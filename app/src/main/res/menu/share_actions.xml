@@ -1,0 +1,26 @@
+<menu 
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
+
+	<item
+        android:id="@+id/file_actions_select"
+        android:title="@string/multi_select"
+		android:icon="@drawable/ic_select"
+		android:showAsAction="always"
+	/>
+	
+	<item
+        android:id="@+id/file_actions_share_trebleshot"
+        android:title="@string/share_with_app"
+		android:icon="@drawable/ic_send"
+		android:showAsAction="always"
+	/>
+
+	<item
+        android:id="@+id/file_actions_share"
+        android:title="@string/share"
+		android:icon="@drawable/ic_share_white"
+		android:showAsAction="always"
+	/>
+
+</menu>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+	<!--<item
+	android:color=""
+	android:drawable=""
+	android:state_pressed="true"
+	android:state_focused="true"
+	android:state_selected="true"
+	android:state_checkable="true"
+	android:state_checked="true"
+	android:state_enabled="true"
+	android:state_window_focused="true"
+	/>-->
+	<item android:color="#277477" android:state_focused="true" />
+	<item android:color="#802D27" android:state_pressed="true" android:state_enabled="false" />
+	<item android:color="#CE22CE" android:state_enabled="false" />
+	<item android:color="#7714F8" />
+</selector>

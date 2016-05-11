@@ -1,0 +1,9 @@
+build
+gradle
+.gradle
+.idea
+gradlew.bat
+gradlew
+TSMAT.iml
+local.properties
+app/build

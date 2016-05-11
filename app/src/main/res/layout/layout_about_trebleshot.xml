@@ -1,0 +1,47 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+	android:paddingLeft="@dimen/abc_dialog_padding_material"
+	android:paddingRight="@dimen/abc_dialog_padding_material">
+
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:gravity="center_horizontal">
+
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/genonbeta_logo"
+		/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Genonbeta (c) 2016"
+			android:textSize="15sp"
+		/>
+	
+		<View
+			android:layout_width="wrap_content"
+			android:layout_height="5dp"
+		/>
+		
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="@string/ingredients"
+			android:padding="5dp"
+			android:textSize="13sp"
+		/>
+	
+		<View
+			android:layout_width="wrap_content"
+			android:layout_height="30dp"
+		/>
+		
+	
+	</LinearLayout>
+</ScrollView>

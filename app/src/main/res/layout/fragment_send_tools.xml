@@ -1,0 +1,64 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+	<LinearLayout
+		android:id="@+id/selector"
+		android:orientation="horizontal"
+		android:gravity="center_horizontal"
+		android:layout_alignParentBottom="true"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp">
+
+		<TextView
+			android:id="@+id/showApps"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:layout_weight="33"
+			android:text="@string/app"
+			style="@style/columnButton"
+		/>
+
+		<TextView
+			android:id="@+id/showMusic"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:layout_weight="33"
+			android:text="@string/music"
+			style="@style/columnButton"
+		/>
+
+		<TextView
+			android:id="@+id/showVideos"
+			android:layout_height="wrap_content"
+			android:layout_width="0dp"
+			android:layout_weight="33"
+			android:text="@string/video"
+			style="@style/columnButton"
+		/>
+
+	</LinearLayout>
+
+	<View
+		android:id="@+id/seperator"
+		android:layout_height="2dp"
+		android:layout_width="wrap_content"
+		android:background="@color/colorAccent"
+		android:layout_above="@id/selector"
+		android:layout_marginLeft="5dp"
+		android:layout_marginRight="5dp"
+	/>
+
+	<LinearLayout
+		android:id="@+id/fragmentContainer"
+		android:layout_alignParentTop="true"
+		android:layout_above="@id/seperator"
+		android:layout_height="wrap_content"
+		android:layout_width="fill_parent"
+		android:paddingLeft="15dp"
+		android:paddingRight="15dp"
+	/>
+
+</RelativeLayout>

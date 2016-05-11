@@ -1,0 +1,118 @@
+package com.genonbeta.TrebleShot.fragment.dialog;
+
+import android.app.*;
+import android.content.*;
+import android.net.*;
+import android.os.*;
+import android.support.v4.app.*;
+import android.support.v7.app.*;
+import com.genonbeta.TrebleShot.*;
+import com.genonbeta.TrebleShot.helper.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
+
+public class FileDeleteDialogFragment extends DialogFragment
+{
+	private ArrayList<URI> mFiles = new ArrayList<URI>();
+	private OnDeleteCompletedListener mDeleteListener = null;
+	private Context mContext;
+	
+	public void setItems(List<URI> items)
+	{
+		mFiles.clear();
+		mFiles.addAll(items);
+	}
+
+	public void setItems(Object[] items)
+	{
+		mFiles.clear();
+		
+		for (Object path : items)
+			mFiles.add(URI.create(path.toString()));
+	}
+
+	@Override
+	public Dialog onCreateDialog(Bundle savedInstanceState)
+	{
+		this.mContext = getActivity();
+		
+		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+		final NotificationPublisher publisher = new NotificationPublisher(getActivity().getApplicationContext());
+		
+		dialogBuilder.setTitle(R.string.delete_confirm);
+		dialogBuilder.setMessage(getString(R.string.delete_warning, mFiles.size()));
+
+		dialogBuilder.setNegativeButton(R.string.cancel, null);
+
+		dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dailog, int p2)
+				{
+					new Thread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								Looper.prepare();
+								
+								for (URI filePath : mFiles)
+								{
+									File file = new File(filePath);		
+									file.delete();
+								}
+								
+								if (mDeleteListener != null)
+									mDeleteListener.onFilesDeleted(FileDeleteDialogFragment.this, mFiles.size());
+								
+								try 
+								{
+									publisher.makeToast(getString(R.string.delete_completed, mFiles.size()));
+								}
+								catch(IllegalStateException e)
+								{
+									e.printStackTrace();
+								}
+								
+								Looper.loop();
+							}
+						}
+					).start();
+				}	
+			}
+		);
+
+		return dialogBuilder.show();
+	}
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+
+		FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+		ft.detach(this);
+		ft.commit();
+	}
+	
+	public Context getContext()
+	{
+		return this.mContext;
+	}
+	
+	public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener)
+	{
+		mDeleteListener = listener;
+	}
+	
+	public static interface OnDeleteCompletedListener
+	{
+		public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize);
+	}
+}
