@@ -24,7 +24,7 @@ public abstract class CoolCommunication extends CoolSocket
 	}
 
 	@Override
-	final protected void onPacketReceived(Socket socket)
+	protected void onPacketReceived(Socket socket)
 	{
 		try
 		{			
@@ -48,6 +48,8 @@ public abstract class CoolCommunication extends CoolSocket
 
 	public static class Messenger
 	{
+		public static final int NO_TIMEOUT = -1;
+		
 		public static void send(String socketHost, int socketPort, String message, ResponseHandler handler)
 		{
 			send(new InetSocketAddress(socketHost, socketPort), message, handler);
@@ -98,7 +100,7 @@ public abstract class CoolCommunication extends CoolSocket
 					socket.bind(null);
 					socket.connect(this.mProcess.getSocketAddress());
 					
-					if (this.mProcess.getSocketTimeout() != -1)	
+					if (this.mProcess.getSocketTimeout() != NO_TIMEOUT)
 						socket.setSoTimeout(this.mProcess.getSocketTimeout());
 					
 					PrintWriter writer = getStreamWriter(socket.getOutputStream());
@@ -146,7 +148,7 @@ public abstract class CoolCommunication extends CoolSocket
 
 			private boolean mResponseReceived = false;
 			private boolean mIsFlushRequested = false;
-			private int mSocketTimeout = -1;
+			private int mSocketTimeout = Messenger.NO_TIMEOUT;
 
 			public Process(SocketAddress address, String message, ResponseHandler handler)
 			{
@@ -263,9 +265,11 @@ public abstract class CoolCommunication extends CoolSocket
 
 			public String waitForResponse()
 			{
+				long timeStart = System.currentTimeMillis();
+				
 				if (this.requestFlush())
 				{
-					while (!this.isResponseReceived())
+					while (!this.isResponseReceived() && (this.getSocketTimeout() == Messenger.NO_TIMEOUT || (System.currentTimeMillis() - timeStart) < this.getSocketTimeout()))
 					{}
 				}
 				

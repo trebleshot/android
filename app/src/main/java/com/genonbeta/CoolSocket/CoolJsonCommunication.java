@@ -8,6 +8,10 @@ import java.net.Socket;
 
 public abstract class CoolJsonCommunication extends CoolCommunication
 {
+	public static final int NO_TAB = -1;
+	
+	private int mAddTabsToResponse = NO_TAB;
+	
 	public CoolJsonCommunication()
 	{
 	}
@@ -22,8 +26,19 @@ public abstract class CoolJsonCommunication extends CoolCommunication
 		super(address, port);
 	}
 	
+	public int getAddTabsToResponse()
+	{
+		return this.mAddTabsToResponse;
+	}
+	
+	public void setAddTabsToResponse(int line)
+	{
+		if (line >= NO_TAB)
+			this.mAddTabsToResponse = line;
+	}
+	
 	@Override
-	protected final void onMessage(Socket socket, String message, PrintWriter writer, String clientIp)
+	protected void onMessage(Socket socket, String message, PrintWriter writer, String clientIp)
 	{
 		try
 		{
@@ -32,7 +47,7 @@ public abstract class CoolJsonCommunication extends CoolCommunication
 			
 			this.onJsonMessage(socket, receivedMessage, responseJson, clientIp);
 
-			writer.append(responseJson.toString());
+			writer.append((this.getAddTabsToResponse() > NO_TAB) ? responseJson.toString(this.getAddTabsToResponse()) : responseJson.toString());
 			writer.flush();
 		}
 		catch (JSONException e)
@@ -46,7 +61,7 @@ public abstract class CoolJsonCommunication extends CoolCommunication
 	public static abstract class JsonResponseHandler extends Messenger.ResponseHandler
 	{
 		@Override
-		public final void onMessage(Socket socket, CoolCommunication.Messenger.Process process, final PrintWriter response)
+		public void onMessage(Socket socket, CoolCommunication.Messenger.Process process, final PrintWriter response)
 		{
 			JSONObject json = new JSONObject();
 			process.putLater(json);
