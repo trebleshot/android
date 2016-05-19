@@ -5,7 +5,7 @@
     <item 
 		android:id="@+id/network_devices_scan"
 		android:title="@string/scan"
-		android:icon="@drawable/ic_search_white"
+		android:icon="@drawable/ic_retry_alpha"
 		app:showAsAction="ifRoom"
 		android:orderInCategory="0"
 		/>

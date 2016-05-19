@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme" parent="@style/Theme.AppCompat">
 		<item name="colorPrimary">@color/colorPrimary</item>
 		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -30,4 +31,5 @@
 		<item name="android:textStyle">bold</item>
 		<item name="android:gravity">center</item>
 	</style>
+
 </resources>
