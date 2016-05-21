@@ -71,6 +71,7 @@
 			<intent-filter>
 				<action android:name="genonbeta.intent.action.SCAN_DEVICES" />
 				<action android:name="genonbeta.intent.action.ADD_IP" />
+				<category android:name="android.intent.category.DEFAULT" />
 			</intent-filter>
 		</receiver>
     </application>
