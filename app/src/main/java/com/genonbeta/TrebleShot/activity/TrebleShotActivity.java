@@ -15,7 +15,7 @@ import java.io.File;
 
 public class TrebleShotActivity extends GActivity
 {
-	public static final String OPEN_RECEIVED_FILES_ACTION = "com.genonbera.intent.action.OPEN_RECEIVED_FILES";
+	public static final String OPEN_RECEIVED_FILES_ACTION = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
