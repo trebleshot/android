@@ -8,8 +8,8 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 27
-        versionName "1.0.9.3"
+        versionCode 28
+        versionName "1.0.10"
     }
     buildTypes {
         release {

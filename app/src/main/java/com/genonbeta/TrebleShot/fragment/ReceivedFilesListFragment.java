@@ -96,7 +96,7 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
 		switch (item.getItemId())
 		{
 			case (R.id.received_device_options_refresh):
-				this.updateList();
+				this.updateInBackground();
 				return true;
 			case (R.id.received_device_options_open_in_file_manager):
 				this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));

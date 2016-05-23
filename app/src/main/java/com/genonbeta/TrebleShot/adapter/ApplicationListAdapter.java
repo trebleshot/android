@@ -110,6 +110,10 @@ public class ApplicationListAdapter extends AbstractFlexibleAdapter
 		super.notifyDataSetChanged();
 	}
 	
+	public void showSystemApps(boolean show)
+	{
+		this.mShowSysApps = show;
+	}
 
 	public static class AppInfo
 	{

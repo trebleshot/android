@@ -19,6 +19,30 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
 	private ActionMode mActionMode;
 	private boolean mIsLoading = false;
 	
+	private Runnable mNotifyListChanges = new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			getAdapter().notifyDataSetChanged();
+			setEmptyText(getString(R.string.list_empty_msg));
+		}
+	};
+	
+	private Runnable mUpdateList = new Runnable()
+	{
+		@Override
+		public void run()
+		{
+			boolean updateSucceed = getAdapter().update();
+				
+			if (updateSucceed && getActivity() != null && !isDetached())
+				getActivity().runOnUiThread(mNotifyListChanges);
+			
+			AbstractMediaListFragment.this.mIsLoading = false;
+		}
+	};
+	
 	protected abstract T onAdapter();
 	protected abstract MediaChoiceListener onChoiceListener();
 	
@@ -89,39 +113,7 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
 
 		setEmptyText(getString(R.string.loading));
 			
-		new Thread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					if (getAdapter().update())
-						updateList();
-					
-					AbstractMediaListFragment.this.mIsLoading = false;
-				}
-			}
-		).start();
-
-		return true;
-	}
-	
-	protected boolean updateList()
-	{
-		if (getActivity() == null)
-			return false;
-
-		this.getActivity().runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					getAdapter().notifyDataSetChanged();
-					
-					if (!isDetached())
-						setEmptyText(getString(R.string.list_empty_msg));
-				}
-			}
-		);
+		new Thread(this.mUpdateList).start();
 
 		return true;
 	}
