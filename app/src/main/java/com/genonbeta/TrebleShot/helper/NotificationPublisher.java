@@ -62,12 +62,12 @@ public class NotificationPublisher
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
-		acceptIntent.setAction(CommunicationService.ALLOW_IP);
+		acceptIntent.setAction(CommunicationService.ACTION_ALLOW_IP);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.REJECT_IP);
+		rejectIntent.setAction(CommunicationService.ACTION_REJECT_IP);
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
@@ -94,7 +94,7 @@ public class NotificationPublisher
 		mManager.notify(uniqueNotificationId, builder.build());
 	}
 	
-	public void notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver)
+	public void notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction)
 	{
 		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
 		
@@ -102,14 +102,31 @@ public class NotificationPublisher
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 				
-		acceptIntent.setAction(CommunicationService.FILE_TRANSFER_ACCEPT);
+		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_ACCEPT);
 		
 		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
 		
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.FILE_TRANSFER_REJECT);
+		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
+		
+		int acceptText;
+		int rejectText;
+		
+		if (halfRestriction)
+		{
+			acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
+			rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
+			
+			acceptText = R.string.receive_restricted;
+			rejectText = R.string.reject_restricted;
+		}
+		else
+		{
+			acceptText = R.string.receive;
+			rejectText = R.string.reject;
+		}
 		
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
@@ -129,14 +146,14 @@ public class NotificationPublisher
 			.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 			.setDefaults(this.getNotificationDefaults())
 			.setDeleteIntent(negativeIntent)
-			.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
-			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
+			.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
+			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
 			.setTicker(mContext.getString(R.string.receive_the_file_que));
 			
 		mManager.notify(uniqueNotificationId, builder.build());
 	}
 	
-	public void notifyMultiTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device)
+	public void notifyMultiTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction)
 	{
 		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
 		
@@ -144,17 +161,34 @@ public class NotificationPublisher
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 		
-		acceptIntent.setAction(CommunicationService.FILE_TRANSFER_ACCEPT);
+		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_ACCEPT);
 		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
 		
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.FILE_TRANSFER_REJECT);
+		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
 
+		int acceptText;
+		int rejectText;
+
+		if (halfRestriction)
+		{
+			acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
+			rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
+
+			acceptText = R.string.receive_restricted;
+			rejectText = R.string.reject_restricted;
+		}
+		else
+		{
+			acceptText = R.string.receive;
+			rejectText = R.string.reject;
+		}
+		
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
-
+		
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.receive_the_file_que));
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.multi_transfer_que, numberOfFiles));
@@ -168,8 +202,8 @@ public class NotificationPublisher
 			.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 			.setDefaults(this.getNotificationDefaults())
 			.setDeleteIntent(negativeIntent)
-			.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
-			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
+			.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
+			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
 			.setTicker(mContext.getString(R.string.receive_the_file_que));
 		
 		mManager.notify(uniqueNotificationId, builder.build());
@@ -183,8 +217,8 @@ public class NotificationPublisher
 			.setContentTitle(mContext.getString(R.string.app_name))
 			.setContentText(mContext.getString(R.string.ongoing))
 			.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
-			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.STOP_SERVICE), 0))
-			.addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
+			.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE), 0))
+			.addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
 		
 		return builder.getNotification();
 	}

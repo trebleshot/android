@@ -125,4 +125,7 @@
 	<string name="loading">Yükleniyor...</string>
 	<string name="error">Hata</string>
 	<string name="multi_select">Çoklu seçim</string>
+	<string name="block">Engelle</string>
+	<string name="receive_restricted">Al</string>
+	<string name="reject_restricted">Engelle</string>
 </resources>

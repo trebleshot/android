@@ -23,11 +23,11 @@ public class CommunicationService extends Service
 {
 	public static final String TAG = "CommunationService";
 
-	public static final String FILE_TRANSFER_ACCEPT = "com.genonbeta.TrebleShot.FILE_TRANSFER_ACCEPT";
-	public static final String FILE_TRANSFER_REJECT = "com.genonbeta.TrebleShot.FILE_TRANSFER_REJECT";
-	public static final String STOP_SERVICE = "com.genonbeta.TrebleShot.STOP_SERVICE";
-	public static final String ALLOW_IP = "com.genonbeta.TrebleShot.ALLOW_IP";
-	public static final String REJECT_IP = "com.genonbeta.TrebleShot.REJECT_IP";
+	public static final String ACTION_FILE_TRANSFER_ACCEPT = "com.genonbeta.TrebleShot.FILE_TRANSFER_ACCEPT";
+	public static final String ACTION_FILE_TRANSFER_REJECT = "com.genonbeta.TrebleShot.FILE_TRANSFER_REJECT";
+	public static final String ACTION_STOP_SERVICE = "com.genonbeta.TrebleShot.STOP_SERVICE";
+	public static final String ACTION_ALLOW_IP = "com.genonbeta.TrebleShot.ALLOW_IP";
+	public static final String ACTION_REJECT_IP = "com.genonbeta.TrebleShot.REJECT_IP";
 
 	public static final String EXTRA_DEVICE_IP = "extraDeviceIp";
 	public static final String EXTRA_FILE_PATH = "extraFilePath";
@@ -37,7 +37,8 @@ public class CommunicationService extends Service
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_ACCEPT_ID = "extraAcceptId";
 	public static final String EXTRA_SERVICE_LOCK_REQUEST = "extraServiceStartLock";
-
+	public static final String EXTRA_HALF_RESTRICT = "extraHalfRestrict";
+	
 	private CommunicationServer mCommunationServer = new CommunicationServer();
 	private NotificationPublisher mPublisher;
 	private SharedPreferences mPreferences;
@@ -213,7 +214,7 @@ public class CommunicationService extends Service
 					}
 				);
 			}
-			else if (STOP_SERVICE.equals(intent.getAction()))
+			else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
 			{
 				if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
 				{
@@ -223,7 +224,7 @@ public class CommunicationService extends Service
 
 				stopSelf();
 			}
-			else if (FILE_TRANSFER_ACCEPT.equals(intent.getAction()))
+			else if (ACTION_FILE_TRANSFER_ACCEPT.equals(intent.getAction()))
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
@@ -232,10 +233,10 @@ public class CommunicationService extends Service
 				mPublisher.cancelNotification(notificationId);
 
 				Log.d(TAG, "fileTransferAccepted ; ip = " + oppositeIp + " ; acceptId = " + acceptId + "; notificationId = " + notificationId);
-
+				
 				if (ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
-
+				
 				if (ApplicationHelper.acceptPendingReceivers(acceptId) < 1)
 				{
 					mPublisher.makeToast(R.string.something_went_wrong);
@@ -264,17 +265,17 @@ public class CommunicationService extends Service
 					}
 				);
 			}
-			else if (FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID))
+			else if (ACTION_FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID))
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
 
 				mPublisher.cancelNotification(notificationId);
-
-				if (ApplicationHelper.getDeviceList().containsKey(oppositeIp))
+				
+				if (ApplicationHelper.getDeviceList().containsKey(oppositeIp) && !intent.hasExtra(EXTRA_HALF_RESTRICT))
 					ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
-
+				
 				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 					new JsonResponseHandler()
 					{
@@ -306,7 +307,7 @@ public class CommunicationService extends Service
 					}
 				);
 			}
-			else if (STOP_SERVICE.equals(intent.getAction()))
+			else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
 			{
 				if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
 				{
@@ -316,7 +317,7 @@ public class CommunicationService extends Service
 
 				stopSelf();
 			}
-			else if (ALLOW_IP.equals(intent.getAction()))
+			else if (ACTION_ALLOW_IP.equals(intent.getAction()))
 			{
 				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
@@ -328,7 +329,7 @@ public class CommunicationService extends Service
 
 				ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
 			}
-			else if (REJECT_IP.equals(intent.getAction()))
+			else if (ACTION_REJECT_IP.equals(intent.getAction()))
 			{
 				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
@@ -386,6 +387,7 @@ public class CommunicationService extends Service
 				JSONObject deviceInformation = new JSONObject();
 				boolean result = false;
 				boolean shouldContinue = true;
+				boolean halfRestriction = false;
 
 				PackageInfo packageInfo = getPackageManager().getPackageInfo(getApplicationInfo().packageName, 0);
 				JSONObject appInfo = new JSONObject();
@@ -411,9 +413,14 @@ public class CommunicationService extends Service
 
 						ApplicationHelper.getDeviceList().put(clientIp, device);
 						sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP).putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, clientIp));
-						mPublisher.notifyConnectionRequest(clientIp);
 						
-						shouldContinue = false;
+						if (receivedMessage.getString("request").equals("file_transfer_request") || receivedMessage.getString("request").equals("multifile_transfer_request"))
+						{
+							shouldContinue = true;
+							halfRestriction = true;
+						}
+						else
+							mPublisher.notifyConnectionRequest(clientIp);
 					}
 					else
 					{
@@ -422,7 +429,7 @@ public class CommunicationService extends Service
 						if (device.isRestricted == true)
 							shouldContinue = false;
 					}
-
+					
 				if (shouldContinue && receivedMessage.has("request"))
 				{
 					switch (receivedMessage.getString("request"))
@@ -442,7 +449,7 @@ public class CommunicationService extends Service
 
 								device.isRestricted = true;
 
-								mPublisher.notifyTransferRequest(acceptId, device, receiver);
+								mPublisher.notifyTransferRequest(acceptId, device, receiver, halfRestriction);
 
 								result = true;
 							}
@@ -485,7 +492,7 @@ public class CommunicationService extends Service
 
 								if (count > 0)
 								{
-									mPublisher.notifyMultiTransferRequest(count, acceptId, device);
+									mPublisher.notifyMultiTransferRequest(count, acceptId, device, halfRestriction);
 									result = true;
 									device.isRestricted = true;
 								}
