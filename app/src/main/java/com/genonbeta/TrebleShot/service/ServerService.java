@@ -120,7 +120,7 @@ public class ServerService extends Service
 					if (!mIsBreakRequested)
 					{
 						mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
-
+						
 						if (!receiver.processCancelled && !mIsBreakRequested)
 						{
 							if (preNotified <= 1)
@@ -225,6 +225,13 @@ public class ServerService extends Service
 					}
 				}
 			);
+			
+			try
+			{
+				serverSocket.close();
+			}
+			catch (IOException e)
+			{}
 		}
 
 		@Override
