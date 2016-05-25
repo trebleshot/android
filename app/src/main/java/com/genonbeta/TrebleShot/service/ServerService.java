@@ -228,7 +228,8 @@ public class ServerService extends Service
 			
 			try
 			{
-				serverSocket.close();
+				if (extra.processCancelled)
+					serverSocket.close();
 			}
 			catch (IOException e)
 			{}
