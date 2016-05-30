@@ -124,7 +124,7 @@ public class NotificationPublisher
 		}
 		else
 		{
-			acceptText = R.string.receive;
+			acceptText = R.string.accept;
 			rejectText = R.string.reject;
 		}
 		
@@ -182,7 +182,7 @@ public class NotificationPublisher
 		}
 		else
 		{
-			acceptText = R.string.receive;
+			acceptText = R.string.accept;
 			rejectText = R.string.reject;
 		}
 		
