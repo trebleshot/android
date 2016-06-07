@@ -122,7 +122,6 @@
 	<string name="connection_problem">Connection problem</string>
 	<string name="communication_problem">Communication problem</string>
 	<string name="poke_sent">You poked the device</string>
-	<string name="loading">Loading...</string>
 	<string name="error">Error</string>
 	<string name="multi_select">Select/Unselect all</string>
 	<string name="block">Block</string>
