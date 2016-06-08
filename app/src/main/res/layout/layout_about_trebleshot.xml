@@ -11,17 +11,16 @@
 		android:orientation="vertical"
 		android:gravity="center_horizontal">
 
-		<ImageView
+		<View
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:src="@drawable/genonbeta_logo"
+			android:layout_height="15dp"
 		/>
-
+		
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="Genonbeta (c) 2016"
-			android:textSize="15sp"
+			android:textSize="18sp"
 		/>
 	
 		<View
@@ -39,9 +38,8 @@
 	
 		<View
 			android:layout_width="wrap_content"
-			android:layout_height="30dp"
+			android:layout_height="15dp"
 		/>
-		
 	
 	</LinearLayout>
 </ScrollView>

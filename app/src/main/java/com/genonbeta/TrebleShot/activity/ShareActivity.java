@@ -22,7 +22,7 @@ public class ShareActivity extends GActivity
 
 		boolean shouldContinue = false;
 		String info = getString(R.string.something_went_wrong);
-
+		
 		if (getIntent() != null && getIntent().hasExtra(Intent.EXTRA_STREAM))
 		{
 			if (Intent.ACTION_SEND.equals(getIntent().getAction()) || ShareActivity.ACTION_SEND.equals(getIntent().getAction()))
