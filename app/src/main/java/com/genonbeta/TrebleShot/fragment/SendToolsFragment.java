@@ -1,16 +1,16 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.os.*;
-import android.support.v4.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.SearchView;
-import android.widget.SearchView.*;
-import java.util.*;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class SendToolsFragment extends Fragment
 {

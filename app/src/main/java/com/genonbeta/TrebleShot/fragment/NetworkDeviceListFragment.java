@@ -1,28 +1,44 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.os.*;
-import android.preference.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-import android.widget.CompoundButton.*;
-import com.genonbeta.CoolSocket.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.adapter.*;
-import com.genonbeta.TrebleShot.config.*;
-import com.genonbeta.TrebleShot.helper.*;
-import com.genonbeta.TrebleShot.receiver.*;
-import com.genonbeta.TrebleShot.service.*;
-import java.net.*;
-import org.json.*;
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ListFragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SwitchCompat;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.view.View.OnClickListener;
-import com.genonbeta.TrebleShot.activity.*;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import com.genonbeta.CoolSocket.CoolCommunication;
+import com.genonbeta.CoolSocket.CoolJsonCommunication;
+import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.PendingProcessListAdapter;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.Socket;
 
 public class NetworkDeviceListFragment extends ListFragment
 {

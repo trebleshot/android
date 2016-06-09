@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TrebleShotActivity;
 import com.genonbeta.TrebleShot.adapter.SimpleFragmentPagerAdapter;
-import com.genonbeta.TrebleShot.adapter.*;
 
 public class SwipableMainActivityFragment extends Fragment
 {

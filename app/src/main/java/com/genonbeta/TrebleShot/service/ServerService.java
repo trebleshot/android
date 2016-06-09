@@ -1,17 +1,28 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.*;
-import android.content.*;
-import android.net.wifi.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.util.*;
-import com.genonbeta.CoolSocket.*;
-import com.genonbeta.TrebleShot.config.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.io.*;
-import java.net.*;
-import org.json.*;
+import android.app.Service;
+import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.os.IBinder;
+import android.util.Log;
+
+import com.genonbeta.CoolSocket.CoolCommunication;
+import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public class ServerService extends Service
 {

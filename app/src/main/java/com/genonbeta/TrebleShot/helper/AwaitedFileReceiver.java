@@ -1,8 +1,5 @@
 package com.genonbeta.TrebleShot.helper;
 
-import java.net.Socket;
-import java.util.ArrayList;
-
 public class AwaitedFileReceiver
 {
 	public String ip;

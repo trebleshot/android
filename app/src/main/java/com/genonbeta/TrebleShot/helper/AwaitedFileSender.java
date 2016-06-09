@@ -1,9 +1,6 @@
 package com.genonbeta.TrebleShot.helper;
 
-import android.support.v4.util.ArrayMap;
-
 import java.io.File;
-import java.net.Socket;
 
 public class AwaitedFileSender
 {

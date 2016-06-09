@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 
 import com.genonbeta.TrebleShot.adapter.PendingProcessListAdapter;
-import com.genonbeta.TrebleShot.*;
 
 public class PendingProcessListFragment extends ListFragment
 {

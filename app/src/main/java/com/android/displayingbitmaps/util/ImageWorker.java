@@ -16,15 +16,22 @@
 
 package com.android.displayingbitmaps.util;
 
-import android.content.*;
-import android.content.res.*;
-import android.graphics.*;
-import android.graphics.drawable.*;
-import android.support.v4.app.*;
-import android.util.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import java.lang.ref.*;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.TransitionDrawable;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.genonbeta.TrebleShot.BuildConfig;
+
+import java.lang.ref.WeakReference;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an

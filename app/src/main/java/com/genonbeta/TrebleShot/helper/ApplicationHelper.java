@@ -1,18 +1,21 @@
 package com.genonbeta.TrebleShot.helper;
 
-import android.content.*;
-import android.database.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.provider.*;
-import android.util.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.core.util.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
+import android.util.Log;
+
+import com.genonbeta.core.util.NetworkDeviceScanner;
+
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class ApplicationHelper
 {

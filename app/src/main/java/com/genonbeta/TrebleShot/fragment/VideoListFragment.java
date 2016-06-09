@@ -1,12 +1,10 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.net.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.adapter.*;
-import java.util.*;
+import android.view.ActionMode;
+import android.view.View;
+import android.widget.ListView;
+
+import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
 
 public class VideoListFragment extends AbstractMediaListFragment<VideoListAdapter>
 {

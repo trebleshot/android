@@ -16,15 +16,22 @@
 
 package com.android.displayingbitmaps.util;
 
-import android.content.*;
-import android.graphics.*;
-import android.net.*;
-import android.os.*;
-import android.util.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import java.io.*;
-import java.net.*;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.os.Build;
+import android.util.Log;
+
+import com.genonbeta.TrebleShot.BuildConfig;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.

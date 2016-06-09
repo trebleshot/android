@@ -1,15 +1,10 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.adapter.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.util.*;
+import android.view.ActionMode;
+import android.view.View;
+import android.widget.ListView;
+
+import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
 
 public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapter>
 {

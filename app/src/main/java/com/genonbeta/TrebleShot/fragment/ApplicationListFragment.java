@@ -1,13 +1,15 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.util.*;
-import android.view.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.adapter.*;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 
 public class ApplicationListFragment extends AbstractMediaListFragment<ApplicationListAdapter>
 {

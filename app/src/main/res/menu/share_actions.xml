@@ -1,6 +1,4 @@
-<menu 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
 	<item
         android:id="@+id/file_actions_select"

@@ -1,18 +1,21 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.*;
-import android.content.*;
-import android.net.wifi.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.util.*;
-import com.genonbeta.CoolSocket.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.config.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
+import android.app.Service;
+import android.content.Intent;
+import android.net.wifi.WifiManager;
+import android.os.IBinder;
+import android.os.Looper;
+import android.util.Log;
+
+import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+
+import java.io.File;
+import java.net.Socket;
 
 public class ClientService extends Service
 {

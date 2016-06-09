@@ -21,8 +21,10 @@ package com.android.displayingbitmaps.util;
 /**
  * Class containing some static utility methods.
  */
-import android.annotation.*;
-import android.os.*;
+
+import android.annotation.TargetApi;
+import android.os.Build;
+import android.os.StrictMode;
 
 public class Utils
 {

@@ -1,16 +1,21 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.activity.*;
-import com.genonbeta.TrebleShot.adapter.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.util.*;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.ListFragment;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.AbsListView;
+import android.widget.ListView;
+
+import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.adapter.AbstractFlexibleAdapter;
+import com.genonbeta.TrebleShot.helper.GAnimater;
+
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapter> extends ListFragment
 {

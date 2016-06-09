@@ -1,13 +1,20 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.*;
-import android.content.pm.*;
-import android.graphics.drawable.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.util.*;
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ApplicationListAdapter extends AbstractFlexibleAdapter
 {

@@ -1,23 +1,37 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.*;
-import android.content.*;
-import android.content.pm.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.util.*;
-import android.widget.*;
-import com.genonbeta.CoolSocket.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.activity.*;
-import com.genonbeta.TrebleShot.config.*;
-import com.genonbeta.TrebleShot.helper.*;
-import com.genonbeta.TrebleShot.receiver.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import org.json.*;
+import android.app.Service;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.net.Uri;
+import android.os.Build;
+import android.os.IBinder;
+import android.os.Looper;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import android.widget.Toast;
+
+import com.genonbeta.CoolSocket.CoolCommunication;
+import com.genonbeta.CoolSocket.CoolJsonCommunication;
+import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
+import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
+import java.net.Socket;
+import java.util.ArrayList;
 
 public class CommunicationService extends Service
 {

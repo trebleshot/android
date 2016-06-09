@@ -16,11 +16,11 @@
 
 package com.android.displayingbitmaps.util;
 
-import android.content.*;
-import android.graphics.drawable.*;
-import android.util.*;
-import android.widget.*;
-import com.android.displayingbitmaps.util.*;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.LayerDrawable;
+import android.util.AttributeSet;
+import android.widget.ImageView;
 
 /**
  * Sub-class of ImageView which automatically notifies the drawable when it is

@@ -1,20 +1,20 @@
 package com.genonbeta.TrebleShot.fragment.dialog;
 
-import android.app.*;
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.support.v4.app.*;
-import android.support.v7.app.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
+
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+
+import java.io.File;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FileDeleteDialogFragment extends DialogFragment
 {

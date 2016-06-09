@@ -1,10 +1,15 @@
 package com.genonbeta.CoolSocket;
 
-import java.io.*;
-import java.net.*;
-import java.util.concurrent.*;
-import java.nio.channels.*;
-import java.security.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.nio.channels.NotYetBoundException;
+import java.util.concurrent.ArrayBlockingQueue;
 
 public class CoolTransfer
 {

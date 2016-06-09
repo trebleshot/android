@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
-import java.io.*;
 
 public abstract class CoolCommunication extends CoolSocket
 {

@@ -16,14 +16,17 @@
 
 package com.android.displayingbitmaps.util;
 
-import android.annotation.*;
-import android.content.*;
-import android.content.res.*;
-import android.graphics.*;
-import android.os.*;
-import android.util.*;
-import com.genonbeta.TrebleShot.*;
-import java.io.*;
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Build;
+import android.util.Log;
+
+import com.genonbeta.TrebleShot.BuildConfig;
+
+import java.io.FileDescriptor;
 
 /**
  * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width

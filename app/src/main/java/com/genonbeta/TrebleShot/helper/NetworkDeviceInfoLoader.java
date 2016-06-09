@@ -8,8 +8,8 @@ import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
 
 import org.json.JSONObject;
-import com.genonbeta.CoolSocket.CoolCommunication.Messenger.*;
-import java.net.*;
+
+import java.net.Socket;
 
 public class NetworkDeviceInfoLoader
 {

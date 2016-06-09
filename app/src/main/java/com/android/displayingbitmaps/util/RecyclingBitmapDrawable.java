@@ -16,11 +16,12 @@
 
 package com.android.displayingbitmaps.util;
 
-import android.content.res.*;
-import android.graphics.*;
-import android.graphics.drawable.*;
-import android.util.*;
-import com.genonbeta.TrebleShot.*;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
+
+import com.genonbeta.TrebleShot.BuildConfig;
 
 /**
  * A BitmapDrawable that keeps track of whether it is being displayed or cached.

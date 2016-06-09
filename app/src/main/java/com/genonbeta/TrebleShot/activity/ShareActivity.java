@@ -1,14 +1,16 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.app.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.io.*;
-import java.util.*;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+
+import java.io.File;
+import java.util.ArrayList;
 
 public class ShareActivity extends GActivity
 {

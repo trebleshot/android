@@ -1,8 +1,10 @@
 package com.genonbeta.TrebleShot.helper;
 
-import android.content.*;
-import java.io.*;
-import java.net.*;
+import android.content.Context;
+
+import java.io.File;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 
 public class FileUtils
 {

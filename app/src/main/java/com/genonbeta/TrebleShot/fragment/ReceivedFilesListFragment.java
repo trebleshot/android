@@ -1,19 +1,27 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.*;
-import android.net.*;
-import android.os.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.adapter.*;
-import com.genonbeta.TrebleShot.fragment.dialog.*;
-import com.genonbeta.TrebleShot.helper.*;
-import com.genonbeta.TrebleShot.service.*;
-
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
+import android.view.ActionMode;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
+
+import com.genonbeta.TrebleShot.adapter.ReceivedFilesListAdapter;
+import com.genonbeta.TrebleShot.fragment.dialog.FileDeleteDialogFragment;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.helper.GAnimater;
+import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.service.ServerService;
 
 public class ReceivedFilesListFragment extends AbstractMediaListFragment<ReceivedFilesListAdapter>
 {

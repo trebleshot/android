@@ -1,14 +1,20 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.content.*;
-import android.database.*;
-import android.net.*;
-import android.provider.*;
-import android.view.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.helper.*;
-import java.util.*;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class MusicListAdapter extends AbstractFlexibleAdapter
 {

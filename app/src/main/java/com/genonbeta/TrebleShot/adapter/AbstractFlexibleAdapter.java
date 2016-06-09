@@ -1,6 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.widget.*;
+import android.widget.BaseAdapter;
 
 abstract public class AbstractFlexibleAdapter extends BaseAdapter
 {

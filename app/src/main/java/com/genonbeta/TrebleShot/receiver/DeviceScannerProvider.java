@@ -1,14 +1,21 @@
 package com.genonbeta.TrebleShot.receiver;
 
-import android.content.*;
-import android.preference.*;
-import android.widget.*;
-import com.genonbeta.TrebleShot.*;
-import com.genonbeta.TrebleShot.config.*;
-import com.genonbeta.TrebleShot.helper.*;
-import com.genonbeta.core.util.*;
-import java.net.*;
-import java.util.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.widget.Toast;
+
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NetworkDeviceInfoLoader;
+import com.genonbeta.core.util.NetworkDeviceScanner;
+import com.genonbeta.core.util.NetworkUtils;
+
+import java.net.InetAddress;
+import java.util.ArrayList;
 
 public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvaiableListener
 {

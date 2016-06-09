@@ -7,7 +7,6 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import org.json.JSONObject;
 
 import java.net.Socket;
-import com.genonbeta.CoolSocket.CoolCommunication.Messenger.*;
 
 public abstract class JsonResponseHandler extends CoolJsonCommunication.JsonResponseHandler
 {

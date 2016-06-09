@@ -1,8 +1,8 @@
 package com.genonbeta.core.util;
 
-import java.net.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 public class NetworkDeviceScanner
 {
