@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 
 public class ApplicationListFragment extends AbstractMediaListFragment<ApplicationListAdapter>

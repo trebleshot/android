@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;

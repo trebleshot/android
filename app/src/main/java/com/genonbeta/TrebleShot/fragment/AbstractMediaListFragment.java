@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.AbstractFlexibleAdapter;
 import com.genonbeta.TrebleShot.helper.GAnimater;

@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ReceivedFilesListAdapter;
 import com.genonbeta.TrebleShot.fragment.dialog.FileDeleteDialogFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;

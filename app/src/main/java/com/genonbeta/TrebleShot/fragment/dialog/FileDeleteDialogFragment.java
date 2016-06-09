@@ -9,6 +9,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 
 import java.io.File;

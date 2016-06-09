@@ -12,6 +12,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.R;
+
 public class SendToolsFragment extends Fragment
 {
 	private AbstractMediaListFragment mApps;

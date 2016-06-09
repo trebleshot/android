@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.android.displayingbitmaps.util.AsyncTask;
 import com.android.displayingbitmaps.util.RecyclingImageView;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 
 import java.lang.ref.WeakReference;

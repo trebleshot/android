@@ -4,6 +4,7 @@ import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
 
 public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapter>
@@ -27,7 +28,7 @@ public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapte
 		
 		MusicListAdapter.MusicInfo musicInfo = (MusicListAdapter.MusicInfo) getAdapter().getItem(position);
 
-		this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));	
+		this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
 	}
 	
 	private class ChoiceListener extends MediaChoiceListener

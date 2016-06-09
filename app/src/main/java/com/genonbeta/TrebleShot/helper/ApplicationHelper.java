@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.core.util.NetworkDeviceScanner;
 
 import java.io.File;

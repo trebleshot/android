@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 

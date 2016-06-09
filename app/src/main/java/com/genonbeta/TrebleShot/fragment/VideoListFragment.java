@@ -4,6 +4,7 @@ import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
 
 public class VideoListFragment extends AbstractMediaListFragment<VideoListAdapter>
@@ -27,7 +28,7 @@ public class VideoListFragment extends AbstractMediaListFragment<VideoListAdapte
 
 		VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) this.getAdapter().getItem(position);
 
-		this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));	
+		this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
 	}
 
 	private class ChoiceListener extends MediaChoiceListener
