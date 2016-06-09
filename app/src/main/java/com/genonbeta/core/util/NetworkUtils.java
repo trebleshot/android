@@ -3,8 +3,6 @@ package com.genonbeta.core.util;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import org.apache.commons.logging.*;
-import org.apache.http.conn.util.*;
 
 public class NetworkUtils
 {
