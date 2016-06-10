@@ -17,81 +17,70 @@ import com.genonbeta.TrebleShot.helper.NetworkDevice;
 
 import java.util.ArrayList;
 
-public class NetworkDeviceListAdapter extends BaseAdapter
-{
-	private Context mContext;
-	private ArrayList<NetworkDevice> mDeviceList = new ArrayList<NetworkDevice>();
+public class NetworkDeviceListAdapter extends BaseAdapter {
+    private Context mContext;
+    private ArrayList<NetworkDevice> mDeviceList = new ArrayList<NetworkDevice>();
 
-	public NetworkDeviceListAdapter(Context context)
-	{
-		this.mContext = context;
-	}
+    public NetworkDeviceListAdapter(Context context) {
+        this.mContext = context;
+    }
 
-	@Override
-	public void notifyDataSetChanged()
-	{
-		mDeviceList.clear();
+    @Override
+    public void notifyDataSetChanged() {
+        mDeviceList.clear();
 
-		for (NetworkDevice device : ApplicationHelper.getDeviceList().values())
-		{
-			if (device.user != null && device.model != null && device.brand != null)
-				mDeviceList.add(device);
-		}
+        for (NetworkDevice device : ApplicationHelper.getDeviceList().values()) {
+            if (device.user != null && device.model != null && device.brand != null)
+                mDeviceList.add(device);
+        }
 
-		super.notifyDataSetChanged();
-	}
+        super.notifyDataSetChanged();
+    }
 
-	@Override
-	public int getCount()
-	{
-		return mDeviceList.size();
-	}
+    @Override
+    public int getCount() {
+        return mDeviceList.size();
+    }
 
-	@Override
-	public Object getItem(int itemId)
-	{
-		return mDeviceList.get(itemId);
-	}
+    @Override
+    public Object getItem(int itemId) {
+        return mDeviceList.get(itemId);
+    }
 
-	@Override
-	public long getItemId(int p1)
-	{
-		return 0;
-	}
+    @Override
+    public long getItemId(int p1) {
+        return 0;
+    }
 
-	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
-	{
-		if (view == null)
-		{
-			view = LayoutInflater.from(mContext).inflate(R.layout.list_network_device, viewGroup, false);
-			AnimationSet set = GAnimater.getAnimation(GAnimater.APPEAR);
-			view.setAnimation(set);
-		}
+    @Override
+    public View getView(int position, View view, ViewGroup viewGroup) {
+        if (view == null) {
+            view = LayoutInflater.from(mContext).inflate(R.layout.list_network_device, viewGroup, false);
+            AnimationSet set = GAnimater.getAnimation(GAnimater.APPEAR);
+            view.setAnimation(set);
+        }
 
-		return getViewAt(view, position);
-	}
+        return getViewAt(view, position);
+    }
 
-	public View getViewAt(View view, int position)
-	{
-		TextView deviceText = (TextView) view.findViewById(R.id.network_device_list_device_text);
-		TextView ipText = (TextView) view.findViewById(R.id.network_device_list_device_ip_text);
-		TextView userText = (TextView) view.findViewById(R.id.network_device_list_device_user_text);
+    public View getViewAt(View view, int position) {
+        TextView deviceText = (TextView) view.findViewById(R.id.network_device_list_device_text);
+        TextView ipText = (TextView) view.findViewById(R.id.network_device_list_device_ip_text);
+        TextView userText = (TextView) view.findViewById(R.id.network_device_list_device_user_text);
 
-		NetworkDevice device = (NetworkDevice) getItem(position);
+        NetworkDevice device = (NetworkDevice) getItem(position);
 
-		if (!ipText.getText().equals(device.ip) && !ipText.getText().equals(""))
-		{
-			Animation animation = AnimationUtils.loadAnimation(this.mContext, android.R.anim.fade_in);
+        if (!ipText.getText().equals(device.ip) && !ipText.getText().equals("")) {
+            Animation animation = AnimationUtils.loadAnimation(this.mContext, android.R.anim.fade_in);
 
-			view.setAnimation(animation);
-			animation.start();
-		}
+            view.setAnimation(animation);
+            animation.start();
+        }
 
-		deviceText.setText(device.model);
-		userText.setText(device.user);
-		ipText.setText(device.ip);
+        deviceText.setText(device.model);
+        userText.setText(device.user);
+        ipText.setText(device.ip);
 
-		return view;
-	}
+        return view;
+    }
 }

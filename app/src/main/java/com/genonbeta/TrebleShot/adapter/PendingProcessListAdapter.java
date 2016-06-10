@@ -15,149 +15,130 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class PendingProcessListAdapter extends BaseAdapter
-{
-	private Context mContext;
-	private String mIp;
-	private ArrayList<ItemHolder> mList = new ArrayList<ItemHolder>();
+public class PendingProcessListAdapter extends BaseAdapter {
+    private Context mContext;
+    private String mIp;
+    private ArrayList<ItemHolder> mList = new ArrayList<ItemHolder>();
 
-	public PendingProcessListAdapter(Context context, String forIp)
-	{
-		this.mContext = context;
-		this.mIp = forIp;
+    public PendingProcessListAdapter(Context context, String forIp) {
+        this.mContext = context;
+        this.mIp = forIp;
 
-		loadList();
-	}
+        loadList();
+    }
 
-	public void loadList()
-	{
-		mList.clear();
+    public void loadList() {
+        mList.clear();
 
-		for (AwaitedFileSender sender : ApplicationHelper.getSenders().values())
-		{
-			if (this.mIp != null && !sender.ip.equals(this.mIp))
-				continue;	
-				
-			addToList(sender);
-		}
+        for (AwaitedFileSender sender : ApplicationHelper.getSenders().values()) {
+            if (this.mIp != null && !sender.ip.equals(this.mIp))
+                continue;
 
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
-		{
-			if (this.mIp != null && !receiver.ip.equals(this.mIp))
-				continue;
-			
-			addToList(receiver);
-		}
-		
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
-		{
-			if (this.mIp != null && !receiver.ip.equals(this.mIp))
-				continue;
+            addToList(sender);
+        }
 
-			addToList(receiver);
-		}
-	}
-	
-	private void addToList(AwaitedFileReceiver r)
-	{
-		ItemHolder holder = new ItemHolder();
-		
-		holder.file = r.fileName;
-			
-		holder.type = true;
-		holder.deviceIp = r.ip;
-		
-		mList.add(holder);
-	}
-	
-	private void addToList(AwaitedFileSender s)
-	{
-		ItemHolder holder = new ItemHolder();
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers()) {
+            if (this.mIp != null && !receiver.ip.equals(this.mIp))
+                continue;
 
-		holder.file = s.file.getName();
+            addToList(receiver);
+        }
 
-		holder.type = false;
-		holder.deviceIp = s.ip;
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers()) {
+            if (this.mIp != null && !receiver.ip.equals(this.mIp))
+                continue;
 
-		mList.add(holder);
-	}
+            addToList(receiver);
+        }
+    }
 
-	public void clearQueue()
-	{
-		HashSet<Integer> keyList = new HashSet<Integer>();
+    private void addToList(AwaitedFileReceiver r) {
+        ItemHolder holder = new ItemHolder();
 
-		for (int key : ApplicationHelper.getSenders().keySet())
-		{
-			AwaitedFileSender sender = ApplicationHelper.getSenders().get(key);
+        holder.file = r.fileName;
 
-			if (sender.ip.equals(this.mIp))
-				keyList.add(key);
-		}
+        holder.type = true;
+        holder.deviceIp = r.ip;
 
-		for (int currentNumber : keyList)
-			ApplicationHelper.getSenders().remove(currentNumber);
-			
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
-		{
-			if (receiver.ip.equals(this.mIp))
-				ApplicationHelper.getReceivers().remove(receiver);
-		}
-		
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
-		{
-			if (receiver.ip.equals(this.mIp))
-				ApplicationHelper.getPendingReceivers().remove(receiver);
-		}
-	}
+        mList.add(holder);
+    }
 
-	@Override
-	public void notifyDataSetChanged()
-	{
-		loadList();
-		super.notifyDataSetChanged();
-	}
+    private void addToList(AwaitedFileSender s) {
+        ItemHolder holder = new ItemHolder();
 
-	@Override
-	public int getCount()
-	{
-		return mList.size();
-	}
+        holder.file = s.file.getName();
 
-	@Override
-	public Object getItem(int itemId)
-	{
-		return mList.get(itemId);
-	}
+        holder.type = false;
+        holder.deviceIp = s.ip;
 
-	@Override
-	public long getItemId(int p1)
-	{
-		return 0;
-	}
+        mList.add(holder);
+    }
 
-	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
-	{
-		return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_pending_queue, viewGroup, false), position);
-	}
+    public void clearQueue() {
+        HashSet<Integer> keyList = new HashSet<Integer>();
 
-	public View getViewAt(View view, int position)
-	{
-		TextView filenameText = (TextView) view.findViewById(R.id.pending_queue_list_filename);
-		TextView processTypeText = (TextView) view.findViewById(R.id.pending_queue_list_process_type_text);
+        for (int key : ApplicationHelper.getSenders().keySet()) {
+            AwaitedFileSender sender = ApplicationHelper.getSenders().get(key);
 
-		ItemHolder item = (ItemHolder) getItem(position);
-		
-		filenameText.setText(item.file);
-		processTypeText.setText((!item.type) ? R.string.send : R.string.receive);
+            if (sender.ip.equals(this.mIp))
+                keyList.add(key);
+        }
 
-		return view;
-	}
-	
-	private class ItemHolder 
-	{
-		public String file;
-		public String deviceIp;
-		public boolean type = false; // send, receive
-	}
+        for (int currentNumber : keyList)
+            ApplicationHelper.getSenders().remove(currentNumber);
+
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers()) {
+            if (receiver.ip.equals(this.mIp))
+                ApplicationHelper.getReceivers().remove(receiver);
+        }
+
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers()) {
+            if (receiver.ip.equals(this.mIp))
+                ApplicationHelper.getPendingReceivers().remove(receiver);
+        }
+    }
+
+    @Override
+    public void notifyDataSetChanged() {
+        loadList();
+        super.notifyDataSetChanged();
+    }
+
+    @Override
+    public int getCount() {
+        return mList.size();
+    }
+
+    @Override
+    public Object getItem(int itemId) {
+        return mList.get(itemId);
+    }
+
+    @Override
+    public long getItemId(int p1) {
+        return 0;
+    }
+
+    @Override
+    public View getView(int position, View view, ViewGroup viewGroup) {
+        return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_pending_queue, viewGroup, false), position);
+    }
+
+    public View getViewAt(View view, int position) {
+        TextView filenameText = (TextView) view.findViewById(R.id.pending_queue_list_filename);
+        TextView processTypeText = (TextView) view.findViewById(R.id.pending_queue_list_process_type_text);
+
+        ItemHolder item = (ItemHolder) getItem(position);
+
+        filenameText.setText(item.file);
+        processTypeText.setText((!item.type) ? R.string.send : R.string.receive);
+
+        return view;
+    }
+
+    private class ItemHolder {
+        public String file;
+        public String deviceIp;
+        public boolean type = false; // send, receive
+    }
 }

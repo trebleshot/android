@@ -2,34 +2,38 @@
 <resources>
 
     <style name="AppTheme" parent="@style/Theme.AppCompat">
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
-		<item name="actionModeBackground">@color/actionModeBackground</item>
-		<item name="android:navigationBarColor">@color/navigationColor</item>
-		<item name="android:windowBackground">@color/windowBackground</item>
-	</style>
-	<style name="marqueedText">
-		<item name="android:singleLine">true</item>
-		<item name="android:ellipsize">marquee</item>
-	</style>
-	<style name="marqueedText.primary" parent="@style/marqueedText">
-		<item name="android:textColor">?android:attr/textColorPrimary</item>
-		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-	</style>
-	<style name="marqueedText.secondary" parent="@style/marqueedText">
-		<item name="android:textColor">?android:attr/textColorSecondary</item>
-		<item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-	</style>
-	<style name="columnButton" parent="@style/marqueedText.primary">
-		<item name="android:paddingTop">10dp</item>
-		<item name="android:paddingBottom">10dp</item>
-		<item name="android:paddingLeft">20dp</item>
-		<item name="android:paddingRight">20dp</item>
-		<item name="android:background">@drawable/clickable_background</item>
-		<item name="android:clickable">true</item>
-		<item name="android:textStyle">bold</item>
-		<item name="android:gravity">center</item>
-	</style>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="actionModeBackground">@color/actionModeBackground</item>
+        <item name="android:navigationBarColor">@color/navigationColor</item>
+        <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <style name="marqueedText">
+        <item name="android:singleLine">true</item>
+        <item name="android:ellipsize">marquee</item>
+    </style>
+
+    <style name="marqueedText.primary" parent="@style/marqueedText">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+    </style>
+
+    <style name="marqueedText.secondary" parent="@style/marqueedText">
+        <item name="android:textColor">?android:attr/textColorSecondary</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="columnButton" parent="@style/marqueedText.primary">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:paddingRight">20dp</item>
+        <item name="android:background">@drawable/clickable_background</item>
+        <item name="android:clickable">true</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
 
 </resources>

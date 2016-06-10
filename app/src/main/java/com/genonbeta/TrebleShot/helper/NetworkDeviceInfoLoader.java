@@ -11,83 +11,68 @@ import org.json.JSONObject;
 
 import java.net.Socket;
 
-public class NetworkDeviceInfoLoader
-{
-	private OnInfoAvaiableListener mOnInfoAvaiableListener;
+public class NetworkDeviceInfoLoader {
+    private OnInfoAvaiableListener mOnInfoAvaiableListener;
 
-	public NetworkDeviceInfoLoader(OnInfoAvaiableListener listener)
-	{
-		setOnInfoAvaiableListener(listener);
-	}
+    public NetworkDeviceInfoLoader(OnInfoAvaiableListener listener) {
+        setOnInfoAvaiableListener(listener);
+    }
 
-	public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps)
-	{
-		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, 
-			new JsonResponseHandler()
-			{
-				@Override
-				public void onConfigure(CoolCommunication.Messenger.Process process)
-				{
-					super.onConfigure(process);
-					
-					try
-					{
-						Thread.sleep(1500);
-					}
-					catch (InterruptedException e)
-					{
-						e.printStackTrace();
-					}
-				}
-				
-				@Override
-				public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-				{
-				}
-				
-				@Override
-				public void onResponseAvaiable(String response)
-				{
-					try 
-					{
-						Log.d("DeviceInfo", deviceIp + ": " + response);
+    public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps) {
+        CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+                new JsonResponseHandler() {
+                    @Override
+                    public void onConfigure(CoolCommunication.Messenger.Process process) {
+                        super.onConfigure(process);
 
-						JSONObject json = new JSONObject(response).getJSONObject("deviceInfo");
+                        try {
+                            Thread.sleep(1500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
-						NetworkDevice device = new NetworkDevice(deviceIp, null, null, null);
-						
-						device.brand = json.getString("brand");
-						device.model = json.getString("model");
-						device.user = json.getString("deviceName");
+                    @Override
+                    public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json) {
+                    }
 
-						if (device.user == null || device.model == null || device.brand == null)
-							return;
-						
-						if (dontDeleteSelfIps == false)
-							if (Build.DISPLAY.equals(json.getString("display")))
-								return;
-						
-						if (mOnInfoAvaiableListener != null)
-							mOnInfoAvaiableListener.onInfoAvaiable(device);
-					}
-					catch (Exception e)
-					{
-						this.onError(e);
-					}
-				}
-			}
-		);
+                    @Override
+                    public void onResponseAvaiable(String response) {
+                        try {
+                            Log.d("DeviceInfo", deviceIp + ": " + response);
 
-		return true;
-	}
+                            JSONObject json = new JSONObject(response).getJSONObject("deviceInfo");
 
-	public void setOnInfoAvaiableListener(OnInfoAvaiableListener listener)
-	{
-		mOnInfoAvaiableListener = listener;
-	}
+                            NetworkDevice device = new NetworkDevice(deviceIp, null, null, null);
 
-	public static interface OnInfoAvaiableListener
-	{
-		public void onInfoAvaiable(NetworkDevice device);
-	}
+                            device.brand = json.getString("brand");
+                            device.model = json.getString("model");
+                            device.user = json.getString("deviceName");
+
+                            if (device.user == null || device.model == null || device.brand == null)
+                                return;
+
+                            if (dontDeleteSelfIps == false)
+                                if (Build.DISPLAY.equals(json.getString("display")))
+                                    return;
+
+                            if (mOnInfoAvaiableListener != null)
+                                mOnInfoAvaiableListener.onInfoAvaiable(device);
+                        } catch (Exception e) {
+                            this.onError(e);
+                        }
+                    }
+                }
+        );
+
+        return true;
+    }
+
+    public void setOnInfoAvaiableListener(OnInfoAvaiableListener listener) {
+        mOnInfoAvaiableListener = listener;
+    }
+
+    public static interface OnInfoAvaiableListener {
+        public void onInfoAvaiable(NetworkDevice device);
+    }
 }

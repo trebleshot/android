@@ -1,17 +1,14 @@
-<menu 
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
-	
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
+
     <item
         android:id="@+id/received_device_options_refresh"
         android:title="@string/refresh"
-		android:icon="@drawable/ic_autorenew_white"
-		app:showAsAction="ifRoom"
-	/>
+        android:icon="@drawable/ic_autorenew_white"
+        app:showAsAction="ifRoom" />
 
-	<item
+    <item
         android:id="@+id/received_device_options_open_in_file_manager"
-        android:title="@string/open_in_file_manager"
-	/>
-    
+        android:title="@string/open_in_file_manager" />
+
 </menu>

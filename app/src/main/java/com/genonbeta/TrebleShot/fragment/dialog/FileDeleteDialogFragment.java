@@ -17,103 +17,87 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileDeleteDialogFragment extends DialogFragment
-{
-	private ArrayList<URI> mFiles = new ArrayList<URI>();
-	private OnDeleteCompletedListener mDeleteListener = null;
-	private Context mContext;
-	
-	public void setItems(List<URI> items)
-	{
-		mFiles.clear();
-		mFiles.addAll(items);
-	}
+public class FileDeleteDialogFragment extends DialogFragment {
+    private ArrayList<URI> mFiles = new ArrayList<URI>();
+    private OnDeleteCompletedListener mDeleteListener = null;
+    private Context mContext;
 
-	public void setItems(Object[] items)
-	{
-		mFiles.clear();
-		
-		for (Object path : items)
-			mFiles.add(URI.create(path.toString()));
-	}
+    public void setItems(List<URI> items) {
+        mFiles.clear();
+        mFiles.addAll(items);
+    }
 
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState)
-	{
-		this.mContext = getActivity();
-		
-		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-		final NotificationPublisher publisher = new NotificationPublisher(getActivity().getApplicationContext());
-		
-		dialogBuilder.setTitle(R.string.delete_confirm);
-		dialogBuilder.setMessage(getString(R.string.delete_warning, mFiles.size()));
+    public void setItems(Object[] items) {
+        mFiles.clear();
 
-		dialogBuilder.setNegativeButton(R.string.cancel, null);
+        for (Object path : items)
+            mFiles.add(URI.create(path.toString()));
+    }
 
-		dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dailog, int p2)
-				{
-					new Thread(new Runnable()
-						{
-							@Override
-							public void run()
-							{
-								Looper.prepare();
-								
-								for (URI filePath : mFiles)
-								{
-									File file = new File(filePath);		
-									file.delete();
-								}
-								
-								if (mDeleteListener != null)
-									mDeleteListener.onFilesDeleted(FileDeleteDialogFragment.this, mFiles.size());
-								
-								try 
-								{
-									publisher.makeToast(getString(R.string.delete_completed, mFiles.size()));
-								}
-								catch(IllegalStateException e)
-								{
-									e.printStackTrace();
-								}
-								
-								Looper.loop();
-							}
-						}
-					).start();
-				}	
-			}
-		);
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        this.mContext = getActivity();
 
-		return dialogBuilder.show();
-	}
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+        final NotificationPublisher publisher = new NotificationPublisher(getActivity().getApplicationContext());
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
+        dialogBuilder.setTitle(R.string.delete_confirm);
+        dialogBuilder.setMessage(getString(R.string.delete_warning, mFiles.size()));
 
-		FragmentTransaction ft = getFragmentManager().beginTransaction();
+        dialogBuilder.setNegativeButton(R.string.cancel, null);
 
-		ft.detach(this);
-		ft.commit();
-	}
-	
-	public Context getContext()
-	{
-		return this.mContext;
-	}
-	
-	public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener)
-	{
-		mDeleteListener = listener;
-	}
-	
-	public static interface OnDeleteCompletedListener
-	{
-		public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize);
-	}
+        dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dailog, int p2) {
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Looper.prepare();
+
+                                for (URI filePath : mFiles) {
+                                    File file = new File(filePath);
+                                    file.delete();
+                                }
+
+                                if (mDeleteListener != null)
+                                    mDeleteListener.onFilesDeleted(FileDeleteDialogFragment.this, mFiles.size());
+
+                                try {
+                                    publisher.makeToast(getString(R.string.delete_completed, mFiles.size()));
+                                } catch (IllegalStateException e) {
+                                    e.printStackTrace();
+                                }
+
+                                Looper.loop();
+                            }
+                        }
+                        ).start();
+                    }
+                }
+        );
+
+        return dialogBuilder.show();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+
+        ft.detach(this);
+        ft.commit();
+    }
+
+    public Context getContext() {
+        return this.mContext;
+    }
+
+    public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener) {
+        mDeleteListener = listener;
+    }
+
+    public static interface OnDeleteCompletedListener {
+        public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize);
+    }
 }

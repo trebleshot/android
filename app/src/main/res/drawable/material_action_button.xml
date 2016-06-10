@@ -1,24 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
-	android:shape="rectangle">
+    android:shape="rectangle">
 
-	<solid
-		android:color="#0D94D2"
-	/>
+    <solid android:color="#0D94D2" />
 
-	<padding
-		android:top="15dip"
-		android:bottom="15dip"
-		android:left="15dip"
-		android:right="15dip"
-	/>
+    <padding
+        android:top="15dip"
+        android:bottom="15dip"
+        android:left="15dip"
+        android:right="15dip" />
 
-	<corners
-		android:radius="30dip"
-	/>
+    <corners android:radius="30dip" />
 
-	<stroke
-		android:width="1dip"
-		android:color="#990D94D2"
-	/>
+    <stroke
+        android:width="1dip"
+        android:color="#990D94D2" />
 </shape>

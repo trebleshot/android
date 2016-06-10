@@ -26,16 +26,13 @@ import android.widget.ImageView;
  * Sub-class of ImageView which automatically notifies the drawable when it is
  * being displayed.
  */
-public class RecyclingImageView extends ImageView
-{
+public class RecyclingImageView extends ImageView {
 
-    public RecyclingImageView(Context context)
-	{
+    public RecyclingImageView(Context context) {
         super(context);
     }
 
-    public RecyclingImageView(Context context, AttributeSet attrs)
-	{
+    public RecyclingImageView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -43,11 +40,10 @@ public class RecyclingImageView extends ImageView
      * @see android.widget.ImageView#onDetachedFromWindow()
      */
     @Override
-    protected void onDetachedFromWindow()
-	{
+    protected void onDetachedFromWindow() {
         // This has been detached from Window, so clear the drawable
         setImageDrawable(null);
-		
+
         super.onDetachedFromWindow();
     }
 
@@ -55,8 +51,7 @@ public class RecyclingImageView extends ImageView
      * @see android.widget.ImageView#setImageDrawable(android.graphics.drawable.Drawable)
      */
     @Override
-    public void setImageDrawable(Drawable drawable)
-	{
+    public void setImageDrawable(Drawable drawable) {
         // Keep hold of previous Drawable
         final Drawable previousDrawable = getDrawable();
 
@@ -76,19 +71,14 @@ public class RecyclingImageView extends ImageView
      * @param drawable
      * @param isDisplayed
      */
-    private static void notifyDrawable(Drawable drawable, final boolean isDisplayed)
-	{
-        if (drawable instanceof RecyclingBitmapDrawable)
-		{
+    private static void notifyDrawable(Drawable drawable, final boolean isDisplayed) {
+        if (drawable instanceof RecyclingBitmapDrawable) {
             // The drawable is a CountingBitmapDrawable, so notify it
             ((RecyclingBitmapDrawable) drawable).setIsDisplayed(isDisplayed);
-        }
-		else if (drawable instanceof LayerDrawable)
-		{
+        } else if (drawable instanceof LayerDrawable) {
             // The drawable is a LayerDrawable, so recurse on each layer
             LayerDrawable layerDrawable = (LayerDrawable) drawable;
-            for (int i = 0, z = layerDrawable.getNumberOfLayers(); i < z; i++)
-			{
+            for (int i = 0, z = layerDrawable.getNumberOfLayers(); i < z; i++) {
                 notifyDrawable(layerDrawable.getDrawable(i), isDisplayed);
             }
         }

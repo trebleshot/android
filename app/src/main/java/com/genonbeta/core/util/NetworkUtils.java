@@ -14,192 +14,153 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-public class NetworkUtils
-{
-	public static String bytesToHex(byte[] bytes)
-	{
-		StringBuilder sbuf = new StringBuilder();
+public class NetworkUtils {
+    public static String bytesToHex(byte[] bytes) {
+        StringBuilder sbuf = new StringBuilder();
 
-		for (int idx = 0; idx < bytes.length; idx++)
-		{
-			int intVal = bytes[idx] & 0xff;
+        for (int idx = 0; idx < bytes.length; idx++) {
+            int intVal = bytes[idx] & 0xff;
 
-			if (intVal < 0x10) 
-				sbuf.append("0");
+            if (intVal < 0x10)
+                sbuf.append("0");
 
-			sbuf.append(Integer.toHexString(intVal).toUpperCase());
-		}
-		return sbuf.toString();
-	}
+            sbuf.append(Integer.toHexString(intVal).toUpperCase());
+        }
+        return sbuf.toString();
+    }
 
-	public static byte[] getUTF8Bytes(String str)
-	{
-		try
-		{ 
-			return str.getBytes("UTF-8"); 
-		}
-		catch (Exception ex)
-		{
-			return null; 
-		}
-	}
-	
-	public static String loadFileAsString(String filename) throws java.io.IOException
-	{
-		final int BUFLEN = 1024;
+    public static byte[] getUTF8Bytes(String str) {
+        try {
+            return str.getBytes("UTF-8");
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
-		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
+    public static String loadFileAsString(String filename) throws java.io.IOException {
+        final int BUFLEN = 1024;
 
-		try
-		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
-			byte[] bytes = new byte[BUFLEN];
-			boolean isUTF8 = false;
-			int read,count = 0;
+        BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
 
-			while ((read = is.read(bytes)) != -1)
-			{
-				if (count == 0 && bytes[0] == (byte)0xEF && bytes[1] == (byte)0xBB && bytes[2] == (byte)0xBF)
-				{
-					isUTF8 = true;
-					baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
-				}
-				else
-				{
-					baos.write(bytes, 0, read);
-				}
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
+            byte[] bytes = new byte[BUFLEN];
+            boolean isUTF8 = false;
+            int read, count = 0;
 
-				count += read;
-			}
-			return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
-		}
-		finally
-		{
-			try
-			{ 
-				is.close(); 
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			} 
-		}
-	}
+            while ((read = is.read(bytes)) != -1) {
+                if (count == 0 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
+                    isUTF8 = true;
+                    baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
+                } else {
+                    baos.write(bytes, 0, read);
+                }
 
-	public static ArrayList<String> getMACAddressList(String interfaceName)
-	{
-		ArrayList<String> macAddressList = new ArrayList<String>();
+                count += read;
+            }
+            return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
+        } finally {
+            try {
+                is.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-		try
-		{
-			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+    public static ArrayList<String> getMACAddressList(String interfaceName) {
+        ArrayList<String> macAddressList = new ArrayList<String>();
 
-			for (NetworkInterface intf : interfaces)
-			{
-				if (interfaceName != null)
-				{
-					if (!intf.getName().equalsIgnoreCase(interfaceName)) 
-						continue;
-				}
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-				byte[] mac = intf.getHardwareAddress();
+            for (NetworkInterface intf : interfaces) {
+                if (interfaceName != null) {
+                    if (!intf.getName().equalsIgnoreCase(interfaceName))
+                        continue;
+                }
 
-				if (mac == null) 
-					continue;
+                byte[] mac = intf.getHardwareAddress();
 
-				StringBuilder buf = new StringBuilder();
+                if (mac == null)
+                    continue;
 
-				for (int idx = 0; idx < mac.length; idx++)
-					buf.append(String.format("%02X:", mac[idx])); 
+                StringBuilder buf = new StringBuilder();
 
-				if (buf.length() > 0) 
-					buf.deleteCharAt(buf.length() - 1);
-					
-				macAddressList.add(buf.toString());
-			}
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+                for (int idx = 0; idx < mac.length; idx++)
+                    buf.append(String.format("%02X:", mac[idx]));
 
-		return macAddressList;
-	}
+                if (buf.length() > 0)
+                    buf.deleteCharAt(buf.length() - 1);
 
-	public static HashMap<NetworkInterface, String> getInterfaces(boolean useIPv4, String[] avoidInterface)
-	{
-		HashMap<NetworkInterface, String> ipAddressList = new HashMap<NetworkInterface, String>();
+                macAddressList.add(buf.toString());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-		try
-		{
-			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+        return macAddressList;
+    }
 
-			for (NetworkInterface intf : interfaces)
-			{
-				boolean breaker = false;
-				
-				for (String match : avoidInterface)
-				{
-					if (intf.getDisplayName().contains(match))
-						breaker = true;
-				}
-				
-				if (breaker)
-					continue;
-				
-				List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
-				
-				for (InetAddress addr : addrs)
-				{
-					if (!addr.isLoopbackAddress())
-					{
-						String sAddr = addr.getHostAddress().toUpperCase(); 
-						boolean isIPv4 = addr instanceof Inet4Address;
-						
-						if (useIPv4 && isIPv4)
-						{
-							ipAddressList.put(intf, sAddr);
-						}
-						else if (!useIPv4)
-						{
-							int delim = sAddr.indexOf('%'); // drop ip6 port suffix
-							ipAddressList.put(intf, (delim < 0 ? sAddr : sAddr.substring(0, delim)));
-						}
-					}
-				}
-			}
-		}
-		catch (Exception e)
-		{}
+    public static HashMap<NetworkInterface, String> getInterfaces(boolean useIPv4, String[] avoidInterface) {
+        HashMap<NetworkInterface, String> ipAddressList = new HashMap<NetworkInterface, String>();
 
-		return ipAddressList;
-	}
-	
-	public static ArrayList<String> getInterfacesWithOnlyIp(boolean useIPv4, String[] avoidInterface)
-	{
-		ArrayList<String> list = new ArrayList<String>();
-		
-		list.addAll(getInterfaces(useIPv4, avoidInterface).values());
-		
-		return list;
-	}
+        try {
+            List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-	public static boolean testSocket(String ip, int port)
-	{
-		InetSocketAddress socketAddress = new InetSocketAddress(ip, port);
-		Socket socket = new Socket();
+            for (NetworkInterface intf : interfaces) {
+                boolean breaker = false;
 
-		try
-		{
-			socket.bind(null);
-			socket.connect(socketAddress);
-			socket.close();
+                for (String match : avoidInterface) {
+                    if (intf.getDisplayName().contains(match))
+                        breaker = true;
+                }
 
-			return true;
-		}
-		catch (IOException e)
-		{
-			return false;
-		}
-	}
+                if (breaker)
+                    continue;
+
+                List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+
+                for (InetAddress addr : addrs) {
+                    if (!addr.isLoopbackAddress()) {
+                        String sAddr = addr.getHostAddress().toUpperCase();
+                        boolean isIPv4 = addr instanceof Inet4Address;
+
+                        if (useIPv4 && isIPv4) {
+                            ipAddressList.put(intf, sAddr);
+                        } else if (!useIPv4) {
+                            int delim = sAddr.indexOf('%'); // drop ip6 port suffix
+                            ipAddressList.put(intf, (delim < 0 ? sAddr : sAddr.substring(0, delim)));
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+
+        return ipAddressList;
+    }
+
+    public static ArrayList<String> getInterfacesWithOnlyIp(boolean useIPv4, String[] avoidInterface) {
+        ArrayList<String> list = new ArrayList<String>();
+
+        list.addAll(getInterfaces(useIPv4, avoidInterface).values());
+
+        return list;
+    }
+
+    public static boolean testSocket(String ip, int port) {
+        InetSocketAddress socketAddress = new InetSocketAddress(ip, port);
+        Socket socket = new Socket();
+
+        try {
+            socket.bind(null);
+            socket.connect(socketAddress);
+            socket.close();
+
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
 }

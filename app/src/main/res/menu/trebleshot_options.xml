@@ -1,24 +1,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    
+
     <item
         android:id="@+id/trebleshot_options_send_application"
         android:title="@string/share_trebleshot"
-		android:icon="@drawable/ic_share_white"
-		android:orderInCategory="10"
-	/>
+        android:icon="@drawable/ic_share_white"
+        android:orderInCategory="10" />
 
-	<item
+    <item
         android:id="@+id/trebleshot_options_preferences"
         android:title="@string/preferences"
-		android:icon="@drawable/ic_settings_applications_black"
-		android:orderInCategory="11"
-	/>
+        android:icon="@drawable/ic_settings_applications_black"
+        android:orderInCategory="11" />
 
     <item
         android:id="@+id/trebleshot_options_about"
         android:title="@string/about"
-		android:icon="@drawable/ic_info_outline_white"
-		android:orderInCategory="12"
-		/>
-    
+        android:icon="@drawable/ic_info_outline_white"
+        android:orderInCategory="12" />
+
 </menu>

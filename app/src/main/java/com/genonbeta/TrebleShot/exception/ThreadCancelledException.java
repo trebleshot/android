@@ -1,5 +1,4 @@
 package com.genonbeta.TrebleShot.exception;
 
-public class ThreadCancelledException extends Exception
-{
+public class ThreadCancelledException extends Exception {
 }

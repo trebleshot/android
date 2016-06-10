@@ -1,48 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="horizontal">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal">
 
-	<LinearLayout
-		android:layout_width="0dp"
-		android:layout_height="fill_parent"
-		android:layout_weight="0.35"
-		android:layout_marginLeft="15dp"
-		android:layout_marginRight="15dp"
-		android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.35"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical">
 
-		<fragment
-			android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-			android:layout_width="fill_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:id="@+id/fragment_wide_main_networkdevicelistfragment"
-			android:tag="networkDevices"/>
+        <fragment
+            android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/fragment_wide_main_networkdevicelistfragment"
+            android:tag="networkDevices" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<LinearLayout
-		android:layout_width="0dp"
-		android:layout_height="fill_parent"
-		android:layout_weight="0.65"
-		android:layout_marginLeft="15dp"
-		android:layout_marginRight="15dp"
-		android:paddingLeft="15dp"
-		android:paddingRight="15dp"
-		android:background="#292929"
-		android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="0.65"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:background="#292929"
+        android:orientation="vertical">
 
-		<fragment
-			android:name="com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment"
-			android:layout_width="fill_parent"
-			android:layout_height="0dp"
-			android:layout_weight="1"
-			android:id="@+id/fragment_wide_main_receivedfileslistfragment"
-			android:tag="receivedFiles"
-		/>
+        <fragment
+            android:name="com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment"
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/fragment_wide_main_receivedfileslistfragment"
+            android:tag="receivedFiles" />
 
-	</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
 
