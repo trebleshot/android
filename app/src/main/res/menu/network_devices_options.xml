@@ -1,17 +1,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
+      xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
 
     <item
         android:id="@+id/network_devices_scan"
         android:title="@string/scan"
         android:icon="@drawable/ic_retry_alpha"
         app:showAsAction="ifRoom"
-        android:orderInCategory="0" />
+        android:orderInCategory="0"/>
 
     <item
         android:id="@+id/network_devices_clear_list"
         android:title="@string/clear_the_list"
         android:icon="@drawable/ic_delete_white"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"/>
 </menu>

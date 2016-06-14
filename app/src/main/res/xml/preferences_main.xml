@@ -6,24 +6,24 @@
         <CheckBoxPreference
             android:key="notify_com_server_started"
             android:title="@string/communation_server_notification"
-            android:summary="@string/communation_server_notification_summary" />
+            android:summary="@string/communation_server_notification_summary"/>
 
         <CheckBoxPreference
             android:key="allow_poke"
             android:title="@string/allow_poke"
-            android:summary="@string/allow_poke_summary" />
+            android:summary="@string/allow_poke_summary"/>
 
         <CheckBoxPreference
             android:key="scan_devices_auto"
             android:title="@string/scan_devices_auto"
-            android:summary="@string/scan_devices_auto_summary" />
+            android:summary="@string/scan_devices_auto_summary"/>
 
 
         <EditTextPreference
             android:key="device_name"
             android:title="@string/device_name"
             android:summary="@string/device_name_summary"
-            android:dialogTitle="@string/device_name_dialogTitle" />
+            android:dialogTitle="@string/device_name_dialogTitle"/>
 
     </PreferenceCategory>
 
@@ -32,17 +32,17 @@
         <CheckBoxPreference
             android:key="notification_vibrate"
             android:title="@string/vibration"
-            android:summary="@string/vibration_summary" />
+            android:summary="@string/vibration_summary"/>
 
         <CheckBoxPreference
             android:key="notification_sound"
             android:title="@string/make_sound"
-            android:summary="@string/make_sound_summary" />
+            android:summary="@string/make_sound_summary"/>
 
         <CheckBoxPreference
             android:key="notification_lights"
             android:title="@string/light"
-            android:summary="@string/light_summary" />
+            android:summary="@string/light_summary"/>
 
     </PreferenceCategory>
 
@@ -51,22 +51,22 @@
         <CheckBoxPreference
             android:key="developer_mode"
             android:title="@string/developer_mode"
-            android:summary="@string/developer_mode_summary" />
+            android:summary="@string/developer_mode_summary"/>
 
         <CheckBoxPreference
             android:key="allow_autoconnect"
             android:title="@string/auto_start"
-            android:summary="@string/auto_start_summary" />
+            android:summary="@string/auto_start_summary"/>
 
         <CheckBoxPreference
             android:key="show_system_apps"
             android:title="@string/show_system_apps"
-            android:summary="@string/show_system_apps_summary" />
+            android:summary="@string/show_system_apps_summary"/>
 
         <com.genonbeta.TrebleShot.helper.preference.StorageSetterPreference
             android:key="storage_path"
             android:title="@string/file_storage_path"
-            android:summary="@string/file_storage_path_summary" />
+            android:summary="@string/file_storage_path_summary"/>
 
     </PreferenceCategory>
 
@@ -78,7 +78,7 @@
 
             <intent
                 android:action="android.intent.action.VIEW"
-                android:data="http://fb.com/veli.tasali" />
+                android:data="http://fb.com/veli.tasali"/>
 
         </PreferenceScreen>
 

@@ -2,19 +2,22 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.widget.BaseAdapter;
 
-abstract public class AbstractFlexibleAdapter extends BaseAdapter {
+abstract public class AbstractFlexibleAdapter extends BaseAdapter
+{
     protected boolean mLockRequested = false;
 
     protected abstract void onSearch(String word);
 
     protected abstract void onUpdate();
 
-    public boolean search(String word) {
+    public boolean search(String word)
+    {
         this.onSearch(word);
         return true;
     }
 
-    public boolean update() {
+    public boolean update()
+    {
         if (mLockRequested)
             return false;
 

@@ -18,7 +18,8 @@ import com.genonbeta.core.util.NetworkUtils;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvaiableListener {
+public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvaiableListener
+{
     public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES";
     public static final String ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED";
     public static final String ACTION_DEVICE_FOUND = "genonbeta.intent.action.DEVICE_FOUND";
@@ -37,17 +38,22 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
     private SharedPreferences mPreferences;
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent)
+    {
         this.mContext = context;
 
         mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
-        if (ACTION_SCAN_DEVICES.equals(intent.getAction())) {
-            if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable()) {
+        if (ACTION_SCAN_DEVICES.equals(intent.getAction()))
+        {
+            if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
+            {
                 ArrayList<String> list = NetworkUtils.getInterfacesWithOnlyIp(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-                for (String ip : list) {
-                    if (!ApplicationHelper.getDeviceList().containsKey(ip)) {
+                for (String ip : list)
+                {
+                    if (!ApplicationHelper.getDeviceList().containsKey(ip))
+                    {
                         NetworkDevice device = new NetworkDevice(ip, null, null, null);
                         device.isLocalAddress = true;
 
@@ -56,16 +62,21 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
                 }
 
                 context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, (ApplicationHelper.getNetworkDeviceScanner().scan(list, this)) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE));
-            } else
+            }
+            else
                 Toast.makeText(context, R.string.concurrent_caution_scan, Toast.LENGTH_SHORT).show();
-        } else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP)) {
+        }
+        else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
+        {
             mInfoLoader.startLoading(context, intent.getStringExtra(EXTRA_DEVICE_IP), true);
         }
     }
 
     @Override
-    public void onDeviceFound(InetAddress address) {
-        if (ApplicationHelper.getDeviceList().containsKey(address.getHostAddress())) {
+    public void onDeviceFound(InetAddress address)
+    {
+        if (ApplicationHelper.getDeviceList().containsKey(address.getHostAddress()))
+        {
             NetworkDevice device = ApplicationHelper.getDeviceList().get(address.getHostAddress());
 
             if (device.isLocalAddress == true && !mPreferences.getBoolean("developer_mode", false))
@@ -76,21 +87,25 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
     }
 
     @Override
-    public void onInfoAvaiable(NetworkDevice device) {
-        if (ApplicationHelper.getDeviceList().containsKey(device.ip)) {
+    public void onInfoAvaiable(NetworkDevice device)
+    {
+        if (ApplicationHelper.getDeviceList().containsKey(device.ip))
+        {
             NetworkDevice oldDevice = ApplicationHelper.getDeviceList().get(device.ip);
 
             oldDevice.brand = device.brand;
             oldDevice.model = device.model;
             oldDevice.user = device.user;
-        } else
+        }
+        else
             ApplicationHelper.getDeviceList().put(device.ip, device);
 
         mContext.sendBroadcast(new Intent(ACTION_DEVICE_FOUND).putExtra(EXTRA_DEVICE_IP, device.ip));
     }
 
     @Override
-    public void onThreadsCompleted() {
+    public void onThreadsCompleted()
+    {
         mContext.sendBroadcast(new Intent(ACTION_DEVICE_SCAN_COMPLETED));
     }
 }

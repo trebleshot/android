@@ -15,36 +15,42 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class PendingProcessListAdapter extends BaseAdapter {
+public class PendingProcessListAdapter extends BaseAdapter
+{
     private Context mContext;
     private String mIp;
     private ArrayList<ItemHolder> mList = new ArrayList<ItemHolder>();
 
-    public PendingProcessListAdapter(Context context, String forIp) {
+    public PendingProcessListAdapter(Context context, String forIp)
+    {
         this.mContext = context;
         this.mIp = forIp;
 
         loadList();
     }
 
-    public void loadList() {
+    public void loadList()
+    {
         mList.clear();
 
-        for (AwaitedFileSender sender : ApplicationHelper.getSenders().values()) {
+        for (AwaitedFileSender sender : ApplicationHelper.getSenders().values())
+        {
             if (this.mIp != null && !sender.ip.equals(this.mIp))
                 continue;
 
             addToList(sender);
         }
 
-        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers()) {
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
+        {
             if (this.mIp != null && !receiver.ip.equals(this.mIp))
                 continue;
 
             addToList(receiver);
         }
 
-        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers()) {
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
+        {
             if (this.mIp != null && !receiver.ip.equals(this.mIp))
                 continue;
 
@@ -52,7 +58,8 @@ public class PendingProcessListAdapter extends BaseAdapter {
         }
     }
 
-    private void addToList(AwaitedFileReceiver r) {
+    private void addToList(AwaitedFileReceiver r)
+    {
         ItemHolder holder = new ItemHolder();
 
         holder.file = r.fileName;
@@ -63,7 +70,8 @@ public class PendingProcessListAdapter extends BaseAdapter {
         mList.add(holder);
     }
 
-    private void addToList(AwaitedFileSender s) {
+    private void addToList(AwaitedFileSender s)
+    {
         ItemHolder holder = new ItemHolder();
 
         holder.file = s.file.getName();
@@ -74,10 +82,12 @@ public class PendingProcessListAdapter extends BaseAdapter {
         mList.add(holder);
     }
 
-    public void clearQueue() {
+    public void clearQueue()
+    {
         HashSet<Integer> keyList = new HashSet<Integer>();
 
-        for (int key : ApplicationHelper.getSenders().keySet()) {
+        for (int key : ApplicationHelper.getSenders().keySet())
+        {
             AwaitedFileSender sender = ApplicationHelper.getSenders().get(key);
 
             if (sender.ip.equals(this.mIp))
@@ -87,44 +97,52 @@ public class PendingProcessListAdapter extends BaseAdapter {
         for (int currentNumber : keyList)
             ApplicationHelper.getSenders().remove(currentNumber);
 
-        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers()) {
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
+        {
             if (receiver.ip.equals(this.mIp))
                 ApplicationHelper.getReceivers().remove(receiver);
         }
 
-        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers()) {
+        for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
+        {
             if (receiver.ip.equals(this.mIp))
                 ApplicationHelper.getPendingReceivers().remove(receiver);
         }
     }
 
     @Override
-    public void notifyDataSetChanged() {
+    public void notifyDataSetChanged()
+    {
         loadList();
         super.notifyDataSetChanged();
     }
 
     @Override
-    public int getCount() {
+    public int getCount()
+    {
         return mList.size();
     }
 
     @Override
-    public Object getItem(int itemId) {
+    public Object getItem(int itemId)
+    {
         return mList.get(itemId);
     }
 
     @Override
-    public long getItemId(int p1) {
+    public long getItemId(int p1)
+    {
         return 0;
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup)
+    {
         return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_pending_queue, viewGroup, false), position);
     }
 
-    public View getViewAt(View view, int position) {
+    public View getViewAt(View view, int position)
+    {
         TextView filenameText = (TextView) view.findViewById(R.id.pending_queue_list_filename);
         TextView processTypeText = (TextView) view.findViewById(R.id.pending_queue_list_process_type_text);
 
@@ -136,7 +154,8 @@ public class PendingProcessListAdapter extends BaseAdapter {
         return view;
     }
 
-    private class ItemHolder {
+    private class ItemHolder
+    {
         public String file;
         public String deviceIp;
         public boolean type = false; // send, receive

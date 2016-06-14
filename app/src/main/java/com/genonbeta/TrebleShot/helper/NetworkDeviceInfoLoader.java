@@ -11,34 +11,44 @@ import org.json.JSONObject;
 
 import java.net.Socket;
 
-public class NetworkDeviceInfoLoader {
+public class NetworkDeviceInfoLoader
+{
     private OnInfoAvaiableListener mOnInfoAvaiableListener;
 
-    public NetworkDeviceInfoLoader(OnInfoAvaiableListener listener) {
+    public NetworkDeviceInfoLoader(OnInfoAvaiableListener listener)
+    {
         setOnInfoAvaiableListener(listener);
     }
 
-    public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps) {
+    public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps)
+    {
         CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                new JsonResponseHandler() {
+                new JsonResponseHandler()
+                {
                     @Override
-                    public void onConfigure(CoolCommunication.Messenger.Process process) {
+                    public void onConfigure(CoolCommunication.Messenger.Process process)
+                    {
                         super.onConfigure(process);
 
-                        try {
+                        try
+                        {
                             Thread.sleep(1500);
-                        } catch (InterruptedException e) {
+                        } catch (InterruptedException e)
+                        {
                             e.printStackTrace();
                         }
                     }
 
                     @Override
-                    public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json) {
+                    public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
+                    {
                     }
 
                     @Override
-                    public void onResponseAvaiable(String response) {
-                        try {
+                    public void onResponseAvaiable(String response)
+                    {
+                        try
+                        {
                             Log.d("DeviceInfo", deviceIp + ": " + response);
 
                             JSONObject json = new JSONObject(response).getJSONObject("deviceInfo");
@@ -58,7 +68,8 @@ public class NetworkDeviceInfoLoader {
 
                             if (mOnInfoAvaiableListener != null)
                                 mOnInfoAvaiableListener.onInfoAvaiable(device);
-                        } catch (Exception e) {
+                        } catch (Exception e)
+                        {
                             this.onError(e);
                         }
                     }
@@ -68,11 +79,13 @@ public class NetworkDeviceInfoLoader {
         return true;
     }
 
-    public void setOnInfoAvaiableListener(OnInfoAvaiableListener listener) {
+    public void setOnInfoAvaiableListener(OnInfoAvaiableListener listener)
+    {
         mOnInfoAvaiableListener = listener;
     }
 
-    public static interface OnInfoAvaiableListener {
+    public static interface OnInfoAvaiableListener
+    {
         public void onInfoAvaiable(NetworkDevice device);
     }
 }

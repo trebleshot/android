@@ -17,17 +17,20 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileDeleteDialogFragment extends DialogFragment {
+public class FileDeleteDialogFragment extends DialogFragment
+{
     private ArrayList<URI> mFiles = new ArrayList<URI>();
     private OnDeleteCompletedListener mDeleteListener = null;
     private Context mContext;
 
-    public void setItems(List<URI> items) {
+    public void setItems(List<URI> items)
+    {
         mFiles.clear();
         mFiles.addAll(items);
     }
 
-    public void setItems(Object[] items) {
+    public void setItems(Object[] items)
+    {
         mFiles.clear();
 
         for (Object path : items)
@@ -35,7 +38,8 @@ public class FileDeleteDialogFragment extends DialogFragment {
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState)
+    {
         this.mContext = getActivity();
 
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
@@ -46,15 +50,20 @@ public class FileDeleteDialogFragment extends DialogFragment {
 
         dialogBuilder.setNegativeButton(R.string.cancel, null);
 
-        dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+        dialogBuilder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
+                {
                     @Override
-                    public void onClick(DialogInterface dailog, int p2) {
-                        new Thread(new Runnable() {
+                    public void onClick(DialogInterface dailog, int p2)
+                    {
+                        new Thread(new Runnable()
+                        {
                             @Override
-                            public void run() {
+                            public void run()
+                            {
                                 Looper.prepare();
 
-                                for (URI filePath : mFiles) {
+                                for (URI filePath : mFiles)
+                                {
                                     File file = new File(filePath);
                                     file.delete();
                                 }
@@ -62,9 +71,11 @@ public class FileDeleteDialogFragment extends DialogFragment {
                                 if (mDeleteListener != null)
                                     mDeleteListener.onFilesDeleted(FileDeleteDialogFragment.this, mFiles.size());
 
-                                try {
+                                try
+                                {
                                     publisher.makeToast(getString(R.string.delete_completed, mFiles.size()));
-                                } catch (IllegalStateException e) {
+                                } catch (IllegalStateException e)
+                                {
                                     e.printStackTrace();
                                 }
 
@@ -80,7 +91,8 @@ public class FileDeleteDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
 
         FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -89,15 +101,18 @@ public class FileDeleteDialogFragment extends DialogFragment {
         ft.commit();
     }
 
-    public Context getContext() {
+    public Context getContext()
+    {
         return this.mContext;
     }
 
-    public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener) {
+    public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener)
+    {
         mDeleteListener = listener;
     }
 
-    public static interface OnDeleteCompletedListener {
+    public static interface OnDeleteCompletedListener
+    {
         public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize);
     }
 }

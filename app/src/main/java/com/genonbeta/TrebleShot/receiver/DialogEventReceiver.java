@@ -11,7 +11,8 @@ import android.view.WindowManager;
 
 import com.genonbeta.TrebleShot.R;
 
-public class DialogEventReceiver extends BroadcastReceiver {
+public class DialogEventReceiver extends BroadcastReceiver
+{
     public final static String ACTION_DIALOG = "com.genonbeta.TrebleShot.action.makeDialog";
 
     public final static String EXTRA_TITLE = "title";
@@ -20,12 +21,14 @@ public class DialogEventReceiver extends BroadcastReceiver {
     public final static String EXTRA_NEGATIVE_INTENT = "negative";
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    public void onReceive(Context context, Intent intent)
+    {
         if (ACTION_DIALOG.equals(intent.getAction()))
             this.showDialog(context, intent.getStringExtra(EXTRA_TITLE), intent.getStringExtra(EXTRA_MESSAGE), (PendingIntent) intent.getParcelableExtra(EXTRA_POSITIVE_INTENT), (PendingIntent) intent.getParcelableExtra(EXTRA_NEGATIVE_INTENT));
     }
 
-    public void showDialog(Context context, String title, String message, final PendingIntent accept, final PendingIntent reject) {
+    public void showDialog(Context context, String title, String message, final PendingIntent accept, final PendingIntent reject)
+    {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
         if (title != null)
@@ -36,12 +39,16 @@ public class DialogEventReceiver extends BroadcastReceiver {
 
         if (accept != null)
             dialogBuilder.setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener() {
+                    new DialogInterface.OnClickListener()
+                    {
                         @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            try {
+                        public void onClick(DialogInterface p1, int p2)
+                        {
+                            try
+                            {
                                 accept.send();
-                            } catch (PendingIntent.CanceledException e) {
+                            } catch (PendingIntent.CanceledException e)
+                            {
                                 e.printStackTrace();
                             }
                         }
@@ -50,12 +57,16 @@ public class DialogEventReceiver extends BroadcastReceiver {
 
         if (reject != null)
             dialogBuilder.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener() {
+                    new DialogInterface.OnClickListener()
+                    {
                         @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            try {
+                        public void onClick(DialogInterface p1, int p2)
+                        {
+                            try
+                            {
                                 reject.send();
-                            } catch (PendingIntent.CanceledException e) {
+                            } catch (PendingIntent.CanceledException e)
+                            {
                                 e.printStackTrace();
                             }
                         }

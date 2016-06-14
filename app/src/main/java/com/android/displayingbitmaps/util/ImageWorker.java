@@ -38,7 +38,8 @@ import java.lang.ref.WeakReference;
  * ImageView. It handles things like using a memory and disk cache, running the work in a background
  * thread and setting a placeholder image.
  */
-public abstract class ImageWorker {
+public abstract class ImageWorker
+{
     private static final String TAG = "ImageWorker";
     private static final int FADE_IN_TIME = 200;
 
@@ -57,7 +58,8 @@ public abstract class ImageWorker {
     private static final int MESSAGE_FLUSH = 2;
     private static final int MESSAGE_CLOSE = 3;
 
-    protected ImageWorker(Context context) {
+    protected ImageWorker(Context context)
+    {
         mResources = context.getResources();
     }
 
@@ -72,21 +74,27 @@ public abstract class ImageWorker {
      * @param data      The URL of the image to download.
      * @param imageView The ImageView to bind the downloaded image to.
      */
-    public void loadImage(Object data, ImageView imageView) {
-        if (data == null) {
+    public void loadImage(Object data, ImageView imageView)
+    {
+        if (data == null)
+        {
             return;
         }
 
         BitmapDrawable value = null;
 
-        if (mImageCache != null) {
+        if (mImageCache != null)
+        {
             value = mImageCache.getBitmapFromMemCache(String.valueOf(data));
         }
 
-        if (value != null) {
+        if (value != null)
+        {
             // Bitmap found in memory cache
             imageView.setImageDrawable(value);
-        } else if (cancelPotentialWork(data, imageView)) {
+        }
+        else if (cancelPotentialWork(data, imageView))
+        {
             //BEGIN_INCLUDE(execute_background_task)
             final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView);
             final AsyncDrawable asyncDrawable =
@@ -106,7 +114,8 @@ public abstract class ImageWorker {
      *
      * @param bitmap
      */
-    public void setLoadingImage(Bitmap bitmap) {
+    public void setLoadingImage(Bitmap bitmap)
+    {
         mLoadingBitmap = bitmap;
     }
 
@@ -115,7 +124,8 @@ public abstract class ImageWorker {
      *
      * @param resId
      */
-    public void setLoadingImage(int resId) {
+    public void setLoadingImage(int resId)
+    {
         mLoadingBitmap = BitmapFactory.decodeResource(mResources, resId);
     }
 
@@ -127,7 +137,8 @@ public abstract class ImageWorker {
      * @param cacheParams     The cache parameters to use for the image cache.
      */
     public void addImageCache(FragmentManager fragmentManager,
-                              ImageCache.ImageCacheParams cacheParams) {
+                              ImageCache.ImageCacheParams cacheParams)
+    {
         mImageCacheParams = cacheParams;
         mImageCache = ImageCache.getInstance(fragmentManager, mImageCacheParams);
         new CacheAsyncTask().execute(MESSAGE_INIT_DISK_CACHE);
@@ -141,7 +152,8 @@ public abstract class ImageWorker {
      * @param diskCacheDirectoryName See
      *                               {@link ImageCache.ImageCacheParams#ImageCacheParams(android.content.Context, String)}.
      */
-    public void addImageCache(FragmentActivity activity, String diskCacheDirectoryName) {
+    public void addImageCache(FragmentActivity activity, String diskCacheDirectoryName)
+    {
         mImageCacheParams = new ImageCache.ImageCacheParams(activity, diskCacheDirectoryName);
         mImageCache = ImageCache.getInstance(activity.getSupportFragmentManager(), mImageCacheParams);
         new CacheAsyncTask().execute(MESSAGE_INIT_DISK_CACHE);
@@ -150,11 +162,13 @@ public abstract class ImageWorker {
     /**
      * If set to true, the image will fade-in once it has been loaded by the background thread.
      */
-    public void setImageFadeIn(boolean fadeIn) {
+    public void setImageFadeIn(boolean fadeIn)
+    {
         mFadeInBitmap = fadeIn;
     }
 
-    public void setExitTasksEarly(boolean exitTasksEarly) {
+    public void setExitTasksEarly(boolean exitTasksEarly)
+    {
         mExitTasksEarly = exitTasksEarly;
         setPauseWork(false);
     }
@@ -173,7 +187,8 @@ public abstract class ImageWorker {
     /**
      * @return The {@link ImageCache} object currently being used by this ImageWorker.
      */
-    protected ImageCache getImageCache() {
+    protected ImageCache getImageCache()
+    {
         return mImageCache;
     }
 
@@ -182,11 +197,14 @@ public abstract class ImageWorker {
      *
      * @param imageView
      */
-    public static void cancelWork(ImageView imageView) {
+    public static void cancelWork(ImageView imageView)
+    {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-        if (bitmapWorkerTask != null) {
+        if (bitmapWorkerTask != null)
+        {
             bitmapWorkerTask.cancel(true);
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG)
+            {
                 final Object bitmapData = bitmapWorkerTask.mData;
                 Log.d(TAG, "cancelWork - cancelled work for " + bitmapData);
             }
@@ -199,18 +217,24 @@ public abstract class ImageWorker {
      * Returns false if the work in progress deals with the same data. The work is not
      * stopped in that case.
      */
-    public static boolean cancelPotentialWork(Object data, ImageView imageView) {
+    public static boolean cancelPotentialWork(Object data, ImageView imageView)
+    {
         //BEGIN_INCLUDE(cancel_potential_work)
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
-        if (bitmapWorkerTask != null) {
+        if (bitmapWorkerTask != null)
+        {
             final Object bitmapData = bitmapWorkerTask.mData;
-            if (bitmapData == null || !bitmapData.equals(data)) {
+            if (bitmapData == null || !bitmapData.equals(data))
+            {
                 bitmapWorkerTask.cancel(true);
-                if (BuildConfig.DEBUG) {
+                if (BuildConfig.DEBUG)
+                {
                     Log.d(TAG, "cancelPotentialWork - cancelled work for " + data);
                 }
-            } else {
+            }
+            else
+            {
                 // The same work is already in progress.
                 return false;
             }
@@ -224,10 +248,13 @@ public abstract class ImageWorker {
      * @return Retrieve the currently active work task (if any) associated with this imageView.
      * null if there is no such task.
      */
-    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView) {
-        if (imageView != null) {
+    private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
+    {
+        if (imageView != null)
+        {
             final Drawable drawable = imageView.getDrawable();
-            if (drawable instanceof AsyncDrawable) {
+            if (drawable instanceof AsyncDrawable)
+            {
                 final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
                 return asyncDrawable.getBitmapWorkerTask();
             }
@@ -238,11 +265,13 @@ public abstract class ImageWorker {
     /**
      * The actual AsyncTask that will asynchronously process the image.
      */
-    private class BitmapWorkerTask extends AsyncTask<Void, Void, BitmapDrawable> {
+    private class BitmapWorkerTask extends AsyncTask<Void, Void, BitmapDrawable>
+    {
         private Object mData;
         private final WeakReference<ImageView> imageViewReference;
 
-        public BitmapWorkerTask(Object data, ImageView imageView) {
+        public BitmapWorkerTask(Object data, ImageView imageView)
+        {
             mData = data;
             imageViewReference = new WeakReference<ImageView>(imageView);
         }
@@ -251,9 +280,11 @@ public abstract class ImageWorker {
          * Background processing.
          */
         @Override
-        protected BitmapDrawable doInBackground(Void... params) {
+        protected BitmapDrawable doInBackground(Void... params)
+        {
             //BEGIN_INCLUDE(load_bitmap_in_background)
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG)
+            {
                 Log.d(TAG, "doInBackground - starting work");
             }
 
@@ -262,11 +293,15 @@ public abstract class ImageWorker {
             BitmapDrawable drawable = null;
 
             // Wait here if work is paused and the task is not cancelled
-            synchronized (mPauseWorkLock) {
-                while (mPauseWork && !isCancelled()) {
-                    try {
+            synchronized (mPauseWorkLock)
+            {
+                while (mPauseWork && !isCancelled())
+                {
+                    try
+                    {
                         mPauseWorkLock.wait();
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException e)
+                    {
                     }
                 }
             }
@@ -276,7 +311,8 @@ public abstract class ImageWorker {
             // to this task and our "exit early" flag is not set then try and fetch the bitmap from
             // the cache
             if (mImageCache != null && !isCancelled() && getAttachedImageView() != null
-                    && !mExitTasksEarly) {
+                    && !mExitTasksEarly)
+            {
                 bitmap = mImageCache.getBitmapFromDiskCache(dataString);
             }
 
@@ -285,7 +321,8 @@ public abstract class ImageWorker {
             // bound back to this task and our "exit early" flag is not set, then call the main
             // process method (as implemented by a subclass)
             if (bitmap == null && !isCancelled() && getAttachedImageView() != null
-                    && !mExitTasksEarly) {
+                    && !mExitTasksEarly)
+            {
                 bitmap = processBitmap(mData);
             }
 
@@ -293,22 +330,28 @@ public abstract class ImageWorker {
             // bitmap to the cache for future use. Note we don't check if the task was cancelled
             // here, if it was, and the thread is still running, we may as well add the processed
             // bitmap to our cache as it might be used again in the future
-            if (bitmap != null) {
-                if (Utils.hasHoneycomb()) {
+            if (bitmap != null)
+            {
+                if (Utils.hasHoneycomb())
+                {
                     // Running on Honeycomb or newer, so wrap in a standard BitmapDrawable
                     drawable = new BitmapDrawable(mResources, bitmap);
-                } else {
+                }
+                else
+                {
                     // Running on Gingerbread or older, so wrap in a RecyclingBitmapDrawable
                     // which will recycle automagically
                     drawable = new RecyclingBitmapDrawable(mResources, bitmap);
                 }
 
-                if (mImageCache != null) {
+                if (mImageCache != null)
+                {
                     mImageCache.addBitmapToCache(dataString, drawable);
                 }
             }
 
-            if (BuildConfig.DEBUG) {
+            if (BuildConfig.DEBUG)
+            {
                 Log.d(TAG, "doInBackground - finished work");
             }
 
@@ -320,16 +363,20 @@ public abstract class ImageWorker {
          * Once the image is processed, associates it to the imageView
          */
         @Override
-        protected void onPostExecute(BitmapDrawable value) {
+        protected void onPostExecute(BitmapDrawable value)
+        {
             //BEGIN_INCLUDE(complete_background_work)
             // if cancel was called on this task or the "exit early" flag is set then we're done
-            if (isCancelled() || mExitTasksEarly) {
+            if (isCancelled() || mExitTasksEarly)
+            {
                 value = null;
             }
 
             final ImageView imageView = getAttachedImageView();
-            if (value != null && imageView != null) {
-                if (BuildConfig.DEBUG) {
+            if (value != null && imageView != null)
+            {
+                if (BuildConfig.DEBUG)
+                {
                     Log.d(TAG, "onPostExecute - setting bitmap");
                 }
                 setImageDrawable(imageView, value);
@@ -338,9 +385,11 @@ public abstract class ImageWorker {
         }
 
         @Override
-        protected void onCancelled(BitmapDrawable value) {
+        protected void onCancelled(BitmapDrawable value)
+        {
             super.onCancelled(value);
-            synchronized (mPauseWorkLock) {
+            synchronized (mPauseWorkLock)
+            {
                 mPauseWorkLock.notifyAll();
             }
         }
@@ -349,11 +398,13 @@ public abstract class ImageWorker {
          * Returns the ImageView associated with this task as long as the ImageView's task still
          * points to this task as well. Returns null otherwise.
          */
-        private ImageView getAttachedImageView() {
+        private ImageView getAttachedImageView()
+        {
             final ImageView imageView = imageViewReference.get();
             final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
-            if (this == bitmapWorkerTask) {
+            if (this == bitmapWorkerTask)
+            {
                 return imageView;
             }
 
@@ -367,16 +418,19 @@ public abstract class ImageWorker {
      * required, and makes sure that only the last started worker process can bind its result,
      * independently of the finish order.
      */
-    private static class AsyncDrawable extends BitmapDrawable {
+    private static class AsyncDrawable extends BitmapDrawable
+    {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
-        public AsyncDrawable(Resources res, Bitmap bitmap, BitmapWorkerTask bitmapWorkerTask) {
+        public AsyncDrawable(Resources res, Bitmap bitmap, BitmapWorkerTask bitmapWorkerTask)
+        {
             super(res, bitmap);
             bitmapWorkerTaskReference =
                     new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
         }
 
-        public BitmapWorkerTask getBitmapWorkerTask() {
+        public BitmapWorkerTask getBitmapWorkerTask()
+        {
             return bitmapWorkerTaskReference.get();
         }
     }
@@ -388,8 +442,10 @@ public abstract class ImageWorker {
      * @param imageView
      * @param drawable
      */
-    private void setImageDrawable(ImageView imageView, Drawable drawable) {
-        if (mFadeInBitmap) {
+    private void setImageDrawable(ImageView imageView, Drawable drawable)
+    {
+        if (mFadeInBitmap)
+        {
             // Transition drawable with a transparent drawable and the final drawable
             final TransitionDrawable td =
                     new TransitionDrawable(new Drawable[]{
@@ -402,7 +458,9 @@ public abstract class ImageWorker {
 
             imageView.setImageDrawable(td);
             td.startTransition(FADE_IN_TIME);
-        } else {
+        }
+        else
+        {
             imageView.setImageDrawable(drawable);
         }
     }
@@ -419,20 +477,26 @@ public abstract class ImageWorker {
      * {@link android.app.Activity#onPause()}), or there is a risk the
      * background thread will never finish.
      */
-    public void setPauseWork(boolean pauseWork) {
-        synchronized (mPauseWorkLock) {
+    public void setPauseWork(boolean pauseWork)
+    {
+        synchronized (mPauseWorkLock)
+        {
             mPauseWork = pauseWork;
-            if (!mPauseWork) {
+            if (!mPauseWork)
+            {
                 mPauseWorkLock.notifyAll();
             }
         }
     }
 
-    protected class CacheAsyncTask extends AsyncTask<Object, Void, Void> {
+    protected class CacheAsyncTask extends AsyncTask<Object, Void, Void>
+    {
 
         @Override
-        protected Void doInBackground(Object... params) {
-            switch ((Integer) params[0]) {
+        protected Void doInBackground(Object... params)
+        {
+            switch ((Integer) params[0])
+            {
                 case MESSAGE_CLEAR:
                     clearCacheInternal();
                     break;
@@ -450,40 +514,51 @@ public abstract class ImageWorker {
         }
     }
 
-    protected void initDiskCacheInternal() {
-        if (mImageCache != null) {
+    protected void initDiskCacheInternal()
+    {
+        if (mImageCache != null)
+        {
             mImageCache.initDiskCache();
         }
     }
 
-    protected void clearCacheInternal() {
-        if (mImageCache != null) {
+    protected void clearCacheInternal()
+    {
+        if (mImageCache != null)
+        {
             mImageCache.clearCache();
         }
     }
 
-    protected void flushCacheInternal() {
-        if (mImageCache != null) {
+    protected void flushCacheInternal()
+    {
+        if (mImageCache != null)
+        {
             mImageCache.flush();
         }
     }
 
-    protected void closeCacheInternal() {
-        if (mImageCache != null) {
+    protected void closeCacheInternal()
+    {
+        if (mImageCache != null)
+        {
             mImageCache.close();
             mImageCache = null;
         }
     }
 
-    public void clearCache() {
+    public void clearCache()
+    {
         new CacheAsyncTask().execute(MESSAGE_CLEAR);
     }
 
-    public void flushCache() {
+    public void flushCache()
+    {
         new CacheAsyncTask().execute(MESSAGE_FLUSH);
     }
 
-    public void closeCache() {
+    public void closeCache()
+    {
         new CacheAsyncTask().execute(MESSAGE_CLOSE);
     }
 }

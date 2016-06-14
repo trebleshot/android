@@ -10,26 +10,31 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 
-public class GActivity extends AppCompatActivity {
+public class GActivity extends AppCompatActivity
+{
     private SharedPreferences mPreferences;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
-        if (this.getDefaultPreferences().getBoolean("serviceLock", false)) {
+        if (this.getDefaultPreferences().getBoolean("serviceLock", false))
+        {
             this.getDefaultPreferences().edit().putBoolean("serviceLock", false).commit();
             Toast.makeText(this, R.string.service_unlocked_notice, Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
-    protected void onStart() {
+    protected void onStart()
+    {
         super.onStart();
         startService(new Intent(this, CommunicationService.class));
     }
 
-    protected SharedPreferences getDefaultPreferences() {
+    protected SharedPreferences getDefaultPreferences()
+    {
         if (this.mPreferences == null)
             this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 

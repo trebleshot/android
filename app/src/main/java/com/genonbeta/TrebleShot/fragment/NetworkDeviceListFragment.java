@@ -41,7 +41,8 @@ import org.json.JSONObject;
 
 import java.net.Socket;
 
-public class NetworkDeviceListFragment extends ListFragment {
+public class NetworkDeviceListFragment extends ListFragment
+{
     private IntentFilter mIntentFilter = new IntentFilter();
     private SelfReceiver mReceiver = new SelfReceiver();
     private PokeHandler mPokeHandler = new PokeHandler();
@@ -51,7 +52,8 @@ public class NetworkDeviceListFragment extends ListFragment {
     private Menu mOptionsMenu;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_FOUND);
@@ -60,7 +62,8 @@ public class NetworkDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         mListAdapter = new NetworkDeviceListAdapter(getActivity());
@@ -82,20 +85,24 @@ public class NetworkDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(ListView l, View v, int position, long id)
+    {
         super.onListItemClick(l, v, position, id);
 
         Intent actIntent = getActivity().getIntent();
         final NetworkDevice device = (NetworkDevice) mListAdapter.getItem(position);
 
-        if (Intent.ACTION_SEND.equals(actIntent.getAction()) || Intent.ACTION_SEND_MULTIPLE.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(actIntent.getAction())) {
+        if (Intent.ACTION_SEND.equals(actIntent.getAction()) || Intent.ACTION_SEND_MULTIPLE.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(actIntent.getAction()))
+        {
             Intent serviceIntent = (Intent) actIntent.clone();
 
             serviceIntent.setClass(getActivity(), CommunicationService.class);
             serviceIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 
             getActivity().startService(serviceIntent);
-        } else if (device.brand != null && device.model != null) {
+        }
+        else if (device.brand != null && device.model != null)
+        {
             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
             dialog.setTitle(device.user);
@@ -111,9 +118,11 @@ public class NetworkDeviceListFragment extends ListFragment {
             accessSwitch.setChecked(!device.isRestricted);
 
             accessSwitch.setOnCheckedChangeListener(
-                    new OnCheckedChangeListener() {
+                    new OnCheckedChangeListener()
+                    {
                         @Override
-                        public void onCheckedChanged(CompoundButton button, boolean isChecked) {
+                        public void onCheckedChanged(CompoundButton button, boolean isChecked)
+                        {
                             device.isRestricted = !isChecked;
                         }
                     }
@@ -121,17 +130,21 @@ public class NetworkDeviceListFragment extends ListFragment {
 
             dialog.setNegativeButton(R.string.close, null);
 
-            dialog.setPositiveButton(R.string.poke, new DialogInterface.OnClickListener() {
+            dialog.setPositiveButton(R.string.poke, new DialogInterface.OnClickListener()
+                    {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int p2) {
+                        public void onClick(DialogInterface dialogInterface, int p2)
+                        {
                             CoolJsonCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null, mPokeHandler);
                         }
                     }
             );
 
-            dialog.setNeutralButton(R.string.thread_queue_short, new DialogInterface.OnClickListener() {
+            dialog.setNeutralButton(R.string.thread_queue_short, new DialogInterface.OnClickListener()
+                    {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int p2) {
+                        public void onClick(DialogInterface dialogInterface, int p2)
+                        {
                             AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
 
                             final PendingProcessListAdapter adapter = new PendingProcessListAdapter(getActivity(), device.ip);
@@ -143,9 +156,11 @@ public class NetworkDeviceListFragment extends ListFragment {
                             else
                                 dialog.setAdapter(adapter, null);
 
-                            dialog.setNeutralButton(R.string.clear_queue, new DialogInterface.OnClickListener() {
+                            dialog.setNeutralButton(R.string.clear_queue, new DialogInterface.OnClickListener()
+                                    {
                                         @Override
-                                        public void onClick(DialogInterface dialogInterface, int p2) {
+                                        public void onClick(DialogInterface dialogInterface, int p2)
+                                        {
                                             adapter.clearQueue();
                                         }
                                     }
@@ -162,7 +177,8 @@ public class NetworkDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
 
         mListAdapter.notifyDataSetChanged();
@@ -170,19 +186,22 @@ public class NetworkDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu)
+    {
         super.onPrepareOptionsMenu(menu);
         this.checkScanStatus();
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.network_devices_options, menu);
 
@@ -190,8 +209,10 @@ public class NetworkDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
             case R.id.network_devices_scan:
                 getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
                 return true;
@@ -205,19 +226,24 @@ public class NetworkDeviceListFragment extends ListFragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void checkScanStatus() {
-        if (mOptionsMenu != null && mOptionsMenu.findItem(R.id.network_devices_scan) != null) {
+    private void checkScanStatus()
+    {
+        if (mOptionsMenu != null && mOptionsMenu.findItem(R.id.network_devices_scan) != null)
+        {
             if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
                 mOptionsMenu.findItem(R.id.network_devices_scan).setActionView(null);
-            else {
+            else
+            {
                 MenuItem searchItem = mOptionsMenu.findItem(R.id.network_devices_scan);
                 searchItem.setActionView(R.layout.layout_running_process);
                 View progressBar = searchItem.getActionView().findViewById(R.id.layout_running_process_progressBar);
 
                 progressBar.setOnClickListener(
-                        new OnClickListener() {
+                        new OnClickListener()
+                        {
                             @Override
-                            public void onClick(View view) {
+                            public void onClick(View view)
+                            {
                                 mPublisher.makeToast(R.string.stopping_msg);
                                 ApplicationHelper.getNetworkDeviceScanner().interrupt();
                             }
@@ -227,51 +253,65 @@ public class NetworkDeviceListFragment extends ListFragment {
         }
     }
 
-    private void showSnackbar(int resId) {
+    private void showSnackbar(int resId)
+    {
         Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT).show();
     }
 
-    private class SelfReceiver extends BroadcastReceiver {
+    private class SelfReceiver extends BroadcastReceiver
+    {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             NetworkDeviceListFragment.this.checkScanStatus();
 
-            if (DeviceScannerProvider.ACTION_DEVICE_FOUND.equals(intent.getAction())) {
+            if (DeviceScannerProvider.ACTION_DEVICE_FOUND.equals(intent.getAction()))
+            {
                 mListAdapter.notifyDataSetChanged();
-            } else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS)) {
+            }
+            else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS))
+            {
                 String scanStatus = intent.getStringExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS);
 
                 if (DeviceScannerProvider.STATUS_OK.equals(scanStatus))
                     showSnackbar(R.string.devices_scanning_msg);
                 else if (DeviceScannerProvider.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
                     showSnackbar(R.string.no_network_interface_msg);
-            } else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
+            }
+            else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction()))
+            {
                 showSnackbar(R.string.scan_completed);
             }
         }
     }
 
-    protected class PokeHandler extends CoolJsonCommunication.JsonResponseHandler {
+    protected class PokeHandler extends CoolJsonCommunication.JsonResponseHandler
+    {
         @Override
-        public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json) {
-            try {
+        public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
+        {
+            try
+            {
                 json.put("request", "poke_the_device");
 
                 JSONObject response = new JSONObject(process.waitForResponse());
 
-                if (response.getBoolean("result")) {
+                if (response.getBoolean("result"))
+                {
                     showToast(getString(R.string.poke_sent));
                     return;
                 }
 
                 showToast(getString(R.string.poke_error, getString(R.string.not_allowed_error)));
-            } catch (JSONException e) {
+            } catch (JSONException e)
+            {
                 showToast(getString(R.string.poke_error, getString(R.string.communication_problem)));
             }
         }
 
         @Override
-        public void onError(Exception exception) {
+        public void onError(Exception exception)
+        {
             super.onError(exception);
 
             showToast(getString(R.string.poke_error, getString(R.string.connection_problem)));
@@ -279,7 +319,8 @@ public class NetworkDeviceListFragment extends ListFragment {
             Looper.loop();
         }
 
-        private void showToast(String text) {
+        private void showToast(String text)
+        {
             Looper.prepare();
 
             if (getActivity() != null)

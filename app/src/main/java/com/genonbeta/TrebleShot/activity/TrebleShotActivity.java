@@ -13,24 +13,29 @@ import com.genonbeta.TrebleShot.helper.FileUtils;
 
 import java.io.File;
 
-public class TrebleShotActivity extends GActivity {
+public class TrebleShotActivity extends GActivity
+{
     public static final String OPEN_RECEIVED_FILES_ACTION = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
         getMenuInflater().inflate(R.menu.trebleshot_options, menu);
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
             case R.id.trebleshot_options_about:
                 new AboutDialog().show(getSupportFragmentManager(), "aboutDialog");
                 break;
@@ -45,7 +50,8 @@ public class TrebleShotActivity extends GActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void sendTheApplication() {
+    private void sendTheApplication()
+    {
         File apkFile = new File(getPackageCodePath());
 
         Intent sendIntent = new Intent(Intent.ACTION_SEND);

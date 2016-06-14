@@ -22,7 +22,8 @@ import com.genonbeta.TrebleShot.service.ServerService;
 
 import java.io.File;
 
-public class NotificationPublisher {
+public class NotificationPublisher
+{
     public static final String TAG = "NotificationPublisher";
     public static final String EXTRA_NOTIFICATION_ID = "notificationId";
     public static final int NOTIFICATION_SERVICE_STARTED = 232434;
@@ -36,21 +37,25 @@ public class NotificationPublisher {
     private NotificationManager mManager;
     private SharedPreferences mPreferences;
 
-    public NotificationPublisher(Context context) {
+    public NotificationPublisher(Context context)
+    {
         this.mContext = context;
         this.mManager = (NotificationManager) mContext.getSystemService(Service.NOTIFICATION_SERVICE);
         this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
     }
 
-    public NotificationManager getNotificationManager() {
+    public NotificationManager getNotificationManager()
+    {
         return this.mManager;
     }
 
-    public SharedPreferences getSharedPreferences() {
+    public SharedPreferences getSharedPreferences()
+    {
         return this.mPreferences;
     }
 
-    public void notifyConnectionRequest(String clientIp) {
+    public void notifyConnectionRequest(String clientIp)
+    {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
         Intent acceptIntent = new Intent(mContext, CommunicationService.class);
@@ -88,7 +93,8 @@ public class NotificationPublisher {
         mManager.notify(uniqueNotificationId, builder.build());
     }
 
-    public void notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction) {
+    public void notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction)
+    {
         int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
@@ -107,13 +113,16 @@ public class NotificationPublisher {
         int acceptText;
         int rejectText;
 
-        if (halfRestriction) {
+        if (halfRestriction)
+        {
             acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
             rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
 
             acceptText = R.string.receive_restricted;
             rejectText = R.string.reject_restricted;
-        } else {
+        }
+        else
+        {
             acceptText = R.string.accept;
             rejectText = R.string.reject;
         }
@@ -143,7 +152,8 @@ public class NotificationPublisher {
         mManager.notify(uniqueNotificationId, builder.build());
     }
 
-    public void notifyMultiTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction) {
+    public void notifyMultiTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction)
+    {
         int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
@@ -161,13 +171,16 @@ public class NotificationPublisher {
         int acceptText;
         int rejectText;
 
-        if (halfRestriction) {
+        if (halfRestriction)
+        {
             acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
             rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
 
             acceptText = R.string.receive_restricted;
             rejectText = R.string.reject_restricted;
-        } else {
+        }
+        else
+        {
             acceptText = R.string.accept;
             rejectText = R.string.reject;
         }
@@ -195,7 +208,8 @@ public class NotificationPublisher {
         mManager.notify(uniqueNotificationId, builder.build());
     }
 
-    public Notification notifyServiceStarted() {
+    public Notification notifyServiceStarted()
+    {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
 
         builder.setSmallIcon(R.mipmap.p2p)
@@ -208,7 +222,8 @@ public class NotificationPublisher {
         return builder.getNotification();
     }
 
-    public NotificationCompat.Builder notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress) {
+    public NotificationCompat.Builder notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress)
+    {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         Intent cancelIntent = new Intent(mContext, ClientService.class);
         Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
@@ -240,7 +255,8 @@ public class NotificationPublisher {
         return builder;
     }
 
-    public NotificationCompat.Builder notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device, int progress) {
+    public NotificationCompat.Builder notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device, int progress)
+    {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         Intent cancelIntent = new Intent(mContext, ServerService.class);
         Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
@@ -274,7 +290,8 @@ public class NotificationPublisher {
         return builder;
     }
 
-    public void notifyOppositeDevicePing(NetworkDevice device) {
+    public void notifyOppositeDevicePing(NetworkDevice device)
+    {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
 
         builder.setSmallIcon(android.R.drawable.stat_notify_chat)
@@ -289,7 +306,8 @@ public class NotificationPublisher {
         mManager.notify(NOTIFICATION_OPPOSITE_DEVICE_PING, builder.build());
     }
 
-    public void notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device) {
+    public void notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
+    {
         Notification.Builder builder = new Notification.Builder(mContext);
         Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
@@ -305,7 +323,8 @@ public class NotificationPublisher {
         mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
     }
 
-    public void notifyFileReceivedMulti(int numberOfFiles) {
+    public void notifyFileReceivedMulti(int numberOfFiles)
+    {
         Notification.Builder builder = new Notification.Builder(mContext);
         Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
@@ -318,7 +337,8 @@ public class NotificationPublisher {
         mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
     }
 
-    public void notifyReceiveError(String fileName) {
+    public void notifyReceiveError(String fileName)
+    {
         Notification.Builder builder = new Notification.Builder(mContext);
         Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
@@ -331,7 +351,8 @@ public class NotificationPublisher {
         mManager.notify(NOTIFICATION_ID_RECEIVE_ERROR, builder.build());
     }
 
-    public int getNotificationDefaults() {
+    public int getNotificationDefaults()
+    {
         int makeSound = (mPreferences.getBoolean("notification_sound", false)) ? NotificationCompat.DEFAULT_SOUND : 0;
         int vibrate = (mPreferences.getBoolean("notification_vibrate", false)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
         int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
@@ -339,27 +360,33 @@ public class NotificationPublisher {
         return makeSound | vibrate | light;
     }
 
-    public void notify(int notificationId, Notification notification) {
+    public void notify(int notificationId, Notification notification)
+    {
         mManager.notify(notificationId, notification);
     }
 
-    public void makeToast(String toastText) {
+    public void makeToast(String toastText)
+    {
         Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
     }
 
-    public void makeToast(int toastTextRes) {
+    public void makeToast(int toastTextRes)
+    {
         Toast.makeText(mContext, toastTextRes, Toast.LENGTH_SHORT).show();
     }
 
-    public void makeToast(String text, int lenght) {
+    public void makeToast(String text, int lenght)
+    {
         Toast.makeText(mContext, text, lenght).show();
     }
 
-    public void makeToast(int textRes, int lenght) {
+    public void makeToast(int textRes, int lenght)
+    {
         Toast.makeText(mContext, textRes, lenght).show();
     }
 
-    public void cancelNotification(int notificationId) {
+    public void cancelNotification(int notificationId)
+    {
         mManager.cancel(notificationId);
     }
 }

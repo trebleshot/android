@@ -11,36 +11,44 @@ import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 
 import java.io.File;
 
-public class StorageSetterPreference extends EditTextPreference {
-    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+public class StorageSetterPreference extends EditTextPreference
+{
+    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes)
+    {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
-    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr) {
+    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr)
+    {
         super(context, attrs, defStyleAttr, defStyleAttr);
     }
 
-    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs) {
+    public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs)
+    {
         super(context, attrs);
     }
 
-    public StorageSetterPreference(android.content.Context context) {
+    public StorageSetterPreference(android.content.Context context)
+    {
         super(context);
     }
 
     @Override
-    protected void onAddEditTextToDialogView(View dialogView, EditText editText) {
+    protected void onAddEditTextToDialogView(View dialogView, EditText editText)
+    {
         super.onAddEditTextToDialogView(dialogView, editText);
 
         Editable editor = editText.getText();
 
-        if (editor.toString().length() == 0) {
+        if (editor.toString().length() == 0)
+        {
             editor.append(ApplicationHelper.getApplicationDirectory(getContext()).getAbsolutePath());
         }
     }
 
     @Override
-    protected void onDialogClosed(boolean positiveResult) {
+    protected void onDialogClosed(boolean positiveResult)
+    {
         super.onDialogClosed(positiveResult);
 
         Editable editable = getEditText().getText();

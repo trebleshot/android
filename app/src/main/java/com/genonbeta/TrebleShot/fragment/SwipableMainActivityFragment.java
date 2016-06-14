@@ -12,7 +12,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TrebleShotActivity;
 import com.genonbeta.TrebleShot.adapter.SimpleFragmentPagerAdapter;
 
-public class SwipableMainActivityFragment extends Fragment {
+public class SwipableMainActivityFragment extends Fragment
+{
     private ViewPager mPager;
     private TabLayout mTabLayout;
     private Fragment mDevicesFragment;
@@ -21,7 +22,8 @@ public class SwipableMainActivityFragment extends Fragment {
     private SimpleFragmentPagerAdapter mFragmentPager;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_swipable_main, container, false);
 
         this.mPager = (ViewPager) view.findViewById(R.id.fragment_swipable_main_view_pager);
@@ -40,10 +42,12 @@ public class SwipableMainActivityFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
 
-        if (getActivity().getIntent() != null && TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION.equals(getActivity().getIntent().getAction())) {
+        if (getActivity().getIntent() != null && TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION.equals(getActivity().getIntent().getAction()))
+        {
             mPager.setCurrentItem(1, true);
             getActivity().getIntent().setAction(null);
         }

@@ -21,7 +21,8 @@ import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 
 import java.util.ArrayList;
 
-public class P2pDeviceListFragment extends ListFragment {
+public class P2pDeviceListFragment extends ListFragment
+{
     private P2pDeviceListAdapter mListAdapter;
     private NotificationPublisher mPublisher;
     private DefaultClassListener mListener = new DefaultClassListener();
@@ -32,7 +33,8 @@ public class P2pDeviceListFragment extends ListFragment {
     private ArrayList<WifiP2pDevice> mPeers = new ArrayList<WifiP2pDevice>();
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         mListAdapter = new P2pDeviceListAdapter(getActivity(), mPeers);
@@ -49,19 +51,22 @@ public class P2pDeviceListFragment extends ListFragment {
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         getActivity().registerReceiver(mReceiver, mIntentFilter);
     }
 
     @Override
-    public void onPause() {
+    public void onPause()
+    {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(ListView l, View v, int position, long id)
+    {
         super.onListItemClick(l, v, position, id);
 
         final WifiP2pDevice device = mPeers.get(position);
@@ -77,24 +82,29 @@ public class P2pDeviceListFragment extends ListFragment {
             mManager.cancelConnect(mChannel, mListener);
         else if (device.status != WifiP2pDevice.UNAVAILABLE && device.status != WifiP2pDevice.CONNECTED)
             mManager.connect(mChannel, config, mListener);
-        else {
+        else
+        {
             mPublisher.makeToast(getActivity().getString(R.string.device_not_be_managed_msg, device.deviceName));
         }
     }
 
-    protected class DefaultClassListener implements WifiP2pManager.PeerListListener, WifiP2pManager.ActionListener {
+    protected class DefaultClassListener implements WifiP2pManager.PeerListListener, WifiP2pManager.ActionListener
+    {
         @Override
-        public void onSuccess() {
+        public void onSuccess()
+        {
             mPublisher.makeToast(R.string.in_process_msg);
         }
 
         @Override
-        public void onFailure(int p1) {
+        public void onFailure(int p1)
+        {
             mPublisher.makeToast(R.string.process_failure_msg_p2p);
         }
 
         @Override
-        public void onPeersAvailable(WifiP2pDeviceList peerList) {
+        public void onPeersAvailable(WifiP2pDeviceList peerList)
+        {
             mPeers.clear();
             mPeers.addAll(peerList.getDeviceList());
 
@@ -102,30 +112,39 @@ public class P2pDeviceListFragment extends ListFragment {
         }
     }
 
-    public void discoverPeers() {
+    public void discoverPeers()
+    {
         mManager.discoverPeers(mChannel, mListener);
     }
 
-    public class P2pStatusReceiver extends BroadcastReceiver {
+    public class P2pStatusReceiver extends BroadcastReceiver
+    {
 
-        public void onReceive(Context context, Intent intent) {
+        public void onReceive(Context context, Intent intent)
+        {
             String action = intent.getAction();
 
-            if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action)) {
+            if (WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION.equals(action))
+            {
                 int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
 
-                if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+                if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED)
+                {
                     discoverPeers();
                 }
-            } else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action))
+            }
+            else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action))
                 if (mManager != null)
                     mManager.requestPeers(mChannel, mListener);
-                else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+                else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action))
+                {
                     NetworkInfo networkInfo = intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
                     // if (networkInfo.isConnected())
 
-                } else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action)) {
+                }
+                else if (WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION.equals(action))
+                {
                     WifiP2pDevice thisDevice = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
                 }
         }

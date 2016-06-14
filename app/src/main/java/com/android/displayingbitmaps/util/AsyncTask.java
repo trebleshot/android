@@ -194,17 +194,20 @@ import java.util.concurrent.atomic.AtomicInteger;
  * {@link #executeOnExecutor(java.util.concurrent.Executor, Object[])} with
  * {@link #THREAD_POOL_EXECUTOR}.</p>
  */
-public abstract class AsyncTask<Params, Progress, Result> {
+public abstract class AsyncTask<Params, Progress, Result>
+{
     private static final String LOG_TAG = "AsyncTask";
 
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final int KEEP_ALIVE = 1;
 
-    private static final ThreadFactory sThreadFactory = new ThreadFactory() {
+    private static final ThreadFactory sThreadFactory = new ThreadFactory()
+    {
         private final AtomicInteger mCount = new AtomicInteger(1);
 
-        public Thread newThread(Runnable r) {
+        public Thread newThread(Runnable r)
+        {
             return new Thread(r, "AsyncTask #" + mCount.getAndIncrement());
         }
     };
@@ -245,27 +248,36 @@ public abstract class AsyncTask<Params, Progress, Result> {
     private final AtomicBoolean mTaskInvoked = new AtomicBoolean();
 
     @TargetApi(11)
-    private static class SerialExecutor implements Executor {
+    private static class SerialExecutor implements Executor
+    {
         final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
         Runnable mActive;
 
-        public synchronized void execute(final Runnable r) {
-            mTasks.offer(new Runnable() {
-                public void run() {
-                    try {
+        public synchronized void execute(final Runnable r)
+        {
+            mTasks.offer(new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
                         r.run();
-                    } finally {
+                    } finally
+                    {
                         scheduleNext();
                     }
                 }
             });
-            if (mActive == null) {
+            if (mActive == null)
+            {
                 scheduleNext();
             }
         }
 
-        protected synchronized void scheduleNext() {
-            if ((mActive = mTasks.poll()) != null) {
+        protected synchronized void scheduleNext()
+        {
+            if ((mActive = mTasks.poll()) != null)
+            {
                 THREAD_POOL_EXECUTOR.execute(mActive);
             }
         }
@@ -275,7 +287,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * Indicates the current status of the task. Each status will be set only once
      * during the lifetime of a task.
      */
-    public enum Status {
+    public enum Status
+    {
         /**
          * Indicates that the task has not been executed yet.
          */
@@ -293,23 +306,28 @@ public abstract class AsyncTask<Params, Progress, Result> {
     /**
      * @hide Used to force static handler to be created.
      */
-    public static void init() {
+    public static void init()
+    {
         sHandler.getLooper();
     }
 
     /**
      * @hide
      */
-    public static void setDefaultExecutor(Executor exec) {
+    public static void setDefaultExecutor(Executor exec)
+    {
         sDefaultExecutor = exec;
     }
 
     /**
      * Creates a new asynchronous task. This constructor must be invoked on the UI thread.
      */
-    public AsyncTask() {
-        mWorker = new WorkerRunnable<Params, Result>() {
-            public Result call() throws Exception {
+    public AsyncTask()
+    {
+        mWorker = new WorkerRunnable<Params, Result>()
+        {
+            public Result call() throws Exception
+            {
                 mTaskInvoked.set(true);
 
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
@@ -318,31 +336,40 @@ public abstract class AsyncTask<Params, Progress, Result> {
             }
         };
 
-        mFuture = new FutureTask<Result>(mWorker) {
+        mFuture = new FutureTask<Result>(mWorker)
+        {
             @Override
-            protected void done() {
-                try {
+            protected void done()
+            {
+                try
+                {
                     postResultIfNotInvoked(get());
-                } catch (InterruptedException e) {
+                } catch (InterruptedException e)
+                {
                     android.util.Log.w(LOG_TAG, e);
-                } catch (ExecutionException e) {
+                } catch (ExecutionException e)
+                {
                     throw new RuntimeException("An error occured while executing doInBackground()",
                             e.getCause());
-                } catch (CancellationException e) {
+                } catch (CancellationException e)
+                {
                     postResultIfNotInvoked(null);
                 }
             }
         };
     }
 
-    private void postResultIfNotInvoked(Result result) {
+    private void postResultIfNotInvoked(Result result)
+    {
         final boolean wasTaskInvoked = mTaskInvoked.get();
-        if (!wasTaskInvoked) {
+        if (!wasTaskInvoked)
+        {
             postResult(result);
         }
     }
 
-    private Result postResult(Result result) {
+    private Result postResult(Result result)
+    {
         @SuppressWarnings("unchecked")
         Message message = sHandler.obtainMessage(MESSAGE_POST_RESULT,
                 new AsyncTaskResult<Result>(this, result));
@@ -355,7 +382,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      *
      * @return The current status.
      */
-    public final Status getStatus() {
+    public final Status getStatus()
+    {
         return mStatus;
     }
 
@@ -381,7 +409,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #onPostExecute
      * @see #doInBackground
      */
-    protected void onPreExecute() {
+    protected void onPreExecute()
+    {
     }
 
     /**
@@ -396,7 +425,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #onCancelled(Object)
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    protected void onPostExecute(Result result) {
+    protected void onPostExecute(Result result)
+    {
     }
 
     /**
@@ -408,7 +438,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #doInBackground
      */
     @SuppressWarnings({"UnusedDeclaration"})
-    protected void onProgressUpdate(Progress... values) {
+    protected void onProgressUpdate(Progress... values)
+    {
     }
 
     /**
@@ -425,7 +456,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #isCancelled()
      */
     @SuppressWarnings({"UnusedParameters"})
-    protected void onCancelled(Result result) {
+    protected void onCancelled(Result result)
+    {
         onCancelled();
     }
 
@@ -441,7 +473,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #cancel(boolean)
      * @see #isCancelled()
      */
-    protected void onCancelled() {
+    protected void onCancelled()
+    {
     }
 
     /**
@@ -453,7 +486,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @return <tt>true</tt> if task was cancelled before it completed
      * @see #cancel(boolean)
      */
-    public final boolean isCancelled() {
+    public final boolean isCancelled()
+    {
         return mCancelled.get();
     }
 
@@ -484,7 +518,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #isCancelled()
      * @see #onCancelled(Object)
      */
-    public final boolean cancel(boolean mayInterruptIfRunning) {
+    public final boolean cancel(boolean mayInterruptIfRunning)
+    {
         mCancelled.set(true);
         return mFuture.cancel(mayInterruptIfRunning);
     }
@@ -499,7 +534,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @throws InterruptedException                       If the current thread was interrupted
      *                                                    while waiting.
      */
-    public final Result get() throws InterruptedException, ExecutionException {
+    public final Result get() throws InterruptedException, ExecutionException
+    {
         return mFuture.get();
     }
 
@@ -517,7 +553,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @throws java.util.concurrent.TimeoutException      If the wait timed out.
      */
     public final Result get(long timeout, TimeUnit unit) throws InterruptedException,
-            ExecutionException, TimeoutException {
+            ExecutionException, TimeoutException
+    {
         return mFuture.get(timeout, unit);
     }
 
@@ -546,7 +583,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      * @see #execute(Runnable)
      */
-    public final AsyncTask<Params, Progress, Result> execute(Params... params) {
+    public final AsyncTask<Params, Progress, Result> execute(Params... params)
+    {
         return executeOnExecutor(sDefaultExecutor, params);
     }
 
@@ -581,9 +619,12 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #execute(Object[])
      */
     public final AsyncTask<Params, Progress, Result> executeOnExecutor(Executor exec,
-                                                                       Params... params) {
-        if (mStatus != Status.PENDING) {
-            switch (mStatus) {
+                                                                       Params... params)
+    {
+        if (mStatus != Status.PENDING)
+        {
+            switch (mStatus)
+            {
                 case RUNNING:
                     throw new IllegalStateException("Cannot execute task:"
                             + " the task is already running.");
@@ -612,7 +653,8 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #execute(Object[])
      * @see #executeOnExecutor(java.util.concurrent.Executor, Object[])
      */
-    public static void execute(Runnable runnable) {
+    public static void execute(Runnable runnable)
+    {
         sDefaultExecutor.execute(runnable);
     }
 
@@ -629,28 +671,37 @@ public abstract class AsyncTask<Params, Progress, Result> {
      * @see #onProgressUpdate
      * @see #doInBackground
      */
-    protected final void publishProgress(Progress... values) {
-        if (!isCancelled()) {
+    protected final void publishProgress(Progress... values)
+    {
+        if (!isCancelled())
+        {
             sHandler.obtainMessage(MESSAGE_POST_PROGRESS,
                     new AsyncTaskResult<Progress>(this, values)).sendToTarget();
         }
     }
 
-    private void finish(Result result) {
-        if (isCancelled()) {
+    private void finish(Result result)
+    {
+        if (isCancelled())
+        {
             onCancelled(result);
-        } else {
+        }
+        else
+        {
             onPostExecute(result);
         }
         mStatus = Status.FINISHED;
     }
 
-    private static class InternalHandler extends Handler {
+    private static class InternalHandler extends Handler
+    {
         @SuppressWarnings({"unchecked", "RawUseOfParameterizedType"})
         @Override
-        public void handleMessage(Message msg) {
+        public void handleMessage(Message msg)
+        {
             AsyncTaskResult result = (AsyncTaskResult) msg.obj;
-            switch (msg.what) {
+            switch (msg.what)
+            {
                 case MESSAGE_POST_RESULT:
                     // There is only one result
                     result.mTask.finish(result.mData[0]);
@@ -662,16 +713,19 @@ public abstract class AsyncTask<Params, Progress, Result> {
         }
     }
 
-    private static abstract class WorkerRunnable<Params, Result> implements Callable<Result> {
+    private static abstract class WorkerRunnable<Params, Result> implements Callable<Result>
+    {
         Params[] mParams;
     }
 
     @SuppressWarnings({"RawUseOfParameterizedType"})
-    private static class AsyncTaskResult<Data> {
+    private static class AsyncTaskResult<Data>
+    {
         final AsyncTask mTask;
         final Data[] mData;
 
-        AsyncTaskResult(AsyncTask task, Data... data) {
+        AsyncTaskResult(AsyncTask task, Data... data)
+        {
             mTask = task;
             mData = data;
         }

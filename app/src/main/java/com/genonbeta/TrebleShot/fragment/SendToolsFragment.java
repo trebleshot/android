@@ -14,7 +14,8 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 
-public class SendToolsFragment extends Fragment {
+public class SendToolsFragment extends Fragment
+{
     private AbstractMediaListFragment mApps;
     private AbstractMediaListFragment mMusic;
     private AbstractMediaListFragment mVideos;
@@ -26,7 +27,8 @@ public class SendToolsFragment extends Fragment {
     private SearchComposer mSearchComposer = new SearchComposer();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         View view = inflater.inflate(R.layout.fragment_send_tools, container, false);
 
         mAppsView = (TextView) view.findViewById(R.id.showApps);
@@ -37,7 +39,8 @@ public class SendToolsFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         setHasOptionsMenu(true);
@@ -46,25 +49,31 @@ public class SendToolsFragment extends Fragment {
         mMusic = new MusicListFragment();
         mVideos = new VideoListFragment();
 
-        mAppsView.setOnClickListener(new OnClickListener() {
+        mAppsView.setOnClickListener(new OnClickListener()
+                                     {
                                          @Override
-                                         public void onClick(View p1) {
+                                         public void onClick(View p1)
+                                         {
                                              showApps();
                                          }
                                      }
         );
 
-        mMusicView.setOnClickListener(new OnClickListener() {
+        mMusicView.setOnClickListener(new OnClickListener()
+                                      {
                                           @Override
-                                          public void onClick(View p1) {
+                                          public void onClick(View p1)
+                                          {
                                               showMusic();
                                           }
                                       }
         );
 
-        mVideosView.setOnClickListener(new OnClickListener() {
+        mVideosView.setOnClickListener(new OnClickListener()
+                                       {
                                            @Override
-                                           public void onClick(View p1) {
+                                           public void onClick(View p1)
+                                           {
                                                showVideos();
                                            }
                                        }
@@ -74,7 +83,8 @@ public class SendToolsFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.search_menu, menu);
 
@@ -83,29 +93,35 @@ public class SendToolsFragment extends Fragment {
         setupSearchView();
     }
 
-    public void setupSearchView() {
+    public void setupSearchView()
+    {
         mSearchView.setOnQueryTextListener(mSearchComposer);
     }
 
-    public void showApps() {
+    public void showApps()
+    {
         if (mFragment != mApps)
             changeFragment(mApps);
     }
 
-    public void showMusic() {
+    public void showMusic()
+    {
         if (mFragment != mMusic)
             changeFragment(mMusic);
     }
 
-    public void showVideos() {
+    public void showVideos()
+    {
         if (mFragment != mVideos)
             changeFragment(mVideos);
     }
 
-    public boolean changeFragment(AbstractMediaListFragment fragment) {
+    public boolean changeFragment(AbstractMediaListFragment fragment)
+    {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
 
-        if (mFragment != null) {
+        if (mFragment != null)
+        {
             if (mFragment.isLoading())
                 return false;
 
@@ -115,7 +131,8 @@ public class SendToolsFragment extends Fragment {
 
         AbstractMediaListFragment findOlds = (AbstractMediaListFragment) getFragmentManager().findFragmentByTag("currentFragment");
 
-        if (findOlds != null) {
+        if (findOlds != null)
+        {
             if (findOlds.isLoading())
                 return false;
 
@@ -133,15 +150,18 @@ public class SendToolsFragment extends Fragment {
         return true;
     }
 
-    private class SearchComposer implements SearchView.OnQueryTextListener {
+    private class SearchComposer implements SearchView.OnQueryTextListener
+    {
         @Override
-        public boolean onQueryTextSubmit(String word) {
+        public boolean onQueryTextSubmit(String word)
+        {
             mFragment.search(word);
             return false;
         }
 
         @Override
-        public boolean onQueryTextChange(String word) {
+        public boolean onQueryTextChange(String word)
+        {
             mFragment.search(word);
             return false;
         }

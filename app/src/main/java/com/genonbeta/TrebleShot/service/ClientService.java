@@ -18,7 +18,8 @@ import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import java.io.File;
 import java.net.Socket;
 
-public class ClientService extends Service {
+public class ClientService extends Service
+{
     public static final String TAG = "ClientService";
 
     public final static String ACTION_SEND = "com.genonbeta.TrebleShot.client.ACTION_SEND";
@@ -29,12 +30,14 @@ public class ClientService extends Service {
     private Send mSend = new Send();
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         return null;
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
         super.onCreate();
 
         mWifiLock = ((WifiManager) getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
@@ -44,15 +47,20 @@ public class ClientService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
         super.onStartCommand(intent, flags, startId);
 
-        if (intent != null) {
-            if (ACTION_SEND.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID)) {
-                try {
+        if (intent != null)
+        {
+            if (ACTION_SEND.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
+            {
+                try
+                {
                     int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
 
-                    if (ApplicationHelper.getSenders().containsKey(requestId)) {
+                    if (ApplicationHelper.getSenders().containsKey(requestId))
+                    {
                         AwaitedFileSender awaitedSender = ApplicationHelper.getSenders().get(requestId);
 
                         mSend.send(awaitedSender.ip, awaitedSender.port, awaitedSender.file, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender);
@@ -61,18 +69,23 @@ public class ClientService extends Service {
                     }
 
                     Log.d(TAG, "Send intent is received");
-                } catch (Exception e) {
+                } catch (Exception e)
+                {
                     mPublisher.makeToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
                 }
-            } else if (ACTION_CANCEL_SENDING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID)) {
+            }
+            else if (ACTION_CANCEL_SENDING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
+            {
                 int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
 
                 Log.d(TAG, "Sender stop request is received for id = " + requestId);
 
-                if (ApplicationHelper.getSenders().containsKey(requestId)) {
+                if (ApplicationHelper.getSenders().containsKey(requestId))
+                {
                     AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
                     sender.isCancelled = true;
-                } else
+                }
+                else
                     mPublisher.cancelNotification(intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1));
             }
         }
@@ -80,9 +93,11 @@ public class ClientService extends Service {
         return START_STICKY;
     }
 
-    private class Send extends CoolTransfer.Send<AwaitedFileSender> {
+    private class Send extends CoolTransfer.Send<AwaitedFileSender>
+    {
         @Override
-        public boolean onStart(String serverIp, int port, File file, AwaitedFileSender extra) {
+        public boolean onStart(String serverIp, int port, File file, AwaitedFileSender extra)
+        {
             Looper.prepare();
             mWifiLock.acquire();
 
@@ -93,7 +108,8 @@ public class ClientService extends Service {
         }
 
         @Override
-        public void onStop(String serverIp, int port, File file, AwaitedFileSender extra) {
+        public void onStop(String serverIp, int port, File file, AwaitedFileSender extra)
+        {
             super.onStop(serverIp, port, file, extra);
 
             mWifiLock.release();
@@ -103,28 +119,33 @@ public class ClientService extends Service {
         }
 
         @Override
-        public void onError(String serverIp, int port, File file, Exception error, AwaitedFileSender extra) {
+        public void onError(String serverIp, int port, File file, Exception error, AwaitedFileSender extra)
+        {
             mPublisher.makeToast(getString(R.string.file_sending_error_msg, "<?>"));
         }
 
         @Override
-        public void onNotify(Socket socket, String serverIp, int port, File file, int percent, AwaitedFileSender extra) {
+        public void onNotify(Socket socket, String serverIp, int port, File file, int percent, AwaitedFileSender extra)
+        {
             NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
             mPublisher.notifyFileSending(extra, device, percent);
         }
 
         @Override
-        public void onTransferCompleted(String serverIp, int port, File file, AwaitedFileSender extra) {
+        public void onTransferCompleted(String serverIp, int port, File file, AwaitedFileSender extra)
+        {
             mPublisher.makeToast(getString(((!extra.isCancelled) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.file.getName()));
         }
 
         @Override
-        public boolean onBreakRequest(String serverIp, int port, File file, AwaitedFileSender extra) {
+        public boolean onBreakRequest(String serverIp, int port, File file, AwaitedFileSender extra)
+        {
             return extra.isCancelled;
         }
 
         @Override
-        public void onSocketReady(Socket socket, String serverIp, int port, File file, AwaitedFileSender extra) {
+        public void onSocketReady(Socket socket, String serverIp, int port, File file, AwaitedFileSender extra)
+        {
 
         }
     }

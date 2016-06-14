@@ -5,12 +5,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
+public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter
+{
     private Context mContext;
     private Fragment[] mFragments;
     private String[] mTitles;
 
-    public SimpleFragmentPagerAdapter(FragmentManager fm, Context context, Fragment[] fragments, String[] titles) {
+    public SimpleFragmentPagerAdapter(FragmentManager fm, Context context, Fragment[] fragments, String[] titles)
+    {
         super(fm);
 
         this.mContext = context;
@@ -19,17 +21,20 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public int getCount() {
+    public int getCount()
+    {
         return this.mFragments.length;
     }
 
     @Override
-    public Fragment getItem(int id) {
+    public Fragment getItem(int id)
+    {
         return this.mFragments[id];
     }
 
     @Override
-    public CharSequence getPageTitle(int position) {
+    public CharSequence getPageTitle(int position)
+    {
         return this.mTitles[position];
     }
 }

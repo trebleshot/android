@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:paddingLeft="@dimen/default_layout_padding"
-    android:paddingRight="@dimen/default_layout_padding">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:paddingLeft="@dimen/default_layout_padding"
+                android:paddingRight="@dimen/default_layout_padding">
 
     <LinearLayout
         android:layout_alignParentBottom="true"
@@ -16,7 +16,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="#4F4F4F" />
+            android:background="#4F4F4F"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             android:textColor="#ffffff"
             android:textSize="16sp"
             android:id="@+id/text"
-            android:padding="20dp" />
+            android:padding="20dp"/>
 
     </LinearLayout>
 
@@ -35,6 +35,6 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/activity_main_fragment"
-        android:tag="mainFragment" />
+        android:tag="mainFragment"/>
 
 </RelativeLayout>

@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.config;
 
-public class AppConfig {
+public class AppConfig
+{
     public final static int COMMUNATION_SERVER_PORT = 1128;
     public final static byte[] DEFAULT_BUFFER_SIZE = new byte[8096];
     public final static byte[] SMALL_BUFFER_SIZE = new byte[1024];

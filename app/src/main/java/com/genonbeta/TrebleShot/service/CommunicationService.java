@@ -34,7 +34,8 @@ import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class CommunicationService extends Service {
+public class CommunicationService extends Service
+{
     public static final String TAG = "CommunationService";
 
     public static final String ACTION_FILE_TRANSFER_ACCEPT = "com.genonbeta.TrebleShot.FILE_TRANSFER_ACCEPT";
@@ -58,12 +59,14 @@ public class CommunicationService extends Service {
     private SharedPreferences mPreferences;
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         return null;
     }
 
     @Override
-    public void onCreate() {
+    public void onCreate()
+    {
         super.onCreate();
 
         if (!mCommunationServer.start())
@@ -77,27 +80,34 @@ public class CommunicationService extends Service {
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
         super.onStartCommand(intent, flags, startId);
 
         if (intent != null)
             Log.d(TAG, "onStart() : action = " + intent.getAction());
 
-        if (intent != null) {
-            if ((Intent.ACTION_SEND.equals(intent.getAction()) || ShareActivity.ACTION_SEND.equals(intent.getAction())) && intent.hasExtra(EXTRA_DEVICE_IP) && intent.hasExtra(Intent.EXTRA_STREAM)) {
+        if (intent != null)
+        {
+            if ((Intent.ACTION_SEND.equals(intent.getAction()) || ShareActivity.ACTION_SEND.equals(intent.getAction())) && intent.hasExtra(EXTRA_DEVICE_IP) && intent.hasExtra(Intent.EXTRA_STREAM))
+            {
                 Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 final File file = ApplicationHelper.getFileFromUri(this, fileUri);
 
-                if (file != null && file.isFile()) {
+                if (file != null && file.isFile())
+                {
                     final int requestId = ApplicationHelper.getUniqueNumber();
                     final String deviceIp = intent.getStringExtra(EXTRA_DEVICE_IP);
                     final String fileMime = (intent.getType() == null) ? FileUtils.getFileContentType(file.getAbsolutePath()) : intent.getType();
 
                     CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                            new JsonResponseHandler() {
+                            new JsonResponseHandler()
+                            {
                                 @Override
-                                public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json) {
-                                    try {
+                                public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+                                {
+                                    try
+                                    {
                                         json.put("request", "file_transfer_request");
                                         json.put("fileName", file.getName());
                                         json.put("fileSize", file.length());
@@ -106,17 +116,21 @@ public class CommunicationService extends Service {
 
                                         JSONObject response = new JSONObject(process.waitForResponse());
 
-                                        if (response.getBoolean("result")) {
+                                        if (response.getBoolean("result"))
+                                        {
                                             ApplicationHelper.getSenders().put(requestId, new AwaitedFileSender(deviceIp, file, requestId));
-                                        } else
+                                        }
+                                        else
                                             showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-                                    } catch (JSONException e) {
+                                    } catch (JSONException e)
+                                    {
                                         showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
                                     }
                                 }
 
                                 @Override
-                                public void onError(Exception e) {
+                                public void onError(Exception e)
+                                {
                                     showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
                                 }
                             }
@@ -126,36 +140,45 @@ public class CommunicationService extends Service {
                 }
 
                 mPublisher.makeToast(R.string.file_type_not_supported_msg);
-            } else if ((Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(intent.getAction())) && intent.hasExtra(Intent.EXTRA_STREAM)) {
+            }
+            else if ((Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(intent.getAction())) && intent.hasExtra(Intent.EXTRA_STREAM))
+            {
                 final ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
                 final String deviceIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 
                 CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                        new JsonResponseHandler() {
+                        new JsonResponseHandler()
+                        {
                             @Override
-                            public void onConfigure(CoolCommunication.Messenger.Process process) {
+                            public void onConfigure(CoolCommunication.Messenger.Process process)
+                            {
                                 process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
                             }
 
                             @Override
-                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json) {
+                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+                            {
                                 JSONArray filesArray = new JSONArray();
 
-                                try {
+                                try
+                                {
                                     json.put("request", "multifile_transfer_request");
 
-                                    for (Uri fileUri : uris) {
+                                    for (Uri fileUri : uris)
+                                    {
                                         File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
 
                                         if (file == null)
                                             continue;
 
-                                        if (file.isFile()) {
+                                        if (file.isFile())
+                                        {
                                             int requestId = ApplicationHelper.getUniqueNumber();
                                             AwaitedFileSender sender = new AwaitedFileSender(deviceIp, file, requestId);
                                             JSONObject thisJson = new JSONObject();
 
-                                            try {
+                                            try
+                                            {
                                                 String fileMime = FileUtils.getFileContentType(file.getAbsolutePath());
 
                                                 thisJson.put("fileName", file.getName());
@@ -166,7 +189,8 @@ public class CommunicationService extends Service {
                                                 filesArray.put(thisJson);
 
                                                 ApplicationHelper.getSenders().put(sender.requestId, sender);
-                                            } catch (Exception e) {
+                                            } catch (Exception e)
+                                            {
                                                 Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());
                                             }
                                         }
@@ -176,35 +200,44 @@ public class CommunicationService extends Service {
 
                                     JSONObject response = new JSONObject(process.waitForResponse());
 
-                                    if (!response.getBoolean("result")) {
+                                    if (!response.getBoolean("result"))
+                                    {
                                         Log.d(TAG, "Server did not accept the request remove pre-added senders");
 
-                                        for (int i = 0; i < filesArray.length(); i++) {
+                                        for (int i = 0; i < filesArray.length(); i++)
+                                        {
                                             int requestId = filesArray.getJSONObject(i).getInt("requestId");
                                             ApplicationHelper.getSenders().remove(requestId);
                                         }
 
                                         showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
                                     }
-                                } catch (JSONException e) {
+                                } catch (JSONException e)
+                                {
                                     showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
                                 }
                             }
 
                             @Override
-                            public void onError(Exception e) {
+                            public void onError(Exception e)
+                            {
                                 showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
                             }
                         }
                 );
-            } else if (ACTION_STOP_SERVICE.equals(intent.getAction())) {
-                if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false)) {
+            }
+            else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
+            {
+                if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
+                {
                     mPreferences.edit().putBoolean("serviceLock", true).commit();
                     mPublisher.makeToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
                 }
 
                 stopSelf();
-            } else if (ACTION_FILE_TRANSFER_ACCEPT.equals(intent.getAction())) {
+            }
+            else if (ACTION_FILE_TRANSFER_ACCEPT.equals(intent.getAction()))
+            {
                 final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
                 final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
                 final int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
@@ -216,7 +249,8 @@ public class CommunicationService extends Service {
                 if (ApplicationHelper.getDeviceList().containsKey(oppositeIp))
                     ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
 
-                if (ApplicationHelper.acceptPendingReceivers(acceptId) < 1) {
+                if (ApplicationHelper.acceptPendingReceivers(acceptId) < 1)
+                {
                     mPublisher.makeToast(R.string.something_went_wrong);
 
                     return START_NOT_STICKY;
@@ -225,19 +259,25 @@ public class CommunicationService extends Service {
                 startService(new Intent(this, ServerService.class).setAction(ServerService.ACTION_CHECK_AVAILABLES));
 
                 CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                        new JsonResponseHandler() {
+                        new JsonResponseHandler()
+                        {
                             @Override
-                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json) {
-                                try {
+                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+                            {
+                                try
+                                {
                                     json.put("request", "file_transfer_request_accepted");
                                     json.put("requestId", acceptId);
-                                } catch (JSONException e) {
+                                } catch (JSONException e)
+                                {
                                     e.printStackTrace();
                                 }
                             }
                         }
                 );
-            } else if (ACTION_FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID)) {
+            }
+            else if (ACTION_FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID))
+            {
                 final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
                 final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
                 final int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
@@ -248,35 +288,46 @@ public class CommunicationService extends Service {
                     ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
 
                 CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                        new JsonResponseHandler() {
+                        new JsonResponseHandler()
+                        {
                             @Override
-                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json) {
-                                try {
+                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+                            {
+                                try
+                                {
                                     JSONArray idList = new JSONArray();
 
                                     json.put("request", "file_transfer_request_rejected");
 
-                                    for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceiversByAcceptId(acceptId)) {
+                                    for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceiversByAcceptId(acceptId))
+                                    {
                                         idList.put(receiver.requestId);
                                     }
 
                                     json.put("requestIds", idList);
-                                } catch (JSONException e) {
+                                } catch (JSONException e)
+                                {
                                     e.printStackTrace();
-                                } finally {
+                                } finally
+                                {
                                     ApplicationHelper.removePendingReceivers(acceptId);
                                 }
                             }
                         }
                 );
-            } else if (ACTION_STOP_SERVICE.equals(intent.getAction())) {
-                if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false)) {
+            }
+            else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
+            {
+                if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
+                {
                     mPreferences.edit().putBoolean("serviceLock", true).commit();
                     mPublisher.makeToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
                 }
 
                 stopSelf();
-            } else if (ACTION_ALLOW_IP.equals(intent.getAction())) {
+            }
+            else if (ACTION_ALLOW_IP.equals(intent.getAction()))
+            {
                 String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
                 int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
 
@@ -286,7 +337,9 @@ public class CommunicationService extends Service {
                     return START_NOT_STICKY;
 
                 ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
-            } else if (ACTION_REJECT_IP.equals(intent.getAction())) {
+            }
+            else if (ACTION_REJECT_IP.equals(intent.getAction()))
+            {
                 String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
                 int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
 
@@ -303,7 +356,8 @@ public class CommunicationService extends Service {
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
 
         mCommunationServer.stop();
@@ -312,7 +366,8 @@ public class CommunicationService extends Service {
         System.gc();
     }
 
-    protected void showToast(String msg) {
+    protected void showToast(String msg)
+    {
         Looper.prepare();
 
         mPublisher.makeToast(msg);
@@ -320,17 +375,21 @@ public class CommunicationService extends Service {
         Looper.loop();
     }
 
-    public class CommunicationServer extends CoolJsonCommunication {
-        public CommunicationServer() {
+    public class CommunicationServer extends CoolJsonCommunication
+    {
+        public CommunicationServer()
+        {
             super(AppConfig.COMMUNATION_SERVER_PORT);
             this.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
         }
 
         @Override
-        public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp) {
+        public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp)
+        {
             NetworkDevice device = null;
 
-            try {
+            try
+            {
                 if (receivedMessage != null)
                     Log.d(TAG, "receivedMessage = " + receivedMessage.toString());
 
@@ -356,29 +415,37 @@ public class CommunicationService extends Service {
                 response.put("deviceInfo", deviceInformation);
 
                 if (receivedMessage.has("request") && !receivedMessage.getString("request").equals(null))
-                    if (!ApplicationHelper.getDeviceList().containsKey(clientIp)) {
+                    if (!ApplicationHelper.getDeviceList().containsKey(clientIp))
+                    {
                         device = new NetworkDevice(clientIp, null, null, null);
                         device.isRestricted = true;
 
                         ApplicationHelper.getDeviceList().put(clientIp, device);
                         sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP).putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, clientIp));
 
-                        if (receivedMessage.getString("request").equals("file_transfer_request") || receivedMessage.getString("request").equals("multifile_transfer_request")) {
+                        if (receivedMessage.getString("request").equals("file_transfer_request") || receivedMessage.getString("request").equals("multifile_transfer_request"))
+                        {
                             shouldContinue = true;
                             halfRestriction = true;
-                        } else
+                        }
+                        else
                             mPublisher.notifyConnectionRequest(clientIp);
-                    } else {
+                    }
+                    else
+                    {
                         device = ApplicationHelper.getDeviceList().get(clientIp);
 
                         if (device.isRestricted == true)
                             shouldContinue = false;
                     }
 
-                if (shouldContinue && receivedMessage.has("request")) {
-                    switch (receivedMessage.getString("request")) {
+                if (shouldContinue && receivedMessage.has("request"))
+                {
+                    switch (receivedMessage.getString("request"))
+                    {
                         case ("file_transfer_request"):
-                            if (receivedMessage.has("fileSize") && receivedMessage.has("fileMime") && receivedMessage.has("fileName") && receivedMessage.has("requestId")) {
+                            if (receivedMessage.has("fileSize") && receivedMessage.has("fileMime") && receivedMessage.has("fileName") && receivedMessage.has("requestId"))
+                            {
                                 long fileSize = receivedMessage.getLong("fileSize");
                                 String fileName = receivedMessage.getString("fileName");
                                 String fileMime = receivedMessage.getString("fileMime");
@@ -397,7 +464,8 @@ public class CommunicationService extends Service {
                             }
                             break;
                         case ("multifile_transfer_request"):
-                            if (receivedMessage.has("filesJson")) {
+                            if (receivedMessage.has("filesJson"))
+                            {
                                 String jsonIndex = receivedMessage.getString("filesJson");
 
                                 Log.d(TAG, jsonIndex);
@@ -409,13 +477,15 @@ public class CommunicationService extends Service {
 
                                 Log.d(TAG, "First PendingReceiver count " + ApplicationHelper.getPendingReceivers().size());
 
-                                for (int i = 0; i < jsonArray.length(); i++) {
+                                for (int i = 0; i < jsonArray.length(); i++)
+                                {
                                     if (!(jsonArray.get(i) instanceof JSONObject))
                                         continue;
 
                                     JSONObject requestIndex = jsonArray.getJSONObject(i);
 
-                                    if (requestIndex != null && requestIndex.has("fileName") && requestIndex.has("fileSize") && requestIndex.has("fileMime") && requestIndex.has("requestId")) {
+                                    if (requestIndex != null && requestIndex.has("fileName") && requestIndex.has("fileSize") && requestIndex.has("fileMime") && requestIndex.has("requestId"))
+                                    {
                                         count++;
                                         AwaitedFileReceiver receiver = new AwaitedFileReceiver(clientIp, requestIndex.getInt("requestId"), acceptId, requestIndex.getString("fileName"), requestIndex.getLong("fileSize"), requestIndex.getString("fileMime"));
 
@@ -429,7 +499,8 @@ public class CommunicationService extends Service {
 
                                 Log.d(TAG, "Last PendingReceiver count " + ApplicationHelper.getPendingReceivers().size());
 
-                                if (count > 0) {
+                                if (count > 0)
+                                {
                                     mPublisher.notifyMultiTransferRequest(count, acceptId, device, halfRestriction);
                                     result = true;
                                     device.isRestricted = true;
@@ -437,29 +508,36 @@ public class CommunicationService extends Service {
                             }
                             break;
                         case ("file_transfer_request_accepted"):
-                            if (receivedMessage.has("requestId")) {
+                            if (receivedMessage.has("requestId"))
+                            {
                                 int requestId = receivedMessage.getInt("requestId");
 
-                                if (ApplicationHelper.getSenders().containsKey(requestId)) {
+                                if (ApplicationHelper.getSenders().containsKey(requestId))
+                                {
                                     AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
 
-                                    if (sender.ip.equals(clientIp)) {
+                                    if (sender.ip.equals(clientIp))
+                                    {
                                         result = true;
                                     }
                                 }
                             }
                             break;
                         case ("file_transfer_request_rejected"):
-                            if (receivedMessage.has("requestIds")) {
+                            if (receivedMessage.has("requestIds"))
+                            {
                                 JSONArray requestIds = receivedMessage.getJSONArray("requestIds");
 
-                                for (int i = 0; i < requestIds.length(); i++) {
+                                for (int i = 0; i < requestIds.length(); i++)
+                                {
                                     int requestId = requestIds.getInt(i);
 
-                                    if (ApplicationHelper.getSenders().containsKey(requestId)) {
+                                    if (ApplicationHelper.getSenders().containsKey(requestId))
+                                    {
                                         AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
 
-                                        if (sender.ip.equals(clientIp)) {
+                                        if (sender.ip.equals(clientIp))
+                                        {
                                             ApplicationHelper.getSenders().remove(requestId);
                                             result = true;
                                         }
@@ -468,11 +546,13 @@ public class CommunicationService extends Service {
                             }
                             break;
                         case ("file_transfer_notify_server_ready"):
-                            if (receivedMessage.has("requestId") && receivedMessage.has("socketPort")) {
+                            if (receivedMessage.has("requestId") && receivedMessage.has("socketPort"))
+                            {
                                 int requestId = receivedMessage.getInt("requestId");
                                 int socketPort = receivedMessage.getInt("socketPort");
 
-                                if (ApplicationHelper.getSenders().containsKey(requestId)) {
+                                if (ApplicationHelper.getSenders().containsKey(requestId))
+                                {
                                     AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
 
                                     sender.setPort(socketPort);
@@ -483,7 +563,8 @@ public class CommunicationService extends Service {
                             }
                             break;
                         case ("poke_the_device"):
-                            if (mPreferences.getBoolean("allow_poke", true)) {
+                            if (mPreferences.getBoolean("allow_poke", true))
+                            {
                                 mPublisher.notifyOppositeDevicePing(device);
                                 result = true;
                             }
@@ -491,13 +572,15 @@ public class CommunicationService extends Service {
                 }
 
                 response.put("result", result);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
                 e.printStackTrace();
             }
         }
 
         @Override
-        protected void onError(Exception exception) {
+        protected void onError(Exception exception)
+        {
         }
     }
 }

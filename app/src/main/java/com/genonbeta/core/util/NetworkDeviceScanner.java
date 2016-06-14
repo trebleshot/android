@@ -4,7 +4,8 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
-public class NetworkDeviceScanner {
+public class NetworkDeviceScanner
+{
     private ArrayList<String> mInterfaces = new ArrayList<String>();
     private ScannerExecutor mExecutor = new ScannerExecutor();
     private Scanner mScanner = new Scanner();
@@ -12,10 +13,12 @@ public class NetworkDeviceScanner {
     private boolean mIsLockRequested = false;
     private ScannerHandler mHandler;
 
-    public NetworkDeviceScanner() {
+    public NetworkDeviceScanner()
+    {
     }
 
-    public boolean interrupt() {
+    public boolean interrupt()
+    {
         if (!this.mIsBreakRequested)
             this.mIsBreakRequested = true;
         else
@@ -24,20 +27,24 @@ public class NetworkDeviceScanner {
         return true;
     }
 
-    public boolean isScannerAvaiable() {
+    public boolean isScannerAvaiable()
+    {
         return (mInterfaces.size() == 0 && !mIsLockRequested);
     }
 
-    private void nextThread() {
+    private void nextThread()
+    {
         if (this.mIsLockRequested)
             return;
 
-        if (this.isScannerAvaiable()) {
+        if (this.isScannerAvaiable())
+        {
             // this sequence only works when threads complete the job
 
             this.mIsBreakRequested = false;
 
-            if (this.mHandler != null) {
+            if (this.mHandler != null)
+            {
                 this.setLock(true); // lock scanner
                 this.mHandler.onThreadsCompleted();
                 this.setLock(false); // release lock
@@ -56,7 +63,8 @@ public class NetworkDeviceScanner {
         mExecutor.execute(this.mScanner);
     }
 
-    public boolean scan(ArrayList<String> interfaces, ScannerHandler handler) {
+    public boolean scan(ArrayList<String> interfaces, ScannerHandler handler)
+    {
         if (!this.isScannerAvaiable())
             return false;
 
@@ -68,19 +76,23 @@ public class NetworkDeviceScanner {
         return true;
     }
 
-    public void setLock(boolean lock) {
+    public void setLock(boolean lock)
+    {
         mIsLockRequested = lock;
     }
 
-    protected class Scanner implements Runnable {
+    protected class Scanner implements Runnable
+    {
         private String mAddressPrefix = "192.168.0.";
         private boolean mNotified = false;
         private boolean[] mDevices = new boolean[256];
 
-        public Scanner() {
+        public Scanner()
+        {
         }
 
-        public void updateScanner() {
+        public void updateScanner()
+        {
             String ipAddress = NetworkDeviceScanner.this.mInterfaces.get(0);
             String addressPrefix = ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1);
 
@@ -90,24 +102,29 @@ public class NetworkDeviceScanner {
         }
 
         @Override
-        public void run() {
-            for (int mPosition = 0; mPosition < mDevices.length; mPosition++) {
+        public void run()
+        {
+            for (int mPosition = 0; mPosition < mDevices.length; mPosition++)
+            {
                 if (mDevices[mPosition] == true || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested == true)
                     continue;
 
                 mDevices[mPosition] = true;
 
-                try {
+                try
+                {
                     InetAddress inet = InetAddress.getByName(mAddressPrefix + mPosition);
 
                     if (inet.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
                         NetworkDeviceScanner.this.mHandler.onDeviceFound(inet);
-                } catch (Exception e) {
+                } catch (Exception e)
+                {
                     e.printStackTrace();
                 }
             }
 
-            if (!this.mNotified) {
+            if (!this.mNotified)
+            {
                 this.mNotified = true;
                 NetworkDeviceScanner.this.mInterfaces.remove(0);
                 NetworkDeviceScanner.this.nextThread();
@@ -115,14 +132,17 @@ public class NetworkDeviceScanner {
         }
     }
 
-    protected class ScannerExecutor implements Executor {
+    protected class ScannerExecutor implements Executor
+    {
         @Override
-        public void execute(Runnable scanner) {
+        public void execute(Runnable scanner)
+        {
             new Thread(scanner).start();
         }
     }
 
-    public static interface ScannerHandler {
+    public static interface ScannerHandler
+    {
         public void onDeviceFound(InetAddress address);
 
         public void onThreadsCompleted();

@@ -7,9 +7,11 @@ import android.support.v7.app.AppCompatDialog;
 
 import com.genonbeta.TrebleShot.R;
 
-public class AboutDialog extends DialogFragment {
+public class AboutDialog extends DialogFragment
+{
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState)
+    {
         AppCompatDialog builder = new AppCompatDialog(getActivity());
 
         builder.setTitle(R.string.about);

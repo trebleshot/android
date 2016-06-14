@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.helper;
 
-public class AwaitedFileReceiver {
+public class AwaitedFileReceiver
+{
     public String ip;
     public String fileName;
     public String fileMimeType;
@@ -9,7 +10,8 @@ public class AwaitedFileReceiver {
     public long fileSize;
     public boolean processCancelled = false;
 
-    public AwaitedFileReceiver(String ip, int requestId, int acceptId, String fileName, long fileSize, String fileMime) {
+    public AwaitedFileReceiver(String ip, int requestId, int acceptId, String fileName, long fileSize, String fileMime)
+    {
         this.ip = ip;
         this.requestId = requestId;
         this.acceptId = acceptId;
@@ -18,6 +20,7 @@ public class AwaitedFileReceiver {
         this.fileMimeType = fileMime;
     }
 
-    public AwaitedFileReceiver() {
+    public AwaitedFileReceiver()
+    {
     }
 }

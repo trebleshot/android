@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 
-public class ApplicationHelper {
+public class ApplicationHelper
+{
     public static final String TAG = "ApplicatiobHelper";
 
     private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
@@ -28,12 +29,14 @@ public class ApplicationHelper {
     private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
     private static int mUniqueNumber = 0;
 
-    public static int acceptPendingReceivers(int acceptId) {
+    public static int acceptPendingReceivers(int acceptId)
+    {
         int count = 0;
 
         Log.d(TAG, "Receiver count " + getReceivers().size() + "; pending receiver count = " + getPendingReceivers().size() + "; copiedReceivers = " + getPendingReceivers().size());
 
-        for (AwaitedFileReceiver receiver : getPendingReceivers()) {
+        for (AwaitedFileReceiver receiver : getPendingReceivers())
+        {
             Log.d(TAG, "Accept requested id = " + acceptId + "; current receivers id " + receiver.acceptId);
 
             if (receiver.acceptId != acceptId)
@@ -50,7 +53,8 @@ public class ApplicationHelper {
         return count;
     }
 
-    public static File getApplicationDirectory(Context context) {
+    public static File getApplicationDirectory(Context context)
+    {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         File testPath = new File(prefs.getString("storage_path", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.app_name)));
@@ -68,31 +72,39 @@ public class ApplicationHelper {
         return appDir;
     }
 
-    public static ArrayBlockingQueue<AwaitedFileReceiver> getReceivers() {
+    public static ArrayBlockingQueue<AwaitedFileReceiver> getReceivers()
+    {
         return mReceivers;
     }
 
-    public static ArrayBlockingQueue<AwaitedFileReceiver> getPendingReceivers() {
+    public static ArrayBlockingQueue<AwaitedFileReceiver> getPendingReceivers()
+    {
         return mPendingReceivers;
     }
 
-    public static HashMap<Integer, AwaitedFileSender> getSenders() {
+    public static HashMap<Integer, AwaitedFileSender> getSenders()
+    {
         return mSenders;
     }
 
-    public static HashMap<String, NetworkDevice> getDeviceList() {
+    public static HashMap<String, NetworkDevice> getDeviceList()
+    {
         return mDeviceList;
     }
 
-    public static File getFileFromUri(Context context, Uri fileUri) {
+    public static File getFileFromUri(Context context, Uri fileUri)
+    {
         String fileUriString = fileUri.toString();
         File file = null;
 
-        if (fileUriString.startsWith("content")) {
+        if (fileUriString.startsWith("content"))
+        {
             Cursor cursor = context.getContentResolver().query(fileUri, null, null, null, null);
 
-            if (cursor != null) {
-                if (cursor.moveToFirst()) {
+            if (cursor != null)
+            {
+                if (cursor.moveToFirst())
+                {
                     int dataIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
                     String dataPath = cursor.getString(dataIndex);
 
@@ -101,20 +113,24 @@ public class ApplicationHelper {
 
                 cursor.close();
             }
-        } else if (fileUriString.startsWith("file"))
+        }
+        else if (fileUriString.startsWith("file"))
             file = new File(URI.create(fileUriString));
 
         return file;
     }
 
-    public static NetworkDeviceScanner getNetworkDeviceScanner() {
+    public static NetworkDeviceScanner getNetworkDeviceScanner()
+    {
         return mDeviceScanner;
     }
 
-    public static ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int acceptId) {
+    public static ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int acceptId)
+    {
         ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
 
-        for (AwaitedFileReceiver receiver : getPendingReceivers()) {
+        for (AwaitedFileReceiver receiver : getPendingReceivers())
+        {
             if (receiver.acceptId == acceptId)
                 list.add(receiver);
         }
@@ -122,25 +138,30 @@ public class ApplicationHelper {
         return list;
     }
 
-    public static int getUniqueNumber() {
+    public static int getUniqueNumber()
+    {
         return mUniqueNumber++;
     }
 
-    public static boolean isReceiverExist(AwaitedFileReceiver receiver) {
+    public static boolean isReceiverExist(AwaitedFileReceiver receiver)
+    {
         if (getReceivers().contains(receiver))
             return true;
 
         return false;
     }
 
-    public static boolean searchWord(String word, String searchThis) {
+    public static boolean searchWord(String word, String searchThis)
+    {
         return word.toLowerCase().contains(searchThis);
     }
 
-    public static int removePendingReceivers(int acceptId) {
+    public static int removePendingReceivers(int acceptId)
+    {
         int count = 0;
 
-        for (AwaitedFileReceiver receiver : getPendingReceivers()) {
+        for (AwaitedFileReceiver receiver : getPendingReceivers())
+        {
             if (receiver.acceptId != acceptId)
                 continue;
 
@@ -152,10 +173,12 @@ public class ApplicationHelper {
         return count;
     }
 
-    public static int removeReceivers(int acceptId) {
+    public static int removeReceivers(int acceptId)
+    {
         int count = 0;
 
-        for (AwaitedFileReceiver receiver : getReceivers()) {
+        for (AwaitedFileReceiver receiver : getReceivers())
+        {
             if (receiver.acceptId != acceptId)
                 continue;
 
@@ -167,7 +190,8 @@ public class ApplicationHelper {
         return count;
     }
 
-    public static boolean removeReceiver(AwaitedFileReceiver receiver) {
+    public static boolean removeReceiver(AwaitedFileReceiver receiver)
+    {
         if (!isReceiverExist(receiver))
             return false;
 
@@ -176,7 +200,8 @@ public class ApplicationHelper {
         return true;
     }
 
-    public static boolean removeSender(AwaitedFileSender sender) {
+    public static boolean removeSender(AwaitedFileSender sender)
+    {
         if (!ApplicationHelper.getSenders().containsKey(sender.requestId))
             return false;
 

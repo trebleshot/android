@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent">
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
 
     <LinearLayout
         android:id="@+id/selector"
@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_weight="33"
             android:text="@string/app"
-            style="@style/columnButton" />
+            style="@style/columnButton"/>
 
         <TextView
             android:id="@+id/showMusic"
@@ -26,7 +26,7 @@
             android:layout_width="0dp"
             android:layout_weight="33"
             android:text="@string/music"
-            style="@style/columnButton" />
+            style="@style/columnButton"/>
 
         <TextView
             android:id="@+id/showVideos"
@@ -34,7 +34,7 @@
             android:layout_width="0dp"
             android:layout_weight="33"
             android:text="@string/video"
-            style="@style/columnButton" />
+            style="@style/columnButton"/>
 
     </LinearLayout>
 
@@ -45,7 +45,7 @@
         android:background="@color/colorAccent"
         android:layout_above="@id/selector"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" />
+        android:layout_marginRight="5dp"/>
 
     <LinearLayout
         android:id="@+id/fragmentContainer"
@@ -54,6 +54,6 @@
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:paddingLeft="15dp"
-        android:paddingRight="15dp" />
+        android:paddingRight="15dp"/>
 
 </RelativeLayout>

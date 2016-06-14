@@ -23,34 +23,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class VideoListAdapter extends AbstractFlexibleAdapter {
+public class VideoListAdapter extends AbstractFlexibleAdapter
+{
     private Context mContext;
     private ContentResolver mResolver;
     private String mSearchWord;
     private ArrayList<VideoInfo> mList = new ArrayList<VideoInfo>();
     private ArrayList<VideoInfo> mPendingList = new ArrayList<VideoInfo>();
-    private Comparator<VideoInfo> mComparator = new Comparator<VideoInfo>() {
+    private Comparator<VideoInfo> mComparator = new Comparator<VideoInfo>()
+    {
         @Override
-        public int compare(VideoInfo compareFrom, VideoInfo compareTo) {
+        public int compare(VideoInfo compareFrom, VideoInfo compareTo)
+        {
             return compareFrom.title.toLowerCase().compareTo(compareTo.title.toLowerCase());
         }
     };
 
-    public VideoListAdapter(Context context) {
+    public VideoListAdapter(Context context)
+    {
         this.mContext = context;
         this.mResolver = context.getContentResolver();
     }
 
-    protected void onUpdate() {
+    protected void onUpdate()
+    {
         this.mPendingList.clear();
 
         Cursor cursor = this.mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
             int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
             int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
 
-            do {
+            do
+            {
                 VideoInfo info = new VideoInfo(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
                 if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(info.title, this.mSearchWord)))
@@ -65,31 +72,37 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
     }
 
     @Override
-    protected void onSearch(String word) {
+    protected void onSearch(String word)
+    {
         this.mSearchWord = word;
     }
 
     @Override
-    public int getCount() {
+    public int getCount()
+    {
         return this.mList.size();
     }
 
     @Override
-    public Object getItem(int position) {
+    public Object getItem(int position)
+    {
         return this.mList.get(position);
     }
 
     @Override
-    public long getItemId(int p1) {
+    public long getItemId(int p1)
+    {
         return 0;
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup)
+    {
         return this.getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_video, viewGroup, false), position);
     }
 
-    public View getViewAt(View view, int position) {
+    public View getViewAt(View view, int position)
+    {
         final VideoInfo info = (VideoInfo) this.getItem(position);
         TextView text = (TextView) view.findViewById(R.id.text);
         final RecyclingImageView image = (RecyclingImageView) view.findViewById(R.id.image);
@@ -102,8 +115,10 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
     }
 
     @Override
-    public void notifyDataSetChanged() {
-        if (mPendingList.size() > 0) {
+    public void notifyDataSetChanged()
+    {
+        if (mPendingList.size() > 0)
+        {
             this.mList.clear();
             this.mList.addAll(this.mPendingList);
 
@@ -113,13 +128,15 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
         super.notifyDataSetChanged();
     }
 
-    public static class VideoInfo {
+    public static class VideoInfo
+    {
         public long id;
         public String title;
         public String thumbnail;
         public Uri uri;
 
-        public VideoInfo(int id, String title, String thumbnail, Uri uri) {
+        public VideoInfo(int id, String title, String thumbnail, Uri uri)
+        {
             this.id = id;
             this.title = title;
             this.thumbnail = thumbnail;
@@ -127,20 +144,24 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
         }
     }
 
-    private class BitmapWorkerTask extends AsyncTask<Void, Void, BitmapDrawable> {
+    private class BitmapWorkerTask extends AsyncTask<Void, Void, BitmapDrawable>
+    {
         private long mId;
         private final WeakReference<ImageView> imageViewReference;
 
-        public BitmapWorkerTask(long id, ImageView imageView) {
+        public BitmapWorkerTask(long id, ImageView imageView)
+        {
             this.mId = id;
             imageViewReference = new WeakReference<ImageView>(imageView);
         }
 
         @Override
-        protected BitmapDrawable doInBackground(Void... params) {
+        protected BitmapDrawable doInBackground(Void... params)
+        {
             BitmapDrawable thumb = null;
 
-            if (getAttachedImageView().isShown()) {
+            if (getAttachedImageView().isShown())
+            {
                 Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(mResolver, mId, MediaStore.Video.Thumbnails.MINI_KIND, null);
 
                 if (bitmap != null)
@@ -151,7 +172,8 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
         }
 
         @Override
-        protected void onPostExecute(BitmapDrawable value) {
+        protected void onPostExecute(BitmapDrawable value)
+        {
             if (value == null)
                 return;
 
@@ -161,7 +183,8 @@ public class VideoListAdapter extends AbstractFlexibleAdapter {
                 imageView.setImageDrawable(value);
         }
 
-        private ImageView getAttachedImageView() {
+        private ImageView getAttachedImageView()
+        {
             return imageViewReference.get();
         }
     }

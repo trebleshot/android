@@ -6,15 +6,18 @@ import java.io.File;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 
-public class FileUtils {
-    public static String getFileContentType(String fileUrl) {
+public class FileUtils
+{
+    public static String getFileContentType(String fileUrl)
+    {
         FileNameMap nameMap = URLConnection.getFileNameMap();
         String fileType = nameMap.getContentTypeFor(fileUrl);
 
         return (fileType == null) ? "*/*" : fileType;
     }
 
-    public static String sizeExpression(long bytes, boolean si) {
+    public static String sizeExpression(long bytes, boolean si)
+    {
         int unit = si ? 1000 : 1024;
 
         if (bytes < unit)
@@ -26,11 +29,13 @@ public class FileUtils {
         return String.format("%.1f %sB", bytes / Math.pow(unit, expression), prefix);
     }
 
-    public static File getUniqueFile(File file) {
+    public static File getUniqueFile(File file)
+    {
         String path = file.getName();
         int pathStartPosition = path.lastIndexOf(".");
 
-        if (pathStartPosition != -1) {
+        if (pathStartPosition != -1)
+        {
             String fileName = path.substring(0, pathStartPosition);
             String fileExtension = path.substring(pathStartPosition);
 
@@ -40,7 +45,8 @@ public class FileUtils {
         return new File(file.getParent() + File.separator + file.getName() + " [" + System.currentTimeMillis() + "]");
     }
 
-    public static String getSaveLocationForFile(Context context, String file) {
+    public static String getSaveLocationForFile(Context context, String file)
+    {
         return ApplicationHelper.getApplicationDirectory(context).getAbsolutePath() + "/" + file;
     }
 }

@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
-public class TrebleShotHelper extends SQLiteOpenHelper {
+public class TrebleShotHelper extends SQLiteOpenHelper
+{
     public final static String DATABASE_NAME = "OptimizedData";
 
     public final static String TABLE_DEVICE = "device";
@@ -29,66 +30,81 @@ public class TrebleShotHelper extends SQLiteOpenHelper {
 
     private Context mContext;
 
-    public TrebleShotHelper(Context context) {
+    public TrebleShotHelper(Context context)
+    {
         super(context, TrebleShotHelper.DATABASE_NAME, null, 1);
 
         this.mContext = context;
     }
 
     @Override
-    public void onCreate(SQLiteDatabase p1) {
+    public void onCreate(SQLiteDatabase p1)
+    {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase p1, int p2, int p3) {
+    public void onUpgrade(SQLiteDatabase p1, int p2, int p3)
+    {
 
     }
 
-    public boolean isDeviceExist(String ip) {
+    public boolean isDeviceExist(String ip)
+    {
         return false;
     }
 
-    public boolean putDevice(NetworkDevice device) {
+    public boolean putDevice(NetworkDevice device)
+    {
         return false;
     }
 
-    public boolean removeDevice(String ip) {
+    public boolean removeDevice(String ip)
+    {
         return false;
     }
 
-    public NetworkDevice getDevice(String ip) {
+    public NetworkDevice getDevice(String ip)
+    {
         return null;
     }
 
-    public ArrayList<NetworkDevice> getDeviceList() {
+    public ArrayList<NetworkDevice> getDeviceList()
+    {
         return null;
     }
 
-    public boolean removeAllDevices() {
+    public boolean removeAllDevices()
+    {
         return false;
     }
 
-    public boolean putSender() {
+    public boolean putSender()
+    {
         return false;
     }
 
-    public boolean putReceiver() {
+    public boolean putReceiver()
+    {
         return false;
     }
 
-    public boolean removeSender() {
+    public boolean removeSender()
+    {
         return false;
     }
 
-    public boolean removeReceiver() {
+    public boolean removeReceiver()
+    {
         return false;
     }
 
-    public boolean isSenderExist() {
+    public boolean isSenderExist()
+    {
         return false;
     }
 
-    public boolean isReceiverExist() {
+    public boolean isReceiverExist()
+    {
         return false;
     }
 }

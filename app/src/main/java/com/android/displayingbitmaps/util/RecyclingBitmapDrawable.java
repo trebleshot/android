@@ -28,7 +28,8 @@ import com.genonbeta.TrebleShot.BuildConfig;
  * When the drawable is no longer being displayed or cached,
  * {@link android.graphics.Bitmap#recycle() recycle()} will be called on this drawable's bitmap.
  */
-public class RecyclingBitmapDrawable extends BitmapDrawable {
+public class RecyclingBitmapDrawable extends BitmapDrawable
+{
 
     static final String TAG = "CountingBitmapDrawable";
 
@@ -37,7 +38,8 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
 
     private boolean mHasBeenDisplayed;
 
-    public RecyclingBitmapDrawable(Resources res, Bitmap bitmap) {
+    public RecyclingBitmapDrawable(Resources res, Bitmap bitmap)
+    {
         super(res, bitmap);
     }
 
@@ -48,13 +50,18 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
      *
      * @param isDisplayed - Whether the drawable is being displayed or not
      */
-    public void setIsDisplayed(boolean isDisplayed) {
+    public void setIsDisplayed(boolean isDisplayed)
+    {
         //BEGIN_INCLUDE(set_is_displayed)
-        synchronized (this) {
-            if (isDisplayed) {
+        synchronized (this)
+        {
+            if (isDisplayed)
+            {
                 mDisplayRefCount++;
                 mHasBeenDisplayed = true;
-            } else {
+            }
+            else
+            {
                 mDisplayRefCount--;
             }
         }
@@ -70,12 +77,17 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
      *
      * @param isCached - Whether the drawable is being cached or not
      */
-    public void setIsCached(boolean isCached) {
+    public void setIsCached(boolean isCached)
+    {
         //BEGIN_INCLUDE(set_is_cached)
-        synchronized (this) {
-            if (isCached) {
+        synchronized (this)
+        {
+            if (isCached)
+            {
                 mCacheRefCount++;
-            } else {
+            }
+            else
+            {
                 mCacheRefCount--;
             }
         }
@@ -85,13 +97,16 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
         //END_INCLUDE(set_is_cached)
     }
 
-    private synchronized void checkState() {
+    private synchronized void checkState()
+    {
         //BEGIN_INCLUDE(check_state)
         // If the drawable cache and display ref counts = 0, and this drawable
         // has been displayed, then recycle
         if (mCacheRefCount <= 0 && mDisplayRefCount <= 0 && mHasBeenDisplayed
-                && hasValidBitmap()) {
-            if (BuildConfig.DEBUG) {
+                && hasValidBitmap())
+        {
+            if (BuildConfig.DEBUG)
+            {
                 Log.d(TAG, "No longer being used or cached so recycling. "
                         + toString());
             }
@@ -101,7 +116,8 @@ public class RecyclingBitmapDrawable extends BitmapDrawable {
         //END_INCLUDE(check_state)
     }
 
-    private synchronized boolean hasValidBitmap() {
+    private synchronized boolean hasValidBitmap()
+    {
         Bitmap bitmap = getBitmap();
         return bitmap != null && !bitmap.isRecycled();
     }

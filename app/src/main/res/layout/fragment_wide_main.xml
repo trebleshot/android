@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal">
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -18,7 +18,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:id="@+id/fragment_wide_main_networkdevicelistfragment"
-            android:tag="networkDevices" />
+            android:tag="networkDevices"/>
 
     </LinearLayout>
 
@@ -39,7 +39,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:id="@+id/fragment_wide_main_receivedfileslistfragment"
-            android:tag="receivedFiles" />
+            android:tag="receivedFiles"/>
 
     </LinearLayout>
 

@@ -1,7 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
 
     <ScrollView
         android:layout_width="wrap_content"
@@ -17,33 +17,33 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/device_brand_info"
-                style="@style/marqueedText.primary" />
+                style="@style/marqueedText.primary"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/device_info_brand_and_model"
-                style="@style/marqueedText.secondary" />
+                style="@style/marqueedText.secondary"/>
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="10dp" />
+                android:layout_height="10dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ip_address"
-                style="@style/marqueedText.primary" />
+                style="@style/marqueedText.primary"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/device_info_ip_address"
-                style="@style/marqueedText.secondary" />
+                style="@style/marqueedText.secondary"/>
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="10dp" />
+                android:layout_height="10dp"/>
 
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/device_info_access_switcher" />
+                    android:id="@+id/device_info_access_switcher"/>
 
                 <TextView
                     android:layout_alignParentLeft="true"
@@ -62,7 +62,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/allow_access"
-                    style="@style/marqueedText.primary" />
+                    style="@style/marqueedText.primary"/>
 
             </RelativeLayout>
         </LinearLayout>

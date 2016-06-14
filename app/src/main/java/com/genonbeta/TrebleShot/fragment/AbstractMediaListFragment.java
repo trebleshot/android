@@ -18,23 +18,28 @@ import com.genonbeta.TrebleShot.helper.GAnimater;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapter> extends ListFragment {
+public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapter> extends ListFragment
+{
     private T mAdapter;
     private MediaChoiceListener mChoiceListener;
     private ActionMode mActionMode;
     private boolean mIsLoading = false;
 
-    private Runnable mNotifyListChanges = new Runnable() {
+    private Runnable mNotifyListChanges = new Runnable()
+    {
         @Override
-        public void run() {
+        public void run()
+        {
             getAdapter().notifyDataSetChanged();
             setEmptyText(getString(R.string.list_empty_msg));
         }
     };
 
-    private Runnable mUpdateList = new Runnable() {
+    private Runnable mUpdateList = new Runnable()
+    {
         @Override
-        public void run() {
+        public void run()
+        {
             boolean updateSucceed = getAdapter().update();
 
             if (updateSucceed && getActivity() != null && !isDetached())
@@ -49,7 +54,8 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
     protected abstract MediaChoiceListener onChoiceListener();
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
         this.mAdapter = this.onAdapter();
@@ -64,24 +70,29 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
     }
 
     @Override
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
         this.updateInBackground();
     }
 
-    protected ActionMode getActionMode() {
+    protected ActionMode getActionMode()
+    {
         return this.mActionMode;
     }
 
-    protected T getAdapter() {
+    protected T getAdapter()
+    {
         return this.mAdapter;
     }
 
-    public boolean isLoading() {
+    public boolean isLoading()
+    {
         return mIsLoading;
     }
 
-    public void openFile(Uri uri, String type, String chooserText) {
+    public void openFile(Uri uri, String type, String chooserText)
+    {
         Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
         openIntent.setDataAndType(uri, type);
@@ -89,7 +100,8 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         this.startActivity(Intent.createChooser(openIntent, chooserText));
     }
 
-    public void search(String word) {
+    public void search(String word)
+    {
         if (word.equals(""))
             word = null;
         else
@@ -99,7 +111,8 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         updateInBackground();
     }
 
-    public boolean updateInBackground() {
+    public boolean updateInBackground()
+    {
         if (getActivity() == null || isLoading())
             return false;
 
@@ -112,19 +125,22 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         return true;
     }
 
-    public void warnBeforeRemove() {
+    public void warnBeforeRemove()
+    {
         if (mChoiceListener != null)
             mChoiceListener.setItemsChecked(false);
     }
 
-    protected abstract class MediaChoiceListener implements AbsListView.MultiChoiceModeListener {
+    protected abstract class MediaChoiceListener implements AbsListView.MultiChoiceModeListener
+    {
         protected HashSet<Uri> mCheckedList = new HashSet<Uri>();
         protected MenuItem mSelectAll;
 
         public abstract void onItemChecked(ActionMode mode, int position, long id, boolean isChecked);
 
         @Override
-        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        public boolean onCreateActionMode(ActionMode mode, Menu menu)
+        {
             mode.getMenuInflater().inflate(R.menu.share_actions, menu);
 
             mActionMode = mode;
@@ -134,18 +150,22 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         }
 
         @Override
-        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu)
+        {
             mCheckedList.clear();
             return true;
         }
 
         @Override
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-            if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot) {
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+        {
+            if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot)
+            {
                 Intent shareIntent = null;
                 String action = (item.getItemId() == R.id.file_actions_share) ? (mCheckedList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND) : (mCheckedList.size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
 
-                if (mCheckedList.size() > 1) {
+                if (mCheckedList.size() > 1)
+                {
                     ArrayList<Uri> uris = new ArrayList<Uri>();
 
                     for (Object uri : mCheckedList)
@@ -155,7 +175,9 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
 
                     shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
                     shareIntent.setType("*/*");
-                } else if (mCheckedList.size() == 1) {
+                }
+                else if (mCheckedList.size() == 1)
+                {
                     Uri fileUri = (Uri) mCheckedList.toArray()[0];
 
                     shareIntent = new Intent(action);
@@ -164,11 +186,14 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
                     shareIntent.setType("*/*");
                 }
 
-                if (shareIntent != null) {
+                if (shareIntent != null)
+                {
                     startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.file_share_app_chooser_msg)) : shareIntent);
                     return true;
                 }
-            } else if (item.getItemId() == R.id.file_actions_select) {
+            }
+            else if (item.getItemId() == R.id.file_actions_select)
+            {
                 setItemsChecked(mCheckedList.size() != getListView().getCount());
                 return true;
             }
@@ -177,7 +202,8 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         }
 
         @Override
-        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked) {
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
+        {
             onItemChecked(mode, position, id, isChecked);
 
             mSelectAll.setIcon((mCheckedList.size() == getListView().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
@@ -186,13 +212,16 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         }
 
         @Override
-        public void onDestroyActionMode(ActionMode p1) {
+        public void onDestroyActionMode(ActionMode p1)
+        {
             mActionMode = null;
             mCheckedList.clear();
         }
 
-        public void setItemsChecked(boolean check) {
-            for (int i = 0; i < getListView().getCount(); i++) {
+        public void setItemsChecked(boolean check)
+        {
+            for (int i = 0; i < getListView().getCount(); i++)
+            {
                 getListView().setItemChecked(i, check);
             }
         }

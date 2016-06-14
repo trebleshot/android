@@ -7,19 +7,23 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
 
-public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapter> {
+public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapter>
+{
     @Override
-    protected MusicListAdapter onAdapter() {
+    protected MusicListAdapter onAdapter()
+    {
         return new MusicListAdapter(getActivity());
     }
 
     @Override
-    protected MediaChoiceListener onChoiceListener() {
+    protected MediaChoiceListener onChoiceListener()
+    {
         return new ChoiceListener();
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
+    public void onListItemClick(ListView l, View v, int position, long id)
+    {
         super.onListItemClick(l, v, position, id);
 
         MusicListAdapter.MusicInfo musicInfo = (MusicListAdapter.MusicInfo) getAdapter().getItem(position);
@@ -27,9 +31,11 @@ public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapte
         this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
     }
 
-    private class ChoiceListener extends MediaChoiceListener {
+    private class ChoiceListener extends MediaChoiceListener
+    {
         @Override
-        public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked) {
+        public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
+        {
             MusicListAdapter.MusicInfo info = (MusicListAdapter.MusicInfo) getAdapter().getItem(pos);
 
             if (isChecked)

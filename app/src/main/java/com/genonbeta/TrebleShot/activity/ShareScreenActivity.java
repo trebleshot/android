@@ -8,9 +8,11 @@ import com.genonbeta.TrebleShot.app.GActivity;
 /**
  * Created by Veli on 09.06.2016.
  */
-public class ShareScreenActivity extends GActivity {
+public class ShareScreenActivity extends GActivity
+{
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_share_screen);
     }
