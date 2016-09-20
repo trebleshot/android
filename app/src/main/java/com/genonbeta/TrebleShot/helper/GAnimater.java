@@ -25,29 +25,29 @@ public class GAnimater
         if (mode == APPEAR)
         {
             Animation animation = new AlphaAnimation(0.0f, 1.0f);
-            animation.setDuration(200);
+            animation.setDuration(300);
             set.addAnimation(animation);
 
             animation = new TranslateAnimation(
-                    Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f,
-                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, -1.0f, Animation.RELATIVE_TO_SELF, 0.0f
             );
 
-            animation.setDuration(200);
+            animation.setDuration(300);
             set.addAnimation(animation);
         }
         else if (mode == DISAPPEAR)
         {
             Animation animation = new AlphaAnimation(1.0f, 0.0f);
-            animation.setDuration(200);
+            animation.setDuration(300);
             set.addAnimation(animation);
 
             animation = new TranslateAnimation(
-                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.0f,
-                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 0.0f,
+                    Animation.RELATIVE_TO_SELF, 0.0f, Animation.RELATIVE_TO_SELF, 1.0f
             );
 
-            animation.setDuration(200);
+            animation.setDuration(300);
             set.addAnimation(animation);
         }
 

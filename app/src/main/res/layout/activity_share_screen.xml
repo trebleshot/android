@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:orientation="vertical"
               android:paddingLeft="@dimen/default_layout_padding"
               android:paddingRight="@dimen/default_layout_padding">
 
     <fragment
-        android:layout_above="@id/layout"
-        android:layout_alignParentTop="true"
+        android:id="@+id/activity_main_fragment"
         android:name="com.genonbeta.TrebleShot.fragment.SendToolsFragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/activity_main_fragment"
+        android:layout_above="@id/layout"
+        android:layout_alignParentTop="true"
         android:tag="mainFragment"/>
 </LinearLayout>

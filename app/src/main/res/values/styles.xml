@@ -6,7 +6,6 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionModeBackground">@color/actionModeBackground</item>
-        <item name="android:navigationBarColor">@color/navigationColor</item>
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
@@ -32,8 +31,9 @@
         <item name="android:paddingRight">20dp</item>
         <item name="android:background">@drawable/clickable_background</item>
         <item name="android:clickable">true</item>
-        <item name="android:textStyle">bold</item>
+        <!-- <item name="android:textStyle">bold</item> -->
         <item name="android:gravity">center</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 
 </resources>

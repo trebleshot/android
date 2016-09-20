@@ -15,7 +15,7 @@
 
         <View
             android:layout_width="fill_parent"
-            android:layout_height="1dp"
+            android:layout_height="4dp"
             android:background="#4F4F4F"/>
 
         <TextView
