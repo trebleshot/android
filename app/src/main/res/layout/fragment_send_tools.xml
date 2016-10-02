@@ -6,7 +6,7 @@
         android:id="@+id/selector"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:layout_marginLeft="5dp"
@@ -38,19 +38,20 @@
 
     </LinearLayout>
 
+    <!--
     <View
         android:id="@+id/seperator"
         android:layout_height="2dp"
         android:layout_width="wrap_content"
         android:background="@color/colorAccent"
-        android:layout_above="@id/selector"
+        android:layout_below="@id/selector"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"/>
+       -->
 
     <LinearLayout
         android:id="@+id/fragmentContainer"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/seperator"
+        android:layout_below="@id/selector"
         android:layout_height="wrap_content"
         android:layout_width="fill_parent"
         android:paddingLeft="15dp"

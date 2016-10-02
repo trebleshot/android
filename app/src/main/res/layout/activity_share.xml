@@ -16,7 +16,7 @@
         <View
             android:layout_width="fill_parent"
             android:layout_height="4dp"
-            android:background="#4F4F4F"/>
+            android:background="@color/colorAccent"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -29,12 +29,13 @@
     </LinearLayout>
 
     <fragment
-        android:layout_above="@id/layout"
-        android:layout_alignParentTop="true"
         android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:id="@+id/activity_main_fragment"
-        android:tag="mainFragment"/>
+        android:tag="mainFragment"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
 </RelativeLayout>
