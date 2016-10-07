@@ -1,11 +1,11 @@
-<menu xmlns:tools="http://schemas.android.com/tools"
-      xmlns:android="http://schemas.android.com/apk/res/android">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/file_actions_delete"
         android:title="@string/delete"
         android:icon="@drawable/ic_delete_white"
-        tools:showAsAction="always"
-        />
+        app:showAsAction="always"/>
 
 </menu>

@@ -11,13 +11,6 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
-    <View
-        android:id="@+id/seperator"
-        android:layout_height="2dp"
-        android:layout_width="wrap_content"
-        android:background="@color/colorAccent"
-        />
-
     <android.support.design.widget.TabLayout
         android:id="@+id/fragment_swipable_main_tab_layout"
         android:layout_width="match_parent"

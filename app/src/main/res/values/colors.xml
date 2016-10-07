@@ -2,10 +2,10 @@
 <resources>
     <color name="colorPrimary">#064253</color>
     <color name="colorPrimaryDark">#013544</color>
-    <color name="windowBackground">#064253</color>
-    <color name="colorAccent">#FFFFFF</color>
+    <color name="windowBackground">#191919</color>
+    <color name="colorAccent">#FAFAFA</color>
     <color name="actionModeBackground">#025B6E</color>
-    <color name="clickableItemBackground">#023c4b</color>
-    <!-- <color name="navigationColor">@color/colorPrimary</color>-->
+    <color name="clickableItemBackground">#5B6563</color>
+    <color name="navigationColor">#000000</color>
     <color name="itemBackground">#000000</color>
 </resources>

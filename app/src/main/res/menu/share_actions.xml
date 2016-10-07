@@ -1,23 +1,22 @@
-<menu xmlns:tools="http://schemas.android.com/tools"
-      xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/file_actions_select"
         android:title="@string/multi_select"
         android:icon="@drawable/ic_select"
-        tools:showAsAction="always"
+        android:showAsAction="always"
         />
 
     <item
         android:id="@+id/file_actions_share_trebleshot"
         android:title="@string/share_with_app"
         android:icon="@drawable/ic_send"
-        tools:showAsAction="always"/>
+        android:showAsAction="always"/>
 
     <item
         android:id="@+id/file_actions_share"
         android:title="@string/share"
         android:icon="@drawable/ic_share_white"
-        tools:showAsAction="always"/>
+        android:showAsAction="always"/>
 
 </menu>
