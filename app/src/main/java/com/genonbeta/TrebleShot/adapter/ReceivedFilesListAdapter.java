@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ReceivedFilesListAdapter extends AbstractFlexibleAdapter
+public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 {
     public Context mContext;
     private String mSearchWord;

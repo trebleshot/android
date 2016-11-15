@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class VideoListAdapter extends AbstractFlexibleAdapter
+public class VideoListAdapter extends AbstractEditableListAdapter
 {
     private Context mContext;
     private ContentResolver mResolver;

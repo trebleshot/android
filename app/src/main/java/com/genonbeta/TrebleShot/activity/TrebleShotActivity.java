@@ -15,11 +15,8 @@ import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
-import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
-import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
-import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.fragment.dialog.AboutDialog;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 
@@ -54,9 +51,9 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
         mFragmentDeviceList = new NetworkDeviceListFragment();
         mFragmentReceivedFiles = new ReceivedFilesListFragment();
-        mFragmentShareApplication = new ApplicationListFragment();
-        mFragmentShareMusic = new MusicListFragment();
-        mFragmentShareVideo = new VideoListFragment();
+        //mFragmentShareApplication = new ApplicationListFragment();
+        //mFragmentShareMusic = new MusicListFragment();
+        //mFragmentShareVideo = new VideoListFragment();
 
         changeFragment(mFragmentDeviceList);
     }

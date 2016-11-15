@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MusicListAdapter extends AbstractFlexibleAdapter
+public class MusicListAdapter extends AbstractEditableListAdapter
 {
     private Context mContext;
     private ContentResolver mResolver;

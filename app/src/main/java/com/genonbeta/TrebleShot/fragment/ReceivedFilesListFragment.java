@@ -24,7 +24,7 @@ import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import com.genonbeta.TrebleShot.service.ServerService;
 
-public class ReceivedFilesListFragment extends AbstractMediaListFragment<ReceivedFilesListAdapter>
+public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter>
 {
     public static final String TAG = "ReceivedFilesListFragment";
 
@@ -48,9 +48,9 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
     }
 
     @Override
-    protected AbstractMediaListFragment.MediaChoiceListener onChoiceListener()
+    protected AbstractEditableListFragment.ActionModeListener onChoiceListener()
     {
-        return null;
+        return new ChoiceListener();
     }
 
     @Override
@@ -116,16 +116,16 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
+    public void onLegacyListItemClick(ListView l, View v, int position, long id)
     {
-        super.onListItemClick(l, v, position, id);
+        super.onLegacyListItemClick(l, v, position, id);
 
         ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
         this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
     }
 
-    private abstract class ChoiceListener extends MediaChoiceListener
+    private class ChoiceListener extends ActionModeListener
     {
         protected ActionMode mActionMode;
         protected MenuItem mSelectAll;
@@ -203,9 +203,6 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (intent.getAction() != null)
-                Log.d(TAG, intent.getAction());
-
             if (ServerService.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
                 ReceivedFilesListFragment.this.updateInBackground();
         }
