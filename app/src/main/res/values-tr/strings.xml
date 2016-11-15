@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TrebleShot</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="preferences">Ayarlar</string>
-    <string name="loading">Yükleniyor...</string>
+    <string name="loading">Yükleniyor…</string>
     <string name="unknown_user">Bilinmeyen Kullanıcı</string>
     <string name="connected">Bağlanıldı</string>
     <string name="invited">Davet edildi</string>
@@ -11,10 +13,10 @@
     <string name="not_avaiable">Kullanılamaz</string>
     <string name="device_list_empty_msg">Cihaz listesi boş</string>
     <string name="no_network_interface_msg">Yakın cihazları bulmam için bağlanmam gerek (mesela kablosuzla)</string>
-    <string name="devices_scanning_msg">Cihazlar bulunuyor...</string>
+    <string name="devices_scanning_msg">Cihazlar bulunuyor…</string>
     <string name="device_not_be_managed_msg">%s cihazı şu anda yönetilemez</string>
     <string name="in_process_msg">Devam ediyor lütfen bekleyin</string>
-    <string name="process_failure_msg_p2p">Birşeyler ters gitti. Kablosuzu etkinleştirin yada devam eden işlem varsa bekleyin</string>
+    <string name="process_failure_msg_p2p">Birşeyler ters gitti. Kablosuzu etkinleştirin ya da devam eden işlem varsa bekleyin</string>
     <string name="receive_the_file_que">Dosya alınsın mı?</string>
     <string name="accept">Kabul et</string>
     <string name="reject">Reddet</string>
@@ -48,10 +50,10 @@
     <string name="multiple_receive">Çoklu dosya alımı</string>
     <string name="multiple_receive_done_summary">%s dosya alındı</string>
     <string name="receive_request_error_msg">Bir cihaz bana karmaşık dosya alımı isteği gönderdi</string>
-    <string name="device_list">Aygıtlar</string>
+    <string name="device_list">Aygıt listesi</string>
     <string name="file_open_app_chooser_msg">Bir uygulama ile açın</string>
     <string name="file_share_app_chooser_msg">Şununla paylaş</string>
-    <string name="received">Alındı</string>
+    <string name="received_files">Alınan dosyalar</string>
     <string name="edit">Düzenle</string>
     <string name="item_selected">%s seçildi</string>
     <string name="share">Paylaş</string>
@@ -85,9 +87,8 @@
     <string name="scan_devices_auto">Cihazları otomatik tara</string>
     <string name="scan_devices_auto_summary">Gerekli durumlarda tarama başlatılır</string>
     <string name="error_contact_other_device">Karşı cihazla iletişim sağlanamadı</string>
-    <string name="concurrent_caution_scan">Halen arıyor...</string>
+    <string name="concurrent_caution_scan">Halen arıyor…</string>
     <string name="advanced">Gelişmiş</string>
-    <string name="application">Uygulama</string>
     <string name="file_storage_path">Dosyaları saklama konumu</string>
     <string name="file_storage_path_summary">Alınan dosyalar bu klasörde saklanacak</string>
     <string name="error_rejected_path">Girmiş olduğunuz klasör yolu kullanılamaz</string>
@@ -99,7 +100,7 @@
     <string name="connection_permission">Bağlantı izni</string>
     <string name="allow_device_to_connect">Cihaza izin ver?</string>
     <string name="file_count">%d dosya</string>
-    <string name="stopping_msg">Durduruluyor...</string>
+    <string name="stopping_msg">Durduruluyor…</string>
     <string name="notification">Bildirim</string>
     <string name="make_sound">Ses</string>
     <string name="make_sound_summary">Bildirimlerde ses kullan</string>
@@ -110,7 +111,7 @@
     <string name="scan_completed">Tarama tamamlandı</string>
     <string name="auto_start">Otomatik başlat</string>
     <string name="auto_start_summary">Algılandığında haberleşme servisini başlatır</string>
-    <string name="app">Uygulama</string>
+    <string name="application">Uygulama</string>
     <string name="image">Görüntü</string>
     <string name="music">Müzik</string>
     <string name="video">Video</string>
@@ -127,4 +128,5 @@
     <string name="block">Engelle</string>
     <string name="receive_restricted">Al</string>
     <string name="reject_restricted">Engelle</string>
+    <string name="about_summary">Bu yazılım Genonbeta Açık Kaynak Yazılım Örgütü tarafından geliştirilmiştir</string>
 </resources>

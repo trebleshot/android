@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.view.ActionMode;
+import android.support.v7.view.ActionMode;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AbsListView;
-import android.widget.ListView;
+import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
@@ -23,6 +23,7 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
     private T mAdapter;
     private MediaChoiceListener mChoiceListener;
     private ActionMode mActionMode;
+    private Toolbar mToolbar;
     private boolean mIsLoading = false;
 
     private Runnable mNotifyListChanges = new Runnable()
@@ -50,7 +51,6 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
     };
 
     protected abstract T onAdapter();
-
     protected abstract MediaChoiceListener onChoiceListener();
 
     @Override
@@ -60,11 +60,17 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
 
         this.mAdapter = this.onAdapter();
         this.mChoiceListener = this.onChoiceListener();
-
+        this.mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         this.setListAdapter(mAdapter);
 
-        this.getListView().setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
-        this.getListView().setMultiChoiceModeListener(this.mChoiceListener);
+        getListView().setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                return false;
+            }
+        });
 
         GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
     }
@@ -125,13 +131,7 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
         return true;
     }
 
-    public void warnBeforeRemove()
-    {
-        if (mChoiceListener != null)
-            mChoiceListener.setItemsChecked(false);
-    }
-
-    protected abstract class MediaChoiceListener implements AbsListView.MultiChoiceModeListener
+    protected abstract class MediaChoiceListener implements ActionMode.Callback
     {
         protected HashSet<Uri> mCheckedList = new HashSet<Uri>();
         protected MenuItem mSelectAll;
@@ -201,9 +201,9 @@ public abstract class AbstractMediaListFragment<T extends AbstractFlexibleAdapte
             return false;
         }
 
-        @Override
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
         {
+            // TODO: Implement this method
             onItemChecked(mode, position, id, isChecked);
 
             mSelectAll.setIcon((mCheckedList.size() == getListView().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);

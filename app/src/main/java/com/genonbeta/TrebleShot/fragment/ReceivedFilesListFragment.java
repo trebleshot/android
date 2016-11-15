@@ -50,7 +50,7 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
     @Override
     protected AbstractMediaListFragment.MediaChoiceListener onChoiceListener()
     {
-        return new ChoiceListener();
+        return null;
     }
 
     @Override
@@ -125,23 +125,22 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
         this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
     }
 
-    private class ChoiceListener extends MediaChoiceListener
+    private abstract class ChoiceListener extends MediaChoiceListener
     {
         protected ActionMode mActionMode;
         protected MenuItem mSelectAll;
 
-        @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu)
         {
-            if (!super.onCreateActionMode(mode, menu))
-                return false;
+
+            //if (!super.onCreateActionMode(mode, menu))
+            //return false;
 
             mode.getMenuInflater().inflate(R.menu.file_actions, menu);
 
             return true;
         }
 
-        @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item)
         {
             if (item.getItemId() == R.id.file_actions_delete)
@@ -168,10 +167,9 @@ public class ReceivedFilesListFragment extends AbstractMediaListFragment<Receive
                 return true;
             }
 
-            return super.onActionItemClicked(mode, item);
+            return false;
         }
-
-        @Override
+        
         public void onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
         {
             ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);

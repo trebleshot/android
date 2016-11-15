@@ -18,7 +18,7 @@ public class VideoListFragment extends AbstractMediaListFragment<VideoListAdapte
     @Override
     protected MediaChoiceListener onChoiceListener()
     {
-        return new ChoiceListener();
+        return null;
     }
 
     @Override
@@ -31,9 +31,8 @@ public class VideoListFragment extends AbstractMediaListFragment<VideoListAdapte
         this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
     }
 
-    private class ChoiceListener extends MediaChoiceListener
+    private abstract class ChoiceListener extends MediaChoiceListener
     {
-        @Override
         public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
             VideoListAdapter.VideoInfo info = (VideoListAdapter.VideoInfo) getAdapter().getItem(pos);

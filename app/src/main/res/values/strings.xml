@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">TrebleShot</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="preferences">Preferences</string>
-    <string name="loading">Loading...</string>
+    <string name="loading">Loading…</string>
     <string name="unknown_user">Unknown User</string>
     <string name="connected">Connected</string>
     <string name="invited">Invited</string>
-    <string name="connection_failured">Connection Failured</string>
+    <string name="connection_failured">Connection Failure</string>
     <string name="avaiable">Available</string>
     <string name="not_avaiable">Not available</string>
     <string name="device_list_empty_msg">No device is found</string>
     <string name="no_network_interface_msg">I need a connection like Wi-Fi to find other devices</string>
-    <string name="devices_scanning_msg">Finding nearby devices...</string>
+    <string name="devices_scanning_msg">Finding nearby devices…</string>
     <string name="device_not_be_managed_msg">%s device cannot be managed on this situation</string>
     <string name="in_process_msg">In process please wait</string>
     <string name="process_failure_msg_p2p">Something went wrong. Plase turn Wi-Fi on or wait the requests still in process</string>
@@ -48,10 +50,10 @@
     <string name="multiple_receive">Completed</string>
     <string name="multiple_receive_done_summary">%s files received</string>
     <string name="receive_request_error_msg">A device sent me a complicated receive request</string>
-    <string name="device_list">Devices</string>
+    <string name="device_list">Device list</string>
     <string name="file_open_app_chooser_msg">Open with an app</string>
     <string name="file_share_app_chooser_msg">Share with an app</string>
-    <string name="received">Received</string>
+    <string name="received_files">Received files</string>
     <string name="edit">Edit</string>
     <string name="item_selected">%s selected</string>
     <string name="share">Share</string>
@@ -85,9 +87,8 @@
     <string name="scan_devices_auto">Auto scan devices</string>
     <string name="scan_devices_auto_summary">Scans devices when it`s necessary</string>
     <string name="error_contact_other_device">Cannot contact with the other device</string>
-    <string name="concurrent_caution_scan">Still scanning...</string>
+    <string name="concurrent_caution_scan">Still scanning…</string>
     <string name="advanced">Advanced</string>
-    <string name="application">Application</string>
     <string name="file_storage_path">Storage path</string>
     <string name="file_storage_path_summary">New files will be saved in it</string>
     <string name="error_rejected_path">The path you entered cannot be used</string>
@@ -99,7 +100,7 @@
     <string name="connection_permission">Connection permission</string>
     <string name="allow_device_to_connect">Allow this device to connect?</string>
     <string name="file_count">%d file(s)</string>
-    <string name="stopping_msg">Stopping...</string>
+    <string name="stopping_msg">Stopping…</string>
     <string name="notification">Notification</string>
     <string name="make_sound">Sounds</string>
     <string name="make_sound_summary">Use sounds</string>
@@ -110,7 +111,7 @@
     <string name="scan_completed">Scan completed</string>
     <string name="auto_start">Auto-start</string>
     <string name="auto_start_summary">Service will be started when a connection is detected</string>
-    <string name="app">App</string>
+    <string name="application">Application</string>
     <string name="image">Image</string>
     <string name="music">Music</string>
     <string name="video">Video</string>
@@ -127,4 +128,5 @@
     <string name="block">Block</string>
     <string name="receive_restricted">Receive</string>
     <string name="reject_restricted">Block</string>
+    <string name="about_summary">This software developed by Genonbeta Open-Source Software Organization</string>
 </resources>

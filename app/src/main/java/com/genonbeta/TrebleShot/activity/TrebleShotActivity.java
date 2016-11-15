@@ -3,51 +3,118 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.fragment.MusicListFragment;
+import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
+import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
+import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.fragment.dialog.AboutDialog;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 
 import java.io.File;
 
-public class TrebleShotActivity extends GActivity
+public class TrebleShotActivity extends GActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     public static final String OPEN_RECEIVED_FILES_ACTION = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
+
+    Fragment mFragmentDeviceList;
+    Fragment mFragmentReceivedFiles;
+    Fragment mFragmentShareApplication;
+    Fragment mFragmentShareMusic;
+    Fragment mFragmentShareVideo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        mFragmentDeviceList = new NetworkDeviceListFragment();
+        mFragmentReceivedFiles = new ReceivedFilesListFragment();
+        mFragmentShareApplication = new ApplicationListFragment();
+        mFragmentShareMusic = new MusicListFragment();
+        mFragmentShareVideo = new VideoListFragment();
+
+        changeFragment(mFragmentDeviceList);
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
+    public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
-        getMenuInflater().inflate(R.menu.trebleshot_options, menu);
+        if (R.id.menu_activity_main_device_list == item.getItemId())
+        {
+            changeFragment(mFragmentDeviceList);
+        }
+        else if (R.id.menu_activity_main_received_files == item.getItemId())
+        {
+            changeFragment(mFragmentReceivedFiles);
+        }
+        else if (R.id.menu_activity_main_share_app == item.getItemId())
+        {
+            changeFragment(mFragmentShareApplication);
+        }
+        else if (R.id.menu_activity_main_share_music == item.getItemId())
+        {
+            changeFragment(mFragmentShareMusic);
+        }
+        else if (R.id.menu_activity_main_share_video == item.getItemId())
+        {
+            changeFragment(mFragmentShareVideo);
+        }
+        else if (R.id.menu_activity_main_about == item.getItemId())
+        {
+            new AboutDialog().show(getSupportFragmentManager(), "aboutDialog");
+        }
+        else if (R.id.menu_activity_main_send_application == item.getItemId())
+        {
+            sendTheApplication();
+        }
+        else if (R.id.menu_activity_main_preferences == item.getItemId())
+        {
+            startActivity(new Intent(this, PreferencesActivity.class));
+        }
+        else
+            return false;
+
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.trebleshot_options_about:
-                new AboutDialog().show(getSupportFragmentManager(), "aboutDialog");
-                break;
-            case (R.id.trebleshot_options_send_application):
-                sendTheApplication();
-                return true;
-            case R.id.trebleshot_options_preferences:
-                startActivity(new Intent(this, PreferencesActivity.class));
-                return true;
-        }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onBackPressed()
+    {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        if (drawer.isDrawerOpen(GravityCompat.START))
+            drawer.closeDrawer(GravityCompat.START);
+        else
+            super.onBackPressed();
     }
 
     private void sendTheApplication()
@@ -60,5 +127,13 @@ public class TrebleShotActivity extends GActivity
         sendIntent.setType(FileUtils.getFileContentType(apkFile.getAbsolutePath()));
 
         startActivity(Intent.createChooser(sendIntent, getString(R.string.file_share_app_chooser_msg)));
+    }
+
+    public void changeFragment(Fragment fragment)
+    {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+        ft.replace(R.id.content_frame, fragment);
+        ft.commit();
     }
 }

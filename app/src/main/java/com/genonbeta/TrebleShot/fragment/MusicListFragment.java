@@ -18,7 +18,7 @@ public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapte
     @Override
     protected MediaChoiceListener onChoiceListener()
     {
-        return new ChoiceListener();
+        return null;
     }
 
     @Override
@@ -31,9 +31,8 @@ public class MusicListFragment extends AbstractMediaListFragment<MusicListAdapte
         this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
     }
 
-    private class ChoiceListener extends MediaChoiceListener
+    private abstract class ChoiceListener extends MediaChoiceListener
     {
-        @Override
         public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
             MusicListAdapter.MusicInfo info = (MusicListAdapter.MusicInfo) getAdapter().getItem(pos);

@@ -34,7 +34,7 @@ public class ApplicationListFragment extends AbstractMediaListFragment<Applicati
     @Override
     protected MediaChoiceListener onChoiceListener()
     {
-        return new ChoiceListener();
+        return null;
     }
 
     @Override
@@ -68,11 +68,12 @@ public class ApplicationListFragment extends AbstractMediaListFragment<Applicati
         menuSystemApps.setChecked(this.mPreferences.getBoolean("show_system_apps", false));
     }
 
+    /*
     private class ChoiceListener extends MediaChoiceListener
     {
-        @Override
         public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
+            // TODO: this too
             ApplicationListAdapter.AppInfo info = (ApplicationListAdapter.AppInfo) getAdapter().getItem(pos);
 
             if (isChecked)
@@ -81,4 +82,5 @@ public class ApplicationListFragment extends AbstractMediaListFragment<Applicati
                 mCheckedList.remove(Uri.parse("file://" + info.codePath));
         }
     }
+    */
 }

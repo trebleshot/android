@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menu_activity_main_device_list"
+            android:title="@string/device_list"/>
+
+        <item
+            android:id="@+id/menu_activity_main_received_files"
+            android:title="@string/received_files"/>
+    </group>
+
+    <item android:title="@string/share">
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/menu_activity_main_share_app"
+                    android:title="@string/application"/>
+
+                <item
+                    android:id="@+id/menu_activity_main_share_music"
+                    android:title="@string/music"/>
+
+                <item
+                    android:id="@+id/menu_activity_main_share_video"
+                    android:title="@string/video"/>
+            </group>
+        </menu>
+    </item>
+
+    <item android:title="@string/share">
+        <menu>
+            <group>
+                <item
+                    android:id="@+id/menu_activity_main_send_application"
+                    android:icon="@drawable/ic_share_white"
+                    android:orderInCategory="10"
+                    android:title="@string/share_trebleshot"/>
+
+                <item
+                    android:id="@+id/menu_activity_main_preferences"
+                    android:icon="@drawable/ic_settings_applications_black"
+                    android:orderInCategory="11"
+                    android:title="@string/preferences"/>
+
+                <item
+                    android:id="@+id/menu_activity_main_about"
+                    android:icon="@drawable/ic_info_outline_white"
+                    android:orderInCategory="12"
+                    android:title="@string/about"/>
+            </group>
+        </menu>
+    </item>
+</menu>
