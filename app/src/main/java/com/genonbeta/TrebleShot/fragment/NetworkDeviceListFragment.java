@@ -157,6 +157,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
                             else
                                 dialog.setAdapter(adapter, null);
 
+                            dialog.setNegativeButton(R.string.close, null);
                             dialog.setNeutralButton(R.string.clear_queue, new DialogInterface.OnClickListener()
                                     {
                                         @Override
@@ -166,6 +167,8 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
                                         }
                                     }
                             );
+
+
 
                             dialog.show();
                         }
