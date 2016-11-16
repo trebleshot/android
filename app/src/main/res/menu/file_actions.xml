@@ -6,6 +6,7 @@
         android:id="@+id/file_actions_delete"
         android:title="@string/delete"
         android:icon="@drawable/ic_delete_white"
+        android:showAsAction="always"
         app:showAsAction="always"/>
 
 </menu>

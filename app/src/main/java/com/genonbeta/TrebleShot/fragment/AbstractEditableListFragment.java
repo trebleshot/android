@@ -3,14 +3,15 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
@@ -23,9 +24,9 @@ import java.util.HashSet;
 public abstract class AbstractEditableListFragment<T extends AbstractEditableListAdapter> extends ListFragment
 {
 	private T mAdapter;
-	private ActionModeListener mChoiceListener;
-	private ActionMode mActionMode;
+	private ActionModeListener mActionModeListener;
 	private Toolbar mToolbar;
+	private SearchView mSearchView;
 	private boolean mIsLoading = false;
 
 	private Runnable mNotifyListChanges = new Runnable()
@@ -52,9 +53,33 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		}
 	};
 
+	private SearchView.OnQueryTextListener mSearchComposer = new SearchView.OnQueryTextListener()
+	{
+		@Override
+		public boolean onQueryTextSubmit(String word)
+		{
+			return false;
+		}
+
+		@Override
+		public boolean onQueryTextChange(String word)
+		{
+			search(word);
+			return false;
+		}
+	};
+
+
 	protected abstract T onAdapter();
 
-	protected abstract ActionModeListener onChoiceListener();
+	protected abstract ActionModeListener onActionModeListener();
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		this.setHasOptionsMenu(true);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
@@ -62,25 +87,14 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		super.onActivityCreated(savedInstanceState);
 
 		this.mAdapter = this.onAdapter();
-		this.mChoiceListener = this.onChoiceListener();
+		this.mActionModeListener = this.onActionModeListener();
 		this.mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
 		this.setListAdapter(mAdapter);
 
-		this.getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-		{
-			@Override
-			public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id)
-			{
-				if (!isInActionMode())
-				{
-					mActionMode = mToolbar.startActionMode(mChoiceListener);
-					return true;
-				}
-
-				return false;
-			}
-		});
+		this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+		this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
+		this.getListView().setPadding(20, 0, 20, 0);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
@@ -93,19 +107,13 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	}
 
 	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
-		super.onListItemClick(l, v, position, id);
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.search_menu, menu);
 
-		if (isInActionMode())
-			getListView().setItemChecked(position, !getListView().isItemChecked(position));
-		else
-			onLegacyListItemClick(l, v, position, id);
-	}
-
-	public void onLegacyListItemClick(ListView l, View v, int position, long id)
-	{
-
+		mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		mSearchView.setOnQueryTextListener(mSearchComposer);
 	}
 
 	protected T getAdapter()
@@ -124,11 +132,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		openIntent.setDataAndType(uri, type);
 
 		this.startActivity(Intent.createChooser(openIntent, chooserText));
-	}
-
-	public boolean isInActionMode()
-	{
-		return mActionMode != null;
 	}
 
 	public void search(String word)
@@ -156,7 +159,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		return true;
 	}
 
-	protected abstract class ActionModeListener implements ActionMode.Callback
+	protected abstract class ActionModeListener implements AbsListView.MultiChoiceModeListener
 	{
 		protected HashSet<Uri> mCheckedList = new HashSet<Uri>();
 		protected MenuItem mSelectAll;
@@ -168,7 +171,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		{
 			mode.getMenuInflater().inflate(R.menu.share_actions, menu);
 
-			mActionMode = mode;
 			mSelectAll = menu.findItem(R.id.file_actions_select);
 
 			return true;
@@ -226,9 +228,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			return false;
 		}
 
+		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
 		{
-			// TODO: Implement this method
 			onItemChecked(mode, position, id, isChecked);
 
 			mSelectAll.setIcon((mCheckedList.size() == getListView().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
@@ -239,16 +241,13 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		@Override
 		public void onDestroyActionMode(ActionMode p1)
 		{
-			mActionMode = null;
 			mCheckedList.clear();
 		}
 
 		public void setItemsChecked(boolean check)
 		{
 			for (int i = 0; i < getListView().getCount(); i++)
-			{
 				getListView().setItemChecked(i, check);
-			}
 		}
 	}
 }

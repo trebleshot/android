@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -26,185 +25,143 @@ import com.genonbeta.TrebleShot.service.ServerService;
 
 public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter>
 {
-    public static final String TAG = "ReceivedFilesListFragment";
+	public static final String TAG = "ReceivedFilesListFragment";
 
-    private NotificationPublisher mPublisher;
-    private SearchView mSearchView;
-    private SearchComposer mSearchComposer = new SearchComposer();
-    private Receiver mReceiver = new Receiver();
-    private IntentFilter mIntentFilter = new IntentFilter();
+	private NotificationPublisher mPublisher;
+	private IntentFilter mIntentFilter = new IntentFilter();
+	private BroadcastReceiver mReceiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (ServerService.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
+				ReceivedFilesListFragment.this.updateInBackground();
+		}
+	};
 
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        this.setHasOptionsMenu(true);
-    }
+	@Override
+	protected ReceivedFilesListAdapter onAdapter()
+	{
+		return new ReceivedFilesListAdapter(getActivity());
+	}
 
-    @Override
-    protected ReceivedFilesListAdapter onAdapter()
-    {
-        return new ReceivedFilesListAdapter(getActivity());
-    }
+	@Override
+	protected AbstractEditableListFragment.ActionModeListener onActionModeListener()
+	{
+		return new ChoiceListener();
+	}
 
-    @Override
-    protected AbstractEditableListFragment.ActionModeListener onChoiceListener()
-    {
-        return new ChoiceListener();
-    }
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
+		mPublisher = new NotificationPublisher(getActivity());
+		mIntentFilter.addAction(ServerService.ACTION_FILE_LIST_CHANGED);
 
-        mPublisher = new NotificationPublisher(getActivity());
+		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
+	}
 
-        getListView().setPadding(20, 0, 20, 0);
+	@Override
+	public void onResume()
+	{
+		super.onResume();
+		this.getActivity().registerReceiver(mReceiver, mIntentFilter);
+	}
 
-        mIntentFilter.addAction(ServerService.ACTION_FILE_LIST_CHANGED);
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		this.getActivity().unregisterReceiver(mReceiver);
+	}
 
-        GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
-    }
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.received_files_options, menu);
+	}
 
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        this.getActivity().registerReceiver(mReceiver, mIntentFilter);
-    }
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		switch (item.getItemId())
+		{
+			case (R.id.received_device_options_refresh):
+				this.updateInBackground();
+				return true;
+			case (R.id.received_device_options_open_in_file_manager):
+				this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
+				return true;
+		}
 
-    @Override
-    public void onPause()
-    {
-        super.onPause();
-        this.getActivity().unregisterReceiver(mReceiver);
-    }
+		return super.onOptionsItemSelected(item);
+	}
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        super.onCreateOptionsMenu(menu, inflater);
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id)
+	{
+		super.onListItemClick(l, v, position, id);
 
-        inflater.inflate(R.menu.search_menu, menu);
-        inflater.inflate(R.menu.received_files_options, menu);
+		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
-        mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+		this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+	}
 
-        setupSearchView();
-    }
+	private class ChoiceListener extends ActionModeListener
+	{
+		@Override
+		public boolean onCreateActionMode(ActionMode mode, Menu menu)
+		{
+			if (!super.onCreateActionMode(mode, menu))
+				return false;
 
-    public void setupSearchView()
-    {
-        mSearchView.setOnQueryTextListener(mSearchComposer);
-    }
+			mode.getMenuInflater().inflate(R.menu.file_actions, menu);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case (R.id.received_device_options_refresh):
-                this.updateInBackground();
-                return true;
-            case (R.id.received_device_options_open_in_file_manager):
-                this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
-                return true;
-        }
+			return true;
+		}
 
-        return super.onOptionsItemSelected(item);
-    }
+		@Override
+		public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+		{
+			if (!super.onActionItemClicked(mode, item))
+				if (item.getItemId() == R.id.file_actions_delete)
+				{
+					FileDeleteDialogFragment df = new FileDeleteDialogFragment();
 
-    @Override
-    public void onLegacyListItemClick(ListView l, View v, int position, long id)
-    {
-        super.onLegacyListItemClick(l, v, position, id);
+					df.setItems(mCheckedList.toArray());
 
-        ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+					df.setOnDeleteCompletedListener(
+							new FileDeleteDialogFragment.OnDeleteCompletedListener()
+							{
+								@Override
+								public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize)
+								{
+									fragment.getContext().sendBroadcast(new Intent(ServerService.ACTION_FILE_LIST_CHANGED));
+								}
+							}
+					);
 
-        this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
-    }
+					df.show(getFragmentManager(), "delete");
 
-    private class ChoiceListener extends ActionModeListener
-    {
-        protected ActionMode mActionMode;
-        protected MenuItem mSelectAll;
+					mode.finish();
 
-        public boolean onCreateActionMode(ActionMode mode, Menu menu)
-        {
+					return true;
+				}
 
-            //if (!super.onCreateActionMode(mode, menu))
-            //return false;
+			return false;
+		}
 
-            mode.getMenuInflater().inflate(R.menu.file_actions, menu);
+		@Override
+		public void onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
+		{
+			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
-            return true;
-        }
-
-        public boolean onActionItemClicked(ActionMode mode, MenuItem item)
-        {
-            if (item.getItemId() == R.id.file_actions_delete)
-            {
-                FileDeleteDialogFragment df = new FileDeleteDialogFragment();
-
-                df.setItems(mCheckedList.toArray());
-
-                df.setOnDeleteCompletedListener(
-                        new FileDeleteDialogFragment.OnDeleteCompletedListener()
-                        {
-                            @Override
-                            public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize)
-                            {
-                                fragment.getContext().sendBroadcast(new Intent(ServerService.ACTION_FILE_LIST_CHANGED));
-                            }
-                        }
-                );
-
-                df.show(getFragmentManager(), "delete");
-
-                mode.finish();
-
-                return true;
-            }
-
-            return false;
-        }
-        
-        public void onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
-        {
-            ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
-
-            if (isChecked)
-                mCheckedList.add(Uri.fromFile(fileInfo.file));
-            else
-                mCheckedList.remove(Uri.fromFile(fileInfo.file));
-        }
-    }
-
-    private class SearchComposer implements SearchView.OnQueryTextListener
-    {
-        @Override
-        public boolean onQueryTextSubmit(String word)
-        {
-            search(word);
-            return false;
-        }
-
-        @Override
-        public boolean onQueryTextChange(String word)
-        {
-            search(word);
-            return false;
-        }
-    }
-
-    private class Receiver extends BroadcastReceiver
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            if (ServerService.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
-                ReceivedFilesListFragment.this.updateInBackground();
-        }
-    }
+			if (isChecked)
+				mCheckedList.add(Uri.fromFile(fileInfo.file));
+			else
+				mCheckedList.remove(Uri.fromFile(fileInfo.file));
+		}
+	}
 }
