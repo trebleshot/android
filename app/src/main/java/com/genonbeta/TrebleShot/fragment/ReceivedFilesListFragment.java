@@ -22,8 +22,9 @@ import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import com.genonbeta.TrebleShot.service.ServerService;
+import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter>
+public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter> implements FragmentTitle
 {
 	public static final String TAG = "ReceivedFilesListFragment";
 
@@ -107,6 +108,12 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
 		this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+	}
+
+	@Override
+	public CharSequence getFragmentTitle(Context context)
+	{
+		return context.getString(R.string.received_files);
 	}
 
 	private class ChoiceListener extends ActionModeListener

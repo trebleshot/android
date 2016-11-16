@@ -35,13 +35,14 @@ import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.Socket;
 
-public class NetworkDeviceListFragment extends ListFragment
+public class NetworkDeviceListFragment extends ListFragment implements FragmentTitle
 {
     private IntentFilter mIntentFilter = new IntentFilter();
     private SelfReceiver mReceiver = new SelfReceiver();
@@ -251,6 +252,12 @@ public class NetworkDeviceListFragment extends ListFragment
                 );
             }
         }
+    }
+
+    @Override
+    public CharSequence getFragmentTitle(Context context)
+    {
+        return context.getString(R.string.device_list);
     }
 
     private void showSnackbar(int resId)

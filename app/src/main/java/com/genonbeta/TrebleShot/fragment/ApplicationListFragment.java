@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,8 +12,9 @@ import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
+import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter>
+public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter> implements FragmentTitle
 {
     private SharedPreferences mPreferences;
 
@@ -66,6 +68,12 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 
         MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
         menuSystemApps.setChecked(this.mPreferences.getBoolean("show_system_apps", false));
+    }
+
+    @Override
+    public CharSequence getFragmentTitle(Context context)
+    {
+        return context.getString(R.string.application);
     }
 
     private class ChoiceListener extends ActionModeListener

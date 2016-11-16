@@ -22,6 +22,7 @@ import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.fragment.dialog.AboutDialog;
 import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
@@ -52,11 +53,11 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        mFragmentDeviceList = new NetworkDeviceListFragment();
-        mFragmentReceivedFiles = new ReceivedFilesListFragment();
-        mFragmentShareApplication = new ApplicationListFragment();
-        mFragmentShareMusic = new MusicListFragment();
-        mFragmentShareVideo = new VideoListFragment();
+        mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
+        mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesListFragment.class.getName());
+        mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
+        mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
+        mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
 
         changeFragment(mFragmentDeviceList);
     }
@@ -135,5 +136,10 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
         ft.replace(R.id.content_frame, fragment);
         ft.commit();
+
+        if (fragment instanceof FragmentTitle)
+            setTitle(((FragmentTitle) fragment).getFragmentTitle(this));
+        else
+            setTitle(R.string.app_name);
     }
 }

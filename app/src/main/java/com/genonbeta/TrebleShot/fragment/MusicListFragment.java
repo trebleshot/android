@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
+import android.content.Context;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
@@ -7,8 +8,9 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.AbstractEditableListAdapter;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
+import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class MusicListFragment extends AbstractEditableListFragment<MusicListAdapter>
+public class MusicListFragment extends AbstractEditableListFragment<MusicListAdapter> implements FragmentTitle
 {
     @Override
     protected MusicListAdapter onAdapter()
@@ -27,6 +29,12 @@ public class MusicListFragment extends AbstractEditableListFragment<MusicListAda
         MusicListAdapter.MusicInfo musicInfo = (MusicListAdapter.MusicInfo) getAdapter().getItem(position);
 
         this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
+    }
+
+    @Override
+    public CharSequence getFragmentTitle(Context context)
+    {
+        return context.getString(R.string.music);
     }
 
     private class ChoiceListener extends ActionModeListener

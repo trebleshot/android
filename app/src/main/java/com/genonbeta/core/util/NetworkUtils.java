@@ -43,7 +43,7 @@ public class NetworkUtils
         }
     }
 
-    public static String loadFileAsString(String filename) throws java.io.IOException
+    public static String loadFileAsString(String filename) throws IOException
     {
         final int BUFLEN = 1024;
 

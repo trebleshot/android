@@ -12,9 +12,15 @@ public class NetworkDeviceScanner
     private boolean mIsBreakRequested = false;
     private boolean mIsLockRequested = false;
     private ScannerHandler mHandler;
+    private int mNumberOfThreads = 6;
 
     public NetworkDeviceScanner()
     {
+    }
+
+    public NetworkDeviceScanner(int numberOfThreads)
+    {
+        this.mNumberOfThreads = numberOfThreads;
     }
 
     public boolean interrupt()
@@ -55,12 +61,10 @@ public class NetworkDeviceScanner
 
         this.mScanner.updateScanner();
 
-        mExecutor.execute(this.mScanner);
-        mExecutor.execute(this.mScanner);
-        mExecutor.execute(this.mScanner);
-        mExecutor.execute(this.mScanner);
-        mExecutor.execute(this.mScanner);
-        mExecutor.execute(this.mScanner);
+        for (int threadsStarted = this.mNumberOfThreads; threadsStarted > 0; threadsStarted--)
+        {
+            mExecutor.execute(this.mScanner);
+        }
     }
 
     public boolean scan(ArrayList<String> interfaces, ScannerHandler handler)
@@ -81,11 +85,18 @@ public class NetworkDeviceScanner
         mIsLockRequested = lock;
     }
 
+    public static interface ScannerHandler
+    {
+        public void onDeviceFound(InetAddress address);
+
+        public void onThreadsCompleted();
+    }
+
     protected class Scanner implements Runnable
     {
         private String mAddressPrefix = "192.168.0.";
-        private boolean mNotified = false;
         private boolean[] mDevices = new boolean[256];
+        private int mThreadsExited = 0;
 
         public Scanner()
         {
@@ -98,7 +109,7 @@ public class NetworkDeviceScanner
 
             this.mAddressPrefix = addressPrefix;
             this.mDevices = new boolean[256];
-            this.mNotified = false;
+            this.mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
         }
 
         @Override
@@ -106,10 +117,13 @@ public class NetworkDeviceScanner
         {
             for (int mPosition = 0; mPosition < mDevices.length; mPosition++)
             {
-                if (mDevices[mPosition] == true || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested == true)
-                    continue;
+                synchronized (mDevices)
+                {
+                    if (mDevices[mPosition] == true || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested == true)
+                        continue;
 
-                mDevices[mPosition] = true;
+                    mDevices[mPosition] = true;
+                }
 
                 try
                 {
@@ -123,9 +137,10 @@ public class NetworkDeviceScanner
                 }
             }
 
-            if (!this.mNotified)
+            this.mThreadsExited--;
+
+            if (this.mThreadsExited == 0)
             {
-                this.mNotified = true;
                 NetworkDeviceScanner.this.mInterfaces.remove(0);
                 NetworkDeviceScanner.this.nextThread();
             }
@@ -139,12 +154,5 @@ public class NetworkDeviceScanner
         {
             new Thread(scanner).start();
         }
-    }
-
-    public static interface ScannerHandler
-    {
-        public void onDeviceFound(InetAddress address);
-
-        public void onThreadsCompleted();
     }
 }
