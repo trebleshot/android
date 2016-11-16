@@ -55,7 +55,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
                 String label = (String) appInfo.loadLabel(this.mManager);
 
                 if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(label, this.mSearchWord)))
-                    this.mPendingList.add(new AppInfo(appInfo.loadLogo(this.mManager), label, packageInfo.versionName, appInfo.sourceDir));
+                    this.mPendingList.add(new AppInfo(appInfo.loadLogo(this.mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
             }
         }
 
@@ -129,13 +129,15 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
         public String label;
         public String version;
         public String codePath;
+        public String packageName;
 
-        public AppInfo(Drawable icon, String label, String version, String codePath)
+        public AppInfo(Drawable icon, String label, String version, String codePath, String packageName)
         {
             this.icon = icon;
             this.label = label;
             this.version = version;
             this.codePath = codePath;
+            this.packageName = packageName;
         }
     }
 }

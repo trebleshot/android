@@ -129,4 +129,7 @@
     <string name="receive_restricted">Receive</string>
     <string name="reject_restricted">Block</string>
     <string name="about_summary">This software developed by Genonbeta Open-Source Software Organization</string>
+    <string name="launch">Launch</string>
+    <string name="launch_application_question">Do you want to launch this application?</string>
+    <string name="launch_application_error">This application can\'t be launched</string>
 </resources>
