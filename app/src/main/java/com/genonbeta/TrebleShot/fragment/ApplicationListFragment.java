@@ -72,7 +72,6 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
     {
         public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
-            // TODO: this too
             ApplicationListAdapter.AppInfo info = (ApplicationListAdapter.AppInfo) getAdapter().getItem(pos);
 
             if (isChecked)
