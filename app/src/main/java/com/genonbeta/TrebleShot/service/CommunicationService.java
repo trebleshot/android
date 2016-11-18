@@ -1,13 +1,13 @@
 package com.genonbeta.TrebleShot.service;
 
 import android.app.Service;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,12 +15,10 @@ import android.widget.Toast;
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolJsonCommunication;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
-import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
@@ -30,33 +28,30 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.net.Socket;
-import java.util.ArrayList;
 
 public class CommunicationService extends Service
 {
-    public static final String TAG = "CommunationService";
+    public static final String TAG = "CommunicationService";
 
     public static final String ACTION_FILE_TRANSFER_ACCEPT = "com.genonbeta.TrebleShot.FILE_TRANSFER_ACCEPT";
     public static final String ACTION_FILE_TRANSFER_REJECT = "com.genonbeta.TrebleShot.FILE_TRANSFER_REJECT";
     public static final String ACTION_STOP_SERVICE = "com.genonbeta.TrebleShot.STOP_SERVICE";
     public static final String ACTION_ALLOW_IP = "com.genonbeta.TrebleShot.ALLOW_IP";
     public static final String ACTION_REJECT_IP = "com.genonbeta.TrebleShot.REJECT_IP";
+    public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.CLIPBOARD";
 
     public static final String EXTRA_DEVICE_IP = "extraDeviceIp";
-    public static final String EXTRA_FILE_PATH = "extraFilePath";
-    public static final String EXTRA_FILE_NAME = "extraFileName";
-    public static final String EXTRA_FILE_SIZE = "extraFileSize";
-    public static final String EXTRA_FILE_MIME = "extraFileMime";
     public static final String EXTRA_REQUEST_ID = "extraRequestId";
     public static final String EXTRA_ACCEPT_ID = "extraAcceptId";
     public static final String EXTRA_SERVICE_LOCK_REQUEST = "extraServiceStartLock";
     public static final String EXTRA_HALF_RESTRICT = "extraHalfRestrict";
+    public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
-    private CommunicationServer mCommunationServer = new CommunicationServer();
+    private CommunicationServer mCommunicationServer = new CommunicationServer();
     private NotificationPublisher mPublisher;
     private SharedPreferences mPreferences;
+    private String mReceivedClipboardIndex;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -69,7 +64,7 @@ public class CommunicationService extends Service
     {
         super.onCreate();
 
-        if (!mCommunationServer.start())
+        if (!mCommunicationServer.start())
             stopSelf();
 
         mPublisher = new NotificationPublisher(this);
@@ -89,144 +84,7 @@ public class CommunicationService extends Service
 
         if (intent != null)
         {
-            if ((Intent.ACTION_SEND.equals(intent.getAction()) || ShareActivity.ACTION_SEND.equals(intent.getAction())) && intent.hasExtra(EXTRA_DEVICE_IP) && intent.hasExtra(Intent.EXTRA_STREAM))
-            {
-                Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-                final File file = ApplicationHelper.getFileFromUri(this, fileUri);
-
-                if (file != null && file.isFile())
-                {
-                    final int requestId = ApplicationHelper.getUniqueNumber();
-                    final String deviceIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-                    final String fileMime = (intent.getType() == null) ? FileUtils.getFileContentType(file.getAbsolutePath()) : intent.getType();
-
-                    CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                            new JsonResponseHandler()
-                            {
-                                @Override
-                                public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-                                {
-                                    try
-                                    {
-                                        json.put("request", "file_transfer_request");
-                                        json.put("fileName", file.getName());
-                                        json.put("fileSize", file.length());
-                                        json.put("fileMime", fileMime);
-                                        json.put("requestId", requestId);
-
-                                        JSONObject response = new JSONObject(process.waitForResponse());
-
-                                        if (response.getBoolean("result"))
-                                        {
-                                            ApplicationHelper.getSenders().put(requestId, new AwaitedFileSender(deviceIp, file, requestId));
-                                        }
-                                        else
-                                            showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-                                    } catch (JSONException e)
-                                    {
-                                        showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-                                    }
-                                }
-
-                                @Override
-                                public void onError(Exception e)
-                                {
-                                    showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-                                }
-                            }
-                    );
-
-                    return START_STICKY;
-                }
-
-                mPublisher.makeToast(R.string.file_type_not_supported_msg);
-            }
-            else if ((Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(intent.getAction())) && intent.hasExtra(Intent.EXTRA_STREAM))
-            {
-                final ArrayList<Uri> uris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                final String deviceIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-
-                CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-                        new JsonResponseHandler()
-                        {
-                            @Override
-                            public void onConfigure(CoolCommunication.Messenger.Process process)
-                            {
-                                process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
-                            }
-
-                            @Override
-                            public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-                            {
-                                JSONArray filesArray = new JSONArray();
-
-                                try
-                                {
-                                    json.put("request", "multifile_transfer_request");
-
-                                    for (Uri fileUri : uris)
-                                    {
-                                        File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
-
-                                        if (file == null)
-                                            continue;
-
-                                        if (file.isFile())
-                                        {
-                                            int requestId = ApplicationHelper.getUniqueNumber();
-                                            AwaitedFileSender sender = new AwaitedFileSender(deviceIp, file, requestId);
-                                            JSONObject thisJson = new JSONObject();
-
-                                            try
-                                            {
-                                                String fileMime = FileUtils.getFileContentType(file.getAbsolutePath());
-
-                                                thisJson.put("fileName", file.getName());
-                                                thisJson.put("fileSize", file.length());
-                                                thisJson.put("requestId", requestId);
-                                                thisJson.put("fileMime", fileMime);
-
-                                                filesArray.put(thisJson);
-
-                                                ApplicationHelper.getSenders().put(sender.requestId, sender);
-                                            } catch (Exception e)
-                                            {
-                                                Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());
-                                            }
-                                        }
-                                    }
-
-                                    json.put("filesJson", filesArray);
-
-                                    JSONObject response = new JSONObject(process.waitForResponse());
-
-                                    if (!response.getBoolean("result"))
-                                    {
-                                        Log.d(TAG, "Server did not accept the request remove pre-added senders");
-
-                                        for (int i = 0; i < filesArray.length(); i++)
-                                        {
-                                            int requestId = filesArray.getJSONObject(i).getInt("requestId");
-                                            ApplicationHelper.getSenders().remove(requestId);
-                                        }
-
-                                        showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-                                    }
-                                } catch (JSONException e)
-                                {
-                                    showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-                                }
-                            }
-
-                            @Override
-                            public void onError(Exception e)
-                            {
-                                showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-                            }
-                        }
-                );
-            }
-            else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
+            if (ACTION_STOP_SERVICE.equals(intent.getAction()))
             {
                 if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
                 {
@@ -316,16 +174,6 @@ public class CommunicationService extends Service
                         }
                 );
             }
-            else if (ACTION_STOP_SERVICE.equals(intent.getAction()))
-            {
-                if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
-                {
-                    mPreferences.edit().putBoolean("serviceLock", true).commit();
-                    mPublisher.makeToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
-                }
-
-                stopSelf();
-            }
             else if (ACTION_ALLOW_IP.equals(intent.getAction()))
             {
                 String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
@@ -350,6 +198,25 @@ public class CommunicationService extends Service
 
                 ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = true;
             }
+            else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
+            {
+                String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
+                int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+
+                mPublisher.cancelNotification(notificationId);
+
+                if (!ApplicationHelper.getDeviceList().containsKey(oppositeIp))
+                    return START_NOT_STICKY;
+
+                ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
+                
+                if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false))
+                {
+                    ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", mReceivedClipboardIndex));
+                    Toast.makeText(this, R.string.clipboard_text_copied, Toast.LENGTH_SHORT).show();
+                }
+            }
+
         }
 
         return START_STICKY;
@@ -360,19 +227,8 @@ public class CommunicationService extends Service
     {
         super.onDestroy();
 
-        mCommunationServer.stop();
+        mCommunicationServer.stop();
         stopForeground(true);
-
-        System.gc();
-    }
-
-    protected void showToast(String msg)
-    {
-        Looper.prepare();
-
-        mPublisher.makeToast(msg);
-
-        Looper.loop();
     }
 
     public class CommunicationServer extends CoolJsonCommunication
@@ -394,12 +250,12 @@ public class CommunicationService extends Service
                     Log.d(TAG, "receivedMessage = " + receivedMessage.toString());
 
                 JSONObject deviceInformation = new JSONObject();
+                JSONObject appInfo = new JSONObject();
                 boolean result = false;
                 boolean shouldContinue = true;
                 boolean halfRestriction = false;
 
                 PackageInfo packageInfo = getPackageManager().getPackageInfo(getApplicationInfo().packageName, 0);
-                JSONObject appInfo = new JSONObject();
 
                 appInfo.put("versionCode", packageInfo.versionCode);
                 appInfo.put("versionName", packageInfo.versionName);
@@ -560,6 +416,17 @@ public class CommunicationService extends Service
 
                                     result = true;
                                 }
+                            }
+                            break;
+                        case ("request_clipboard"):
+                            if (receivedMessage.has("clipboardText"))
+                            {
+                                mReceivedClipboardIndex = receivedMessage.getString("clipboardText");
+                                mPublisher.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
+
+                                device.isRestricted = true;
+                                
+                                result = true;
                             }
                             break;
                         case ("poke_the_device"):

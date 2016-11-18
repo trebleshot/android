@@ -38,7 +38,7 @@
     <string name="device_name">Device name</string>
     <string name="device_name_summary">This name will be showed on other devices</string>
     <string name="device_name_dialogTitle">Enter device name</string>
-    <string name="file_type_not_supported_msg">File type is not supported</string>
+    <string name="type_not_supported_msg">Type is not supported</string>
     <string name="file_sending_error_msg">File cannot be sent. %s</string>
     <string name="file_sent_msg">%s is sent</string>
     <string name="file_send_cancelled_msg">Sending %s file is cancelled</string>
@@ -132,4 +132,11 @@
     <string name="launch">Launch</string>
     <string name="launch_application_question">Do you want to launch this application?</string>
     <string name="launch_application_error">This application can\'t be launched</string>
+    <string name="enter_text_info">Enter text here…</string>
+    <string name="clipboard_text_copied">Text copied to clipboard</string>
+    <string name="copy_to_clipboard_question">Copy to clipboard?</string>
+    <string name="received_text">Received text</string>
+    <string name="received_text_info">Received clipboard text</string>
+    <string name="clipboard_text">Clipboard text</string>
+    <string name="check_for_updates">Check for updates</string>
 </resources>

@@ -1,0 +1,19 @@
+<resources>
+    <string name="uwg_module_name">UpdateWithGitHub</string>
+    <string name="uwg_check_for_updates">Check for updates</string>
+    <string name="uwg_check_for_updates_ongoing">Checking for updates…</string>
+    <string name="uwg_update_available">Update available</string>
+    <string name="uwg_later">Later</string>
+    <string name="uwg_download_now">Download Now</string>
+    <string name="uwg_downloading_update_title" formatted="false">%s v%s update</string>
+    <string name="uwg_downloading_update_description">%s update is being downloaded</string>
+    <string name="uwg_currently_latest_version_info">Great! You\'re using latest version</string>
+    <string name="uwg_update_body" formatted="false">Current version: %s\nLatest version: %s\nRelease date: %s\n\n%s</string>
+    <string name="uwg_version_check_error">Couldn\'t check new version. An error occurred</string>
+    <string name="uwg_no_update_available">No updates is currently available</string>
+    <string name="uwg_cancel">Cancel</string>
+    <string name="uwg_update_now">Update now</string>
+    <string name="uwg_download_anyway">Download anyway</string>
+    <string name="uwg_update_now_info"><![CDATA[Update is already downloaded. You can update now. If you see \'Installation blocked\' message, go Settings > Security > Unknown sources > (activate it)]]></string>
+    <string name="uwg_update_file_different_info">Update file already exits but it\'s different. Maybe downloading is still going on. If you start it anyway, current file will be overwritten</string>
+</resources>

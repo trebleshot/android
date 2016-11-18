@@ -38,8 +38,8 @@
     <string name="device_name">Cihaz adı</string>
     <string name="device_name_summary">Diğer cihazlarda gösterilecek</string>
     <string name="device_name_dialogTitle">Cihaz adı girin</string>
-    <string name="file_type_not_supported_msg">Dosya türü desteklenmiyor</string>
-    <string name="file_sending_error_msg">Dosya gönderilirken birşeyler ters gitti</string>
+    <string name="type_not_supported_msg">Biçim desteklenmiyor</string>
+    <string name="file_sending_error_msg">Dosya gönderilirken birşeyler ters gitti. %s</string>
     <string name="file_sent_msg">%s gönderildi</string>
     <string name="file_send_cancelled_msg">%s dosyasının gönderimi iptal edildi</string>
     <string name="existed_file_name_changed_msg">Dosya ismi kullanıldığı için değiştirildi: \n%s</string>
@@ -132,4 +132,11 @@
     <string name="launch">Başlat</string>
     <string name="launch_application_question">Uygulamayı başlatmak istiyor musunuz?</string>
     <string name="launch_application_error">Bu uygulama başlatılamaz</string>
+    <string name="enter_text_info">Buraya metin girin…</string>
+    <string name="clipboard_text_copied">Metin panoya kopyalandı</string>
+    <string name="copy_to_clipboard_question">Panoya kopyalansın mı?</string>
+    <string name="received_text">Metin alındı</string>
+    <string name="received_text_info">Pano metni alındı</string>
+    <string name="clipboard_text">Pano metni</string>
+    <string name="check_for_updates">Güncellemeleri denetle</string>
 </resources>

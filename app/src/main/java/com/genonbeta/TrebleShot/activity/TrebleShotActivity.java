@@ -26,6 +26,8 @@ import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
+import velitasali.updatewithgithub.GithubUpdater;
+
 public class TrebleShotActivity extends GActivity implements NavigationView.OnNavigationItemSelectedListener
 {
     public static final String OPEN_RECEIVED_FILES_ACTION = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
@@ -96,6 +98,15 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         else if (R.id.menu_activity_main_preferences == item.getItemId())
         {
             startActivity(new Intent(this, PreferencesActivity.class));
+        }
+        else if (R.id.menu_activity_main_share_clipboard_text == item.getItemId())
+        {
+            startActivity(new Intent(this, ShareActivity.class).setAction(ShareActivity.ACTION_SEND_TEXT));
+        }
+        else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
+        {
+            GithubUpdater updater = new GithubUpdater(this, "https://api.github.com/repos/velitasali/Classm8/releases", R.style.AppTheme);
+            updater.checkForUpdates();
         }
         else
             return false;

@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AbsListView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
@@ -51,6 +52,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
     private NotificationPublisher mPublisher;
     private SharedPreferences mPreferences;
     private Menu mOptionsMenu;
+    private AbsListView.OnItemClickListener mClickListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -90,17 +92,11 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
     {
         super.onListItemClick(l, v, position, id);
 
-        Intent actIntent = getActivity().getIntent();
         final NetworkDevice device = (NetworkDevice) mListAdapter.getItem(position);
 
-        if (Intent.ACTION_SEND.equals(actIntent.getAction()) || Intent.ACTION_SEND_MULTIPLE.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND.equals(actIntent.getAction()) || ShareActivity.ACTION_SEND_MULTIPLE.equals(actIntent.getAction()))
+        if (mClickListener != null)
         {
-            Intent serviceIntent = (Intent) actIntent.clone();
-
-            serviceIntent.setClass(getActivity(), CommunicationService.class);
-            serviceIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
-
-            getActivity().startService(serviceIntent);
+            this.mClickListener.onItemClick(l, v, position, id);
         }
         else if (device.brand != null && device.model != null)
         {
@@ -261,6 +257,11 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
     public CharSequence getFragmentTitle(Context context)
     {
         return context.getString(R.string.device_list);
+    }
+
+    public void setOnListClickListener(AbsListView.OnItemClickListener listener)
+    {
+        this.mClickListener = listener;
     }
 
     private void showSnackbar(int resId)

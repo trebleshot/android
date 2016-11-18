@@ -219,7 +219,7 @@ public class NotificationPublisher
                 .addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE), 0))
                 .addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
 
-        return builder.getNotification();
+        return builder.build();
     }
 
     public NotificationCompat.Builder notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress)
@@ -250,7 +250,7 @@ public class NotificationPublisher
 
         Log.d(TAG, "sending(): requestId = " + sender.requestId);
 
-        mManager.notify(sender.requestId, builder.build());
+        notify(sender.requestId, builder.build());
 
         return builder;
     }
@@ -285,7 +285,7 @@ public class NotificationPublisher
 
         Log.d(TAG, "receiving(): requestId = " + receiver.requestId);
 
-        mManager.notify(NOTIFICATION_ID_RECEIVING, builder.build());
+        notify(NOTIFICATION_ID_RECEIVING, builder.build());
 
         return builder;
     }
@@ -320,7 +320,7 @@ public class NotificationPublisher
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
 
-        mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
+        notify(NOTIFICATION_ID_RECEIVED, builder.build());
     }
 
     public void notifyFileReceivedMulti(int numberOfFiles)
@@ -348,8 +348,51 @@ public class NotificationPublisher
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
 
-        mManager.notify(NOTIFICATION_ID_RECEIVE_ERROR, builder.build());
+        notify(NOTIFICATION_ID_RECEIVE_ERROR, builder.build());
     }
+
+    public void notifyClipboardRequest(String clientIp, CharSequence text)
+    {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+        int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
+
+        Intent acceptIntent = new Intent(mContext, CommunicationService.class);
+        Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
+
+        acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD);
+        acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
+        acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
+
+        Intent rejectIntent = ((Intent) acceptIntent.clone());
+
+        acceptIntent.putExtra(CommunicationService.EXTRA_CLIPBOARD_ACCEPTED, true);
+        rejectIntent.putExtra(CommunicationService.EXTRA_CLIPBOARD_ACCEPTED, false);
+
+        PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
+        PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
+
+        dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
+        dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.copy_to_clipboard_question));
+        dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, text);
+        dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
+        dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
+
+        Log.i(TAG, "clientIp = " + clientIp);
+
+        builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+                .setContentTitle(mContext.getString(R.string.received_text))
+                .setContentText(mContext.getString(R.string.copy_to_clipboard_question))
+                .setContentInfo(clientIp)
+                .setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
+                .setDefaults(this.getNotificationDefaults())
+                .setDeleteIntent(negativeIntent)
+                .addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
+                .setTicker(mContext.getString(R.string.received_text_info));
+
+        mManager.notify(uniqueNotificationId, builder.build());
+    }
+
 
     public int getNotificationDefaults()
     {

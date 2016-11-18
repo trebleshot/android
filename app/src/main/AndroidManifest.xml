@@ -33,6 +33,7 @@
             android:label="@string/app_name"
             android:name=".activity.ShareActivity">
             <intent-filter>
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
                 <action android:name="android.intent.action.SEND"/>
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
