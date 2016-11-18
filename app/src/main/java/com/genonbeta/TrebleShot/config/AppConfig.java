@@ -8,4 +8,5 @@ public class AppConfig
     public final static int DEFAULT_SOCKET_TIMEOUT = 5000;
     public final static int DEFAULT_SOCKET_LARGE_TIMEOUT = 20000;
     public final static String[] DEFAULT_DISABLED_INTERFACES = new String[]{"rmnet"};
+    public final static String APP_UPDATE_REPO = "https://api.github.com/repos/genonbeta/TrebleShot/releases";
 }

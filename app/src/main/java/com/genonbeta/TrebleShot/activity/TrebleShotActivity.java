@@ -15,6 +15,7 @@ import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
@@ -105,7 +106,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         }
         else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
         {
-            GithubUpdater updater = new GithubUpdater(this, "https://api.github.com/repos/velitasali/Classm8/releases", R.style.AppTheme);
+            GithubUpdater updater = new GithubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
             updater.checkForUpdates();
         }
         else
