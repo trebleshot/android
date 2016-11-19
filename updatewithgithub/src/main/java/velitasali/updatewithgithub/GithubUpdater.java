@@ -41,6 +41,8 @@ public class GithubUpdater
 
 	public void checkForUpdates()
 	{
+		Toast.makeText(mContext, R.string.uwg_check_for_updates_ongoing, Toast.LENGTH_LONG).show();
+
 		new Thread()
 		{
 			@Override
@@ -52,8 +54,6 @@ public class GithubUpdater
 
 				try
 				{
-					Toast.makeText(mContext, R.string.uwg_check_for_updates_ongoing, Toast.LENGTH_LONG).show();
-
 					mContext.setTheme(mThemeRes);
 
 					RemoteServer server = new RemoteServer(mRepo);

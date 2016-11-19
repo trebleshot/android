@@ -139,4 +139,5 @@
     <string name="received_text_info">Pano metni alındı</string>
     <string name="clipboard_text">Pano metni</string>
     <string name="check_for_updates">Güncellemeleri denetle</string>
+    <string name="see_source_code">Kaynak kodunu gör</string>
 </resources>

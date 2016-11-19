@@ -139,4 +139,5 @@
     <string name="received_text_info">Received clipboard text</string>
     <string name="clipboard_text">Clipboard text</string>
     <string name="check_for_updates">Check for updates</string>
+    <string name="see_source_code">See source code</string>
 </resources>

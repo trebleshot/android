@@ -11,7 +11,7 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 21
-        versionCode 32
+        versionCode 33
         versionName "1.1.0"
     }
     buildTypes {
