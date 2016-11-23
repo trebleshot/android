@@ -20,7 +20,6 @@ import java.util.Comparator;
 public class ApplicationListAdapter extends AbstractEditableListAdapter
 {
     private boolean mShowSysApps = false;
-    private Context mContext;
     private String mSearchWord;
     private PackageManager mManager;
     private ArrayList<AppInfo> mList = new ArrayList<AppInfo>();
@@ -36,8 +35,8 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 
     public ApplicationListAdapter(Context context, boolean showSystemApps)
     {
+        super(context);
         this.mShowSysApps = showSystemApps;
-        this.mContext = context;
         this.mManager = this.mContext.getPackageManager();
     }
 
@@ -89,7 +88,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
     @Override
     public View getView(int position, View view, ViewGroup viewGroup)
     {
-        return this.getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_application, viewGroup, false), position);
+        return this.getViewAt(view == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false) : view, position);
     }
 
     public View getViewAt(View view, int position)

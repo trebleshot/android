@@ -3,15 +3,15 @@
 
     <item
         android:id="@+id/network_devices_scan"
-        android:title="@string/scan"
         android:icon="@drawable/ic_retry_alpha"
-        app:showAsAction="always"
-        android:orderInCategory="0"/>
+        android:orderInCategory="0"
+        android:title="@string/scan"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/network_devices_clear_list"
-        android:title="@string/clear_the_list"
         android:icon="@drawable/ic_delete_white"
         android:orderInCategory="1"
+        android:title="@string/clear_the_list"
         app:showAsAction="always"/>
 </menu>

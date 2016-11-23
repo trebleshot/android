@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="@style/Theme.AppCompat">
+    <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarTheme">@style/MyApp.ActionBarTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -10,13 +12,28 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
-    <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.NoActionBar">
+    <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
+        <item name="actionBarStyle">@style/MyActionBar</item>
+        <item name="actionBarTheme">@style/MyApp.ActionBarTheme</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="actionModeBackground">@color/actionModeBackground</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+    </style>
+
+    <style name="MyApp.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <!-- THIS is where you can color the arrow! -->
+        <item name="colorControlNormal">#FFF</item>
+    </style>
+
+    <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
+        <item name="titleTextStyle">@style/MyTitleTextStyle</item>
+    </style>
+
+    <style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">#FFF</item>
     </style>
 
     <style name="marqueedText">
@@ -34,21 +51,8 @@
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
     </style>
 
-    <style name="columnButton" parent="@style/marqueedText.primary">
-        <item name="android:textSize">14sp</item>
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
-        <item name="android:paddingLeft">20dp</item>
-        <item name="android:paddingRight">20dp</item>
-        <item name="android:background">@drawable/clickable_background</item>
-        <item name="android:clickable">true</item>
-        <!-- <item name="android:textStyle">bold</item> -->
-        <item name="android:gravity">center</item>
-        <item name="android:textAllCaps">true</item>
-    </style>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
-
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
 </resources>

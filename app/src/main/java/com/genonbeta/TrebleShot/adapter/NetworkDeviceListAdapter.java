@@ -80,14 +80,6 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 
         NetworkDevice device = (NetworkDevice) getItem(position);
 
-        if (!ipText.getText().equals(device.ip) && !ipText.getText().equals(""))
-        {
-            Animation animation = AnimationUtils.loadAnimation(this.mContext, android.R.anim.fade_in);
-
-            view.setAnimation(animation);
-            animation.start();
-        }
-
         deviceText.setText(device.model);
         userText.setText(device.user);
         ipText.setText(device.ip);

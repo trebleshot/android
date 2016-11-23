@@ -89,6 +89,7 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/animated-vector-drawable/24.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/appcompat-v7/24.2.1/jars" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/cardview-v7/24.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/design/24.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/24.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-compat/24.2.1/jars" />
@@ -120,7 +121,6 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 24 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="support-annotations-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-v4-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-compat-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-media-compat-24.2.1" level="project" />
@@ -131,6 +131,8 @@
     <orderEntry type="library" exported="" name="appcompat-v7-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-vector-drawable-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-24.2.1" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-24.2.1" level="project" />
+    <orderEntry type="library" exported="" name="cardview-v7-24.2.1" level="project" />
     <orderEntry type="library" exported="" name="design-24.2.1" level="project" />
     <orderEntry type="module" module-name="updatewithgithub" exported="" />
     <orderEntry type="library" exported="" name="http-request-6.0" level="project" />

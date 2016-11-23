@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#9b9300</color>
+    <color name="colorPrimary">#ff6810</color>
     <color name="colorPrimaryDark">@color/colorPrimary</color>
-    <color name="windowBackground">#191919</color>
-    <color name="colorAccent">#a5ff5c</color>
+    <color name="windowBackground">#d6d6d6</color>
+    <color name="colorAccent">#6c3a00</color>
     <color name="actionModeBackground">#025B6E</color>
-    <color name="clickableItemBackground">#5B6563</color>
+    <color name="clickableItemBackground">#b9b9b9</color>
+    <color name="boxColor">#FFF</color>
+    <color name="transparentColor">#00000000</color>
     <color name="navigationColor">#000000</color>
     <color name="itemBackground">#000000</color>
 </resources>

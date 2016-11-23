@@ -17,7 +17,6 @@ import java.util.Comparator;
 
 public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 {
-    public Context mContext;
     private String mSearchWord;
     public ArrayList<FileInfo> mList = new ArrayList<FileInfo>();
     private Comparator<FileInfo> mComparator = new Comparator<FileInfo>()
@@ -31,7 +30,7 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 
     public ReceivedFilesListAdapter(Context context)
     {
-        this.mContext = context;
+        super(context);
     }
 
     @Override
@@ -73,9 +72,9 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup container)
+    public View getView(int position, View convertView, ViewGroup parent)
     {
-        return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_received_files, container, false), position);
+        return getViewAt(convertView == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_received_file, parent, false) : convertView, position);
     }
 
     public View getViewAt(View view, int position)

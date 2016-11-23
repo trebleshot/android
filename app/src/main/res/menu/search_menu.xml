@@ -3,10 +3,10 @@
 
     <item
         android:id="@+id/search"
-        android:title="@string/scan"
         android:icon="@drawable/ic_search_white"
         android:orderInCategory="0"
-        app:showAsAction="always"
-        app:actionViewClass="android.support.v7.widget.SearchView"/>
+        android:title="@string/scan"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="always"/>
 
 </menu>

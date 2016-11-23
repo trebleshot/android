@@ -4,49 +4,45 @@
 
     <LinearLayout
         android:id="@+id/activity_share_info_layout"
-        android:layout_alignParentBottom="true"
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/boxColor"
+        android:orientation="vertical"
         android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="fill_parent"
-            android:layout_height="4dp"
-            android:background="@color/colorAccent"/>
+        android:paddingRight="10dp">
 
         <TextView
             android:id="@+id/activity_share_info_text"
+            style="@style/marqueedText.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#ffffff"
-            android:textSize="16sp"
             android:padding="20dp"
+            android:textSize="16sp"
             android:visibility="gone"/>
 
         <EditText
             android:id="@+id/activity_share_info_edit_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:hint="@string/enter_text_info"
-            android:textSize="16sp"
-            android:padding="20dp"
             android:background="#0000"
+            android:hint="@string/enter_text_info"
             android:maxLines="3"
+            android:padding="20dp"
+            android:textSize="16sp"
             android:visibility="gone"/>
 
     </LinearLayout>
 
     <fragment
         android:id="@+id/activity_share_fragment"
-        android:tag="mainFragment"
         android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/activity_share_info_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"/>
+        android:layout_above="@id/activity_share_info_layout"
+        android:layout_alignParentTop="true"
+        android:layout_centerInParent="true"
+        android:tag="mainFragment"/>
 
 </RelativeLayout>
 

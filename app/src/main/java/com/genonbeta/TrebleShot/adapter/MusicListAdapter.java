@@ -19,7 +19,6 @@ import java.util.Comparator;
 
 public class MusicListAdapter extends AbstractEditableListAdapter
 {
-    private Context mContext;
     private ContentResolver mResolver;
     private String mSearchWord;
     private ArrayList<MusicInfo> mList = new ArrayList<MusicInfo>();
@@ -35,7 +34,7 @@ public class MusicListAdapter extends AbstractEditableListAdapter
 
     public MusicListAdapter(Context context)
     {
-        this.mContext = context;
+        super(context);
         this.mResolver = context.getContentResolver();
     }
 
@@ -91,9 +90,9 @@ public class MusicListAdapter extends AbstractEditableListAdapter
     }
 
     @Override
-    public View getView(int position, View view, ViewGroup viewGroup)
+    public View getView(int position, View convertView, ViewGroup parent)
     {
-        return this.getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_music, viewGroup, false), position);
+        return getViewAt(convertView == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_music, parent, false) : convertView, position);
     }
 
     public View getViewAt(View view, int position)
