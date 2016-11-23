@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,8 +26,8 @@ import java.util.HashSet;
 public abstract class AbstractEditableListFragment<T extends AbstractEditableListAdapter> extends ListFragment
 {
 	private T mAdapter;
+	private ActionMode mActionMode;
 	private ActionModeListener mActionModeListener;
-	private Toolbar mToolbar;
 	private SearchView mSearchView;
 	private boolean mIsLoading = false;
 
@@ -36,6 +38,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		{
 			getAdapter().notifyDataSetChanged();
 			setEmptyText(getString(R.string.list_empty_msg));
+
+			if (mActionMode != null)
+				for (int i = 0; i < getListView().getCount(); i++)
+					if (getListView().isItemChecked(i))
+						mActionModeListener.onItemCheckedStateChanged(mActionMode, i, 0, true);
+
 		}
 	};
 
@@ -88,7 +96,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		this.mAdapter = this.onAdapter();
 		this.mActionModeListener = this.onActionModeListener();
-		this.mToolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
 		this.setListAdapter(mAdapter);
 
@@ -114,6 +121,18 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
 		mSearchView.setOnQueryTextListener(mSearchComposer);
+	}
+
+	@Override
+	public void onDetach()
+	{
+		super.onDetach();
+
+		if (mActionMode != null)
+		{
+			mActionMode.finish();
+			mActionMode = null;
+		}
 	}
 
 	protected T getAdapter()
@@ -145,6 +164,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		updateInBackground();
 	}
 
+	public void setItemsChecked(boolean check)
+	{
+		for (int i = 0; i < getListView().getCount(); i++)
+			getListView().setItemChecked(i, check);
+	}
+
 	public boolean updateInBackground()
 	{
 		if (getActivity() == null || isLoading())
@@ -172,6 +197,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			mode.getMenuInflater().inflate(R.menu.share_actions, menu);
 
 			mSelectAll = menu.findItem(R.id.file_actions_select);
+			mActionMode = mode;
 
 			return true;
 		}
@@ -180,6 +206,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu)
 		{
 			mCheckedList.clear();
+
 			return true;
 		}
 
@@ -242,12 +269,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public void onDestroyActionMode(ActionMode p1)
 		{
 			mCheckedList.clear();
-		}
-
-		public void setItemsChecked(boolean check)
-		{
-			for (int i = 0; i < getListView().getCount(); i++)
-				getListView().setItemChecked(i, check);
+			mActionMode = null;
 		}
 	}
 }
