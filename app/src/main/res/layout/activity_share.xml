@@ -14,7 +14,7 @@
 
         <TextView
             android:id="@+id/activity_share_info_text"
-            style="@style/marqueedText.secondary"
+            style="@style/marqueedText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="20dp"
@@ -45,8 +45,3 @@
         android:tag="mainFragment"/>
 
 </RelativeLayout>
-
-
-
-
-
