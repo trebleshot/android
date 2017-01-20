@@ -49,6 +49,10 @@
             android:name=".activity.PreferencesActivity"
             android:parentActivityName=".activity.TrebleShotActivity"/>
 
+        <activity
+            android:label="@string/text_editor"
+            android:name=".activity.TextEditorActivity"/>
+
         <service
             android:name=".service.ClientService"
             android:label="Client Service"/>

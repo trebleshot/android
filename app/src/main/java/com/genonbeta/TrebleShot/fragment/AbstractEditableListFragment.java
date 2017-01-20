@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,7 +21,9 @@ import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.AbstractEditableListAdapter;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public abstract class AbstractEditableListFragment<T extends AbstractEditableListAdapter> extends ListFragment
@@ -101,7 +104,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
-		this.getListView().setPadding(20, 0, 20, 0);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
@@ -186,10 +188,10 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 	protected abstract class ActionModeListener implements AbsListView.MultiChoiceModeListener
 	{
-		protected HashSet<Uri> mCheckedList = new HashSet<Uri>();
-		protected MenuItem mSelectAll;
+		private ArrayList<Uri> mCheckedList = new ArrayList<>();
+		private MenuItem mSelectAll;
 
-		public abstract void onItemChecked(ActionMode mode, int position, long id, boolean isChecked);
+		public abstract Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked);
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu)
@@ -220,14 +222,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 				if (mCheckedList.size() > 1)
 				{
-					ArrayList<Uri> uris = new ArrayList<Uri>();
-
-					for (Object uri : mCheckedList)
-						uris.add((Uri) uri);
-
 					shareIntent = new Intent(action);
 
-					shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
+					shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mCheckedList);
 					shareIntent.setType("*/*");
 				}
 				else if (mCheckedList.size() == 1)
@@ -258,7 +255,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		@Override
 		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
 		{
-			onItemChecked(mode, position, id, isChecked);
+			Uri uri = onItemChecked(mode, position, id, isChecked);
+
+			if (isChecked)
+				mCheckedList.add(uri);
+			else
+				mCheckedList.remove(uri);
 
 			mSelectAll.setIcon((mCheckedList.size() == getListView().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
 
@@ -271,5 +273,16 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			mCheckedList.clear();
 			mActionMode = null;
 		}
+
+		public MenuItem getQuickSelectMenuItem()
+		{
+			return mSelectAll;
+		}
+
+		public ArrayList<Uri> getSharedItemList()
+		{
+			return mCheckedList;
+		}
+
 	}
 }

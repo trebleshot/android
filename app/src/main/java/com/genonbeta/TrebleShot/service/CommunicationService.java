@@ -88,7 +88,7 @@ public class CommunicationService extends Service
             {
                 if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
                 {
-                    mPreferences.edit().putBoolean("serviceLock", true).commit();
+                    mPreferences.edit().putBoolean("serviceLock", true).apply();
                     mPublisher.makeToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
                 }
 

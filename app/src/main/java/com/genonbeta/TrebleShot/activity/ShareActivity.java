@@ -7,7 +7,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,6 +28,7 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.net.Socket;
@@ -34,6 +37,8 @@ import java.util.ArrayList;
 public class ShareActivity extends GActivity
 {
 	public static final String TAG = "ShareActivity";
+
+	public static final int REQUEST_CODE_EDIT_BOX = 1;
 
 	public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
 	public static final String ACTION_SEND_TEXT = "genonbeta.intent.action.TREBLESHOT_SEND_TEXT";
@@ -47,13 +52,15 @@ public class ShareActivity extends GActivity
 		MULTI_FILE_SHARE
 	}
 
+	private EditText mStatusText;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
 		ResultType resultType = ResultType.NOT_CONTINUE;
-		String info = new String();
+		String info = "";
 
 		if (getIntent() != null)
 			if (ACTION_SEND_TEXT.equals(getIntent().getAction()))
@@ -101,21 +108,27 @@ public class ShareActivity extends GActivity
 			setContentView(R.layout.activity_share);
 
 			final NetworkDeviceListFragment deviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-			final EditText editText = (EditText) findViewById(R.id.activity_share_info_edit_text);
-			final TextView infoText = (TextView) findViewById(R.id.activity_share_info_text);
+
+			mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
+			final ImageButton editButton = (ImageButton) findViewById(R.id.activity_share_edit_button);
+
+			mStatusText.getText().append(info);
 
 			if (resultType == ResultType.TEXT_SHARE)
-			{
-				editText.setVisibility(View.VISIBLE);
-				editText.getText().append(info);
-			}
-			else
-			{
-				infoText.setVisibility(View.VISIBLE);
-				infoText.setText(info);
-			}
+				editButton.setVisibility(View.VISIBLE);
 
 			final ResultType finalResultType = resultType;
+
+			editButton.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
+							.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+							.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mStatusText.getText().toString()), REQUEST_CODE_EDIT_BOX);
+				}
+			});
 
 			deviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 			{
@@ -256,18 +269,18 @@ public class ShareActivity extends GActivity
 								}
 						);
 					}
-					else if (finalResultType == ResultType.TEXT_SHARE)
+					else
 					{
 						CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 								new JsonResponseHandler()
 								{
 									@Override
-									public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+									public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
 									{
 										try
 										{
 											json.put("request", "request_clipboard");
-											json.put("clipboardText", editText.getText().toString());
+											json.put("clipboardText", mStatusText.getText().toString());
 
 											JSONObject response = new JSONObject(process.waitForResponse());
 
@@ -295,6 +308,19 @@ public class ShareActivity extends GActivity
 				}
 			});
 		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (resultCode == RESULT_OK)
+			if (requestCode == REQUEST_CODE_EDIT_BOX && data != null && data.hasExtra(TextEditorActivity.EXTRA_TEXT_INDEX))
+			{
+				mStatusText.setText(data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX));
+			}
+
 	}
 
 	protected void showToast(String msg)

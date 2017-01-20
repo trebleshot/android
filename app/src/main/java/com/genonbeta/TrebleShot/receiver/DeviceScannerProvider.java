@@ -18,7 +18,7 @@ import com.genonbeta.core.util.NetworkUtils;
 import java.net.InetAddress;
 import java.util.ArrayList;
 
-public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvaiableListener
+public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvailableListener
 {
     public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES";
     public static final String ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED";
@@ -79,7 +79,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
         {
             NetworkDevice device = ApplicationHelper.getDeviceList().get(address.getHostAddress());
 
-            if (device.isLocalAddress == true && !mPreferences.getBoolean("developer_mode", false))
+            if (device.isLocalAddress && !mPreferences.getBoolean("developer_mode", false))
                 return;
         }
 
@@ -87,7 +87,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
     }
 
     @Override
-    public void onInfoAvaiable(NetworkDevice device)
+    public void onInfoAvailable(NetworkDevice device)
     {
         if (ApplicationHelper.getDeviceList().containsKey(device.ip))
         {

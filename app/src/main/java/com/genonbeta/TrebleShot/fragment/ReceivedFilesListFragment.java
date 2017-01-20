@@ -137,7 +137,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 				{
 					FileDeleteDialogFragment df = new FileDeleteDialogFragment();
 
-					df.setItems(mCheckedList.toArray());
+					df.setItems(getSharedItemList().toArray());
 
 					df.setOnDeleteCompletedListener(
 							new FileDeleteDialogFragment.OnDeleteCompletedListener()
@@ -161,14 +161,11 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		}
 
 		@Override
-		public void onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
+		public Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
 		{
 			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
-			if (isChecked)
-				mCheckedList.add(Uri.fromFile(fileInfo.file));
-			else
-				mCheckedList.remove(Uri.fromFile(fileInfo.file));
+			return Uri.fromFile(fileInfo.file);
 		}
 	}
 }

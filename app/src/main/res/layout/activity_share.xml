@@ -2,37 +2,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/activity_share_info_layout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@color/boxColor"
-        android:orientation="vertical"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp">
+        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/activity_share_info_text"
-            style="@style/marqueedText.primary"
+        <ImageButton
+            android:id="@+id/activity_share_edit_button"
+            style="?borderlessButtonStyle"
+            android:src="@drawable/ic_create_black_24dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            />
 
         <EditText
-            android:id="@+id/activity_share_info_edit_text"
+            android:id="@+id/activity_share_info_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#0000"
-            android:hint="@string/enter_text_info"
-            android:maxLines="3"
-            android:padding="20dp"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@id/activity_share_edit_button"
+            android:layout_toStartOf="@id/activity_share_edit_button"
+            android:focusable="false"
+            android:clickable="false"
+            android:hint="@string/empty"
+            android:maxLines="4"
+            android:padding="15dp"
+            android:background="#0FFF"
+            android:textSize="16sp"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <fragment
         android:id="@+id/activity_share_fragment"

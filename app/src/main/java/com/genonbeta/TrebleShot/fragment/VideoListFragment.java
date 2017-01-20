@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
@@ -38,14 +39,11 @@ public class VideoListFragment extends AbstractEditableListFragment<VideoListAda
 
     private class ChoiceListener extends ActionModeListener
     {
-        public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
+        public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
             VideoListAdapter.VideoInfo info = (VideoListAdapter.VideoInfo) getAdapter().getItem(pos);
 
-            if (isChecked)
-                mCheckedList.add(info.uri);
-            else
-                mCheckedList.remove(info.uri);
+            return info.uri;
         }
     }
 }

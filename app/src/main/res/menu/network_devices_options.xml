@@ -6,6 +6,7 @@
         android:icon="@drawable/ic_retry_alpha"
         android:orderInCategory="0"
         android:title="@string/scan"
+        app:actionViewClass="android.widget.ImageView"
         app:showAsAction="always"/>
 
     <item

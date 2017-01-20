@@ -1,11 +1,14 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="48dp"
-             android:layout_height="wrap_content">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center">
 
-    <ProgressBar
-        android:id="@+id/layout_running_process_progressBar"
-        style="@style/Base.Widget.AppCompat.ProgressBar"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_gravity="center"/>
-</FrameLayout>
+    <ImageView
+        android:id="@+id/layout_running_process_reload_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_autorenew_white"
+        android:padding="5dp"/>
+
+</LinearLayout>

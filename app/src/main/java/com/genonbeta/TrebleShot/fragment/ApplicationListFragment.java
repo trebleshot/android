@@ -113,14 +113,10 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 
     private class ChoiceListener extends ActionModeListener
     {
-        public void onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
+        public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
         {
             ApplicationListAdapter.AppInfo info = (ApplicationListAdapter.AppInfo) getAdapter().getItem(pos);
-
-            if (isChecked)
-                mCheckedList.add(Uri.parse("file://" + info.codePath));
-            else
-                mCheckedList.remove(Uri.parse("file://" + info.codePath));
+            return Uri.parse("file://" + info.codePath);
         }
     }
 }

@@ -13,11 +13,11 @@ import java.net.Socket;
 
 public class NetworkDeviceInfoLoader
 {
-    private OnInfoAvaiableListener mOnInfoAvaiableListener;
+    private OnInfoAvailableListener mOnInfoAvaiableListener;
 
-    public NetworkDeviceInfoLoader(OnInfoAvaiableListener listener)
+    public NetworkDeviceInfoLoader(OnInfoAvailableListener listener)
     {
-        setOnInfoAvaiableListener(listener);
+        setOnInfoAvailableListener(listener);
     }
 
     public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps)
@@ -67,7 +67,7 @@ public class NetworkDeviceInfoLoader
                                     return;
 
                             if (mOnInfoAvaiableListener != null)
-                                mOnInfoAvaiableListener.onInfoAvaiable(device);
+                                mOnInfoAvaiableListener.onInfoAvailable(device);
                         } catch (Exception e)
                         {
                             this.onError(e);
@@ -79,13 +79,13 @@ public class NetworkDeviceInfoLoader
         return true;
     }
 
-    public void setOnInfoAvaiableListener(OnInfoAvaiableListener listener)
+    public void setOnInfoAvailableListener(OnInfoAvailableListener listener)
     {
         mOnInfoAvaiableListener = listener;
     }
 
-    public static interface OnInfoAvaiableListener
+    public static interface OnInfoAvailableListener
     {
-        public void onInfoAvaiable(NetworkDevice device);
+        public void onInfoAvailable(NetworkDevice device);
     }
 }

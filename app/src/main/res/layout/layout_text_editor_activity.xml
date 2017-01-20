@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/layout_text_editor_activity_text_text_box"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#0000"
+        android:ellipsize="end"
+        android:hint="@string/tap_to_edit"
+        android:inputType="textMultiLine"
+        android:overScrollMode="never"
+        android:padding="10dp"/>
+
+</ScrollView>
