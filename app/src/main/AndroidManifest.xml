@@ -46,8 +46,7 @@
 
         <activity
             android:label="@string/preferences"
-            android:name=".activity.PreferencesActivity"
-            android:parentActivityName=".activity.TrebleShotActivity"/>
+            android:name=".activity.PreferencesActivity"/>
 
         <activity
             android:label="@string/text_editor"

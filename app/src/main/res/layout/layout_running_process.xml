@@ -2,13 +2,13 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:gravity="center"
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/layout_running_process_reload_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_autorenew_white"
-        android:padding="5dp"/>
+        android:src="@drawable/ic_retry_alpha"/>
 
 </LinearLayout>

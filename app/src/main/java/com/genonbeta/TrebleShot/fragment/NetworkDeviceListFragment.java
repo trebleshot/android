@@ -11,20 +11,16 @@ import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -37,6 +33,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
@@ -185,13 +182,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu)
-	{
-		super.onPrepareOptionsMenu(menu);
-		this.checkScanStatus();
-	}
-
-	@Override
 	public void onPause()
 	{
 		super.onPause();
@@ -205,30 +195,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		inflater.inflate(R.menu.network_devices_options, menu);
 
 		mAnimatedSearchMenuItem = menu.findItem(R.id.network_devices_scan);
-
-		ImageView menuIcon = (ImageView) mAnimatedSearchMenuItem.getActionView();
-
-		menuIcon.setImageResource(R.drawable.ic_retry_alpha);
-		menuIcon.setPadding(5, 5, 5, 5);
-
-		menuIcon.setOnClickListener(
-				new OnClickListener()
-				{
-					@Override
-					public void onClick(View view)
-					{
-						boolean isAvailable = ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable();
-
-						if (isAvailable)
-							getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
-						else
-						{
-							mPublisher.makeToast(R.string.stopping_msg);
-							ApplicationHelper.getNetworkDeviceScanner().interrupt();
-						}
-					}
-				}
-		);
 	}
 
 	@Override
@@ -249,26 +215,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void checkScanStatus()
-	{
-		if (mAnimatedSearchMenuItem == null)
-			return;
-
-		ImageView reloadImage = (ImageView) mAnimatedSearchMenuItem.getActionView();
-
-		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
-		{
-			RotateAnimation anim = new RotateAnimation(0.0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-
-			anim.setInterpolator(new LinearInterpolator());
-			anim.setRepeatCount(Animation.INFINITE);
-			anim.setDuration(700);
-
-			reloadImage.startAnimation(anim);
-		}
-		else
-			reloadImage.setAnimation(null);
-	}
 
 	@Override
 	public CharSequence getFragmentTitle(Context context)
@@ -291,7 +237,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			NetworkDeviceListFragment.this.checkScanStatus();
+			((ScanDevicesActionProvider)MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
 
 			if (DeviceScannerProvider.ACTION_DEVICE_FOUND.equals(intent.getAction()))
 			{

@@ -27,7 +27,7 @@ public abstract class JsonResponseHandler extends CoolJsonCommunication.JsonResp
     }
 
     @Override
-    public void onResponseAvaiable(String response)
+    public void onResponseAvailable(String response)
     {
     }
 

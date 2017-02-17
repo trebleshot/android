@@ -45,7 +45,7 @@ public class NetworkDeviceInfoLoader
                     }
 
                     @Override
-                    public void onResponseAvaiable(String response)
+                    public void onResponseAvailable(String response)
                     {
                         try
                         {
@@ -62,7 +62,7 @@ public class NetworkDeviceInfoLoader
                             if (device.user == null || device.model == null || device.brand == null)
                                 return;
 
-                            if (dontDeleteSelfIps == false)
+                            if (!dontDeleteSelfIps)
                                 if (Build.DISPLAY.equals(json.getString("display")))
                                     return;
 

@@ -6,8 +6,8 @@
         android:icon="@drawable/ic_retry_alpha"
         android:orderInCategory="0"
         android:title="@string/scan"
-        app:actionViewClass="android.widget.ImageView"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        app:actionProviderClass="com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider"/>
 
     <item
         android:id="@+id/network_devices_clear_list"

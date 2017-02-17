@@ -236,7 +236,7 @@ public class CommunicationService extends Service
         public CommunicationServer()
         {
             super(AppConfig.COMMUNATION_SERVER_PORT);
-            this.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
+            this.setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
         }
 
         @Override
@@ -270,7 +270,7 @@ public class CommunicationService extends Service
                 response.put("appInfo", appInfo);
                 response.put("deviceInfo", deviceInformation);
 
-                if (receivedMessage.has("request") && !receivedMessage.getString("request").equals(null))
+                if (receivedMessage.has("request") && !receivedMessage.getString("request").equals(""))
                     if (!ApplicationHelper.getDeviceList().containsKey(clientIp))
                     {
                         device = new NetworkDevice(clientIp, null, null, null);
@@ -291,7 +291,7 @@ public class CommunicationService extends Service
                     {
                         device = ApplicationHelper.getDeviceList().get(clientIp);
 
-                        if (device.isRestricted == true)
+                        if (device.isRestricted)
                             shouldContinue = false;
                     }
 
