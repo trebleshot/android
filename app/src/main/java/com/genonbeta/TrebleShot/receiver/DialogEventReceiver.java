@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
@@ -23,7 +24,7 @@ public class DialogEventReceiver extends BroadcastReceiver
     @Override
     public void onReceive(Context context, Intent intent)
     {
-        if (ACTION_DIALOG.equals(intent.getAction()))
+        if (ACTION_DIALOG.equals(intent.getAction()) && Build.VERSION.SDK_INT < 23)
             this.showDialog(context, intent.getStringExtra(EXTRA_TITLE), intent.getStringExtra(EXTRA_MESSAGE), (PendingIntent) intent.getParcelableExtra(EXTRA_POSITIVE_INTENT), (PendingIntent) intent.getParcelableExtra(EXTRA_NEGATIVE_INTENT));
     }
 

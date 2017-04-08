@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
@@ -190,13 +191,13 @@ public class NotificationPublisher
 
         dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
         dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.receive_the_file_que));
-        dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.multi_transfer_que, numberOfFiles));
+        dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)));
         dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
         dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
         builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(mContext.getString(R.string.receive_the_file_que))
-                .setContentText(mContext.getString(R.string.multi_transfer_que, numberOfFiles))
+                .setContentText(mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)))
                 .setContentInfo(device.user)
                 .setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
                 .setDefaults(this.getNotificationDefaults())
@@ -306,12 +307,17 @@ public class NotificationPublisher
         mManager.notify(NOTIFICATION_OPPOSITE_DEVICE_PING, builder.build());
     }
 
-    public void notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
-    {
-        Notification.Builder builder = new Notification.Builder(mContext);
-        Intent openIntent = new Intent(Intent.ACTION_VIEW);
+    public void notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
 
-        openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
+        Intent openIntent;
+
+        if (Build.VERSION.SDK_INT < 23) {
+            openIntent = new Intent(Intent.ACTION_VIEW);
+            openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
+        }
+        else
+            openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
         builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(receiver.fileName)
@@ -320,17 +326,17 @@ public class NotificationPublisher
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
 
-        notify(NOTIFICATION_ID_RECEIVED, builder.build());
+        mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
     }
 
     public void notifyFileReceivedMulti(int numberOfFiles)
     {
-        Notification.Builder builder = new Notification.Builder(mContext);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
         builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle(mContext.getString(R.string.multiple_receive))
-                .setContentText(mContext.getString(R.string.multiple_receive_done_summary, numberOfFiles))
+                .setContentText(mContext.getString(R.string.multiple_receive_done_summary, String.valueOf(numberOfFiles)))
                 .setAutoCancel(true)
                 .setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
 
@@ -339,7 +345,7 @@ public class NotificationPublisher
 
     public void notifyReceiveError(String fileName)
     {
-        Notification.Builder builder = new Notification.Builder(mContext);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
         Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
         builder.setSmallIcon(android.R.drawable.stat_notify_error)

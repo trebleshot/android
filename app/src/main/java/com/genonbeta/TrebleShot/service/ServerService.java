@@ -51,7 +51,7 @@ public class ServerService extends Service
     {
         super.onCreate();
 
-        mWifiLock = ((WifiManager) getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
+        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
         mPublisher = new NotificationPublisher(this);
 
         mReceive.setNotifyDelay(2000);

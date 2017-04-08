@@ -40,7 +40,7 @@ public class ClientService extends Service
     {
         super.onCreate();
 
-        mWifiLock = ((WifiManager) getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
+        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
         mPublisher = new NotificationPublisher(this);
 
         mSend.setNotifyDelay(2000);

@@ -42,11 +42,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			getAdapter().notifyDataSetChanged();
 			setEmptyText(getString(R.string.list_empty_msg));
 
+			mActionModeListener.clearSelectionList();
+
 			if (mActionMode != null)
 				for (int i = 0; i < getListView().getCount(); i++)
 					if (getListView().isItemChecked(i))
 						mActionModeListener.onItemCheckedStateChanged(mActionMode, i, 0, true);
-
 		}
 	};
 
@@ -168,6 +169,8 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 	public void setItemsChecked(boolean check)
 	{
+		mActionModeListener.clearSelectionList();
+
 		for (int i = 0; i < getListView().getCount(); i++)
 			getListView().setItemChecked(i, check);
 	}
@@ -208,7 +211,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu)
 		{
 			mCheckedList.clear();
-
 			return true;
 		}
 
@@ -262,7 +264,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			else
 				mCheckedList.remove(uri);
 
-			mSelectAll.setIcon((mCheckedList.size() == getListView().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
+			mSelectAll.setIcon((mCheckedList.size() == mAdapter.getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
 
 			mode.setTitle(String.valueOf(getListView().getCheckedItemCount()));
 		}
@@ -277,6 +279,11 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public MenuItem getQuickSelectMenuItem()
 		{
 			return mSelectAll;
+		}
+
+		public void clearSelectionList()
+		{
+			mCheckedList.clear();
 		}
 
 		public ArrayList<Uri> getSharedItemList()
