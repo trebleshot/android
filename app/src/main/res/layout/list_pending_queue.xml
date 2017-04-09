@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/pending_queue_list_process_type_text"
-        style="@style/marqueedText.secondary"
+        style="@style/marqueeText.secondary"
         android:layout_marginLeft="4dp"/>
 
     <TextView
@@ -22,6 +22,6 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/pending_queue_list_filename"
-        style="@style/marqueedText.primary"/>
+        style="@style/marqueeText.primary"/>
 
 </RelativeLayout>

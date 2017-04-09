@@ -76,6 +76,8 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		setListAdapter(mListAdapter);
 		setHasOptionsMenu(true);
 
+		getListView().setDividerHeight(0);
+
 		setEmptyText(getString(R.string.find_device_hint));
 
 		if (mPreferences.getBoolean("developer_mode", false))

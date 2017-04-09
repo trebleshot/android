@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
+import com.genonbeta.TrebleShot.fragment.OnGoingProcessListFragment;
 import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
@@ -42,6 +43,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
     Fragment mFragmentDeviceList;
     Fragment mFragmentReceivedFiles;
+    Fragment mFragmentOnGoingProcessList;
     Fragment mFragmentShareApplication;
     Fragment mFragmentShareMusic;
     Fragment mFragmentShareVideo;
@@ -65,6 +67,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
         mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
         mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesListFragment.class.getName());
+        //mFragmentOnGoingProcessList = Fragment.instantiate(this, OnGoingProcessListFragment.class.getName());
         mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
         mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
         mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
@@ -94,6 +97,10 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         {
             changeFragment(mFragmentReceivedFiles);
         }
+        /*else if (R.id.menu_activity_main_ongoing_process == item.getItemId())
+        {
+            changeFragment(mFragmentOnGoingProcessList);
+        }*/
         else if (R.id.menu_activity_main_share_app == item.getItemId())
         {
             changeFragment(mFragmentShareApplication);

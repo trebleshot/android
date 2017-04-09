@@ -14,14 +14,14 @@
             android:padding="@dimen/abc_dialog_padding_material">
 
             <TextView
-                style="@style/marqueedText.primary"
+                style="@style/marqueeText.primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/device_brand_info"/>
 
             <TextView
                 android:id="@+id/device_info_brand_and_model"
-                style="@style/marqueedText.secondary"
+                style="@style/marqueeText.secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -30,14 +30,14 @@
                 android:layout_height="10dp"/>
 
             <TextView
-                style="@style/marqueedText.primary"
+                style="@style/marqueeText.primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/ip_address"/>
 
             <TextView
                 android:id="@+id/device_info_ip_address"
-                style="@style/marqueedText.secondary"
+                style="@style/marqueeText.secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -47,7 +47,7 @@
 
             <android.support.v7.widget.SwitchCompat
                 android:id="@+id/device_info_access_switcher"
-                style="@style/marqueedText.primary"
+                style="@style/marqueeText.primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/allow_access"/>

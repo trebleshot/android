@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/p2p_device_list_device_status_text"
-        style="@style/marqueedText.secondary"/>
+        style="@style/marqueeText.secondary"/>
 
     <TextView
         android:layout_alignParentLeft="true"
@@ -19,6 +19,6 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         android:id="@+id/p2p_device_list_device_text"
-        style="@style/marqueedText.primary"/>
+        style="@style/marqueeText.primary"/>
 
 </RelativeLayout>

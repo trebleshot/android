@@ -10,6 +10,11 @@
             android:id="@+id/menu_activity_main_received_files"
             android:icon="@drawable/ic_file_download_black_24dp"
             android:title="@string/received_files"/>
+
+        <!-- <item
+            android:id="@+id/menu_activity_main_ongoing_process"
+            android:icon="@drawable/ic_cloud_upload_black_24dp"
+            android:title="@string/ongoing_process"/>-->
     </group>
 
     <item android:title="@string/share">
