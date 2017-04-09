@@ -144,4 +144,5 @@
     <string name="done">Done</string>
     <string name="empty">(empty)</string>
     <string name="share_text">Share text</string>
+    <string name="open_wifi_settings_short">Wi-Fi</string>
 </resources>

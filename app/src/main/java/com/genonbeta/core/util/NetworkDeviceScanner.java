@@ -69,7 +69,7 @@ public class NetworkDeviceScanner
 
     public boolean scan(ArrayList<String> interfaces, ScannerHandler handler)
     {
-        if (!this.isScannerAvaiable())
+        if (!this.isScannerAvaiable() || interfaces.size() < 1)
             return false;
 
         this.mInterfaces.addAll(interfaces);

@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
@@ -250,7 +251,20 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 				if (DeviceScannerProvider.STATUS_OK.equals(scanStatus))
 					showSnackbar(R.string.devices_scanning_msg);
 				else if (DeviceScannerProvider.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-					showSnackbar(R.string.no_network_interface_msg);
+				{
+					Snackbar bar = Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), R.string.no_network_interface_msg, Snackbar.LENGTH_SHORT);
+
+					bar.setAction(R.string.open_wifi_settings_short, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+						}
+					});
+
+					bar.show();
+				}
 			}
 			else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction()))
 			{
