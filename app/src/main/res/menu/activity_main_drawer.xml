@@ -31,9 +31,9 @@
                     android:title="@string/video"/>
 
                 <item
-                    android:id="@+id/menu_activity_main_share_clipboard_text"
+                    android:id="@+id/menu_activity_main_share_text"
                     android:icon="@drawable/ic_textsms_black_24dp"
-                    android:title="@string/clipboard_text"/>
+                    android:title="@string/share_text"/>
             </group>
         </menu>
     </item>

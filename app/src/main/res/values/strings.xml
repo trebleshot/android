@@ -137,11 +137,11 @@
     <string name="copy_to_clipboard_question">Copy to clipboard?</string>
     <string name="received_text">Received text</string>
     <string name="received_text_info">Received clipboard text</string>
-    <string name="clipboard_text">Clipboard text</string>
     <string name="check_for_updates">Check for updates</string>
     <string name="see_source_code">See source code</string>
     <string name="tap_to_edit">Tap to edit…</string>
     <string name="text_editor">Text editor</string>
     <string name="done">Done</string>
     <string name="empty">(empty)</string>
+    <string name="share_text">Share text</string>
 </resources>

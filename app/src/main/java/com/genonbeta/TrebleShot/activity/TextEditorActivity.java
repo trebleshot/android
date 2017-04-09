@@ -32,7 +32,9 @@ public class TextEditorActivity extends GActivity
 		else
 		{
 			setContentView(R.layout.layout_text_editor_activity);
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+			if (getSupportActionBar() != null)
+				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 			setContentView(R.layout.layout_text_editor_activity);
 

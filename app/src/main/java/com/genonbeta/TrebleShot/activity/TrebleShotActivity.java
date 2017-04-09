@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
+import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.fragment.dialog.AboutDialog;
 import com.genonbeta.TrebleShot.helper.FileUtils;
@@ -44,6 +45,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
     Fragment mFragmentShareApplication;
     Fragment mFragmentShareMusic;
     Fragment mFragmentShareVideo;
+    Fragment mFragmentShareText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +68,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
         mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
         mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
+        mFragmentShareText = Fragment.instantiate(this, TextShareFragment.class.getName());
 
         changeFragment(mFragmentDeviceList);
 
@@ -103,6 +106,10 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         {
             changeFragment(mFragmentShareVideo);
         }
+		else if (R.id.menu_activity_main_share_text == item.getItemId())
+		{
+			changeFragment(mFragmentShareText);
+		}
         else if (R.id.menu_activity_main_about == item.getItemId())
         {
             new AboutDialog().show(getSupportFragmentManager(), "aboutDialog");
@@ -114,10 +121,6 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
         else if (R.id.menu_activity_main_preferences == item.getItemId())
         {
             startActivity(new Intent(this, PreferencesActivity.class));
-        }
-        else if (R.id.menu_activity_main_share_clipboard_text == item.getItemId())
-        {
-            startActivity(new Intent(this, ShareActivity.class).setAction(ShareActivity.ACTION_SEND_TEXT));
         }
         else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
         {
