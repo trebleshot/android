@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#009951</color>
     <color name="colorPrimaryDark">#007941</color>
-    <color name="windowBackground">#d6d6d6</color>
+    <color name="windowBackground">#ffffff</color>
     <color name="colorAccent">#106c00</color>
     <color name="actionModeBackground">#00a155</color>
     <color name="clickableItemBackground">#b9b9b9</color>

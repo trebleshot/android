@@ -105,6 +105,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 		this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
+		this.getListView().setDividerHeight(0);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}

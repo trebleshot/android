@@ -139,7 +139,7 @@
     <string name="received_text_info">Received clipboard text</string>
     <string name="check_for_updates">Check for updates</string>
     <string name="see_source_code">See source code</string>
-    <string name="tap_to_edit">Tap to edit…</string>
+    <string name="tap_to_edit">Type the text you want to send…</string>
     <string name="text_editor">Text editor</string>
     <string name="done">Done</string>
     <string name="empty">(empty)</string>

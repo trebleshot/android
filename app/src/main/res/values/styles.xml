@@ -42,7 +42,7 @@
     </style>
 
     <style name="marqueedText">
-        <item name="android:singleLine">true</item>
+        <item name="android:maxLines">1</item>
         <item name="android:ellipsize">marquee</item>
     </style>
 

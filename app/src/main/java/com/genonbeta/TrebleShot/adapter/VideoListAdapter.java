@@ -20,9 +20,13 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 
 import java.lang.ref.WeakReference;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 
 public class VideoListAdapter extends AbstractEditableListAdapter
 {
@@ -57,10 +61,19 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		{
 			int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
 			int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
+			int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
 			do
 			{
 				VideoInfo info = new VideoInfo(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+
+				int lenght = cursor.getInt(lengthIndex);
+
+				int hrs = (lenght / 3600000);
+				int mns = (lenght / 60000) % 60000;
+				int scs = lenght % 60000 / 1000;
+
+				info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs,  mns, scs);
 
 				if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(info.title, this.mSearchWord)))
 					this.mPendingList.add(info);
@@ -108,13 +121,16 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 			convertView = getInflater().inflate(R.layout.list_video, null);
 			holder = new ViewHolder();
 			holder.titleView = (TextView) convertView.findViewById(R.id.text);
+			holder.durationView = (TextView) convertView.findViewById(R.id.duration);
 			holder.imageView = (ImageView) convertView.findViewById(R.id.image);
+
 			convertView.setTag(holder);
 		}
 		else
 			holder = (ViewHolder) convertView.getTag();
 
 		holder.titleView.setText(info.title);
+		holder.durationView.setText(info.duration);
 
 		if (holder.imageView != null)
 			loadBitmap(info.id, holder.imageView);
@@ -143,6 +159,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		public String title;
 		public String thumbnail;
 		public Uri uri;
+		public String duration;
 
 		public VideoInfo(int id, String title, String thumbnail, Uri uri)
 		{
@@ -222,6 +239,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	private class ViewHolder
 	{
 		TextView titleView;
+		TextView durationView;
 		ImageView imageView;
 	}
 
@@ -253,13 +271,10 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 			if (isCancelled())
 				bitmap = null;
 
-			if (imageViewReference != null)
-			{
-				ImageView imageView = imageViewReference.get();
+			ImageView imageView = imageViewReference.get();
 
-				if (imageView != null)
-					imageView.setImageBitmap(bitmap == null ? mPlaceHolderBitmap : bitmap);
-			}
+			if (imageView != null)
+				imageView.setImageBitmap(bitmap == null ? mPlaceHolderBitmap : bitmap);
 		}
 	}
 }

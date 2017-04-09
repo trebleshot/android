@@ -139,9 +139,10 @@
     <string name="received_text_info">Pano metni alındı</string>
     <string name="check_for_updates">Güncellemeleri denetle</string>
     <string name="see_source_code">Kaynak kodunu gör</string>
-    <string name="tap_to_edit">Düzenlemek için dokun...</string>
+    <string name="tap_to_edit">Yollamak istediğiniz metni girin...</string>
     <string name="text_editor">Metin editörü</string>
     <string name="done">Bitti</string>
     <string name="empty">(boş)</string>
     <string name="share_text">Metin yolla</string>
+    <string name="open_wifi_settings_short">Kablosuz</string>
 </resources>
