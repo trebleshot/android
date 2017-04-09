@@ -145,5 +145,5 @@
     <string name="empty">(empty)</string>
     <string name="share_text">Share text</string>
     <string name="open_wifi_settings_short">Wi-Fi</string>
-    <string name="ongoing_process">Ongoing events</string>
+    <string name="ongoing_process">Ongoing</string>
 </resources>
