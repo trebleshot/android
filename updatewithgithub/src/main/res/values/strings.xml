@@ -14,6 +14,6 @@
     <string name="uwg_cancel">Cancel</string>
     <string name="uwg_update_now">Update now</string>
     <string name="uwg_download_anyway">Download anyway</string>
-    <string name="uwg_update_now_info"><![CDATA[Update is already downloaded. You can update now. If you see \'Installation blocked\' message, go Settings > Security > Unknown sources > (activate it)]]></string>
+    <string name="uwg_update_now_info"><![CDATA[Update is already downloaded. You can update now. If you see \'Installation blocked\' message, go to Settings > Security > Unknown sources > (activate it)]]></string>
     <string name="uwg_update_file_different_info">Update file already exits but it\'s different. Maybe downloading is still going on. If you start it anyway, current file will be overwritten</string>
 </resources>
