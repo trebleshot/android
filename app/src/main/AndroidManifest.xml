@@ -74,8 +74,12 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".receiver.FileChangesReceiver">
+            <intent-filter>
+                <action android:name="com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED"/>
             </intent-filter>
         </receiver>
     </application>

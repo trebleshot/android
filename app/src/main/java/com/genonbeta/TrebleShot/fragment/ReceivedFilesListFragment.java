@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,7 +20,7 @@ import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
-import com.genonbeta.TrebleShot.service.ServerService;
+import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter> implements FragmentTitle
@@ -35,7 +34,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (ServerService.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
+			if (FileChangesReceiver.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
 				ReceivedFilesListFragment.this.updateInBackground();
 		}
 	};
@@ -58,7 +57,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		super.onActivityCreated(savedInstanceState);
 
 		mPublisher = new NotificationPublisher(getActivity());
-		mIntentFilter.addAction(ServerService.ACTION_FILE_LIST_CHANGED);
+		mIntentFilter.addAction(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
@@ -90,7 +89,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		switch (item.getItemId())
 		{
 			case (R.id.received_device_options_refresh):
-				this.updateInBackground();
+				getContext().sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
 				return true;
 			case (R.id.received_device_options_open_in_file_manager):
 				this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
@@ -145,7 +144,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 								@Override
 								public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize)
 								{
-									fragment.getContext().sendBroadcast(new Intent(ServerService.ACTION_FILE_LIST_CHANGED));
+									fragment.getContext().sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
 								}
 							}
 					);

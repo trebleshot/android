@@ -12,32 +12,32 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 
 public class GActivity extends AppCompatActivity
 {
-    private SharedPreferences mPreferences;
+	private SharedPreferences mPreferences;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
+	@Override
+	protected void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
 
-        if (this.getDefaultPreferences().getBoolean("serviceLock", false))
-        {
-            this.getDefaultPreferences().edit().putBoolean("serviceLock", false).commit();
-            Toast.makeText(this, R.string.service_unlocked_notice, Toast.LENGTH_SHORT).show();
-        }
-    }
+		if (this.getDefaultPreferences().getBoolean("serviceLock", false))
+		{
+			this.getDefaultPreferences().edit().putBoolean("serviceLock", false).commit();
+			Toast.makeText(this, R.string.service_unlocked_notice, Toast.LENGTH_SHORT).show();
+		}
+	}
 
-    @Override
-    protected void onStart()
-    {
-        super.onStart();
-        startService(new Intent(this, CommunicationService.class));
-    }
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+		startService(new Intent(this, CommunicationService.class));
+	}
 
-    protected SharedPreferences getDefaultPreferences()
-    {
-        if (this.mPreferences == null)
-            this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	protected SharedPreferences getDefaultPreferences()
+	{
+		if (this.mPreferences == null)
+			this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        return this.mPreferences;
-    }
+		return this.mPreferences;
+	}
 }

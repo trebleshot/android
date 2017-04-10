@@ -20,12 +20,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 
 import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Locale;
 
 public class VideoListAdapter extends AbstractEditableListAdapter
@@ -51,6 +48,45 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		this.mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_autorenew_white);
 	}
 
+	private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
+	{
+		if (imageView != null)
+		{
+			final Drawable drawable = imageView.getDrawable();
+
+			if (drawable instanceof AsyncDrawable)
+			{
+				final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
+				return asyncDrawable.getBitmapWorkerTask();
+			}
+		}
+
+		return null;
+	}
+
+	public static boolean cancelPotentialWork(long data, ImageView imageView)
+	{
+		final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
+
+		if (bitmapWorkerTask != null)
+		{
+			final long bitmapData = bitmapWorkerTask.getData();
+			// If bitmapData is not yet set or it differs from the new data
+			if (bitmapData == 0 || bitmapData != data)
+			{
+				// Cancel previous task
+				bitmapWorkerTask.cancel(true);
+			}
+			else
+			{
+				// The same work is already in progress
+				return false;
+			}
+		}
+		// No task associated with the ImageView, or an existing task was cancelled
+		return true;
+	}
+
 	protected void onUpdate()
 	{
 		this.mPendingList.clear();
@@ -73,7 +109,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 				int mns = (lenght / 60000) % 60000;
 				int scs = lenght % 60000 / 1000;
 
-				info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs,  mns, scs);
+				info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, mns, scs);
 
 				if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(info.title, this.mSearchWord)))
 					this.mPendingList.add(info);
@@ -153,6 +189,17 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		super.notifyDataSetChanged();
 	}
 
+	public void loadBitmap(long id, ImageView imageView)
+	{
+		if (cancelPotentialWork(id, imageView))
+		{
+			final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
+			final AsyncDrawable asyncDrawable = new AsyncDrawable(getContext().getResources(), mPlaceHolderBitmap, task);
+			imageView.setImageDrawable(asyncDrawable);
+			task.execute(id);
+		}
+	}
+
 	public static class VideoInfo
 	{
 		public long id;
@@ -167,56 +214,6 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 			this.title = title;
 			this.thumbnail = thumbnail;
 			this.uri = uri;
-		}
-	}
-
-	private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
-	{
-		if (imageView != null)
-		{
-			final Drawable drawable = imageView.getDrawable();
-
-			if (drawable instanceof AsyncDrawable)
-			{
-				final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
-				return asyncDrawable.getBitmapWorkerTask();
-			}
-		}
-
-		return null;
-	}
-
-	public static boolean cancelPotentialWork(long data, ImageView imageView)
-	{
-		final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
-
-		if (bitmapWorkerTask != null)
-		{
-			final long bitmapData = bitmapWorkerTask.getData();
-			// If bitmapData is not yet set or it differs from the new data
-			if (bitmapData == 0 || bitmapData != data)
-			{
-				// Cancel previous task
-				bitmapWorkerTask.cancel(true);
-			}
-			else
-			{
-				// The same work is already in progress
-				return false;
-			}
-		}
-		// No task associated with the ImageView, or an existing task was cancelled
-		return true;
-	}
-
-	public void loadBitmap(long id, ImageView imageView)
-	{
-		if (cancelPotentialWork(id, imageView))
-		{
-			final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
-			final AsyncDrawable asyncDrawable = new AsyncDrawable(getContext().getResources(), mPlaceHolderBitmap, task);
-			imageView.setImageDrawable(asyncDrawable);
-			task.execute(id);
 		}
 	}
 

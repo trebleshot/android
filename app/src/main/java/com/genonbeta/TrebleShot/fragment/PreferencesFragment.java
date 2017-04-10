@@ -7,10 +7,10 @@ import com.genonbeta.TrebleShot.R;
 
 public class PreferencesFragment extends PreferenceFragment
 {
-    @Override
-    public void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        addPreferencesFromResource(R.xml.preferences_main);
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		addPreferencesFromResource(R.xml.preferences_main);
+	}
 }

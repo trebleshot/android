@@ -15,6 +15,7 @@ import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,239 +27,241 @@ import java.net.Socket;
 
 public class ServerService extends Service
 {
-    public static final String TAG = "ServerService";
+	public static final String TAG = "ServerService";
 
-    public final static String ACTION_CHECK_AVAILABLES = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
-    public final static String ACTION_CANCEL_RECEIVING = "com.genonbeta.TrebleShot.server.CANCEL_RECEIVING";
-    public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
+	public final static String ACTION_CHECK_AVAILABLES = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
+	public final static String ACTION_CANCEL_RECEIVING = "com.genonbeta.TrebleShot.server.CANCEL_RECEIVING";
 
-    private ServerRunnable mRunnable = new ServerRunnable();
-    private boolean mIsBreakRequested = false;
+	private ServerRunnable mRunnable = new ServerRunnable();
+	private boolean mIsBreakRequested = false;
 
-    private NotificationPublisher mPublisher;
-    private WifiManager.WifiLock mWifiLock;
-    private Receive mReceive = new Receive();
-    private Thread mThread;
+	private NotificationPublisher mPublisher;
+	private WifiManager.WifiLock mWifiLock;
+	private Receive mReceive = new Receive();
+	private Thread mThread;
 
-    @Override
-    public IBinder onBind(Intent p1)
-    {
-        return null;
-    }
+	@Override
+	public IBinder onBind(Intent p1)
+	{
+		return null;
+	}
 
-    @Override
-    public void onCreate()
-    {
-        super.onCreate();
+	@Override
+	public void onCreate()
+	{
+		super.onCreate();
 
-        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
-        mPublisher = new NotificationPublisher(this);
+		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
+		mPublisher = new NotificationPublisher(this);
 
-        mReceive.setNotifyDelay(2000);
-    }
+		mReceive.setNotifyDelay(2000);
+	}
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
-        super.onStartCommand(intent, flags, startId);
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		super.onStartCommand(intent, flags, startId);
 
-        if (intent != null)
-        {
-            if (ACTION_CHECK_AVAILABLES.equals(intent.getAction()))
-            {
-                Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
-            }
-            else if (ACTION_CANCEL_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
-            {
-                final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+		if (intent != null)
+		{
+			if (ACTION_CHECK_AVAILABLES.equals(intent.getAction()))
+			{
+				Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
+			}
+			else if (ACTION_CANCEL_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
+			{
+				final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 
-                ApplicationHelper.removeReceivers(acceptId);
+				ApplicationHelper.removeReceivers(acceptId);
 
-                mIsBreakRequested = true;
-            }
-        }
+				mIsBreakRequested = true;
+			}
+		}
 
-        return START_STICKY;
-    }
+		return START_STICKY;
+	}
 
-    public boolean startEngine()
-    {
-        if (mThread == null || Thread.State.TERMINATED.equals(mThread.getState()))
-        {
-            mThread = new Thread(mRunnable);
-            mThread.start();
+	public boolean startEngine()
+	{
+		if (mThread == null || Thread.State.TERMINATED.equals(mThread.getState()))
+		{
+			mThread = new Thread(mRunnable);
+			mThread.start();
 
-            return true;
-        }
+			return true;
+		}
 
-        Log.d(TAG, "Thread state = " + mThread.getState());
+		Log.d(TAG, "Thread state = " + mThread.getState());
 
-        return false;
-    }
+		return false;
+	}
 
-    public File getUniqueFile(File file) throws IOException
-    {
-        if (file.isFile())
-        {
-            file = FileUtils.getUniqueFile(file);
-            file.createNewFile();
-        }
+	public File getUniqueFile(File file) throws IOException
+	{
+		if (file.isFile())
+		{
+			file = FileUtils.getUniqueFile(file);
+			file.createNewFile();
+		}
 
-        return file;
-    }
+		return file;
+	}
 
-    private class ServerRunnable implements Runnable
-    {
-        @Override
-        public void run()
-        {
-            mWifiLock.acquire();
+	private class ServerRunnable implements Runnable
+	{
+		@Override
+		public void run()
+		{
+			mWifiLock.acquire();
 
-            Log.d(TAG, "Receiver count " + ApplicationHelper.getReceivers().size());
+			Log.d(TAG, "Receiver count " + ApplicationHelper.getReceivers().size());
 
-            int preNotified = 0;
+			int preNotified = 0;
 
-            for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
-            {
-                preNotified++;
+			for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
+			{
+				preNotified++;
 
-                Log.d(TAG, "ReceiverThread running for receiver = " + receiver.fileName);
+				Log.d(TAG, "ReceiverThread running for receiver = " + receiver.fileName);
 
-                try
-                {
-                    File file = getUniqueFile(new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName)));
+				try
+				{
+					File file = getUniqueFile(new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName)));
 
-                    if (!mIsBreakRequested)
-                    {
-                        mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
+					if (!mIsBreakRequested)
+					{
+						mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
 
-                        if (!receiver.processCancelled && !mIsBreakRequested)
-                        {
-                            if (preNotified <= 1)
-                                mPublisher.notifyFileReceived(receiver, file, ApplicationHelper.getDeviceList().get(receiver.ip));
-                            else
-                                mPublisher.notifyFileReceivedMulti(preNotified);
-                        }
-                    }
-                } catch (Exception e)
-                {
-                    Log.d(TAG, "ongoing receiving error = " + e.getMessage());
-                } finally
-                {
-                    mPublisher.cancelNotification(NotificationPublisher.NOTIFICATION_ID_RECEIVING);
-                    ApplicationHelper.removeReceiver(receiver);
+						if (!receiver.processCancelled && !mIsBreakRequested)
+						{
+							if (preNotified <= 1)
+								mPublisher.notifyFileReceived(receiver, file, ApplicationHelper.getDeviceList().get(receiver.ip));
+							else
+								mPublisher.notifyFileReceivedMulti(preNotified);
+						}
+					}
+				} catch (Exception e)
+				{
+					Log.d(TAG, "ongoing receive error = " + e.getMessage());
+				}
+				finally
+				{
+					mPublisher.cancelNotification(NotificationPublisher.NOTIFICATION_ID_RECEIVING);
+					ApplicationHelper.removeReceiver(receiver);
 
-                    sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED));
-                }
-            }
+					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED).putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
+				}
+			}
 
-            mIsBreakRequested = false;
+			sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
 
-            Log.d(TAG, "Thread done");
-            mWifiLock.release();
+			mIsBreakRequested = false;
 
-            if (ApplicationHelper.getReceivers().size() > 0)
-                run();
-        }
+			Log.d(TAG, "Thread done");
+			mWifiLock.release();
 
-        public boolean requestBreak()
-        {
-            if (mIsBreakRequested == true)
-                return false;
+			if (ApplicationHelper.getReceivers().size() > 0)
+				run();
+		}
 
-            mIsBreakRequested = true;
+		public boolean requestBreak()
+		{
+			if (mIsBreakRequested)
+				return false;
 
-            return true;
-        }
-    }
+			mIsBreakRequested = true;
 
-    private class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
-    {
-        @Override
-        public void onError(int port, File file, Exception error, AwaitedFileReceiver extra)
-        {
-            if (!mIsBreakRequested)
-            {
-                mPublisher.notifyReceiveError(extra.fileName);
-                extra.processCancelled = true;
-            }
+			return true;
+		}
+	}
 
-            if (file != null && file.isFile())
-                file.delete();
-        }
+	private class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
+	{
+		@Override
+		public void onError(int port, File file, Exception error, AwaitedFileReceiver extra)
+		{
+			if (!mIsBreakRequested)
+			{
+				mPublisher.notifyReceiveError(extra.fileName);
+				extra.processCancelled = true;
+			}
 
-        @Override
-        public void onNotify(Socket socket, int port, File file, int percent, AwaitedFileReceiver extra)
-        {
-            NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-            mPublisher.notifyFileReceiving(extra, device, percent);
-        }
+			if (file != null && file.isFile())
+				file.delete();
+		}
 
-        @Override
-        public void onTransferCompleted(int port, File file, AwaitedFileReceiver extra)
-        {
+		@Override
+		public void onNotify(Socket socket, int port, File file, int percent, AwaitedFileReceiver extra)
+		{
+			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
+			mPublisher.notifyFileReceiving(extra, device, percent);
+		}
 
-        }
+		@Override
+		public void onTransferCompleted(int port, File file, AwaitedFileReceiver extra)
+		{
 
-        @Override
-        public void onSocketReady(final ServerSocket serverSocket, int port, File file, final AwaitedFileReceiver extra)
-        {
-            CoolCommunication.Messenger.sendOnCurrentThread(extra.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
-                    new JsonResponseHandler()
-                    {
-                        @Override
-                        public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-                        {
-                            try
-                            {
-                                json.put("request", "file_transfer_notify_server_ready");
-                                json.put("requestId", extra.requestId);
-                                json.put("socketPort", serverSocket.getLocalPort());
+		}
 
-                                JSONObject response = new JSONObject(process.waitForResponse());
+		@Override
+		public void onSocketReady(final ServerSocket serverSocket, int port, File file, final AwaitedFileReceiver extra)
+		{
+			CoolCommunication.Messenger.sendOnCurrentThread(extra.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
+					new JsonResponseHandler()
+					{
+						@Override
+						public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
+						{
+							try
+							{
+								json.put("request", "file_transfer_notify_server_ready");
+								json.put("requestId", extra.requestId);
+								json.put("socketPort", serverSocket.getLocalPort());
 
-                                if (!response.getBoolean("result"))
-                                    this.onError(new Exception("Request rejected"));
-                            } catch (JSONException e)
-                            {
-                                this.onError(e);
-                            }
-                        }
+								JSONObject response = new JSONObject(process.waitForResponse());
 
-                        @Override
-                        public void onError(Exception exception)
-                        {
-                            Log.d(TAG, "Error while receiver is waiting response of sender");
-                            extra.processCancelled = true;
-                        }
-                    }
-            );
+								if (!response.getBoolean("result"))
+									this.onError(new Exception("Request rejected"));
+							} catch (JSONException e)
+							{
+								this.onError(e);
+							}
+						}
 
-            try
-            {
-                if (extra.processCancelled)
-                    serverSocket.close();
-            } catch (IOException e)
-            {
-            }
-        }
+						@Override
+						public void onError(Exception exception)
+						{
+							Log.d(TAG, "Error while receiver is waiting response of sender");
+							extra.processCancelled = true;
+						}
+					}
+			);
 
-        @Override
-        public boolean onBreakRequest(int port, File file, AwaitedFileReceiver extra)
-        {
-            return super.onBreakRequest(port, file, extra) || mIsBreakRequested || extra.processCancelled;
-        }
+			try
+			{
+				if (extra.processCancelled)
+					serverSocket.close();
+			} catch (IOException e)
+			{
+			}
+		}
 
-        @Override
-        public boolean onStart(int port, File file, AwaitedFileReceiver extra)
-        {
-            if (extra.processCancelled)
-                return false;
+		@Override
+		public boolean onBreakRequest(int port, File file, AwaitedFileReceiver extra)
+		{
+			return super.onBreakRequest(port, file, extra) || mIsBreakRequested || extra.processCancelled;
+		}
 
-            NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-            mPublisher.notifyFileReceiving(extra, device, 0);
+		@Override
+		public boolean onStart(int port, File file, AwaitedFileReceiver extra)
+		{
+			if (extra.processCancelled)
+				return false;
 
-            return true;
-        }
-    }
+			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
+			mPublisher.notifyFileReceiving(extra, device, 0);
+
+			return true;
+		}
+	}
 }

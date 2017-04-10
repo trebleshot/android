@@ -2,50 +2,51 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
-import com.genonbeta.TrebleShot.R;
 
 abstract public class AbstractEditableListAdapter extends BaseAdapter
 {
-    protected boolean mLockRequested = false;
-    protected Context mContext;
-    protected LayoutInflater mInflater;
+	protected boolean mLockRequested = false;
+	protected Context mContext;
+	protected LayoutInflater mInflater;
 
-    protected abstract void onSearch(String word);
-    protected abstract void onUpdate();
+	public AbstractEditableListAdapter(Context context)
+	{
+		this.mContext = context;
+		this.mInflater = LayoutInflater.from(context);
+	}
 
-    public AbstractEditableListAdapter(Context context)
-    {
-        this.mContext = context;
-        this.mInflater = LayoutInflater.from(context);
-    }
+	protected abstract void onSearch(String word);
 
-    public Context getContext()
-    {
-        return this.mContext;
-    }
-    public LayoutInflater getInflater() { return this.mInflater; }
+	protected abstract void onUpdate();
 
-    public boolean search(String word)
-    {
-        this.onSearch(word);
-        return true;
-    }
+	public Context getContext()
+	{
+		return this.mContext;
+	}
 
-    public boolean update()
-    {
-        if (mLockRequested)
-            return false;
+	public LayoutInflater getInflater()
+	{
+		return this.mInflater;
+	}
 
-        mLockRequested = true;
+	public boolean search(String word)
+	{
+		this.onSearch(word);
+		return true;
+	}
 
-        this.onUpdate();
+	public boolean update()
+	{
+		if (mLockRequested)
+			return false;
 
-        mLockRequested = false;
+		mLockRequested = true;
 
-        return true;
-    }
+		this.onUpdate();
+
+		mLockRequested = false;
+
+		return true;
+	}
 }

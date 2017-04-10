@@ -1,15 +1,11 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,10 +17,7 @@ import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.AbstractEditableListAdapter;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 
 public abstract class AbstractEditableListFragment<T extends AbstractEditableListAdapter> extends ListFragment
 {
@@ -143,6 +136,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	{
 		return this.mAdapter;
 	}
+
 	public boolean isLoading()
 	{
 		return mIsLoading;

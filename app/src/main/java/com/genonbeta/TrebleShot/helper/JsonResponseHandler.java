@@ -10,29 +10,29 @@ import java.net.Socket;
 
 public abstract class JsonResponseHandler extends CoolJsonCommunication.JsonResponseHandler
 {
-    @Override
-    public void onConfigure(CoolCommunication.Messenger.Process process)
-    {
-        process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
-    }
+	@Override
+	public void onConfigure(CoolCommunication.Messenger.Process process)
+	{
+		process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+	}
 
-    @Override
-    public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-    {
-    }
+	@Override
+	public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
+	{
+	}
 
-    @Override
-    public void onError(Exception exception)
-    {
-    }
+	@Override
+	public void onError(Exception exception)
+	{
+	}
 
-    @Override
-    public void onResponseAvailable(String response)
-    {
-    }
+	@Override
+	public void onResponseAvailable(String response)
+	{
+	}
 
-    @Override
-    public void onFinal()
-    {
-    }
+	@Override
+	public void onFinal()
+	{
+	}
 }

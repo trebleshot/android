@@ -8,15 +8,15 @@ import com.genonbeta.TrebleShot.adapter.PendingProcessListAdapter;
 
 public class PendingProcessListFragment extends ListFragment
 {
-    private PendingProcessListAdapter mAdapter;
+	private PendingProcessListAdapter mAdapter;
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
-        super.onActivityCreated(savedInstanceState);
-        mAdapter = new PendingProcessListAdapter(getActivity(), null);
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+		mAdapter = new PendingProcessListAdapter(getActivity(), null);
 
-        setEmptyText(getString(R.string.list_empty_msg));
-        setListAdapter(mAdapter);
-    }
+		setEmptyText(getString(R.string.list_empty_msg));
+		setListAdapter(mAdapter);
+	}
 }

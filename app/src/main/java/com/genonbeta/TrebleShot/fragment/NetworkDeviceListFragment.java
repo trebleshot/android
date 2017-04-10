@@ -240,7 +240,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			((ScanDevicesActionProvider)MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
+			((ScanDevicesActionProvider) MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
 
 			if (DeviceScannerProvider.ACTION_DEVICE_FOUND.equals(intent.getAction()))
 			{

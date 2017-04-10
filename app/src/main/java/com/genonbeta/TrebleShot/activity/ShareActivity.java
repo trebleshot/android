@@ -7,10 +7,8 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
@@ -23,12 +21,10 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.net.Socket;
@@ -43,15 +39,6 @@ public class ShareActivity extends GActivity
 	public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
 	public static final String ACTION_SEND_TEXT = "genonbeta.intent.action.TREBLESHOT_SEND_TEXT";
 	public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
-
-	public enum ResultType
-	{
-		NOT_CONTINUE,
-		SINGLE_FILE_SHARE,
-		TEXT_SHARE,
-		MULTI_FILE_SHARE
-	}
-
 	private EditText mStatusText;
 
 	@Override
@@ -328,5 +315,13 @@ public class ShareActivity extends GActivity
 		Looper.prepare();
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 		Looper.loop();
+	}
+
+	public enum ResultType
+	{
+		NOT_CONTINUE,
+		SINGLE_FILE_SHARE,
+		TEXT_SHARE,
+		MULTI_FILE_SHARE
 	}
 }

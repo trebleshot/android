@@ -12,38 +12,41 @@ import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 public class VideoListFragment extends AbstractEditableListFragment<VideoListAdapter> implements FragmentTitle
 {
-    @Override
-    protected VideoListAdapter onAdapter()
-    {
-        return new VideoListAdapter(getActivity());
-    }
+	@Override
+	protected VideoListAdapter onAdapter()
+	{
+		return new VideoListAdapter(getActivity());
+	}
 
-    @Override
-    protected ActionModeListener onActionModeListener() { return new ChoiceListener(); }
+	@Override
+	protected ActionModeListener onActionModeListener()
+	{
+		return new ChoiceListener();
+	}
 
-    @Override
-    public void onListItemClick(ListView l, View v, int position, long id)
-    {
-        super.onListItemClick(l, v, position, id);
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id)
+	{
+		super.onListItemClick(l, v, position, id);
 
-        VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) this.getAdapter().getItem(position);
+		VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) this.getAdapter().getItem(position);
 
-        this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
-    }
+		this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
+	}
 
-    @Override
-    public CharSequence getFragmentTitle(Context context)
-    {
-        return context.getString(R.string.video);
-    }
+	@Override
+	public CharSequence getFragmentTitle(Context context)
+	{
+		return context.getString(R.string.video);
+	}
 
-    private class ChoiceListener extends ActionModeListener
-    {
-        public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
-        {
-            VideoListAdapter.VideoInfo info = (VideoListAdapter.VideoInfo) getAdapter().getItem(pos);
+	private class ChoiceListener extends ActionModeListener
+	{
+		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
+		{
+			VideoListAdapter.VideoInfo info = (VideoListAdapter.VideoInfo) getAdapter().getItem(pos);
 
-            return info.uri;
-        }
-    }
+			return info.uri;
+		}
+	}
 }
