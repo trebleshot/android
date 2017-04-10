@@ -10,4 +10,4 @@
 </ul>
 <br />
 <br />
-See the development process: <a href="https://trello.com/b/YmbwDHHo">Trelle</a>
+See the development process: <a href="https://trello.com/b/YmbwDHHo">Trello</a>
