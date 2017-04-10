@@ -8,3 +8,6 @@
 	<li>Install it on your all android devices and get the things easier</li>
 	<li>You need to send some text information? Just use TrebleShot to do it</li>
 </ul>
+<br />
+<br />
+See the development process: <a href="https://trello.com/b/YmbwDHHo">Trelle</a>
