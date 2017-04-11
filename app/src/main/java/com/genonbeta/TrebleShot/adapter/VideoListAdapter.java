@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Locale;
+import java.util.StringTokenizer;
 
 public class VideoListAdapter extends AbstractEditableListAdapter
 {
@@ -103,13 +104,14 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 			{
 				VideoInfo info = new VideoInfo(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-				int lenght = cursor.getInt(lengthIndex);
+				long length = cursor.getLong(lengthIndex);
 
-				int hrs = (lenght / 3600000);
-				int mns = (lenght / 60000) % 60000;
-				int scs = lenght % 60000 / 1000;
+				/*int hrs = (length / 3600000);
+				int mns = (length / 60000) % 60000;
+				int scs = length % 60000 / 1000;*/
+				//info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, mns, scs);
 
-				info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, mns, scs);
+				info.duration = convertDuration(length);
 
 				if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(info.title, this.mSearchWord)))
 					this.mPendingList.add(info);
@@ -126,6 +128,37 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	protected void onSearch(String word)
 	{
 		this.mSearchWord = word;
+	}
+
+	public String convertDuration(long duration)
+	{
+		StringBuilder string = new StringBuilder();
+
+		long hours = (duration / 3600000);
+		long minutes = (duration - (hours * 3600000)) / 60000;
+		long seconds = (duration - (hours * 3600000) - (minutes * 60000)) / 1000;
+
+		if (hours > 0)
+		{
+			if (hours < 10)
+				string.append("0");
+
+			string.append(hours);
+			string.append(":");
+		}
+
+		if (minutes < 10)
+			string.append("0");
+
+		string.append(minutes);
+		string.append(":");
+
+		if (seconds < 10)
+			string.append("0");
+
+		string.append(seconds);
+
+		return string.toString();
 	}
 
 	@Override

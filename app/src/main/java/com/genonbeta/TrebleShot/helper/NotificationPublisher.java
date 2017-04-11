@@ -398,7 +398,8 @@ public class NotificationPublisher
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
-				.setTicker(mContext.getString(R.string.received_text_info));
+				.setTicker(mContext.getString(R.string.received_text_info))
+				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
 		mManager.notify(uniqueNotificationId, builder.build());
 	}

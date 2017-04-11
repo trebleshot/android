@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.receiver;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
@@ -7,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 
 import com.genonbeta.TrebleShot.R;
@@ -30,8 +30,6 @@ public class DialogEventReceiver extends BroadcastReceiver
 
 	public void showDialog(Context context, String title, String message, final PendingIntent accept, final PendingIntent reject)
 	{
-		context.setTheme(R.style.AppTheme);
-
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(context);
 
 		if (title != null)

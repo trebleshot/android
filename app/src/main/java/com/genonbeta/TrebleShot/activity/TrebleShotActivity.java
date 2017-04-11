@@ -40,6 +40,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
+	NavigationView mNavigationView;
 	Fragment mFragmentDeviceList;
 	Fragment mFragmentReceivedFiles;
 	Fragment mFragmentOnGoingProcessList;
@@ -62,8 +63,8 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
-		NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-		navigationView.setNavigationItemSelectedListener(this);
+		mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
 		mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesListFragment.class.getName());
@@ -77,7 +78,6 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
 		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
 		{
-
 			// Should we show an explanation?
 			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS))
 			{
@@ -88,6 +88,8 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_ALL);
 			}
 		}
+
+		checkCurrentRequestedFragment(getIntent());
 	}
 
 	@Override
@@ -147,6 +149,12 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		return true;
 	}
 
+	@Override
+	protected void onNewIntent(Intent intent)
+	{
+		super.onNewIntent(intent);
+		checkCurrentRequestedFragment(intent);
+	}
 
 	@Override
 	public void onBackPressed()
@@ -157,18 +165,6 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 			drawer.closeDrawer(GravityCompat.START);
 		else
 			super.onBackPressed();
-	}
-
-	private void sendTheApplication()
-	{
-		File apkFile = new File(getPackageCodePath());
-
-		Intent sendIntent = new Intent(Intent.ACTION_SEND);
-
-		sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(apkFile));
-		sendIntent.setType(FileUtils.getFileContentType(apkFile.getAbsolutePath()));
-
-		startActivity(Intent.createChooser(sendIntent, getString(R.string.file_share_app_chooser_msg)));
 	}
 
 	public void changeFragment(Fragment fragment)
@@ -182,5 +178,27 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 			setTitle(((FragmentTitle) fragment).getFragmentTitle(this));
 		else
 			setTitle(R.string.app_name);
+	}
+
+	public void checkCurrentRequestedFragment(Intent intent)
+	{
+		if (intent != null)
+			if (OPEN_RECEIVED_FILES_ACTION.equals(intent.getAction()))
+			{
+				changeFragment(mFragmentReceivedFiles);
+				mNavigationView.setCheckedItem(R.id.menu_activity_main_received_files);
+			}
+	}
+
+	private void sendTheApplication()
+	{
+		File apkFile = new File(getPackageCodePath());
+
+		Intent sendIntent = new Intent(Intent.ACTION_SEND);
+
+		sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(apkFile));
+		sendIntent.setType(FileUtils.getFileContentType(apkFile.getAbsolutePath()));
+
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.file_share_app_chooser_msg)));
 	}
 }
