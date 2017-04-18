@@ -74,7 +74,7 @@
     <string name="close">Close</string>
     <string name="device_brand_info">Brand and Model:</string>
     <string name="lock">Lock</string>
-    <string name="service_lock_notice">The communication service will not be started automatically. To disable this, run the applicaton for once</string>
+    <string name="service_lock_notice">The communication service will not be started automatically. To disable this, just run the application</string>
     <string name="service_unlocked_notice">The communication server auto-start lock is disabled</string>
     <string name="send">Send</string>
     <string name="receive">Receive</string>

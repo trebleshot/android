@@ -17,8 +17,8 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
-            android:label="@string/app_name"
             android:name=".activity.TrebleShotActivity"
+            android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -31,8 +31,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="@string/app_name"
-            android:name=".activity.ShareActivity">
+            android:name=".activity.ShareActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
                 <action android:name="android.intent.action.SEND"/>
@@ -46,12 +46,12 @@
         </activity>
 
         <activity
-            android:label="@string/preferences"
-            android:name=".activity.PreferencesActivity"/>
+            android:name=".activity.PreferencesActivity"
+            android:label="@string/preferences"/>
 
         <activity
-            android:label="@string/text_editor"
-            android:name=".activity.TextEditorActivity"/>
+            android:name=".activity.TextEditorActivity"
+            android:label="@string/text_editor"/>
 
         <service
             android:name=".service.ClientService"
@@ -62,6 +62,11 @@
         <service
             android:name=".service.CommunicationService"
             android:label="Communication Service"/>
+
+        <service
+            android:name=".service.JobSchedulerService"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <receiver android:name=".receiver.NetworkStatusReceiver">
             <intent-filter>
@@ -75,6 +80,7 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

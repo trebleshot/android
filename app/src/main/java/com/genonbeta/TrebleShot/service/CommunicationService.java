@@ -303,19 +303,19 @@ public class CommunicationService extends Service
 						case ("file_transfer_request"):
 							if (receivedMessage.has("fileSize") && receivedMessage.has("fileMime") && receivedMessage.has("fileName") && receivedMessage.has("requestId"))
 							{
+								int requestId = receivedMessage.getInt("requestId");
 								long fileSize = receivedMessage.getLong("fileSize");
 								String fileName = receivedMessage.getString("fileName");
 								String fileMime = receivedMessage.getString("fileMime");
-								int requestId = receivedMessage.getInt("requestId");
 
 								int acceptId = ApplicationHelper.getUniqueNumber();
 
 								AwaitedFileReceiver receiver = new AwaitedFileReceiver(device.ip, requestId, acceptId, fileName, fileSize, fileMime);
 								ApplicationHelper.getPendingReceivers().offer(receiver);
 
-								device.isRestricted = true;
-
 								mPublisher.notifyTransferRequest(acceptId, device, receiver, halfRestriction);
+
+								device.isRestricted = true;
 
 								result = true;
 							}

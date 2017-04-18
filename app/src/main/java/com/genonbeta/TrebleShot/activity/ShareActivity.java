@@ -15,6 +15,7 @@ import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
@@ -39,12 +40,16 @@ public class ShareActivity extends GActivity
 	public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
 	public static final String ACTION_SEND_TEXT = "genonbeta.intent.action.TREBLESHOT_SEND_TEXT";
 	public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
+
 	private EditText mStatusText;
+	private Transaction mTransaction;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		mTransaction = new Transaction(getApplicationContext());
 
 		ResultType resultType = ResultType.NOT_CONTINUE;
 		String info = "";
@@ -153,7 +158,9 @@ public class ShareActivity extends GActivity
 
 												if (response.getBoolean("result"))
 												{
-													ApplicationHelper.getSenders().put(requestId, new AwaitedFileSender(deviceIp, file, requestId));
+													AwaitedFileSender sender = new AwaitedFileSender(deviceIp, file, requestId);
+													ApplicationHelper.getSenders().put(requestId, sender);
+													mTransaction.registerSender(sender);
 												}
 												else
 													showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
@@ -219,6 +226,7 @@ public class ShareActivity extends GActivity
 														filesArray.put(thisJson);
 
 														ApplicationHelper.getSenders().put(sender.requestId, sender);
+														mTransaction.registerSender(sender);
 													} catch (Exception e)
 													{
 														Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());

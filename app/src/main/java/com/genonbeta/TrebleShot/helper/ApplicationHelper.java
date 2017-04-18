@@ -20,7 +20,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class ApplicationHelper
 {
-	public static final String TAG = "ApplicatiobHelper";
+	public static final String TAG = "ApplicationHelper";
 
 	private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
 	private static HashMap<Integer, AwaitedFileSender> mSenders = new HashMap<Integer, AwaitedFileSender>();
