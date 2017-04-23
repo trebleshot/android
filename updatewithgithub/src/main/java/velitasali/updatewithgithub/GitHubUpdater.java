@@ -4,6 +4,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,6 +12,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -26,13 +28,13 @@ import java.net.URI;
  * Date: 11/13/16 8:25 AM
  */
 
-public class GithubUpdater
+public class GitHubUpdater
 {
 	private Context mContext;
 	private String mRepo;
 	private int mThemeRes;
 
-	public GithubUpdater(Context context, String repo, int themeRes)
+	public GitHubUpdater(Context context, String repo, int themeRes)
 	{
 		this.mContext = context;
 		this.mRepo = repo;
@@ -121,7 +123,15 @@ public class GithubUpdater
 										@Override
 										public void onClick(DialogInterface dialog, int which)
 										{
-											mContext.startActivity(new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.fromFile(updateFile), "application/vnd.android.package-archive"));
+											Intent installerIntent = new Intent(Intent.ACTION_VIEW);
+
+											if (Build.VERSION.SDK_INT > 22)
+												installerIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", updateFile), "application/vnd.android.package-archive")
+														.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+											else
+												installerIntent.setDataAndType(Uri.fromFile(updateFile), "application/vnd.android.package-archive");
+
+											mContext.startActivity(installerIntent);
 										}
 									};
 
@@ -151,18 +161,12 @@ public class GithubUpdater
 										positiveButtonListener = downloadButtonListener;
 									}
 
-									AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-
-									builder.setTitle(R.string.uwg_update_available);
-									builder.setMessage(updateBody);
-
-									builder.setNegativeButton(negativeButtonLabel, null);
-									builder.setPositiveButton(positiveButtonLabel, positiveButtonListener);
-
-									AlertDialog dialog = builder.create();
-
-									dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
-									dialog.show();
+									new AlertDialog.Builder(mContext)
+											.setTitle(R.string.uwg_update_available)
+											.setMessage(updateBody)
+											.setNegativeButton(negativeButtonLabel, null)
+											.setPositiveButton(positiveButtonLabel, positiveButtonListener)
+											.show();
 								}
 							}
 							else
@@ -172,6 +176,7 @@ public class GithubUpdater
 							Toast.makeText(mContext, R.string.uwg_currently_latest_version_info, Toast.LENGTH_LONG).show();
 					}
 				} catch (Exception e) {
+					e.printStackTrace();
 					Toast.makeText(mContext, R.string.uwg_version_check_error, Toast.LENGTH_LONG).show();
 				}
 				finally

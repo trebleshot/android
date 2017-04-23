@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
-import velitasali.updatewithgithub.GithubUpdater;
+import velitasali.updatewithgithub.GitHubUpdater;
 
 public class TrebleShotActivity extends GActivity implements NavigationView.OnNavigationItemSelectedListener
 {
@@ -138,7 +138,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		}
 		else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
 		{
-			GithubUpdater updater = new GithubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
+			GitHubUpdater updater = new GitHubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
 			updater.checkForUpdates();
 		}
 		else
