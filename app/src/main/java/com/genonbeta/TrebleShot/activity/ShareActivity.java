@@ -38,7 +38,6 @@ public class ShareActivity extends GActivity
 	public static final int REQUEST_CODE_EDIT_BOX = 1;
 
 	public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
-	//public static final String ACTION_SEND_TEXT = "genonbeta.intent.action.TREBLESHOT_SEND_TEXT";
 	public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
 
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";

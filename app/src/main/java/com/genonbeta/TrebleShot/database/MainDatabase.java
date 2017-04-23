@@ -12,7 +12,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 public class MainDatabase extends SQLiteDatabase
 {
-	public static final String DATABASE_NAME = MainDatabase.class.getSimpleName()+ ".db";
+	public static final String DATABASE_NAME = MainDatabase.class.getSimpleName() + ".db";
 
 	public static final String TABLE_TRANSFER = "transfer";
 	public static final String FIELD_TRANSFER_ID = "id";

@@ -38,7 +38,7 @@ public class Transaction extends MainDatabase
 
 	public boolean removeSender(AwaitedFileSender sender)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(sender.requestId)});
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(sender.requestId)});
 
 		return getAffectedRowCount() > 0;
 	}
@@ -52,7 +52,7 @@ public class Transaction extends MainDatabase
 		{
 			cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
 
-			if(cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
+			if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
 			{
 				returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
 				Log.d(TAG, "affectedRowCount = " + returnCount);
@@ -61,14 +61,13 @@ public class Transaction extends MainDatabase
 			{
 				// Some error occurred?
 			}
-		}
-		catch(SQLException e)
+		} catch (SQLException e)
 		{
 			// Handle exception here.
 		}
 		finally
 		{
-			if(cursor != null)
+			if (cursor != null)
 				cursor.close();
 		}
 

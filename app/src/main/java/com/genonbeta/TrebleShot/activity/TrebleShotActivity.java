@@ -105,9 +105,9 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 			changeFragment(mFragmentReceivedFiles);
 		}
 		else if (R.id.menu_activity_main_ongoing_process == item.getItemId())
-        {
-            changeFragment(mFragmentOnGoingProcessList);
-        }
+		{
+			changeFragment(mFragmentOnGoingProcessList);
+		}
 		else if (R.id.menu_activity_main_share_app == item.getItemId())
 		{
 			changeFragment(mFragmentShareApplication);
