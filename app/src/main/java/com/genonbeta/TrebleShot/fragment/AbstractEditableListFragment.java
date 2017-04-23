@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -187,9 +188,15 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	protected abstract class ActionModeListener implements AbsListView.MultiChoiceModeListener
 	{
 		private ArrayList<Uri> mCheckedList = new ArrayList<>();
+		private ArrayMap<Uri, String> mCheckedNameList = new ArrayMap<>();
 		private MenuItem mSelectAll;
 
 		public abstract Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked);
+
+		public String onProvideName(ActionMode mode, int position)
+		{
+			return null;
+		}
 
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu)
@@ -223,6 +230,16 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 					shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mCheckedList);
 					shareIntent.setType("*/*");
+
+					if (mCheckedNameList.size() > 1)
+					{
+						ArrayList<CharSequence> nameExit = new ArrayList<>();
+
+						for (Uri fileUri : mCheckedList)
+							nameExit.add(mCheckedNameList.containsKey(fileUri) ? mCheckedNameList.get(fileUri) : null);
+
+						shareIntent.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameExit);
+					}
 				}
 				else if (mCheckedList.size() == 1)
 				{
@@ -232,6 +249,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 					shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
 					shareIntent.setType("*/*");
+
+					if (mCheckedNameList.containsKey(fileUri))
+						shareIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, mCheckedNameList.get(fileUri));
 				}
 
 				if (shareIntent != null)
@@ -253,11 +273,22 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
 		{
 			Uri uri = onItemChecked(mode, position, id, isChecked);
+			String name = onProvideName(mode, position);
 
 			if (isChecked)
+			{
 				mCheckedList.add(uri);
+
+				if (name != null)
+					mCheckedNameList.put(uri, name);
+			}
 			else
+			{
+				if (mCheckedNameList.containsKey(uri))
+					mCheckedNameList.remove(uri);
+
 				mCheckedList.remove(uri);
+			}
 
 			mSelectAll.setIcon((mCheckedList.size() == mAdapter.getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
 
@@ -286,5 +317,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			return mCheckedList;
 		}
 
+		public ArrayMap<Uri, String> getSharedItemNameList()
+		{
+			return mCheckedNameList;
+		}
 	}
 }

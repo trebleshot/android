@@ -74,7 +74,7 @@ public class PendingProcessListAdapter extends BaseAdapter
 	{
 		ItemHolder holder = new ItemHolder();
 
-		holder.file = s.file.getName();
+		holder.file = s.fileName;
 
 		holder.type = false;
 		holder.deviceIp = s.ip;

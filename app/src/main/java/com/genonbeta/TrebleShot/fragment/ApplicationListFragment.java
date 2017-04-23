@@ -29,8 +29,8 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		this.setHasOptionsMenu(true);
-		this.mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		setHasOptionsMenu(true);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 	}
 
 	@Override
@@ -57,9 +57,9 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	{
 		if (item.getItemId() == R.id.show_system_apps)
 		{
-			this.mPreferences.edit().putBoolean("show_system_apps", !this.mPreferences.getBoolean("show_system_apps", false)).commit();
-			this.getAdapter().showSystemApps(this.mPreferences.getBoolean("show_system_apps", false));
-			this.updateInBackground();
+			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).commit();
+			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
+			updateInBackground();
 
 			return true;
 		}
@@ -73,7 +73,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 		super.onPrepareOptionsMenu(menu);
 
 		MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
-		menuSystemApps.setChecked(this.mPreferences.getBoolean("show_system_apps", false));
+		menuSystemApps.setChecked(mPreferences.getBoolean("show_system_apps", false));
 	}
 
 	@Override
@@ -113,10 +113,20 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 
 	private class ChoiceListener extends ActionModeListener
 	{
+		public ApplicationListAdapter.AppInfo getItem(int position)
+		{
+			return (ApplicationListAdapter.AppInfo) getAdapter().getItem(position);
+		}
+
 		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
 		{
-			ApplicationListAdapter.AppInfo info = (ApplicationListAdapter.AppInfo) getAdapter().getItem(pos);
-			return Uri.parse("file://" + info.codePath);
+			return Uri.parse("file://" + getItem(pos).codePath);
+		}
+
+		@Override
+		public String onProvideName(ActionMode mode, int position)
+		{
+			return getItem(position).label + "_" + getItem(position).version + ".apk";
 		}
 	}
 }

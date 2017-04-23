@@ -134,7 +134,7 @@ public class ClientService extends Service
 		@Override
 		public void onTransferCompleted(String serverIp, int port, File file, AwaitedFileSender extra)
 		{
-			mPublisher.makeToast(getString(((!extra.isCancelled) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.file.getName()));
+			mPublisher.makeToast(getString(((!extra.isCancelled) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.fileName));
 		}
 
 		@Override

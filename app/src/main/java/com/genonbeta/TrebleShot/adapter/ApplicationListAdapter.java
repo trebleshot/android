@@ -36,47 +36,47 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 	public ApplicationListAdapter(Context context, boolean showSystemApps)
 	{
 		super(context);
-		this.mShowSysApps = showSystemApps;
-		this.mManager = this.mContext.getPackageManager();
+		mShowSysApps = showSystemApps;
+		mManager = mContext.getPackageManager();
 	}
 
 	@Override
 	protected void onUpdate()
 	{
-		this.mPendingList.clear();
+		mPendingList.clear();
 
-		for (PackageInfo packageInfo : this.mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA))
+		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA))
 		{
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || this.mShowSysApps)
+			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
 			{
-				String label = (String) appInfo.loadLabel(this.mManager);
+				String label = (String) appInfo.loadLabel(mManager);
 
-				if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(label, this.mSearchWord)))
-					this.mPendingList.add(new AppInfo(appInfo.loadLogo(this.mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+				if (mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(label, mSearchWord)))
+					mPendingList.add(new AppInfo(appInfo.loadLogo(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 			}
 		}
 
-		Collections.sort(this.mPendingList, this.mComparator);
+		Collections.sort(mPendingList, mComparator);
 	}
 
 	@Override
 	protected void onSearch(String word)
 	{
-		this.mSearchWord = word;
+		mSearchWord = word;
 	}
 
 	@Override
 	public int getCount()
 	{
-		return this.mList.size();
+		return mList.size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return this.mList.get(position);
+		return mList.get(position);
 	}
 
 	@Override
@@ -88,12 +88,12 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
-		return this.getViewAt(view == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false) : view, position);
+		return getViewAt(view == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false) : view, position);
 	}
 
 	public View getViewAt(View view, int position)
 	{
-		AppInfo info = (AppInfo) this.getItem(position);
+		AppInfo info = (AppInfo) getItem(position);
 		TextView text = (TextView) view.findViewById(R.id.text);
 		TextView text2 = (TextView) view.findViewById(R.id.text2);
 
@@ -108,10 +108,10 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 	{
 		if (mPendingList.size() > 0)
 		{
-			this.mList.clear();
-			this.mList.addAll(this.mPendingList);
+			mList.clear();
+			mList.addAll(mPendingList);
 
-			this.mPendingList.clear();
+			mPendingList.clear();
 		}
 
 		super.notifyDataSetChanged();
@@ -119,7 +119,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 
 	public void showSystemApps(boolean show)
 	{
-		this.mShowSysApps = show;
+		mShowSysApps = show;
 	}
 
 	public static class AppInfo

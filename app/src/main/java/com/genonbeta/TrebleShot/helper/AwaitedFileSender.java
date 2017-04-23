@@ -8,12 +8,14 @@ public class AwaitedFileSender
 	public int port;
 	public int requestId;
 	public boolean isCancelled = false;
+	public String fileName;
 	public File file;
 
-	public AwaitedFileSender(String ip, File file, int requestId)
+	public AwaitedFileSender(String ip, String fileName, File file, int requestId)
 	{
 		this.ip = ip;
 		this.file = file;
+		this.fileName = fileName;
 		this.requestId = requestId;
 	}
 

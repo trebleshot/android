@@ -239,11 +239,11 @@ public class NotificationPublisher
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.cancel_sending));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, sender.file.getName());
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, sender.fileName);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 
 		builder.setSmallIcon(android.R.drawable.stat_sys_upload)
-				.setContentTitle(sender.file.getName())
+				.setContentTitle(sender.fileName)
 				.setContentText(mContext.getString(R.string.sending_msg))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
