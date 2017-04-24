@@ -34,8 +34,7 @@ public class ProcessListAdapter extends BaseAdapter
 		mInflater = LayoutInflater.from(mContext);
 
 		mList.addAll(mDatabase.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setGroupBy(MainDatabase.FIELD_TRANSFER_GROUPID)
-				.setOrderBy(MainDatabase.FIELD_TRANSFER_GROUPID + " DESC")));
+				.setOrderBy(MainDatabase.FIELD_TRANSFER_ACCEPTID + " DESC")));
 	}
 
 	@Override
@@ -69,7 +68,7 @@ public class ProcessListAdapter extends BaseAdapter
 		boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
 
 		typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
-		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_FILE));
+		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_NAME));
 
 		return view;
 	}

@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
+import com.genonbeta.TrebleShot.helper.AwaitedTransaction;
 
 /**
  * Created by: veli
@@ -22,14 +23,11 @@ public class Transaction extends MainDatabase
 		super(context);
 	}
 
-	public boolean registerSender(AwaitedFileSender sender)
+	public boolean registerTransaction(AwaitedTransaction transaction)
 	{
 		ContentValues values = new ContentValues();
 
-		values.put(FIELD_TRANSFER_ID, sender.requestId);
-		values.put(FIELD_TRANSFER_GROUPID, sender.requestId);
-		values.put(FIELD_TRANSFER_FILE, sender.file.getAbsolutePath());
-		values.put(FIELD_TRANSFER_TYPE, TYPE_TRANSFER_TYPE_OUTGOING);
+		transaction.addDatabase(values);
 
 		getWritableDatabase().insert(TABLE_TRANSFER, null, values);
 

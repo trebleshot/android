@@ -132,7 +132,7 @@ public class ServerService extends Service
 					{
 						mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
 
-						if (!receiver.processCancelled && !mIsBreakRequested)
+						if (!receiver.isCancelled && !mIsBreakRequested)
 						{
 							if (preNotified <= 1)
 								mPublisher.notifyFileReceived(receiver, file, ApplicationHelper.getDeviceList().get(receiver.ip));
@@ -183,7 +183,7 @@ public class ServerService extends Service
 			if (!mIsBreakRequested)
 			{
 				mPublisher.notifyReceiveError(extra.fileName);
-				extra.processCancelled = true;
+				extra.isCancelled = true;
 			}
 
 			if (file != null && file.isFile())
@@ -232,14 +232,14 @@ public class ServerService extends Service
 						public void onError(Exception exception)
 						{
 							Log.d(TAG, "Error while receiver is waiting response of sender");
-							extra.processCancelled = true;
+							extra.isCancelled = true;
 						}
 					}
 			);
 
 			try
 			{
-				if (extra.processCancelled)
+				if (extra.isCancelled)
 					serverSocket.close();
 			} catch (IOException e)
 			{
@@ -249,13 +249,13 @@ public class ServerService extends Service
 		@Override
 		public boolean onBreakRequest(int port, File file, AwaitedFileReceiver extra)
 		{
-			return super.onBreakRequest(port, file, extra) || mIsBreakRequested || extra.processCancelled;
+			return super.onBreakRequest(port, file, extra) || mIsBreakRequested || extra.isCancelled;
 		}
 
 		@Override
 		public boolean onStart(int port, File file, AwaitedFileReceiver extra)
 		{
-			if (extra.processCancelled)
+			if (extra.isCancelled)
 				return false;
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);

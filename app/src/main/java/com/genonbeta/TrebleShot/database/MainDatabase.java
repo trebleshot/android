@@ -16,11 +16,12 @@ public class MainDatabase extends SQLiteDatabase
 
 	public static final String TABLE_TRANSFER = "transfer";
 	public static final String FIELD_TRANSFER_ID = "id";
-	public static final String FIELD_TRANSFER_GROUPID = "groupId";
 	public static final String FIELD_TRANSFER_FILE = "file";
+	public static final String FIELD_TRANSFER_NAME = "name";
 	public static final String FIELD_TRANSFER_SIZE = "size";
 	public static final String FIELD_TRANSFER_MIME = "mime";
 	public static final String FIELD_TRANSFER_TYPE = "type";
+	public static final String FIELD_TRANSFER_ACCEPTID = "acceptId";
 	public static final int TYPE_TRANSFER_TYPE_INCOMING = 0;
 	public static final int TYPE_TRANSFER_TYPE_OUTGOING = 1;
 
@@ -34,8 +35,9 @@ public class MainDatabase extends SQLiteDatabase
 	{
 		new SQLQuery.CreateTable(TABLE_TRANSFER)
 				.addColumn(FIELD_TRANSFER_ID, SQLQuery.Type.TEXT.toString(), false)
-				.addColumn(FIELD_TRANSFER_GROUPID, SQLQuery.Type.INTEGER.toString(), false)
-				.addColumn(FIELD_TRANSFER_FILE, SQLQuery.Type.TEXT.toString(), false)
+				.addColumn(FIELD_TRANSFER_ACCEPTID, SQLQuery.Type.INTEGER.toString(), true)
+				.addColumn(FIELD_TRANSFER_FILE, SQLQuery.Type.TEXT.toString(), true)
+				.addColumn(FIELD_TRANSFER_NAME, SQLQuery.Type.TEXT.toString(), false)
 				.addColumn(FIELD_TRANSFER_SIZE, SQLQuery.Type.INTEGER.toString(), true)
 				.addColumn(FIELD_TRANSFER_MIME, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_TRANSFER_TYPE, SQLQuery.Type.TEXT.toString(), false)

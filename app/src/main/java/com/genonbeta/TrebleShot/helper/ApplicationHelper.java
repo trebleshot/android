@@ -138,6 +138,7 @@ public class ApplicationHelper
 		return list;
 	}
 
+	// TODO: 4/25/17 Gotta register last number to db in order to get rid of misuse of same id
 	public static int getUniqueNumber()
 	{
 		return mUniqueNumber++;

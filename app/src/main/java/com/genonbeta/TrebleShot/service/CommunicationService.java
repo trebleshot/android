@@ -158,9 +158,7 @@ public class CommunicationService extends Service
 									json.put("request", "file_transfer_request_rejected");
 
 									for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceiversByAcceptId(acceptId))
-									{
 										idList.put(receiver.requestId);
-									}
 
 									json.put("requestIds", idList);
 								} catch (JSONException e)
