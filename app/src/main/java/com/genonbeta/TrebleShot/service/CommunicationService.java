@@ -16,6 +16,7 @@ import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolJsonCommunication;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
@@ -23,6 +24,7 @@ import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
+import com.genonbeta.android.database.CursorItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,6 +54,7 @@ public class CommunicationService extends Service
 	private NotificationPublisher mPublisher;
 	private SharedPreferences mPreferences;
 	private String mReceivedClipboardIndex;
+	private Transaction mTransaction;
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -69,6 +72,7 @@ public class CommunicationService extends Service
 
 		mPublisher = new NotificationPublisher(this);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mTransaction = new Transaction(this);
 
 		if (mPreferences.getBoolean("notify_com_server_started", false))
 			startForeground(NotificationPublisher.NOTIFICATION_SERVICE_STARTED, mPublisher.notifyServiceStarted());
@@ -107,14 +111,14 @@ public class CommunicationService extends Service
 				if (ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
 
-				if (ApplicationHelper.acceptPendingReceivers(acceptId) < 1)
+				if (mTransaction.acceptPendingReceivers(acceptId) < 1)
 				{
 					mPublisher.makeToast(R.string.something_went_wrong);
 
 					return START_NOT_STICKY;
 				}
 
-				startService(new Intent(this, ServerService.class).setAction(ServerService.ACTION_CHECK_AVAILABLES));
+				startService(new Intent(this, ServerService.class).setAction(ServerService.ACTION_CHECK_AVAILABLE));
 
 				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 						new JsonResponseHandler()
@@ -157,7 +161,7 @@ public class CommunicationService extends Service
 
 									json.put("request", "file_transfer_request_rejected");
 
-									for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceiversByAcceptId(acceptId))
+									for (AwaitedFileReceiver receiver : mTransaction.getPendingReceiversByAcceptId(acceptId))
 										idList.put(receiver.requestId);
 
 									json.put("requestIds", idList);
@@ -167,7 +171,7 @@ public class CommunicationService extends Service
 								}
 								finally
 								{
-									ApplicationHelper.removePendingReceivers(acceptId);
+									mTransaction.removePendingReceivers(acceptId);
 								}
 							}
 						}
@@ -309,7 +313,7 @@ public class CommunicationService extends Service
 								int acceptId = ApplicationHelper.getUniqueNumber();
 
 								AwaitedFileReceiver receiver = new AwaitedFileReceiver(device.ip, requestId, acceptId, fileName, fileSize, fileMime);
-								ApplicationHelper.getPendingReceivers().offer(receiver);
+								mTransaction.getPendingReceivers().offer(receiver);
 
 								mPublisher.notifyTransferRequest(acceptId, device, receiver, halfRestriction);
 
@@ -330,7 +334,7 @@ public class CommunicationService extends Service
 								int count = 0;
 								int acceptId = ApplicationHelper.getUniqueNumber();
 
-								Log.d(TAG, "First PendingReceiver count " + ApplicationHelper.getPendingReceivers().size());
+								Log.d(TAG, "First PendingReceiver count " + mTransaction.getPendingReceivers().size());
 
 								for (int i = 0; i < jsonArray.length(); i++)
 								{
@@ -348,11 +352,11 @@ public class CommunicationService extends Service
 
 										Log.d(TAG, "Received acceptId test they must be the same = " + receiver.acceptId);
 
-										ApplicationHelper.getPendingReceivers().offer(receiver);
+										mTransaction.getPendingReceivers().offer(receiver);
 									}
 								}
 
-								Log.d(TAG, "Last PendingReceiver count " + ApplicationHelper.getPendingReceivers().size());
+								Log.d(TAG, "Last PendingReceiver count " + mTransaction.getPendingReceivers().size());
 
 								if (count > 0)
 								{
@@ -367,14 +371,10 @@ public class CommunicationService extends Service
 							{
 								int requestId = receivedMessage.getInt("requestId");
 
-								if (ApplicationHelper.getSenders().containsKey(requestId))
+								if (mTransaction.transactionExists(requestId))
 								{
-									AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
-
-									if (sender.ip.equals(clientIp))
-									{
-										result = true;
-									}
+									AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
+									result = sender.ip.equals(clientIp);
 								}
 							}
 							break;
@@ -387,13 +387,15 @@ public class CommunicationService extends Service
 								{
 									int requestId = requestIds.getInt(i);
 
-									if (ApplicationHelper.getSenders().containsKey(requestId))
+									CursorItem item = mTransaction.getTransaction(requestId);
+
+									if (item != null)
 									{
-										AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
+										AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
 
 										if (sender.ip.equals(clientIp))
 										{
-											ApplicationHelper.getSenders().remove(requestId);
+											mTransaction.removeTransaction(requestId);
 											result = true;
 										}
 									}
@@ -406,13 +408,9 @@ public class CommunicationService extends Service
 								int requestId = receivedMessage.getInt("requestId");
 								int socketPort = receivedMessage.getInt("socketPort");
 
-								if (ApplicationHelper.getSenders().containsKey(requestId))
+								if (mTransaction.applyAccessPort(requestId, socketPort))
 								{
-									AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
-
-									sender.setPort(socketPort);
 									startService(new Intent(getApplicationContext(), ClientService.class).setAction(ClientService.ACTION_SEND).putExtra(EXTRA_REQUEST_ID, requestId));
-
 									result = true;
 								}
 							}

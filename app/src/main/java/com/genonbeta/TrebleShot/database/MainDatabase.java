@@ -1,6 +1,9 @@
 package com.genonbeta.TrebleShot.database;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.util.Log;
 
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -12,6 +15,8 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 public class MainDatabase extends SQLiteDatabase
 {
+	public static final String TAG = MainDatabase.class.getSimpleName();
+
 	public static final String DATABASE_NAME = MainDatabase.class.getSimpleName() + ".db";
 
 	public static final String TABLE_TRANSFER = "transfer";
@@ -21,6 +26,8 @@ public class MainDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFER_SIZE = "size";
 	public static final String FIELD_TRANSFER_MIME = "mime";
 	public static final String FIELD_TRANSFER_TYPE = "type";
+	public static final String FIELD_TRANSFER_USERIP = "ip";
+	public static final String FIELD_TRANSFER_ACCESSPORT = "accessPort";
 	public static final String FIELD_TRANSFER_ACCEPTID = "acceptId";
 	public static final int TYPE_TRANSFER_TYPE_INCOMING = 0;
 	public static final int TYPE_TRANSFER_TYPE_OUTGOING = 1;
@@ -41,6 +48,8 @@ public class MainDatabase extends SQLiteDatabase
 				.addColumn(FIELD_TRANSFER_SIZE, SQLQuery.Type.INTEGER.toString(), true)
 				.addColumn(FIELD_TRANSFER_MIME, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_TRANSFER_TYPE, SQLQuery.Type.TEXT.toString(), false)
+				.addColumn(FIELD_TRANSFER_USERIP, SQLQuery.Type.TEXT.toString(), false)
+				.addColumn(FIELD_TRANSFER_ACCESSPORT, SQLQuery.Type.INTEGER.toString(), true)
 				.exec(db);
 	}
 
@@ -48,5 +57,36 @@ public class MainDatabase extends SQLiteDatabase
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase sqLiteDatabase, int i, int i1)
 	{
 
+	}
+
+	public long getAffectedRowCount()
+	{
+		Cursor cursor = null;
+		long returnCount = 0;
+
+		try
+		{
+			cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
+
+			if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
+			{
+				returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
+				Log.d(TAG, "affectedRowCount = " + returnCount);
+			}
+			else
+			{
+				// Some error occurred?
+			}
+		} catch (SQLException e)
+		{
+			// Handle exception here.
+		}
+		finally
+		{
+			if (cursor != null)
+				cursor.close();
+		}
+
+		return returnCount;
 	}
 }

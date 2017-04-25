@@ -2,12 +2,16 @@ package com.genonbeta.TrebleShot.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.SQLException;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.AwaitedTransaction;
+import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.android.database.SQLQuery;
+
+import java.util.ArrayList;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by: veli
@@ -18,9 +22,95 @@ public class Transaction extends MainDatabase
 {
 	public static final String TAG = Transaction.class.getSimpleName();
 
+	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
+
 	public Transaction(Context context)
 	{
 		super(context);
+	}
+
+	public int acceptPendingReceivers(int acceptId)
+	{
+		int count = 0;
+
+		Log.d(TAG, "Receiver count " + false + "; pending receiver count = " + getPendingReceivers().size() + "; copiedReceivers = " + getPendingReceivers().size());
+
+		for (AwaitedFileReceiver receiver : getPendingReceivers())
+		{
+			Log.d(TAG, "Accept requested id = " + acceptId + "; current receivers id " + receiver.acceptId);
+
+			if (receiver.acceptId != acceptId)
+				continue;
+
+			registerTransaction(receiver);
+			getPendingReceivers().remove(receiver);
+
+			count++;
+		}
+
+		Log.d(TAG, "After accepting pendingReceivers, current receivers count " + false);
+
+		return count;
+	}
+
+	public boolean applyAccessPort(int requestId, int port)
+	{
+		ContentValues values = new ContentValues();
+		values.put(FIELD_TRANSFER_ACCESSPORT, port);
+
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
+
+		return getAffectedRowCount() > 0;
+	}
+
+	public ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int acceptId)
+	{
+		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
+
+		for (AwaitedFileReceiver receiver : getPendingReceivers())
+		{
+			if (receiver.acceptId == acceptId)
+				list.add(receiver);
+		}
+
+		return list;
+	}
+
+	public ArrayBlockingQueue<AwaitedFileReceiver> getPendingReceivers()
+	{
+		return mPendingReceivers;
+	}
+
+	public ArrayList<AwaitedFileReceiver> getReceivers()
+	{
+		ArrayList<CursorItem> list = getTable(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_TYPE + "=?", String.valueOf(TYPE_TRANSFER_TYPE_INCOMING)));
+
+		ArrayList<AwaitedFileReceiver> outputList = new ArrayList<>();
+
+		for (CursorItem item : list)
+			outputList.add(new AwaitedFileReceiver(item));
+
+		return outputList;
+	}
+
+	public ArrayList<AwaitedFileSender> getSenders()
+	{
+		ArrayList<CursorItem> list = getTable(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_TYPE + "=?", String.valueOf(TYPE_TRANSFER_TYPE_OUTGOING)));
+
+		ArrayList<AwaitedFileSender> outputList = new ArrayList<>();
+
+		for (CursorItem item : list)
+			outputList.add(new AwaitedFileSender(item));
+
+		return outputList;
+	}
+
+	public CursorItem getTransaction(int requestId)
+	{
+		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
 	}
 
 	public boolean registerTransaction(AwaitedTransaction transaction)
@@ -34,41 +124,49 @@ public class Transaction extends MainDatabase
 		return getAffectedRowCount() > 0;
 	}
 
-	public boolean removeSender(AwaitedFileSender sender)
+	public int removePendingReceivers(int acceptId)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(sender.requestId)});
+		int count = 0;
+
+		for (AwaitedFileReceiver receiver : getPendingReceivers())
+		{
+			if (receiver.acceptId != acceptId)
+				continue;
+
+			getPendingReceivers().remove(receiver);
+
+			count++;
+		}
+
+		return count;
+	}
+
+	public boolean removeTransaction(AwaitedTransaction transaction)
+	{
+		return removeTransaction(transaction.requestId);
+	}
+
+	public boolean removeTransaction(int requestId)
+	{
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
 
 		return getAffectedRowCount() > 0;
 	}
 
-	public long getAffectedRowCount()
+	public boolean removeTransactionGroup(AwaitedTransaction transaction)
 	{
-		Cursor cursor = null;
-		long returnCount = 0;
+		return removeTransactionGroup(transaction.acceptId);
+	}
 
-		try
-		{
-			cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
+	public boolean removeTransactionGroup(int acceptId)
+	{
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ACCEPTID + "=?", new String[]{String.valueOf(acceptId)});
 
-			if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
-			{
-				returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
-				Log.d(TAG, "affectedRowCount = " + returnCount);
-			}
-			else
-			{
-				// Some error occurred?
-			}
-		} catch (SQLException e)
-		{
-			// Handle exception here.
-		}
-		finally
-		{
-			if (cursor != null)
-				cursor.close();
-		}
+		return getAffectedRowCount() > 0;
+	}
 
-		return returnCount;
+	public boolean transactionExists(int requestId)
+	{
+		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId))) != null;
 	}
 }

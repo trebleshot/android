@@ -8,7 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.database.MainDatabase;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 
@@ -18,22 +19,24 @@ import java.util.HashSet;
 public class PendingProcessListAdapter extends BaseAdapter
 {
 	private Context mContext;
+	private Transaction mTransaction;
 	private String mIp;
-	private ArrayList<ItemHolder> mList = new ArrayList<ItemHolder>();
+	private ArrayList<ItemHolder> mList = new ArrayList<>();
 
 	public PendingProcessListAdapter(Context context, String forIp)
 	{
 		this.mContext = context;
 		this.mIp = forIp;
-
-		loadList();
+		this.mTransaction = new Transaction(context);
 	}
 
 	public void loadList()
 	{
 		mList.clear();
 
-		for (AwaitedFileSender sender : ApplicationHelper.getSenders().values())
+		// TODO: 4/25/17 fix this too bro sorry
+
+		for (AwaitedFileSender sender : mTransaction.getSenders())
 		{
 			if (this.mIp != null && !sender.ip.equals(this.mIp))
 				continue;
@@ -41,15 +44,7 @@ public class PendingProcessListAdapter extends BaseAdapter
 			addToList(sender);
 		}
 
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
-		{
-			if (this.mIp != null && !receiver.ip.equals(this.mIp))
-				continue;
-
-			addToList(receiver);
-		}
-
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
+		for (AwaitedFileReceiver receiver : mTransaction.getReceivers())
 		{
 			if (this.mIp != null && !receiver.ip.equals(this.mIp))
 				continue;
@@ -86,28 +81,9 @@ public class PendingProcessListAdapter extends BaseAdapter
 	{
 		HashSet<Integer> keyList = new HashSet<Integer>();
 
-		for (int key : ApplicationHelper.getSenders().keySet())
-		{
-			AwaitedFileSender sender = ApplicationHelper.getSenders().get(key);
-
-			if (sender.ip.equals(this.mIp))
-				keyList.add(key);
-		}
-
-		for (int currentNumber : keyList)
-			ApplicationHelper.getSenders().remove(currentNumber);
-
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
-		{
-			if (receiver.ip.equals(this.mIp))
-				ApplicationHelper.getReceivers().remove(receiver);
-		}
-
-		for (AwaitedFileReceiver receiver : ApplicationHelper.getPendingReceivers())
-		{
-			if (receiver.ip.equals(this.mIp))
-				ApplicationHelper.getPendingReceivers().remove(receiver);
-		}
+		mTransaction.getWritableDatabase().delete(MainDatabase.TABLE_TRANSFER,
+				MainDatabase.FIELD_TRANSFER_USERIP + "=?",
+				new String[] {mIp});
 	}
 
 	@Override
@@ -138,11 +114,9 @@ public class PendingProcessListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
-		return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_pending_queue, viewGroup, false), position);
-	}
+		if (view == null)
+			view = LayoutInflater.from(mContext).inflate(R.layout.list_pending_queue, viewGroup, false);
 
-	public View getViewAt(View view, int position)
-	{
 		TextView filenameText = (TextView) view.findViewById(R.id.pending_queue_list_filename);
 		TextView processTypeText = (TextView) view.findViewById(R.id.pending_queue_list_process_type_text);
 

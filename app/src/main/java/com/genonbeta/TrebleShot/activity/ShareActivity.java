@@ -167,7 +167,6 @@ public class ShareActivity extends GActivity
 														if (response.getBoolean("result"))
 														{
 															AwaitedFileSender sender = new AwaitedFileSender(deviceIp, fileName, file, requestId, requestId);
-															ApplicationHelper.getSenders().put(requestId, sender);
 															mTransaction.registerTransaction(sender);
 														}
 														else
@@ -253,7 +252,6 @@ public class ShareActivity extends GActivity
 
 															filesArray.put(thisJson);
 
-															ApplicationHelper.getSenders().put(sender.requestId, sender);
 															mTransaction.registerTransaction(sender);
 														} catch (Exception e)
 														{
@@ -275,7 +273,7 @@ public class ShareActivity extends GActivity
 													for (int i = 0; i < filesArray.length(); i++)
 													{
 														int requestId = filesArray.getJSONObject(i).getInt("requestId");
-														ApplicationHelper.getSenders().remove(requestId);
+														mTransaction.removeTransaction(requestId);
 													}
 
 													showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));

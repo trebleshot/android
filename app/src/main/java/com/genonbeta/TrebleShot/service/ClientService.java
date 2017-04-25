@@ -10,6 +10,7 @@ import android.util.Log;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
@@ -27,6 +28,7 @@ public class ClientService extends Service
 
 	private NotificationPublisher mPublisher;
 	private WifiManager.WifiLock mWifiLock;
+	private Transaction mTransaction;
 	private Send mSend = new Send();
 
 	@Override
@@ -42,6 +44,7 @@ public class ClientService extends Service
 
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
 		mPublisher = new NotificationPublisher(this);
+		mTransaction = new Transaction(this);
 
 		mSend.setNotifyDelay(2000);
 	}
@@ -59,9 +62,9 @@ public class ClientService extends Service
 				{
 					int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
 
-					if (ApplicationHelper.getSenders().containsKey(requestId))
+					if (mTransaction.transactionExists(requestId))
 					{
-						AwaitedFileSender awaitedSender = ApplicationHelper.getSenders().get(requestId);
+						AwaitedFileSender awaitedSender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
 
 						mSend.send(awaitedSender.ip, awaitedSender.port, awaitedSender.file, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender);
 
@@ -80,6 +83,8 @@ public class ClientService extends Service
 
 				Log.d(TAG, "Sender stop request is received for id = " + requestId);
 
+				// TODO: 4/25/17 this code is ineffective now change it
+				/*
 				if (ApplicationHelper.getSenders().containsKey(requestId))
 				{
 					AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
@@ -87,6 +92,7 @@ public class ClientService extends Service
 				}
 				else
 					mPublisher.cancelNotification(intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1));
+					*/
 			}
 		}
 
@@ -115,7 +121,7 @@ public class ClientService extends Service
 			mWifiLock.release();
 			mPublisher.cancelNotification(extra.requestId);
 
-			ApplicationHelper.removeSender(extra);
+			mTransaction.removeTransaction(extra);
 		}
 
 		@Override

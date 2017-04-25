@@ -3,26 +3,37 @@ package com.genonbeta.TrebleShot.helper;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.MainDatabase;
+import com.genonbeta.android.database.CursorItem;
 
 public class AwaitedFileReceiver extends AwaitedTransaction
 {
-	public String ip;
 	public String fileMimeType;
 	public long fileSize;
 
 	public AwaitedFileReceiver(String ip, int requestId, int acceptId, String fileName, long fileSize, String fileMime)
 	{
-		super(fileName, requestId, acceptId);
+		super(ip, fileName, requestId, acceptId);
 
-		this.ip = ip;
 		this.fileSize = fileSize;
 		this.fileMimeType = fileMime;
+	}
+
+	public AwaitedFileReceiver(CursorItem item)
+	{
+		super(item);
 	}
 
 	@Override
 	public void onAddDatabase(ContentValues values)
 	{
-		values.put(MainDatabase.FIELD_TRANSFER_ACCEPTID, acceptId);
+		values.put(MainDatabase.FIELD_TRANSFER_SIZE, fileSize);
 		values.put(MainDatabase.FIELD_TRANSFER_TYPE, MainDatabase.TYPE_TRANSFER_TYPE_INCOMING);
+	}
+
+	@Override
+	public void onCreate(CursorItem item)
+	{
+		this.fileSize = item.getLong(MainDatabase.FIELD_TRANSFER_SIZE);
+		this.fileMimeType = item.getString(MainDatabase.FIELD_TRANSFER_MIME);
 	}
 }

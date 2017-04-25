@@ -31,18 +31,22 @@ public class FileUtils
 
 	public static File getUniqueFile(File file)
 	{
-		String path = file.getName();
-		int pathStartPosition = path.lastIndexOf(".");
+		String fileName = file.getName();
+		int pathStartPosition = fileName.lastIndexOf(".");
 
-		if (pathStartPosition != -1)
+		String mergedFileName = file.getParent() + File.separator + (pathStartPosition != -1 ? fileName.substring(0, pathStartPosition) : fileName);
+		String fileExtension = pathStartPosition != -1 ? fileName.substring(pathStartPosition) : "";
+
+		for (int exceed = 1; exceed < 999; exceed++)
 		{
-			String fileName = path.substring(0, pathStartPosition);
-			String fileExtension = path.substring(pathStartPosition);
+			File newFile = new File(mergedFileName + " (" + exceed + ")" + fileExtension);
 
-			return new File(file.getParent() + File.separator + fileName + " [" + System.currentTimeMillis() + "]" + fileExtension);
+			if (!newFile.isFile())
+				return newFile;
 		}
 
-		return new File(file.getParent() + File.separator + file.getName() + " [" + System.currentTimeMillis() + "]");
+		// TODO: 4/25/17 handle this later
+		return null;
 	}
 
 	public static String getSaveLocationForFile(Context context, String file)

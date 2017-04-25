@@ -9,6 +9,7 @@ import android.util.Log;
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.FileUtils;
@@ -24,12 +25,13 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class ServerService extends Service
 {
 	public static final String TAG = "ServerService";
 
-	public final static String ACTION_CHECK_AVAILABLES = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
+	public final static String ACTION_CHECK_AVAILABLE = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
 	public final static String ACTION_CANCEL_RECEIVING = "com.genonbeta.TrebleShot.server.CANCEL_RECEIVING";
 
 	private ServerRunnable mRunnable = new ServerRunnable();
@@ -37,6 +39,7 @@ public class ServerService extends Service
 
 	private NotificationPublisher mPublisher;
 	private WifiManager.WifiLock mWifiLock;
+	private Transaction mTransaction;
 	private Receive mReceive = new Receive();
 	private Thread mThread;
 
@@ -53,6 +56,7 @@ public class ServerService extends Service
 
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
 		mPublisher = new NotificationPublisher(this);
+		mTransaction = new Transaction(this);
 
 		mReceive.setNotifyDelay(2000);
 	}
@@ -64,7 +68,7 @@ public class ServerService extends Service
 
 		if (intent != null)
 		{
-			if (ACTION_CHECK_AVAILABLES.equals(intent.getAction()))
+			if (ACTION_CHECK_AVAILABLE.equals(intent.getAction()))
 			{
 				Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
 			}
@@ -72,7 +76,7 @@ public class ServerService extends Service
 			{
 				final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 
-				ApplicationHelper.removeReceivers(acceptId);
+				mTransaction.removeTransactionGroup(acceptId);
 
 				mIsBreakRequested = true;
 			}
@@ -113,12 +117,24 @@ public class ServerService extends Service
 		public void run()
 		{
 			mWifiLock.acquire();
+			ArrayList<AwaitedFileReceiver> receiverList = mTransaction.getReceivers();
 
-			Log.d(TAG, "Receiver count " + ApplicationHelper.getReceivers().size());
+			do
+			{
+				doJob(receiverList);
+				receiverList = mTransaction.getReceivers();
+			} while (receiverList.size() > 0);
+
+			mWifiLock.release();
+		}
+
+		public void doJob(ArrayList<AwaitedFileReceiver> receiverList)
+		{
+			Log.d(TAG, "Receiver count " + receiverList.size());
 
 			int preNotified = 0;
 
-			for (AwaitedFileReceiver receiver : ApplicationHelper.getReceivers())
+			for (AwaitedFileReceiver receiver : receiverList)
 			{
 				preNotified++;
 
@@ -147,7 +163,7 @@ public class ServerService extends Service
 				finally
 				{
 					mPublisher.cancelNotification(NotificationPublisher.NOTIFICATION_ID_RECEIVING);
-					ApplicationHelper.removeReceiver(receiver);
+					mTransaction.removeTransaction(receiver);
 
 					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED).putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
 				}
@@ -158,10 +174,6 @@ public class ServerService extends Service
 			mIsBreakRequested = false;
 
 			Log.d(TAG, "Thread done");
-			mWifiLock.release();
-
-			if (ApplicationHelper.getReceivers().size() > 0)
-				run();
 		}
 
 		public boolean requestBreak()
