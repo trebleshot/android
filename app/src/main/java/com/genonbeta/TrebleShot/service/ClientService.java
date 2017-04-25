@@ -15,6 +15,7 @@ import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.android.database.CursorItem;
 
 import java.io.File;
 import java.net.Socket;
@@ -83,16 +84,16 @@ public class ClientService extends Service
 
 				Log.d(TAG, "Sender stop request is received for id = " + requestId);
 
-				// TODO: 4/25/17 this code is ineffective now change it
-				/*
-				if (ApplicationHelper.getSenders().containsKey(requestId))
+				CursorItem transactionItem = mTransaction.getTransaction(requestId);
+
+				if (transactionItem != null)
 				{
-					AwaitedFileSender sender = ApplicationHelper.getSenders().get(requestId);
-					sender.isCancelled = true;
+					AwaitedFileSender sender = new AwaitedFileSender(transactionItem);
+					mTransaction.removeTransactionGroup(sender.acceptId);
+					mSend.cancelGroup(sender.acceptId);
 				}
 				else
 					mPublisher.cancelNotification(intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1));
-					*/
 			}
 		}
 
@@ -101,6 +102,8 @@ public class ClientService extends Service
 
 	private class Send extends CoolTransfer.Send<AwaitedFileSender>
 	{
+		private int mCancelledGroupId = -1;
+
 		@Override
 		public boolean onStart(String serverIp, int port, File file, AwaitedFileSender extra)
 		{
@@ -109,6 +112,7 @@ public class ClientService extends Service
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
 			mPublisher.notifyFileSending(extra, device, 0);
+			mCancelledGroupId = -1;
 
 			return true;
 		}
@@ -140,19 +144,29 @@ public class ClientService extends Service
 		@Override
 		public void onTransferCompleted(String serverIp, int port, File file, AwaitedFileSender extra)
 		{
-			mPublisher.makeToast(getString(((!extra.isCancelled) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.fileName));
+			mPublisher.makeToast(getString(((!isCancelled(extra)) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.fileName));
 		}
 
 		@Override
 		public boolean onBreakRequest(String serverIp, int port, File file, AwaitedFileSender extra)
 		{
-			return extra.isCancelled;
+			return isCancelled(extra);
 		}
 
 		@Override
 		public void onSocketReady(Socket socket, String serverIp, int port, File file, AwaitedFileSender extra)
 		{
 
+		}
+
+		public void cancelGroup(int groupId)
+		{
+			mCancelledGroupId = groupId;
+		}
+
+		public boolean isCancelled(AwaitedFileSender sender)
+		{
+			return sender.acceptId == mCancelledGroupId;
 		}
 	}
 }

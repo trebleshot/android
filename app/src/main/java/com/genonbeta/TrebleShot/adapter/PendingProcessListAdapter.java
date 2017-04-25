@@ -34,8 +34,6 @@ public class PendingProcessListAdapter extends BaseAdapter
 	{
 		mList.clear();
 
-		// TODO: 4/25/17 fix this too bro sorry
-
 		for (AwaitedFileSender sender : mTransaction.getSenders())
 		{
 			if (this.mIp != null && !sender.ip.equals(this.mIp))

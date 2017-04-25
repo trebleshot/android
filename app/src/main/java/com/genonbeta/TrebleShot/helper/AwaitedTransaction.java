@@ -36,6 +36,7 @@ abstract public class AwaitedTransaction
 		this.ip = item.getString(MainDatabase.FIELD_TRANSFER_USERIP);
 		this.fileName = item.getString(MainDatabase.FIELD_TRANSFER_NAME);
 		this.requestId = item.getInt(MainDatabase.FIELD_TRANSFER_ID);
+		this.acceptId = item.getInt(MainDatabase.FIELD_TRANSFER_ACCEPTID);
 
 		this.onCreate(item);
 	}
@@ -43,6 +44,7 @@ abstract public class AwaitedTransaction
 	public void addDatabase(ContentValues values)
 	{
 		values.put(MainDatabase.FIELD_TRANSFER_ID, requestId);
+		values.put(MainDatabase.FIELD_TRANSFER_ACCEPTID, acceptId);
 		values.put(MainDatabase.FIELD_TRANSFER_NAME, fileName);
 		values.put(MainDatabase.FIELD_TRANSFER_USERIP, ip);
 
