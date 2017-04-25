@@ -29,6 +29,7 @@ public class MainDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFER_USERIP = "ip";
 	public static final String FIELD_TRANSFER_ACCESSPORT = "accessPort";
 	public static final String FIELD_TRANSFER_ACCEPTID = "acceptId";
+	public static final String FIELD_TRANSFER_FLAG = "flag";
 	public static final int TYPE_TRANSFER_TYPE_INCOMING = 0;
 	public static final int TYPE_TRANSFER_TYPE_OUTGOING = 1;
 
@@ -49,6 +50,7 @@ public class MainDatabase extends SQLiteDatabase
 				.addColumn(FIELD_TRANSFER_MIME, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_TRANSFER_TYPE, SQLQuery.Type.TEXT.toString(), false)
 				.addColumn(FIELD_TRANSFER_USERIP, SQLQuery.Type.TEXT.toString(), false)
+				.addColumn(FIELD_TRANSFER_FLAG, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_TRANSFER_ACCESSPORT, SQLQuery.Type.INTEGER.toString(), true)
 				.exec(db);
 	}
@@ -69,14 +71,7 @@ public class MainDatabase extends SQLiteDatabase
 			cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
 
 			if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
-			{
 				returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
-				Log.d(TAG, "affectedRowCount = " + returnCount);
-			}
-			else
-			{
-				// Some error occurred?
-			}
 		} catch (SQLException e)
 		{
 			// Handle exception here.

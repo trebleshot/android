@@ -24,7 +24,7 @@ public class AwaitedFileReceiver extends AwaitedTransaction
 	}
 
 	@Override
-	public void onAddDatabase(ContentValues values)
+	public void onDatabaseObject(ContentValues values)
 	{
 		values.put(MainDatabase.FIELD_TRANSFER_SIZE, fileSize);
 		values.put(MainDatabase.FIELD_TRANSFER_TYPE, MainDatabase.TYPE_TRANSFER_TYPE_INCOMING);

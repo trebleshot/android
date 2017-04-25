@@ -9,6 +9,7 @@ import android.util.Log;
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
@@ -17,6 +18,7 @@ import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationPublisher;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
+import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,7 +37,6 @@ public class ServerService extends Service
 	public final static String ACTION_CANCEL_RECEIVING = "com.genonbeta.TrebleShot.server.CANCEL_RECEIVING";
 
 	private ServerRunnable mRunnable = new ServerRunnable();
-	private boolean mIsBreakRequested = false;
 
 	private NotificationPublisher mPublisher;
 	private WifiManager.WifiLock mWifiLock;
@@ -67,7 +68,6 @@ public class ServerService extends Service
 		super.onStartCommand(intent, flags, startId);
 
 		if (intent != null)
-		{
 			if (ACTION_CHECK_AVAILABLE.equals(intent.getAction()))
 			{
 				Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
@@ -77,10 +77,7 @@ public class ServerService extends Service
 				final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 
 				mTransaction.removeTransactionGroup(acceptId);
-
-				mIsBreakRequested = true;
 			}
-		}
 
 		return START_STICKY;
 	}
@@ -100,17 +97,6 @@ public class ServerService extends Service
 		return false;
 	}
 
-	public File getUniqueFile(File file) throws IOException
-	{
-		if (file.isFile())
-		{
-			file = FileUtils.getUniqueFile(file);
-			file.createNewFile();
-		}
-
-		return file;
-	}
-
 	private class ServerRunnable implements Runnable
 	{
 		@Override
@@ -122,7 +108,10 @@ public class ServerService extends Service
 			do
 			{
 				doJob(receiverList);
-				receiverList = mTransaction.getReceivers();
+				receiverList = mTransaction.getReceivers(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
+								.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + "=?",
+										String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_OUTGOING),
+										Transaction.Flag.PENDING.toString()));
 			} while (receiverList.size() > 0);
 
 			mWifiLock.release();
@@ -132,93 +121,90 @@ public class ServerService extends Service
 		{
 			Log.d(TAG, "Receiver count " + receiverList.size());
 
-			int preNotified = 0;
+			mReceive.multiCounter = 0;
 
 			for (AwaitedFileReceiver receiver : receiverList)
 			{
-				preNotified++;
+				mReceive.multiCounter++;
 
 				Log.d(TAG, "ReceiverThread running for receiver = " + receiver.fileName);
 
 				try
 				{
-					File file = getUniqueFile(new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName)));
+					File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
 
-					if (!mIsBreakRequested)
+					if (Transaction.Flag.PENDING.equals(receiver.flag) && file.isFile())
 					{
-						mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
-
-						if (!receiver.isCancelled && !mIsBreakRequested)
-						{
-							if (preNotified <= 1)
-								mPublisher.notifyFileReceived(receiver, file, ApplicationHelper.getDeviceList().get(receiver.ip));
-							else
-								mPublisher.notifyFileReceivedMulti(preNotified);
-						}
+						file = FileUtils.getUniqueFile(file);
+						receiver.fileName = file.getName();
 					}
+
+					file.createNewFile();
+
+					mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
 				} catch (Exception e)
 				{
-					Log.d(TAG, "ongoing receive error = " + e.getMessage());
+					e.printStackTrace();
 				}
 				finally
 				{
 					mPublisher.cancelNotification(NotificationPublisher.NOTIFICATION_ID_RECEIVING);
-					mTransaction.removeTransaction(receiver);
 
-					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED).putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
+					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
+							.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
 				}
 			}
 
 			sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
 
-			mIsBreakRequested = false;
-
 			Log.d(TAG, "Thread done");
-		}
-
-		public boolean requestBreak()
-		{
-			if (mIsBreakRequested)
-				return false;
-
-			mIsBreakRequested = true;
-
-			return true;
 		}
 	}
 
 	private class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
 	{
+		public int multiCounter = 0;
+
 		@Override
-		public void onError(int port, File file, Exception error, AwaitedFileReceiver extra)
+		public void onError(ReceiveHandler handler, Exception error)
 		{
-			if (!mIsBreakRequested)
-			{
-				mPublisher.notifyReceiveError(extra.fileName);
-				extra.isCancelled = true;
-			}
+			handler.getExtra().flag = Transaction.Flag.ERROR;
+
+			mTransaction.updateTransaction(handler.getExtra());
+			mPublisher.notifyReceiveError(handler.getExtra().fileName);
+		}
+
+		@Override
+		public void onNotify(ReceiveHandler handler, int percent)
+		{
+			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
+			mPublisher.notifyFileReceiving(handler.getExtra(), device, percent);
+		}
+
+		@Override
+		public void onTransferCompleted(ReceiveHandler handler)
+		{
+			mTransaction.removeTransaction(handler.getExtra());
+
+			if (multiCounter <= 1)
+				mPublisher.notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
+			else
+				mPublisher.notifyFileReceivedMulti(multiCounter);
+		}
+
+		@Override
+		public void onInterrupted(ReceiveHandler handler)
+		{
+			File file = handler.getFile();
 
 			if (file != null && file.isFile())
 				file.delete();
 		}
 
 		@Override
-		public void onNotify(Socket socket, int port, File file, int percent, AwaitedFileReceiver extra)
+		public void onSocketReady(final ReceiveHandler handler, final ServerSocket serverSocket)
 		{
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-			mPublisher.notifyFileReceiving(extra, device, percent);
-		}
-
-		@Override
-		public void onTransferCompleted(int port, File file, AwaitedFileReceiver extra)
-		{
-
-		}
-
-		@Override
-		public void onSocketReady(final ServerSocket serverSocket, int port, File file, final AwaitedFileReceiver extra)
-		{
-			CoolCommunication.Messenger.sendOnCurrentThread(extra.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
+			CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 					new JsonResponseHandler()
 					{
 						@Override
@@ -227,51 +213,49 @@ public class ServerService extends Service
 							try
 							{
 								json.put("request", "file_transfer_notify_server_ready");
-								json.put("requestId", extra.requestId);
+								json.put("requestId", handler.getExtra().requestId);
 								json.put("socketPort", serverSocket.getLocalPort());
 
 								JSONObject response = new JSONObject(process.waitForResponse());
 
 								if (!response.getBoolean("result"))
+								{
 									this.onError(new Exception("Request rejected"));
+									serverSocket.close();
+								}
 							} catch (JSONException e)
 							{
 								this.onError(e);
+							} catch (IOException e)
+							{
+								e.printStackTrace();
 							}
 						}
 
 						@Override
 						public void onError(Exception exception)
 						{
+							exception.printStackTrace();
 							Log.d(TAG, "Error while receiver is waiting response of sender");
-							extra.isCancelled = true;
 						}
 					}
 			);
-
-			try
-			{
-				if (extra.isCancelled)
-					serverSocket.close();
-			} catch (IOException e)
-			{
-			}
 		}
 
 		@Override
-		public boolean onBreakRequest(int port, File file, AwaitedFileReceiver extra)
+		public boolean onCheckStatus(ReceiveHandler handler)
 		{
-			return super.onBreakRequest(port, file, extra) || mIsBreakRequested || extra.isCancelled;
+			// TODO: 4/25/17 here is also for checking if the break requested
+			return super.onCheckStatus(handler);
 		}
 
 		@Override
-		public boolean onStart(int port, File file, AwaitedFileReceiver extra)
+		public boolean onStart(ReceiveHandler handler)
 		{
-			if (extra.isCancelled)
-				return false;
+			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-			mPublisher.notifyFileReceiving(extra, device, 0);
+			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
+			mPublisher.notifyFileReceiving(handler.getExtra(), device, 0);
 
 			return true;
 		}

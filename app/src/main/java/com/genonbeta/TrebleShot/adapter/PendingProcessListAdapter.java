@@ -28,6 +28,8 @@ public class PendingProcessListAdapter extends BaseAdapter
 		this.mContext = context;
 		this.mIp = forIp;
 		this.mTransaction = new Transaction(context);
+
+		loadList();
 	}
 
 	public void loadList()

@@ -3,9 +3,8 @@ package com.genonbeta.TrebleShot.helper;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.MainDatabase;
+import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.android.database.CursorItem;
-
-import java.io.File;
 
 /**
  * Created by: veli
@@ -18,9 +17,9 @@ abstract public class AwaitedTransaction
 	public String ip;
 	public int requestId;
 	public int acceptId;
-	public boolean isCancelled = false;
+	public Transaction.Flag flag = Transaction.Flag.PENDING;
 
-	public abstract void onAddDatabase(ContentValues values);
+	public abstract void onDatabaseObject(ContentValues values);
 	public abstract void onCreate(CursorItem item);
 
 	public AwaitedTransaction(String ip, String fileName, int requestId, int acceptId)
@@ -37,17 +36,27 @@ abstract public class AwaitedTransaction
 		this.fileName = item.getString(MainDatabase.FIELD_TRANSFER_NAME);
 		this.requestId = item.getInt(MainDatabase.FIELD_TRANSFER_ID);
 		this.acceptId = item.getInt(MainDatabase.FIELD_TRANSFER_ACCEPTID);
+		this.flag = Transaction.Flag.valueOf(item.getString(MainDatabase.FIELD_TRANSFER_FLAG));
 
 		this.onCreate(item);
 	}
 
-	public void addDatabase(ContentValues values)
+	public ContentValues getDatabaseObject()
+	{
+		ContentValues values = new ContentValues();
+		getDatabaseObject(values);
+
+		return values;
+	}
+
+	public void getDatabaseObject(ContentValues values)
 	{
 		values.put(MainDatabase.FIELD_TRANSFER_ID, requestId);
 		values.put(MainDatabase.FIELD_TRANSFER_ACCEPTID, acceptId);
 		values.put(MainDatabase.FIELD_TRANSFER_NAME, fileName);
 		values.put(MainDatabase.FIELD_TRANSFER_USERIP, ip);
+		values.put(MainDatabase.FIELD_TRANSFER_FLAG, flag.toString());
 
-		onAddDatabase(values);
+		onDatabaseObject(values);
 	}
 }

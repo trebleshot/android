@@ -23,8 +23,6 @@ public class ApplicationHelper
 	public static final String TAG = "ApplicationHelper";
 
 	private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
-	//private static HashMap<Integer, AwaitedFileSender> mSenders = new HashMap<Integer, AwaitedFileSender>();
-	//private static ArrayBlockingQueue<AwaitedFileReceiver> mReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
 	private static int mUniqueNumber = 0;
 
@@ -46,14 +44,6 @@ public class ApplicationHelper
 
 		return appDir;
 	}
-
-	/*
-	public static ArrayBlockingQueue<AwaitedFileReceiver> getReceivers()
-	{
-		return mReceivers;
-	}
-
-	*/
 
 	public static HashMap<String, NetworkDevice> getDeviceList()
 	{
@@ -93,11 +83,10 @@ public class ApplicationHelper
 		return mDeviceScanner;
 	}
 
-
 	// TODO: 4/25/17 Gotta register last number to db in order to get rid of misuse of same id
 	public static int getUniqueNumber()
 	{
-		return mUniqueNumber++;
+		return (int)System.currentTimeMillis() / 1000;
 	}
 
 	public static boolean searchWord(String word, String searchThis)

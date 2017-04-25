@@ -22,6 +22,12 @@ public class Transaction extends MainDatabase
 {
 	public static final String TAG = Transaction.class.getSimpleName();
 
+	public enum Flag {
+		PENDING,
+		ERROR,
+		RUNNING
+	};
+
 	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
 
 	public Transaction(Context context)
@@ -58,9 +64,7 @@ public class Transaction extends MainDatabase
 		ContentValues values = new ContentValues();
 		values.put(FIELD_TRANSFER_ACCESSPORT, port);
 
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
-
-		return getAffectedRowCount() > 0;
+		return updateTransaction(requestId, values) > 0;
 	}
 
 	public ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int acceptId)
@@ -68,10 +72,8 @@ public class Transaction extends MainDatabase
 		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
-		{
 			if (receiver.acceptId == acceptId)
 				list.add(receiver);
-		}
 
 		return list;
 	}
@@ -83,8 +85,13 @@ public class Transaction extends MainDatabase
 
 	public ArrayList<AwaitedFileReceiver> getReceivers()
 	{
-		ArrayList<CursorItem> list = getTable(new SQLQuery.Select(TABLE_TRANSFER)
+		return getReceivers(new SQLQuery.Select(TABLE_TRANSFER)
 				.setWhere(FIELD_TRANSFER_TYPE + "=?", String.valueOf(TYPE_TRANSFER_TYPE_INCOMING)));
+	}
+
+	public ArrayList<AwaitedFileReceiver> getReceivers(SQLQuery.Select select)
+	{
+		ArrayList<CursorItem> list = getTable(select);
 
 		ArrayList<AwaitedFileReceiver> outputList = new ArrayList<>();
 
@@ -96,8 +103,13 @@ public class Transaction extends MainDatabase
 
 	public ArrayList<AwaitedFileSender> getSenders()
 	{
-		ArrayList<CursorItem> list = getTable(new SQLQuery.Select(TABLE_TRANSFER)
+		return getSenders(new SQLQuery.Select(TABLE_TRANSFER)
 				.setWhere(FIELD_TRANSFER_TYPE + "=?", String.valueOf(TYPE_TRANSFER_TYPE_OUTGOING)));
+	}
+
+	public ArrayList<AwaitedFileSender> getSenders(SQLQuery.Select select)
+	{
+		ArrayList<CursorItem> list = getTable(select);
 
 		ArrayList<AwaitedFileSender> outputList = new ArrayList<>();
 
@@ -115,12 +127,7 @@ public class Transaction extends MainDatabase
 
 	public boolean registerTransaction(AwaitedTransaction transaction)
 	{
-		ContentValues values = new ContentValues();
-
-		transaction.addDatabase(values);
-
-		getWritableDatabase().insert(TABLE_TRANSFER, null, values);
-
+		getWritableDatabase().insert(TABLE_TRANSFER, null, transaction.getDatabaseObject());
 		return getAffectedRowCount() > 0;
 	}
 
@@ -168,5 +175,24 @@ public class Transaction extends MainDatabase
 	public boolean transactionExists(int requestId)
 	{
 		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId))) != null;
+	}
+
+	public boolean updateFlag(int requestId, Flag flag)
+	{
+		ContentValues values = new ContentValues();
+		values.put(FIELD_TRANSFER_FLAG, flag.toString());
+
+		return updateTransaction(requestId, values) > 0;
+	}
+
+	public long updateTransaction(AwaitedTransaction transaction)
+	{
+		return updateTransaction(transaction.requestId, transaction.getDatabaseObject());
+	}
+
+	public long updateTransaction(int requestId, ContentValues values)
+	{
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
+		return getAffectedRowCount();
 	}
 }

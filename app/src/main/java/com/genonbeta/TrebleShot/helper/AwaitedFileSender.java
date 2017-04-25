@@ -25,7 +25,7 @@ public class AwaitedFileSender extends AwaitedTransaction
 	}
 
 	@Override
-	public void onAddDatabase(ContentValues values)
+	public void onDatabaseObject(ContentValues values)
 	{
 		values.put(MainDatabase.FIELD_TRANSFER_FILE, file.getAbsolutePath());
 		values.put(MainDatabase.FIELD_TRANSFER_ACCESSPORT, port);

@@ -15,7 +15,7 @@ public class CoolTransfer
 {
 	public final static int DELAY_DISABLED = -1;
 
-	public abstract static class Send<T extends Object>
+	public abstract static class Send<T>
 	{
 		private ArrayBlockingQueue<SendHandler> mProcess = new ArrayBlockingQueue<SendHandler>(100, true);
 		private int notifyDelay = CoolTransfer.DELAY_DISABLED;
@@ -59,7 +59,6 @@ public class CoolTransfer
 			SendHandler handler = new SendHandler(serverIp, port, file, bufferSize, extra);
 
 			handler.onRun();
-			handler.transferCompleted();
 
 			return handler;
 		}
@@ -87,9 +86,9 @@ public class CoolTransfer
 			}
 
 			@Override
-			public boolean isBreakRequested()
+			public boolean isInterrupted()
 			{
-				return super.isBreakRequested() || Send.this.onBreakRequest(this.mServerIp, this.mPort, this.mFile, this.mExtra);
+				return super.isInterrupted() || Send.this.onBreakRequest(this.mServerIp, this.mPort, this.mFile, this.mExtra);
 			}
 
 			@Override
@@ -134,7 +133,7 @@ public class CoolTransfer
 							lastNotified = System.currentTimeMillis();
 						}
 
-						if (this.isBreakRequested())
+						if (this.isInterrupted())
 							break;
 					}
 
@@ -156,27 +155,29 @@ public class CoolTransfer
 		}
 	}
 
-	public abstract static class Receive<T extends Object>
+	public abstract static class Receive<T>
 	{
 		private ArrayBlockingQueue<ReceiveHandler> mProcess = new ArrayBlockingQueue<ReceiveHandler>(100, true);
 		private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 
-		public abstract void onError(int port, File file, Exception error, T extra);
+		public abstract void onError(ReceiveHandler handler, Exception error);
 
-		public abstract void onNotify(Socket socket, int port, File file, int percent, T extra);
+		public abstract void onNotify(ReceiveHandler handler, int percent);
 
-		public abstract void onTransferCompleted(int port, File file, T extra);
+		public abstract void onTransferCompleted(ReceiveHandler handler);
 
-		public abstract void onSocketReady(ServerSocket socket, int port, File file, T extra);
+		public abstract void onInterrupted(ReceiveHandler handler);
 
-		public abstract boolean onStart(int port, File file, T extra);
+		public abstract void onSocketReady(ReceiveHandler handler, ServerSocket serverSocket);
 
-		public boolean onBreakRequest(int port, File file, T extra)
+		public abstract boolean onStart(ReceiveHandler handler);
+
+		public boolean onCheckStatus(ReceiveHandler handler)
 		{
 			return false;
 		}
 
-		public void onStop(int port, File file, T extra)
+		public void onStop(ReceiveHandler handler)
 		{
 		}
 
@@ -200,7 +201,6 @@ public class CoolTransfer
 			ReceiveHandler handler = new ReceiveHandler(port, file, fileSize, bufferSize, timeOut, extra);
 
 			handler.onRun();
-			handler.transferCompleted();
 
 			return handler;
 		}
@@ -217,6 +217,7 @@ public class CoolTransfer
 			protected long mFileSize;
 			protected byte[] mBufferSize;
 			protected int mTimeout;
+			protected Socket mSocket;
 			protected T mExtra;
 
 			public ReceiveHandler(int port, File file, long fileSize, byte[] bufferSize, int timeout, T extra)
@@ -230,27 +231,22 @@ public class CoolTransfer
 			}
 
 			@Override
-			public boolean isBreakRequested()
-			{
-				return super.isBreakRequested() || Receive.this.onBreakRequest(this.mPort, this.mFile, this.mExtra);
-			}
-
-			@Override
 			protected void onRun()
 			{
 				Receive.this.getProcesses().offer(this);
 
-				if (!Receive.this.onStart(this.mPort, this.mFile, this.mExtra))
+				if (!Receive.this.onStart(this))
 					return;
 
 				try
 				{
 					ServerSocket serverSocket = new ServerSocket(this.mPort);
 
-					Receive.this.onSocketReady(serverSocket, this.mPort, this.mFile, this.mExtra);
+					Receive.this.onSocketReady(this, serverSocket);
 
-					Socket socket = serverSocket.accept();
-					InputStream inputStream = socket.getInputStream();
+					mSocket = serverSocket.accept();
+
+					InputStream inputStream = mSocket.getInputStream();
 					FileOutputStream outputStream = new FileOutputStream(this.mFile);
 
 					int len;
@@ -274,71 +270,101 @@ public class CoolTransfer
 
 							if (currentPercent > progressPercent)
 							{
-								Receive.this.onNotify(socket, this.mPort, this.mFile, currentPercent, this.mExtra);
+								Receive.this.onNotify(this, currentPercent);
 								progressPercent = currentPercent;
 							}
 
 							lastNotified = System.currentTimeMillis();
 						}
 
-						if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isBreakRequested())
+						if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isInterrupted())
 							break;
 					}
 
 					outputStream.close();
 					inputStream.close();
-					socket.close();
+					mSocket.close();
 					serverSocket.close();
 
-					if (this.mFile.length() != this.mFileSize && !this.isBreakRequested())
-						Receive.this.onError(this.mPort, this.mFile, new NotYetBoundException(), this.mExtra);
-
-					Receive.this.onTransferCompleted(this.mPort, this.mFile, this.mExtra);
+					if (this.isInterrupted())
+						Receive.this.onInterrupted(this);
+					else
+					{
+						if (this.mFile.length() != this.mFileSize)
+							throw new NotYetBoundException();
+						else
+							Receive.this.onTransferCompleted(this);
+					}
 				} catch (Exception e)
 				{
-					Receive.this.onError(this.mPort, this.mFile, e, this.mExtra);
+					Receive.this.onError(this, e);
 				}
 				finally
 				{
-					Receive.this.onStop(this.mPort, this.mFile, this.mExtra);
+					Receive.this.onStop(this);
 					Receive.this.getProcesses().remove(this);
 				}
+			}
+
+			public byte[] getBufferSize()
+			{
+				return mBufferSize;
+			}
+
+			public T getExtra()
+			{
+				return mExtra;
+			}
+
+			public File getFile()
+			{
+				return mFile;
+			}
+
+			public long getFileSize()
+			{
+				return mFileSize;
+			}
+
+			public Socket getSocket()
+			{
+				return mSocket;
+			}
+
+			public long getTimeout()
+			{
+				return mTimeout;
+			}
+
+			@Override
+			public boolean isInterrupted()
+			{
+				return super.isInterrupted() || Receive.this.onCheckStatus(this);
 			}
 		}
 	}
 
 	public abstract static class TransferHandler implements Runnable
 	{
-		private boolean mIsBreakRequested = false;
-		private boolean mIsCompleted = false;
+		private boolean mInterrupted = false;
 
 		protected abstract void onRun();
 
-		public boolean isBreakRequested()
+		public void interrupt()
 		{
-			return this.mIsBreakRequested;
+			this.mInterrupted = true;
 		}
 
-		public boolean isCompleted()
+		public boolean isInterrupted()
 		{
-			return this.mIsCompleted;
-		}
-
-		public void requestBreak()
-		{
-			this.mIsBreakRequested = true;
+			return this.mInterrupted;
 		}
 
 		@Override
 		public void run()
 		{
+			mInterrupted = false;
 			this.onRun();
-			this.transferCompleted();
-		}
-
-		public void transferCompleted()
-		{
-			this.mIsCompleted = true;
 		}
 	}
 }
