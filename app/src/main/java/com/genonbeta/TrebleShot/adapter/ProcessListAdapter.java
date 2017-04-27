@@ -20,21 +20,31 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class ProcessListAdapter extends BaseAdapter
+public class ProcessListAdapter extends AbstractEditableListAdapter
 {
 	private Context mContext;
-	private LayoutInflater mInflater;
 	private MainDatabase mDatabase;
 	private ArrayList<CursorItem> mList = new ArrayList<>();
 
 	public ProcessListAdapter(Context context)
 	{
-		mContext = context;
-		mDatabase = new MainDatabase(context);
-		mInflater = LayoutInflater.from(mContext);
+		super(context);
 
+		mDatabase = new MainDatabase(context);
 		mList.addAll(mDatabase.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
 				.setOrderBy(MainDatabase.FIELD_TRANSFER_ACCEPTID + " DESC")));
+	}
+
+	@Override
+	protected void onSearch(String word)
+	{
+
+	}
+
+	@Override
+	protected void onUpdate()
+	{
+
 	}
 
 	@Override
@@ -59,16 +69,18 @@ public class ProcessListAdapter extends BaseAdapter
 	public View getView(int i, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
-			view = mInflater.inflate(R.layout.list_process, viewGroup, false);
+			view = getInflater().inflate(R.layout.list_process, viewGroup, false);
 
 		CursorItem thisItem = (CursorItem) getItem(i);
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
 		TextView mainText = (TextView) view.findViewById(R.id.list_process_name_text);
+		TextView statusText = (TextView) view.findViewById(R.id.list_process_status_text);
 
 		boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
 
 		typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_NAME));
+		statusText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_FLAG));
 
 		return view;
 	}

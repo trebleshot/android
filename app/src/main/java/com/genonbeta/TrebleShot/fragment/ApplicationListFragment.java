@@ -57,7 +57,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	{
 		if (item.getItemId() == R.id.show_system_apps)
 		{
-			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).commit();
+			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
 			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
 			updateInBackground();
 

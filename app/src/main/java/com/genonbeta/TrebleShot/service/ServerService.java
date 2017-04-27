@@ -75,7 +75,7 @@ public class ServerService extends Service
 			}
 			else if (ACTION_CANCEL_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
 			{
-				final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 				mTransaction.removeTransactionGroup(acceptId);
 
 				if (mReceive.getProcesses().size() > 0)
@@ -144,7 +144,8 @@ public class ServerService extends Service
 
 					file.createNewFile();
 
-					mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
+					if (mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver).isInterrupted())
+						break;
 				} catch (Exception e)
 				{
 					e.printStackTrace();
@@ -195,6 +196,8 @@ public class ServerService extends Service
 		@Override
 		public void onInterrupted(ReceiveHandler handler)
 		{
+			handler.getExtra().notification.cancel();
+
 			File file = handler.getFile();
 
 			if (file != null && file.isFile())
@@ -217,8 +220,6 @@ public class ServerService extends Service
 								json.put("socketPort", serverSocket.getLocalPort());
 
 								JSONObject response = new JSONObject(process.waitForResponse());
-
-								Log.d(TAG, "Read connection response: " + response.toString());
 
 								if (!response.getBoolean("result"))
 								{
