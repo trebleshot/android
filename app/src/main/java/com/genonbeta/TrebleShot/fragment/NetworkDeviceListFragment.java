@@ -33,7 +33,7 @@ import com.genonbeta.TrebleShot.adapter.PendingProcessListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
@@ -49,7 +49,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	private SelfReceiver mReceiver = new SelfReceiver();
 	private PokeHandler mPokeHandler = new PokeHandler();
 	private NetworkDeviceListAdapter mListAdapter;
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private MenuItem mAnimatedSearchMenuItem;
 	private AbsListView.OnItemClickListener mClickListener;
@@ -70,7 +70,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		super.onActivityCreated(savedInstanceState);
 
 		mListAdapter = new NetworkDeviceListAdapter(getActivity());
-		mPublisher = new NotificationPublisher(getActivity());
+		mNotification = new NotificationUtils(getActivity());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		setListAdapter(mListAdapter);
@@ -211,7 +211,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 			case R.id.network_devices_clear_list:
 				ApplicationHelper.getDeviceList().clear();
 				mListAdapter.notifyDataSetChanged();
-				mPublisher.makeToast(R.string.device_list_cleared_msg);
+				mNotification.showToast(R.string.device_list_cleared_msg);
 				return true;
 		}
 
@@ -314,7 +314,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 			Looper.prepare();
 
 			if (getActivity() != null)
-				mPublisher.makeToast(text);
+				mNotification.showToast(text);
 
 			Looper.loop();
 		}

@@ -10,7 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -43,7 +43,7 @@ public class FileDeleteDialogFragment extends DialogFragment
 		this.mContext = getActivity();
 
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-		final NotificationPublisher publisher = new NotificationPublisher(getActivity().getApplicationContext());
+		final NotificationUtils publisher = new NotificationUtils(getActivity().getApplicationContext());
 
 		dialogBuilder.setTitle(R.string.delete_confirm);
 		dialogBuilder.setMessage(getString(R.string.delete_warning, mFiles.size()));
@@ -73,7 +73,7 @@ public class FileDeleteDialogFragment extends DialogFragment
 
 								try
 								{
-									publisher.makeToast(getString(R.string.delete_completed, mFiles.size()));
+									publisher.showToast(getString(R.string.delete_completed, mFiles.size()));
 								} catch (IllegalStateException e)
 								{
 									e.printStackTrace();

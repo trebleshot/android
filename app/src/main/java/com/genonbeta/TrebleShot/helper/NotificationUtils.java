@@ -1,15 +1,14 @@
 package com.genonbeta.TrebleShot.helper;
 
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -23,48 +22,68 @@ import com.genonbeta.TrebleShot.service.ServerService;
 
 import java.io.File;
 
-public class NotificationPublisher
+/**
+ * Created by: veli
+ * Date: 4/28/17 2:00 AM
+ */
+
+public class NotificationUtils
 {
 	public static final String TAG = "NotificationPublisher";
 	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
-	public static final int NOTIFICATION_SERVICE_STARTED = 232434;
-	public static final int NOTIFICATION_OPPOSITE_DEVICE_PING = 232438;
-	public static final int NOTIFICATION_ID_RECEIVED = 20000;
-	public static final int NOTIFICATION_ID_SENT = 20001;
-	public static final int NOTIFICATION_ID_RECEIVING = 20002;
-	public static final int NOTIFICATION_ID_RECEIVE_ERROR = 20003;
+	public static final int NOTIFICATION_ID_SERVICE = 232434;
+	public static final int NOTIFICATION_ID_PING = 232438;
 
 	private Context mContext;
-	private NotificationManager mManager;
+	private NotificationManagerCompat mManager;
 	private SharedPreferences mPreferences;
 
-	public NotificationPublisher(Context context)
+	public NotificationUtils(Context context)
 	{
 		this.mContext = context;
-		this.mManager = (NotificationManager) mContext.getSystemService(Service.NOTIFICATION_SERVICE);
+		this.mManager = NotificationManagerCompat.from(context);
 		this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 	}
 
-	public NotificationManager getNotificationManager()
+	public NotificationUtils cancel(int notificationId)
 	{
-		return this.mManager;
+		mManager.cancel(notificationId);
+		return this;
 	}
 
-	public SharedPreferences getSharedPreferences()
+	public int getNotificationSettings()
 	{
-		return this.mPreferences;
+		int makeSound = (mPreferences.getBoolean("notification_sound", false)) ? NotificationCompat.DEFAULT_SOUND : 0;
+		int vibrate = (mPreferences.getBoolean("notification_vibrate", false)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
+		int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
+
+		return makeSound | vibrate | light;
 	}
 
-	public void notifyConnectionRequest(String clientIp)
+	public DynamicNotification notifyService()
 	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, NOTIFICATION_ID_SERVICE);
+
+		notification.setSmallIcon(R.mipmap.p2p)
+				.setContentTitle(mContext.getString(R.string.app_name))
+				.setContentText(mContext.getString(R.string.ongoing))
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE), 0))
+				.addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
+
+		return notification.show();
+	}
+
+	public DynamicNotification notifyConnectionRequest(String clientIp)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
+
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_ALLOW_IP);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
+		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 		rejectIntent.setAction(CommunicationService.ACTION_REJECT_IP);
@@ -80,25 +99,24 @@ public class NotificationPublisher
 
 		Log.i(TAG, "clientIp = " + clientIp);
 
-		builder.setSmallIcon(android.R.drawable.stat_notify_error)
+		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.connection_permission))
 				.setContentText(mContext.getString(R.string.allow_device_to_connect))
 				.setContentInfo(clientIp)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setDefaults(this.getNotificationDefaults())
+				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
 				.setTicker(mContext.getString(R.string.connection_permission));
 
-		mManager.notify(uniqueNotificationId, builder.build());
+		return notification.show();
 	}
 
-	public void notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction)
+	public DynamicNotification notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction)
 	{
-		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
 
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
@@ -106,7 +124,7 @@ public class NotificationPublisher
 
 		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
+		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
@@ -139,33 +157,32 @@ public class NotificationPublisher
 
 		Log.i(TAG, "clientIp = " + device.ip + "; fileName = " + receiver.fileName + " ; fileType = " + receiver.fileMimeType + " ; requestId = " + receiver.requestId);
 
-		builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
 				.setContentText(receiver.fileName)
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setDefaults(this.getNotificationDefaults())
+				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
 				.setTicker(mContext.getString(R.string.receive_the_file_que))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-		mManager.notify(uniqueNotificationId, builder.build());
+		return notification.show();
 	}
 
-	public void notifyMultiTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction)
+	public DynamicNotification notifyTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction)
 	{
-		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, acceptId);
 
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_ACCEPT);
 		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
+		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
@@ -196,44 +213,30 @@ public class NotificationPublisher
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
-		builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
 				.setContentText(mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setDefaults(this.getNotificationDefaults())
+				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
 				.setTicker(mContext.getString(R.string.receive_the_file_que))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-		mManager.notify(uniqueNotificationId, builder.build());
+		return notification.show();
 	}
 
-	public Notification notifyServiceStarted()
+	public DynamicNotification notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress)
 	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-
-		builder.setSmallIcon(R.mipmap.p2p)
-				.setContentTitle(mContext.getString(R.string.app_name))
-				.setContentText(mContext.getString(R.string.ongoing))
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE), 0))
-				.addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
-
-		return builder.build();
-	}
-
-	public NotificationCompat.Builder notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress)
-	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, sender.acceptId);
 		Intent cancelIntent = new Intent(mContext, ClientService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		cancelIntent.setAction(ClientService.ACTION_CANCEL_SENDING);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, sender.requestId);
-		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, sender.requestId);
+		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
 
@@ -242,25 +245,24 @@ public class NotificationPublisher
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, sender.fileName);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 
-		builder.setSmallIcon(android.R.drawable.stat_sys_upload)
+		notification.setSmallIcon(android.R.drawable.stat_sys_upload)
 				.setContentTitle(sender.fileName)
 				.setContentText(mContext.getString(R.string.sending_msg))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
+				// TODO: 4/28/17 Progress? Shoulda remove it?
 				.setProgress(100, progress, false)
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
 		Log.d(TAG, "sending(): requestId = " + sender.requestId);
 
-		notify(sender.requestId, builder.build());
-
-		return builder;
+		return notification.show();
 	}
 
-	public NotificationCompat.Builder notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device, int progress)
+	public DynamicNotification notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device)
 	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
 		Intent cancelIntent = new Intent(mContext, ServerService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
@@ -268,7 +270,7 @@ public class NotificationPublisher
 		cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, receiver.requestId);
 		cancelIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId);
-		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, NOTIFICATION_ID_RECEIVING);
+		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
 
@@ -277,101 +279,27 @@ public class NotificationPublisher
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, receiver.fileName);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 
-		builder.setSmallIcon(android.R.drawable.stat_sys_download)
+		notification.setSmallIcon(android.R.drawable.stat_sys_download)
 				.setContentTitle(receiver.fileName)
 				.setContentText(mContext.getString(R.string.receiving_msg))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setProgress(100, progress, false)
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.cancel_receiving), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
-		Log.d(TAG, "receiving(): requestId = " + receiver.requestId);
-
-		notify(NOTIFICATION_ID_RECEIVING, builder.build());
-
-		return builder;
+		return notification.show();
 	}
 
-	public void notifyOppositeDevicePing(NetworkDevice device)
+	public DynamicNotification notifyClipboardRequest(String clientIp, CharSequence text)
 	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-
-		builder.setSmallIcon(android.R.drawable.stat_notify_chat)
-				.setContentTitle(mContext.getString(R.string.poke_notify))
-				.setContentText(mContext.getString(R.string.sent_signal_msg))
-				.setContentInfo(device.user)
-				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
-				.setDefaults(this.getNotificationDefaults())
-				.setTicker(mContext.getString(R.string.poke_notify));
-
-		mManager.notify(NOTIFICATION_OPPOSITE_DEVICE_PING, builder.build());
-	}
-
-	public void notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
-	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-
-		Intent openIntent;
-
-		if (Build.VERSION.SDK_INT < 23)
-		{
-			openIntent = new Intent(Intent.ACTION_VIEW);
-			openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
-		}
-		else
-			openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
-
-		builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(receiver.fileName)
-				.setContentText(mContext.getString(R.string.file_received_msg))
-				.setContentInfo(device.user)
-				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
-
-		mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
-	}
-
-	public void notifyFileReceivedMulti(int numberOfFiles)
-	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
-
-		builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.multiple_receive))
-				.setContentText(mContext.getString(R.string.multiple_receive_done_summary, String.valueOf(numberOfFiles)))
-				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
-
-		mManager.notify(NOTIFICATION_ID_RECEIVED, builder.build());
-	}
-
-	public void notifyReceiveError(String fileName)
-	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
-
-		builder.setSmallIcon(android.R.drawable.stat_notify_error)
-				.setContentTitle(mContext.getString(R.string.error))
-				.setContentText(mContext.getString(R.string.file_receiving_error_msg, fileName))
-				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
-
-		notify(NOTIFICATION_ID_RECEIVE_ERROR, builder.build());
-	}
-
-	public void notifyClipboardRequest(String clientIp, CharSequence text)
-	{
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-		int uniqueNotificationId = ApplicationHelper.getUniqueNumber();
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, uniqueNotificationId);
+		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 
@@ -389,58 +317,106 @@ public class NotificationPublisher
 
 		Log.i(TAG, "clientIp = " + clientIp);
 
-		builder.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.received_text))
 				.setContentText(mContext.getString(R.string.copy_to_clipboard_question))
 				.setContentInfo(clientIp)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setDefaults(this.getNotificationDefaults())
+				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
 				.setTicker(mContext.getString(R.string.received_text_info))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-		mManager.notify(uniqueNotificationId, builder.build());
+		return notification.show();
 	}
 
-
-	public int getNotificationDefaults()
+	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
 	{
-		int makeSound = (mPreferences.getBoolean("notification_sound", false)) ? NotificationCompat.DEFAULT_SOUND : 0;
-		int vibrate = (mPreferences.getBoolean("notification_vibrate", false)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
-		int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		Intent openIntent;
 
-		return makeSound | vibrate | light;
+		if (Build.VERSION.SDK_INT < 23)
+		{
+			openIntent = new Intent(Intent.ACTION_VIEW);
+			openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
+		}
+		else
+			openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
+
+		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+				.setContentTitle(receiver.fileName)
+				.setContentText(mContext.getString(R.string.file_received_msg))
+				.setContentInfo(device.user)
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
+
+		return notification.show();
 	}
 
-	public void notify(int notificationId, Notification notification)
+	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, int numberOfFiles)
 	{
-		mManager.notify(notificationId, notification);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
+
+		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+				.setContentTitle(mContext.getString(R.string.multiple_receive))
+				.setContentText(mContext.getString(R.string.multiple_receive_done_summary, String.valueOf(numberOfFiles)))
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
+
+		return notification.show();
 	}
 
-	public void makeToast(String toastText)
+	public DynamicNotification notifyPing(NetworkDevice device)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, NOTIFICATION_ID_PING);
+
+		notification.setSmallIcon(android.R.drawable.stat_notify_chat)
+				.setContentTitle(mContext.getString(R.string.poke_notify))
+				.setContentText(mContext.getString(R.string.sent_signal_msg))
+				.setContentInfo(device.user)
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
+				.setDefaults(getNotificationSettings())
+				.setTicker(mContext.getString(R.string.poke_notify));
+
+		return notification.show();
+	}
+
+	public DynamicNotification notifyReceiveError(AwaitedFileReceiver receiver)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
+
+		notification.setSmallIcon(android.R.drawable.stat_notify_error)
+				.setContentTitle(mContext.getString(R.string.error))
+				.setContentText(mContext.getString(R.string.file_receiving_error_msg, receiver.fileName))
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
+
+		return notification.show();
+	}
+
+	public void showToast(String toastText)
 	{
 		Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
 	}
 
-	public void makeToast(int toastTextRes)
+	public void showToast(int toastTextRes)
 	{
 		Toast.makeText(mContext, toastTextRes, Toast.LENGTH_SHORT).show();
 	}
 
-	public void makeToast(String text, int lenght)
+	public void showToast(String text, int length)
 	{
-		Toast.makeText(mContext, text, lenght).show();
+		Toast.makeText(mContext, text, length).show();
 	}
 
-	public void makeToast(int textRes, int lenght)
+	public void showToast(int textRes, int length)
 	{
-		Toast.makeText(mContext, textRes, lenght).show();
+		Toast.makeText(mContext, textRes, length).show();
 	}
 
-	public void cancelNotification(int notificationId)
-	{
-		mManager.cancel(notificationId);
-	}
 }

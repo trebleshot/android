@@ -9,7 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetBoundException;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayList;
 
 public class CoolTransfer
 {
@@ -17,31 +17,36 @@ public class CoolTransfer
 
 	public abstract static class Send<T>
 	{
-		private ArrayBlockingQueue<SendHandler> mProcess = new ArrayBlockingQueue<SendHandler>(100, true);
+		private final ArrayList<SendHandler> mProcess = new ArrayList<>();
 		private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 
-		public abstract void onError(String serverIp, int port, File file, Exception error, T extra);
+		public abstract void onError(SendHandler handler, Exception error);
 
-		public abstract void onNotify(Socket socket, String serverIp, int port, File file, int percent, T extra);
+		public abstract void onNotify(SendHandler handler, int percent);
 
-		public abstract void onTransferCompleted(String serverIp, int port, File file, T extra);
+		public abstract void onTransferCompleted(SendHandler handler);
 
-		public abstract void onSocketReady(Socket socket, String serverIp, int port, File file, T extra);
+		public abstract void onInterrupted(SendHandler handler);
 
-		public abstract boolean onStart(String serverIp, int port, File file, T extra);
+		public abstract void onSocketReady(SendHandler handler);
 
-		public boolean onBreakRequest(String serverIp, int port, File file, T extra)
+		public abstract boolean onStart(SendHandler handler);
+
+		public boolean onCheckStatus(SendHandler handler)
 		{
 			return false;
 		}
 
-		public void onStop(String serverIp, int port, File file, T extra)
+		public void onStop(SendHandler handler)
 		{
 		}
 
-		public ArrayBlockingQueue<SendHandler> getProcesses()
+		public ArrayList<SendHandler> getProcesses()
 		{
-			return this.mProcess;
+			synchronized (this.mProcess)
+			{
+				return this.mProcess;
+			}
 		}
 
 		public SendHandler send(String serverIp, int port, File file, byte[] bufferSize, T extra)
@@ -70,11 +75,12 @@ public class CoolTransfer
 
 		public class SendHandler extends TransferHandler
 		{
-			protected String mServerIp;
-			protected int mPort;
-			protected File mFile;
-			protected byte[] mBufferSize;
-			protected T mExtra;
+			private String mServerIp;
+			private int mPort;
+			private File mFile;
+			private byte[] mBufferSize;
+			private T mExtra;
+			private Socket mSocket;
 
 			public SendHandler(String serverIp, int port, File file, byte[] bufferSize, T extra)
 			{
@@ -86,30 +92,24 @@ public class CoolTransfer
 			}
 
 			@Override
-			public boolean isInterrupted()
-			{
-				return super.isInterrupted() || Send.this.onBreakRequest(this.mServerIp, this.mPort, this.mFile, this.mExtra);
-			}
-
-			@Override
 			protected void onRun()
 			{
-				Send.this.getProcesses().offer(this);
+				Send.this.getProcesses().add(this);
 
-				if (!Send.this.onStart(this.mServerIp, this.mPort, this.mFile, this.mExtra))
+				if (!Send.this.onStart(this))
 					return;
 
 				try
 				{
-					Socket socket = new Socket();
+					mSocket = new Socket();
 
-					socket.bind(null);
-					socket.connect(new InetSocketAddress(this.mServerIp, this.mPort));
+					mSocket.bind(null);
+					mSocket.connect(new InetSocketAddress(this.mServerIp, this.mPort));
 
-					Send.this.onSocketReady(socket, this.mServerIp, this.mPort, this.mFile, this.mExtra);
+					Send.this.onSocketReady(this);
 
 					FileInputStream inputStream = new FileInputStream(this.mFile);
-					OutputStream outputStream = socket.getOutputStream();
+					OutputStream outputStream = mSocket.getOutputStream();
 
 					int len;
 					int progressPercent = -1;
@@ -126,7 +126,7 @@ public class CoolTransfer
 
 							if (currentPercent > progressPercent)
 							{
-								Send.this.onNotify(socket, this.mServerIp, this.mPort, this.mFile, currentPercent, this.mExtra);
+								Send.this.onNotify(this, currentPercent);
 								progressPercent = currentPercent;
 							}
 
@@ -139,25 +139,64 @@ public class CoolTransfer
 
 					outputStream.close();
 					inputStream.close();
-					socket.close();
+					mSocket.close();
 
-					Send.this.onTransferCompleted(this.mServerIp, this.mPort, this.mFile, this.mExtra);
+					if (this.isInterrupted())
+						Send.this.onInterrupted(this);
+					else
+						Send.this.onTransferCompleted(this);
 				} catch (Exception e)
 				{
-					Send.this.onError(this.mServerIp, this.mPort, this.mFile, e, this.mExtra);
+					Send.this.onError(this, e);
 				}
 				finally
 				{
-					Send.this.onStop(this.mServerIp, this.mPort, this.mFile, this.mExtra);
+					Send.this.onStop(this);
 					Send.this.getProcesses().remove(this);
 				}
+			}
+
+			public byte[] getBufferSize()
+			{
+				return mBufferSize;
+			}
+
+			public T getExtra()
+			{
+				return mExtra;
+			}
+
+			public File getFile()
+			{
+				return mFile;
+			}
+
+			public int getPort()
+			{
+				return mPort;
+			}
+
+			public String getServerIp()
+			{
+				return mServerIp;
+			}
+
+			public Socket getSocket()
+			{
+				return mSocket;
+			}
+
+			@Override
+			public boolean isInterrupted()
+			{
+				return super.isInterrupted() || Send.this.onCheckStatus(this);
 			}
 		}
 	}
 
 	public abstract static class Receive<T>
 	{
-		private ArrayBlockingQueue<ReceiveHandler> mProcess = new ArrayBlockingQueue<ReceiveHandler>(100, true);
+		private final ArrayList<ReceiveHandler> mProcess = new ArrayList<>();
 		private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 
 		public abstract void onError(ReceiveHandler handler, Exception error);
@@ -181,9 +220,12 @@ public class CoolTransfer
 		{
 		}
 
-		public ArrayBlockingQueue<ReceiveHandler> getProcesses()
+		public ArrayList<ReceiveHandler> getProcesses()
 		{
-			return this.mProcess;
+			synchronized (this.mProcess)
+			{
+				return this.mProcess;
+			}
 		}
 
 		public ReceiveHandler receive(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra)
@@ -212,13 +254,13 @@ public class CoolTransfer
 
 		public class ReceiveHandler extends TransferHandler
 		{
-			protected int mPort;
-			protected File mFile;
-			protected long mFileSize;
-			protected byte[] mBufferSize;
-			protected int mTimeout;
-			protected Socket mSocket;
-			protected T mExtra;
+			private int mPort;
+			private File mFile;
+			private long mFileSize;
+			private byte[] mBufferSize;
+			private int mTimeout;
+			private Socket mSocket;
+			private T mExtra;
 
 			public ReceiveHandler(int port, File file, long fileSize, byte[] bufferSize, int timeout, T extra)
 			{
@@ -233,7 +275,7 @@ public class CoolTransfer
 			@Override
 			protected void onRun()
 			{
-				Receive.this.getProcesses().offer(this);
+				Receive.this.getProcesses().add(this);
 
 				if (!Receive.this.onStart(this))
 					return;
@@ -326,6 +368,11 @@ public class CoolTransfer
 				return mFileSize;
 			}
 
+			public long getPort()
+			{
+				return mPort;
+			}
+
 			public Socket getSocket()
 			{
 				return mSocket;
@@ -363,7 +410,7 @@ public class CoolTransfer
 		@Override
 		public void run()
 		{
-			mInterrupted = false;
+			this.mInterrupted = false;
 			this.onRun();
 		}
 	}

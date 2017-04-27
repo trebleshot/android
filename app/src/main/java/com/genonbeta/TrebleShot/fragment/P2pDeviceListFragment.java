@@ -17,14 +17,14 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.P2pDeviceListAdapter;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 
 import java.util.ArrayList;
 
 public class P2pDeviceListFragment extends ListFragment
 {
 	private P2pDeviceListAdapter mListAdapter;
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private DefaultClassListener mListener = new DefaultClassListener();
 	private WifiP2pManager mManager;
 	private WifiP2pManager.Channel mChannel;
@@ -47,7 +47,7 @@ public class P2pDeviceListFragment extends ListFragment
 
 		mManager = (WifiP2pManager) getActivity().getSystemService(Context.WIFI_P2P_SERVICE);
 		mChannel = mManager.initialize(getActivity(), getActivity().getMainLooper(), null);
-		mPublisher = new NotificationPublisher(getActivity());
+		mNotification = new NotificationUtils(getActivity());
 	}
 
 	@Override
@@ -84,7 +84,7 @@ public class P2pDeviceListFragment extends ListFragment
 			mManager.connect(mChannel, config, mListener);
 		else
 		{
-			mPublisher.makeToast(getActivity().getString(R.string.device_not_be_managed_msg, device.deviceName));
+			mNotification.showToast(getActivity().getString(R.string.device_not_be_managed_msg, device.deviceName));
 		}
 	}
 
@@ -98,13 +98,13 @@ public class P2pDeviceListFragment extends ListFragment
 		@Override
 		public void onSuccess()
 		{
-			mPublisher.makeToast(R.string.in_process_msg);
+			mNotification.showToast(R.string.in_process_msg);
 		}
 
 		@Override
 		public void onFailure(int p1)
 		{
-			mPublisher.makeToast(R.string.process_failure_msg_p2p);
+			mNotification.showToast(R.string.process_failure_msg_p2p);
 		}
 
 		@Override

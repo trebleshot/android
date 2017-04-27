@@ -59,7 +59,7 @@
     <string name="share">Paylaş</string>
     <string name="delete">Sil</string>
     <string name="delete_confirm">Silme Onayı</string>
-    <string name="delete_warning">%s dosyayı silmek istiyor musunuz?</string>
+    <string name="delete_warning">%d dosyayı silmek istiyor musunuz?</string>
     <string name="delete_started">Dosyalar silinecek</string>
     <string name="delete_completed">%d dosya silindi</string>
     <string name="cancel">İptal</string>

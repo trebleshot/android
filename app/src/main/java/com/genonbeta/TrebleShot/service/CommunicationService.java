@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.android.database.CursorItem;
 
@@ -51,7 +51,7 @@ public class CommunicationService extends Service
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private String mReceivedClipboardIndex;
 	private Transaction mTransaction;
@@ -70,12 +70,12 @@ public class CommunicationService extends Service
 		if (!mCommunicationServer.start())
 			stopSelf();
 
-		mPublisher = new NotificationPublisher(this);
+		mNotification = new NotificationUtils(this);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mTransaction = new Transaction(this);
 
 		if (mPreferences.getBoolean("notify_com_server_started", false))
-			startForeground(NotificationPublisher.NOTIFICATION_SERVICE_STARTED, mPublisher.notifyServiceStarted());
+			startForeground(NotificationUtils.NOTIFICATION_ID_SERVICE, mNotification.notifyService().build());
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class CommunicationService extends Service
 				if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
 				{
 					mPreferences.edit().putBoolean("serviceLock", true).apply();
-					mPublisher.makeToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
+					mNotification.showToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
 				}
 
 				stopSelf();
@@ -102,9 +102,9 @@ public class CommunicationService extends Service
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
-				final int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mPublisher.cancelNotification(notificationId);
+				mNotification.cancel(notificationId);
 
 				Log.d(TAG, "fileTransferAccepted ; ip = " + oppositeIp + " ; acceptId = " + acceptId + "; notificationId = " + notificationId);
 
@@ -113,7 +113,7 @@ public class CommunicationService extends Service
 
 				if (mTransaction.acceptPendingReceivers(acceptId) < 1)
 				{
-					mPublisher.makeToast(R.string.something_went_wrong);
+					mNotification.showToast(R.string.something_went_wrong);
 
 					return START_NOT_STICKY;
 				}
@@ -138,13 +138,13 @@ public class CommunicationService extends Service
 						}
 				);
 			}
-			else if (ACTION_FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID))
+			else if (ACTION_FILE_TRANSFER_REJECT.equals(intent.getAction()) && intent.hasExtra(NotificationUtils.EXTRA_NOTIFICATION_ID))
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
-				final int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mPublisher.cancelNotification(notificationId);
+				mNotification.cancel(notificationId);
 
 				if (ApplicationHelper.getDeviceList().containsKey(oppositeIp) && !intent.hasExtra(EXTRA_HALF_RESTRICT))
 					ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = false;
@@ -180,9 +180,9 @@ public class CommunicationService extends Service
 			else if (ACTION_ALLOW_IP.equals(intent.getAction()))
 			{
 				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-				int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mPublisher.cancelNotification(notificationId);
+				mNotification.cancel(notificationId);
 
 				if (!ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					return START_NOT_STICKY;
@@ -192,9 +192,9 @@ public class CommunicationService extends Service
 			else if (ACTION_REJECT_IP.equals(intent.getAction()))
 			{
 				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-				int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mPublisher.cancelNotification(notificationId);
+				mNotification.cancel(notificationId);
 
 				if (!ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					return START_NOT_STICKY;
@@ -204,9 +204,9 @@ public class CommunicationService extends Service
 			else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
 			{
 				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-				int notificationId = intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1);
+				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mPublisher.cancelNotification(notificationId);
+				mNotification.cancel(notificationId);
 
 				if (!ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					return START_NOT_STICKY;
@@ -288,7 +288,7 @@ public class CommunicationService extends Service
 							halfRestriction = true;
 						}
 						else
-							mPublisher.notifyConnectionRequest(clientIp);
+							mNotification.notifyConnectionRequest(clientIp);
 					}
 					else
 					{
@@ -315,7 +315,7 @@ public class CommunicationService extends Service
 								AwaitedFileReceiver receiver = new AwaitedFileReceiver(device.ip, requestId, acceptId, fileName, fileSize, fileMime);
 								mTransaction.getPendingReceivers().offer(receiver);
 
-								mPublisher.notifyTransferRequest(acceptId, device, receiver, halfRestriction);
+								mNotification.notifyTransferRequest(acceptId, device, receiver, halfRestriction);
 
 								device.isRestricted = true;
 
@@ -347,9 +347,6 @@ public class CommunicationService extends Service
 									{
 										count++;
 										AwaitedFileReceiver receiver = new AwaitedFileReceiver(clientIp, requestIndex.getInt("requestId"), acceptId, requestIndex.getString("fileName"), requestIndex.getLong("fileSize"), requestIndex.getString("fileMime"));
-
-										receiver.acceptId = acceptId;
-
 										Log.d(TAG, "Received acceptId test they must be the same = " + receiver.acceptId);
 
 										mTransaction.getPendingReceivers().offer(receiver);
@@ -360,7 +357,7 @@ public class CommunicationService extends Service
 
 								if (count > 0)
 								{
-									mPublisher.notifyMultiTransferRequest(count, acceptId, device, halfRestriction);
+									mNotification.notifyTransferRequest(count, acceptId, device, halfRestriction);
 									result = true;
 									device.isRestricted = true;
 								}
@@ -419,7 +416,7 @@ public class CommunicationService extends Service
 							if (receivedMessage.has("clipboardText"))
 							{
 								mReceivedClipboardIndex = receivedMessage.getString("clipboardText");
-								mPublisher.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
+								mNotification.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
 
 								device.isRestricted = true;
 
@@ -429,7 +426,7 @@ public class CommunicationService extends Service
 						case ("poke_the_device"):
 							if (mPreferences.getBoolean("allow_poke", true))
 							{
-								mPublisher.notifyOppositeDevicePing(device);
+								mNotification.notifyPing(device);
 								result = true;
 							}
 					}

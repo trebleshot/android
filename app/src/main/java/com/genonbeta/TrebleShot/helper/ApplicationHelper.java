@@ -83,10 +83,10 @@ public class ApplicationHelper
 		return mDeviceScanner;
 	}
 
-	// TODO: 4/25/17 Gotta register last number to db in order to get rid of misuse of same id
 	public static int getUniqueNumber()
 	{
-		return (int)System.currentTimeMillis() / 1000;
+		// TODO: 4/28/17 this isn't secure. Check other solutions
+		return (int)System.currentTimeMillis() + (++mUniqueNumber);
 	}
 
 	public static boolean searchWord(String word, String searchThis)

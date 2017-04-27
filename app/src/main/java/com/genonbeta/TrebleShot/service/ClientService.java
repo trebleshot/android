@@ -14,7 +14,7 @@ import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.android.database.CursorItem;
 
 import java.io.File;
@@ -27,7 +27,7 @@ public class ClientService extends Service
 	public final static String ACTION_SEND = "com.genonbeta.TrebleShot.client.ACTION_SEND";
 	public final static String ACTION_CANCEL_SENDING = "com.genonbeta.TrebleShot.client.CANCEL_SENDING";
 
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private WifiManager.WifiLock mWifiLock;
 	private Transaction mTransaction;
 	private Send mSend = new Send();
@@ -44,7 +44,7 @@ public class ClientService extends Service
 		super.onCreate();
 
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
-		mPublisher = new NotificationPublisher(this);
+		mNotification = new NotificationUtils(this);
 		mTransaction = new Transaction(this);
 
 		mSend.setNotifyDelay(2000);
@@ -75,7 +75,7 @@ public class ClientService extends Service
 					Log.d(TAG, "Send intent is received");
 				} catch (Exception e)
 				{
-					mPublisher.makeToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+					mNotification.showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 				}
 			}
 			else if (ACTION_CANCEL_SENDING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
@@ -93,7 +93,7 @@ public class ClientService extends Service
 					mSend.cancelGroup(sender.acceptId);
 				}
 				else
-					mPublisher.cancelNotification(intent.getIntExtra(NotificationPublisher.EXTRA_NOTIFICATION_ID, -1));
+					mNotification.cancel(intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1));
 			}
 		}
 
@@ -104,61 +104,6 @@ public class ClientService extends Service
 	{
 		private int mCancelledGroupId = -1;
 
-		@Override
-		public boolean onStart(String serverIp, int port, File file, AwaitedFileSender extra)
-		{
-			Looper.prepare();
-			mWifiLock.acquire();
-
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-			mPublisher.notifyFileSending(extra, device, 0);
-			mCancelledGroupId = -1;
-
-			return true;
-		}
-
-		@Override
-		public void onStop(String serverIp, int port, File file, AwaitedFileSender extra)
-		{
-			super.onStop(serverIp, port, file, extra);
-
-			mWifiLock.release();
-			mPublisher.cancelNotification(extra.requestId);
-
-			mTransaction.removeTransaction(extra);
-		}
-
-		@Override
-		public void onError(String serverIp, int port, File file, Exception error, AwaitedFileSender extra)
-		{
-			mPublisher.makeToast(getString(R.string.file_sending_error_msg, "<?>"));
-		}
-
-		@Override
-		public void onNotify(Socket socket, String serverIp, int port, File file, int percent, AwaitedFileSender extra)
-		{
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(extra.ip);
-			mPublisher.notifyFileSending(extra, device, percent);
-		}
-
-		@Override
-		public void onTransferCompleted(String serverIp, int port, File file, AwaitedFileSender extra)
-		{
-			mPublisher.makeToast(getString(((!isCancelled(extra)) ? R.string.file_sent_msg : R.string.file_send_cancelled_msg), extra.fileName));
-		}
-
-		@Override
-		public boolean onBreakRequest(String serverIp, int port, File file, AwaitedFileSender extra)
-		{
-			return isCancelled(extra);
-		}
-
-		@Override
-		public void onSocketReady(Socket socket, String serverIp, int port, File file, AwaitedFileSender extra)
-		{
-
-		}
-
 		public void cancelGroup(int groupId)
 		{
 			mCancelledGroupId = groupId;
@@ -167,6 +112,67 @@ public class ClientService extends Service
 		public boolean isCancelled(AwaitedFileSender sender)
 		{
 			return sender.acceptId == mCancelledGroupId;
+		}
+
+		@Override
+		public void onError(SendHandler handler, Exception error)
+		{
+			mNotification.showToast(getString(R.string.file_sending_error_msg, "<?>"));
+		}
+
+		@Override
+		public void onNotify(SendHandler handler, int percent)
+		{
+			handler.getExtra().notification.updateProgress(100, percent, false);
+		}
+
+		@Override
+		public void onTransferCompleted(SendHandler handler)
+		{
+			mNotification.showToast(getString(R.string.file_sent_msg, handler.getExtra().fileName));
+			mTransaction.removeTransaction(handler.getExtra());
+		}
+
+		@Override
+		public void onInterrupted(SendHandler handler)
+		{
+			mNotification.showToast(getString(R.string.file_send_cancelled_msg, handler.getExtra().fileName));
+		}
+
+		@Override
+		public void onSocketReady(SendHandler handler)
+		{
+
+		}
+
+		@Override
+		public boolean onStart(SendHandler handler)
+		{
+			Looper.prepare();
+			mWifiLock.acquire();
+
+			mCancelledGroupId = -1;
+
+			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
+			handler.getExtra().notification = mNotification.notifyFileSending(handler.getExtra(), device, 0);
+
+			return true;
+		}
+
+		@Override
+		public void onStop(SendHandler handler)
+		{
+			super.onStop(handler);
+
+			handler.getExtra().notification.cancel();
+
+			mWifiLock.release();
+		}
+
+		@Override
+		public boolean onCheckStatus(SendHandler handler)
+		{
+			return isCancelled(handler.getExtra());
 		}
 	}
 }

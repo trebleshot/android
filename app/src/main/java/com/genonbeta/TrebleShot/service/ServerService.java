@@ -13,10 +13,11 @@ import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.DynamicNotification;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -38,7 +39,7 @@ public class ServerService extends Service
 
 	private ServerRunnable mRunnable = new ServerRunnable();
 
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private WifiManager.WifiLock mWifiLock;
 	private Transaction mTransaction;
 	private Receive mReceive = new Receive();
@@ -56,7 +57,7 @@ public class ServerService extends Service
 		super.onCreate();
 
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
-		mPublisher = new NotificationPublisher(this);
+		mNotification = new NotificationUtils(this);
 		mTransaction = new Transaction(this);
 
 		mReceive.setNotifyDelay(2000);
@@ -75,8 +76,10 @@ public class ServerService extends Service
 			else if (ACTION_CANCEL_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
 			{
 				final int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
-
 				mTransaction.removeTransactionGroup(acceptId);
+
+				if (mReceive.getProcesses().size() > 0)
+					mReceive.getProcesses().get(0).interrupt();
 			}
 
 		return START_STICKY;
@@ -148,8 +151,6 @@ public class ServerService extends Service
 				}
 				finally
 				{
-					mPublisher.cancelNotification(NotificationPublisher.NOTIFICATION_ID_RECEIVING);
-
 					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
 							.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
 				}
@@ -171,14 +172,13 @@ public class ServerService extends Service
 			handler.getExtra().flag = Transaction.Flag.ERROR;
 
 			mTransaction.updateTransaction(handler.getExtra());
-			mPublisher.notifyReceiveError(handler.getExtra().fileName);
+			mNotification.notifyReceiveError(handler.getExtra());
 		}
 
 		@Override
 		public void onNotify(ReceiveHandler handler, int percent)
 		{
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
-			mPublisher.notifyFileReceiving(handler.getExtra(), device, percent);
+			handler.getExtra().notification.updateProgress(100, percent, false);
 		}
 
 		@Override
@@ -187,9 +187,9 @@ public class ServerService extends Service
 			mTransaction.removeTransaction(handler.getExtra());
 
 			if (multiCounter <= 1)
-				mPublisher.notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
+				mNotification.notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
 			else
-				mPublisher.notifyFileReceivedMulti(multiCounter);
+				mNotification.notifyFileReceived(handler.getExtra(), multiCounter);
 		}
 
 		@Override
@@ -218,6 +218,8 @@ public class ServerService extends Service
 
 								JSONObject response = new JSONObject(process.waitForResponse());
 
+								Log.d(TAG, "Read connection response: " + response.toString());
+
 								if (!response.getBoolean("result"))
 								{
 									this.onError(new Exception("Request rejected"));
@@ -235,7 +237,6 @@ public class ServerService extends Service
 						@Override
 						public void onError(Exception exception)
 						{
-							exception.printStackTrace();
 							Log.d(TAG, "Error while receiver is waiting response of sender");
 						}
 					}
@@ -255,7 +256,7 @@ public class ServerService extends Service
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
-			mPublisher.notifyFileReceiving(handler.getExtra(), device, 0);
+			handler.getExtra().notification = mNotification.notifyFileReceiving(handler.getExtra(), device);
 
 			return true;
 		}

@@ -17,6 +17,7 @@ abstract public class AwaitedTransaction
 	public String ip;
 	public int requestId;
 	public int acceptId;
+	public DynamicNotification notification;
 	public Transaction.Flag flag = Transaction.Flag.PENDING;
 
 	public abstract void onDatabaseObject(ContentValues values);

@@ -19,7 +19,7 @@ import com.genonbeta.TrebleShot.fragment.dialog.FileDeleteDialogFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
-import com.genonbeta.TrebleShot.helper.NotificationPublisher;
+import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
@@ -27,7 +27,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 {
 	public static final String TAG = "ReceivedFilesListFragment";
 
-	private NotificationPublisher mPublisher;
+	private NotificationUtils mNotification;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -56,7 +56,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mPublisher = new NotificationPublisher(getActivity());
+		mNotification = new NotificationUtils(getActivity());
 		mIntentFilter.addAction(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
