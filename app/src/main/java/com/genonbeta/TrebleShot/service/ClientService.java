@@ -62,17 +62,13 @@ public class ClientService extends Service
 				try
 				{
 					int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
+					CursorItem transaction = mTransaction.getTransaction(requestId);
 
-					if (mTransaction.transactionExists(requestId))
+					if (transaction != null)
 					{
-						AwaitedFileSender awaitedSender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
-
+						AwaitedFileSender awaitedSender = new AwaitedFileSender(transaction);
 						mSend.send(awaitedSender.ip, awaitedSender.port, awaitedSender.file, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender);
-
-						Log.d(TAG, "Send intent is ok");
 					}
-
-					Log.d(TAG, "Send intent is received");
 				} catch (Exception e)
 				{
 					mNotification.showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));

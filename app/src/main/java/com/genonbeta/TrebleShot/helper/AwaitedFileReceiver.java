@@ -10,9 +10,9 @@ public class AwaitedFileReceiver extends AwaitedTransaction
 	public String fileMimeType;
 	public long fileSize;
 
-	public AwaitedFileReceiver(String ip, int requestId, int acceptId, String fileName, long fileSize, String fileMime)
+	public AwaitedFileReceiver(int requestId, int acceptId, String ip, String fileName, long fileSize, String fileMime)
 	{
-		super(ip, fileName, requestId, acceptId);
+		super(requestId, acceptId, ip, fileName);
 
 		this.fileSize = fileSize;
 		this.fileMimeType = fileMime;

@@ -19,10 +19,12 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
+import com.genonbeta.android.database.CursorItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -153,7 +155,7 @@ public class CommunicationService extends Service
 				if (!ApplicationHelper.getDeviceList().containsKey(oppositeIp))
 					return START_NOT_STICKY;
 
-				ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = isAccepted;
+				ApplicationHelper.getDeviceList().get(oppositeIp).isRestricted = !isAccepted;
 			}
 			else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
 			{
@@ -278,7 +280,7 @@ public class CommunicationService extends Service
 									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID))
 									{
 										count++;
-										heldReceiver = new AwaitedFileReceiver(clientIp, requestIndex.getInt(Keyword.REQUEST_ID), acceptId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
+										heldReceiver = new AwaitedFileReceiver(requestIndex.getInt(Keyword.REQUEST_ID), acceptId, clientIp, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
 										mTransaction.getPendingReceivers().offer(heldReceiver);
 									}
 								}
@@ -315,8 +317,11 @@ public class CommunicationService extends Service
 								int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
 								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
 
-								if (mTransaction.applyAccessPort(requestId, socketPort))
+								CursorItem transaction = mTransaction.getTransaction(requestId);
+
+								if (transaction != null)
 								{
+									new AwaitedFileSender(transaction);
 									startService(new Intent(getApplicationContext(), ClientService.class).setAction(ClientService.ACTION_SEND).putExtra(EXTRA_REQUEST_ID, requestId));
 									result = true;
 								}

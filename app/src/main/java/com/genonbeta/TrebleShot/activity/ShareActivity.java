@@ -242,7 +242,7 @@ public class ShareActivity extends GActivity
 								if (file.isFile())
 								{
 									int requestId = ApplicationHelper.getUniqueNumber();
-									AwaitedFileSender sender = new AwaitedFileSender(deviceIp, fileName, file, requestId, acceptId);
+									AwaitedFileSender sender = new AwaitedFileSender(requestId, acceptId, deviceIp, fileName, file);
 									JSONObject thisJson = new JSONObject();
 
 									try

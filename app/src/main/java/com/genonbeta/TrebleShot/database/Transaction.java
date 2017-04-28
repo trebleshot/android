@@ -32,7 +32,7 @@ public class Transaction extends MainDatabase
 		ERROR,
 		RUNNING,
 		RETRY
-	};
+	}
 
 	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
 
@@ -45,12 +45,8 @@ public class Transaction extends MainDatabase
 	{
 		int count = 0;
 
-		Log.d(TAG, "Receiver count " + false + "; pending receiver count = " + getPendingReceivers().size() + "; copiedReceivers = " + getPendingReceivers().size());
-
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
 		{
-			Log.d(TAG, "Accept requested id = " + acceptId + "; current receivers id " + receiver.acceptId);
-
 			if (receiver.acceptId != acceptId)
 				continue;
 
@@ -59,8 +55,6 @@ public class Transaction extends MainDatabase
 
 			count++;
 		}
-
-		Log.d(TAG, "After accepting pendingReceivers, current receivers count " + false);
 
 		return count;
 	}

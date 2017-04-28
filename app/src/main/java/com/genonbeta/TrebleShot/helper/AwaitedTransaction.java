@@ -23,7 +23,7 @@ abstract public class AwaitedTransaction
 	public abstract void onDatabaseObject(ContentValues values);
 	public abstract void onCreate(CursorItem item);
 
-	public AwaitedTransaction(String ip, String fileName, int requestId, int acceptId)
+	public AwaitedTransaction(int requestId, int acceptId, String ip, String fileName)
 	{
 		this.ip = ip;
 		this.fileName = fileName;
