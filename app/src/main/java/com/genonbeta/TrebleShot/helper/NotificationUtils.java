@@ -29,7 +29,7 @@ import java.io.File;
 
 public class NotificationUtils
 {
-	public static final String TAG = "NotificationPublisher";
+	public static final String TAG = "NotificationUtils";
 	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
 	public static final int NOTIFICATION_ID_SERVICE = 232434;
 	public static final int NOTIFICATION_ID_PING = 232438;

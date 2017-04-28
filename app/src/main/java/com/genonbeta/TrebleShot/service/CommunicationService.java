@@ -36,10 +36,10 @@ public class CommunicationService extends Service
 {
 	public static final String TAG = "CommunicationService";
 
-	public static final String ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.FILE_TRANSFER";
-	public static final String ACTION_STOP_SERVICE = "com.genonbeta.TrebleShot.STOP_SERVICE";
-	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.CLIPBOARD";
-	public static final String ACTION_IP = "com.genonbeta.TrebleShot.IP";
+	public static final String ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER";
+	public static final String ACTION_STOP_SERVICE = "com.genonbeta.TrebleShot.action.STOP_SERVICE";
+	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
+	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
 
 	public static final String EXTRA_DEVICE_IP = "extraDeviceIp";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
@@ -317,11 +317,8 @@ public class CommunicationService extends Service
 								int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
 								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
 
-								CursorItem transaction = mTransaction.getTransaction(requestId);
-
-								if (transaction != null)
+								if (mTransaction.applyAccessPort(requestId, socketPort))
 								{
-									new AwaitedFileSender(transaction);
 									startService(new Intent(getApplicationContext(), ClientService.class).setAction(ClientService.ACTION_SEND).putExtra(EXTRA_REQUEST_ID, requestId));
 									result = true;
 								}

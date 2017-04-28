@@ -113,6 +113,7 @@ public class ClientService extends Service
 		@Override
 		public void onError(SendHandler handler, Exception error)
 		{
+			error.printStackTrace();
 			handler.getExtra().flag = Transaction.Flag.ERROR;
 
 			mTransaction.updateTransaction(handler.getExtra());
