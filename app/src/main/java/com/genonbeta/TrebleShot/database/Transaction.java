@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
@@ -22,10 +23,15 @@ public class Transaction extends MainDatabase
 {
 	public static final String TAG = Transaction.class.getSimpleName();
 
+	public static final String ACTION_TRANSACTION_REGISTERED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REGISTERED";
+	public static final String ACTION_TRANSACTION_UPDATED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_UPDATED";
+	public static final String ACTION_TRANSACTION_REMOVED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REMOVED";
+
 	public enum Flag {
 		PENDING,
 		ERROR,
-		RUNNING
+		RUNNING,
+		RETRY
 	};
 
 	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
@@ -128,6 +134,7 @@ public class Transaction extends MainDatabase
 	public boolean registerTransaction(AwaitedTransaction transaction)
 	{
 		getWritableDatabase().insert(TABLE_TRANSFER, null, transaction.getDatabaseObject());
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REGISTERED));
 		return getAffectedRowCount() > 0;
 	}
 
@@ -156,7 +163,7 @@ public class Transaction extends MainDatabase
 	public boolean removeTransaction(int requestId)
 	{
 		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
-
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
 		return getAffectedRowCount() > 0;
 	}
 
@@ -168,7 +175,7 @@ public class Transaction extends MainDatabase
 	public boolean removeTransactionGroup(int acceptId)
 	{
 		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ACCEPTID + "=?", new String[]{String.valueOf(acceptId)});
-
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
 		return getAffectedRowCount() > 0;
 	}
 
@@ -193,6 +200,7 @@ public class Transaction extends MainDatabase
 	public long updateTransaction(int requestId, ContentValues values)
 	{
 		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_UPDATED));
 		return getAffectedRowCount();
 	}
 }

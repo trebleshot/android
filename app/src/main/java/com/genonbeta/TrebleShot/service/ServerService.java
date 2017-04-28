@@ -105,60 +105,65 @@ public class ServerService extends Service
 		public void run()
 		{
 			mWifiLock.acquire();
-			ArrayList<AwaitedFileReceiver> receiverList = mTransaction.getReceivers();
+
+			SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
+					.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? or " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
+							String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
+							Transaction.Flag.PENDING.toString(),
+							Transaction.Flag.RETRY.toString());
+
+			ArrayList<AwaitedFileReceiver> receiverList = mTransaction.getReceivers(selectQuery);
 
 			do
 			{
 				doJob(receiverList);
-				receiverList = mTransaction.getReceivers(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-								.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + "=?",
-										String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_OUTGOING),
-										Transaction.Flag.PENDING.toString()));
+				receiverList = mTransaction.getReceivers(selectQuery);
 			} while (receiverList.size() > 0);
 
 			mWifiLock.release();
 		}
 
+		public boolean doJob(AwaitedFileReceiver receiver)
+		{
+			try
+			{
+				File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
+
+				if (Transaction.Flag.PENDING.equals(receiver.flag) && file.isFile())
+				{
+					file = FileUtils.getUniqueFile(file);
+					receiver.fileName = file.getName();
+				}
+
+				file.createNewFile();
+
+				return !mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver).isInterrupted();
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
+						.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
+			}
+
+			return true;
+		}
+
 		public void doJob(ArrayList<AwaitedFileReceiver> receiverList)
 		{
-			Log.d(TAG, "Receiver count " + receiverList.size());
-
 			mReceive.multiCounter = 0;
 
 			for (AwaitedFileReceiver receiver : receiverList)
 			{
 				mReceive.multiCounter++;
 
-				Log.d(TAG, "ReceiverThread running for receiver = " + receiver.fileName);
-
-				try
-				{
-					File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
-
-					if (Transaction.Flag.PENDING.equals(receiver.flag) && file.isFile())
-					{
-						file = FileUtils.getUniqueFile(file);
-						receiver.fileName = file.getName();
-					}
-
-					file.createNewFile();
-
-					if (mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver).isInterrupted())
-						break;
-				} catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
-							.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
-				}
+				if (!doJob(receiver))
+					break;
 			}
 
 			sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
-
-			Log.d(TAG, "Thread done");
 		}
 	}
 
@@ -214,13 +219,13 @@ public class ServerService extends Service
 						{
 							try
 							{
-								json.put("request", "file_transfer_notify_server_ready");
-								json.put("requestId", handler.getExtra().requestId);
-								json.put("socketPort", serverSocket.getLocalPort());
+								json.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
+								json.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
+								json.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
 
 								JSONObject response = new JSONObject(process.waitForResponse());
 
-								if (!response.getBoolean("result"))
+								if (!response.getBoolean(Keyword.RESULT))
 								{
 									this.onError(new Exception("Request rejected"));
 									serverSocket.close();
@@ -257,6 +262,9 @@ public class ServerService extends Service
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
 			handler.getExtra().notification = mNotification.notifyFileReceiving(handler.getExtra(), device);
+			handler.getExtra().flag = Transaction.Flag.RUNNING;
+
+			mTransaction.updateTransaction(handler.getExtra());
 
 			return true;
 		}

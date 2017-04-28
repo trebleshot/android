@@ -26,10 +26,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	public OngoingListAdapter(Context context)
 	{
 		super(context);
-
 		mDatabase = new MainDatabase(context);
-		mList.addAll(mDatabase.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setOrderBy(MainDatabase.FIELD_TRANSFER_ACCEPTID + " DESC")));
 	}
 
 	@Override
@@ -41,7 +38,9 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	@Override
 	protected void onUpdate()
 	{
-
+		mList.clear();
+		mList.addAll(mDatabase.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
+				.setOrderBy(MainDatabase.FIELD_TRANSFER_ACCEPTID + " DESC")));
 	}
 
 	@Override

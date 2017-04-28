@@ -36,6 +36,7 @@ import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
+import com.genonbeta.TrebleShot.service.Keyword;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import org.json.JSONException;
@@ -282,11 +283,11 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		{
 			try
 			{
-				json.put("request", "poke_the_device");
+				json.put(Keyword.REQUEST, Keyword.REQUEST_POKE);
 
 				JSONObject response = new JSONObject(process.waitForResponse());
 
-				if (response.getBoolean("result"))
+				if (response.getBoolean(Keyword.RESULT))
 				{
 					showToast(getString(R.string.poke_sent));
 					return;

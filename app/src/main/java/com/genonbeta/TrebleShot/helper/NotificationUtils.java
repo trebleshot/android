@@ -81,12 +81,14 @@ public class NotificationUtils
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
-		acceptIntent.setAction(CommunicationService.ACTION_ALLOW_IP);
+		acceptIntent.setAction(CommunicationService.ACTION_IP);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.ACTION_REJECT_IP);
+
+		acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
+		rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
@@ -113,21 +115,22 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(int acceptId, NetworkDevice device, AwaitedFileReceiver receiver, boolean halfRestriction)
+	public DynamicNotification notifyTransferRequest(NetworkDevice device, boolean halfRestriction, AwaitedFileReceiver receiver)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
-		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_ACCEPT);
+		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
 
-		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
+		acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
+		rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
 
 		int acceptText;
 		int rejectText;
@@ -172,20 +175,22 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(int numberOfFiles, int acceptId, NetworkDevice device, boolean halfRestriction)
+	public DynamicNotification notifyTransferRequest(NetworkDevice device, boolean halfRestriction, int acceptId, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, acceptId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
-		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_ACCEPT);
+		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
 		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		rejectIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER_REJECT);
+
+		acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
+		rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
 
 		int acceptText;
 		int rejectText;
@@ -250,8 +255,6 @@ public class NotificationUtils
 				.setContentText(mContext.getString(R.string.sending_msg))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				// TODO: 4/28/17 Progress? Shoulda remove it?
-				.setProgress(100, progress, false)
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
@@ -290,7 +293,7 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyClipboardRequest(String clientIp, CharSequence text)
+	public DynamicNotification notifyClipboardRequest(NetworkDevice device, CharSequence text)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
 
@@ -298,7 +301,7 @@ public class NotificationUtils
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD);
-		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
+		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
@@ -315,12 +318,10 @@ public class NotificationUtils
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
-		Log.i(TAG, "clientIp = " + clientIp);
-
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.received_text))
 				.setContentText(mContext.getString(R.string.copy_to_clipboard_question))
-				.setContentInfo(clientIp)
+				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)

@@ -6,6 +6,8 @@ import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONObject;
 
@@ -51,19 +53,19 @@ public class NetworkDeviceInfoLoader
 						{
 							Log.d("DeviceInfo", deviceIp + ": " + response);
 
-							JSONObject json = new JSONObject(response).getJSONObject("deviceInfo");
+							JSONObject json = new JSONObject(response).getJSONObject(Keyword.DEVICE_INFO);
 
 							NetworkDevice device = new NetworkDevice(deviceIp, null, null, null);
 
-							device.brand = json.getString("brand");
-							device.model = json.getString("model");
-							device.user = json.getString("deviceName");
+							device.brand = json.getString(Keyword.BRAND);
+							device.model = json.getString(Keyword.MODEL);
+							device.user = json.getString(Keyword.USER);
 
 							if (device.user == null || device.model == null || device.brand == null)
 								return;
 
 							if (!dontDeleteSelfIps)
-								if (Build.DISPLAY.equals(json.getString("display")))
+								if (Build.DISPLAY.equals(json.getString(Keyword.DISPLAY)))
 									return;
 
 							if (mOnInfoAvaiableListener != null)

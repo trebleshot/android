@@ -33,9 +33,12 @@ public class MainDatabase extends SQLiteDatabase
 	public static final int TYPE_TRANSFER_TYPE_INCOMING = 0;
 	public static final int TYPE_TRANSFER_TYPE_OUTGOING = 1;
 
+	private Context mContext;
+
 	public MainDatabase(Context context)
 	{
 		super(context, DATABASE_NAME, null, 1);
+		mContext = context;
 	}
 
 	@Override
@@ -83,5 +86,10 @@ public class MainDatabase extends SQLiteDatabase
 		}
 
 		return returnCount;
+	}
+
+	public Context getContext()
+	{
+		return mContext;
 	}
 }

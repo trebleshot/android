@@ -117,6 +117,9 @@ public class ClientService extends Service
 		@Override
 		public void onError(SendHandler handler, Exception error)
 		{
+			handler.getExtra().flag = Transaction.Flag.ERROR;
+
+			mTransaction.updateTransaction(handler.getExtra());
 			mNotification.showToast(getString(R.string.file_sending_error_msg, "<?>"));
 		}
 
@@ -155,6 +158,9 @@ public class ClientService extends Service
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
 			handler.getExtra().notification = mNotification.notifyFileSending(handler.getExtra(), device, 0);
+			handler.getExtra().flag = Transaction.Flag.RUNNING;
+
+			mTransaction.updateTransaction(handler.getExtra());
 
 			return true;
 		}

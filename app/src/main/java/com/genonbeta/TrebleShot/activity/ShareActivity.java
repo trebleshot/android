@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
@@ -22,6 +24,8 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,7 +73,7 @@ public class ShareActivity extends GActivity
 					{
 						appendStatusText(getIntent().getStringExtra(Intent.EXTRA_TEXT));
 
-						ImageButton editButton = (ImageButton) findViewById(R.id.activity_share_edit_button);
+						ImageView editButton = (ImageView) findViewById(R.id.activity_share_edit_button);
 
 						editButton.setVisibility(View.VISIBLE);
 						editButton.setOnClickListener(new View.OnClickListener()
@@ -99,12 +103,12 @@ public class ShareActivity extends GActivity
 											{
 												try
 												{
-													json.put("request", "request_clipboard");
-													json.put("clipboardText", mStatusText.getText().toString());
+													json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+													json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
 
 													JSONObject response = new JSONObject(process.waitForResponse());
 
-													if (response.getBoolean("result"))
+													if (response.getBoolean(Keyword.RESULT))
 													{
 
 													}
@@ -129,11 +133,22 @@ public class ShareActivity extends GActivity
 					}
 					else
 					{
-						final Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+						final ArrayList<Uri> fileUris = new ArrayList<>();
+						final ArrayList<CharSequence> fileNames = new ArrayList<>();
+						final Uri fileUri = (Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
 						final File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
-						final String fileName = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getStringExtra(EXTRA_FILENAME_LIST) : file.getName();
 
-						appendStatusText(fileName);
+						fileUris.add(fileUri);
+
+						if (getIntent().hasExtra(EXTRA_FILENAME_LIST))
+						{
+							String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
+
+							fileNames.add(fileName);
+							appendStatusText(fileName);
+						}
+						else
+							appendStatusText(file.getName());
 
 						mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 						{
@@ -143,48 +158,7 @@ public class ShareActivity extends GActivity
 								final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
 								final String deviceIp = device.ip;
 
-								if (file != null && file.isFile())
-								{
-									final int requestId = ApplicationHelper.getUniqueNumber();
-									final String fileMime = (getIntent().getType() == null) ? FileUtils.getFileContentType(file.getAbsolutePath()) : getIntent().getType();
-
-									CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-											new JsonResponseHandler()
-											{
-												@Override
-												public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-												{
-													try
-													{
-														json.put("request", "file_transfer_request");
-														json.put("fileName", fileName);
-														json.put("fileSize", file.length());
-														json.put("fileMime", fileMime);
-														json.put("requestId", requestId);
-
-														JSONObject response = new JSONObject(process.waitForResponse());
-
-														if (response.getBoolean("result"))
-														{
-															AwaitedFileSender sender = new AwaitedFileSender(deviceIp, fileName, file, requestId, requestId);
-															mTransaction.registerTransaction(sender);
-														}
-														else
-															showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-													} catch (JSONException e)
-													{
-														showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-													}
-												}
-
-												@Override
-												public void onError(Exception e)
-												{
-													showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-												}
-											}
-									);
-								}
+								handleFiles(fileUris, fileNames.size() > 0 ? fileNames : null, deviceIp);
 							}
 						});
 
@@ -205,92 +179,7 @@ public class ShareActivity extends GActivity
 							final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
 							final String deviceIp = device.ip;
 
-							CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-									new JsonResponseHandler()
-									{
-										@Override
-										public void onConfigure(CoolCommunication.Messenger.Process process)
-										{
-											process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
-										}
-
-										@Override
-										public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-										{
-											JSONArray filesArray = new JSONArray();
-
-											try
-											{
-												json.put("request", "multifile_transfer_request");
-
-												int index = 0;
-
-												int acceptId = ApplicationHelper.getUniqueNumber();
-
-												for (Uri fileUri : fileUris)
-												{
-													File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
-													String fileName = String.valueOf(fileNames == null ? file.getName() : fileNames.get(index));
-
-													if (file == null)
-														continue;
-
-													if (file.isFile())
-													{
-														int requestId = ApplicationHelper.getUniqueNumber();
-														AwaitedFileSender sender = new AwaitedFileSender(deviceIp, fileName, file, requestId, acceptId);
-														JSONObject thisJson = new JSONObject();
-
-														try
-														{
-															String fileMime = FileUtils.getFileContentType(file.getAbsolutePath());
-
-															thisJson.put("fileName", fileName);
-															thisJson.put("fileSize", file.length());
-															thisJson.put("requestId", requestId);
-															thisJson.put("fileMime", fileMime);
-
-															filesArray.put(thisJson);
-
-															mTransaction.registerTransaction(sender);
-														} catch (Exception e)
-														{
-															Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());
-														}
-													}
-
-													index++;
-												}
-
-												json.put("filesJson", filesArray);
-
-												JSONObject response = new JSONObject(process.waitForResponse());
-
-												if (!response.getBoolean("result"))
-												{
-													Log.d(TAG, "Server did not accept the request remove pre-added senders");
-
-													for (int i = 0; i < filesArray.length(); i++)
-													{
-														int requestId = filesArray.getJSONObject(i).getInt("requestId");
-														mTransaction.removeTransaction(requestId);
-													}
-
-													showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-												}
-											} catch (JSONException e)
-											{
-												showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-											}
-										}
-
-										@Override
-										public void onError(Exception e)
-										{
-											showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-										}
-									}
-							);
+							handleFiles(fileUris, fileNames, deviceIp);
 						}
 					});
 
@@ -316,6 +205,91 @@ public class ShareActivity extends GActivity
 	{
 		mStatusText.getText().clear();
 		mStatusText.getText().append(charSequence);
+	}
+
+	protected void handleFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames, final String deviceIp)
+	{
+		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+				new JsonResponseHandler()
+				{
+					@Override
+					public void onConfigure(CoolCommunication.Messenger.Process process)
+					{
+						process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
+					}
+
+					@Override
+					public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
+					{
+						JSONArray filesArray = new JSONArray();
+
+						try
+						{
+							int index = 0;
+							int acceptId = ApplicationHelper.getUniqueNumber();
+
+							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+							json.put(Keyword.ACCEPT_ID, acceptId);
+
+							for (Uri fileUri : fileUris)
+							{
+								File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
+								String fileName = String.valueOf(fileNames == null ? file.getName() : fileNames.get(index));
+
+								if (file == null)
+									continue;
+
+								if (file.isFile())
+								{
+									int requestId = ApplicationHelper.getUniqueNumber();
+									AwaitedFileSender sender = new AwaitedFileSender(deviceIp, fileName, file, requestId, acceptId);
+									JSONObject thisJson = new JSONObject();
+
+									try
+									{
+										String fileMime = FileUtils.getFileContentType(file.getAbsolutePath());
+
+										thisJson.put(Keyword.FILE_NAME, fileName);
+										thisJson.put(Keyword.FILE_SIZE, file.length());
+										thisJson.put(Keyword.REQUEST_ID, requestId);
+										thisJson.put(Keyword.FILE_MIME, fileMime);
+
+										filesArray.put(thisJson);
+
+										mTransaction.registerTransaction(sender);
+									} catch (Exception e)
+									{
+										Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());
+									}
+								}
+
+								index++;
+							}
+
+							json.put(Keyword.FILES_INDEX, filesArray);
+
+							JSONObject response = new JSONObject(process.waitForResponse());
+
+							if (!response.getBoolean(Keyword.RESULT))
+							{
+								Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
+								mTransaction.removeTransactionGroup(acceptId);
+
+								showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+							}
+						} catch (JSONException e)
+						{
+							showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+						}
+					}
+
+					@Override
+					public void onError(Exception e)
+					{
+						showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
+					}
+				}
+		);
 	}
 
 	protected void showToast(String msg)
