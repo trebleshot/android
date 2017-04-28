@@ -1,10 +1,8 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,13 +18,12 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class ProcessListAdapter extends AbstractEditableListAdapter
+public class OngoingListAdapter extends AbstractEditableListAdapter
 {
-	private Context mContext;
 	private MainDatabase mDatabase;
 	private ArrayList<CursorItem> mList = new ArrayList<>();
 
-	public ProcessListAdapter(Context context)
+	public OngoingListAdapter(Context context)
 	{
 		super(context);
 
@@ -69,9 +66,10 @@ public class ProcessListAdapter extends AbstractEditableListAdapter
 	public View getView(int i, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
-			view = getInflater().inflate(R.layout.list_process, viewGroup, false);
+			view = getInflater().inflate(R.layout.list_ongoing, viewGroup, false);
 
 		CursorItem thisItem = (CursorItem) getItem(i);
+
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
 		TextView mainText = (TextView) view.findViewById(R.id.list_process_name_text);
 		TextView statusText = (TextView) view.findViewById(R.id.list_process_status_text);

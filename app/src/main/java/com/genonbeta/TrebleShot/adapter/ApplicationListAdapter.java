@@ -88,11 +88,9 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
-		return getViewAt(view == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false) : view, position);
-	}
+		if (view == null)
+			view = LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false);
 
-	public View getViewAt(View view, int position)
-	{
 		AppInfo info = (AppInfo) getItem(position);
 		TextView text = (TextView) view.findViewById(R.id.text);
 		TextView text2 = (TextView) view.findViewById(R.id.text2);
