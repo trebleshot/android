@@ -268,8 +268,6 @@ public class CommunicationService extends Service
 								int acceptId = receivedMessage.getInt(Keyword.ACCEPT_ID);
 								AwaitedFileReceiver heldReceiver = null;
 
-								Log.d(TAG, "First PendingReceiver count " + mTransaction.getPendingReceivers().size());
-
 								for (int i = 0; i < jsonArray.length(); i++)
 								{
 									if (!(jsonArray.get(i) instanceof JSONObject))
@@ -284,8 +282,6 @@ public class CommunicationService extends Service
 										mTransaction.getPendingReceivers().offer(heldReceiver);
 									}
 								}
-
-								Log.d(TAG, "Last PendingReceiver count " + mTransaction.getPendingReceivers().size());
 
 								if (count > 0)
 								{
@@ -319,7 +315,11 @@ public class CommunicationService extends Service
 
 								if (mTransaction.applyAccessPort(requestId, socketPort))
 								{
-									startService(new Intent(getApplicationContext(), ClientService.class).setAction(ClientService.ACTION_SEND).putExtra(EXTRA_REQUEST_ID, requestId));
+									Intent starterIntent = new Intent(getApplicationContext(), ClientService.class)
+											.setAction(ClientService.ACTION_SEND)
+											.putExtra(EXTRA_REQUEST_ID, requestId);
+
+									startService(starterIntent);
 									result = true;
 								}
 							}

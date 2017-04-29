@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.helper;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +15,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TrebleShotActivity;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
+import com.genonbeta.TrebleShot.service.AbstractTransactionService;
 import com.genonbeta.TrebleShot.service.ClientService;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
@@ -233,62 +233,42 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileSending(AwaitedFileSender sender, NetworkDevice device, int progress)
+	public DynamicNotification notifyFileSending(AwaitedFileSender sender, NetworkDevice device)
 	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, sender.acceptId);
-		Intent cancelIntent = new Intent(mContext, ClientService.class);
-		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
-
-		cancelIntent.setAction(ClientService.ACTION_CANCEL_SENDING);
-		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, sender.requestId);
-		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
-
-		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
-
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.cancel_sending));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, sender.fileName);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-
-		notification.setSmallIcon(android.R.drawable.stat_sys_upload)
-				.setContentTitle(sender.fileName)
-				.setContentText(mContext.getString(R.string.sending_msg))
-				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setOngoing(true)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
-
-		Log.d(TAG, "sending(): requestId = " + sender.requestId);
-
-		return notification.show();
+		return notifyFileTransaction(sender, device, false);
 	}
 
 	public DynamicNotification notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device)
 	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
-		Intent cancelIntent = new Intent(mContext, ServerService.class);
+		return notifyFileTransaction(receiver, device, true);
+	}
+
+	private DynamicNotification notifyFileTransaction(AwaitedTransaction transaction, NetworkDevice device, boolean isIncoming)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
+		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
-		cancelIntent.setAction(ServerService.ACTION_CANCEL_RECEIVING);
-		cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
-		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, receiver.requestId);
-		cancelIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId);
+		cancelIntent.setAction(AbstractTransactionService.ACTION_CANCEL_JOB);
+		cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, transaction.ip);
+		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
+		cancelIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, transaction.acceptId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.cancel_receiving));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, receiver.fileName);
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(isIncoming ? R.string.cancel_receiving : R.string.cancel_sending));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, transaction.fileName);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download)
-				.setContentTitle(receiver.fileName)
-				.setContentText(mContext.getString(R.string.receiving_msg))
+		notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
+				.setContentTitle(transaction.fileName)
+				.setContentText(mContext.getString(isIncoming ? R.string.receiving_msg : R.string.sending_msg))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setOngoing(true)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.cancel_receiving), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.cancel_receiving : R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
 		return notification.show();
 	}
@@ -400,6 +380,22 @@ public class NotificationUtils
 		return notification.show();
 	}
 
+	public DynamicNotification notifyStuckThread(AwaitedTransaction transaction, boolean isIncoming)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
+		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(AbstractTransactionService.ACTION_CANCEL_KILL);
+
+		// TODO: 4/29/17 Don't leave it like this
+		notification.setSmallIcon(android.R.drawable.stat_sys_warning)
+				.setOngoing(true)
+				.setContentTitle(mContext.getString(R.string.stop_progress))
+				.setContentText(mContext.getString(R.string.cancel_progress))
+				.setProgress(0, 0, true)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.kill_immediately), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), killIntent, 0));
+
+		return notification.show();
+	}
+
 	public void showToast(String toastText)
 	{
 		Toast.makeText(mContext, toastText, Toast.LENGTH_SHORT).show();
@@ -419,5 +415,4 @@ public class NotificationUtils
 	{
 		Toast.makeText(mContext, textRes, length).show();
 	}
-
 }

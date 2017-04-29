@@ -1,13 +1,12 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.Service;
 import android.content.Intent;
-import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
-import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.CoolSocket.CoolTransferReceive;
+import com.genonbeta.CoolSocket.CoolTransferReceiveHandler;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
@@ -16,7 +15,6 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -29,18 +27,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ServerService extends Service
+public class ServerService extends AbstractTransactionService<AwaitedFileReceiver, CoolTransferReceiveHandler<AwaitedFileReceiver>>
 {
 	public static final String TAG = "ServerService";
 
 	public final static String ACTION_CHECK_AVAILABLE = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
-	public final static String ACTION_CANCEL_RECEIVING = "com.genonbeta.TrebleShot.server.CANCEL_RECEIVING";
 
 	private ServerRunnable mRunnable = new ServerRunnable();
 
-	private NotificationUtils mNotification;
-	private WifiManager.WifiLock mWifiLock;
-	private Transaction mTransaction;
 	private Receive mReceive = new Receive();
 	private Thread mThread;
 
@@ -51,14 +45,15 @@ public class ServerService extends Service
 	}
 
 	@Override
+	public ArrayList<CoolTransferReceiveHandler<AwaitedFileReceiver>> onProcessList()
+	{
+		return mReceive.getProcessList();
+	}
+
+	@Override
 	public void onCreate()
 	{
 		super.onCreate();
-
-		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
-		mNotification = new NotificationUtils(this);
-		mTransaction = new Transaction(this);
-
 		mReceive.setNotifyDelay(2000);
 	}
 
@@ -71,14 +66,6 @@ public class ServerService extends Service
 			if (ACTION_CHECK_AVAILABLE.equals(intent.getAction()))
 			{
 				Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
-			}
-			else if (ACTION_CANCEL_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
-			{
-				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
-				mTransaction.removeTransactionGroup(acceptId);
-
-				if (mReceive.getProcesses().size() > 0)
-					mReceive.getProcesses().get(0).interrupt();
 			}
 
 		return START_STICKY;
@@ -104,7 +91,7 @@ public class ServerService extends Service
 		@Override
 		public void run()
 		{
-			mWifiLock.acquire();
+			getWifiLock().acquire();
 
 			SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
 					.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? or " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
@@ -112,15 +99,15 @@ public class ServerService extends Service
 							Transaction.Flag.PENDING.toString(),
 							Transaction.Flag.RETRY.toString());
 
-			ArrayList<AwaitedFileReceiver> receiverList = mTransaction.getReceivers(selectQuery);
+			ArrayList<AwaitedFileReceiver> receiverList = getTransactionInstance().getReceivers(selectQuery);
 
 			do
 			{
 				doJob(receiverList);
-				receiverList = mTransaction.getReceivers(selectQuery);
+				receiverList = getTransactionInstance().getReceivers(selectQuery);
 			} while (receiverList.size() > 0);
 
-			mWifiLock.release();
+			getWifiLock().release();
 		}
 
 		public boolean doJob(AwaitedFileReceiver receiver)
@@ -167,38 +154,38 @@ public class ServerService extends Service
 		}
 	}
 
-	private class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
+	public class Receive extends CoolTransferReceive<AwaitedFileReceiver>
 	{
 		public int multiCounter = 0;
 
 		@Override
-		public void onError(ReceiveHandler handler, Exception error)
+		public void onError(CoolTransferReceiveHandler<AwaitedFileReceiver> handler, Exception error)
 		{
 			handler.getExtra().flag = Transaction.Flag.ERROR;
 
-			mTransaction.updateTransaction(handler.getExtra());
-			mNotification.notifyReceiveError(handler.getExtra());
+			getTransactionInstance().updateTransaction(handler.getExtra());
+			getNotificationUtils().notifyReceiveError(handler.getExtra());
 		}
 
 		@Override
-		public void onNotify(ReceiveHandler handler, int percent)
+		public void onNotify(CoolTransferReceiveHandler<AwaitedFileReceiver> handler, int percent)
 		{
 			handler.getExtra().notification.updateProgress(100, percent, false);
 		}
 
 		@Override
-		public void onTransferCompleted(ReceiveHandler handler)
+		public void onTransferCompleted(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
 		{
-			mTransaction.removeTransaction(handler.getExtra());
+			getTransactionInstance().removeTransaction(handler.getExtra());
 
 			if (multiCounter <= 1)
-				mNotification.notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
 			else
-				mNotification.notifyFileReceived(handler.getExtra(), multiCounter);
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
 		}
 
 		@Override
-		public void onInterrupted(ReceiveHandler handler)
+		public void onInterrupted(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
 		{
 			handler.getExtra().notification.cancel();
 
@@ -209,7 +196,13 @@ public class ServerService extends Service
 		}
 
 		@Override
-		public void onSocketReady(final ReceiveHandler handler, final ServerSocket serverSocket)
+		public void onSocketReady(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
+		{
+
+		}
+
+		@Override
+		public void onSocketReady(final CoolTransferReceiveHandler<AwaitedFileReceiver> handler, final ServerSocket serverSocket)
 		{
 			CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 					new JsonResponseHandler()
@@ -249,22 +242,15 @@ public class ServerService extends Service
 		}
 
 		@Override
-		public boolean onCheckStatus(ReceiveHandler handler)
-		{
-			// TODO: 4/25/17 here is also for checking if the break requested
-			return super.onCheckStatus(handler);
-		}
-
-		@Override
-		public boolean onStart(ReceiveHandler handler)
+		public boolean onStart(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
 		{
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
 			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
-			handler.getExtra().notification = mNotification.notifyFileReceiving(handler.getExtra(), device);
+			handler.getExtra().notification = getNotificationUtils().notifyFileReceiving(handler.getExtra(), device);
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 
-			mTransaction.updateTransaction(handler.getExtra());
+			getTransactionInstance().updateTransaction(handler.getExtra());
 
 			return true;
 		}
