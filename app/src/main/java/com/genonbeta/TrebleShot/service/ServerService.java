@@ -5,8 +5,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
-import com.genonbeta.CoolSocket.CoolTransferReceive;
-import com.genonbeta.CoolSocket.CoolTransferReceiveHandler;
+import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
@@ -27,7 +26,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ServerService extends AbstractTransactionService<AwaitedFileReceiver, CoolTransferReceiveHandler<AwaitedFileReceiver>>
+public class ServerService extends AbstractTransactionService<AwaitedFileReceiver>
 {
 	public static final String TAG = "ServerService";
 
@@ -45,7 +44,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	}
 
 	@Override
-	public ArrayList<CoolTransferReceiveHandler<AwaitedFileReceiver>> onProcessList()
+	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileReceiver>> onProcessList()
 	{
 		return mReceive.getProcessList();
 	}
@@ -131,7 +130,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			}
 			finally
 			{
-				sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
+				sendBroadcast(new 	Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
 						.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
 			}
 
@@ -154,12 +153,12 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 	}
 
-	public class Receive extends CoolTransferReceive<AwaitedFileReceiver>
+	public class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
 	{
 		public int multiCounter = 0;
 
 		@Override
-		public void onError(CoolTransferReceiveHandler<AwaitedFileReceiver> handler, Exception error)
+		public void onError(TransferHandler<AwaitedFileReceiver> handler, Exception error)
 		{
 			handler.getExtra().flag = Transaction.Flag.ERROR;
 
@@ -168,13 +167,13 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public void onNotify(CoolTransferReceiveHandler<AwaitedFileReceiver> handler, int percent)
+		public void onNotify(TransferHandler<AwaitedFileReceiver> handler, int percent)
 		{
 			handler.getExtra().notification.updateProgress(100, percent, false);
 		}
 
 		@Override
-		public void onTransferCompleted(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
+		public void onTransferCompleted(TransferHandler<AwaitedFileReceiver> handler)
 		{
 			getTransactionInstance().removeTransaction(handler.getExtra());
 
@@ -185,7 +184,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public void onInterrupted(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
+		public void onInterrupted(TransferHandler<AwaitedFileReceiver> handler)
 		{
 			handler.getExtra().notification.cancel();
 
@@ -196,13 +195,13 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public void onSocketReady(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
+		public void onSocketReady(TransferHandler<AwaitedFileReceiver> handler)
 		{
 
 		}
 
 		@Override
-		public void onSocketReady(final CoolTransferReceiveHandler<AwaitedFileReceiver> handler, final ServerSocket serverSocket)
+		public void onSocketReady(final TransferHandler<AwaitedFileReceiver> handler, final ServerSocket serverSocket)
 		{
 			CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 					new JsonResponseHandler()
@@ -242,7 +241,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public boolean onStart(CoolTransferReceiveHandler<AwaitedFileReceiver> handler)
+		public boolean onStart(TransferHandler<AwaitedFileReceiver> handler)
 		{
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 

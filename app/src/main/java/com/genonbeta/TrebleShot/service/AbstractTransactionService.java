@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Date: 4/29/17 2:59 PM
  */
 
-abstract public class AbstractTransactionService<E extends AwaitedTransaction, T extends CoolTransfer.TransferHandler<E>> extends Service
+abstract public class AbstractTransactionService<E extends AwaitedTransaction> extends Service
 {
 	public static final String TAG = AbstractTransactionService.class.getSimpleName();
 
@@ -28,7 +28,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction, T
 	private WifiManager.WifiLock mWifiLock;
 	private Transaction mTransaction;
 
-	abstract public ArrayList<T> onProcessList();
+	abstract public ArrayList<CoolTransfer.TransferHandler<E>> onProcessList();
 
 	@Override
 	public void onCreate()
@@ -49,7 +49,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction, T
 				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 				getTransactionInstance().removeTransactionGroup(acceptId);
 
-				for (T handler : onProcessList())
+				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
 				{
 					if (handler.getExtra().acceptId == acceptId)
 					{
@@ -66,7 +66,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction, T
 			{
 				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
 
-				for (T handler : onProcessList())
+				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
 					if (handler.getExtra().acceptId == acceptId && handler.getSocket() != null)
 					{
 						try
