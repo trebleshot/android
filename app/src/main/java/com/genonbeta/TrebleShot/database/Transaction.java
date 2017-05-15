@@ -125,11 +125,22 @@ public class Transaction extends MainDatabase
 				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
 	}
 
+	protected long notifyRemoved()
+	{
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
+		return getAffectedRowCount();
+	}
+
+	protected long notifyUpdated()
+	{
+		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REGISTERED));
+		return getAffectedRowCount();
+	}
+
 	public boolean registerTransaction(AwaitedTransaction transaction)
 	{
 		getWritableDatabase().insert(TABLE_TRANSFER, null, transaction.getDatabaseObject());
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REGISTERED));
-		return getAffectedRowCount() > 0;
+		return notifyUpdated() > 0;
 	}
 
 	public int removePendingReceivers(int acceptId)
@@ -157,8 +168,7 @@ public class Transaction extends MainDatabase
 	public boolean removeTransaction(int requestId)
 	{
 		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
-		return getAffectedRowCount() > 0;
+		return notifyRemoved() > 0;
 	}
 
 	public boolean removeTransactionGroup(AwaitedTransaction transaction)
@@ -170,7 +180,7 @@ public class Transaction extends MainDatabase
 	{
 		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ACCEPTID + "=?", new String[]{String.valueOf(acceptId)});
 		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
-		return getAffectedRowCount() > 0;
+		return notifyRemoved() > 0;
 	}
 
 	public boolean transactionExists(int requestId)
@@ -186,6 +196,14 @@ public class Transaction extends MainDatabase
 		return updateTransaction(requestId, values) > 0;
 	}
 
+	public boolean updateFlagGroup(int acceptId, Flag flag)
+	{
+		ContentValues values = new ContentValues();
+		values.put(FIELD_TRANSFER_FLAG, flag.toString());
+
+		return updateTransactionGroup(acceptId, values) > 0;
+	}
+
 	public long updateTransaction(AwaitedTransaction transaction)
 	{
 		return updateTransaction(transaction.requestId, transaction.getDatabaseObject());
@@ -194,7 +212,12 @@ public class Transaction extends MainDatabase
 	public long updateTransaction(int requestId, ContentValues values)
 	{
 		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_UPDATED));
-		return getAffectedRowCount();
+		return notifyUpdated();
+	}
+
+	public long updateTransactionGroup(int acceptId, ContentValues values)
+	{
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ACCEPTID + "=?", new String[] {String.valueOf(acceptId)});
+		return notifyUpdated();
 	}
 }

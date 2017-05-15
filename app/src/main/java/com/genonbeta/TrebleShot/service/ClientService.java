@@ -9,6 +9,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
@@ -66,7 +67,6 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 					getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 				}
 			}
-
 
 		return START_STICKY;
 	}
@@ -135,6 +135,18 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 
 			handler.getExtra().notification.cancel();
 			getWifiLock().release();
+		}
+
+
+		@Override
+		public void onProcessListChanged(ArrayList<TransferHandler<AwaitedFileSender>> processList, TransferHandler<AwaitedFileSender> handler, boolean isAdded)
+		{
+			super.onProcessListChanged(processList, handler, isAdded);
+
+			if (processList.size() > 0)
+				getWifiLock().acquire();
+			else
+				getWifiLock().release();
 		}
 	}
 }

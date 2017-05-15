@@ -15,7 +15,6 @@ import com.genonbeta.TrebleShot.adapter.OngoingListAdapter;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.AwaitedTransaction;
 import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.android.database.CursorItem;
@@ -84,7 +83,7 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 			{
 				receiver.flag = Transaction.Flag.RETRY;
 				mTransaction.updateTransaction(receiver);
-				getActivity().startService(new Intent(getActivity(), ServerService.class).setAction(ServerService.ACTION_CHECK_AVAILABLE));
+				getActivity().startService(new Intent(getActivity(), ServerService.class).setAction(ServerService.ACTION_START_RECEIVING));
 			}
 		}
 	}

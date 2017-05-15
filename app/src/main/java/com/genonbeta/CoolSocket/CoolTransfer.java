@@ -37,6 +37,17 @@ abstract public class CoolTransfer<T>
 	{
 	}
 
+	public void onProcessListChanged(ArrayList<TransferHandler<T>> processList, TransferHandler<T> handler, boolean isAdded)
+	{
+
+	}
+
+	protected void addProcess(TransferHandler<T> processHandler)
+	{
+		getProcessList().add(processHandler);
+		onProcessListChanged(getProcessList(), processHandler, true);
+	}
+
 	public ArrayList<TransferHandler<T>> getProcessList()
 	{
 		synchronized (this.mProcess)
@@ -48,6 +59,12 @@ abstract public class CoolTransfer<T>
 	public int getNotifyDelay()
 	{
 		return notifyDelay;
+	}
+
+	protected void removeProcess(TransferHandler<T> processHandler)
+	{
+		getProcessList().remove(processHandler);
+		onProcessListChanged(getProcessList(), processHandler, false);
 	}
 
 	public void setNotifyDelay(int delay)
@@ -160,7 +177,7 @@ abstract public class CoolTransfer<T>
 			@Override
 			protected void onRun()
 			{
-				getProcessList().add(this);
+				addProcess(this);
 
 				if (!onStart(this))
 					return;
@@ -234,7 +251,7 @@ abstract public class CoolTransfer<T>
 				finally
 				{
 					onStop(this);
-					getProcessList().remove(this);
+					removeProcess(this);
 				}
 			}
 

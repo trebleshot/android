@@ -15,6 +15,7 @@ import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONException;
@@ -30,12 +31,9 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 {
 	public static final String TAG = "ServerService";
 
-	public final static String ACTION_CHECK_AVAILABLE = "com.genonbeta.TrebleShot.server.OPEN_NEW_SERVER_SOCKET";
-
-	private ServerRunnable mRunnable = new ServerRunnable();
+	public final static String ACTION_START_RECEIVING = "com.genonbeta.TrebleShot.action.START_RECEIVING";
 
 	private Receive mReceive = new Receive();
-	private Thread mThread;
 
 	@Override
 	public IBinder onBind(Intent p1)
@@ -62,95 +60,51 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		super.onStartCommand(intent, flags, startId);
 
 		if (intent != null)
-			if (ACTION_CHECK_AVAILABLE.equals(intent.getAction()))
-			{
-				Log.d(TAG, "Thread started for request; status = " + (startEngine() ? "now started" : "already started"));
-			}
+			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
+				Log.d(TAG, "Thread started for request; status = " + (doJob(intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1)) ? "started" : "error"));
 
 		return START_STICKY;
 	}
 
-	public boolean startEngine()
+	public boolean doJob(int acceptId)
 	{
-		if (mThread == null || Thread.State.TERMINATED.equals(mThread.getState()))
+		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
+				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? or " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
+						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
+						String.valueOf(acceptId),
+						Transaction.Flag.PENDING.toString(),
+						Transaction.Flag.RETRY.toString());
+
+		CursorItem receiverInstance = getTransactionInstance().getFirstFromTable(selectQuery);
+
+		if (receiverInstance == null)
+			return false;
+
+		AwaitedFileReceiver receiver = new AwaitedFileReceiver(receiverInstance);
+		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
+
+		if (Transaction.Flag.PENDING.equals(receiver.flag))
 		{
-			mThread = new Thread(mRunnable);
-			mThread.start();
-
-			return true;
-		}
-
-		Log.d(TAG, "Thread state = " + mThread.getState());
-
-		return false;
-	}
-
-	private class ServerRunnable implements Runnable
-	{
-		@Override
-		public void run()
-		{
-			getWifiLock().acquire();
-
-			SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-					.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? or " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
-							String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
-							Transaction.Flag.PENDING.toString(),
-							Transaction.Flag.RETRY.toString());
-
-			ArrayList<AwaitedFileReceiver> receiverList = getTransactionInstance().getReceivers(selectQuery);
-
-			do
+			if (file.isFile())
 			{
-				doJob(receiverList);
-				receiverList = getTransactionInstance().getReceivers(selectQuery);
-			} while (receiverList.size() > 0);
+				file = FileUtils.getUniqueFile(file);
+				receiver.fileName = file.getName();
+			}
 
-			getWifiLock().release();
-		}
-
-		public boolean doJob(AwaitedFileReceiver receiver)
-		{
 			try
 			{
-				File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
-
-				if (Transaction.Flag.PENDING.equals(receiver.flag) && file.isFile())
-				{
-					file = FileUtils.getUniqueFile(file);
-					receiver.fileName = file.getName();
-				}
-
 				file.createNewFile();
-
-				return !mReceive.receiveOnCurrentThread(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver).isInterrupted();
-			} catch (Exception e)
+			} catch (IOException e)
 			{
 				e.printStackTrace();
+				return false;
 			}
-			finally
-			{
-				sendBroadcast(new 	Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED)
-						.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true));
-			}
-
-			return true;
 		}
 
-		public void doJob(ArrayList<AwaitedFileReceiver> receiverList)
-		{
-			mReceive.multiCounter = 0;
+		mReceive.receive(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
 
-			for (AwaitedFileReceiver receiver : receiverList)
-			{
-				mReceive.multiCounter++;
 
-				if (!doJob(receiver))
-					break;
-			}
-
-			sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
-		}
+		return true;
 	}
 
 	public class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
@@ -181,6 +135,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
 			else
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
+
+			doJob(handler.getExtra().acceptId);
+
+			multiCounter++;
 		}
 
 		@Override
@@ -252,6 +210,24 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			getTransactionInstance().updateTransaction(handler.getExtra());
 
 			return true;
+		}
+
+		@Override
+		public void onProcessListChanged(ArrayList<TransferHandler<AwaitedFileReceiver>> processList, TransferHandler<AwaitedFileReceiver> handler, boolean isAdded)
+		{
+			super.onProcessListChanged(processList, handler, isAdded);
+
+			Intent updateReceivedList = new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
+
+			if (processList.size() > 0)
+			{
+				getWifiLock().acquire();
+				updateReceivedList.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true);
+			}
+			else
+				getWifiLock().release();
+
+			sendBroadcast(updateReceivedList);
 		}
 	}
 }

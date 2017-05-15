@@ -19,12 +19,10 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
-import com.genonbeta.android.database.CursorItem;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -135,11 +133,12 @@ public class CommunicationService extends Service
 					if (mTransaction.acceptPendingReceivers(acceptId) < 1)
 					{
 						mNotification.showToast(R.string.something_went_wrong);
-
 						return START_NOT_STICKY;
 					}
 
-					startService(new Intent(this, ServerService.class).setAction(ServerService.ACTION_CHECK_AVAILABLE));
+					startService(new Intent(this, ServerService.class)
+							.setAction(ServerService.ACTION_START_RECEIVING)
+							.putExtra(EXTRA_ACCEPT_ID, acceptId));
 				}
 				else
 					mTransaction.removePendingReceivers(acceptId);
