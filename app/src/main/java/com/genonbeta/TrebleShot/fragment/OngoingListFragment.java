@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
@@ -81,18 +80,15 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 		{
 			AwaitedFileReceiver receiver = new AwaitedFileReceiver(item);
 
-			if (!receiver.flag.equals(Transaction.Flag.RUNNING))
+			if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
 			{
-				if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
-				{
-					receiver.flag = Transaction.Flag.RESUME;
-					mTransaction.updateTransaction(receiver);
-				}
-
-				getActivity().startService(new Intent(getActivity(), ServerService.class)
-						.setAction(ServerService.ACTION_START_RECEIVING)
-						.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
+				receiver.flag = Transaction.Flag.RESUME;
+				mTransaction.updateTransaction(receiver);
 			}
+
+			getActivity().startService(new Intent(getActivity(), ServerService.class)
+					.setAction(ServerService.ACTION_START_RECEIVING)
+					.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
 		}
 	}
 

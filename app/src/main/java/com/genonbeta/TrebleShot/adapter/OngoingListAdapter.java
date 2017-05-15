@@ -50,7 +50,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	{
 		mList.clear();
 		mList.addAll(mTransaction.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setOrderBy(MainDatabase.FIELD_TRANSFER_ID + " ASC")
+				.setOrderBy(Transaction.FIELD_TRANSFER_ID + " DESC")
 				.setGroupBy(MainDatabase.FIELD_TRANSFER_ACCEPTID)
 				.setLoadListener(new SQLQuery.Select.LoadListener()
 				{

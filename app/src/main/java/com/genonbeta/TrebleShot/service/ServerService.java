@@ -90,11 +90,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	public boolean doJob(int acceptId)
 	{
 		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? OR " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
+				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
 						String.valueOf(acceptId),
-						Transaction.Flag.PENDING.toString(),
-						Transaction.Flag.RESUME.toString());
+						Transaction.Flag.INTERRUPTED.toString());
 
 		CursorItem receiverInstance = getTransactionInstance().getFirstFromTable(selectQuery);
 
