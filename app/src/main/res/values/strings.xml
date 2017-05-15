@@ -149,4 +149,8 @@
     <string name="stop_progress">Stopping!</string>
     <string name="cancel_progress">The job is being cancelled</string>
     <string name="kill_immediately">Kill now</string>
+    <string name="ongoing_list_warning">This file will be received after %s is received</string>
+    <string name="proceed">Proceed</string>
+    <string name="dialog_title_remove_queue_job">Remove job queue?</string>
+    <string name="dialog_msg_remove_queue_job">%d file(s) will be removed with their uncompleted files</string>
 </resources>

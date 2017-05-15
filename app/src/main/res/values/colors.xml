@@ -5,7 +5,7 @@
     <color name="windowBackground">#ffffff</color>
     <color name="colorAccent">#106c00</color>
     <color name="actionModeBackground">#00a155</color>
-    <color name="clickableItemBackground">#d2d2d2</color>
+    <color name="clickableItemBackground">#eee</color>
     <color name="boxColor">#e6e6e6</color>
     <color name="transparentColor">#00000000</color>
     <color name="navigationColor">#000000</color>

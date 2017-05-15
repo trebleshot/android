@@ -47,7 +47,6 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 			if (ACTION_CANCEL_JOB.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
 			{
 				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
-				getTransactionInstance().removeTransactionGroup(acceptId);
 
 				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
 				{

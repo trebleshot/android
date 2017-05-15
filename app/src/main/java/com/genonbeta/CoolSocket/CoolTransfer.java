@@ -207,8 +207,6 @@ abstract public class CoolTransfer<T>
 					long lastRead = System.currentTimeMillis();
 					long lastNotified = System.currentTimeMillis();
 
-					Log.d("CoolTransfer", "Filesize: " + getFile().length());
-
 					while (getFile().length() != this.mFileSize)
 					{
 						if ((len = inputStream.read(getBufferSize())) > 0)

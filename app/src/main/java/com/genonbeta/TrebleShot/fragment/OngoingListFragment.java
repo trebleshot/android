@@ -83,8 +83,12 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 
 			if (!receiver.flag.equals(Transaction.Flag.RUNNING))
 			{
-				receiver.flag = Transaction.Flag.RETRY;
-				mTransaction.updateTransaction(receiver);
+				if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
+				{
+					receiver.flag = Transaction.Flag.RESUME;
+					mTransaction.updateTransaction(receiver);
+				}
+
 				getActivity().startService(new Intent(getActivity(), ServerService.class)
 						.setAction(ServerService.ACTION_START_RECEIVING)
 						.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));

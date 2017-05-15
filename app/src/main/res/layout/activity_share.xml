@@ -7,41 +7,44 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:minHeight="50dp">
 
         <ImageView
             android:id="@+id/activity_share_edit_button"
-            android:src="@drawable/ic_create_black_24dp"
-            android:background="@drawable/checkable_item_background"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:padding="15dp"
-            android:layout_marginRight="15dp"
             android:layout_marginEnd="15dp"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/checkable_item_background"
+            android:padding="15dp"
+            android:src="@drawable/ic_create_black_24dp"
             android:visibility="gone"
             />
 
         <EditText
-            android:layout_centerVertical="true"
             android:id="@+id/activity_share_info_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginEnd="10dp"
             android:layout_toLeftOf="@id/activity_share_edit_button"
             android:layout_toStartOf="@id/activity_share_edit_button"
-            android:focusable="false"
-            android:clickable="false"
-            android:hint="@string/empty"
-            android:maxLines="4"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
             android:background="#0FFF"
-            android:textSize="16sp"/>
+            android:clickable="false"
+            android:ellipsize="end"
+            android:focusable="false"
+            android:hint="@string/empty"
+            android:inputType="textMultiLine"
+            android:maxLines="4"/>
 
     </RelativeLayout>
 
@@ -49,10 +52,10 @@
         android:id="@+id/activity_share_separator"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:background="@color/boxColor"
         android:layout_above="@id/activity_share_info_layout"
         android:layout_marginLeft="15dp"
         android:layout_marginRight="15dp"
+        android:background="@color/boxColor"
         />
 
     <fragment

@@ -79,7 +79,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		@Override
 		public void onError(TransferHandler<AwaitedFileSender> handler, Exception error)
 		{
-			handler.getExtra().flag = Transaction.Flag.ERROR;
+			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
 			getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, "<?>"));

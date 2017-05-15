@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
@@ -77,12 +78,9 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				}
 
 				if (runningReceiver == null)
-				{
-					Toast.makeText(this, "File will be received", Toast.LENGTH_SHORT).show();
 					doJob(acceptId);
-				}
 				else
-					Toast.makeText(this, "This file will be received after " + runningReceiver.fileName + " is received", Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getString(R.string.ongoing_list_warning, runningReceiver.fileName), Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -92,11 +90,11 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	public boolean doJob(int acceptId)
 	{
 		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? or " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
+				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND (" + MainDatabase.FIELD_TRANSFER_FLAG + "=? OR " + MainDatabase.FIELD_TRANSFER_FLAG + "=?)",
 						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
 						String.valueOf(acceptId),
 						Transaction.Flag.PENDING.toString(),
-						Transaction.Flag.RETRY.toString());
+						Transaction.Flag.RESUME.toString());
 
 		CursorItem receiverInstance = getTransactionInstance().getFirstFromTable(selectQuery);
 
@@ -136,7 +134,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		@Override
 		public void onError(TransferHandler<AwaitedFileReceiver> handler, Exception error)
 		{
-			handler.getExtra().flag = Transaction.Flag.ERROR;
+			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
 			getNotificationUtils().notifyReceiveError(handler.getExtra());
@@ -167,11 +165,9 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		public void onInterrupted(TransferHandler<AwaitedFileReceiver> handler)
 		{
 			handler.getExtra().notification.cancel();
+			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
-			File file = handler.getFile();
-
-			if (file != null && file.isFile())
-				file.delete();
+			getTransactionInstance().updateTransaction(handler.getExtra());
 		}
 
 		@Override

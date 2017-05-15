@@ -29,9 +29,9 @@ public class Transaction extends MainDatabase
 
 	public enum Flag {
 		PENDING,
-		ERROR,
+		RESUME,
 		RUNNING,
-		RETRY
+		INTERRUPTED
 	}
 
 	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
@@ -92,7 +92,6 @@ public class Transaction extends MainDatabase
 	public ArrayList<AwaitedFileReceiver> getReceivers(SQLQuery.Select select)
 	{
 		ArrayList<CursorItem> list = getTable(select);
-
 		ArrayList<AwaitedFileReceiver> outputList = new ArrayList<>();
 
 		for (CursorItem item : list)
