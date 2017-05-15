@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.FileLockInterruptionException;
 import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 
@@ -28,8 +29,6 @@ abstract public class CoolTransfer<T>
 	public abstract void onInterrupted(TransferHandler<T> handler);
 
 	public abstract void onSocketReady(TransferHandler<T> handler);
-
-	public abstract void onSocketReady(TransferHandler<T> handler, ServerSocket serverSocket);
 
 	public abstract boolean onStart(TransferHandler<T> handler);
 
@@ -141,6 +140,13 @@ abstract public class CoolTransfer<T>
 
 	public static abstract class Receive<T> extends CoolTransfer<T>
 	{
+		public abstract void onSocketReady(Handler handler, ServerSocket serverSocket);
+
+		public void onOrientatingStreams(Handler handler, InputStream inputStream, FileOutputStream fileOutputStream)
+		{
+
+		}
+
 		public Handler receive(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra)
 		{
 			Handler handler = new Handler(extra, port, file, fileSize, bufferSize, timeOut);
@@ -164,7 +170,6 @@ abstract public class CoolTransfer<T>
 		{
 			private long mFileSize;
 			private int mTimeout;
-			private Socket mSocket;
 
 			public Handler(T extra, int port, File file, long fileSize, byte[] bufferSize, int timeout)
 			{
@@ -188,10 +193,14 @@ abstract public class CoolTransfer<T>
 
 					onSocketReady(this, serverSocket);
 
-					mSocket = serverSocket.accept();
+					setSocket(serverSocket.accept());
 
-					InputStream inputStream = mSocket.getInputStream();
-					FileOutputStream outputStream = new FileOutputStream(getFile());
+					onSocketReady(this);
+
+					InputStream inputStream = getSocket().getInputStream();
+					FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
+
+					onOrientatingStreams(this, inputStream, outputStream);
 
 					int len;
 					int progressPercent = -1;
@@ -199,9 +208,6 @@ abstract public class CoolTransfer<T>
 					long lastNotified = System.currentTimeMillis();
 
 					Log.d("CoolTransfer", "Filesize: " + getFile().length());
-
-					if (getFile().length() > 0)
-						outputStream.getChannel().position(getFile().length());
 
 					while (getFile().length() != this.mFileSize)
 					{
@@ -232,7 +238,7 @@ abstract public class CoolTransfer<T>
 
 					outputStream.close();
 					inputStream.close();
-					mSocket.close();
+					getSocket().close();
 					serverSocket.close();
 
 					if (this.isInterrupted())
@@ -260,11 +266,6 @@ abstract public class CoolTransfer<T>
 				return mFileSize;
 			}
 
-			public Socket getSocket()
-			{
-				return mSocket;
-			}
-
 			public long getTimeout()
 			{
 				return mTimeout;
@@ -274,6 +275,11 @@ abstract public class CoolTransfer<T>
 
 	public static abstract class Send<T> extends CoolTransfer<T>
 	{
+		public void onOrientatingStreams(Handler handler, FileInputStream fileInputStream, OutputStream outputStream)
+		{
+
+		}
+
 		public Handler send(String serverIp, int port, File file, byte[] bufferSize, T extra)
 		{
 			Handler handler = new Handler(serverIp, port, file, bufferSize, extra);
@@ -323,6 +329,8 @@ abstract public class CoolTransfer<T>
 
 					FileInputStream inputStream = new FileInputStream(getFile());
 					OutputStream outputStream = getSocket().getOutputStream();
+
+					onOrientatingStreams(this, inputStream, outputStream);
 
 					int len;
 					int progressPercent = -1;
@@ -374,6 +382,5 @@ abstract public class CoolTransfer<T>
 				return mServerIp;
 			}
 		}
-
 	}
 }

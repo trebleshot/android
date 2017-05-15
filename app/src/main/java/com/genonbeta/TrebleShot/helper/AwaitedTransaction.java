@@ -15,18 +15,20 @@ abstract public class AwaitedTransaction
 {
 	public String fileName;
 	public String ip;
-	public int requestId;
-	public int acceptId;
+	public int requestId = 0;
+	public int acceptId = 0;
+	public long fileSize = 0;
 	public DynamicNotification notification;
 	public Transaction.Flag flag = Transaction.Flag.PENDING;
 
 	public abstract void onDatabaseObject(ContentValues values);
 	public abstract void onCreate(CursorItem item);
 
-	public AwaitedTransaction(int requestId, int acceptId, String ip, String fileName)
+	public AwaitedTransaction(int requestId, int acceptId, String ip, String fileName, long fileSize)
 	{
 		this.ip = ip;
 		this.fileName = fileName;
+		this.fileSize = fileSize;
 		this.requestId = requestId;
 		this.acceptId = acceptId;
 	}
@@ -37,6 +39,7 @@ abstract public class AwaitedTransaction
 		this.fileName = item.getString(MainDatabase.FIELD_TRANSFER_NAME);
 		this.requestId = item.getInt(MainDatabase.FIELD_TRANSFER_ID);
 		this.acceptId = item.getInt(MainDatabase.FIELD_TRANSFER_ACCEPTID);
+		this.fileSize = item.getLong(MainDatabase.FIELD_TRANSFER_SIZE);
 		this.flag = Transaction.Flag.valueOf(item.getString(MainDatabase.FIELD_TRANSFER_FLAG));
 
 		this.onCreate(item);
@@ -55,6 +58,7 @@ abstract public class AwaitedTransaction
 		values.put(MainDatabase.FIELD_TRANSFER_ID, requestId);
 		values.put(MainDatabase.FIELD_TRANSFER_ACCEPTID, acceptId);
 		values.put(MainDatabase.FIELD_TRANSFER_NAME, fileName);
+		values.put(MainDatabase.FIELD_TRANSFER_SIZE, fileSize);
 		values.put(MainDatabase.FIELD_TRANSFER_USERIP, ip);
 		values.put(MainDatabase.FIELD_TRANSFER_FLAG, flag.toString());
 

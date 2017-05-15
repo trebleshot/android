@@ -56,9 +56,11 @@
         <service
             android:name=".service.ClientService"
             android:label="Client Service"/>
+
         <service
             android:name=".service.ServerService"
             android:label="Server Service"/>
+
         <service
             android:name=".service.CommunicationService"
             android:label="Communication Service"/>

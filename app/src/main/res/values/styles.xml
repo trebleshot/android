@@ -50,8 +50,17 @@
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
     </style>
 
+    <style name="marqueeText.primary.big" parent="@style/marqueeText.primary">
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="marqueeText.secondary" parent="@style/marqueeText">
         <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+    </style>
+
+    <style name="condensedCapsText" parent="@style/marqueeText">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
     </style>
 </resources>

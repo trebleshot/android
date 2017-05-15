@@ -14,6 +14,9 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
@@ -108,12 +111,6 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		}
 
 		@Override
-		public void onSocketReady(TransferHandler<AwaitedFileSender> handler, ServerSocket serverSocket)
-		{
-
-		}
-
-		@Override
 		public boolean onStart(TransferHandler<AwaitedFileSender> handler)
 		{
 			Looper.prepare();
@@ -137,6 +134,21 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 			getWifiLock().release();
 		}
 
+		@Override
+		public void onOrientatingStreams(Handler handler, FileInputStream fileInputStream, OutputStream outputStream)
+		{
+			super.onOrientatingStreams(handler, fileInputStream, outputStream);
+
+			if (handler.getExtra().fileSize > 0)
+				try
+				{
+					fileInputStream.getChannel().position(handler.getExtra().fileSize);
+				} catch (IOException e)
+				{
+					handler.interrupt();
+					e.printStackTrace();
+				}
+		}
 
 		@Override
 		public void onProcessListChanged(ArrayList<TransferHandler<AwaitedFileSender>> processList, TransferHandler<AwaitedFileSender> handler, boolean isAdded)

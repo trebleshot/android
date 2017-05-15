@@ -1,13 +1,17 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.media.Image;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationSet;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.GAnimater;
@@ -73,14 +77,17 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 	public View getViewAt(View view, int position)
 	{
 		TextView deviceText = (TextView) view.findViewById(R.id.network_device_list_device_text);
-		TextView ipText = (TextView) view.findViewById(R.id.network_device_list_device_ip_text);
-		TextView userText = (TextView) view.findViewById(R.id.network_device_list_device_user_text);
+		TextView userText = (TextView) view.findViewById(R.id.network_device_list_user_text);
+		ImageView userImage = (ImageView) view.findViewById(R.id.network_device_list_device_image);
 
 		NetworkDevice device = (NetworkDevice) getItem(position);
+		String firstLetters = ApplicationHelper.getFirstLetters(device.user, 1);
+
+		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.colorTextDrawable), 100);
 
 		deviceText.setText(device.model);
 		userText.setText(device.user);
-		ipText.setText(device.ip);
+		userImage.setImageDrawable(drawable);
 
 		return view;
 	}

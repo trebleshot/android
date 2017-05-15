@@ -12,9 +12,9 @@ public class AwaitedFileSender extends AwaitedTransaction
 	public File file;
 	public int port;
 
-	public AwaitedFileSender(int requestId, int acceptId, String ip, String fileName, File file)
+	public AwaitedFileSender(int requestId, int acceptId, String ip, String fileName, long fileSize, File file)
 	{
-		super(requestId, acceptId, ip, fileName);
+		super(requestId, acceptId, ip, fileName, fileSize);
 
 		this.file = file;
 	}

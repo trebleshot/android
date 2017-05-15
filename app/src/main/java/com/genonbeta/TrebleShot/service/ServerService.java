@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.CoolSocket.CoolTransfer;
@@ -60,8 +61,30 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		super.onStartCommand(intent, flags, startId);
 
 		if (intent != null)
+		{
 			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
-				Log.d(TAG, "Thread started for request; status = " + (doJob(intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1)) ? "started" : "error"));
+			{
+				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+				AwaitedFileReceiver runningReceiver = null;
+
+				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler :  mReceive.getProcessList())
+				{
+					if (handler.getExtra().acceptId == acceptId)
+					{
+						runningReceiver = handler.getExtra();
+						break;
+					}
+				}
+
+				if (runningReceiver == null)
+				{
+					Toast.makeText(this, "File will be received", Toast.LENGTH_SHORT).show();
+					doJob(acceptId);
+				}
+				else
+					Toast.makeText(this, "This file will be received after " + runningReceiver.fileName + " is received", Toast.LENGTH_SHORT).show();
+			}
+		}
 
 		return START_STICKY;
 	}
@@ -103,7 +126,6 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 		mReceive.receive(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
 
-
 		return true;
 	}
 
@@ -129,16 +151,16 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		@Override
 		public void onTransferCompleted(TransferHandler<AwaitedFileReceiver> handler)
 		{
+			multiCounter++;
+
 			getTransactionInstance().removeTransaction(handler.getExtra());
 
 			if (multiCounter <= 1)
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getDeviceList().get(handler.getExtra().ip));
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getNetworkDeviceByAddress(handler.getExtra().ip));
 			else
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
 
 			doJob(handler.getExtra().acceptId);
-
-			multiCounter++;
 		}
 
 		@Override
@@ -159,7 +181,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public void onSocketReady(final TransferHandler<AwaitedFileReceiver> handler, final ServerSocket serverSocket)
+		public void onSocketReady(final ServerService.Receive.Handler handler, final ServerSocket serverSocket)
 		{
 			CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 					new JsonResponseHandler()
@@ -172,6 +194,9 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 								json.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
 								json.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
 								json.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
+
+								if (handler.getFile().length() > 0)
+									json.put(Keyword.FILE_SIZE, handler.getFile().length());
 
 								JSONObject response = new JSONObject(process.waitForResponse());
 
@@ -203,7 +228,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
+			NetworkDevice device = ApplicationHelper.getNetworkDeviceByAddress(handler.getExtra().ip);
 			handler.getExtra().notification = getNotificationUtils().notifyFileReceiving(handler.getExtra(), device);
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 

@@ -20,7 +20,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 public class ApplicationHelper
 {
-	public static final String TAG = "ApplicationHelper";
+	public static final String TAG = ApplicationHelper.class.getSimpleName();
 
 	private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
@@ -50,6 +50,12 @@ public class ApplicationHelper
 		return mDeviceList;
 	}
 
+	public static NetworkDevice getNetworkDeviceByAddress(String ipAddress)
+	{
+		NetworkDevice device = getDeviceList().get(ipAddress);
+		return device == null ? new NetworkDevice(ipAddress, null, null, null) : device;
+	}
+
 	public static File getFileFromUri(Context context, Uri fileUri)
 	{
 		String fileUriString = fileUri.toString();
@@ -76,6 +82,21 @@ public class ApplicationHelper
 			file = new File(URI.create(fileUriString));
 
 		return file;
+	}
+
+	public static String getFirstLetters(String text, int breakAfter)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (String letter : text.split(" "))
+		{
+			if (stringBuilder.length() > breakAfter)
+				break;
+
+			stringBuilder.append(letter.charAt(0));
+		}
+
+		return stringBuilder.toString().toUpperCase();
 	}
 
 	public static NetworkDeviceScanner getNetworkDeviceScanner()

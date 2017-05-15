@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
@@ -15,6 +16,7 @@ import com.genonbeta.TrebleShot.adapter.OngoingListAdapter;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.android.database.CursorItem;
@@ -79,11 +81,13 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 		{
 			AwaitedFileReceiver receiver = new AwaitedFileReceiver(item);
 
-			if (receiver.flag.equals(Transaction.Flag.ERROR))
+			if (!receiver.flag.equals(Transaction.Flag.RUNNING))
 			{
 				receiver.flag = Transaction.Flag.RETRY;
 				mTransaction.updateTransaction(receiver);
-				getActivity().startService(new Intent(getActivity(), ServerService.class).setAction(ServerService.ACTION_START_RECEIVING));
+				getActivity().startService(new Intent(getActivity(), ServerService.class)
+						.setAction(ServerService.ACTION_START_RECEIVING)
+						.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
 			}
 		}
 	}

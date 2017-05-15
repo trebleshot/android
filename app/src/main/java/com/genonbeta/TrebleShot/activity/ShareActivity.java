@@ -135,7 +135,7 @@ public class ShareActivity extends GActivity
 					{
 						final ArrayList<Uri> fileUris = new ArrayList<>();
 						final ArrayList<CharSequence> fileNames = new ArrayList<>();
-						final Uri fileUri = (Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+						final Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
 						final File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
 
 						fileUris.add(fileUri);
@@ -242,7 +242,7 @@ public class ShareActivity extends GActivity
 								if (file.isFile())
 								{
 									int requestId = ApplicationHelper.getUniqueNumber();
-									AwaitedFileSender sender = new AwaitedFileSender(requestId, acceptId, deviceIp, fileName, file);
+									AwaitedFileSender sender = new AwaitedFileSender(requestId, acceptId, deviceIp, fileName, 0, file);
 									JSONObject thisJson = new JSONObject();
 
 									try

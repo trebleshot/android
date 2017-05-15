@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -37,7 +38,8 @@ import velitasali.updatewithgithub.GitHubUpdater;
 
 public class TrebleShotActivity extends GActivity implements NavigationView.OnNavigationItemSelectedListener
 {
-	public static final String OPEN_RECEIVED_FILES_ACTION = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
+	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
+	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -130,7 +132,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		}
 		else if (R.id.menu_activity_main_send_application == item.getItemId())
 		{
-			sendTheApplication();
+			sendThisApplication();
 		}
 		else if (R.id.menu_activity_main_preferences == item.getItemId())
 		{
@@ -184,21 +186,36 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 	public void checkCurrentRequestedFragment(Intent intent)
 	{
 		if (intent != null)
-			if (OPEN_RECEIVED_FILES_ACTION.equals(intent.getAction()))
+			if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction()))
 			{
 				changeFragment(mFragmentReceivedFiles);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_received_files);
 			}
+			else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction()))
+			{
+				changeFragment(mFragmentOnGoingProcessList);
+				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
+			}
 	}
 
-	private void sendTheApplication()
+	private void sendThisApplication()
 	{
 		File apkFile = new File(getPackageCodePath());
-
 		Intent sendIntent = new Intent(Intent.ACTION_SEND);
 
 		sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(apkFile));
 		sendIntent.setType(FileUtils.getFileContentType(apkFile.getAbsolutePath()));
+
+		try
+		{
+			PackageManager pm = getPackageManager();
+			PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
+
+			sendIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk");
+		} catch (PackageManager.NameNotFoundException e)
+		{
+			e.printStackTrace();
+		}
 
 		startActivity(Intent.createChooser(sendIntent, getString(R.string.file_share_app_chooser_msg)));
 	}

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -316,15 +317,13 @@ public class NotificationUtils
 	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
-		Intent openIntent;
+		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-		if (Build.VERSION.SDK_INT < 23)
-		{
-			openIntent = new Intent(Intent.ACTION_VIEW);
-			openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
-		}
+		if (Build.VERSION.SDK_INT > 22)
+			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), FileUtils.getFileContentType(file.getAbsolutePath()))
+					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		else
-			openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
+			openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(receiver.fileName)
@@ -339,13 +338,13 @@ public class NotificationUtils
 	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
-		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.multiple_receive))
 				.setContentText(mContext.getString(R.string.multiple_receive_done_summary, String.valueOf(numberOfFiles)))
 				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class)
+						.setAction(TrebleShotActivity.ACTION_OPEN_RECEIVED_FILES), 0));
 
 		return notification.show();
 	}
@@ -369,7 +368,8 @@ public class NotificationUtils
 	public DynamicNotification notifyReceiveError(AwaitedFileReceiver receiver)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
-		Intent openIntent = new Intent(mContext, TrebleShotActivity.class).setAction(TrebleShotActivity.OPEN_RECEIVED_FILES_ACTION);
+		Intent openIntent = new Intent(mContext, TrebleShotActivity.class)
+				.setAction(TrebleShotActivity.ACTION_OPEN_ONGOING_LIST);
 
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.error))

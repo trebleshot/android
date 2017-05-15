@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.service;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -221,7 +222,7 @@ public class CommunicationService extends Service
 				deviceInformation.put(Keyword.DISPLAY, Build.DISPLAY);
 				deviceInformation.put(Keyword.BRAND, Build.BRAND);
 				deviceInformation.put(Keyword.MODEL, Build.MODEL);
-				deviceInformation.put(Keyword.USER, mPreferences.getString("device_name", Build.BOARD));
+				deviceInformation.put(Keyword.USER, mPreferences.getString("device_name", Build.BOARD.toUpperCase()));
 
 				response.put(Keyword.APP_INFO, appInfo);
 				response.put(Keyword.DEVICE_INFO, deviceInformation);
@@ -314,6 +315,14 @@ public class CommunicationService extends Service
 
 								if (mTransaction.applyAccessPort(requestId, socketPort))
 								{
+									if (receivedMessage.has(Keyword.FILE_SIZE))
+									{
+										ContentValues values = new ContentValues();
+										values.put(Transaction.FIELD_TRANSFER_SIZE, receivedMessage.getLong(Keyword.FILE_SIZE));
+
+										mTransaction.updateTransaction(requestId, values);
+									}
+
 									Intent starterIntent = new Intent(getApplicationContext(), ClientService.class)
 											.setAction(ClientService.ACTION_SEND)
 											.putExtra(EXTRA_REQUEST_ID, requestId);
