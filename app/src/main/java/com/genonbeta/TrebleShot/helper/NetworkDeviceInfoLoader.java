@@ -1,12 +1,13 @@
 package com.genonbeta.TrebleShot.helper;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
+import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.service.Keyword;
+import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONObject;
 
@@ -56,9 +57,6 @@ public class NetworkDeviceInfoLoader
 							device.brand = json.getString(Keyword.BRAND);
 							device.model = json.getString(Keyword.MODEL);
 							device.user = json.getString(Keyword.USER);
-
-							if (device.user == null || device.model == null || device.brand == null)
-								return;
 
 							if (mOnInfoAvailableListener != null)
 								mOnInfoAvailableListener.onInfoAvailable(device);

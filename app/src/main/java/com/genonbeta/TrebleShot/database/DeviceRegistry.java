@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.net.Network;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
@@ -82,6 +84,12 @@ public class DeviceRegistry extends MainDatabase
 	public void removeDevice(String ipAddress)
 	{
 		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_IP + "=?", new String[]{ipAddress});
+	}
+
+	public boolean updateRestriction(NetworkDevice device, boolean restrict)
+	{
+		device.isRestricted = restrict;
+		return updateRestriction(device.ip, restrict);
 	}
 
 	public boolean updateRestriction(String ipAddress, boolean restrict)

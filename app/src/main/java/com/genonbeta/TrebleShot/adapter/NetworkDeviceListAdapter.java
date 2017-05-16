@@ -95,12 +95,9 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 		mDeviceList.clear();
 
 		for (NetworkDevice device : mDeviceRegistry.getDeviceList())
-		{
 			if (device.user != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress))
 				mDeviceList.add(device);
-		}
 
 		super.notifyDataSetChanged();
 	}
-
 }

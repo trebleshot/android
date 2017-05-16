@@ -106,9 +106,6 @@ public class CommunicationService extends Service
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 
 				mNotification.cancel(notificationId);
-
-				Log.d(TAG, "fileTransferAccepted ; ip = " + oppositeIp + " ; acceptId = " + acceptId + "; notificationId = " + notificationId);
-
 				mDeviceRegisty.updateRestriction(oppositeIp, false);
 
 				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
@@ -231,7 +228,6 @@ public class CommunicationService extends Service
 					if (!mDeviceRegisty.exists(clientIp))
 					{
 						device.isRestricted = true;
-
 						mDeviceRegisty.registerDevice(device);
 						sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP).putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, clientIp));
 
@@ -286,7 +282,7 @@ public class CommunicationService extends Service
 								if (count > 0)
 								{
 									result = true;
-									device.isRestricted = true;
+									mDeviceRegisty.updateRestriction(device, true);
 
 									if (count > 1)
 										mNotification.notifyTransferRequest(halfRestriction, clientIp, acceptId, count);
@@ -338,7 +334,7 @@ public class CommunicationService extends Service
 								mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
 								mNotification.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
 
-								device.isRestricted = true;
+								mDeviceRegisty.updateRestriction(device, true);
 
 								result = true;
 							}

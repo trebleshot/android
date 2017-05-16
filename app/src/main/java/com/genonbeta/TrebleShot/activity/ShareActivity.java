@@ -17,6 +17,7 @@ import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.GActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
@@ -49,6 +50,7 @@ public class ShareActivity extends GActivity
 	private EditText mStatusText;
 	private Transaction mTransaction;
 	private NetworkDeviceListFragment mDeviceListFragment;
+	private DeviceRegistry mDeviceRegistry;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -58,6 +60,7 @@ public class ShareActivity extends GActivity
 		setContentView(R.layout.activity_share);
 
 		mTransaction = new Transaction(getApplicationContext());
+		mDeviceRegistry = new DeviceRegistry(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 		mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
 
@@ -209,6 +212,8 @@ public class ShareActivity extends GActivity
 
 	protected void handleFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames, final String deviceIp)
 	{
+		mDeviceRegistry.updateRestriction(deviceIp, false);
+
 		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 				new JsonResponseHandler()
 				{

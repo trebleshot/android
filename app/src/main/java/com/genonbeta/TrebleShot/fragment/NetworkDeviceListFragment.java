@@ -129,8 +129,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 						@Override
 						public void onCheckedChanged(CompoundButton button, boolean isChecked)
 						{
-							device.isRestricted = !isChecked;
-							mListAdapter.getDeviceRegistry().registerDevice(device);
+							mListAdapter.getDeviceRegistry().updateRestriction(device, !isChecked);
 						}
 					}
 			);
@@ -181,7 +180,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 			);
 
 			dialog.setView(rootView);
-			dialog.show();
+ 			dialog.show();
 		}
 	}
 
@@ -227,7 +226,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 
 		return super.onOptionsItemSelected(item);
 	}
-
 
 	@Override
 	public CharSequence getFragmentTitle(Context context)

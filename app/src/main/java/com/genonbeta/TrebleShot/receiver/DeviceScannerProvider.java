@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -54,7 +55,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 
 				for (String ip : list)
 				{
-					NetworkDevice device = new NetworkDevice(ip, null, null, null);
+					NetworkDevice device = new NetworkDevice(ip);
 					device.isLocalAddress = true;
 
 					mDeviceRegistry.registerDevice(device);
