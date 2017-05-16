@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TrebleShotActivity;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.AbstractTransactionService;
 import com.genonbeta.TrebleShot.service.ClientService;
@@ -37,12 +38,14 @@ public class NotificationUtils
 
 	private Context mContext;
 	private NotificationManagerCompat mManager;
+	private DeviceRegistry mDeviceRegistry;
 	private SharedPreferences mPreferences;
 
 	public NotificationUtils(Context context)
 	{
 		this.mContext = context;
 		this.mManager = NotificationManagerCompat.from(context);
+		this.mDeviceRegistry = new DeviceRegistry(context);
 		this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 	}
 
@@ -116,8 +119,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(NetworkDevice device, boolean halfRestriction, AwaitedFileReceiver receiver)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver)
 	{
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
@@ -176,8 +180,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(NetworkDevice device, boolean halfRestriction, int acceptId, int numberOfFiles)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, String ipAddress, int acceptId, int numberOfFiles)
 	{
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, acceptId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
@@ -234,18 +239,11 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileSending(AwaitedFileSender sender, NetworkDevice device)
+	public DynamicNotification notifyFileTransaction(AwaitedTransaction transaction)
 	{
-		return notifyFileTransaction(sender, device, false);
-	}
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(transaction.ip);
+		boolean isIncoming = transaction instanceof AwaitedFileReceiver;
 
-	public DynamicNotification notifyFileReceiving(AwaitedFileReceiver receiver, NetworkDevice device)
-	{
-		return notifyFileTransaction(receiver, device, true);
-	}
-
-	private DynamicNotification notifyFileTransaction(AwaitedTransaction transaction, NetworkDevice device, boolean isIncoming)
-	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
 		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
@@ -274,8 +272,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyClipboardRequest(NetworkDevice device, CharSequence text)
+	public DynamicNotification notifyClipboardRequest(String ipAddress, CharSequence text)
 	{
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
@@ -314,8 +313,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, File file, NetworkDevice device)
+	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, File file)
 	{
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
@@ -349,8 +349,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyPing(NetworkDevice device)
+	public DynamicNotification notifyPing(String ipAddress)
 	{
+		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, NOTIFICATION_ID_PING);
 
 		notification.setSmallIcon(android.R.drawable.stat_notify_chat)
@@ -380,8 +381,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyStuckThread(AwaitedTransaction transaction, boolean isIncoming)
+	public DynamicNotification notifyStuckThread(AwaitedTransaction transaction)
 	{
+		boolean isIncoming = transaction instanceof AwaitedFileReceiver;
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
 		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(AbstractTransactionService.ACTION_CANCEL_KILL);
 

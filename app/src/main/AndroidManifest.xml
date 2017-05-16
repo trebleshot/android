@@ -55,11 +55,13 @@
 
         <service
             android:name=".service.ClientService"
-            android:label="Client Service"/>
+            android:label="Client Service"
+            android:process=":transfer"/>
 
         <service
             android:name=".service.ServerService"
-            android:label="Server Service"/>
+            android:label="Server Service"
+            android:process=":transfer"/>
 
         <service
             android:name=".service.CommunicationService"

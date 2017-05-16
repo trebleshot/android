@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NetworkDeviceInfoLoader;
@@ -27,8 +28,8 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	public static final String ACTION_ADD_IP = "genonbeta.intent.action.ADD_IP";
 
 	public static final String EXTRA_DEVICE_IP = "genonbeta.intent.extra.DEVICE_IP";
-	public static final String EXTRA_NETWORK_INTERFACE_PREFIX = "genonbeta.intent.extra.NETWORK_INTERFACE_PREFIX";
 	public static final String EXTRA_SCAN_STATUS = "genonbeta.intent.extra.SCAN_STATUS";
+	public static final String EXTRA_NETWORK_INTERFACE_PREFIX = "genonbeta.intent.extra.NETWORK_INTERFACE_PREFIX";
 
 	public static final String STATUS_OK = "genonbeta.intent.status.OK";
 	public static final String STATUS_NO_NETWORK_INTERFACE = "genonbeta.intent.status.NO_NETWORK_INTERFACE";
@@ -36,13 +37,14 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	private Context mContext;
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader(this);
 	private SharedPreferences mPreferences;
+	private DeviceRegistry mDeviceRegistry;
 
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
-		this.mContext = context;
-
+		mContext = context;
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+		mDeviceRegistry = new DeviceRegistry(context);
 
 		if (ACTION_SCAN_DEVICES.equals(intent.getAction()))
 		{
@@ -52,13 +54,10 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 
 				for (String ip : list)
 				{
-					if (!ApplicationHelper.getDeviceList().containsKey(ip))
-					{
-						NetworkDevice device = new NetworkDevice(ip, null, null, null);
-						device.isLocalAddress = true;
+					NetworkDevice device = new NetworkDevice(ip, null, null, null);
+					device.isLocalAddress = true;
 
-						ApplicationHelper.getDeviceList().put(ip, device);
-					}
+					mDeviceRegistry.registerDevice(device);
 				}
 
 				context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, (ApplicationHelper.getNetworkDeviceScanner().scan(list, this)) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE));
@@ -68,38 +67,20 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 		}
 		else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
 		{
-			mInfoLoader.startLoading(context, intent.getStringExtra(EXTRA_DEVICE_IP), true);
+			mInfoLoader.startLoading(context, mDeviceRegistry, intent.getStringExtra(EXTRA_DEVICE_IP));
 		}
 	}
 
 	@Override
 	public void onDeviceFound(InetAddress address)
 	{
-		if (ApplicationHelper.getDeviceList().containsKey(address.getHostAddress()))
-		{
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(address.getHostAddress());
-
-			if (device.isLocalAddress && !mPreferences.getBoolean("developer_mode", false))
-				return;
-		}
-
-		mInfoLoader.startLoading(this.mContext, address.getHostAddress(), mPreferences.getBoolean("developer_mode", false));
+		mInfoLoader.startLoading(mContext, mDeviceRegistry, address.getHostAddress());
 	}
 
 	@Override
 	public void onInfoAvailable(NetworkDevice device)
 	{
-		if (ApplicationHelper.getDeviceList().containsKey(device.ip))
-		{
-			NetworkDevice oldDevice = ApplicationHelper.getDeviceList().get(device.ip);
-
-			oldDevice.brand = device.brand;
-			oldDevice.model = device.model;
-			oldDevice.user = device.user;
-		}
-		else
-			ApplicationHelper.getDeviceList().put(device.ip, device);
-
+		mDeviceRegistry.registerDevice(device);
 		mContext.sendBroadcast(new Intent(ACTION_DEVICE_FOUND).putExtra(EXTRA_DEVICE_IP, device.ip));
 	}
 

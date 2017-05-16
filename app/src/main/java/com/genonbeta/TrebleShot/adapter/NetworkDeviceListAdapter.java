@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.media.Image;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
@@ -21,32 +23,27 @@ import java.util.ArrayList;
 
 public class NetworkDeviceListAdapter extends BaseAdapter
 {
+	private boolean mShowLocalAddresses = false;
 	private Context mContext;
+	private DeviceRegistry mDeviceRegistry;
 	private ArrayList<NetworkDevice> mDeviceList = new ArrayList<NetworkDevice>();
 
-	public NetworkDeviceListAdapter(Context context)
+	public NetworkDeviceListAdapter(Context context, boolean showLocalAddresses)
 	{
+		this.mShowLocalAddresses = showLocalAddresses;
 		this.mContext = context;
-	}
-
-	@Override
-	public void notifyDataSetChanged()
-	{
-		mDeviceList.clear();
-
-		for (NetworkDevice device : ApplicationHelper.getDeviceList().values())
-		{
-			if (device.user != null && device.model != null && device.brand != null)
-				mDeviceList.add(device);
-		}
-
-		super.notifyDataSetChanged();
+		this.mDeviceRegistry = new DeviceRegistry(context);
 	}
 
 	@Override
 	public int getCount()
 	{
 		return mDeviceList.size();
+	}
+
+	public DeviceRegistry getDeviceRegistry()
+	{
+		return mDeviceRegistry;
 	}
 
 	@Override
@@ -91,4 +88,19 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 
 		return view;
 	}
+
+	@Override
+	public void notifyDataSetChanged()
+	{
+		mDeviceList.clear();
+
+		for (NetworkDevice device : mDeviceRegistry.getDeviceList())
+		{
+			if (device.user != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress))
+				mDeviceList.add(device);
+		}
+
+		super.notifyDataSetChanged();
+	}
+
 }

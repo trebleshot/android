@@ -1,12 +1,11 @@
 package com.genonbeta.TrebleShot.helper;
 
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONObject;
@@ -15,14 +14,14 @@ import java.net.Socket;
 
 public class NetworkDeviceInfoLoader
 {
-	private OnInfoAvailableListener mOnInfoAvaiableListener;
+	private OnInfoAvailableListener mOnInfoAvailableListener;
 
 	public NetworkDeviceInfoLoader(OnInfoAvailableListener listener)
 	{
 		setOnInfoAvailableListener(listener);
 	}
 
-	public boolean startLoading(final Context context, final String deviceIp, final boolean dontDeleteSelfIps)
+	public boolean startLoading(final Context context, final DeviceRegistry deviceRegistry, final String deviceIp)
 	{
 		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 				new JsonResponseHandler()
@@ -51,11 +50,8 @@ public class NetworkDeviceInfoLoader
 					{
 						try
 						{
-							Log.d("DeviceInfo", deviceIp + ": " + response);
-
 							JSONObject json = new JSONObject(response).getJSONObject(Keyword.DEVICE_INFO);
-
-							NetworkDevice device = new NetworkDevice(deviceIp, null, null, null);
+							NetworkDevice device = deviceRegistry.getNetworkDevice(deviceIp);
 
 							device.brand = json.getString(Keyword.BRAND);
 							device.model = json.getString(Keyword.MODEL);
@@ -64,12 +60,8 @@ public class NetworkDeviceInfoLoader
 							if (device.user == null || device.model == null || device.brand == null)
 								return;
 
-							if (!dontDeleteSelfIps)
-								if (Build.DISPLAY.equals(json.getString(Keyword.DISPLAY)))
-									return;
-
-							if (mOnInfoAvaiableListener != null)
-								mOnInfoAvaiableListener.onInfoAvailable(device);
+							if (mOnInfoAvailableListener != null)
+								mOnInfoAvailableListener.onInfoAvailable(device);
 						} catch (Exception e)
 						{
 							this.onError(e);
@@ -83,7 +75,7 @@ public class NetworkDeviceInfoLoader
 
 	public void setOnInfoAvailableListener(OnInfoAvailableListener listener)
 	{
-		mOnInfoAvaiableListener = listener;
+		mOnInfoAvailableListener = listener;
 	}
 
 	public static interface OnInfoAvailableListener

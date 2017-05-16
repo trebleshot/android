@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -65,6 +66,8 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 					{
 						ArrayList<CursorItem> itemList = mTransaction.getTable(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
 							.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", item.getString(Transaction.FIELD_TRANSFER_ACCEPTID)));
+
+						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
 
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
 					}

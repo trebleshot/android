@@ -22,7 +22,7 @@ public class ApplicationHelper
 {
 	public static final String TAG = ApplicationHelper.class.getSimpleName();
 
-	private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
+	//private static HashMap<String, NetworkDevice> mDeviceList = new HashMap<String, NetworkDevice>();
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
 	private static int mUniqueNumber = 0;
 
@@ -45,6 +45,7 @@ public class ApplicationHelper
 		return appDir;
 	}
 
+	/*
 	public static HashMap<String, NetworkDevice> getDeviceList()
 	{
 		return mDeviceList;
@@ -55,6 +56,7 @@ public class ApplicationHelper
 		NetworkDevice device = getDeviceList().get(ipAddress);
 		return device == null ? new NetworkDevice(ipAddress, null, null, null) : device;
 	}
+	*/
 
 	public static File getFileFromUri(Context context, Uri fileUri)
 	{

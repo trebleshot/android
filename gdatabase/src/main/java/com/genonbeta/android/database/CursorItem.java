@@ -11,6 +11,12 @@ public class CursorItem
 {
 	private HashMap<String, Object> mList = new HashMap<>();
 
+	public CursorItem clear()
+	{
+		mList.clear();
+		return this;
+	}
+
 	public boolean exists(String keyName)
 	{
 		return mList.containsKey(keyName);
@@ -56,9 +62,25 @@ public class CursorItem
 		return exists(SQLiteDatabase.COLUMN_ISSTATIC) && getInt(SQLiteDatabase.COLUMN_ISSTATIC) == 1;
 	}
 
+	public HashMap<String, Object> list()
+	{
+		return mList;
+	}
+
 	public CursorItem put(String keyName, Object object)
 	{
 		mList.put(keyName, object);
 		return this;
+	}
+
+	public CursorItem putAll(CursorItem item)
+	{
+		list().putAll(item.list());
+		return this;
+	}
+
+	public int size()
+	{
+		return mList.size();
 	}
 }

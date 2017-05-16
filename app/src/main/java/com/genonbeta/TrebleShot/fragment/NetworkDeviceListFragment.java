@@ -70,9 +70,9 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mListAdapter = new NetworkDeviceListAdapter(getActivity());
 		mNotification = new NotificationUtils(getActivity());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		mListAdapter = new NetworkDeviceListAdapter(getActivity(), mPreferences.getBoolean("developer_mode", false));
 
 		setListAdapter(mListAdapter);
 		setHasOptionsMenu(true);
@@ -82,7 +82,15 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		setEmptyText(getString(R.string.find_device_hint));
 
 		if (mPreferences.getBoolean("developer_mode", false))
-			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP).putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, "127.0.0.1"));
+		{
+			NetworkDevice device = new NetworkDevice("127.0.0.1");
+			device.isLocalAddress = true;
+
+			mListAdapter.getDeviceRegistry().registerDevice(device);
+
+			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP)
+					.putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, "127.0.0.1"));
+		}
 
 		if (mPreferences.getBoolean("scan_devices_auto", false))
 			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
@@ -122,6 +130,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 						public void onCheckedChanged(CompoundButton button, boolean isChecked)
 						{
 							device.isRestricted = !isChecked;
+							mListAdapter.getDeviceRegistry().registerDevice(device);
 						}
 					}
 			);
@@ -210,7 +219,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 				getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
 				return true;
 			case R.id.network_devices_clear_list:
-				ApplicationHelper.getDeviceList().clear();
+				mListAdapter.getDeviceRegistry().removeAll();
 				mListAdapter.notifyDataSetChanged();
 				mNotification.showToast(R.string.device_list_cleared_msg);
 				return true;

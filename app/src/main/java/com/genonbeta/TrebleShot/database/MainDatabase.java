@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.database;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.util.Log;
 
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -33,6 +32,14 @@ public class MainDatabase extends SQLiteDatabase
 	public static final int TYPE_TRANSFER_TYPE_INCOMING = 0;
 	public static final int TYPE_TRANSFER_TYPE_OUTGOING = 1;
 
+	public static final String TABLE_DEVICES = "devices";
+	public static final String FIELD_DEVICES_IP = "ip";
+	public static final String FIELD_DEVICES_USER = "user";
+	public static final String FIELD_DEVICES_BRAND = "brand";
+	public static final String FIELD_DEVICES_MODEL = "model";
+	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
+	public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
+
 	private Context mContext;
 
 	public MainDatabase(Context context)
@@ -55,6 +62,15 @@ public class MainDatabase extends SQLiteDatabase
 				.addColumn(FIELD_TRANSFER_USERIP, SQLQuery.Type.TEXT.toString(), false)
 				.addColumn(FIELD_TRANSFER_FLAG, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_TRANSFER_ACCESSPORT, SQLQuery.Type.INTEGER.toString(), true)
+				.exec(db);
+
+		new SQLQuery.CreateTable(TABLE_DEVICES)
+				.addColumn(FIELD_DEVICES_IP, SQLQuery.Type.TEXT.toString(), false)
+				.addColumn(FIELD_DEVICES_USER, SQLQuery.Type.TEXT.toString(), true)
+				.addColumn(FIELD_DEVICES_BRAND, SQLQuery.Type.TEXT.toString(), true)
+				.addColumn(FIELD_DEVICES_MODEL, SQLQuery.Type.TEXT.toString(), true)
+				.addColumn(FIELD_DEVICES_ISRESTRICTED, SQLQuery.Type.INTEGER.toString(), false)
+				.addColumn(FIELD_DEVICES_ISLOCALADDRESS, SQLQuery.Type.INTEGER.toString(), false)
 				.exec(db);
 	}
 

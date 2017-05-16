@@ -116,8 +116,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 			Looper.prepare();
 			getWifiLock().acquire();
 
-			NetworkDevice device = ApplicationHelper.getDeviceList().get(handler.getExtra().ip);
-			handler.getExtra().notification = getNotificationUtils().notifyFileSending(handler.getExtra(), device);
+			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());

@@ -153,7 +153,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			getTransactionInstance().removeTransaction(handler.getExtra());
 
 			if (multiCounter <= 1)
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile(), ApplicationHelper.getNetworkDeviceByAddress(handler.getExtra().ip));
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile());
 			else
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
 
@@ -223,8 +223,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
-			NetworkDevice device = ApplicationHelper.getNetworkDeviceByAddress(handler.getExtra().ip);
-			handler.getExtra().notification = getNotificationUtils().notifyFileReceiving(handler.getExtra(), device);
+			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());

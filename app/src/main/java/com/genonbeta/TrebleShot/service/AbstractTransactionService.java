@@ -52,7 +52,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 				{
 					if (handler.getExtra().acceptId == acceptId)
 					{
-						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra(), false);
+						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
 						handler.interrupt();
 
 						break;
