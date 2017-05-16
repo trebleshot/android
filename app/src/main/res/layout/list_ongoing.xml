@@ -7,31 +7,15 @@
     android:paddingBottom="8dp"
     android:paddingTop="8dp">
 
-    <RelativeLayout
-        android:id="@+id/list_process_info_layout"
+    <ImageView
+        android:id="@+id/list_process_type_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true">
-
-        <ImageView
-            android:padding="15dp"
-            android:id="@+id/list_process_type_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_file_upload_black_24dp"/>
-
-        <TextView
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:id="@+id/list_process_count_text"
-            style="@style/marqueeText.primary.big"
-            android:textColor="#aaa"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </RelativeLayout>
+        android:layout_centerVertical="true"
+        android:padding="15dp"
+        android:src="@drawable/ic_file_upload_black_24dp"/>
 
     <ImageView
         android:id="@+id/list_process_clear_image"
@@ -49,9 +33,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/list_process_info_layout"
+        android:layout_toEndOf="@id/list_process_type_image"
         android:layout_toLeftOf="@id/list_process_clear_image"
-        android:layout_toRightOf="@id/list_process_info_layout"
+        android:layout_toRightOf="@id/list_process_type_image"
         android:layout_toStartOf="@id/list_process_clear_image"
         android:orientation="vertical">
 
@@ -61,11 +45,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/list_process_status_text"
-            style="@style/condensedCapsText"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/list_process_status_text"
+                style="@style/condensedCapsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/list_process_count_text"
+                style="@style/condensedCapsText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
+                android:textColor="#9c9"/>
+
+        </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

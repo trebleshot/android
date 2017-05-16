@@ -24,6 +24,7 @@ public class SQLQuery
 
 	public static class Select
 	{
+		public String tag;
 		public String tableName;
 		public String[] columns;
 		public String where;
@@ -60,6 +61,12 @@ public class SQLQuery
 		public Select setLoadListener(LoadListener listener)
 		{
 			this.loadListener = listener;
+			return this;
+		}
+
+		public Select setTag(String tag)
+		{
+			this.tag = tag;
 			return this;
 		}
 

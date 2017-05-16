@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -33,24 +32,13 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 
 	private Transaction mTransaction;
 	private ArrayList<CursorItem> mList = new ArrayList<>();
+	private SQLQuery.Select mSelect;
 
 	public OngoingListAdapter(Context context)
 	{
 		super(context);
 		mTransaction = new Transaction(context);
-	}
-
-	@Override
-	protected void onSearch(String word)
-	{
-
-	}
-
-	@Override
-	protected void onUpdate()
-	{
-		mList.clear();
-		mList.addAll(mTransaction.getTable(new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
+		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
 				.setOrderBy(Transaction.FIELD_TRANSFER_ID + " DESC")
 				.setGroupBy(MainDatabase.FIELD_TRANSFER_ACCEPTID)
 				.setLoadListener(new SQLQuery.Select.LoadListener()
@@ -65,13 +53,40 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 					public void onLoad(SQLiteDatabase db, Cursor cursor, CursorItem item)
 					{
 						ArrayList<CursorItem> itemList = mTransaction.getTable(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-							.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", item.getString(Transaction.FIELD_TRANSFER_ACCEPTID)));
+								.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", item.getString(Transaction.FIELD_TRANSFER_ACCEPTID)));
 
 						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
 
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
 					}
-				})));
+				});
+	}
+
+	public OngoingListAdapter(Context context, int acceptId)
+	{
+		this(context);
+		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
+				.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", String.valueOf(acceptId));
+	}
+
+	public OngoingListAdapter(Context context, String ipAddress)
+	{
+		super(context);
+		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
+				.setWhere(Transaction.FIELD_TRANSFER_USERIP + "=?", ipAddress);
+	}
+
+	@Override
+	protected void onSearch(String word)
+	{
+
+	}
+
+	@Override
+	protected void onUpdate()
+	{
+		mList.clear();
+		mList.addAll(mTransaction.getTable(mSelect));
 	}
 
 	@Override
@@ -99,6 +114,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 			view = getInflater().inflate(R.layout.list_ongoing, viewGroup, false);
 
 		final CursorItem thisItem = (CursorItem) getItem(i);
+		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
 
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
 		ImageView clearImage = (ImageView) view.findViewById(R.id.list_process_clear_image);
@@ -106,12 +122,12 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 		TextView statusText = (TextView) view.findViewById(R.id.list_process_status_text);
 		TextView countText = (TextView) view.findViewById(R.id.list_process_count_text);
 
-		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
-
 		typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_NAME));
 		statusText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_FLAG));
-		countText.setText(thisItem.getString(FIELD_TRANSFER_TOTAL_COUNT));
+
+		if (thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT))
+			countText.setText((thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) > 1) ? "+" + (thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) - 1) : "");
 
 		clearImage.setOnClickListener(new View.OnClickListener()
 		{
@@ -121,7 +137,10 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 				AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
 
 				dialog.setTitle(R.string.dialog_title_remove_queue_job);
-				dialog.setMessage(mContext.getString(R.string.dialog_msg_remove_queue_job, thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)));
+				dialog.setMessage(thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT) ?
+						mContext.getString(R.string.dialog_msg_remove_queue_job, thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
+						"Delete " + thisItem.getString(Transaction.FIELD_TRANSFER_NAME) + " from the queue");
+
 				dialog.setNegativeButton(R.string.close, null);
 				dialog.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener()
 				{

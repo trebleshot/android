@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,7 +8,10 @@ import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.ActionMode;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
@@ -42,6 +46,8 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 		mFilter.addAction(Transaction.ACTION_TRANSACTION_REMOVED);
 
 		mTransaction = new Transaction(getContext());
+
+		setSearchSupport(false);
 	}
 
 	@Override
@@ -67,44 +73,59 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 	@Override
 	protected ActionModeListener onActionModeListener()
 	{
-		return new ChoiceListener();
+		return null;
 	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
+
 		CursorItem item = (CursorItem) getAdapter().getItem(position);
+		Dialog mDialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
 
-		if (item.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING)
+		mDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+
+		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_transaction_editor, null);
+		ListView list = (ListView) view.findViewById(R.id.layout_transaction_editor_list_main);
+
+		final OngoingListAdapter adapter = new OngoingListAdapter(getContext(), item.getInt(Transaction.FIELD_TRANSFER_ACCEPTID));
+
+		list.setAdapter(adapter);
+		list.setOnItemClickListener(new AdapterView.OnItemClickListener()
 		{
-			AwaitedFileReceiver receiver = new AwaitedFileReceiver(item);
-
-			if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				receiver.flag = Transaction.Flag.RESUME;
-				mTransaction.updateTransaction(receiver);
-			}
+				CursorItem thisItem = (CursorItem) adapter.getItem(position);
 
-			getActivity().startService(new Intent(getActivity(), ServerService.class)
-					.setAction(ServerService.ACTION_START_RECEIVING)
-					.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
-		}
+				if (thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING)
+				{
+					AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
+
+					if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
+					{
+						receiver.flag = Transaction.Flag.RESUME;
+						mTransaction.updateTransaction(receiver);
+					}
+
+					getActivity().startService(new Intent(getActivity(), ServerService.class)
+							.setAction(ServerService.ACTION_START_RECEIVING)
+							.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
+				}
+			}
+		});
+
+		adapter.update();
+		adapter.notifyDataSetChanged();
+
+		mDialog.setContentView(view);
+		mDialog.show();
 	}
 
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
 		return context.getString(R.string.ongoing_process);
-	}
-
-	private class ChoiceListener extends ActionModeListener
-	{
-		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
-		{
-			getAdapter().getItem(pos);
-
-			return null;
-		}
 	}
 }

@@ -26,6 +26,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	private ActionMode mActionMode;
 	private ActionModeListener mActionModeListener;
 	private SearchView mSearchView;
+	private boolean mSearchSupport = true;
 	private boolean mIsLoading = false;
 
 	private Runnable mNotifyListChanges = new Runnable()
@@ -36,7 +37,8 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			getAdapter().notifyDataSetChanged();
 			setEmptyText(getString(R.string.list_empty_msg));
 
-			mActionModeListener.clearSelectionList();
+			if (mActionModeListener != null)
+				mActionModeListener.clearSelectionList();
 
 			if (mActionMode != null)
 				for (int i = 0; i < getListView().getCount(); i++)
@@ -97,8 +99,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		this.setListAdapter(mAdapter);
 
-		this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-		this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
+		if (this.mActionModeListener != null)
+		{
+			this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+			this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
+		}
+
 		this.getListView().setDividerHeight(0);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
@@ -115,10 +121,14 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.search_menu, menu);
 
-		mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
-		mSearchView.setOnQueryTextListener(mSearchComposer);
+		if (mSearchSupport)
+		{
+			inflater.inflate(R.menu.search_menu, menu);
+
+			mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
+			mSearchView.setOnQueryTextListener(mSearchComposer);
+		}
 	}
 
 	@Override
@@ -169,6 +179,11 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		for (int i = 0; i < getListView().getCount(); i++)
 			getListView().setItemChecked(i, check);
+	}
+
+	public void setSearchSupport(boolean searchSupport)
+	{
+		mSearchSupport = searchSupport;
 	}
 
 	public boolean updateInBackground()
