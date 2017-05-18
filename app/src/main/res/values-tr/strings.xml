@@ -79,7 +79,7 @@
     <string name="send">Gönderilecek</string>
     <string name="receive">Alınacak</string>
     <string name="clear_queue">Kuyruğu temizle</string>
-    <string name="thread_queue">İşlem Kuyruğu</string>
+    <string name="thread_queue">İşlem Kuyruğu - %s</string>
     <string name="thread_queue_short">İş. Kuyruğu</string>
     <string name="share_with_app">TrebleShot ile paylaş</string>
     <string name="something_went_wrong">Birşeyler ters gitti</string>

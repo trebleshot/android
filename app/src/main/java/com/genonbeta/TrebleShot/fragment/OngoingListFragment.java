@@ -5,9 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -89,7 +87,7 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_transaction_editor, null);
 		ListView list = (ListView) view.findViewById(R.id.layout_transaction_editor_list_main);
 
-		final OngoingListAdapter adapter = new OngoingListAdapter(getContext(), item.getInt(Transaction.FIELD_TRANSFER_ACCEPTID));
+		final OngoingListAdapter adapter = new OngoingListAdapter(getContext(), item.getInt(Transaction.FIELD_TRANSFER_GROUPID));
 
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new AdapterView.OnItemClickListener()
@@ -111,7 +109,7 @@ public class OngoingListFragment extends AbstractEditableListFragment<OngoingLis
 
 					getActivity().startService(new Intent(getActivity(), ServerService.class)
 							.setAction(ServerService.ACTION_START_RECEIVING)
-							.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId));
+							.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId));
 				}
 			}
 		});

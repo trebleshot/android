@@ -64,20 +64,6 @@ public class NotificationUtils
 		return makeSound | vibrate | light;
 	}
 
-	public DynamicNotification notifyService()
-	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, NOTIFICATION_ID_SERVICE);
-
-		notification.setSmallIcon(R.mipmap.p2p)
-				.setContentTitle(mContext.getString(R.string.app_name))
-				.setContentText(mContext.getString(R.string.ongoing))
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.stop_service), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE), 0))
-				.addAction(android.R.drawable.ic_menu_revert, mContext.getString(R.string.lock), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_STOP_SERVICE).putExtra(CommunicationService.EXTRA_SERVICE_LOCK_REQUEST, true), 0));
-
-		return notification.show();
-	}
-
 	public DynamicNotification notifyConnectionRequest(String clientIp)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
@@ -122,14 +108,14 @@ public class NotificationUtils
 	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver)
 	{
 		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
 
-		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, receiver.acceptId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
@@ -189,7 +175,7 @@ public class NotificationUtils
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-		acceptIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, acceptId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, acceptId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
@@ -244,14 +230,14 @@ public class NotificationUtils
 		NetworkDevice device = mDeviceRegistry.getNetworkDevice(transaction.ip);
 		boolean isIncoming = transaction instanceof AwaitedFileReceiver;
 
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		cancelIntent.setAction(AbstractTransactionService.ACTION_CANCEL_JOB);
 		cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, transaction.ip);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
-		cancelIntent.putExtra(CommunicationService.EXTRA_ACCEPT_ID, transaction.acceptId);
+		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
@@ -316,7 +302,7 @@ public class NotificationUtils
 	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, File file)
 	{
 		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
 		if (Build.VERSION.SDK_INT > 22)
@@ -337,7 +323,7 @@ public class NotificationUtils
 
 	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, int numberOfFiles)
 	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.multiple_receive))
@@ -349,26 +335,9 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyPing(String ipAddress)
-	{
-		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, NOTIFICATION_ID_PING);
-
-		notification.setSmallIcon(android.R.drawable.stat_notify_chat)
-				.setContentTitle(mContext.getString(R.string.poke_notify))
-				.setContentText(mContext.getString(R.string.sent_signal_msg))
-				.setContentInfo(device.user)
-				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class), 0))
-				.setDefaults(getNotificationSettings())
-				.setTicker(mContext.getString(R.string.poke_notify));
-
-		return notification.show();
-	}
-
 	public DynamicNotification notifyReceiveError(AwaitedFileReceiver receiver)
 	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 		Intent openIntent = new Intent(mContext, TrebleShotActivity.class)
 				.setAction(TrebleShotActivity.ACTION_OPEN_ONGOING_LIST);
 
@@ -384,7 +353,7 @@ public class NotificationUtils
 	public DynamicNotification notifyStuckThread(AwaitedTransaction transaction)
 	{
 		boolean isIncoming = transaction instanceof AwaitedFileReceiver;
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(AbstractTransactionService.ACTION_CANCEL_KILL);
 
 		// TODO: 4/29/17 Don't leave it like this

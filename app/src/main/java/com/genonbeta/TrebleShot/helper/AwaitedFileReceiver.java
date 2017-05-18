@@ -9,9 +9,9 @@ public class AwaitedFileReceiver extends AwaitedTransaction
 {
 	public String fileMimeType;
 
-	public AwaitedFileReceiver(int requestId, int acceptId, String ip, String fileName, long fileSize, String fileMime)
+	public AwaitedFileReceiver(NetworkDevice networkDevice, int requestId, int acceptId, String fileName, long fileSize, String fileMime)
 	{
-		super(requestId, acceptId, ip, fileName, fileSize);
+		super(networkDevice.deviceId, requestId, acceptId, networkDevice.ip, fileName, fileSize);
 		this.fileMimeType = fileMime;
 	}
 

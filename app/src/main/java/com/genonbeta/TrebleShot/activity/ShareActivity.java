@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
@@ -9,7 +8,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -25,7 +23,6 @@ import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONArray;
@@ -158,10 +155,8 @@ public class ShareActivity extends GActivity
 							@Override
 							public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 							{
-								final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-								final String deviceIp = device.ip;
-
-								handleFiles(fileUris, fileNames.size() > 0 ? fileNames : null, deviceIp);
+								NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+								handleFiles(fileUris, fileNames.size() > 0 ? fileNames : null, device);
 							}
 						});
 
@@ -179,10 +174,8 @@ public class ShareActivity extends GActivity
 						@Override
 						public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 						{
-							final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-							final String deviceIp = device.ip;
-
-							handleFiles(fileUris, fileNames, deviceIp);
+							NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+							handleFiles(fileUris, fileNames, device);
 						}
 					});
 
@@ -210,11 +203,11 @@ public class ShareActivity extends GActivity
 		mStatusText.getText().append(charSequence);
 	}
 
-	protected void handleFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames, final String deviceIp)
+	protected void handleFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames, final NetworkDevice device)
 	{
-		mDeviceRegistry.updateRestriction(deviceIp, false);
+		mDeviceRegistry.updateRestriction(device, false);
 
-		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+		CoolCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 				new JsonResponseHandler()
 				{
 					@Override
@@ -234,7 +227,7 @@ public class ShareActivity extends GActivity
 							int acceptId = ApplicationHelper.getUniqueNumber();
 
 							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-							json.put(Keyword.ACCEPT_ID, acceptId);
+							json.put(Keyword.GROUP_ID, acceptId);
 
 							for (Uri fileUri : fileUris)
 							{
@@ -247,7 +240,7 @@ public class ShareActivity extends GActivity
 								if (file.isFile())
 								{
 									int requestId = ApplicationHelper.getUniqueNumber();
-									AwaitedFileSender sender = new AwaitedFileSender(requestId, acceptId, deviceIp, fileName, 0, file);
+									AwaitedFileSender sender = new AwaitedFileSender(device, requestId, acceptId, fileName, 0, file);
 									JSONObject thisJson = new JSONObject();
 
 									try

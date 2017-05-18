@@ -22,8 +22,8 @@ import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.helper.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
-import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,24 +36,24 @@ public class CommunicationService extends Service
 	public static final String TAG = "CommunicationService";
 
 	public static final String ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER";
-	public static final String ACTION_STOP_SERVICE = "com.genonbeta.TrebleShot.action.STOP_SERVICE";
 	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
 	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
 
 	public static final String EXTRA_DEVICE_IP = "extraDeviceIp";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
-	public static final String EXTRA_ACCEPT_ID = "extraAcceptId";
+	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
 	public static final String EXTRA_SERVICE_LOCK_REQUEST = "extraServiceStartLock";
 	public static final String EXTRA_HALF_RESTRICT = "extraHalfRestrict";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
+	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader();
 	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private String mReceivedClipboardIndex;
 	private Transaction mTransaction;
-	private DeviceRegistry mDeviceRegisty;
+	private DeviceRegistry mDeviceRegistry;
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -72,10 +72,7 @@ public class CommunicationService extends Service
 		mNotification = new NotificationUtils(this);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mTransaction = new Transaction(this);
-		mDeviceRegisty = new DeviceRegistry(this);
-
-		if (mPreferences.getBoolean("notify_com_server_started", false))
-			startForeground(NotificationUtils.NOTIFICATION_ID_SERVICE, mNotification.notifyService().build());
+		mDeviceRegistry = new DeviceRegistry(this);
 	}
 
 	@Override
@@ -88,25 +85,15 @@ public class CommunicationService extends Service
 
 		if (intent != null)
 		{
-			if (ACTION_STOP_SERVICE.equals(intent.getAction()))
-			{
-				if (intent.getBooleanExtra(EXTRA_SERVICE_LOCK_REQUEST, false))
-				{
-					mPreferences.edit().putBoolean("serviceLock", true).apply();
-					mNotification.showToast(R.string.service_lock_notice, Toast.LENGTH_LONG);
-				}
-
-				stopSelf();
-			}
-			else if (ACTION_FILE_TRANSFER.equals(intent.getAction()))
+			if (ACTION_FILE_TRANSFER.equals(intent.getAction()))
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-				final int acceptId = intent.getIntExtra(EXTRA_ACCEPT_ID, -1);
+				final int acceptId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 
 				mNotification.cancel(notificationId);
-				mDeviceRegisty.updateRestriction(oppositeIp, false);
+				mDeviceRegistry.updateRestriction(oppositeIp, false);
 
 				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 						new JsonResponseHandler()
@@ -117,7 +104,7 @@ public class CommunicationService extends Service
 								try
 								{
 									json.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-									json.put(Keyword.ACCEPT_ID, acceptId);
+									json.put(Keyword.GROUP_ID, acceptId);
 									json.put(Keyword.IS_ACCEPTED, isAccepted);
 								} catch (JSONException e)
 								{
@@ -137,7 +124,7 @@ public class CommunicationService extends Service
 
 					startService(new Intent(this, ServerService.class)
 							.setAction(ServerService.ACTION_START_RECEIVING)
-							.putExtra(EXTRA_ACCEPT_ID, acceptId));
+							.putExtra(EXTRA_GROUP_ID, acceptId));
 				}
 				else
 					mTransaction.removePendingReceivers(acceptId);
@@ -150,10 +137,10 @@ public class CommunicationService extends Service
 
 				mNotification.cancel(notificationId);
 
-				if (!mDeviceRegisty.exists(oppositeIp))
+				if (!mDeviceRegistry.exists(oppositeIp))
 					return START_NOT_STICKY;
 
-				mDeviceRegisty.updateRestriction(oppositeIp, !isAccepted);
+				mDeviceRegistry.updateRestriction(oppositeIp, !isAccepted);
 			}
 			else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
 			{
@@ -162,10 +149,10 @@ public class CommunicationService extends Service
 
 				mNotification.cancel(notificationId);
 
-				if (!mDeviceRegisty.exists(oppositeIp))
+				if (!mDeviceRegistry.exists(oppositeIp))
 					return START_NOT_STICKY;
 
-				mDeviceRegisty.updateRestriction(oppositeIp, false);
+				mDeviceRegistry.updateRestriction(oppositeIp, false);
 
 				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false))
 				{
@@ -198,7 +185,7 @@ public class CommunicationService extends Service
 		@Override
 		public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp)
 		{
-			NetworkDevice device = new NetworkDevice(clientIp, null, null, null);
+			NetworkDevice device = new NetworkDevice(clientIp);
 
 			try
 			{
@@ -216,7 +203,7 @@ public class CommunicationService extends Service
 				appInfo.put(Keyword.VERSION_CODE, packageInfo.versionCode);
 				appInfo.put(Keyword.VERSION_NAME, packageInfo.versionName);
 
-				deviceInformation.put(Keyword.DISPLAY, Build.DISPLAY);
+				deviceInformation.put(Keyword.SERIAL, Build.SERIAL);
 				deviceInformation.put(Keyword.BRAND, Build.BRAND);
 				deviceInformation.put(Keyword.MODEL, Build.MODEL);
 				deviceInformation.put(Keyword.USER, mPreferences.getString("device_name", Build.BOARD.toUpperCase()));
@@ -225,11 +212,10 @@ public class CommunicationService extends Service
 				response.put(Keyword.DEVICE_INFO, deviceInformation);
 
 				if (receivedMessage.has(Keyword.REQUEST) && !receivedMessage.getString(Keyword.REQUEST).equals(""))
-					if (!mDeviceRegisty.exists(clientIp))
+					if (!mDeviceRegistry.exists(clientIp))
 					{
 						device.isRestricted = true;
-						mDeviceRegisty.registerDevice(device);
-						sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP).putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, clientIp));
+						mDeviceRegistry.registerDevice(mInfoLoader.startLoadingOnCurrentThread(mDeviceRegistry, device.ip));
 
 						if (receivedMessage.getString(Keyword.REQUEST).equals(Keyword.REQUEST_TRANSFER))
 						{
@@ -241,7 +227,7 @@ public class CommunicationService extends Service
 					}
 					else
 					{
-						device = mDeviceRegisty.getNetworkDevice(clientIp);
+						device = mDeviceRegistry.getNetworkDevice(clientIp);
 
 						if (device.isRestricted)
 							shouldContinue = false;
@@ -252,7 +238,7 @@ public class CommunicationService extends Service
 					switch (receivedMessage.getString(Keyword.REQUEST))
 					{
 						case (Keyword.REQUEST_TRANSFER):
-							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.ACCEPT_ID))
+							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID))
 							{
 								String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
 
@@ -261,7 +247,7 @@ public class CommunicationService extends Service
 								JSONArray jsonArray = new JSONArray(jsonIndex);
 
 								int count = 0;
-								int acceptId = receivedMessage.getInt(Keyword.ACCEPT_ID);
+								int acceptId = receivedMessage.getInt(Keyword.GROUP_ID);
 								AwaitedFileReceiver heldReceiver = null;
 
 								for (int i = 0; i < jsonArray.length(); i++)
@@ -274,7 +260,7 @@ public class CommunicationService extends Service
 									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID))
 									{
 										count++;
-										heldReceiver = new AwaitedFileReceiver(requestIndex.getInt(Keyword.REQUEST_ID), acceptId, clientIp, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
+										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), acceptId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
 										mTransaction.getPendingReceivers().offer(heldReceiver);
 									}
 								}
@@ -282,7 +268,7 @@ public class CommunicationService extends Service
 								if (count > 0)
 								{
 									result = true;
-									mDeviceRegisty.updateRestriction(device, true);
+									mDeviceRegistry.updateRestriction(device, true);
 
 									if (count > 1)
 										mNotification.notifyTransferRequest(halfRestriction, clientIp, acceptId, count);
@@ -292,9 +278,9 @@ public class CommunicationService extends Service
 							}
 							break;
 						case (Keyword.REQUEST_RESPONSE):
-							if (receivedMessage.has(Keyword.ACCEPT_ID))
+							if (receivedMessage.has(Keyword.GROUP_ID))
 							{
-								int acceptId = receivedMessage.getInt(Keyword.ACCEPT_ID);
+								int acceptId = receivedMessage.getInt(Keyword.GROUP_ID);
 								boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
 
 								if (!isAccepted)
@@ -334,17 +320,11 @@ public class CommunicationService extends Service
 								mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
 								mNotification.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
 
-								mDeviceRegisty.updateRestriction(device, true);
+								mDeviceRegistry.updateRestriction(device, true);
 
 								result = true;
 							}
 							break;
-						case (Keyword.REQUEST_POKE):
-							if (mPreferences.getBoolean("allow_poke", true))
-							{
-								mNotification.notifyPing(clientIp);
-								result = true;
-							}
 					}
 				}
 

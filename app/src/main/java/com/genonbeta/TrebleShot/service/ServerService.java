@@ -11,11 +11,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -63,14 +61,14 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 		if (intent != null)
 		{
-			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_ACCEPT_ID))
+			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID))
 			{
-				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 				AwaitedFileReceiver runningReceiver = null;
 
 				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler :  mReceive.getProcessList())
 				{
-					if (handler.getExtra().acceptId == acceptId)
+					if (handler.getExtra().groupId == acceptId)
 					{
 						runningReceiver = handler.getExtra();
 						break;
@@ -90,7 +88,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	public boolean doJob(int acceptId)
 	{
 		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_ACCEPTID + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + " != ?",
+				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
 						String.valueOf(acceptId),
 						Transaction.Flag.INTERRUPTED.toString());
@@ -157,7 +155,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			else
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
 
-			doJob(handler.getExtra().acceptId);
+			doJob(handler.getExtra().groupId);
 		}
 
 		@Override

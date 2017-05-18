@@ -2,53 +2,36 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.SwitchCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
-import com.genonbeta.CoolSocket.CoolJsonCommunication;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.PendingProcessListAdapter;
-import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
-import com.genonbeta.TrebleShot.service.Keyword;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.Socket;
 
 public class NetworkDeviceListFragment extends ListFragment implements FragmentTitle
 {
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private SelfReceiver mReceiver = new SelfReceiver();
-	private PokeHandler mPokeHandler = new PokeHandler();
 	private NetworkDeviceListAdapter mListAdapter;
 	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
@@ -109,78 +92,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		}
 		else if (device.brand != null && device.model != null)
 		{
-			AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-
-			dialog.setTitle(device.user);
-
-			View rootView = getActivity().getLayoutInflater().inflate(R.layout.layout_device_info, null);
-
-			TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
-			TextView ipText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
-			SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);
-
-			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
-			ipText.setText(device.ip);
-			accessSwitch.setChecked(!device.isRestricted);
-
-			accessSwitch.setOnCheckedChangeListener(
-					new OnCheckedChangeListener()
-					{
-						@Override
-						public void onCheckedChanged(CompoundButton button, boolean isChecked)
-						{
-							mListAdapter.getDeviceRegistry().updateRestriction(device, !isChecked);
-						}
-					}
-			);
-
-			dialog.setNegativeButton(R.string.close, null);
-
-			dialog.setPositiveButton(R.string.poke, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int p2)
-						{
-							CoolJsonCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null, mPokeHandler);
-						}
-					}
-			);
-
-			dialog.setNeutralButton(R.string.thread_queue_short, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int p2)
-						{
-							AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-
-							final PendingProcessListAdapter adapter = new PendingProcessListAdapter(getActivity(), device.ip);
-
-							dialog.setTitle(getString(R.string.thread_queue) + " - " + device.user);
-
-							if (adapter.getCount() < 1)
-								dialog.setMessage(R.string.list_empty_msg);
-							else
-								dialog.setAdapter(adapter, null);
-
-							dialog.setNegativeButton(R.string.close, null);
-							dialog.setNeutralButton(R.string.clear_queue, new DialogInterface.OnClickListener()
-									{
-										@Override
-										public void onClick(DialogInterface dialogInterface, int p2)
-										{
-											adapter.clearQueue();
-										}
-									}
-							);
-
-
-							dialog.show();
-						}
-					}
-			);
-
-			dialog.setView(rootView);
- 			dialog.show();
+			new DeviceInfoDialog(getContext(), mListAdapter.getDeviceRegistry(), mNotification, device).show();
 		}
 	}
 
@@ -280,51 +192,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 			{
 				showSnackbar(R.string.scan_completed);
 			}
-		}
-	}
-
-	protected class PokeHandler extends CoolJsonCommunication.JsonResponseHandler
-	{
-		@Override
-		public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-		{
-			try
-			{
-				json.put(Keyword.REQUEST, Keyword.REQUEST_POKE);
-
-				JSONObject response = new JSONObject(process.waitForResponse());
-
-				if (response.getBoolean(Keyword.RESULT))
-				{
-					showToast(getString(R.string.poke_sent));
-					return;
-				}
-
-				showToast(getString(R.string.poke_error, getString(R.string.not_allowed_error)));
-			} catch (JSONException e)
-			{
-				showToast(getString(R.string.poke_error, getString(R.string.communication_problem)));
-			}
-		}
-
-		@Override
-		public void onError(Exception exception)
-		{
-			super.onError(exception);
-
-			showToast(getString(R.string.poke_error, getString(R.string.connection_problem)));
-
-			Looper.loop();
-		}
-
-		private void showToast(String text)
-		{
-			Looper.prepare();
-
-			if (getActivity() != null)
-				mNotification.showToast(text);
-
-			Looper.loop();
 		}
 	}
 }

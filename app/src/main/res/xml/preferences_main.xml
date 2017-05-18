@@ -4,20 +4,9 @@
     <PreferenceCategory android:title="@string/application">
 
         <CheckBoxPreference
-            android:key="notify_com_server_started"
-            android:title="@string/communation_server_notification"
-            android:summary="@string/communation_server_notification_summary"/>
-
-        <CheckBoxPreference
-            android:key="allow_poke"
-            android:title="@string/allow_poke"
-            android:summary="@string/allow_poke_summary"/>
-
-        <CheckBoxPreference
             android:key="scan_devices_auto"
             android:title="@string/scan_devices_auto"
             android:summary="@string/scan_devices_auto_summary"/>
-
 
         <EditTextPreference
             android:key="device_name"
@@ -67,20 +56,6 @@
             android:key="storage_path"
             android:title="@string/file_storage_path"
             android:summary="@string/file_storage_path_summary"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory android:title="@string/about">
-
-        <PreferenceScreen
-            android:title="Genonbeta on Facebook"
-            android:summary="Veli Tasalı (fb.com/veli.tasali)">
-
-            <intent
-                android:action="android.intent.action.VIEW"
-                android:data="http://fb.com/veli.tasali"/>
-
-        </PreferenceScreen>
 
     </PreferenceCategory>
 

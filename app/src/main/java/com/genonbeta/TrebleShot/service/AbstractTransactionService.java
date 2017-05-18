@@ -46,11 +46,11 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 		if (intent != null)
 			if (ACTION_CANCEL_JOB.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
 			{
-				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 
 				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
 				{
-					if (handler.getExtra().acceptId == acceptId)
+					if (handler.getExtra().groupId == acceptId)
 					{
 						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
 						handler.interrupt();
@@ -63,10 +63,10 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 			}
 			else if (ACTION_CANCEL_KILL.equals(intent.getAction()))
 			{
-				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_ACCEPT_ID, -1);
+				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 
 				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
-					if (handler.getExtra().acceptId == acceptId && handler.getSocket() != null)
+					if (handler.getExtra().groupId == acceptId && handler.getSocket() != null)
 					{
 						try
 						{

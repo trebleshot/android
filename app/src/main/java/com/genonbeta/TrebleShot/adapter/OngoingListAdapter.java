@@ -40,7 +40,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 		mTransaction = new Transaction(context);
 		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
 				.setOrderBy(Transaction.FIELD_TRANSFER_ID + " DESC")
-				.setGroupBy(MainDatabase.FIELD_TRANSFER_ACCEPTID)
+				.setGroupBy(MainDatabase.FIELD_TRANSFER_GROUPID)
 				.setLoadListener(new SQLQuery.Select.LoadListener()
 				{
 					@Override
@@ -53,7 +53,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 					public void onLoad(SQLiteDatabase db, Cursor cursor, CursorItem item)
 					{
 						ArrayList<CursorItem> itemList = mTransaction.getTable(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-								.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", item.getString(Transaction.FIELD_TRANSFER_ACCEPTID)));
+								.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", item.getString(Transaction.FIELD_TRANSFER_GROUPID)));
 
 						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
 
@@ -66,7 +66,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	{
 		this(context);
 		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", String.valueOf(acceptId));
+				.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(acceptId));
 	}
 
 	public OngoingListAdapter(Context context, String ipAddress)
@@ -150,7 +150,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 						if (isIncoming)
 						{
 							ArrayList<AwaitedFileReceiver> receivers = mTransaction.getReceivers(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-									.setWhere(Transaction.FIELD_TRANSFER_ACCEPTID + "=?", thisItem.getString(Transaction.FIELD_TRANSFER_ACCEPTID)));
+									.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", thisItem.getString(Transaction.FIELD_TRANSFER_GROUPID)));
 
 							for (AwaitedFileReceiver receiver : receivers)
 							{
@@ -164,7 +164,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 							}
 						}
 
-						mTransaction.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_ACCEPTID));
+						mTransaction.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
 					}
 				}).show();
 			}

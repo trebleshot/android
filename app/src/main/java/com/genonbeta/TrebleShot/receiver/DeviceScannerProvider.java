@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -68,21 +67,24 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 		}
 		else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
 		{
-			mInfoLoader.startLoading(context, mDeviceRegistry, intent.getStringExtra(EXTRA_DEVICE_IP));
+			mInfoLoader.startLoading(mDeviceRegistry, intent.getStringExtra(EXTRA_DEVICE_IP));
 		}
 	}
 
 	@Override
 	public void onDeviceFound(InetAddress address)
 	{
-		mInfoLoader.startLoading(mContext, mDeviceRegistry, address.getHostAddress());
+		mInfoLoader.startLoading(mDeviceRegistry, address.getHostAddress());
 	}
 
 	@Override
 	public void onInfoAvailable(NetworkDevice device)
 	{
-		mDeviceRegistry.registerDevice(device);
-		mContext.sendBroadcast(new Intent(ACTION_DEVICE_FOUND).putExtra(EXTRA_DEVICE_IP, device.ip));
+		if (device.deviceId != null)
+		{
+			mDeviceRegistry.registerDevice(device);
+			mContext.sendBroadcast(new Intent(ACTION_DEVICE_FOUND).putExtra(EXTRA_DEVICE_IP, device.ip));
+		}
 	}
 
 	@Override

@@ -79,7 +79,7 @@
     <string name="send">Send</string>
     <string name="receive">Receive</string>
     <string name="clear_queue">Clear the queue</string>
-    <string name="thread_queue">Thread Queue</string>
+    <string name="thread_queue">Thread Queue - %s</string>
     <string name="thread_queue_short">Thr. Queue</string>
     <string name="share_with_app">Share with TrebleShot</string>
     <string name="something_went_wrong">Something went wrong</string>

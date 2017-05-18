@@ -2,12 +2,12 @@ package com.genonbeta.TrebleShot.database;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.net.Network;
-import android.util.Log;
+import android.database.Cursor;
 
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
@@ -18,6 +18,34 @@ import java.util.ArrayList;
 
 public class DeviceRegistry extends MainDatabase
 {
+	public static final String FIELD_DEVICES_AVAILABLE_CONNECTIONS = "availableConnections";
+
+	public SQLQuery.Select.LoadListener mLoadListenerAvailableConnections = new SQLQuery.Select.LoadListener()
+	{
+		@Override
+		public void onOpen(SQLiteDatabase db, Cursor cursor)
+		{
+
+		}
+
+		@Override
+		public void onLoad(SQLiteDatabase db, Cursor cursor, CursorItem item)
+		{
+			StringBuilder builder = new StringBuilder();
+
+			for (CursorItem deviceItem : getTable(new SQLQuery.Select(TABLE_DEVICES)
+					.setWhere(FIELD_DEVICES_ID + "=?", item.getString(FIELD_DEVICES_ID))))
+			{
+				if (builder.length() > 0)
+					builder.append(":");
+
+				builder.append(deviceItem.getString(FIELD_DEVICES_IP));
+			}
+
+			item.put(FIELD_DEVICES_AVAILABLE_CONNECTIONS, builder.toString());
+		}
+	};
+
 	public DeviceRegistry(Context context)
 	{
 		super(context);
@@ -36,9 +64,12 @@ public class DeviceRegistry extends MainDatabase
 
 	public ArrayList<NetworkDevice> getDeviceList()
 	{
-		ArrayList<NetworkDevice> deviceList = new ArrayList<>();
+		final ArrayList<NetworkDevice> deviceList = new ArrayList<>();
+		ArrayList<CursorItem> tableIndex = getTable(new SQLQuery.Select(TABLE_DEVICES)
+				.setGroupBy(FIELD_DEVICES_ID)
+				.setLoadListener(mLoadListenerAvailableConnections));
 
-		for (CursorItem item : getTable(new SQLQuery.Select(TABLE_DEVICES)))
+		for (CursorItem item : tableIndex)
 			deviceList.add(new NetworkDevice(item));
 
 		return deviceList;
@@ -47,7 +78,8 @@ public class DeviceRegistry extends MainDatabase
 	public NetworkDevice getNetworkDevice(String ipAddress)
 	{
 		CursorItem item = getFirstFromTable(new SQLQuery.Select(TABLE_DEVICES)
-				.setWhere(FIELD_DEVICES_IP + "=?", ipAddress));
+				.setWhere(FIELD_DEVICES_IP + "=?", ipAddress)
+				.setLoadListener(mLoadListenerAvailableConnections));
 
 		if (item != null)
 			return new NetworkDevice(item);
@@ -59,16 +91,7 @@ public class DeviceRegistry extends MainDatabase
 	{
 		removeDevice(device);
 
-		ContentValues values = new ContentValues();
-
-		values.put(FIELD_DEVICES_IP, device.ip);
-		values.put(FIELD_DEVICES_USER, device.user);
-		values.put(FIELD_DEVICES_BRAND, device.brand);
-		values.put(FIELD_DEVICES_MODEL, device.model);
-		values.put(FIELD_DEVICES_ISRESTRICTED, device.isRestricted ? 1 : 0);
-		values.put(FIELD_DEVICES_ISLOCALADDRESS, device.isLocalAddress ? 1 : 0);
-
-		getWritableDatabase().insert(TABLE_DEVICES, null, values);
+		getWritableDatabase().insert(TABLE_DEVICES, null, device.getValues());
 	}
 
 	public void removeAll()

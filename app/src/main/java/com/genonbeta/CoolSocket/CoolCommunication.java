@@ -63,12 +63,12 @@ public abstract class CoolCommunication extends CoolSocket
 			new Thread(runnable).start();
 		}
 
-		public static boolean sendOnCurrentThread(String socketHost, int socketPort, String message, ResponseHandler handler)
+		public static String sendOnCurrentThread(String socketHost, int socketPort, String message, ResponseHandler handler)
 		{
 			return sendOnCurrentThread(new InetSocketAddress(socketHost, socketPort), message, handler);
 		}
 
-		public static boolean sendOnCurrentThread(InetSocketAddress address, String message, ResponseHandler handler)
+		public static String sendOnCurrentThread(InetSocketAddress address, String message, ResponseHandler handler)
 		{
 			SenderRunnable runnable = new SenderRunnable(address, message, handler);
 
@@ -90,7 +90,7 @@ public abstract class CoolCommunication extends CoolSocket
 				runProcess();
 			}
 
-			public boolean runProcess()
+			public String runProcess()
 			{
 				if (this.mProcess.getResponseHandler() != null)
 					this.mProcess.getResponseHandler().onConfigure(this.mProcess);
@@ -121,7 +121,7 @@ public abstract class CoolCommunication extends CoolSocket
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onResponseAvailable(this.mProcess.getResponse());
 
-					return true;
+					return this.mProcess.getResponse();
 				} catch (IOException e)
 				{
 					if (this.mProcess.getResponseHandler() != null)
@@ -133,7 +133,7 @@ public abstract class CoolCommunication extends CoolSocket
 						this.mProcess.getResponseHandler().onFinal();
 				}
 
-				return false;
+				return null;
 			}
 		}
 

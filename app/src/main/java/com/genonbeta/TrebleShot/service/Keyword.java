@@ -16,7 +16,7 @@ public class Keyword
 	public static final String REQUEST_POKE = "requestPoke";
 	public static final String CLIPBOARD_TEXT = "clipboardText";
 	public static final String REQUEST_ID = "requestId";
-	public static final String ACCEPT_ID = "acceptId";
+	public static final String GROUP_ID = "groupId";
 	public static final String IS_ACCEPTED = "isAccepted";
 	public static final String SOCKET_PORT = "socketPort";
 	public static final String FILE_NAME = "fileName";
@@ -26,7 +26,7 @@ public class Keyword
 	public static final String BRAND = "brand";
 	public static final String MODEL = "model";
 	public static final String USER = "user";
-	public static final String DISPLAY = "display";
+	public static final String SERIAL = "deviceId";
 	public static final String FILES_INDEX = "filesIndex";
 	public static final String VERSION_NAME = "versionName";
 	public static final String VERSION_CODE = "versionCode";

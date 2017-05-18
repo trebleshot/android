@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
@@ -47,7 +46,7 @@ public class Transaction extends MainDatabase
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
 		{
-			if (receiver.acceptId != acceptId)
+			if (receiver.groupId != acceptId)
 				continue;
 
 			registerTransaction(receiver);
@@ -72,7 +71,7 @@ public class Transaction extends MainDatabase
 		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
-			if (receiver.acceptId == acceptId)
+			if (receiver.groupId == acceptId)
 				list.add(receiver);
 
 		return list;
@@ -148,7 +147,7 @@ public class Transaction extends MainDatabase
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
 		{
-			if (receiver.acceptId != acceptId)
+			if (receiver.groupId != acceptId)
 				continue;
 
 			getPendingReceivers().remove(receiver);
@@ -172,12 +171,12 @@ public class Transaction extends MainDatabase
 
 	public boolean removeTransactionGroup(AwaitedTransaction transaction)
 	{
-		return removeTransactionGroup(transaction.acceptId);
+		return removeTransactionGroup(transaction.groupId);
 	}
 
 	public boolean removeTransactionGroup(int acceptId)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ACCEPTID + "=?", new String[]{String.valueOf(acceptId)});
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_GROUPID + "=?", new String[]{String.valueOf(acceptId)});
 		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
 		return notifyRemoved() > 0;
 	}
@@ -216,7 +215,7 @@ public class Transaction extends MainDatabase
 
 	public long updateTransactionGroup(int acceptId, ContentValues values)
 	{
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ACCEPTID + "=?", new String[] {String.valueOf(acceptId)});
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_GROUPID + "=?", new String[] {String.valueOf(acceptId)});
 		return notifyUpdated();
 	}
 }
