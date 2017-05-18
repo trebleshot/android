@@ -26,7 +26,7 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class OngoingListAdapter extends AbstractEditableListAdapter
+public class PendingTransferListAdapter extends AbstractEditableListAdapter
 {
 	public static final String FIELD_TRANSFER_TOTAL_COUNT = "pseudoTotalCount";
 
@@ -34,7 +34,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	private ArrayList<CursorItem> mList = new ArrayList<>();
 	private SQLQuery.Select mSelect;
 
-	public OngoingListAdapter(Context context)
+	public PendingTransferListAdapter(Context context)
 	{
 		super(context);
 		mTransaction = new Transaction(context);
@@ -62,18 +62,18 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 				});
 	}
 
-	public OngoingListAdapter(Context context, int acceptId)
+	public PendingTransferListAdapter(Context context, int groupId)
 	{
 		this(context);
 		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(acceptId));
+				.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId));
 	}
 
-	public OngoingListAdapter(Context context, String ipAddress)
+	public PendingTransferListAdapter(Context context, String deviceId)
 	{
-		super(context);
+		this(context);
 		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setWhere(Transaction.FIELD_TRANSFER_USERIP + "=?", ipAddress);
+				.setWhere(Transaction.FIELD_TRANSFER_DEVICEID + "=?", deviceId);
 	}
 
 	@Override
@@ -111,7 +111,7 @@ public class OngoingListAdapter extends AbstractEditableListAdapter
 	public View getView(int i, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
-			view = getInflater().inflate(R.layout.list_ongoing, viewGroup, false);
+			view = getInflater().inflate(R.layout.list_pending_transfer, viewGroup, false);
 
 		final CursorItem thisItem = (CursorItem) getItem(i);
 		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;

@@ -224,10 +224,10 @@ public class ShareActivity extends GActivity
 						try
 						{
 							int index = 0;
-							int acceptId = ApplicationHelper.getUniqueNumber();
+							int groupId = ApplicationHelper.getUniqueNumber();
 
 							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-							json.put(Keyword.GROUP_ID, acceptId);
+							json.put(Keyword.GROUP_ID, groupId);
 
 							for (Uri fileUri : fileUris)
 							{
@@ -240,7 +240,7 @@ public class ShareActivity extends GActivity
 								if (file.isFile())
 								{
 									int requestId = ApplicationHelper.getUniqueNumber();
-									AwaitedFileSender sender = new AwaitedFileSender(device, requestId, acceptId, fileName, 0, file);
+									AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileName, 0, file);
 									JSONObject thisJson = new JSONObject();
 
 									try
@@ -271,7 +271,7 @@ public class ShareActivity extends GActivity
 							if (!response.getBoolean(Keyword.RESULT))
 							{
 								Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
-								mTransaction.removeTransactionGroup(acceptId);
+								mTransaction.removeTransactionGroup(groupId);
 
 								showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
 							}

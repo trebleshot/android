@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#EFFFFFFF">
-
-    <ListView
-        android:id="@+id/layout_transaction_editor_list_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+                android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/layout_transaction_editor_close_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:padding="20dp"
-        android:textSize="25sp"
+        android:padding="15dp"
+        android:textSize="20sp"
         android:textColor="#39B"
         android:text="@string/close"
         style="@style/condensedCapsText"
         />
 
+    <ListView
+        android:id="@+id/layout_transaction_editor_list_main"
+        android:layout_above="@id/layout_transaction_editor_close_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

@@ -145,5 +145,5 @@
     <string name="empty">(boş)</string>
     <string name="share_text">Metin yolla</string>
     <string name="open_wifi_settings_short">Kablosuz</string>
-    <string name="ongoing_process">Devam ediyor</string>
+    <string name="pending_transfers">Bekleyen aktarımlar</string>
 </resources>

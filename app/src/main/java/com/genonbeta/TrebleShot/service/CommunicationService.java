@@ -88,7 +88,7 @@ public class CommunicationService extends Service
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction()))
 			{
 				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
-				final int acceptId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 
@@ -104,7 +104,7 @@ public class CommunicationService extends Service
 								try
 								{
 									json.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-									json.put(Keyword.GROUP_ID, acceptId);
+									json.put(Keyword.GROUP_ID, groupId);
 									json.put(Keyword.IS_ACCEPTED, isAccepted);
 								} catch (JSONException e)
 								{
@@ -116,7 +116,7 @@ public class CommunicationService extends Service
 
 				if (isAccepted)
 				{
-					if (mTransaction.acceptPendingReceivers(acceptId) < 1)
+					if (mTransaction.acceptPendingReceivers(groupId) < 1)
 					{
 						mNotification.showToast(R.string.something_went_wrong);
 						return START_NOT_STICKY;
@@ -124,10 +124,10 @@ public class CommunicationService extends Service
 
 					startService(new Intent(this, ServerService.class)
 							.setAction(ServerService.ACTION_START_RECEIVING)
-							.putExtra(EXTRA_GROUP_ID, acceptId));
+							.putExtra(EXTRA_GROUP_ID, groupId));
 				}
 				else
-					mTransaction.removePendingReceivers(acceptId);
+					mTransaction.removePendingReceivers(groupId);
 			}
 			else if (ACTION_IP.equals(intent.getAction()))
 			{
@@ -247,7 +247,7 @@ public class CommunicationService extends Service
 								JSONArray jsonArray = new JSONArray(jsonIndex);
 
 								int count = 0;
-								int acceptId = receivedMessage.getInt(Keyword.GROUP_ID);
+								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								AwaitedFileReceiver heldReceiver = null;
 
 								for (int i = 0; i < jsonArray.length(); i++)
@@ -260,7 +260,7 @@ public class CommunicationService extends Service
 									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID))
 									{
 										count++;
-										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), acceptId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
+										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), groupId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
 										mTransaction.getPendingReceivers().offer(heldReceiver);
 									}
 								}
@@ -271,7 +271,7 @@ public class CommunicationService extends Service
 									mDeviceRegistry.updateRestriction(device, true);
 
 									if (count > 1)
-										mNotification.notifyTransferRequest(halfRestriction, clientIp, acceptId, count);
+										mNotification.notifyTransferRequest(halfRestriction, clientIp, groupId, count);
 									else
 										mNotification.notifyTransferRequest(halfRestriction, heldReceiver);
 								}
@@ -280,11 +280,11 @@ public class CommunicationService extends Service
 						case (Keyword.REQUEST_RESPONSE):
 							if (receivedMessage.has(Keyword.GROUP_ID))
 							{
-								int acceptId = receivedMessage.getInt(Keyword.GROUP_ID);
+								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
 
 								if (!isAccepted)
-									mTransaction.removeTransactionGroup(acceptId);
+									mTransaction.removeTransactionGroup(groupId);
 
 								result = true;
 							}

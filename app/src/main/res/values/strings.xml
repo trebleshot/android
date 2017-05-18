@@ -145,7 +145,7 @@
     <string name="empty">(empty)</string>
     <string name="share_text">Share text</string>
     <string name="open_wifi_settings_short">Wi-Fi</string>
-    <string name="ongoing_process">Ongoing</string>
+    <string name="pending_transfers">Pending transfers</string>
     <string name="stop_progress">Stopping!</string>
     <string name="cancel_progress">The job is being cancelled</string>
     <string name="kill_immediately">Kill now</string>

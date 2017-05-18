@@ -40,13 +40,13 @@ public class Transaction extends MainDatabase
 		super(context);
 	}
 
-	public int acceptPendingReceivers(int acceptId)
+	public int acceptPendingReceivers(int groupId)
 	{
 		int count = 0;
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
 		{
-			if (receiver.groupId != acceptId)
+			if (receiver.groupId != groupId)
 				continue;
 
 			registerTransaction(receiver);
@@ -66,12 +66,12 @@ public class Transaction extends MainDatabase
 		return updateTransaction(requestId, values) > 0;
 	}
 
-	public ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int acceptId)
+	public ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int groupId)
 	{
 		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
-			if (receiver.groupId == acceptId)
+			if (receiver.groupId == groupId)
 				list.add(receiver);
 
 		return list;
@@ -141,13 +141,13 @@ public class Transaction extends MainDatabase
 		return notifyUpdated() > 0;
 	}
 
-	public int removePendingReceivers(int acceptId)
+	public int removePendingReceivers(int groupId)
 	{
 		int count = 0;
 
 		for (AwaitedFileReceiver receiver : getPendingReceivers())
 		{
-			if (receiver.groupId != acceptId)
+			if (receiver.groupId != groupId)
 				continue;
 
 			getPendingReceivers().remove(receiver);
@@ -174,9 +174,9 @@ public class Transaction extends MainDatabase
 		return removeTransactionGroup(transaction.groupId);
 	}
 
-	public boolean removeTransactionGroup(int acceptId)
+	public boolean removeTransactionGroup(int groupId)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_GROUPID + "=?", new String[]{String.valueOf(acceptId)});
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_GROUPID + "=?", new String[]{String.valueOf(groupId)});
 		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
 		return notifyRemoved() > 0;
 	}
@@ -194,12 +194,12 @@ public class Transaction extends MainDatabase
 		return updateTransaction(requestId, values) > 0;
 	}
 
-	public boolean updateFlagGroup(int acceptId, Flag flag)
+	public boolean updateFlagGroup(int groupId, Flag flag)
 	{
 		ContentValues values = new ContentValues();
 		values.put(FIELD_TRANSFER_FLAG, flag.toString());
 
-		return updateTransactionGroup(acceptId, values) > 0;
+		return updateTransactionGroup(groupId, values) > 0;
 	}
 
 	public long updateTransaction(AwaitedTransaction transaction)
@@ -213,9 +213,9 @@ public class Transaction extends MainDatabase
 		return notifyUpdated();
 	}
 
-	public long updateTransactionGroup(int acceptId, ContentValues values)
+	public long updateTransactionGroup(int groupId, ContentValues values)
 	{
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_GROUPID + "=?", new String[] {String.valueOf(acceptId)});
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_GROUPID + "=?", new String[] {String.valueOf(groupId)});
 		return notifyUpdated();
 	}
 }

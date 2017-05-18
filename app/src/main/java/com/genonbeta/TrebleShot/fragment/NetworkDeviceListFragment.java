@@ -87,13 +87,9 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		final NetworkDevice device = (NetworkDevice) mListAdapter.getItem(position);
 
 		if (mClickListener != null)
-		{
 			this.mClickListener.onItemClick(l, v, position, id);
-		}
 		else if (device.brand != null && device.model != null)
-		{
 			new DeviceInfoDialog(getContext(), mListAdapter.getDeviceRegistry(), mNotification, device).show();
-		}
 	}
 
 	@Override

@@ -63,12 +63,12 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID))
 			{
-				int acceptId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
+				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 				AwaitedFileReceiver runningReceiver = null;
 
 				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler :  mReceive.getProcessList())
 				{
-					if (handler.getExtra().groupId == acceptId)
+					if (handler.getExtra().groupId == groupId)
 					{
 						runningReceiver = handler.getExtra();
 						break;
@@ -76,7 +76,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				}
 
 				if (runningReceiver == null)
-					doJob(acceptId);
+					doJob(groupId);
 				else
 					Toast.makeText(this, getString(R.string.ongoing_list_warning, runningReceiver.fileName), Toast.LENGTH_SHORT).show();
 			}
@@ -85,12 +85,12 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		return START_STICKY;
 	}
 
-	public boolean doJob(int acceptId)
+	public boolean doJob(int groupId)
 	{
 		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
 				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
-						String.valueOf(acceptId),
+						String.valueOf(groupId),
 						Transaction.Flag.INTERRUPTED.toString());
 
 		CursorItem receiverInstance = getTransactionInstance().getFirstFromTable(selectQuery);

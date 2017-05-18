@@ -166,16 +166,16 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(boolean halfRestriction, String ipAddress, int acceptId, int numberOfFiles)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, String ipAddress, int groupId, int numberOfFiles)
 	{
 		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, acceptId);
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, groupId);
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, acceptId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, groupId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 

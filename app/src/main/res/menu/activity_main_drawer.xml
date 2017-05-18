@@ -14,7 +14,7 @@
         <item
             android:id="@+id/menu_activity_main_ongoing_process"
             android:icon="@drawable/ic_swap_vert_black_24dp"
-            android:title="@string/ongoing_process"/>
+            android:title="@string/pending_transfers"/>
     </group>
 
     <item android:title="@string/share">
