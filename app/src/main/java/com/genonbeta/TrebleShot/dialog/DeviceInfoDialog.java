@@ -52,7 +52,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 		setTitle(device.user);
 		setView(rootView);
-		setNegativeButton(R.string.close, null);
+		setPositiveButton(R.string.close, null);
 		setNeutralButton(R.string.thread_queue_short, new DialogInterface.OnClickListener()
 				{
 					@Override
@@ -62,5 +62,30 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					}
 				}
 		);
+
+		setNegativeButton(R.string.remove, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
+
+				askPermission.setTitle(R.string.dialog_title_remove_device);
+				askPermission.setMessage(R.string.dialog_message_remove_device);
+				askPermission.setNegativeButton(R.string.cancel, null);
+				askPermission.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						registry.removeDeviceWithInstances(device);
+
+						new Transaction(context).removeDeviceTransactionGroup(device);
+					}
+				});
+
+				askPermission.show();
+			}
+		});
 	}
 }

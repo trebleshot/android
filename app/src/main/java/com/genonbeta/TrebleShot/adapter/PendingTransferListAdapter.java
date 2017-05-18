@@ -12,13 +12,10 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -115,6 +112,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 
 		final CursorItem thisItem = (CursorItem) getItem(i);
 		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
+		final boolean isGroup = thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT);
 
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
 		ImageView clearImage = (ImageView) view.findViewById(R.id.list_process_clear_image);
@@ -125,9 +123,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 		typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_NAME));
 		statusText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_FLAG));
-
-		if (thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT))
-			countText.setText((thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) > 1) ? "+" + (thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) - 1) : "");
+		countText.setText((thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT) && thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) > 1) ? "+" + (thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) - 1) : "");
 
 		clearImage.setOnClickListener(new View.OnClickListener()
 		{
@@ -139,7 +135,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 				dialog.setTitle(R.string.dialog_title_remove_queue_job);
 				dialog.setMessage(thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT) ?
 						mContext.getString(R.string.dialog_msg_remove_queue_job, thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
-						"Delete " + thisItem.getString(Transaction.FIELD_TRANSFER_NAME) + " from the queue");
+						mContext.getString(R.string.warning_remove_pending_transfer, thisItem.getString(Transaction.FIELD_TRANSFER_NAME)));
 
 				dialog.setNegativeButton(R.string.close, null);
 				dialog.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener()
@@ -147,24 +143,10 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						if (isIncoming)
-						{
-							ArrayList<AwaitedFileReceiver> receivers = mTransaction.getReceivers(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-									.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", thisItem.getString(Transaction.FIELD_TRANSFER_GROUPID)));
-
-							for (AwaitedFileReceiver receiver : receivers)
-							{
-								if (receiver.flag.equals(Transaction.Flag.PENDING))
-									continue;
-
-								File tmpFile = new File(FileUtils.getSaveLocationForFile(mContext, receiver.fileName));
-
-								if (tmpFile.isFile())
-									tmpFile.delete();
-							}
-						}
-
-						mTransaction.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+						if (isGroup)
+							mTransaction.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+						else
+							mTransaction.removeTransaction(thisItem.getInt(Transaction.FIELD_TRANSFER_ID));
 					}
 				}).show();
 			}

@@ -215,7 +215,9 @@ public class CommunicationService extends Service
 					if (!mDeviceRegistry.exists(clientIp))
 					{
 						device.isRestricted = true;
-						mDeviceRegistry.registerDevice(mInfoLoader.startLoadingOnCurrentThread(mDeviceRegistry, device.ip));
+						device = mInfoLoader.startLoadingOnCurrentThread(mDeviceRegistry, device.ip);
+
+						mDeviceRegistry.registerDevice(device);
 
 						if (receivedMessage.getString(Keyword.REQUEST).equals(Keyword.REQUEST_TRANSFER))
 						{

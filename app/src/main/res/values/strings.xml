@@ -152,5 +152,10 @@
     <string name="ongoing_list_warning">This file will be received after %s is received</string>
     <string name="proceed">Proceed</string>
     <string name="dialog_title_remove_queue_job">Remove job queue?</string>
-    <string name="dialog_msg_remove_queue_job">%d file(s) will be removed with their uncompleted files</string>
+    <string name="dialog_msg_remove_queue_job">%d pending transfer(s) will be removed</string>
+    <string name="remove">Remove</string>
+    <string name="remove_all">Remove all</string>
+    <string name="dialog_title_remove_device">Remove this device?</string>
+    <string name="dialog_message_remove_device">When you remove a device, its leftover transfers with their partly received files will also be removed</string>
+    <string name="warning_remove_pending_transfer">This will remove %s from the queue</string>
 </resources>

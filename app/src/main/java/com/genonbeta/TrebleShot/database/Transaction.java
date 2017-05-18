@@ -7,6 +7,7 @@ import android.content.Intent;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.AwaitedTransaction;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -156,6 +157,12 @@ public class Transaction extends MainDatabase
 		}
 
 		return count;
+	}
+
+	public boolean removeDeviceTransactionGroup(NetworkDevice device)
+	{
+		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_DEVICEID + "=?", new String[]{String.valueOf(device.deviceId)});
+		return notifyRemoved() > 0;
 	}
 
 	public boolean removeTransaction(AwaitedTransaction transaction)

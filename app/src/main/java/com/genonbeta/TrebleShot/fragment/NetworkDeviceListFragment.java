@@ -21,6 +21,7 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NotificationUtils;
@@ -43,7 +44,8 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	{
 		super.onCreate(savedInstanceState);
 
-		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_FOUND);
+		mIntentFilter.addAction(DeviceRegistry.ACTION_DEVICE_UPDATED);
+		mIntentFilter.addAction(DeviceRegistry.ACTION_DEVICE_REMOVED);
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
 	}
@@ -125,11 +127,6 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 			case R.id.network_devices_scan:
 				getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
 				return true;
-			case R.id.network_devices_clear_list:
-				mListAdapter.getDeviceRegistry().removeAll();
-				mListAdapter.notifyDataSetChanged();
-				mNotification.showToast(R.string.device_list_cleared_msg);
-				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
@@ -158,7 +155,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		{
 			((ScanDevicesActionProvider) MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
 
-			if (DeviceScannerProvider.ACTION_DEVICE_FOUND.equals(intent.getAction()))
+			if (DeviceRegistry.ACTION_DEVICE_UPDATED.equals(intent.getAction()) || DeviceRegistry.ACTION_DEVICE_REMOVED.equals(intent.getAction()))
 			{
 				mListAdapter.notifyDataSetChanged();
 			}

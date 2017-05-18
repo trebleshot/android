@@ -2,12 +2,14 @@ package com.genonbeta.TrebleShot.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.core.util.NetworkUtils;
 
 import java.util.ArrayList;
 
@@ -18,6 +20,9 @@ import java.util.ArrayList;
 
 public class DeviceRegistry extends MainDatabase
 {
+	public static final String ACTION_DEVICE_UPDATED = "com.genonbeta.TrebleShot.intent.action.DEVICE_UPDATED";
+	public static final String ACTION_DEVICE_REMOVED = "com.genonbeta.TrebleShot.intent.action.DEVICE_REMOVED";
+
 	public static final String FIELD_DEVICES_AVAILABLE_CONNECTIONS = "availableConnections";
 
 	public SQLQuery.Select.LoadListener mLoadListenerAvailableConnections = new SQLQuery.Select.LoadListener()
@@ -87,26 +92,46 @@ public class DeviceRegistry extends MainDatabase
 		return new NetworkDevice(ipAddress);
 	}
 
-	public void registerDevice(NetworkDevice device)
+	public long notifyRemoved()
+	{
+		getContext().sendBroadcast(new Intent(ACTION_DEVICE_REMOVED));
+		return getAffectedRowCount();
+	}
+
+	public long notifyUpdated()
+	{
+		getContext().sendBroadcast(new Intent(ACTION_DEVICE_UPDATED));
+		return getAffectedRowCount();
+	}
+
+	public boolean registerDevice(NetworkDevice device)
 	{
 		removeDevice(device);
-
 		getWritableDatabase().insert(TABLE_DEVICES, null, device.getValues());
+
+		return notifyUpdated() > 0;
 	}
 
-	public void removeAll()
+	public boolean removeDeviceWithInstances(NetworkDevice device)
 	{
-		getWritableDatabase().delete(TABLE_DEVICES, null, null);
+		return removeDeviceWithInstances(device.deviceId);
 	}
 
-	public void removeDevice(NetworkDevice device)
+	public boolean removeDeviceWithInstances(String deviceId)
 	{
-		removeDevice(device.ip);
+		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ID + "=?", new String[]{deviceId});
+		return notifyRemoved() > 0;
 	}
 
-	public void removeDevice(String ipAddress)
+	public boolean removeDevice(NetworkDevice device)
+	{
+		return removeDevice(device.ip);
+	}
+
+	public boolean removeDevice(String ipAddress)
 	{
 		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_IP + "=?", new String[]{ipAddress});
+		return notifyRemoved() > 0;
 	}
 
 	public boolean updateRestriction(NetworkDevice device, boolean restrict)
@@ -122,6 +147,6 @@ public class DeviceRegistry extends MainDatabase
 
 		getWritableDatabase().update(TABLE_DEVICES, values, FIELD_DEVICES_IP + "=?", new String[]{ipAddress});
 
-		return getAffectedRowCount() > 0;
+		return notifyUpdated() > 0;
 	}
 }

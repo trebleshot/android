@@ -3,23 +3,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/layout_transaction_editor_close_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_transaction_editor_layout_main"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
         android:padding="15dp"
-        android:textSize="20sp"
-        android:textColor="#39B"
-        android:text="@string/close"
-        style="@style/condensedCapsText"
-        />
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/layout_transaction_editor_remove_text"
+            style="@style/condensedCapsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_all"
+            android:textColor="#39B"
+            android:textSize="20sp"
+            android:layout_marginRight="20dp"
+            android:layout_marginEnd="20dp"/>
+
+        <TextView
+            android:id="@+id/layout_transaction_editor_close_text"
+            style="@style/condensedCapsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close"
+            android:textColor="#39B"
+            android:textSize="20sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"/>
+
+    </LinearLayout>
 
     <ListView
         android:id="@+id/layout_transaction_editor_list_main"
-        android:layout_above="@id/layout_transaction_editor_close_text"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@id/layout_transaction_editor_layout_main"/>
 
 </RelativeLayout>
