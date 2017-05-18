@@ -140,7 +140,7 @@ public class PendingTransferListDialog extends Dialog
 		{
 			receiver.ip = ipAddress;
 			ContentValues values = new ContentValues();
-			
+
 			values.put(Transaction.FIELD_TRANSFER_USERIP, ipAddress);
 			transaction.updateTransactionGroup(receiver.groupId, values);
 		}

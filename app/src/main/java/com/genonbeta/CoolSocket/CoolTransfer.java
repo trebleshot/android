@@ -297,11 +297,12 @@ abstract public class CoolTransfer<T>
 				finally
 				{
 					onStop(this);
+
+					if (!Flag.CANCEL_ALL.equals(flag))
+						onPrepareNext(this);
+
 					removeProcess(this);
 				}
-
-				if (!Flag.CANCEL_ALL.equals(flag))
-					onPrepareNext(this);
 			}
 
 			public long getFileSize()
@@ -425,11 +426,12 @@ abstract public class CoolTransfer<T>
 				finally
 				{
 					onStop(this);
+
+					if (!Flag.CANCEL_ALL.equals(flag))
+						onPrepareNext(this);
+
 					removeProcess(this);
 				}
-
-				if (!Flag.CANCEL_ALL.equals(flag))
-					onPrepareNext(this);
 			}
 
 			public String getServerIp()
