@@ -58,7 +58,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					@Override
 					public void onClick(DialogInterface dialogInterface, int p2)
 					{
-						new PendingTransferListDialog(context, new Transaction(context), device.deviceId).show();
+						new PendingTransferListDialog(context, new DeviceRegistry(context), new Transaction(context), device.deviceId).show();
 					}
 				}
 		);

@@ -9,19 +9,23 @@
 
     <TextView
         android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:id="@+id/pending_queue_list_process_type_text"
+        android:id="@+id/pending_available_interface_text2"
         style="@style/marqueeText.secondary"
-        android:layout_marginLeft="4dp"/>
+        android:layout_marginLeft="4dp"
+        android:layout_marginStart="4dp"/>
 
     <TextView
-        android:layout_toLeftOf="@id/pending_queue_list_process_type_text"
+        android:layout_toLeftOf="@id/pending_available_interface_text2"
+        android:layout_toStartOf="@id/pending_available_interface_text2"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:id="@+id/pending_queue_list_filename"
+        android:id="@+id/pending_available_interface_text1"
         style="@style/marqueeText.primary"/>
 
 </RelativeLayout>

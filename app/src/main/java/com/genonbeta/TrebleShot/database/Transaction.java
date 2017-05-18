@@ -67,7 +67,7 @@ public class Transaction extends MainDatabase
 		return updateTransaction(requestId, values) > 0;
 	}
 
-	public ArrayList<AwaitedFileReceiver> getPendingReceiversByAcceptId(int groupId)
+	public ArrayList<AwaitedFileReceiver> getPendingReceiversByGroupId(int groupId)
 	{
 		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
 
@@ -191,6 +191,11 @@ public class Transaction extends MainDatabase
 	public boolean transactionExists(int requestId)
 	{
 		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId))) != null;
+	}
+
+	public boolean transactionGroupExists(int groupId)
+	{
+		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))) != null;
 	}
 
 	public boolean updateFlag(int requestId, Flag flag)

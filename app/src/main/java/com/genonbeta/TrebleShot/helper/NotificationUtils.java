@@ -89,8 +89,6 @@ public class NotificationUtils
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
-		Log.i(TAG, "clientIp = " + clientIp);
-
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.connection_permission))
 				.setContentText(mContext.getString(R.string.allow_device_to_connect))
@@ -105,120 +103,46 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver, int numberOfFiles)
 	{
 		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
+		String message = numberOfFiles > 1 ? mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)) : receiver.fileName;
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-
 		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId);
-		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
-
-		Intent rejectIntent = ((Intent) acceptIntent.clone());
-		acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
-		rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
-
-		int acceptText;
-		int rejectText;
-
-		if (halfRestriction)
-		{
-			acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
-			rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
-
-			acceptText = R.string.receive_restricted;
-			rejectText = R.string.reject_restricted;
-		}
-		else
-		{
-			acceptText = R.string.accept;
-			rejectText = R.string.reject;
-		}
-
-		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
-		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
-
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.receive_the_file_que));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, receiver.fileName);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
-
-		Log.i(TAG, "clientIp = " + device.ip + "; fileName = " + receiver.fileName + " ; fileType = " + receiver.fileMimeType + " ; requestId = " + receiver.requestId);
-
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
-				.setContentText(receiver.fileName)
-				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
-				.setDefaults(getNotificationSettings())
-				.setDeleteIntent(negativeIntent)
-				.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
-				.setTicker(mContext.getString(R.string.receive_the_file_que))
-				.setPriority(NotificationCompat.PRIORITY_HIGH);
-
-		return notification.show();
-	}
-
-	public DynamicNotification notifyTransferRequest(boolean halfRestriction, String ipAddress, int groupId, int numberOfFiles)
-	{
-		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, groupId);
-
-		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
-		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
-
-		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, groupId);
 		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
+		if (halfRestriction)
+			acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
+
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 
 		acceptIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
 		rejectIntent.putExtra(CommunicationService.EXTRA_IS_ACCEPTED, false);
-
-		int acceptText;
-		int rejectText;
-
-		if (halfRestriction)
-		{
-			acceptIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
-			rejectIntent.putExtra(CommunicationService.EXTRA_HALF_RESTRICT, true);
-
-			acceptText = R.string.receive_restricted;
-			rejectText = R.string.reject_restricted;
-		}
-		else
-		{
-			acceptText = R.string.accept;
-			rejectText = R.string.reject;
-		}
 
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.receive_the_file_que));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, message);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
-				.setContentText(mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)))
+				.setContentText(message)
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(android.R.drawable.ic_menu_send, mContext.getString(acceptText), positiveIntent)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(rejectText), negativeIntent)
+				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(halfRestriction ? R.string.reject_restricted : R.string.reject), negativeIntent)
 				.setTicker(mContext.getString(R.string.receive_the_file_que))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -356,7 +280,6 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(AbstractTransactionService.ACTION_CANCEL_KILL);
 
-		// TODO: 4/29/17 Don't leave it like this
 		notification.setSmallIcon(android.R.drawable.stat_sys_warning)
 				.setOngoing(true)
 				.setContentTitle(mContext.getString(R.string.stop_progress))

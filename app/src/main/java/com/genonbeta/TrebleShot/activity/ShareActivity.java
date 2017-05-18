@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.app.GActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
@@ -133,15 +134,16 @@ public class ShareActivity extends GActivity
 					}
 					else
 					{
-						final ArrayList<Uri> fileUris = new ArrayList<>();
-						final ArrayList<CharSequence> fileNames = new ArrayList<>();
-						final Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
-						final File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
+						ArrayList<Uri> fileUris = new ArrayList<>();
+						ArrayList<CharSequence> fileNames = null;
+						Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
+						File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
 
 						fileUris.add(fileUri);
 
 						if (getIntent().hasExtra(EXTRA_FILENAME_LIST))
 						{
+							fileNames = new ArrayList<>();
 							String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
 
 							fileNames.add(fileName);
@@ -150,35 +152,17 @@ public class ShareActivity extends GActivity
 						else
 							appendStatusText(file.getName());
 
-						mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
-						{
-							@Override
-							public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-							{
-								NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-								handleFiles(fileUris, fileNames.size() > 0 ? fileNames : null, device);
-							}
-						});
-
+						registerClickListener(fileUris, fileNames);
 					}
 					break;
 				case ACTION_SEND_MULTIPLE:
 				case Intent.ACTION_SEND_MULTIPLE:
-					final ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-					final ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
+					ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+					ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
 					appendStatusText(getString(R.string.item_selected, String.valueOf(fileUris.size())));
 
-					mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
-					{
-						@Override
-						public void onItemClick(AdapterView<?> parent, View view, int position, long id)
-						{
-							NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-							handleFiles(fileUris, fileNames, device);
-						}
-					});
-
+					registerClickListener(fileUris, fileNames);
 					break;
 				default:
 					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).show();
@@ -232,7 +216,7 @@ public class ShareActivity extends GActivity
 							for (Uri fileUri : fileUris)
 							{
 								File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
-								String fileName = String.valueOf(fileNames == null ? file.getName() : fileNames.get(index));
+								String fileName = String.valueOf(fileNames != null && fileNames.size() > 0 ? fileNames.get(index) : file.getName());
 
 								if (file == null)
 									continue;
@@ -288,6 +272,30 @@ public class ShareActivity extends GActivity
 					}
 				}
 		);
+	}
+
+	protected void registerClickListener(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
+	{
+		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+
+				if (device.availableConnections.length > 1)
+					new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+					{
+						@Override
+						public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+						{
+							handleFiles(fileUris, fileNames, mDeviceRegistry.getNetworkDevice(addressHolder.address));
+						}
+					}).show();
+				else
+					handleFiles(fileUris, fileNames, device);
+			}
+		});
 	}
 
 	protected void showToast(String msg)

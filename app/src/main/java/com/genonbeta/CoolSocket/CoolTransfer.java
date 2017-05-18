@@ -1,7 +1,5 @@
 package com.genonbeta.CoolSocket;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -10,17 +8,31 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.FileLockInterruptionException;
 import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 
 abstract public class CoolTransfer<T>
 {
 	public final static int DELAY_DISABLED = -1;
+
+	public enum Flag
+	{
+		CONTINUE,
+		CANCEL_ALL,
+		CANCEL_CURRENT
+	}
+
+	public enum Status
+	{
+		INTERRUPTED,
+		RUNNING,
+		PENDING,
+	}
+
 	private final ArrayList<TransferHandler<T>> mProcess = new ArrayList<>();
 	private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 
-	public abstract void onError(TransferHandler<T> handler, Exception error);
+	public abstract Flag onError(TransferHandler<T> handler, Exception error);
 
 	public abstract void onNotify(TransferHandler<T> handler, int percent);
 
@@ -28,9 +40,13 @@ abstract public class CoolTransfer<T>
 
 	public abstract void onInterrupted(TransferHandler<T> handler);
 
-	public abstract void onSocketReady(TransferHandler<T> handler);
+	public abstract Flag onSocketReady(TransferHandler<T> handler);
 
-	public abstract boolean onStart(TransferHandler<T> handler);
+	public abstract Flag onStart(TransferHandler<T> handler);
+
+	public void onPrepareNext(TransferHandler<T> handler)
+	{
+	}
 
 	public void onStop(TransferHandler<T> handler)
 	{
@@ -38,7 +54,6 @@ abstract public class CoolTransfer<T>
 
 	public void onProcessListChanged(ArrayList<TransferHandler<T>> processList, TransferHandler<T> handler, boolean isAdded)
 	{
-
 	}
 
 	protected void addProcess(TransferHandler<T> processHandler)
@@ -79,6 +94,7 @@ abstract public class CoolTransfer<T>
 		private byte[] mBufferSize;
 		private int mPort;
 		private File mFile;
+		private Status mStatus = Status.PENDING;
 
 		public TransferHandler(int port, File file, byte[] bufferSize, T extra)
 		{
@@ -115,6 +131,11 @@ abstract public class CoolTransfer<T>
 			return mSocket;
 		}
 
+		public Status getStatus()
+		{
+			return mStatus;
+		}
+
 		public void interrupt()
 		{
 			this.mInterrupted = true;
@@ -129,18 +150,26 @@ abstract public class CoolTransfer<T>
 		public void run()
 		{
 			this.mInterrupted = false;
+
+			this.setStatus(Status.RUNNING);
 			this.onRun();
+			this.setStatus(Status.INTERRUPTED);
 		}
 
 		protected void setSocket(Socket mSocket)
 		{
 			this.mSocket = mSocket;
 		}
+
+		public void setStatus(Status status)
+		{
+			this.mStatus = status;
+		}
 	}
 
 	public static abstract class Receive<T> extends CoolTransfer<T>
 	{
-		public abstract void onSocketReady(Handler handler, ServerSocket serverSocket);
+		public abstract Flag onSocketReady(Handler handler, ServerSocket serverSocket);
 
 		public void onOrientatingStreams(Handler handler, InputStream inputStream, FileOutputStream fileOutputStream)
 		{
@@ -161,7 +190,7 @@ abstract public class CoolTransfer<T>
 		{
 			Handler handler = new Handler(extra, port, file, fileSize, bufferSize, timeOut);
 
-			handler.onRun();
+			handler.run();
 
 			return handler;
 		}
@@ -184,79 +213,95 @@ abstract public class CoolTransfer<T>
 			{
 				addProcess(this);
 
-				if (!onStart(this))
-					return;
+				Flag flag = onStart(this);
 
 				try
 				{
-					ServerSocket serverSocket = new ServerSocket(getPort());
-
-					onSocketReady(this, serverSocket);
-
-					setSocket(serverSocket.accept());
-
-					onSocketReady(this);
-
-					InputStream inputStream = getSocket().getInputStream();
-					FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
-
-					onOrientatingStreams(this, inputStream, outputStream);
-
-					int len;
-					int progressPercent = -1;
-					long lastRead = System.currentTimeMillis();
-					long lastNotified = System.currentTimeMillis();
-
-					while (getFile().length() != this.mFileSize)
+					if (Flag.CONTINUE.equals(flag))
 					{
-						if ((len = inputStream.read(getBufferSize())) > 0)
+						ServerSocket serverSocket = new ServerSocket(getPort());
+
+						flag = onSocketReady(this, serverSocket);
+
+						if (Flag.CONTINUE.equals(flag))
 						{
-							outputStream.write(getBufferSize(), 0, len);
-							outputStream.flush();
+							setSocket(serverSocket.accept());
 
-							lastRead = System.currentTimeMillis();
-						}
+							flag = onSocketReady(this);
 
-						if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
-						{
-							int currentPercent = (int) (((float) 100 / this.mFileSize) * outputStream.getChannel().position());
-
-							if (currentPercent > progressPercent)
+							if (Flag.CONTINUE.equals(flag))
 							{
-								onNotify(this, currentPercent);
-								progressPercent = currentPercent;
+								InputStream inputStream = getSocket().getInputStream();
+								FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
+
+								onOrientatingStreams(this, inputStream, outputStream);
+
+								int len;
+								int progressPercent = -1;
+								long lastRead = System.currentTimeMillis();
+								long lastNotified = System.currentTimeMillis();
+
+								while (getFile().length() != this.mFileSize)
+								{
+									if ((len = inputStream.read(getBufferSize())) > 0)
+									{
+										outputStream.write(getBufferSize(), 0, len);
+										outputStream.flush();
+
+										lastRead = System.currentTimeMillis();
+									}
+
+									if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
+									{
+										int currentPercent = (int) (((float) 100 / this.mFileSize) * outputStream.getChannel().position());
+
+										if (currentPercent > progressPercent)
+										{
+											onNotify(this, currentPercent);
+											progressPercent = currentPercent;
+										}
+
+										lastNotified = System.currentTimeMillis();
+									}
+
+									if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isInterrupted())
+										break;
+								}
+
+								outputStream.close();
+								inputStream.close();
 							}
 
-							lastNotified = System.currentTimeMillis();
+							getSocket().close();
 						}
 
-						if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isInterrupted())
-							break;
-					}
+						serverSocket.close();
 
-					outputStream.close();
-					inputStream.close();
-					getSocket().close();
-					serverSocket.close();
-
-					if (this.isInterrupted())
-						onInterrupted(this);
-					else
-					{
-						if (getFile().length() != this.mFileSize)
-							throw new NotYetBoundException();
+						if (this.isInterrupted())
+						{
+							flag = Flag.CANCEL_ALL;
+							onInterrupted(this);
+						}
 						else
-							onTransferCompleted(this);
+						{
+							if (getFile().length() != this.mFileSize)
+								throw new NotYetBoundException();
+							else
+								onTransferCompleted(this);
+						}
 					}
 				} catch (Exception e)
 				{
-					onError(this, e);
+					flag = onError(this, e);
 				}
 				finally
 				{
 					onStop(this);
 					removeProcess(this);
 				}
+
+				if (!Flag.CANCEL_ALL.equals(flag))
+					onPrepareNext(this);
 			}
 
 			public long getFileSize()
@@ -292,7 +337,7 @@ abstract public class CoolTransfer<T>
 		{
 			Handler handler = new Handler(serverIp, port, file, bufferSize, extra);
 
-			handler.onRun();
+			handler.run();
 
 			return handler;
 		}
@@ -311,68 +356,80 @@ abstract public class CoolTransfer<T>
 			@Override
 			protected void onRun()
 			{
-				getProcessList().add(this);
+				addProcess(this);
 
-				if (!onStart(this))
-					return;
+				Flag flag = onStart(this);
 
 				try
 				{
-					setSocket(new Socket());
-
-					getSocket().bind(null);
-					getSocket().connect(new InetSocketAddress(getServerIp(), getPort()));
-
-					onSocketReady(this);
-
-					FileInputStream inputStream = new FileInputStream(getFile());
-					OutputStream outputStream = getSocket().getOutputStream();
-
-					onOrientatingStreams(this, inputStream, outputStream);
-
-					int len;
-					int progressPercent = -1;
-					long lastNotified = System.currentTimeMillis();
-
-					while ((len = inputStream.read(getBufferSize())) > 0)
+					if (Flag.CONTINUE.equals(flag))
 					{
-						outputStream.write(getBufferSize(), 0, len);
-						outputStream.flush();
+						setSocket(new Socket());
 
-						if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
+						getSocket().bind(null);
+						getSocket().connect(new InetSocketAddress(getServerIp(), getPort()));
+
+						flag = onSocketReady(this);
+
+						if (Flag.CONTINUE.equals(flag))
 						{
-							int currentPercent = (int) (((float) 100 / getFile().length()) * inputStream.getChannel().position());
+							FileInputStream inputStream = new FileInputStream(getFile());
+							OutputStream outputStream = getSocket().getOutputStream();
 
-							if (currentPercent > progressPercent)
+							onOrientatingStreams(this, inputStream, outputStream);
+
+							int len;
+							int progressPercent = -1;
+							long lastNotified = System.currentTimeMillis();
+
+							while ((len = inputStream.read(getBufferSize())) > 0)
 							{
-								onNotify(this, currentPercent);
-								progressPercent = currentPercent;
+								outputStream.write(getBufferSize(), 0, len);
+								outputStream.flush();
+
+								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
+								{
+									int currentPercent = (int) (((float) 100 / getFile().length()) * inputStream.getChannel().position());
+
+									if (currentPercent > progressPercent)
+									{
+										onNotify(this, currentPercent);
+										progressPercent = currentPercent;
+									}
+
+									lastNotified = System.currentTimeMillis();
+								}
+
+								if (this.isInterrupted())
+									break;
 							}
 
-							lastNotified = System.currentTimeMillis();
+							outputStream.close();
+							inputStream.close();
 						}
 
+						getSocket().close();
+
 						if (this.isInterrupted())
-							break;
+						{
+							flag = Flag.CANCEL_ALL;
+							onInterrupted(this);
+						}
+						else
+							onTransferCompleted(this);
 					}
-
-					outputStream.close();
-					inputStream.close();
-					getSocket().close();
-
-					if (this.isInterrupted())
-						onInterrupted(this);
-					else
-						onTransferCompleted(this);
 				} catch (Exception e)
 				{
-					onError(this, e);
+					flag = onError(this, e);
 				}
 				finally
 				{
 					onStop(this);
-					getProcessList().remove(this);
+					removeProcess(this);
 				}
+
+				if (!Flag.CANCEL_ALL.equals(flag))
+					onPrepareNext(this);
 			}
 
 			public String getServerIp()

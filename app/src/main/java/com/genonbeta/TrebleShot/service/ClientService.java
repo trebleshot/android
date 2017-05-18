@@ -2,22 +2,17 @@ package com.genonbeta.TrebleShot.service;
 
 import android.content.Intent;
 import android.os.IBinder;
-import android.os.Looper;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.android.database.CursorItem;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.ServerSocket;
 import java.util.ArrayList;
 
 public class ClientService extends AbstractTransactionService<AwaitedFileSender>
@@ -77,12 +72,14 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 	public class Send extends CoolTransfer.Send<AwaitedFileSender>
 	{
 		@Override
-		public void onError(TransferHandler<AwaitedFileSender> handler, Exception error)
+		public Flag onError(TransferHandler<AwaitedFileSender> handler, Exception error)
 		{
 			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
-			getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, "<?>"));
+			//getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, "<?>"));
+
+			return Flag.CANCEL_ALL;
 		}
 
 		@Override
@@ -94,26 +91,25 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		@Override
 		public void onTransferCompleted(TransferHandler<AwaitedFileSender> handler)
 		{
-			getNotificationUtils().showToast(getString(R.string.file_sent_msg, handler.getExtra().fileName));
+			//getNotificationUtils().showToast(getString(R.string.file_sent_msg, handler.getExtra().fileName));
 			getTransactionInstance().removeTransaction(handler.getExtra());
 		}
 
 		@Override
 		public void onInterrupted(TransferHandler<AwaitedFileSender> handler)
 		{
-			getNotificationUtils().showToast(getString(R.string.file_send_cancelled_msg, handler.getExtra().fileName));
+			//getNotificationUtils().showToast(getString(R.string.file_send_cancelled_msg, handler.getExtra().fileName));
 		}
 
 		@Override
-		public void onSocketReady(TransferHandler<AwaitedFileSender> handler)
+		public Flag onSocketReady(TransferHandler<AwaitedFileSender> handler)
 		{
-
+			return Flag.CONTINUE;
 		}
 
 		@Override
-		public boolean onStart(TransferHandler<AwaitedFileSender> handler)
+		public Flag onStart(TransferHandler<AwaitedFileSender> handler)
 		{
-			Looper.prepare();
 			getWifiLock().acquire();
 
 			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
@@ -121,7 +117,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
 
-			return true;
+			return Flag.CONTINUE;
 		}
 
 		@Override

@@ -20,6 +20,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.helper.NetworkDeviceInfoLoader;
@@ -43,7 +44,6 @@ public class CommunicationService extends Service
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
-	public static final String EXTRA_SERVICE_LOCK_REQUEST = "extraServiceStartLock";
 	public static final String EXTRA_HALF_RESTRICT = "extraHalfRestrict";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
@@ -91,9 +91,12 @@ public class CommunicationService extends Service
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
+				final boolean isHalfRestriction = intent.hasExtra(EXTRA_HALF_RESTRICT);
 
 				mNotification.cancel(notificationId);
-				mDeviceRegistry.updateRestriction(oppositeIp, false);
+
+				if (!isHalfRestriction || isAccepted)
+					mDeviceRegistry.updateRestriction(oppositeIp, false);
 
 				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 						new JsonResponseHandler()
@@ -243,9 +246,6 @@ public class CommunicationService extends Service
 							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID))
 							{
 								String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
-
-								Log.d(TAG, jsonIndex);
-
 								JSONArray jsonArray = new JSONArray(jsonIndex);
 
 								int count = 0;
@@ -271,11 +271,7 @@ public class CommunicationService extends Service
 								{
 									result = true;
 									mDeviceRegistry.updateRestriction(device, true);
-
-									if (count > 1)
-										mNotification.notifyTransferRequest(halfRestriction, clientIp, groupId, count);
-									else
-										mNotification.notifyTransferRequest(halfRestriction, heldReceiver);
+									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, count);
 								}
 							}
 							break;
@@ -292,9 +288,10 @@ public class CommunicationService extends Service
 							}
 							break;
 						case (Keyword.REQUEST_SERVER_READY):
-							if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.SOCKET_PORT))
+							if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.GROUP_ID) && receivedMessage.has(Keyword.SOCKET_PORT))
 							{
 								int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
+								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
 
 								if (mTransaction.applyAccessPort(requestId, socketPort))
@@ -303,8 +300,16 @@ public class CommunicationService extends Service
 									{
 										ContentValues values = new ContentValues();
 										values.put(Transaction.FIELD_TRANSFER_SIZE, receivedMessage.getLong(Keyword.FILE_SIZE));
-
 										mTransaction.updateTransaction(requestId, values);
+									}
+
+									AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
+
+									if (!clientIp.equals(sender.ip))
+									{
+										ContentValues values = new ContentValues();
+										values.put(Transaction.FIELD_TRANSFER_USERIP, clientIp);
+										mTransaction.updateTransactionGroup(sender.groupId, values);
 									}
 
 									Intent starterIntent = new Intent(getApplicationContext(), ClientService.class)
@@ -314,6 +319,8 @@ public class CommunicationService extends Service
 									startService(starterIntent);
 									result = true;
 								}
+								else if (mTransaction.transactionGroupExists(groupId))
+									response.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 							}
 							break;
 						case (Keyword.REQUEST_CLIPBOARD):

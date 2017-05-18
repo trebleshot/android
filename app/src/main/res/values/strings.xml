@@ -156,6 +156,11 @@
     <string name="remove">Remove</string>
     <string name="remove_all">Remove all</string>
     <string name="dialog_title_remove_device">Remove this device?</string>
-    <string name="dialog_message_remove_device">When you remove a device, its leftover transfers with their partly received files will also be removed</string>
+    <string name="dialog_message_remove_device">When you remove a device, its leftover transfers is also removed</string>
     <string name="warning_remove_pending_transfer">This will remove %s from the queue</string>
+    <string name="dialog_title_remove_certain_transactions">Remove all?</string>
+    <string name="dialog_message_remove_certain_transaction">This will remove all the pending transfers that you see in this list</string>
+    <string name="dialog_title_available_networks">Avail. networks for this device</string>
+    <string name="dialog_message_available_networks_no_network">No network is available</string>
+    <string name="warning_device_not_exits">Sender doesn\'t exist in your devices anymore. Find that device to continue!</string>
 </resources>

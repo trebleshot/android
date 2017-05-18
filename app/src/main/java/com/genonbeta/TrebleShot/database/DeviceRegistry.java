@@ -80,6 +80,18 @@ public class DeviceRegistry extends MainDatabase
 		return deviceList;
 	}
 
+	public NetworkDevice getNetworkDeviceById(String deviceId)
+	{
+		CursorItem item = getFirstFromTable(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_ID + "=?", deviceId)
+				.setLoadListener(mLoadListenerAvailableConnections));
+
+		if (item != null)
+			return new NetworkDevice(item);
+
+		return null;
+	}
+
 	public NetworkDevice getNetworkDevice(String ipAddress)
 	{
 		CursorItem item = getFirstFromTable(new SQLQuery.Select(TABLE_DEVICES)

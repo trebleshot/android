@@ -66,7 +66,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 				AwaitedFileReceiver runningReceiver = null;
 
-				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler :  mReceive.getProcessList())
+				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler : mReceive.getProcessList())
 				{
 					if (handler.getExtra().groupId == groupId)
 					{
@@ -129,12 +129,14 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		public int multiCounter = 0;
 
 		@Override
-		public void onError(TransferHandler<AwaitedFileReceiver> handler, Exception error)
+		public Flag onError(TransferHandler<AwaitedFileReceiver> handler, Exception error)
 		{
 			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
 			getNotificationUtils().notifyReceiveError(handler.getExtra());
+
+			return Flag.CANCEL_ALL;
 		}
 
 		@Override
@@ -154,8 +156,6 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile());
 			else
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
-
-			doJob(handler.getExtra().groupId);
 		}
 
 		@Override
@@ -168,56 +168,44 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public void onSocketReady(TransferHandler<AwaitedFileReceiver> handler)
+		public Flag onSocketReady(TransferHandler<AwaitedFileReceiver> handler)
 		{
-
+			return Flag.CONTINUE;
 		}
 
 		@Override
-		public void onSocketReady(final ServerService.Receive.Handler handler, final ServerSocket serverSocket)
+		public Flag onSocketReady(final ServerService.Receive.Handler handler, final ServerSocket serverSocket)
 		{
-			CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, null,
-					new JsonResponseHandler()
-					{
-						@Override
-						public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-						{
-							try
-							{
-								json.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
-								json.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
-								json.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
+			try
+			{
+				JSONObject jsonObject = new JSONObject();
 
-								if (handler.getFile().length() > 0)
-									json.put(Keyword.FILE_SIZE, handler.getFile().length());
+				jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
+				jsonObject.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
+				jsonObject.put(Keyword.GROUP_ID, handler.getExtra().groupId);
+				jsonObject.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
 
-								JSONObject response = new JSONObject(process.waitForResponse());
+				if (handler.getFile().length() > 0)
+					jsonObject.put(Keyword.FILE_SIZE, handler.getFile().length());
 
-								if (!response.getBoolean(Keyword.RESULT))
-								{
-									this.onError(new Exception("Request rejected"));
-									serverSocket.close();
-								}
-							} catch (JSONException e)
-							{
-								this.onError(e);
-							} catch (IOException e)
-							{
-								e.printStackTrace();
-							}
-						}
+				JSONObject response = new JSONObject(CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, jsonObject.toString(), null));
 
-						@Override
-						public void onError(Exception exception)
-						{
-							Log.d(TAG, "Error while receiver is waiting response of sender");
-						}
-					}
-			);
+				if (response.getBoolean(Keyword.RESULT))
+					return Flag.CONTINUE;
+
+				if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG)))
+					return Flag.CANCEL_CURRENT;
+			} catch (JSONException e)
+			{
+				// It shouldn't have happened.
+				e.printStackTrace();
+			}
+
+			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public boolean onStart(TransferHandler<AwaitedFileReceiver> handler)
+		public Flag onStart(TransferHandler<AwaitedFileReceiver> handler)
 		{
 			Log.d(TAG, "onStart(): " + handler.getFile().getName());
 
@@ -226,7 +214,13 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 			getTransactionInstance().updateTransaction(handler.getExtra());
 
-			return true;
+			return Flag.CONTINUE;
+		}
+
+		@Override
+		public void onPrepareNext(TransferHandler<AwaitedFileReceiver> handler)
+		{
+			doJob(handler.getExtra().groupId);
 		}
 
 		@Override

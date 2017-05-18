@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -53,7 +54,6 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 								.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", item.getString(Transaction.FIELD_TRANSFER_GROUPID)));
 
 						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
-
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
 					}
 				});
@@ -104,6 +104,11 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 		return 0;
 	}
 
+	public SQLQuery.Select getSelect()
+	{
+		return mSelect;
+	}
+
 	@Override
 	public View getView(int i, View view, ViewGroup viewGroup)
 	{
@@ -133,7 +138,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 				AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
 
 				dialog.setTitle(R.string.dialog_title_remove_queue_job);
-				dialog.setMessage(thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT) ?
+				dialog.setMessage(isGroup ?
 						mContext.getString(R.string.dialog_msg_remove_queue_job, thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
 						mContext.getString(R.string.warning_remove_pending_transfer, thisItem.getString(Transaction.FIELD_TRANSFER_NAME)));
 

@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
+import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.dialog.PendingTransferListDialog;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
@@ -18,6 +19,7 @@ import com.genonbeta.android.database.CursorItem;
 public class PendingTransferListFragment extends AbstractEditableListFragment<PendingTransferListAdapter> implements FragmentTitle
 {
 	public Transaction mTransaction;
+	public DeviceRegistry mDeviceRegistry;
 	public IntentFilter mFilter = new IntentFilter();
 	public BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -37,6 +39,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Pe
 		mFilter.addAction(Transaction.ACTION_TRANSACTION_REMOVED);
 
 		mTransaction = new Transaction(getContext());
+		mDeviceRegistry = new DeviceRegistry(getContext());
 
 		setSearchSupport(false);
 	}
@@ -73,7 +76,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Pe
 		super.onListItemClick(l, v, position, id);
 
 		CursorItem item = (CursorItem) getAdapter().getItem(position);
-		new PendingTransferListDialog(getActivity(), mTransaction, item.getInt(Transaction.FIELD_TRANSFER_GROUPID)).show();
+		new PendingTransferListDialog(getActivity(), mDeviceRegistry, mTransaction, item.getInt(Transaction.FIELD_TRANSFER_GROUPID)).show();
 	}
 
 	@Override

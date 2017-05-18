@@ -123,7 +123,7 @@ public class NetworkUtils
 		return macAddressList;
 	}
 
-	public static HashMap<NetworkInterface, String> getInterfaces(boolean useIPv4, String[] avoidInterface)
+	public static HashMap<NetworkInterface, String> getInterfaces(boolean useIPv4, String[] avoidedInterfaces)
 	{
 		HashMap<NetworkInterface, String> ipAddressList = new HashMap<NetworkInterface, String>();
 
@@ -135,7 +135,7 @@ public class NetworkUtils
 			{
 				boolean breaker = false;
 
-				for (String match : avoidInterface)
+				for (String match : avoidedInterfaces)
 				{
 					if (intf.getDisplayName().contains(match))
 						breaker = true;
@@ -172,11 +172,11 @@ public class NetworkUtils
 		return ipAddressList;
 	}
 
-	public static ArrayList<String> getInterfacesWithOnlyIp(boolean useIPv4, String[] avoidInterface)
+	public static ArrayList<String> getInterfacesWithOnlyIp(boolean useIPv4, String[] avoidedInterfaces)
 	{
 		ArrayList<String> list = new ArrayList<String>();
 
-		list.addAll(getInterfaces(useIPv4, avoidInterface).values());
+		list.addAll(getInterfaces(useIPv4, avoidedInterfaces).values());
 
 		return list;
 	}
