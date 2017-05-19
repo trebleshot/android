@@ -45,7 +45,6 @@ public class FileUtils
 				return newFile;
 		}
 
-		// TODO: 4/25/17 handle this later
 		return null;
 	}
 

@@ -94,7 +94,6 @@ public class ApplicationHelper
 
 	public static int getUniqueNumber()
 	{
-		// TODO: 4/28/17 this isn't secure. Check other solutions
 		return (int)System.currentTimeMillis() + (++mUniqueNumber);
 	}
 

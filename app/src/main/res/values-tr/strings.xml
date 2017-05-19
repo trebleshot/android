@@ -162,4 +162,5 @@
     <string name="stop_progress">Durduruluyor!</string>
     <string name="warning_device_not_exits">Gönderen artık cihaz listenizde yer almıyor. Cihazları birbirlerine bağlayarak devam edebilirsiniz</string>
     <string name="warning_remove_pending_transfer">Bu %s aktarımını kuyruktan silecek</string>
+    <string name="ongoing_list_warning">Bu dosya, %s dosyası alındıktan sonra alınacak</string>
 </resources>
