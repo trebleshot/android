@@ -227,7 +227,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_check_for_updates);
 
 		item.setChecked(true);
-		item.setTitle(R.string.version_available_text);	
+		item.setTitle(R.string.version_available_text);
 	}
 
 	private void sendThisApplication()
