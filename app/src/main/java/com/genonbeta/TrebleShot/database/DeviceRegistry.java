@@ -149,15 +149,15 @@ public class DeviceRegistry extends MainDatabase
 	public boolean updateRestriction(NetworkDevice device, boolean restrict)
 	{
 		device.isRestricted = restrict;
-		return updateRestriction(device.ip, restrict);
+		return updateRestriction(device.deviceId, restrict);
 	}
 
-	public boolean updateRestriction(String ipAddress, boolean restrict)
+	public boolean updateRestriction(String deviceId, boolean restrict)
 	{
 		ContentValues values = new ContentValues();
 		values.put(FIELD_DEVICES_ISRESTRICTED, restrict ? 1 : 0);
 
-		getWritableDatabase().update(TABLE_DEVICES, values, FIELD_DEVICES_IP + "=?", new String[]{ipAddress});
+		getWritableDatabase().update(TABLE_DEVICES, values, FIELD_DEVICES_ID + "=?", new String[]{deviceId});
 
 		return notifyUpdated() > 0;
 	}
