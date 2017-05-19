@@ -94,41 +94,49 @@ public class ShareActivity extends GActivity
 							public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 							{
 								final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-								final String deviceIp = device.ip;
 
-								CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-										new JsonResponseHandler()
-										{
-											@Override
-											public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-											{
-												try
+								new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+								{
+									@Override
+									public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+									{
+										final String deviceIp = addressHolder.address;
+
+										CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+												new JsonResponseHandler()
 												{
-													json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-													json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
-
-													JSONObject response = new JSONObject(process.waitForResponse());
-
-													if (response.getBoolean(Keyword.RESULT))
+													@Override
+													public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
 													{
+														try
+														{
+															json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+															json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
 
+															JSONObject response = new JSONObject(process.waitForResponse());
+
+															if (response.getBoolean(Keyword.RESULT))
+															{
+
+															}
+															else
+																showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+														} catch (JSONException e)
+														{
+															showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+														}
 													}
-													else
-														showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-												} catch (JSONException e)
-												{
-													showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-												}
-											}
 
-											@Override
-											public void onError(Exception e)
-											{
-												e.printStackTrace();
-												showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-											}
-										}
-								);
+													@Override
+													public void onError(Exception e)
+													{
+														e.printStackTrace();
+														showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
+													}
+												}
+										);
+									}
+								}).show();
 							}
 						});
 					}
@@ -165,7 +173,10 @@ public class ShareActivity extends GActivity
 					registerClickListener(fileUris, fileNames);
 					break;
 				default:
-					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).
+
+							show();
+
 					finish();
 			}
 		}
@@ -187,7 +198,8 @@ public class ShareActivity extends GActivity
 		mStatusText.getText().append(charSequence);
 	}
 
-	protected void handleFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames, final NetworkDevice device)
+	protected void handleFiles(final ArrayList<Uri> fileUris,
+							   final ArrayList<CharSequence> fileNames, final NetworkDevice device)
 	{
 		mDeviceRegistry.updateRestriction(device, false);
 
@@ -274,7 +286,8 @@ public class ShareActivity extends GActivity
 		);
 	}
 
-	protected void registerClickListener(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
+	protected void registerClickListener(final ArrayList<Uri> fileUris,
+										 final ArrayList<CharSequence> fileNames)
 	{
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -283,17 +296,14 @@ public class ShareActivity extends GActivity
 			{
 				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
 
-				if (device.availableConnections.length > 1)
-					new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+				new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+				{
+					@Override
+					public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
 					{
-						@Override
-						public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
-						{
-							handleFiles(fileUris, fileNames, mDeviceRegistry.getNetworkDevice(addressHolder.address));
-						}
-					}).show();
-				else
-					handleFiles(fileUris, fileNames, device);
+						handleFiles(fileUris, fileNames, mDeviceRegistry.getNetworkDevice(addressHolder.address));
+					}
+				}).show();
 			}
 		});
 	}

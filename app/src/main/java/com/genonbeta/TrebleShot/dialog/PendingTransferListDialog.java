@@ -108,21 +108,29 @@ public class PendingTransferListDialog extends Dialog
 						Toast.makeText(getContext(), R.string.warning_device_not_exits, Toast.LENGTH_LONG).show();
 					else if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
 					{
-						if (device.availableConnections.length > 0)
+						new DeviceChooserDialog(context, device, new DeviceChooserDialog.OnDeviceSelectedListener()
 						{
-							new DeviceChooserDialog(context, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+							@Override
+							public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
 							{
-								@Override
-								public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+								if (!receiver.ip.equals(addressHolder.address))
 								{
-									continueReceiving(transaction, receiver, addressHolder.address);
+									receiver.ip = addressHolder.address;
+									ContentValues values = new ContentValues();
+
+									values.put(Transaction.FIELD_TRANSFER_USERIP, addressHolder.address);
+									transaction.updateTransactionGroup(receiver.groupId, values);
 								}
-							}).show();
-						}
-						else
-						{
-							continueReceiving(transaction, receiver, device.ip);
-						}
+
+								receiver.flag = Transaction.Flag.RESUME;
+								transaction.updateTransaction(receiver);
+
+								transaction.getContext().startService(new Intent(transaction.getContext(), ServerService.class)
+										.setAction(ServerService.ACTION_START_RECEIVING)
+										.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId));
+							}
+						}).show();
+
 					}
 				}
 			}
@@ -132,24 +140,5 @@ public class PendingTransferListDialog extends Dialog
 		adapter.notifyDataSetChanged();
 
 		setContentView(view);
-	}
-
-	public void continueReceiving(Transaction transaction, AwaitedFileReceiver receiver, String ipAddress)
-	{
-		if (!receiver.ip.equals(ipAddress))
-		{
-			receiver.ip = ipAddress;
-			ContentValues values = new ContentValues();
-
-			values.put(Transaction.FIELD_TRANSFER_USERIP, ipAddress);
-			transaction.updateTransactionGroup(receiver.groupId, values);
-		}
-
-		receiver.flag = Transaction.Flag.RESUME;
-		transaction.updateTransaction(receiver);
-
-		transaction.getContext().startService(new Intent(transaction.getContext(), ServerService.class)
-				.setAction(ServerService.ACTION_START_RECEIVING)
-				.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId));
 	}
 }
