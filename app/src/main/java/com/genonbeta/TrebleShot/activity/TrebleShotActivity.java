@@ -2,10 +2,12 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -16,6 +18,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
@@ -43,14 +46,16 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
-	NavigationView mNavigationView;
-	Fragment mFragmentDeviceList;
-	Fragment mFragmentReceivedFiles;
-	Fragment mFragmentOnGoingProcessList;
-	Fragment mFragmentShareApplication;
-	Fragment mFragmentShareMusic;
-	Fragment mFragmentShareVideo;
-	Fragment mFragmentShareText;
+	private SharedPreferences mPreferences;
+	private NavigationView mNavigationView;
+	private GitHubUpdater mUpdater;
+	private Fragment mFragmentDeviceList;
+	private Fragment mFragmentReceivedFiles;
+	private Fragment mFragmentOnGoingProcessList;
+	private Fragment mFragmentShareApplication;
+	private Fragment mFragmentShareMusic;
+	private Fragment mFragmentShareVideo;
+	private Fragment mFragmentShareText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -66,6 +71,8 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
+		mUpdater = new GitHubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 		mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -93,6 +100,24 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		}
 
 		checkCurrentRequestedFragment(getIntent());
+
+		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
+			highlightUpdater(mPreferences.getString("availableVersion", null));
+		else
+			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
+			{
+				@Override
+				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
+				{
+					mPreferences
+							.edit()
+							.putString("availableVersion", versionName)
+							.apply();
+
+					if (newVersion)
+						highlightUpdater(versionName);
+				}
+			});
 	}
 
 	@Override
@@ -140,8 +165,7 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 		}
 		else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
 		{
-			GitHubUpdater updater = new GitHubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
-			updater.checkForUpdates();
+			mUpdater.checkForUpdates(true, null);
 		}
 		else
 			return false;
@@ -196,6 +220,14 @@ public class TrebleShotActivity extends GActivity implements NavigationView.OnNa
 				changeFragment(mFragmentOnGoingProcessList);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
 			}
+	}
+
+	private void highlightUpdater(String availableVersion)
+	{
+		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_check_for_updates);
+
+		item.setChecked(true);
+		item.setTitle(R.string.version_available_text);	
 	}
 
 	private void sendThisApplication()

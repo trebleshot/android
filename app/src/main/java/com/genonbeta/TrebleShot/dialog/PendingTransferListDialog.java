@@ -83,7 +83,7 @@ public class PendingTransferListDialog extends Dialog
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						transaction.getWritableDatabase().delete(adapter.getSelect().tableName, adapter.getSelect().where, adapter.getSelect().whereArgs);
+						transaction.removeTransaction(adapter.getSelect());
 						cancel();
 					}
 				});

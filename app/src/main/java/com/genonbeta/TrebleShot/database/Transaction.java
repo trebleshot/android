@@ -159,10 +159,20 @@ public class Transaction extends MainDatabase
 		return count;
 	}
 
+	public boolean removeDeviceTransactionGroup(AwaitedTransaction transaction)
+	{
+		return removeDeviceTransactionGroup(transaction.deviceId);
+	}
+
 	public boolean removeDeviceTransactionGroup(NetworkDevice device)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_DEVICEID + "=?", new String[]{String.valueOf(device.deviceId)});
-		return notifyRemoved() > 0;
+		return removeDeviceTransactionGroup(device.deviceId);
+	}
+
+	public boolean removeDeviceTransactionGroup(String deviceId)
+	{
+		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_DEVICEID + "=?", deviceId));
 	}
 
 	public boolean removeTransaction(AwaitedTransaction transaction)
@@ -172,8 +182,8 @@ public class Transaction extends MainDatabase
 
 	public boolean removeTransaction(int requestId)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
-		return notifyRemoved() > 0;
+		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
 	}
 
 	public boolean removeTransactionGroup(AwaitedTransaction transaction)
@@ -183,8 +193,15 @@ public class Transaction extends MainDatabase
 
 	public boolean removeTransactionGroup(int groupId)
 	{
-		getWritableDatabase().delete(TABLE_TRANSFER, FIELD_TRANSFER_GROUPID + "=?", new String[]{String.valueOf(groupId)});
+		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
+	}
+
+	public boolean removeTransaction(SQLQuery.Select select)
+	{
+		getWritableDatabase().delete(select.tableName, select.where, select.whereArgs);
 		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
+
 		return notifyRemoved() > 0;
 	}
 

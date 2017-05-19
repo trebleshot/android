@@ -96,7 +96,7 @@
     <string name="open_in_file_manager">Show on File Manager</string>
     <string name="pick_file_manager">Pick the file manager</string>
     <string name="ip_address">IP Address</string>
-    <string name="allow_access">Allow access</string>
+    <string name="allow_access">Allow to access</string>
     <string name="connection_permission">Connection permission</string>
     <string name="allow_device_to_connect">Allow this device to connect?</string>
     <string name="file_count">%d file(s)</string>
@@ -163,4 +163,7 @@
     <string name="dialog_title_available_networks">Avail. networks for this device</string>
     <string name="dialog_message_available_networks_no_network">No network is available</string>
     <string name="warning_device_not_exits">Sender doesn\'t exist in your devices anymore. You can continue after connecting devices to each other</string>
+    <string name="saved_connections">Saved connections</string>
+    <string name="available_connections">%d connections</string>
+    <string name="version_available_text">New version is available!</string>
 </resources>

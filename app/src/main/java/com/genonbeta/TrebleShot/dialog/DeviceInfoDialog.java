@@ -36,7 +36,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 		modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
 
-		ipText.setText(device.availableConnections.length + " available");
+		ipText.setText(device.availableConnections.length > 1 ? context.getString(R.string.available_connections, device.availableConnections.length) : device.availableConnections[0]);
 		accessSwitch.setChecked(!device.isRestricted);
 
 		accessSwitch.setOnCheckedChangeListener(
