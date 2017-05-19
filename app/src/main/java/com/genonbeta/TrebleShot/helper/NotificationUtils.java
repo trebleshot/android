@@ -10,7 +10,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.NotificationCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -21,6 +20,7 @@ import com.genonbeta.TrebleShot.service.AbstractTransactionService;
 import com.genonbeta.TrebleShot.service.ClientService;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
+import com.genonbeta.core.util.NetworkUtils;
 
 import java.io.File;
 
@@ -33,8 +33,6 @@ public class NotificationUtils
 {
 	public static final String TAG = "NotificationUtils";
 	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
-	public static final int NOTIFICATION_ID_SERVICE = 232434;
-	public static final int NOTIFICATION_ID_PING = 232438;
 
 	private Context mContext;
 	private NotificationManagerCompat mManager;
@@ -64,7 +62,7 @@ public class NotificationUtils
 		return makeSound | vibrate | light;
 	}
 
-	public DynamicNotification notifyConnectionRequest(String clientIp)
+	public DynamicNotification notifyConnectionRequest(NetworkDevice device)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
 
@@ -72,7 +70,7 @@ public class NotificationUtils
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_IP);
-		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, clientIp);
+		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
@@ -92,7 +90,7 @@ public class NotificationUtils
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.connection_permission))
 				.setContentText(mContext.getString(R.string.allow_device_to_connect))
-				.setContentInfo(clientIp)
+				.setContentInfo(device.deviceId)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
@@ -103,9 +101,8 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver, int numberOfFiles)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver,  NetworkDevice device, int numberOfFiles)
 	{
-		NetworkDevice device = mDeviceRegistry.getNetworkDevice(receiver.ip);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 		String message = numberOfFiles > 1 ? mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)) : receiver.fileName;
 
@@ -114,7 +111,7 @@ public class NotificationUtils
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
 		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId);
-		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, device.ip);
+		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_IP, receiver.ip);
 		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		if (halfRestriction)
@@ -151,9 +148,9 @@ public class NotificationUtils
 
 	public DynamicNotification notifyFileTransaction(AwaitedTransaction transaction)
 	{
-		NetworkDevice device = mDeviceRegistry.getNetworkDevice(transaction.ip);
 		boolean isIncoming = transaction instanceof AwaitedFileReceiver;
 
+		NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(transaction.deviceId);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
@@ -182,9 +179,8 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyClipboardRequest(String ipAddress, CharSequence text)
+	public DynamicNotification notifyClipboardRequest(NetworkDevice device, CharSequence text)
 	{
-		NetworkDevice device = mDeviceRegistry.getNetworkDevice(ipAddress);
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, ApplicationHelper.getUniqueNumber());
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);

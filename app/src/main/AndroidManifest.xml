@@ -39,7 +39,6 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>
@@ -84,7 +83,6 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

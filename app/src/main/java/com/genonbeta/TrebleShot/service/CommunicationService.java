@@ -87,7 +87,7 @@ public class CommunicationService extends Service
 		{
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction()))
 			{
-				final String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
+				final String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
@@ -96,9 +96,9 @@ public class CommunicationService extends Service
 				mNotification.cancel(notificationId);
 
 				if (!isHalfRestriction || isAccepted)
-					mDeviceRegistry.updateRestriction(oppositeIp, false);
+					mDeviceRegistry.updateRestriction(ipAddress, false);
 
-				CoolCommunication.Messenger.send(oppositeIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+				CoolCommunication.Messenger.send(ipAddress, AppConfig.COMMUNATION_SERVER_PORT, null,
 						new JsonResponseHandler()
 						{
 							@Override
@@ -134,28 +134,28 @@ public class CommunicationService extends Service
 			}
 			else if (ACTION_IP.equals(intent.getAction()))
 			{
-				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
+				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
 				mNotification.cancel(notificationId);
 
-				if (!mDeviceRegistry.exists(oppositeIp))
+				if (!mDeviceRegistry.exists(ipAddress))
 					return START_NOT_STICKY;
 
-				mDeviceRegistry.updateRestriction(oppositeIp, !isAccepted);
+				mDeviceRegistry.updateRestriction(ipAddress, !isAccepted);
 			}
 			else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
 			{
-				String oppositeIp = intent.getStringExtra(EXTRA_DEVICE_IP);
+				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
 				mNotification.cancel(notificationId);
 
-				if (!mDeviceRegistry.exists(oppositeIp))
+				if (!mDeviceRegistry.exists(ipAddress))
 					return START_NOT_STICKY;
 
-				mDeviceRegistry.updateRestriction(oppositeIp, false);
+				mDeviceRegistry.updateRestriction(ipAddress, false);
 
 				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false))
 				{
@@ -228,7 +228,7 @@ public class CommunicationService extends Service
 							halfRestriction = true;
 						}
 						else
-							mNotification.notifyConnectionRequest(clientIp);
+							mNotification.notifyConnectionRequest(device);
 					}
 					else
 					{
@@ -270,8 +270,8 @@ public class CommunicationService extends Service
 								if (count > 0)
 								{
 									result = true;
-									mDeviceRegistry.updateRestriction(device, true);
-									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, count);
+									mDeviceRegistry.updateRestrictionByDeviceId(device, true);
+									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, device, count);
 								}
 							}
 							break;
@@ -327,9 +327,9 @@ public class CommunicationService extends Service
 							if (receivedMessage.has(Keyword.CLIPBOARD_TEXT))
 							{
 								mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
-								mNotification.notifyClipboardRequest(clientIp, mReceivedClipboardIndex);
 
-								mDeviceRegistry.updateRestriction(device, true);
+								mNotification.notifyClipboardRequest(device, mReceivedClipboardIndex);
+								mDeviceRegistry.updateRestrictionByDeviceId(device, true);
 
 								result = true;
 							}

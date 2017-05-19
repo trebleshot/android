@@ -116,6 +116,12 @@ public class DeviceRegistry extends MainDatabase
 		return getAffectedRowCount();
 	}
 
+	public long removeLocalDevices()
+	{
+		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ISLOCALADDRESS + "=?", new String[] {String.valueOf(1)});
+		return getAffectedRowCount();
+	}
+
 	public boolean registerDevice(NetworkDevice device)
 	{
 		removeDevice(device);
@@ -146,13 +152,18 @@ public class DeviceRegistry extends MainDatabase
 		return notifyRemoved() > 0;
 	}
 
-	public boolean updateRestriction(NetworkDevice device, boolean restrict)
+	public boolean updateRestriction(String ipAddress, boolean restrict)
 	{
-		device.isRestricted = restrict;
-		return updateRestriction(device.deviceId, restrict);
+		return updateRestrictionByDeviceId(getNetworkDevice(ipAddress), restrict);
 	}
 
-	public boolean updateRestriction(String deviceId, boolean restrict)
+	public boolean updateRestrictionByDeviceId(NetworkDevice device, boolean restrict)
+	{
+		device.isRestricted = restrict;
+		return updateRestrictionByDeviceId(device.deviceId, restrict);
+	}
+
+	public boolean updateRestrictionByDeviceId(String deviceId, boolean restrict)
 	{
 		ContentValues values = new ContentValues();
 		values.put(FIELD_DEVICES_ISRESTRICTED, restrict ? 1 : 0);

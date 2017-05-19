@@ -45,7 +45,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					@Override
 					public void onCheckedChanged(CompoundButton button, boolean isChecked)
 					{
-						registry.updateRestriction(device, !isChecked);
+						registry.updateRestrictionByDeviceId(device, !isChecked);
 					}
 				}
 		);

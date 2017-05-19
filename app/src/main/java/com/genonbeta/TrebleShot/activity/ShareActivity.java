@@ -201,7 +201,7 @@ public class ShareActivity extends GActivity
 	protected void handleFiles(final ArrayList<Uri> fileUris,
 							   final ArrayList<CharSequence> fileNames, final NetworkDevice device)
 	{
-		mDeviceRegistry.updateRestriction(device, false);
+		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
 
 		CoolCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
 				new JsonResponseHandler()

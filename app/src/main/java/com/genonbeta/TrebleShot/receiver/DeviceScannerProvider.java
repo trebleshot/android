@@ -50,6 +50,8 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 		{
 			if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
 			{
+				mDeviceRegistry.removeLocalDevices();
+
 				ArrayList<String> list = NetworkUtils.getInterfacesWithOnlyIp(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
 				for (String ip : list)
