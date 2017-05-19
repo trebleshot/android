@@ -118,13 +118,18 @@ public class DeviceRegistry extends MainDatabase
 
 	public long removeLocalDevices()
 	{
-		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ISLOCALADDRESS + "=?", new String[] {String.valueOf(1)});
+		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ISLOCALADDRESS + "=?", new String[]{String.valueOf(1)});
 		return getAffectedRowCount();
 	}
 
 	public boolean registerDevice(NetworkDevice device)
 	{
 		removeDevice(device);
+
+		delete(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_ID + "=? AND " + FIELD_DEVICES_IP + " LIKE ?",
+						device.deviceId, NetworkUtils.getAddressPrefix(device.ip) + "%"));
+
 		getWritableDatabase().insert(TABLE_DEVICES, null, device.getValues());
 
 		return notifyUpdated() > 0;
@@ -137,7 +142,9 @@ public class DeviceRegistry extends MainDatabase
 
 	public boolean removeDeviceWithInstances(String deviceId)
 	{
-		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ID + "=?", new String[]{deviceId});
+		delete(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_ID + "=?", deviceId));
+
 		return notifyRemoved() > 0;
 	}
 
@@ -148,7 +155,9 @@ public class DeviceRegistry extends MainDatabase
 
 	public boolean removeDevice(String ipAddress)
 	{
-		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_IP + "=?", new String[]{ipAddress});
+		delete(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_IP + "=?", ipAddress));
+
 		return notifyRemoved() > 0;
 	}
 
@@ -168,7 +177,7 @@ public class DeviceRegistry extends MainDatabase
 		ContentValues values = new ContentValues();
 		values.put(FIELD_DEVICES_ISRESTRICTED, restrict ? 1 : 0);
 
-		getWritableDatabase().update(TABLE_DEVICES, values, FIELD_DEVICES_ID + "=?", new String[]{deviceId});
+		update(new SQLQuery.Select(TABLE_DEVICES).setWhere(FIELD_DEVICES_ID + "=?", deviceId), values);
 
 		return notifyUpdated() > 0;
 	}

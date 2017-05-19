@@ -1,5 +1,6 @@
 package com.genonbeta.android.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -24,6 +25,11 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	public SQLiteDatabase(Context context, String name, android.database.sqlite.SQLiteDatabase.CursorFactory factory, int version)
 	{
 		super(context, name, factory, version);
+	}
+
+	public int delete(SQLQuery.Select select)
+	{
+		return getWritableDatabase().delete(select.tableName, select.where, select.whereArgs);
 	}
 
 	public CursorItem getFirstFromTable(SQLQuery.Select select)
@@ -91,5 +97,10 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		}
 
 		getWritableDatabase().execSQL("DELETE FROM " + tableName + " WHERE " + COLUMN_ID + " IN (" + idsToValues.toString() + ")");
+	}
+
+	public int update(SQLQuery.Select select, ContentValues values)
+	{
+		return getWritableDatabase().update(select.tableName, values, select.where, select.whereArgs);
 	}
 }

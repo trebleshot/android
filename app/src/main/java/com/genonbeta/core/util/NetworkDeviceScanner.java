@@ -105,9 +105,8 @@ public class NetworkDeviceScanner
 		public void updateScanner()
 		{
 			String ipAddress = NetworkDeviceScanner.this.mInterfaces.get(0);
-			String addressPrefix = ipAddress.substring(0, ipAddress.lastIndexOf(".") + 1);
 
-			this.mAddressPrefix = addressPrefix;
+			this.mAddressPrefix = NetworkUtils.getAddressPrefix(ipAddress);
 			this.mDevices = new boolean[256];
 			this.mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
 		}
@@ -119,7 +118,7 @@ public class NetworkDeviceScanner
 			{
 				synchronized (mDevices)
 				{
-					if (mDevices[mPosition] == true || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested == true)
+					if (mDevices[mPosition] || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested)
 						continue;
 
 					mDevices[mPosition] = true;

@@ -181,6 +181,11 @@ public class NetworkUtils
 		return list;
 	}
 
+	public static String getAddressPrefix(String ipv4Address)
+	{
+		return ipv4Address.substring(0, ipv4Address.lastIndexOf(".") + 1);
+	}
+
 	public static boolean testSocket(String ip, int port)
 	{
 		InetSocketAddress socketAddress = new InetSocketAddress(ip, port);

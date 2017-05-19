@@ -40,7 +40,7 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 			AddressHolder holder = new AddressHolder();
 
 			holder.name = address.getDisplayName();
-			holder.address = interfaceAddress.substring(0, interfaceAddress.lastIndexOf(".") + 1);
+			holder.address = NetworkUtils.getAddressPrefix(interfaceAddress);
 
 			prefixInterfaces.add(holder);
 		}

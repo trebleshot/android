@@ -199,7 +199,7 @@ public class Transaction extends MainDatabase
 
 	public boolean removeTransaction(SQLQuery.Select select)
 	{
-		getWritableDatabase().delete(select.tableName, select.where, select.whereArgs);
+		delete(select);
 		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
 
 		return notifyRemoved() > 0;
@@ -207,12 +207,14 @@ public class Transaction extends MainDatabase
 
 	public boolean transactionExists(int requestId)
 	{
-		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId))) != null;
+		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId))) != null;
 	}
 
 	public boolean transactionGroupExists(int groupId)
 	{
-		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER).setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))) != null;
+		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))) != null;
 	}
 
 	public boolean updateFlag(int requestId, Flag flag)
@@ -244,7 +246,9 @@ public class Transaction extends MainDatabase
 
 	public long updateTransactionGroup(int groupId, ContentValues values)
 	{
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_GROUPID + "=?", new String[] {String.valueOf(groupId)});
+		update(new SQLQuery.Select(TABLE_TRANSFER)
+				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), values);
+
 		return notifyUpdated();
 	}
 }

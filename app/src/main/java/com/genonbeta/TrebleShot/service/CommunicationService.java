@@ -267,7 +267,7 @@ public class CommunicationService extends Service
 									}
 								}
 
-								if (count > 0)
+								if (heldReceiver != null && count > 0)
 								{
 									result = true;
 									mDeviceRegistry.updateRestrictionByDeviceId(device, true);
