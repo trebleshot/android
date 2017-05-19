@@ -88,9 +88,6 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	{
 		switch (item.getItemId())
 		{
-			case (R.id.received_device_options_refresh):
-				getContext().sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
-				return true;
 			case (R.id.received_device_options_open_in_file_manager):
 				this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
 				return true;

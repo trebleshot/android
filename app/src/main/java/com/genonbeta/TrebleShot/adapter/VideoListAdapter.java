@@ -44,7 +44,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	{
 		super(context);
 		this.mResolver = context.getContentResolver();
-		this.mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_autorenew_white);
+		this.mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_autorenew_white_24dp);
 	}
 
 	private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)

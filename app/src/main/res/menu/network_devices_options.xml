@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/network_devices_scan"
-        android:icon="@drawable/ic_retry_alpha"
+        android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="0"
         android:title="@string/scan"
         app:showAsAction="always"
