@@ -146,4 +146,20 @@
     <string name="share_text">Metin yolla</string>
     <string name="open_wifi_settings_short">Kablosuz</string>
     <string name="pending_transfers">Bekleyen aktarımlar</string>
+    <string name="cancel_progress">İşlem iptal ediliyor</string>
+    <string name="dialog_message_available_networks_no_network">Kullanilir ağ yok</string>
+    <string name="dialog_message_remove_certain_transaction">Devam ederseniz listede görmüş olduğunuz bekleyen aktarımlar silinecek</string>
+    <string name="dialog_message_remove_device">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
+    <string name="dialog_msg_remove_queue_job">Bekleyen %s işlem kaldırılacak</string>
+    <string name="dialog_title_available_networks">Cihaza bağl. için uygun ağlar</string>
+    <string name="dialog_title_remove_certain_transactions">Hepsini kaldır?</string>
+    <string name="dialog_title_remove_device">Bu cihazı kaldır?</string>
+    <string name="dialog_title_remove_queue_job">İş kuyruğunu kaldır?</string>
+    <string name="kill_immediately">Şimdi durdur</string>
+    <string name="proceed">Devam et</string>
+    <string name="remove">Kaldır</string>
+    <string name="remove_all">Hepsini kaldır</string>
+    <string name="stop_progress">Durduruluyor!</string>
+    <string name="warning_device_not_exits">Gönderen artık cihaz listenizde yer almıyor. Cihazları birbirlerine bağlayarak devam edebilirsiniz</string>
+    <string name="warning_remove_pending_transfer">Bu %s aktarımını kuyruktan silecek</string>
 </resources>

@@ -105,7 +105,7 @@ public class PendingTransferListDialog extends Dialog
 					final NetworkDevice device = deviceRegistry.getNetworkDeviceById(receiver.deviceId);
 
 					if (device == null)
-						Toast.makeText(getContext(), R.string.warning_device_not_exits, Toast.LENGTH_SHORT).show();
+						Toast.makeText(getContext(), R.string.warning_device_not_exits, Toast.LENGTH_LONG).show();
 					else if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
 					{
 						if (device.availableConnections.length > 0)
