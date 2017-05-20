@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
@@ -24,10 +25,7 @@ public class FileChangesReceiver extends BroadcastReceiver
 	{
 		if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && !intent.hasExtra(NOT_COMPLETE_JOB))
 		{
-			Intent scanRequest = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-			scanRequest.setData(Uri.fromFile(ApplicationHelper.getApplicationDirectory(context)));
 
-			context.sendBroadcast(scanRequest);
 		}
 	}
 }

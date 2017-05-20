@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.service;
 
 import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -228,15 +230,16 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 			Intent updateReceivedList = new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
 
-			if (processList.size() > 0)
-			{
+			if (isAdded)
 				getWifiLock().acquire();
-				updateReceivedList.putExtra(FileChangesReceiver.NOT_COMPLETE_JOB, true);
-			}
 			else
-				getWifiLock().release();
+			{
+				if (processList.size() < 1)
+					getWifiLock().release();
 
-			sendBroadcast(updateReceivedList);
+				MediaScannerConnection.scanFile(getApplicationContext(), new String[]{handler.getFile().getAbsolutePath()}, new String[]{handler.getExtra().fileMimeType}, null);
+				sendBroadcast(updateReceivedList);
+			}
 		}
 	}
 }

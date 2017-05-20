@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -17,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -30,7 +32,6 @@ import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
 import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.TrebleShot.fragment.dialog.AboutDialog;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
@@ -152,7 +153,21 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		}
 		else if (R.id.menu_activity_main_about == item.getItemId())
 		{
-			new AboutDialog().show(getSupportFragmentManager(), "aboutDialog");
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+			builder.setTitle(R.string.about);
+			builder.setMessage(R.string.about_summary);
+			builder.setNegativeButton(R.string.close, null);
+			builder.setPositiveButton(R.string.see_source_code, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.APPLICATION_REPO)));
+				}
+			});
+
+			builder.show();
 		}
 		else if (R.id.menu_activity_main_send_application == item.getItemId())
 		{

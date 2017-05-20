@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.ActionMode;
@@ -15,7 +16,7 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ReceivedFilesListAdapter;
-import com.genonbeta.TrebleShot.fragment.dialog.FileDeleteDialogFragment;
+import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
@@ -23,12 +24,14 @@ import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
+import java.io.File;
+
 public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter> implements FragmentTitle
 {
 	public static final String TAG = "ReceivedFilesListFragment";
 
-	private NotificationUtils mNotification;
 	private IntentFilter mIntentFilter = new IntentFilter();
+	private MediaScannerConnection mMediaScanner;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -55,9 +58,11 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
-		mNotification = new NotificationUtils(getActivity());
+		
 		mIntentFilter.addAction(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
+		mMediaScanner = new MediaScannerConnection(getActivity(), null);
+
+		mMediaScanner.connect();
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
@@ -74,6 +79,13 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mReceiver);
+	}
+
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		mMediaScanner.disconnect();
 	}
 
 	@Override
@@ -126,27 +138,26 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		}
 
 		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item)
+		public boolean onActionItemClicked(final ActionMode mode, MenuItem item)
 		{
 			if (!super.onActionItemClicked(mode, item))
 				if (item.getItemId() == R.id.file_actions_delete)
 				{
-					FileDeleteDialogFragment df = new FileDeleteDialogFragment();
+					new FileDeleteDialog(getActivity(), getSharedItemList().toArray(), new FileDeleteDialog.Listener()
+					{
+						@Override
+						public void onFileDeletion(Context context, File file)
+						{
+							if (mMediaScanner.isConnected())
+								mMediaScanner.scanFile(file.getAbsolutePath(), "*/*");
+						}
 
-					df.setItems(getSharedItemList().toArray());
-
-					df.setOnDeleteCompletedListener(
-							new FileDeleteDialogFragment.OnDeleteCompletedListener()
-							{
-								@Override
-								public void onFilesDeleted(FileDeleteDialogFragment fragment, int fileSize)
-								{
-									fragment.getContext().sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
-								}
-							}
-					);
-
-					df.show(getFragmentManager(), "delete");
+						@Override
+						public void onCompleted(Context context, int fileSize)
+						{
+							context.sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
+						}
+					}).show();
 
 					mode.finish();
 

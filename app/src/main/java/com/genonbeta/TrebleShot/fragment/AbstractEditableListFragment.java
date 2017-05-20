@@ -324,14 +324,14 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			mActionMode = null;
 		}
 
-		public MenuItem getQuickSelectMenuItem()
-		{
-			return mSelectAll;
-		}
-
 		public void clearSelectionList()
 		{
 			mCheckedList.clear();
+		}
+
+		public MenuItem getQuickSelectMenuItem()
+		{
+			return mSelectAll;
 		}
 
 		public ArrayList<Uri> getSharedItemList()

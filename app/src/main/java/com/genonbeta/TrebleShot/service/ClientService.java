@@ -150,9 +150,9 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		{
 			super.onProcessListChanged(processList, handler, isAdded);
 
-			if (processList.size() > 0)
+			if (isAdded)
 				getWifiLock().acquire();
-			else
+			else if (processList.size() < 1)
 				getWifiLock().release();
 		}
 	}
