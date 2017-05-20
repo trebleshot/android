@@ -1,5 +1,5 @@
 <h1>TrebleShot Open-Source File and Text Sharing Application</h1>
-<p style="font-weight: bold;"><b>Send your files and text over wireless connection without making any effort</p>
+<p style="font-weight: bold;"><b>Send and receive files over available connections without making any effort</p>
 <h2>Main Features</h2>
 <ul>
 	<li>Pause or resume transfers even when an error is given</li>
@@ -9,6 +9,5 @@
 	<li>Install it on your all android devices and get the things easier</li>
 	<li>You need to send some text information? Just use TrebleShot to do it</li>
 </ul>
-<br />
 <br />
 See the development process: <a href="https://trello.com/b/YmbwDHHo">Trello</a>
