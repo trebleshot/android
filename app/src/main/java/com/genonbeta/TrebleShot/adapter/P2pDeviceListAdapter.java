@@ -20,8 +20,8 @@ public class P2pDeviceListAdapter extends BaseAdapter
 
 	public P2pDeviceListAdapter(Context context, ArrayList<WifiP2pDevice> peerList)
 	{
-		this.mContext = context;
-		this.mPeers = peerList;
+		mContext = context;
+		mPeers = peerList;
 	}
 
 	@Override
@@ -45,11 +45,9 @@ public class P2pDeviceListAdapter extends BaseAdapter
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
-		return getViewAt(LayoutInflater.from(mContext).inflate(R.layout.list_p2p_device, viewGroup, false), position);
-	}
+		if (view == null)
+			view = LayoutInflater.from(mContext).inflate(R.layout.list_p2p_device, viewGroup, false);
 
-	public View getViewAt(View view, int position)
-	{
 		TextView deviceText = (TextView) view.findViewById(R.id.p2p_device_list_device_text);
 		TextView deviceStatusText = (TextView) view.findViewById(R.id.p2p_device_list_device_status_text);
 		WifiP2pDevice device = (WifiP2pDevice) getItem(position);

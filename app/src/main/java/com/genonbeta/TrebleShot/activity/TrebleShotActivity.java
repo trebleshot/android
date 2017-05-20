@@ -18,11 +18,10 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
@@ -39,7 +38,7 @@ import java.io.File;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class TrebleShotActivity extends GActivity implements NavigationView.OnNavigationItemSelectedListener
+public class TrebleShotActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";

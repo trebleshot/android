@@ -182,7 +182,7 @@ public class CommunicationService extends Service
 		public CommunicationServer()
 		{
 			super(AppConfig.COMMUNATION_SERVER_PORT);
-			this.setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 		}
 
 		@Override

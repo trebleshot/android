@@ -12,8 +12,8 @@ abstract public class AbstractEditableListAdapter extends BaseAdapter
 
 	public AbstractEditableListAdapter(Context context)
 	{
-		this.mContext = context;
-		this.mInflater = LayoutInflater.from(context);
+		mContext = context;
+		mInflater = LayoutInflater.from(context);
 	}
 
 	protected abstract void onSearch(String word);
@@ -22,17 +22,17 @@ abstract public class AbstractEditableListAdapter extends BaseAdapter
 
 	public Context getContext()
 	{
-		return this.mContext;
+		return mContext;
 	}
 
 	public LayoutInflater getInflater()
 	{
-		return this.mInflater;
+		return mInflater;
 	}
 
 	public boolean search(String word)
 	{
-		this.onSearch(word);
+		onSearch(word);
 		return true;
 	}
 
@@ -42,9 +42,7 @@ abstract public class AbstractEditableListAdapter extends BaseAdapter
 			return false;
 
 		mLockRequested = true;
-
-		this.onUpdate();
-
+		onUpdate();
 		mLockRequested = false;
 
 		return true;

@@ -7,14 +7,14 @@ import android.view.MenuItem;
 import android.widget.EditText;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 
 /**
  * Created by: veli
  * Date: 1/19/17 5:05 PM
  */
 
-public class TextEditorActivity extends GActivity
+public class TextEditorActivity extends Activity
 {
 	public static final String ACTION_EDIT_TEXT = "genonbeta.intent.action.EDIT_TEXT";
 	public static final String EXTRA_TEXT_INDEX = "extraText";

@@ -59,7 +59,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 					@Override
 					public void onClick(View view)
 					{
-						boolean isAvailable = ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable();
+						boolean isAvailable = ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable();
 
 						if (isAvailable)
 							getContext().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
@@ -72,7 +72,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 				}
 		);
 
-		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
+		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable())
 		{
 			RotateAnimation anim = new RotateAnimation(0.0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 

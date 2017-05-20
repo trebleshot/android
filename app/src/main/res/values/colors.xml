@@ -4,10 +4,12 @@
     <color name="colorPrimaryDark">#007941</color>
     <color name="windowBackground">#ffffff</color>
     <color name="colorAccent">#106c00</color>
-    <color name="actionModeBackground">#000</color>
+    <color name="actionModeBackground">#077155</color>
+    <color name="actionModeColorPrimary">#175040</color>
     <color name="clickableItemBackground">#eee</color>
     <color name="boxColor">#e6e6e6</color>
     <color name="transparentColor">#00000000</color>
+    <color name="transparentColor2">#20ffffff</color>
     <color name="navigationColor">#000000</color>
     <color name="itemBackground">#000000</color>
     <color name="colorTextDrawable">#004b76</color>

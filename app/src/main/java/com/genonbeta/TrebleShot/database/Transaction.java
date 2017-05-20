@@ -26,14 +26,6 @@ public class Transaction extends MainDatabase
 	public static final String ACTION_TRANSACTION_REGISTERED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REGISTERED";
 	public static final String ACTION_TRANSACTION_UPDATED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_UPDATED";
 	public static final String ACTION_TRANSACTION_REMOVED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REMOVED";
-
-	public enum Flag {
-		PENDING,
-		RESUME,
-		RUNNING,
-		INTERRUPTED
-	}
-
 	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
 
 	public Transaction(Context context)
@@ -240,7 +232,7 @@ public class Transaction extends MainDatabase
 
 	public long updateTransaction(int requestId, ContentValues values)
 	{
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[] {String.valueOf(requestId)});
+		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
 		return notifyUpdated();
 	}
 
@@ -250,5 +242,13 @@ public class Transaction extends MainDatabase
 				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), values);
 
 		return notifyUpdated();
+	}
+
+	public enum Flag
+	{
+		PENDING,
+		RESUME,
+		RUNNING,
+		INTERRUPTED
 	}
 }

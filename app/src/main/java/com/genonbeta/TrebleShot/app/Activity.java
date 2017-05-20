@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 
-public class GActivity extends AppCompatActivity
+public class Activity extends AppCompatActivity
 {
 	private SharedPreferences mPreferences;
 
@@ -18,12 +16,6 @@ public class GActivity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		if (this.getDefaultPreferences().getBoolean("serviceLock", false))
-		{
-			this.getDefaultPreferences().edit().putBoolean("serviceLock", false).commit();
-			Toast.makeText(this, R.string.service_unlocked_notice, Toast.LENGTH_SHORT).show();
-		}
 	}
 
 	@Override
@@ -35,9 +27,9 @@ public class GActivity extends AppCompatActivity
 
 	protected SharedPreferences getDefaultPreferences()
 	{
-		if (this.mPreferences == null)
-			this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		if (mPreferences == null)
+			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-		return this.mPreferences;
+		return mPreferences;
 	}
 }

@@ -116,12 +116,6 @@ public class DeviceRegistry extends MainDatabase
 		return getAffectedRowCount();
 	}
 
-	public long removeLocalDevices()
-	{
-		getWritableDatabase().delete(TABLE_DEVICES, FIELD_DEVICES_ISLOCALADDRESS + "=?", new String[]{String.valueOf(1)});
-		return getAffectedRowCount();
-	}
-
 	public boolean registerDevice(NetworkDevice device)
 	{
 		removeDevice(device);
@@ -135,6 +129,12 @@ public class DeviceRegistry extends MainDatabase
 		return notifyUpdated() > 0;
 	}
 
+	public boolean removeLocalDevices()
+	{
+		return removeDevice(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_ISLOCALADDRESS + "=?", String.valueOf(1)));
+	}
+
 	public boolean removeDeviceWithInstances(NetworkDevice device)
 	{
 		return removeDeviceWithInstances(device.deviceId);
@@ -142,10 +142,8 @@ public class DeviceRegistry extends MainDatabase
 
 	public boolean removeDeviceWithInstances(String deviceId)
 	{
-		delete(new SQLQuery.Select(TABLE_DEVICES)
+		return removeDevice(new SQLQuery.Select(TABLE_DEVICES)
 				.setWhere(FIELD_DEVICES_ID + "=?", deviceId));
-
-		return notifyRemoved() > 0;
 	}
 
 	public boolean removeDevice(NetworkDevice device)
@@ -155,9 +153,13 @@ public class DeviceRegistry extends MainDatabase
 
 	public boolean removeDevice(String ipAddress)
 	{
-		delete(new SQLQuery.Select(TABLE_DEVICES)
+		return removeDevice(new SQLQuery.Select(TABLE_DEVICES)
 				.setWhere(FIELD_DEVICES_IP + "=?", ipAddress));
+	}
 
+	public boolean removeDevice(SQLQuery.Select select)
+	{
+		delete(select);
 		return notifyRemoved() > 0;
 	}
 

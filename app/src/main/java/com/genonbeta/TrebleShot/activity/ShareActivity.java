@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
@@ -34,7 +34,7 @@ import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
 
-public class ShareActivity extends GActivity
+public class ShareActivity extends Activity
 {
 	public static final String TAG = "ShareActivity";
 

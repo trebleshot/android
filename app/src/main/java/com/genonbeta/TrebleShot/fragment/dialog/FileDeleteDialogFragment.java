@@ -40,7 +40,7 @@ public class FileDeleteDialogFragment extends DialogFragment
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState)
 	{
-		this.mContext = getActivity();
+		mContext = getActivity();
 
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 		final NotificationUtils publisher = new NotificationUtils(getActivity().getApplicationContext());
@@ -103,7 +103,7 @@ public class FileDeleteDialogFragment extends DialogFragment
 
 	public Context getContext()
 	{
-		return this.mContext;
+		return mContext;
 	}
 
 	public void setOnDeleteCompletedListener(OnDeleteCompletedListener listener)

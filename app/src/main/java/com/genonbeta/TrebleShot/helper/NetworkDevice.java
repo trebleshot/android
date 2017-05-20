@@ -19,7 +19,7 @@ public class NetworkDevice
 	public NetworkDevice(String ip)
 	{
 		this.ip = ip;
-		this.availableConnections = new String[] {ip};
+		this.availableConnections = new String[]{ip};
 	}
 
 	public NetworkDevice(CursorItem item)

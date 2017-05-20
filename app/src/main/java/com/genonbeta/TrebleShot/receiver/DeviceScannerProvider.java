@@ -43,12 +43,12 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	public void onReceive(Context context, Intent intent)
 	{
 		mContext = context;
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 		mDeviceRegistry = new DeviceRegistry(context);
 
 		if (ACTION_SCAN_DEVICES.equals(intent.getAction()))
 		{
-			if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvaiable())
+			if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable())
 			{
 				mDeviceRegistry.removeLocalDevices();
 

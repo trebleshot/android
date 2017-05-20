@@ -74,6 +74,11 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 			setMessage(R.string.dialog_message_available_networks_no_network);
 	}
 
+	public abstract static class OnDeviceSelectedListener
+	{
+		public abstract void onDeviceSelected(AddressHolder addressHolder, ArrayList<AddressHolder> availableInterfaces);
+	}
+
 	public class AddressHolder
 	{
 		public String name;
@@ -116,10 +121,5 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 
 			return convertView;
 		}
-	}
-
-	public abstract static class OnDeviceSelectedListener
-	{
-		public abstract void onDeviceSelected(AddressHolder addressHolder, ArrayList<AddressHolder> availableInterfaces);
 	}
 }

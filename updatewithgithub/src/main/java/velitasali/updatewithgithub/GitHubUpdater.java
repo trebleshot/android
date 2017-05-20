@@ -36,9 +36,9 @@ public class GitHubUpdater
 
 	public GitHubUpdater(Context context, String repo, int themeRes)
 	{
-		this.mContext = context;
-		this.mRepo = repo;
-		this.mThemeRes = themeRes;
+		mContext = context;
+		mRepo = repo;
+		mThemeRes = themeRes;
 	}
 
 	public void checkForUpdates(final boolean popupDialog, final OnInfoAvailableListener listener)
@@ -128,7 +128,8 @@ public class GitHubUpdater
 											downloadRequest.setDescription(mContext.getString(R.string.uwg_downloading_update_description, applicationName));
 											downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, applicationName + " v" + lastVersionName + ".apk");
 											downloadRequest.setMimeType("application/vnd.android.package-archive");
-											if (Build.VERSION.SDK_INT >= 11)
+
+											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
 												downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
 											manager.enqueue(downloadRequest);
@@ -142,7 +143,7 @@ public class GitHubUpdater
 										{
 											Intent installerIntent = new Intent(Intent.ACTION_VIEW);
 
-											if (Build.VERSION.SDK_INT > 22)
+											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 												installerIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", updateFile), "application/vnd.android.package-archive")
 														.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 											else

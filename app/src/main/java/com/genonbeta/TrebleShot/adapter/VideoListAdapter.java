@@ -43,8 +43,8 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	public VideoListAdapter(Context context)
 	{
 		super(context);
-		this.mResolver = context.getContentResolver();
-		this.mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_autorenew_white_24dp);
+		mResolver = context.getContentResolver();
+		mPlaceHolderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_autorenew_white_24dp);
 	}
 
 	private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
@@ -88,9 +88,9 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 
 	protected void onUpdate()
 	{
-		this.mPendingList.clear();
+		mPendingList.clear();
 
-		Cursor cursor = this.mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+		Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
 		if (cursor.moveToFirst())
 		{
@@ -111,12 +111,12 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 
 				info.duration = convertDuration(length);
 
-				if (this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(info.title, this.mSearchWord)))
-					this.mPendingList.add(info);
+				if (mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(info.title, mSearchWord)))
+					mPendingList.add(info);
 			}
 			while (cursor.moveToNext());
 
-			Collections.sort(this.mPendingList, this.mComparator);
+			Collections.sort(mPendingList, mComparator);
 		}
 
 		cursor.close();
@@ -125,7 +125,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	@Override
 	protected void onSearch(String word)
 	{
-		this.mSearchWord = word;
+		mSearchWord = word;
 	}
 
 	public String convertDuration(long duration)
@@ -162,13 +162,13 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	@Override
 	public int getCount()
 	{
-		return this.mList.size();
+		return mList.size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return this.mList.get(position);
+		return mList.get(position);
 	}
 
 	@Override
@@ -211,10 +211,10 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 	{
 		if (mPendingList.size() > 0)
 		{
-			this.mList.clear();
-			this.mList.addAll(this.mPendingList);
+			mList.clear();
+			mList.addAll(this.mPendingList);
 
-			this.mPendingList.clear();
+			mPendingList.clear();
 		}
 
 		super.notifyDataSetChanged();
@@ -284,13 +284,13 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		@Override
 		protected Bitmap doInBackground(Long... params)
 		{
-			this.mId = params[0];
+			mId = params[0];
 			return MediaStore.Video.Thumbnails.getThumbnail(mResolver, params[0], MediaStore.Video.Thumbnails.MINI_KIND, null);
 		}
 
 		public long getData()
 		{
-			return this.mId;
+			return mId;
 		}
 
 		@Override

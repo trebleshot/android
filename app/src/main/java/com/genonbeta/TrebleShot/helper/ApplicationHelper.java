@@ -7,16 +7,12 @@ import android.net.Uri;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.core.util.NetworkDeviceScanner;
 
 import java.io.File;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.concurrent.ArrayBlockingQueue;
 
 public class ApplicationHelper
 {
@@ -94,7 +90,7 @@ public class ApplicationHelper
 
 	public static int getUniqueNumber()
 	{
-		return (int)System.currentTimeMillis() + (++mUniqueNumber);
+		return (int) System.currentTimeMillis() + (++mUniqueNumber);
 	}
 
 	public static boolean searchWord(String word, String searchThis)

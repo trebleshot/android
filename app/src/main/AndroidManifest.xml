@@ -66,11 +66,6 @@
             android:name=".service.CommunicationService"
             android:label="Communication Service"/>
 
-        <service
-            android:name=".service.JobSchedulerService"
-            android:exported="true"
-            android:permission="android.permission.BIND_JOB_SERVICE"/>
-
         <receiver android:name=".receiver.NetworkStatusReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>

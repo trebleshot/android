@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
-import android.media.Image;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +28,9 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 
 	public NetworkDeviceListAdapter(Context context, boolean showLocalAddresses)
 	{
-		this.mShowLocalAddresses = showLocalAddresses;
-		this.mContext = context;
-		this.mDeviceRegistry = new DeviceRegistry(context);
+		mShowLocalAddresses = showLocalAddresses;
+		mContext = context;
+		mDeviceRegistry = new DeviceRegistry(context);
 	}
 
 	@Override
@@ -68,11 +66,6 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 			view.setAnimation(set);
 		}
 
-		return getViewAt(view, position);
-	}
-
-	public View getViewAt(View view, int position)
-	{
 		TextView deviceText = (TextView) view.findViewById(R.id.network_device_list_device_text);
 		TextView userText = (TextView) view.findViewById(R.id.network_device_list_user_text);
 		ImageView userImage = (ImageView) view.findViewById(R.id.network_device_list_device_image);

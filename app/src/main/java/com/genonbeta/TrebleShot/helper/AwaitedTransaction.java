@@ -22,9 +22,6 @@ abstract public class AwaitedTransaction
 	public DynamicNotification notification;
 	public Transaction.Flag flag = Transaction.Flag.PENDING;
 
-	public abstract void onDatabaseObject(ContentValues values);
-	public abstract void onCreate(CursorItem item);
-
 	public AwaitedTransaction(String deviceId, int requestId, int groupId, String ip, String fileName, long fileSize)
 	{
 		this.deviceId = deviceId;
@@ -47,6 +44,10 @@ abstract public class AwaitedTransaction
 
 		this.onCreate(item);
 	}
+
+	public abstract void onDatabaseObject(ContentValues values);
+
+	public abstract void onCreate(CursorItem item);
 
 	public ContentValues getDatabaseObject()
 	{

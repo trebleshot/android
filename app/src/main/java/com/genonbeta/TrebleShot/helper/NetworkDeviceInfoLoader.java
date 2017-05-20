@@ -20,7 +20,8 @@ public class NetworkDeviceInfoLoader
 	}
 
 	public NetworkDeviceInfoLoader()
-	{}
+	{
+	}
 
 	public NetworkDevice startLoadingOnCurrentThread(final DeviceRegistry deviceRegistry, final String deviceIp) throws ConnectException
 	{
@@ -63,7 +64,7 @@ public class NetworkDeviceInfoLoader
 						mListener.onInfoAvailable(device);
 				} catch (Exception e)
 				{
-					this.onError(e);
+					onError(e);
 				}
 			}
 		});
@@ -114,7 +115,7 @@ public class NetworkDeviceInfoLoader
 						mListener.onInfoAvailable(device);
 				} catch (Exception e)
 				{
-					this.onError(e);
+					onError(e);
 				}
 			}
 		});

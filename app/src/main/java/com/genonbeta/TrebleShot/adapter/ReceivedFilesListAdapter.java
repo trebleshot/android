@@ -36,33 +36,33 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 	@Override
 	protected void onSearch(String word)
 	{
-		this.mSearchWord = word;
+		mSearchWord = word;
 	}
 
 	@Override
 	protected void onUpdate()
 	{
-		this.mList.clear();
+		mList.clear();
 
 		for (File file : ApplicationHelper.getApplicationDirectory(mContext).listFiles())
 		{
-			if ((this.mSearchWord == null || (this.mSearchWord != null && ApplicationHelper.searchWord(file.getName(), this.mSearchWord))) && file.isFile())
-				this.mList.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
+			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isFile())
+				mList.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
 		}
 
-		Collections.sort(mList, this.mComparator);
+		Collections.sort(mList, mComparator);
 	}
 
 	@Override
 	public int getCount()
 	{
-		return this.mList.size();
+		return mList.size();
 	}
 
 	@Override
 	public Object getItem(int itemId)
 	{
-		return this.mList.get(itemId);
+		return mList.get(itemId);
 	}
 
 	@Override
@@ -74,19 +74,17 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
-		return getViewAt(convertView == null ? LayoutInflater.from(getContext()).inflate(R.layout.list_received_file, parent, false) : convertView, position);
-	}
+		if (convertView == null)
+			convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_received_file, parent, false);
 
-	public View getViewAt(View view, int position)
-	{
-		TextView fileNameText = (TextView) view.findViewById(R.id.text);
-		TextView sizeText = (TextView) view.findViewById(R.id.text2);
+		TextView fileNameText = (TextView) convertView.findViewById(R.id.text);
+		TextView sizeText = (TextView) convertView.findViewById(R.id.text2);
 		FileInfo fileInfo = (FileInfo) getItem(position);
 
 		fileNameText.setText(fileInfo.fileName);
 		sizeText.setText(fileInfo.fileSize);
 
-		return view;
+		return convertView;
 	}
 
 	public static class FileInfo

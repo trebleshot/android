@@ -15,26 +15,26 @@ public class SimpleFragmentPagerAdapter extends FragmentPagerAdapter
 	{
 		super(fm);
 
-		this.mContext = context;
-		this.mFragments = fragments;
-		this.mTitles = titles;
+		mContext = context;
+		mFragments = fragments;
+		mTitles = titles;
 	}
 
 	@Override
 	public int getCount()
 	{
-		return this.mFragments.length;
+		return mFragments.length;
 	}
 
 	@Override
 	public Fragment getItem(int id)
 	{
-		return this.mFragments[id];
+		return mFragments[id];
 	}
 
 	@Override
 	public CharSequence getPageTitle(int position)
 	{
-		return this.mTitles[position];
+		return mTitles[position];
 	}
 }

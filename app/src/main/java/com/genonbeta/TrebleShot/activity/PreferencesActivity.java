@@ -4,9 +4,9 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GActivity;
+import com.genonbeta.TrebleShot.app.Activity;
 
-public class PreferencesActivity extends GActivity
+public class PreferencesActivity extends Activity
 {
 	@Override
 	protected void onCreate(Bundle savedInstanceState)

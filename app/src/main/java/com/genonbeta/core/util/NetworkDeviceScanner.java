@@ -20,62 +20,62 @@ public class NetworkDeviceScanner
 
 	public NetworkDeviceScanner(int numberOfThreads)
 	{
-		this.mNumberOfThreads = numberOfThreads;
+		mNumberOfThreads = numberOfThreads;
 	}
 
 	public boolean interrupt()
 	{
-		if (!this.mIsBreakRequested)
-			this.mIsBreakRequested = true;
+		if (!mIsBreakRequested)
+			mIsBreakRequested = true;
 		else
 			return false;
 
 		return true;
 	}
 
-	public boolean isScannerAvaiable()
+	public boolean isScannerAvailable()
 	{
 		return (mInterfaces.size() == 0 && !mIsLockRequested);
 	}
 
 	private void nextThread()
 	{
-		if (this.mIsLockRequested)
+		if (mIsLockRequested)
 			return;
 
-		if (this.isScannerAvaiable())
+		if (isScannerAvailable())
 		{
 			// this sequence only works when threads complete the job
 
-			this.mIsBreakRequested = false;
+			mIsBreakRequested = false;
 
-			if (this.mHandler != null)
+			if (mHandler != null)
 			{
-				this.setLock(true); // lock scanner
-				this.mHandler.onThreadsCompleted();
-				this.setLock(false); // release lock
+				setLock(true); // lock scanner
+				mHandler.onThreadsCompleted();
+				setLock(false); // release lock
 			}
 
 			return;
 		}
 
-		this.mScanner.updateScanner();
+		mScanner.updateScanner();
 
-		for (int threadsStarted = this.mNumberOfThreads; threadsStarted > 0; threadsStarted--)
+		for (int threadsStarted = mNumberOfThreads; threadsStarted > 0; threadsStarted--)
 		{
-			mExecutor.execute(this.mScanner);
+			mExecutor.execute(mScanner);
 		}
 	}
 
 	public boolean scan(ArrayList<String> interfaces, ScannerHandler handler)
 	{
-		if (!this.isScannerAvaiable() || interfaces.size() < 1)
+		if (!isScannerAvailable() || interfaces.size() < 1)
 			return false;
 
-		this.mInterfaces.addAll(interfaces);
+		mInterfaces.addAll(interfaces);
 
-		this.mHandler = handler;
-		this.nextThread();
+		mHandler = handler;
+		nextThread();
 
 		return true;
 	}
@@ -106,9 +106,9 @@ public class NetworkDeviceScanner
 		{
 			String ipAddress = NetworkDeviceScanner.this.mInterfaces.get(0);
 
-			this.mAddressPrefix = NetworkUtils.getAddressPrefix(ipAddress);
-			this.mDevices = new boolean[256];
-			this.mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
+			mAddressPrefix = NetworkUtils.getAddressPrefix(ipAddress);
+			mDevices = new boolean[256];
+			mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
 		}
 
 		@Override
@@ -136,9 +136,9 @@ public class NetworkDeviceScanner
 				}
 			}
 
-			this.mThreadsExited--;
+			mThreadsExited--;
 
-			if (this.mThreadsExited == 0)
+			if (mThreadsExited == 0)
 			{
 				NetworkDeviceScanner.this.mInterfaces.remove(0);
 				NetworkDeviceScanner.this.nextThread();

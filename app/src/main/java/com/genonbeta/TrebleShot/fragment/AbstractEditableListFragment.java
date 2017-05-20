@@ -2,9 +2,11 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ListFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SearchView;
 import android.view.ActionMode;
@@ -25,7 +27,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	private T mAdapter;
 	private ActionMode mActionMode;
 	private ActionModeListener mActionModeListener;
-	private SearchView mSearchView;
 	private boolean mSearchSupport = true;
 	private boolean mIsLoading = false;
 
@@ -86,7 +87,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		this.setHasOptionsMenu(true);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -94,18 +95,18 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		this.mAdapter = this.onAdapter();
-		this.mActionModeListener = this.onActionModeListener();
+		mAdapter = onAdapter();
+		mActionModeListener = onActionModeListener();
 
-		this.setListAdapter(mAdapter);
+		setListAdapter(mAdapter);
 
-		if (this.mActionModeListener != null)
+		if (mActionModeListener != null)
 		{
-			this.getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
-			this.getListView().setMultiChoiceModeListener(this.mActionModeListener);
+			getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
+			getListView().setMultiChoiceModeListener(mActionModeListener);
 		}
 
-		this.getListView().setDividerHeight(0);
+		getListView().setDividerHeight(0);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
@@ -114,7 +115,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	public void onResume()
 	{
 		super.onResume();
-		this.updateInBackground();
+		updateInBackground();
 	}
 
 	@Override
@@ -126,8 +127,8 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		{
 			inflater.inflate(R.menu.search_menu, menu);
 
-			mSearchView = (SearchView) menu.findItem(R.id.search).getActionView();
-			mSearchView.setOnQueryTextListener(mSearchComposer);
+			((SearchView) menu.findItem(R.id.search).getActionView())
+					.setOnQueryTextListener(mSearchComposer);
 		}
 	}
 
@@ -145,7 +146,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 	protected T getAdapter()
 	{
-		return this.mAdapter;
+		return mAdapter;
 	}
 
 	public boolean isLoading()
@@ -159,7 +160,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 
 		openIntent.setDataAndType(uri, type);
 
-		this.startActivity(Intent.createChooser(openIntent, chooserText));
+		startActivity(Intent.createChooser(openIntent, chooserText));
 	}
 
 	public void search(String word)
@@ -191,11 +192,11 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		if (getActivity() == null || isLoading())
 			return false;
 
-		this.mIsLoading = true;
+		mIsLoading = true;
 
 		setEmptyText(getString(R.string.loading));
 
-		new Thread(this.mUpdateList).start();
+		new Thread(mUpdateList).start();
 
 		return true;
 	}
@@ -227,6 +228,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		@Override
 		public boolean onPrepareActionMode(ActionMode mode, Menu menu)
 		{
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+				getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), R.color.actionModeColorPrimary));
+
 			mCheckedList.clear();
 			return true;
 		}
@@ -313,6 +317,9 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		@Override
 		public void onDestroyActionMode(ActionMode p1)
 		{
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+				getActivity().getWindow().setStatusBarColor(ContextCompat.getColor(getContext(), android.R.color.transparent));
+
 			mCheckedList.clear();
 			mActionMode = null;
 		}

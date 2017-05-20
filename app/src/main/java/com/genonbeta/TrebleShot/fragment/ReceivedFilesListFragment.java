@@ -66,14 +66,14 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	public void onResume()
 	{
 		super.onResume();
-		this.getActivity().registerReceiver(mReceiver, mIntentFilter);
+		getActivity().registerReceiver(mReceiver, mIntentFilter);
 	}
 
 	@Override
 	public void onPause()
 	{
 		super.onPause();
-		this.getActivity().unregisterReceiver(mReceiver);
+		getActivity().unregisterReceiver(mReceiver);
 	}
 
 	@Override
@@ -89,7 +89,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		switch (item.getItemId())
 		{
 			case (R.id.received_device_options_open_in_file_manager):
-				this.openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
+				openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
 				return true;
 		}
 
@@ -103,7 +103,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 
 		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
-		this.openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+		openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
 	}
 
 	@Override

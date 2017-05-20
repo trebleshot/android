@@ -14,21 +14,6 @@ import java.util.ArrayList;
 abstract public class CoolTransfer<T>
 {
 	public final static int DELAY_DISABLED = -1;
-
-	public enum Flag
-	{
-		CONTINUE,
-		CANCEL_ALL,
-		CANCEL_CURRENT
-	}
-
-	public enum Status
-	{
-		INTERRUPTED,
-		RUNNING,
-		PENDING,
-	}
-
 	private final ArrayList<TransferHandler<T>> mProcess = new ArrayList<>();
 	private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 
@@ -75,15 +60,29 @@ abstract public class CoolTransfer<T>
 		return notifyDelay;
 	}
 
+	public void setNotifyDelay(int delay)
+	{
+		this.notifyDelay = delay;
+	}
+
 	protected void removeProcess(TransferHandler<T> processHandler)
 	{
 		getProcessList().remove(processHandler);
 		onProcessListChanged(getProcessList(), processHandler, false);
 	}
 
-	public void setNotifyDelay(int delay)
+	public enum Flag
 	{
-		this.notifyDelay = delay;
+		CONTINUE,
+		CANCEL_ALL,
+		CANCEL_CURRENT
+	}
+
+	public enum Status
+	{
+		INTERRUPTED,
+		RUNNING,
+		PENDING,
 	}
 
 	public abstract static class TransferHandler<T> implements Runnable
@@ -131,9 +130,19 @@ abstract public class CoolTransfer<T>
 			return mSocket;
 		}
 
+		protected void setSocket(Socket mSocket)
+		{
+			this.mSocket = mSocket;
+		}
+
 		public Status getStatus()
 		{
 			return mStatus;
+		}
+
+		public void setStatus(Status status)
+		{
+			this.mStatus = status;
 		}
 
 		public void interrupt()
@@ -154,16 +163,6 @@ abstract public class CoolTransfer<T>
 			this.setStatus(Status.RUNNING);
 			this.onRun();
 			this.setStatus(Status.INTERRUPTED);
-		}
-
-		protected void setSocket(Socket mSocket)
-		{
-			this.mSocket = mSocket;
-		}
-
-		public void setStatus(Status status)
-		{
-			this.mStatus = status;
 		}
 	}
 

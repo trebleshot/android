@@ -29,9 +29,8 @@ public class VideoListFragment extends AbstractEditableListFragment<VideoListAda
 	{
 		super.onListItemClick(l, v, position, id);
 
-		VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) this.getAdapter().getItem(position);
-
-		this.openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
+		VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) getAdapter().getItem(position);
+		openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
 	}
 
 	@Override

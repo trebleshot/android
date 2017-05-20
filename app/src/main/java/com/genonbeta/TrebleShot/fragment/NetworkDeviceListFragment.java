@@ -11,7 +11,6 @@ import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -89,7 +88,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		final NetworkDevice device = (NetworkDevice) mListAdapter.getItem(position);
 
 		if (mClickListener != null)
-			this.mClickListener.onItemClick(l, v, position, id);
+			mClickListener.onItemClick(l, v, position, id);
 		else if (device.brand != null && device.model != null)
 			new DeviceInfoDialog(getContext(), mListAdapter.getDeviceRegistry(), mNotification, device).show();
 	}
@@ -140,7 +139,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 
 	public void setOnListClickListener(AbsListView.OnItemClickListener listener)
 	{
-		this.mClickListener = listener;
+		mClickListener = listener;
 	}
 
 	private void showSnackbar(int resId)

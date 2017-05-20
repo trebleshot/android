@@ -11,12 +11,12 @@ public class RemoteServer
 
 	public RemoteServer(String serverUri)
 	{
-		this.mConnection = serverUri;
+		mConnection = serverUri;
 	}
 
 	public String connect(String postKey, String postValue) throws IOException
 	{
-		HttpRequest request = HttpRequest.get(this.mConnection);
+		HttpRequest request = HttpRequest.get(mConnection);
 		StringBuilder output = new StringBuilder();
 
 		request.readTimeout(5000);
@@ -31,11 +31,11 @@ public class RemoteServer
 
 	public String getConnectionAddress()
 	{
-		return this.mConnection;
+		return mConnection;
 	}
 
 	public void setConnection(String remoteAddress)
 	{
-		this.mConnection = remoteAddress;
+		mConnection = remoteAddress;
 	}
 }

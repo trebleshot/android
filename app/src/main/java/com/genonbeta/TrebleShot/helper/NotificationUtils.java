@@ -20,7 +20,6 @@ import com.genonbeta.TrebleShot.service.AbstractTransactionService;
 import com.genonbeta.TrebleShot.service.ClientService;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
-import com.genonbeta.core.util.NetworkUtils;
 
 import java.io.File;
 
@@ -41,10 +40,10 @@ public class NotificationUtils
 
 	public NotificationUtils(Context context)
 	{
-		this.mContext = context;
-		this.mManager = NotificationManagerCompat.from(context);
-		this.mDeviceRegistry = new DeviceRegistry(context);
-		this.mPreferences = PreferenceManager.getDefaultSharedPreferences(this.mContext);
+		mContext = context;
+		mManager = NotificationManagerCompat.from(context);
+		mDeviceRegistry = new DeviceRegistry(context);
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 	}
 
 	public NotificationUtils cancel(int notificationId)
@@ -101,7 +100,7 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver,  NetworkDevice device, int numberOfFiles)
+	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver, NetworkDevice device, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 		String message = numberOfFiles > 1 ? mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)) : receiver.fileName;
@@ -225,7 +224,7 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-		if (Build.VERSION.SDK_INT > 22)
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), FileUtils.getFileContentType(file.getAbsolutePath()))
 					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		else
