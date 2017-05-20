@@ -2,6 +2,7 @@
 <p style="font-weight: bold;"><b>Send your files and text over wireless connection without making any effort</p>
 <h2>Main Features</h2>
 <ul>
+	<li>Pause or resume transfers even when an error is given</li>
 	<li>Share your videos and songs within the application</li>
 	<li>There is no limit. You can send thousands of files with only one connection</li>
 	<li>You have the updates installed on your phone but your friend doesn't? Send them with the app</li>
