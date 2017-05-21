@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="uwg_later">Daha sonra</string>
-    <string name="uwg_cancel">Iptal</string>
+    <string name="uwg_cancel">İptal</string>
     <string name="uwg_check_for_updates">Güncellemeleri denetle</string>
     <string name="uwg_check_for_updates_ongoing">Güncellemeler denetleniyor…</string>
     <string name="uwg_currently_latest_version_info">Harika! Son uygulamanız son sürüm</string>
-    <string name="uwg_download_anyway">Yinede indir</string>
-    <string name="uwg_download_now">Şimdi İndir</string>
+    <string name="uwg_download_now">Şimdi indir</string>
+    <string name="uwg_open">Aç</string>
     <string name="uwg_downloading_update_description">%s güncellemesi indiriliyor</string>
     <string name="uwg_downloading_update_title" formatted="false">%s v%s güncellemesi</string>
     <string name="uwg_module_name">UpdateWithGithub</string>
     <string name="uwg_no_update_available">Kullanabilir sürüm bulunmuyor</string>
     <string name="uwg_update_available">Güncelleme mevcut</string>
     <string name="uwg_update_body" formatted="false">Şuanki sürüm: %s\nKullanılabilir sürüm: %s\nYayın tarihi: %s\n\n%s</string>
-    <string name="uwg_update_file_different_info">Bu güncelleme için zaten bir dosya mevcur. Güncelleme halen devam ediyor olabilir. Buna rağmen başlatırsanız, varolan dosyanın üzerine yazılacak</string>
-    <string name="uwg_update_now">Şİmdi güncelle</string>
-    <string name="uwg_update_now_info"><![CDATA[Güncelleme zaten indirilmiş. Şimdi güncelleyebilirsiniz. Eğer \'Yükleme engellendi\' hatası alırsanız, Ayarlar\'a gidin > Güvenlik > Bilinmeyen kaynaklar > (etkinleştirin)]]></string>
+    <string name="uwg_update_exists">İndirilecek olan dosyanın ismiyle eşleşen dosya var. İsterseniz İndirmeler\'i açabilir ve güncellemeyi indirebilirsiniz</string>
     <string name="uwg_version_check_error">Şuanda denetlenemiyor. Bir hata oluştu</string>
 </resources>

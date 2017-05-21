@@ -164,6 +164,6 @@
     <string name="warning_remove_pending_transfer">Bu %s aktarımını kuyruktan silecek</string>
     <string name="ongoing_list_warning">Bu dosya, %s dosyası alındıktan sonra alınacak</string>
     <string name="available_connections">%d bağlantı</string>
-    <string name="saved_connections">Bilin bağlantılar</string>
+    <string name="saved_connections">Bilin. bağlantılar</string>
     <string name="version_available_text">Yeni sürüm mevcut!</string>
 </resources>

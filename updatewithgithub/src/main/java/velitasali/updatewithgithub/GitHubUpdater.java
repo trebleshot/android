@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.widget.Toast;
@@ -108,12 +107,7 @@ public class GitHubUpdater
 									final JSONObject firstAsset = releaseAssets.getJSONObject(0);
 									final String downloadURL = firstAsset.getString("browser_download_url");
 
-									int negativeButtonLabel;
-									int positiveButtonLabel;
-									final String updateBody;
-									DialogInterface.OnClickListener positiveButtonListener;
-
-									DialogInterface.OnClickListener downloadButtonListener = new DialogInterface.OnClickListener()
+									DialogInterface.OnClickListener downloadStart = new DialogInterface.OnClickListener()
 									{
 										@Override
 										public void onClick(DialogInterface dialog, int which)
@@ -136,62 +130,35 @@ public class GitHubUpdater
 										}
 									};
 
-									DialogInterface.OnClickListener updateButtonListener = new DialogInterface.OnClickListener()
+									DialogInterface.OnClickListener openDownloads = new DialogInterface.OnClickListener()
 									{
 										@Override
 										public void onClick(DialogInterface dialog, int which)
 										{
-											Intent installerIntent = new Intent(Intent.ACTION_VIEW);
-
-											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-												installerIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", updateFile), "application/vnd.android.package-archive")
-														.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-											else
-												installerIntent.setDataAndType(Uri.fromFile(updateFile), "application/vnd.android.package-archive");
-
-											mContext.startActivity(installerIntent);
+											mContext.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
 										}
 									};
+
+									AlertDialog.Builder dialog = new AlertDialog.Builder(mContext)
+											.setTitle(R.string.uwg_update_available);
 
 									if (updateFile.isFile())
 									{
 										Log.d(TAG, "File is already exists: " + updateFile.getName());
 
-										if (firstAsset.getLong("size") == updateFile.length())
-										{
-											Log.d(TAG, "Existing file is ok");
-
-											negativeButtonLabel = R.string.uwg_later;
-											positiveButtonLabel = R.string.uwg_update_now;
-											updateBody = mContext.getString(R.string.uwg_update_now_info);
-											positiveButtonListener = updateButtonListener;
-										}
-										else
-										{
-											Log.d(TAG, "Existing file is corrupted");
-
-											negativeButtonLabel = R.string.uwg_cancel;
-											positiveButtonLabel = R.string.uwg_download_anyway;
-											updateBody = mContext.getString(R.string.uwg_update_file_different_info);
-											positiveButtonListener = downloadButtonListener;
-										}
+										dialog.setMessage(R.string.uwg_update_exists)
+												.setNeutralButton(R.string.uwg_download, downloadStart)
+												.setPositiveButton(R.string.uwg_open, openDownloads);
 									}
 									else
 									{
 										Log.d(TAG, "Update is downloadable");
 
-										negativeButtonLabel = R.string.uwg_later;
-										positiveButtonLabel = R.string.uwg_download_now;
-										updateBody = String.format(mContext.getString(R.string.uwg_update_body), appVersionName, lastVersionName, lastVersionDate, lastVersionBody);
-
-										positiveButtonListener = downloadButtonListener;
+										dialog.setMessage(String.format(mContext.getString(R.string.uwg_update_body), appVersionName, lastVersionName, lastVersionDate, lastVersionBody))
+												.setPositiveButton(R.string.uwg_download_now, downloadStart);
 									}
 
-									new AlertDialog.Builder(mContext)
-											.setTitle(R.string.uwg_update_available)
-											.setMessage(updateBody)
-											.setNegativeButton(negativeButtonLabel, null)
-											.setPositiveButton(positiveButtonLabel, positiveButtonListener)
+									dialog.setNegativeButton(R.string.uwg_later, null)
 											.show();
 								}
 								else

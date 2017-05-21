@@ -43,33 +43,29 @@
         </menu>
     </item>
 
-    <item android:title="@string/share">
-        <menu>
-            <group>
-                <item
-                    android:id="@+id/menu_activity_main_send_application"
-                    android:icon="@drawable/ic_share_white_24dp"
-                    android:orderInCategory="10"
-                    android:title="@string/share_trebleshot"/>
+    <group android:id="@+id/nav_group_other">
+        <item
+            android:id="@+id/menu_activity_main_send_application"
+            android:icon="@drawable/ic_share_white_24dp"
+            android:orderInCategory="10"
+            android:title="@string/share_trebleshot"/>
 
-                <item
-                    android:id="@+id/menu_activity_main_preferences"
-                    android:icon="@drawable/ic_settings_white_24dp"
-                    android:orderInCategory="11"
-                    android:title="@string/preferences"/>
+        <item
+            android:id="@+id/menu_activity_main_preferences"
+            android:icon="@drawable/ic_settings_white_24dp"
+            android:orderInCategory="11"
+            android:title="@string/preferences"/>
 
-                <item
-                    android:id="@+id/menu_activity_main_about"
-                    android:icon="@drawable/ic_info_white_24dp"
-                    android:orderInCategory="12"
-                    android:title="@string/about"/>
+        <item
+            android:id="@+id/menu_activity_main_about"
+            android:icon="@drawable/ic_info_white_24dp"
+            android:orderInCategory="12"
+            android:title="@string/about"/>
 
-                <item
-                    android:id="@+id/menu_activity_main_check_for_updates"
-                    android:icon="@drawable/ic_system_update_white_24dp"
-                    android:orderInCategory="13"
-                    android:title="@string/check_for_updates"/>
-            </group>
-        </menu>
-    </item>
+        <item
+            android:id="@+id/menu_activity_main_check_for_updates"
+            android:icon="@drawable/ic_system_update_white_24dp"
+            android:orderInCategory="13"
+            android:title="@string/check_for_updates"/>
+    </group>
 </menu>
