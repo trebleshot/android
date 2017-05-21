@@ -21,7 +21,7 @@ public class Keyword
 	public static final String FLAG = "flag";
 	public static final String FLAG_GROUP_EXISTS = "flagGroupExists";
 	public static final String FILE_NAME = "fileName";
-	public static final String FILE_SIZE = "fileInfo";
+	public static final String FILE_SIZE = "fileSize";
 	public static final String FILE_MIME = "fileMime";
 	public static final String DEVICE_INFO = "deviceInfo";
 	public static final String BRAND = "brand";
