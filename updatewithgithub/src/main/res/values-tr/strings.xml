@@ -4,7 +4,7 @@
     <string name="uwg_cancel">İptal</string>
     <string name="uwg_check_for_updates">Güncellemeleri denetle</string>
     <string name="uwg_check_for_updates_ongoing">Güncellemeler denetleniyor…</string>
-    <string name="uwg_currently_latest_version_info">Harika! Son uygulamanız son sürüm</string>
+    <string name="uwg_currently_latest_version_info">Harika! Son sürümü kullanıyorsunuz</string>
     <string name="uwg_download_now">Şimdi indir</string>
     <string name="uwg_open">Aç</string>
     <string name="uwg_downloading_update_description">%s güncellemesi indiriliyor</string>

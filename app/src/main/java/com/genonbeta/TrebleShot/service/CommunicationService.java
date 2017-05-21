@@ -245,6 +245,8 @@ public class CommunicationService extends Service
 						case (Keyword.REQUEST_TRANSFER):
 							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID))
 							{
+								Log.d(TAG, "Reading file index");
+
 								String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
 								JSONArray jsonArray = new JSONArray(jsonIndex);
 
@@ -259,20 +261,30 @@ public class CommunicationService extends Service
 
 									JSONObject requestIndex = jsonArray.getJSONObject(i);
 
+									Log.d(TAG, "Position is read: " + i + "; booleans: " + requestIndex.has(Keyword.FILE_NAME) + "; size: " + requestIndex.has(Keyword.FILE_SIZE) + "; mime: " + requestIndex.has(Keyword.FILE_MIME) + "; id: " + requestIndex.has(Keyword.REQUEST_ID));
+
 									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID))
 									{
+										Log.d(TAG, "Position is cached: " + i);
+
 										count++;
 										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), groupId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
 										mTransaction.getPendingReceivers().offer(heldReceiver);
 									}
 								}
 
+								Log.d(TAG, "Done reading file index");
+
 								if (heldReceiver != null && count > 0)
 								{
+									Log.d(TAG, "Sending true result");
+
 									result = true;
 									mDeviceRegistry.updateRestrictionByDeviceId(device, true);
 									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, device, count);
 								}
+
+								Log.d(TAG, "Done transfer request");
 							}
 							break;
 						case (Keyword.REQUEST_RESPONSE):

@@ -9,7 +9,7 @@
     <string name="uwg_open">Open</string>
     <string name="uwg_downloading_update_title" formatted="false">%s v%s update</string>
     <string name="uwg_downloading_update_description">%s update is being downloaded</string>
-    <string name="uwg_currently_latest_version_info">Great! You\'re using latest version</string>
+    <string name="uwg_currently_latest_version_info">Great! You\'re using the latest version</string>
     <string name="uwg_update_body" formatted="false">Current version: %s\nLatest version: %s\nRelease date: %s\n\n%s</string>
     <string name="uwg_version_check_error">Couldn\'t check new version. An error occurred</string>
     <string name="uwg_no_update_available">No updates is currently available</string>

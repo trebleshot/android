@@ -1,5 +1,7 @@
 package com.genonbeta.CoolSocket;
 
+import android.support.v7.app.WindowDecorActionBar;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
@@ -122,7 +124,7 @@ public abstract class CoolCommunication extends CoolSocket
 						this.mProcess.getResponseHandler().onResponseAvailable(this.mProcess.getResponse());
 
 					return this.mProcess.getResponse();
-				} catch (IOException e)
+				} catch (Exception e)
 				{
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onError(e);
@@ -266,7 +268,7 @@ public abstract class CoolCommunication extends CoolSocket
 				this.mWriter = writer;
 			}
 
-			public String waitForResponse()
+			public String waitForResponse() throws TimeoutException
 			{
 				long timeStart = System.currentTimeMillis();
 
@@ -275,6 +277,9 @@ public abstract class CoolCommunication extends CoolSocket
 					while (!this.isResponseReceived() && (this.getSocketTimeout() == Messenger.NO_TIMEOUT || (System.currentTimeMillis() - timeStart) < this.getSocketTimeout()))
 					{
 					}
+
+					if (!this.isResponseReceived())
+						throw new TimeoutException();
 				}
 
 				return this.getResponse();

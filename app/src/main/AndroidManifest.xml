@@ -81,11 +81,7 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.FileChangesReceiver">
-            <intent-filter>
-                <action android:name="com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED"/>
-            </intent-filter>
-        </receiver>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

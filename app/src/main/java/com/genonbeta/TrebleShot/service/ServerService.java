@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.service;
 
 import android.content.Intent;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
@@ -13,9 +12,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.FileUtils;
-import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -34,6 +33,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	public final static String ACTION_START_RECEIVING = "com.genonbeta.TrebleShot.action.START_RECEIVING";
 
 	private Receive mReceive = new Receive();
+	private MediaScannerConnection mMediaScanner;
 
 	@Override
 	public IBinder onBind(Intent p1)
@@ -51,6 +51,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	public void onCreate()
 	{
 		super.onCreate();
+
+		mMediaScanner = new MediaScannerConnection(this, null);
 		mReceive.setNotifyDelay(2000);
 	}
 
@@ -111,7 +113,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 			try
 			{
-				file.createNewFile();
+				if (!file.createNewFile())
+					return false;
 			} catch (IOException e)
 			{
 				e.printStackTrace();
@@ -228,8 +231,6 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			super.onProcessListChanged(processList, handler, isAdded);
 
-			Intent updateReceivedList = new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
-
 			if (isAdded)
 				getWifiLock().acquire();
 			else
@@ -237,8 +238,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				if (processList.size() < 1)
 					getWifiLock().release();
 
-				MediaScannerConnection.scanFile(getApplicationContext(), new String[]{handler.getFile().getAbsolutePath()}, new String[]{handler.getExtra().fileMimeType}, null);
-				sendBroadcast(updateReceivedList);
+				if (mMediaScanner.isConnected())
+					mMediaScanner.scanFile(handler.getFile().getAbsolutePath(), handler.getExtra().fileMimeType);
+
+				sendBroadcast(new Intent(ReceivedFilesListFragment.ACTION_FILE_LIST_CHANGED));
 			}
 		}
 	}

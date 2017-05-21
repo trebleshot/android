@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ReceivedFilesListAdapter;
@@ -20,15 +21,16 @@ import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
-import com.genonbeta.TrebleShot.receiver.FileChangesReceiver;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
 public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter> implements FragmentTitle
 {
-	public static final String TAG = "ReceivedFilesListFragment";
+	public static final String TAG = ReceivedFilesListFragment.class.getSimpleName();
+
+	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
+	public final static String EXTRA_KEEP_CURRENT = "keepCurrent";
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
@@ -37,8 +39,13 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (FileChangesReceiver.ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
+			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
+			{
+				if (!intent.hasExtra(EXTRA_KEEP_CURRENT))
+					getAdapter().goDefault();
+
 				ReceivedFilesListFragment.this.updateInBackground();
+			}
 		}
 	};
 
@@ -49,7 +56,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	}
 
 	@Override
-	protected AbstractEditableListFragment.ActionModeListener onActionModeListener()
+	protected ActionModeListener onActionModeListener()
 	{
 		return new ChoiceListener();
 	}
@@ -58,8 +65,8 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		
-		mIntentFilter.addAction(FileChangesReceiver.ACTION_FILE_LIST_CHANGED);
+
+		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
 		mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
 		mMediaScanner.connect();
@@ -115,7 +122,13 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 
 		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
-		openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+		if (fileInfo.file.isFile())
+			openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+		else
+		{
+			getAdapter().goPath(fileInfo.file);
+			updateInBackground();
+		}
 	}
 
 	@Override
@@ -155,7 +168,8 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 						@Override
 						public void onCompleted(Context context, int fileSize)
 						{
-							context.sendBroadcast(new Intent(FileChangesReceiver.ACTION_FILE_LIST_CHANGED));
+							context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+									.putExtra(EXTRA_KEEP_CURRENT, true));
 						}
 					}).show();
 
@@ -171,8 +185,27 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		public Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
 		{
 			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
-
 			return Uri.fromFile(fileInfo.file);
+		}
+
+		@Override
+		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
+		{
+			super.onItemCheckedStateChanged(mode, position, id, isChecked);
+			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+
+			if (isChecked && !getAdapter().getPath().equals(fileInfo.file.getParentFile()))
+			{
+				Toast.makeText(getContext(), "Can't select this folder", Toast.LENGTH_SHORT).show();
+				getListView().setItemChecked(position, false);
+			}
+		}
+
+		@Override
+		protected boolean onItemCheckable(int position)
+		{
+			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+			return getAdapter().getPath().equals(fileInfo.file.getParentFile());
 		}
 	}
 }

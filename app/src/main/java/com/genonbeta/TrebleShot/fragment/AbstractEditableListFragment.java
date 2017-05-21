@@ -174,14 +174,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		updateInBackground();
 	}
 
-	public void setItemsChecked(boolean check)
-	{
-		mActionModeListener.clearSelectionList();
-
-		for (int i = 0; i < getListView().getCount(); i++)
-			getListView().setItemChecked(i, check);
-	}
-
 	public void setSearchSupport(boolean searchSupport)
 	{
 		mSearchSupport = searchSupport;
@@ -342,6 +334,20 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public ArrayMap<Uri, String> getSharedItemNameList()
 		{
 			return mCheckedNameList;
+		}
+
+		public void setItemsChecked(boolean check)
+		{
+			mActionModeListener.clearSelectionList();
+
+			for (int position = 0; position < getListView().getCount(); position++)
+				if (onItemCheckable(position))
+					getListView().setItemChecked(position, check);
+		}
+
+		protected boolean onItemCheckable(int position)
+		{
+			return true;
 		}
 	}
 }

@@ -166,4 +166,6 @@
     <string name="available_connections">%d bağlantı</string>
     <string name="saved_connections">Bilin. bağlantılar</string>
     <string name="version_available_text">Yeni sürüm mevcut!</string>
+    <string name="file_manager_go_up">Üst klasör</string>
+    <string name="folder">Klasör</string>
 </resources>

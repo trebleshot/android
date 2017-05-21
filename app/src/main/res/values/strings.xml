@@ -166,4 +166,6 @@
     <string name="saved_connections">Saved connections</string>
     <string name="available_connections">%d connections</string>
     <string name="version_available_text">New version is available!</string>
+    <string name="file_manager_go_up">Go up</string>
+    <string name="folder">Folder</string>
 </resources>

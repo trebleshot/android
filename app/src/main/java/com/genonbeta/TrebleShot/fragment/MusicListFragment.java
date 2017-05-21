@@ -30,8 +30,7 @@ public class MusicListFragment extends AbstractEditableListFragment<MusicListAda
 		super.onListItemClick(l, v, position, id);
 
 		MusicListAdapter.MusicInfo musicInfo = (MusicListAdapter.MusicInfo) getAdapter().getItem(position);
-
-		this.openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
+		openFile(musicInfo.uri, "audio/*", getString(R.string.file_open_app_chooser_msg));
 	}
 
 	@Override

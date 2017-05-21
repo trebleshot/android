@@ -17,8 +17,11 @@ import java.util.Comparator;
 
 public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 {
-	public ArrayList<FileInfo> mList = new ArrayList<FileInfo>();
+
+	private ArrayList<FileInfo> mList = new ArrayList<>();
 	private String mSearchWord;
+	private File mDefaultPath;
+	private File mPath;
 	private Comparator<FileInfo> mComparator = new Comparator<FileInfo>()
 	{
 		@Override
@@ -31,6 +34,7 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 	public ReceivedFilesListAdapter(Context context)
 	{
 		super(context);
+		mPath = mDefaultPath = ApplicationHelper.getApplicationDirectory(mContext);
 	}
 
 	@Override
@@ -44,13 +48,27 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 	{
 		mList.clear();
 
-		for (File file : ApplicationHelper.getApplicationDirectory(mContext).listFiles())
-		{
-			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isFile())
-				mList.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
-		}
+		ArrayList<FileInfo> folders = new ArrayList<>();
+		ArrayList<FileInfo> files = new ArrayList<>();
 
-		Collections.sort(mList, mComparator);
+		File[] fileIndex = mPath.listFiles();
+
+		for (File file : fileIndex)
+			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isDirectory() && file.canRead())
+				folders.add(new FileInfo(file.getName(), mContext.getString(R.string.folder), file));
+
+		for (File file : fileIndex)
+			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isFile() && file.canRead())
+				files.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
+
+		Collections.sort(folders, mComparator);
+		Collections.sort(files, mComparator);
+
+		if (mPath.getParentFile() != null && mPath.getParentFile().canRead())
+			mList.add(new FileInfo(mContext.getString(R.string.file_manager_go_up), "", mPath.getParentFile()));
+
+		mList.addAll(folders);
+		mList.addAll(files);
 	}
 
 	@Override
@@ -65,10 +83,20 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 		return mList.get(itemId);
 	}
 
+	public ArrayList<FileInfo> getList()
+	{
+		return mList;
+	}
+
 	@Override
 	public long getItemId(int p1)
 	{
 		return 0;
+	}
+
+	public File getPath()
+	{
+		return mPath;
 	}
 
 	@Override
@@ -82,21 +110,31 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 		FileInfo fileInfo = (FileInfo) getItem(position);
 
 		fileNameText.setText(fileInfo.fileName);
-		sizeText.setText(fileInfo.fileSize);
+		sizeText.setText(fileInfo.fileInfo);
 
 		return convertView;
+	}
+
+	public void goDefault()
+	{
+		goPath(mDefaultPath);
+	}
+
+	public void goPath(File path)
+	{
+		mPath = path;
 	}
 
 	public static class FileInfo
 	{
 		public String fileName;
-		public String fileSize;
+		public String fileInfo;
 		public File file;
 
 		public FileInfo(String name, String size, File file)
 		{
 			this.fileName = name;
-			this.fileSize = size;
+			this.fileInfo = size;
 			this.file = file;
 		}
 	}

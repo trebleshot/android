@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,6 +50,8 @@ public class ShareActivity extends Activity
 	private Transaction mTransaction;
 	private NetworkDeviceListFragment mDeviceListFragment;
 	private DeviceRegistry mDeviceRegistry;
+	private ProgressDialog mProgressDialog;
+	private ArrayList<FileState> mFiles = new ArrayList<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -61,6 +64,11 @@ public class ShareActivity extends Activity
 		mDeviceRegistry = new DeviceRegistry(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 		mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
+
+		mProgressDialog = new ProgressDialog(this);
+		mProgressDialog.setMessage("Organizing your files...");
+		mProgressDialog.setIndeterminate(true);
+		mProgressDialog.setCancelable(false);
 
 		if (getIntent() != null && getIntent().getAction() != null)
 		{
@@ -121,7 +129,7 @@ public class ShareActivity extends Activity
 															}
 															else
 																showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-														} catch (JSONException e)
+														} catch (Exception e)
 														{
 															showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 														}
@@ -145,7 +153,6 @@ public class ShareActivity extends Activity
 						ArrayList<Uri> fileUris = new ArrayList<>();
 						ArrayList<CharSequence> fileNames = null;
 						Uri fileUri = getIntent().getParcelableExtra(Intent.EXTRA_STREAM);
-						File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
 
 						fileUris.add(fileUri);
 
@@ -155,10 +162,7 @@ public class ShareActivity extends Activity
 							String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
 
 							fileNames.add(fileName);
-							appendStatusText(fileName);
 						}
-						else
-							appendStatusText(file.getName());
 
 						registerClickListener(fileUris, fileNames);
 					}
@@ -168,15 +172,10 @@ public class ShareActivity extends Activity
 					ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 					ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
-					appendStatusText(getString(R.string.item_selected, String.valueOf(fileUris.size())));
-
 					registerClickListener(fileUris, fileNames);
 					break;
 				default:
-					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).
-
-							show();
-
+					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).show();
 					finish();
 			}
 		}
@@ -198,8 +197,7 @@ public class ShareActivity extends Activity
 		mStatusText.getText().append(charSequence);
 	}
 
-	protected void handleFiles(final ArrayList<Uri> fileUris,
-							   final ArrayList<CharSequence> fileNames, final NetworkDevice device)
+	protected void handleFiles(final NetworkDevice device)
 	{
 		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
 
@@ -225,36 +223,25 @@ public class ShareActivity extends Activity
 							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 							json.put(Keyword.GROUP_ID, groupId);
 
-							for (Uri fileUri : fileUris)
+							for (FileState fileState : mFiles)
 							{
-								File file = ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri);
-								String fileName = String.valueOf(fileNames != null && fileNames.size() > 0 ? fileNames.get(index) : file.getName());
+								int requestId = ApplicationHelper.getUniqueNumber();
+								AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileState.fileName, 0, fileState.file);
+								JSONObject thisJson = new JSONObject();
 
-								if (file == null)
-									continue;
-
-								if (file.isFile())
+								try
 								{
-									int requestId = ApplicationHelper.getUniqueNumber();
-									AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileName, 0, file);
-									JSONObject thisJson = new JSONObject();
+									thisJson.put(Keyword.FILE_NAME, fileState.fileName);
+									thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
+									thisJson.put(Keyword.REQUEST_ID, requestId);
+									thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
 
-									try
-									{
-										String fileMime = FileUtils.getFileContentType(file.getAbsolutePath());
+									filesArray.put(thisJson);
 
-										thisJson.put(Keyword.FILE_NAME, fileName);
-										thisJson.put(Keyword.FILE_SIZE, file.length());
-										thisJson.put(Keyword.REQUEST_ID, requestId);
-										thisJson.put(Keyword.FILE_MIME, fileMime);
-
-										filesArray.put(thisJson);
-
-										mTransaction.registerTransaction(sender);
-									} catch (Exception e)
-									{
-										Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + file.getName());
-									}
+									mTransaction.registerTransaction(sender);
+								} catch (Exception e)
+								{
+									Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
 								}
 
 								index++;
@@ -271,7 +258,7 @@ public class ShareActivity extends Activity
 
 								showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
 							}
-						} catch (JSONException e)
+						} catch (Exception e)
 						{
 							showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 						}
@@ -286,9 +273,69 @@ public class ShareActivity extends Activity
 		);
 	}
 
+	protected void organizeFiles(File file, String fileName)
+	{
+		if (!file.canRead())
+			return;
+
+		if (file.isDirectory())
+		{
+			for (File fileInstance : file.listFiles())
+				organizeFiles(fileInstance, null);
+		}
+		else
+		{
+			FileState fileState = new FileState();
+
+			fileState.file = file;
+			fileState.fileName = fileName != null ? fileName : file.getName();
+			fileState.fileMime = FileUtils.getFileContentType(file.getName());
+
+			mFiles.add(fileState);
+		}
+	}
+
+	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
+	{
+		mProgressDialog.show();
+
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+
+				for (int position = 0; position < fileUris.size(); position++)
+				{
+					Uri fileUri = fileUris.get(position);
+					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
+
+					organizeFiles(ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri), fileName);
+				}
+
+				mProgressDialog.cancel();
+
+				runOnUiThread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						if (mFiles.size() == 1)
+							appendStatusText(mFiles.get(0).fileName);
+						else if (mFiles.size() > 1)
+							appendStatusText(getString(R.string.item_selected, String.valueOf(mFiles.size())));
+					}
+				});
+			}
+		}.start();
+	}
+
 	protected void registerClickListener(final ArrayList<Uri> fileUris,
 										 final ArrayList<CharSequence> fileNames)
 	{
+		organizeFiles(fileUris, fileNames);
+
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
@@ -301,7 +348,7 @@ public class ShareActivity extends Activity
 					@Override
 					public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
 					{
-						handleFiles(fileUris, fileNames, mDeviceRegistry.getNetworkDevice(addressHolder.address));
+						handleFiles(mDeviceRegistry.getNetworkDevice(addressHolder.address));
 					}
 				}).show();
 			}
@@ -313,5 +360,12 @@ public class ShareActivity extends Activity
 		Looper.prepare();
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 		Looper.loop();
+	}
+
+	private class FileState
+	{
+		public File file;
+		public String fileName;
+		public String fileMime;
 	}
 }
