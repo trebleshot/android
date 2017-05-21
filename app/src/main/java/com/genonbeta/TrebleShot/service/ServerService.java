@@ -53,6 +53,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		super.onCreate();
 
 		mMediaScanner = new MediaScannerConnection(this, null);
+
+		mMediaScanner.connect();
 		mReceive.setNotifyDelay(2000);
 	}
 
