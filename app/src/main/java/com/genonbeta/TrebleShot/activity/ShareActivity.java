@@ -66,7 +66,7 @@ public class ShareActivity extends Activity
 		mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
 
 		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage("Organizing your files...");
+		mProgressDialog.setMessage(getString(R.string.progress_organize_files));
 		mProgressDialog.setIndeterminate(true);
 		mProgressDialog.setCancelable(false);
 

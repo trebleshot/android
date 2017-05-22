@@ -9,8 +9,8 @@
     <string name="connected">Connected</string>
     <string name="invited">Invited</string>
     <string name="connection_failured">Connection Failure</string>
-    <string name="avaiable">Available</string>
-    <string name="not_avaiable">Not available</string>
+    <string name="available">Available</string>
+    <string name="not_available">Not available</string>
     <string name="device_list_empty_msg">No device is found</string>
     <string name="no_network_interface_msg">I need a connection like Wi-Fi to find other devices</string>
     <string name="devices_scanning_msg">Finding nearby devices…</string>
@@ -33,8 +33,6 @@
     <string name="list_empty_msg">List is empty</string>
     <string name="developer_mode">Developer mode</string>
     <string name="developer_mode_summary">It disables user configuration</string>
-    <string name="communation_server_notification">Communication server</string>
-    <string name="communation_server_notification_summary">Notify when service started</string>
     <string name="device_name">Device name</string>
     <string name="device_name_summary">This name will be showed on other devices</string>
     <string name="device_name_dialogTitle">Enter device name</string>
@@ -168,4 +166,5 @@
     <string name="version_available_text">New version is available!</string>
     <string name="file_manager_go_up">Go up</string>
     <string name="folder">Folder</string>
+    <string name="progress_organize_files">Organizing your files…</string>
 </resources>

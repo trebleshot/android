@@ -16,7 +16,7 @@ public class P2pDeviceListAdapter extends BaseAdapter
 {
 	private Context mContext;
 	private ArrayList<WifiP2pDevice> mPeers;
-	private int[] mDeviceStatus = new int[]{R.string.connected, R.string.invited, R.string.connection_failured, R.string.avaiable, R.string.not_avaiable};
+	private int[] mDeviceStatus = new int[]{R.string.connected, R.string.invited, R.string.connection_failured, R.string.available, R.string.not_available};
 
 	public P2pDeviceListAdapter(Context context, ArrayList<WifiP2pDevice> peerList)
 	{

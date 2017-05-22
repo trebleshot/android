@@ -9,8 +9,8 @@
     <string name="connected">Bağlanıldı</string>
     <string name="invited">Davet edildi</string>
     <string name="connection_failured">Bağlantı başarısız</string>
-    <string name="avaiable">Kullanılabilir</string>
-    <string name="not_avaiable">Kullanılamaz</string>
+    <string name="available">Kullanılabilir</string>
+    <string name="not_available">Kullanılamaz</string>
     <string name="device_list_empty_msg">Cihaz listesi boş</string>
     <string name="no_network_interface_msg">Yakın cihazları bulmam için bağlanmam gerek (mesela kablosuzla)</string>
     <string name="devices_scanning_msg">Cihazlar bulunuyor…</string>
@@ -33,8 +33,6 @@
     <string name="list_empty_msg">Liste boş</string>
     <string name="developer_mode">Geliştirici modu</string>
     <string name="developer_mode_summary">Kullanıcı yapılandırmasını devre dışı bırakır</string>
-    <string name="communation_server_notification">Haberleşme sunucusu</string>
-    <string name="communation_server_notification_summary">Sunucu başlatıldığında bildir</string>
     <string name="device_name">Cihaz adı</string>
     <string name="device_name_summary">Diğer cihazlarda gösterilecek</string>
     <string name="device_name_dialogTitle">Cihaz adı girin</string>
@@ -168,4 +166,5 @@
     <string name="version_available_text">Yeni sürüm mevcut!</string>
     <string name="file_manager_go_up">Üst klasör</string>
     <string name="folder">Klasör</string>
+    <string name="progress_organize_files">Dosyalarınız hazırlanıyor...</string>
 </resources>
