@@ -40,9 +40,10 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 				setListShown(true);
 				mAdapter.onUpdate(data);
 				mAdapter.notifyDataSetChanged();
+
+				onListRefreshed();
 			}
 		}
-
 
 		@Override
 		public void onLoaderReset(Loader<ArrayList<T>> loader)
@@ -74,4 +75,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 	{
 		getLoaderManager().restartLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
 	}
+
+	protected void onListRefreshed()
+	{}
 }

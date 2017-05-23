@@ -78,6 +78,20 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	}
 
 	@Override
+	protected void onListRefreshed()
+	{
+		super.onListRefreshed();
+
+		if (mActionModeListener != null)
+			mActionModeListener.clearSelectionList();
+
+		if (mActionMode != null)
+			for (int i = 0; i < getListView().getCount(); i++)
+				if (getListView().isItemChecked(i))
+					mActionModeListener.onItemCheckedStateChanged(mActionMode, i, 0, true);
+	}
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
