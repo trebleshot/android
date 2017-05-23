@@ -6,7 +6,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListAdapter;
 
 import java.util.ArrayList;
 

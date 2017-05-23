@@ -27,23 +27,6 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	private ActionModeListener mActionModeListener;
 	private boolean mSearchSupport = true;
 
-	private Runnable mNotifyListChanges = new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			getAdapter().notifyDataSetChanged();
-
-			if (mActionModeListener != null)
-				mActionModeListener.clearSelectionList();
-
-			if (mActionMode != null)
-				for (int i = 0; i < getListView().getCount(); i++)
-					if (getListView().isItemChecked(i))
-						mActionModeListener.onItemCheckedStateChanged(mActionMode, i, 0, true);
-		}
-	};
-
 	private SearchView.OnQueryTextListener mSearchComposer = new SearchView.OnQueryTextListener()
 	{
 		@Override

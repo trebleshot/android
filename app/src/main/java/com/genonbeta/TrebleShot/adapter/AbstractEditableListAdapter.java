@@ -2,7 +2,7 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 
-import com.genonbeta.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListAdapter;
 
 abstract public class AbstractEditableListAdapter<T> extends ListAdapter<T>
 {

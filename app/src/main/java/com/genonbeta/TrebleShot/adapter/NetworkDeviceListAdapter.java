@@ -15,7 +15,7 @@ import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListAdapter;
 
 import java.util.ArrayList;
 

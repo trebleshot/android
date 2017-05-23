@@ -7,3 +7,4 @@ gradlew
 TSMAT.iml
 local.properties
 app/build
+*.apk
