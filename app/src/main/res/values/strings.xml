@@ -168,4 +168,9 @@
     <string name="folder">Folder</string>
     <string name="progress_organize_files">Organizing your files</string>
     <string name="progress_communicate">Communicating</string>
+    <string name="service_client">Client Service</string>
+    <string name="service_server">Server Service</string>
+    <string name="service_communication">Communication Service</string>
+    <string name="service_chooser_target">Device Chooser Provider</string>
+    <string name="pending_transfer_editor_activity">Pending Transfers</string>
 </resources>

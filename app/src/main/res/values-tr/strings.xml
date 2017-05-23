@@ -168,4 +168,9 @@
     <string name="folder">Klasör</string>
     <string name="progress_organize_files">Dosyalarınız hazırlanıyor</string>
     <string name="progress_communicate">İletişim kuruluyor</string>
+    <string name="service_chooser_target">Hızlı Paylaşım Servisi</string>
+    <string name="service_client">İstemci Servis</string>
+    <string name="service_communication">Haberleşme Servisi</string>
+    <string name="service_server">Sunucu Servis</string>
+    <string name="pending_transfer_editor_activity">Bekleyen Aktarımlar</string>
 </resources>

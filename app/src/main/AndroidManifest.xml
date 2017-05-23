@@ -39,7 +39,6 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>
@@ -48,6 +47,7 @@
         </activity>
 
         <activity
+            android:label="@string/pending_transfer_editor_activity"
             android:name=".activity.PendingTransferListActivity"
             android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
 
@@ -61,21 +61,21 @@
 
         <service
             android:name=".service.ClientService"
-            android:label="Client Service"
+            android:label="@string/service_client"
             android:process=":transfer"/>
 
         <service
             android:name=".service.ServerService"
-            android:label="Server Service"
+            android:label="@string/service_server"
             android:process=":transfer"/>
 
         <service
             android:name=".service.CommunicationService"
-            android:label="Communication Service"/>
+            android:label="@string/service_communication"/>
 
         <service
             android:name=".service.DeviceChooserService"
-            android:label="Device Chooser Provider"
+            android:label="@string/service_chooser_target"
             android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
             <intent-filter>
                 <action android:name="android.service.chooser.ChooserTargetService"/>
