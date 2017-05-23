@@ -166,5 +166,5 @@
     <string name="version_available_text">Yeni sürüm mevcut!</string>
     <string name="file_manager_go_up">Üst klasör</string>
     <string name="folder">Klasör</string>
-    <string name="progress_organize_files">Dosyalarınız hazırlanıyor...</string>
+    <string name="progress_organize_files">Dosyalarınız hazırlanıyor</string>
 </resources>

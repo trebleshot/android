@@ -11,6 +11,7 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
@@ -58,7 +59,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					@Override
 					public void onClick(DialogInterface dialogInterface, int p2)
 					{
-						new PendingTransferListDialog(context, new DeviceRegistry(context), new Transaction(context), device.deviceId).show();
+						PendingTransferListActivity.startInstance(context, device.deviceId);
 					}
 				}
 		);
@@ -80,7 +81,10 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					{
 						registry.removeDeviceWithInstances(device);
 
-						new Transaction(context).removeDeviceTransactionGroup(device);
+						new Transaction(context)
+								.edit()
+								.removeDeviceTransactionGroup(device)
+								.done();
 					}
 				});
 

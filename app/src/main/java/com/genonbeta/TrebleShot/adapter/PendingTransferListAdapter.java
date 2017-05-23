@@ -34,8 +34,9 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 	public PendingTransferListAdapter(Context context)
 	{
 		super(context);
-		mTransaction = new Transaction(context);
-		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
+
+		initialize(context);
+		setSelect(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
 				.setOrderBy(Transaction.FIELD_TRANSFER_ID + " DESC")
 				.setGroupBy(MainDatabase.FIELD_TRANSFER_GROUPID)
 				.setLoadListener(new SQLQuery.Select.LoadListener()
@@ -55,21 +56,15 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
 					}
-				});
+				}));
 	}
 
-	public PendingTransferListAdapter(Context context, int groupId)
+	public PendingTransferListAdapter(Context context, SQLQuery.Select select)
 	{
-		this(context);
-		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId));
-	}
+		super(context);
 
-	public PendingTransferListAdapter(Context context, String deviceId)
-	{
-		this(context);
-		mSelect = new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setWhere(Transaction.FIELD_TRANSFER_DEVICEID + "=?", deviceId);
+		initialize(context);
+		setSelect(select);
 	}
 
 	@Override
@@ -83,6 +78,11 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 	{
 		mList.clear();
 		mList.addAll(mTransaction.getTable(mSelect));
+	}
+
+	private void initialize(Context context)
+	{
+		mTransaction = new Transaction(context);
 	}
 
 	@Override
@@ -147,15 +147,27 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
+						Transaction.EditingSession editingSession = mTransaction.edit();
+
 						if (isGroup)
-							mTransaction.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+							editingSession.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
 						else
-							mTransaction.removeTransaction(thisItem.getInt(Transaction.FIELD_TRANSFER_ID));
+							editingSession.removeTransaction(thisItem.getInt(Transaction.FIELD_TRANSFER_ID));
+
+						editingSession.done();
 					}
 				}).show();
 			}
 		});
 
 		return view;
+	}
+
+	public PendingTransferListAdapter setSelect(SQLQuery.Select select)
+	{
+		if (select != null)
+			mSelect = select;
+
+		return this;
 	}
 }

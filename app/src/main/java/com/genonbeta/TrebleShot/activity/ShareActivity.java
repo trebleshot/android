@@ -28,7 +28,6 @@ import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -50,7 +49,8 @@ public class ShareActivity extends Activity
 	private Transaction mTransaction;
 	private NetworkDeviceListFragment mDeviceListFragment;
 	private DeviceRegistry mDeviceRegistry;
-	private ProgressDialog mProgressDialog;
+	private ProgressDialog mProgressOrganizeFiles;
+	private ProgressDialog mProgressConnect;
 	private ArrayList<FileState> mFiles = new ArrayList<>();
 
 	@Override
@@ -65,10 +65,15 @@ public class ShareActivity extends Activity
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 		mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
 
-		mProgressDialog = new ProgressDialog(this);
-		mProgressDialog.setMessage(getString(R.string.progress_organize_files));
-		mProgressDialog.setIndeterminate(true);
-		mProgressDialog.setCancelable(false);
+		mProgressOrganizeFiles = new ProgressDialog(this);
+		mProgressOrganizeFiles.setIndeterminate(true);
+		mProgressOrganizeFiles.setCancelable(false);
+		mProgressOrganizeFiles.setMessage(getString(R.string.progress_organize_files));
+
+		mProgressConnect = new ProgressDialog(this);
+		mProgressConnect.setIndeterminate(true);
+		mProgressConnect.setCancelable(false);
+		mProgressConnect.setMessage("Communicating");
 
 		if (getIntent() != null && getIntent().getAction() != null)
 		{
@@ -110,6 +115,8 @@ public class ShareActivity extends Activity
 									{
 										final String deviceIp = addressHolder.address;
 
+										mProgressConnect.show();
+
 										CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
 												new JsonResponseHandler()
 												{
@@ -132,6 +139,17 @@ public class ShareActivity extends Activity
 														} catch (Exception e)
 														{
 															showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+														}
+														finally
+														{
+															runOnUiThread(new Runnable()
+															{
+																@Override
+																public void run()
+																{
+																	mProgressConnect.cancel();
+																}
+															});
 														}
 													}
 
@@ -199,6 +217,7 @@ public class ShareActivity extends Activity
 
 	protected void handleFiles(final NetworkDevice device)
 	{
+		mProgressConnect.show();
 		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
 
 		CoolCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
@@ -219,6 +238,7 @@ public class ShareActivity extends Activity
 						{
 							int index = 0;
 							int groupId = ApplicationHelper.getUniqueNumber();
+							Transaction.EditingSession editingSession = mTransaction.edit();
 
 							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 							json.put(Keyword.GROUP_ID, groupId);
@@ -238,7 +258,7 @@ public class ShareActivity extends Activity
 
 									filesArray.put(thisJson);
 
-									mTransaction.registerTransaction(sender);
+									editingSession.registerTransaction(sender);
 								} catch (Exception e)
 								{
 									Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
@@ -254,7 +274,7 @@ public class ShareActivity extends Activity
 							if (!response.getBoolean(Keyword.RESULT))
 							{
 								Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
-								mTransaction.removeTransactionGroup(groupId);
+								editingSession.removeTransactionGroup(groupId);
 
 								showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
 							}
@@ -262,11 +282,15 @@ public class ShareActivity extends Activity
 						{
 							showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 						}
+
+						mProgressConnect.cancel();
 					}
 
 					@Override
 					public void onError(Exception e)
 					{
+
+						mProgressConnect.cancel();
 						showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
 					}
 				}
@@ -297,7 +321,7 @@ public class ShareActivity extends Activity
 
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
-		mProgressDialog.show();
+		mProgressOrganizeFiles.show();
 
 		new Thread()
 		{
@@ -314,7 +338,7 @@ public class ShareActivity extends Activity
 					organizeFiles(ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri), fileName);
 				}
 
-				mProgressDialog.cancel();
+				mProgressOrganizeFiles.cancel();
 
 				runOnUiThread(new Runnable()
 				{

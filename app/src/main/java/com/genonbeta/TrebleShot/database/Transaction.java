@@ -12,7 +12,6 @@ import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * Created by: veli
@@ -23,56 +22,20 @@ public class Transaction extends MainDatabase
 {
 	public static final String TAG = Transaction.class.getSimpleName();
 
-	public static final String ACTION_TRANSACTION_REGISTERED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REGISTERED";
-	public static final String ACTION_TRANSACTION_UPDATED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_UPDATED";
-	public static final String ACTION_TRANSACTION_REMOVED = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_REMOVED";
-	private ArrayBlockingQueue<AwaitedFileReceiver> mPendingReceivers = new ArrayBlockingQueue<AwaitedFileReceiver>(2000, true);
+	public static final String ACTION_TRANSACTION_CHANGE = "com.genonbeta.TrebleShot.intent.action.TRANSACTION_CHANGE";
+
+	public static final String EXTRA_COUNT_REMOVED = "countRemoved";
+	public static final String EXTRA_COUNT_REGISTERED = "countRegistered";
+	public static final String EXTRA_COUNT_UPDATED = "countUpdated";
 
 	public Transaction(Context context)
 	{
 		super(context);
 	}
 
-	public int acceptPendingReceivers(int groupId)
+	public EditingSession edit()
 	{
-		int count = 0;
-
-		for (AwaitedFileReceiver receiver : getPendingReceivers())
-		{
-			if (receiver.groupId != groupId)
-				continue;
-
-			registerTransaction(receiver);
-			getPendingReceivers().remove(receiver);
-
-			count++;
-		}
-
-		return count;
-	}
-
-	public boolean applyAccessPort(int requestId, int port)
-	{
-		ContentValues values = new ContentValues();
-		values.put(FIELD_TRANSFER_ACCESSPORT, port);
-
-		return updateTransaction(requestId, values) > 0;
-	}
-
-	public ArrayList<AwaitedFileReceiver> getPendingReceiversByGroupId(int groupId)
-	{
-		ArrayList<AwaitedFileReceiver> list = new ArrayList<AwaitedFileReceiver>();
-
-		for (AwaitedFileReceiver receiver : getPendingReceivers())
-			if (receiver.groupId == groupId)
-				list.add(receiver);
-
-		return list;
-	}
-
-	public ArrayBlockingQueue<AwaitedFileReceiver> getPendingReceivers()
-	{
-		return mPendingReceivers;
+		return new EditingSession();
 	}
 
 	public ArrayList<AwaitedFileReceiver> getReceivers()
@@ -101,7 +64,6 @@ public class Transaction extends MainDatabase
 	public ArrayList<AwaitedFileSender> getSenders(SQLQuery.Select select)
 	{
 		ArrayList<CursorItem> list = getTable(select);
-
 		ArrayList<AwaitedFileSender> outputList = new ArrayList<>();
 
 		for (CursorItem item : list)
@@ -116,87 +78,6 @@ public class Transaction extends MainDatabase
 				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
 	}
 
-	protected long notifyRemoved()
-	{
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
-		return getAffectedRowCount();
-	}
-
-	protected long notifyUpdated()
-	{
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REGISTERED));
-		return getAffectedRowCount();
-	}
-
-	public boolean registerTransaction(AwaitedTransaction transaction)
-	{
-		getWritableDatabase().insert(TABLE_TRANSFER, null, transaction.getDatabaseObject());
-		return notifyUpdated() > 0;
-	}
-
-	public int removePendingReceivers(int groupId)
-	{
-		int count = 0;
-
-		for (AwaitedFileReceiver receiver : getPendingReceivers())
-		{
-			if (receiver.groupId != groupId)
-				continue;
-
-			getPendingReceivers().remove(receiver);
-
-			count++;
-		}
-
-		return count;
-	}
-
-	public boolean removeDeviceTransactionGroup(AwaitedTransaction transaction)
-	{
-		return removeDeviceTransactionGroup(transaction.deviceId);
-	}
-
-	public boolean removeDeviceTransactionGroup(NetworkDevice device)
-	{
-		return removeDeviceTransactionGroup(device.deviceId);
-	}
-
-	public boolean removeDeviceTransactionGroup(String deviceId)
-	{
-		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
-				.setWhere(FIELD_TRANSFER_DEVICEID + "=?", deviceId));
-	}
-
-	public boolean removeTransaction(AwaitedTransaction transaction)
-	{
-		return removeTransaction(transaction.requestId);
-	}
-
-	public boolean removeTransaction(int requestId)
-	{
-		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
-				.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
-	}
-
-	public boolean removeTransactionGroup(AwaitedTransaction transaction)
-	{
-		return removeTransactionGroup(transaction.groupId);
-	}
-
-	public boolean removeTransactionGroup(int groupId)
-	{
-		return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
-				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
-	}
-
-	public boolean removeTransaction(SQLQuery.Select select)
-	{
-		delete(select);
-		getContext().sendBroadcast(new Intent(ACTION_TRANSACTION_REMOVED));
-
-		return notifyRemoved() > 0;
-	}
-
 	public boolean transactionExists(int requestId)
 	{
 		return getFirstFromTable(new SQLQuery.Select(TABLE_TRANSFER)
@@ -209,46 +90,150 @@ public class Transaction extends MainDatabase
 				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))) != null;
 	}
 
-	public boolean updateFlag(int requestId, Flag flag)
-	{
-		ContentValues values = new ContentValues();
-		values.put(FIELD_TRANSFER_FLAG, flag.toString());
-
-		return updateTransaction(requestId, values) > 0;
-	}
-
-	public boolean updateFlagGroup(int groupId, Flag flag)
-	{
-		ContentValues values = new ContentValues();
-		values.put(FIELD_TRANSFER_FLAG, flag.toString());
-
-		return updateTransactionGroup(groupId, values) > 0;
-	}
-
-	public long updateTransaction(AwaitedTransaction transaction)
-	{
-		return updateTransaction(transaction.requestId, transaction.getDatabaseObject());
-	}
-
-	public long updateTransaction(int requestId, ContentValues values)
-	{
-		getWritableDatabase().update(TABLE_TRANSFER, values, FIELD_TRANSFER_ID + "=?", new String[]{String.valueOf(requestId)});
-		return notifyUpdated();
-	}
-
-	public long updateTransactionGroup(int groupId, ContentValues values)
-	{
-		update(new SQLQuery.Select(TABLE_TRANSFER)
-				.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), values);
-
-		return notifyUpdated();
-	}
-
 	public enum Flag
 	{
 		PENDING,
 		RESUME,
 		RUNNING,
 		INTERRUPTED
+	}
+
+	public class EditingSession
+	{
+		private boolean mClosed = false;
+
+		private int mCountRegistered = 0;
+		private int mCountRemoved = 0;
+		private int mCountUpdated = 0;
+
+		public void done()
+		{
+			Intent updateIntent = new Intent(ACTION_TRANSACTION_CHANGE);
+
+			updateIntent.putExtra(EXTRA_COUNT_REGISTERED, mCountRegistered);
+			updateIntent.putExtra(EXTRA_COUNT_REMOVED, mCountRemoved);
+			updateIntent.putExtra(EXTRA_COUNT_UPDATED, mCountUpdated);
+
+			getContext().sendBroadcast(updateIntent);
+
+			mClosed = true;
+		}
+
+		public EditingSession registerTransaction(AwaitedTransaction transaction)
+		{
+			getWritableDatabase().insert(TABLE_TRANSFER, null, transaction.getDatabaseObject());
+
+			if (getAffectedRowCount() > 0)
+				mCountRegistered++;
+
+			return this;
+		}
+
+		public EditingSession removeDeviceTransactionGroup(AwaitedTransaction transaction)
+		{
+			return removeDeviceTransactionGroup(transaction.deviceId);
+		}
+
+		public EditingSession removeDeviceTransactionGroup(NetworkDevice device)
+		{
+			return removeDeviceTransactionGroup(device.deviceId);
+		}
+
+		public EditingSession removeDeviceTransactionGroup(String deviceId)
+		{
+			return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+					.setWhere(FIELD_TRANSFER_DEVICEID + "=?", deviceId));
+		}
+
+		public EditingSession removeTransaction(AwaitedTransaction transaction)
+		{
+			return removeTransaction(transaction.requestId);
+		}
+
+		public EditingSession removeTransaction(int requestId)
+		{
+			return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+					.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)));
+		}
+
+		public EditingSession removeTransactionGroup(AwaitedTransaction transaction)
+		{
+			return removeTransactionGroup(transaction.groupId);
+		}
+
+		public EditingSession removeTransactionGroup(int groupId)
+		{
+			return removeTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+					.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
+		}
+
+		public EditingSession removeTransaction(SQLQuery.Select select)
+		{
+			delete(select);
+
+			mCountRemoved += getAffectedRowCount();
+
+			return this;
+		}
+
+		public EditingSession updateAccessPort(int requestId, int port)
+		{
+			ContentValues values = new ContentValues();
+			values.put(FIELD_TRANSFER_ACCESSPORT, port);
+
+			updateTransaction(requestId, values);
+
+			return this;
+		}
+
+		public EditingSession updateFlag(int requestId, Flag flag)
+		{
+			ContentValues values = new ContentValues();
+			values.put(FIELD_TRANSFER_FLAG, flag.toString());
+
+			updateTransaction(requestId, values);
+
+			return this;
+		}
+
+		public EditingSession updateFlagGroup(int groupId, Flag flag)
+		{
+			ContentValues values = new ContentValues();
+			values.put(FIELD_TRANSFER_FLAG, flag.toString());
+
+			updateTransactionGroup(groupId, values);
+
+			return this;
+		}
+
+		public EditingSession updateTransaction(AwaitedTransaction transaction)
+		{
+			return updateTransaction(transaction.requestId, transaction.getDatabaseObject());
+		}
+
+		public EditingSession updateTransaction(int requestId, ContentValues values)
+		{
+			return updateTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+					.setWhere(FIELD_TRANSFER_ID + "=?", String.valueOf(requestId)), values);
+		}
+
+		public EditingSession updateTransaction(SQLQuery.Select select, ContentValues values)
+		{
+			update(select, values);
+
+			mCountUpdated += getAffectedRowCount();
+
+			return this;
+		}
+
+		public EditingSession updateTransactionGroup(int groupId, ContentValues values)
+		{
+			return updateTransaction(new SQLQuery.Select(TABLE_TRANSFER)
+					.setWhere(FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), values);
+		}
+	}
+
+	public class ClosedSessionException extends Exception
+	{
 	}
 }

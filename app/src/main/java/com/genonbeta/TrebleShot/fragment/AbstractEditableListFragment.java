@@ -78,7 +78,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		}
 	};
 
-
 	protected abstract T onAdapter();
 
 	protected abstract ActionModeListener onActionModeListener();
@@ -144,7 +143,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		}
 	}
 
-	protected T getAdapter()
+	public T getAdapter()
 	{
 		return mAdapter;
 	}

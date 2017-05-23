@@ -166,5 +166,5 @@
     <string name="version_available_text">New version is available!</string>
     <string name="file_manager_go_up">Go up</string>
     <string name="folder">Folder</string>
-    <string name="progress_organize_files">Organizing your files…</string>
+    <string name="progress_organize_files">Organizing your files</string>
 </resources>

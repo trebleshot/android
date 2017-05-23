@@ -13,6 +13,7 @@ import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
 import com.genonbeta.TrebleShot.activity.TrebleShotActivity;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
@@ -134,7 +135,9 @@ public class NotificationUtils
 				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
 				.setContentText(message)
 				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
+						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, receiver.groupId), 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
@@ -171,7 +174,9 @@ public class NotificationUtils
 				.setContentTitle(transaction.fileName)
 				.setContentText(mContext.getString(isIncoming ? R.string.receiving_msg : R.string.sending_msg))
 				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
+						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.cancel_receiving : R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
@@ -204,8 +209,11 @@ public class NotificationUtils
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.received_text))
-				.setContentText(mContext.getString(R.string.copy_to_clipboard_question))
+				.setContentTitle(mContext.getString(R.string.copy_to_clipboard_question))
+				.setContentText(mContext.getString(R.string.received_text))
+				.setStyle(new NotificationCompat.BigTextStyle()
+						.bigText(text)
+						.setBigContentTitle(mContext.getString(R.string.copy_to_clipboard_question)))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
@@ -257,14 +265,14 @@ public class NotificationUtils
 	public DynamicNotification notifyReceiveError(AwaitedFileReceiver receiver)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
-		Intent openIntent = new Intent(mContext, TrebleShotActivity.class)
-				.setAction(TrebleShotActivity.ACTION_OPEN_ONGOING_LIST);
 
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.error))
 				.setContentText(mContext.getString(R.string.file_receiving_error_msg, receiver.fileName))
 				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
+				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
+						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, receiver.groupId), 0));
 
 		return notification.show();
 	}

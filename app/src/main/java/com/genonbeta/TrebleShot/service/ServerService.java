@@ -138,7 +138,11 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
-			getTransactionInstance().updateTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(handler.getExtra())
+					.done();
+
 			getNotificationUtils().notifyReceiveError(handler.getExtra());
 
 			return Flag.CANCEL_ALL;
@@ -155,7 +159,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		{
 			multiCounter++;
 
-			getTransactionInstance().removeTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.removeTransaction(handler.getExtra())
+					.done();
 
 			if (multiCounter <= 1)
 				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile());
@@ -169,7 +176,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			handler.getExtra().notification.cancel();
 			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
-			getTransactionInstance().updateTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(handler.getExtra())
+					.done();
 		}
 
 		@Override
@@ -217,7 +227,10 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 
-			getTransactionInstance().updateTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(handler.getExtra())
+					.done();
 
 			return Flag.CONTINUE;
 		}

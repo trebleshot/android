@@ -14,6 +14,7 @@ import java.util.ArrayList;
 abstract public class CoolTransfer<T>
 {
 	public final static int DELAY_DISABLED = -1;
+
 	private final ArrayList<TransferHandler<T>> mProcess = new ArrayList<>();
 	private int notifyDelay = CoolTransfer.DELAY_DISABLED;
 

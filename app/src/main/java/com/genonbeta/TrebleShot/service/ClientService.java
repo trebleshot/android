@@ -76,7 +76,10 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		{
 			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
 
-			getTransactionInstance().updateTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(handler.getExtra())
+					.done();
 			//getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, "<?>"));
 
 			return Flag.CANCEL_ALL;
@@ -92,7 +95,10 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		public void onTransferCompleted(TransferHandler<AwaitedFileSender> handler)
 		{
 			//getNotificationUtils().showToast(getString(R.string.file_sent_msg, handler.getExtra().fileName));
-			getTransactionInstance().removeTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.removeTransaction(handler.getExtra())
+					.done();
 		}
 
 		@Override
@@ -115,7 +121,10 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
 			handler.getExtra().flag = Transaction.Flag.RUNNING;
 
-			getTransactionInstance().updateTransaction(handler.getExtra());
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(handler.getExtra())
+					.done();
 
 			return Flag.CONTINUE;
 		}

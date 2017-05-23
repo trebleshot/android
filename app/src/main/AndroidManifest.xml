@@ -44,6 +44,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.PendingTransferListActivity"
+                  android:theme="@style/AppTheme.NoActionBar.BlackStatusBar" />
+
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/preferences"/>

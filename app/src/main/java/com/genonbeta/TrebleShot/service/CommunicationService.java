@@ -117,20 +117,21 @@ public class CommunicationService extends Service
 						}
 				);
 
-				if (isAccepted)
+				if (!mTransaction.transactionGroupExists(groupId))
 				{
-					if (mTransaction.acceptPendingReceivers(groupId) < 1)
-					{
-						mNotification.showToast(R.string.something_went_wrong);
-						return START_NOT_STICKY;
-					}
+					mNotification.showToast(R.string.something_went_wrong);
+					return START_NOT_STICKY;
+				}
 
+				if (isAccepted)
 					startService(new Intent(this, ServerService.class)
 							.setAction(ServerService.ACTION_START_RECEIVING)
 							.putExtra(EXTRA_GROUP_ID, groupId));
-				}
 				else
-					mTransaction.removePendingReceivers(groupId);
+					mTransaction
+							.edit()
+							.removeTransactionGroup(groupId)
+							.done();
 			}
 			else if (ACTION_IP.equals(intent.getAction()))
 			{
@@ -252,6 +253,8 @@ public class CommunicationService extends Service
 								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								AwaitedFileReceiver heldReceiver = null;
 
+								Transaction.EditingSession editingSession = mTransaction.edit();
+
 								for (int i = 0; i < jsonArray.length(); i++)
 								{
 									if (!(jsonArray.get(i) instanceof JSONObject))
@@ -263,9 +266,11 @@ public class CommunicationService extends Service
 									{
 										count++;
 										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), groupId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
-										mTransaction.getPendingReceivers().offer(heldReceiver);
+										editingSession.registerTransaction(heldReceiver);
 									}
 								}
+
+								editingSession.done();
 
 								if (heldReceiver != null && count > 0)
 								{
@@ -282,7 +287,10 @@ public class CommunicationService extends Service
 								boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
 
 								if (!isAccepted)
-									mTransaction.removeTransactionGroup(groupId);
+									mTransaction
+											.edit()
+											.removeTransactionGroup(groupId)
+											.done();
 
 								result = true;
 							}
@@ -294,13 +302,17 @@ public class CommunicationService extends Service
 								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
 
-								if (mTransaction.applyAccessPort(requestId, socketPort))
+								Transaction.EditingSession editingSession = mTransaction
+										.edit()
+										.updateAccessPort(requestId, socketPort);
+
+								if (mTransaction.getAffectedRowCount() > 0)
 								{
 									if (receivedMessage.has(Keyword.FILE_SIZE))
 									{
 										ContentValues values = new ContentValues();
 										values.put(Transaction.FIELD_TRANSFER_SIZE, receivedMessage.getLong(Keyword.FILE_SIZE));
-										mTransaction.updateTransaction(requestId, values);
+										editingSession.updateTransaction(requestId, values);
 									}
 
 									AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
@@ -309,7 +321,7 @@ public class CommunicationService extends Service
 									{
 										ContentValues values = new ContentValues();
 										values.put(Transaction.FIELD_TRANSFER_USERIP, clientIp);
-										mTransaction.updateTransactionGroup(sender.groupId, values);
+										editingSession.updateTransactionGroup(sender.groupId, values);
 									}
 
 									Intent starterIntent = new Intent(getApplicationContext(), ClientService.class)
@@ -321,6 +333,8 @@ public class CommunicationService extends Service
 								}
 								else if (mTransaction.transactionGroupExists(groupId))
 									response.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
+
+								editingSession.done();
 							}
 							break;
 						case (Keyword.REQUEST_CLIPBOARD):
