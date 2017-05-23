@@ -142,14 +142,7 @@ public class ShareActivity extends Activity
 														}
 														finally
 														{
-															runOnUiThread(new Runnable()
-															{
-																@Override
-																public void run()
-																{
-																	mProgressConnect.cancel();
-																}
-															});
+															mProgressConnect.cancel();
 														}
 													}
 
@@ -236,7 +229,6 @@ public class ShareActivity extends Activity
 
 						try
 						{
-							int index = 0;
 							int groupId = ApplicationHelper.getUniqueNumber();
 							Transaction.EditingSession editingSession = mTransaction.edit();
 
@@ -263,8 +255,6 @@ public class ShareActivity extends Activity
 								{
 									Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
 								}
-
-								index++;
 							}
 
 							json.put(Keyword.FILES_INDEX, filesArray);
@@ -282,8 +272,10 @@ public class ShareActivity extends Activity
 						{
 							showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
 						}
-
-						mProgressConnect.cancel();
+						finally
+						{
+							mProgressConnect.cancel();
+						}
 					}
 
 					@Override
