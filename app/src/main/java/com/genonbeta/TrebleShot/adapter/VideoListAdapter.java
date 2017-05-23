@@ -24,13 +24,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class VideoListAdapter extends AbstractEditableListAdapter
+public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapter.VideoInfo>
 {
 	private ContentResolver mResolver;
-	private String mSearchWord;
 	private Bitmap mPlaceHolderBitmap;
 	private ArrayList<VideoInfo> mList = new ArrayList<VideoInfo>();
-	private ArrayList<VideoInfo> mPendingList = new ArrayList<VideoInfo>();
 	private Comparator<VideoInfo> mComparator = new Comparator<VideoInfo>()
 	{
 		@Override
@@ -86,10 +84,10 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 		return true;
 	}
 
-	protected void onUpdate()
+	@Override
+	public ArrayList<VideoInfo> onLoad()
 	{
-		mPendingList.clear();
-
+		ArrayList<VideoInfo> list = new ArrayList<>();
 		Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
 		if (cursor.moveToFirst())
@@ -103,29 +101,26 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 				VideoInfo info = new VideoInfo(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
 				long length = cursor.getLong(lengthIndex);
-
-				/*int hrs = (length / 3600000);
-				int mns = (length / 60000) % 60000;
-				int scs = length % 60000 / 1000;*/
-				//info.duration = String.format(Locale.getDefault(), "%02d:%02d:%02d", hrs, mns, scs);
-
 				info.duration = convertDuration(length);
 
-				if (mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(info.title, mSearchWord)))
-					mPendingList.add(info);
+				if (getSearchWord() == null || (getSearchWord() != null && ApplicationHelper.searchWord(info.title, getSearchWord())))
+					list.add(info);
 			}
 			while (cursor.moveToNext());
 
-			Collections.sort(mPendingList, mComparator);
+			Collections.sort(list, mComparator);
 		}
 
 		cursor.close();
+
+		return list;
 	}
 
 	@Override
-	protected void onSearch(String word)
+	public void onUpdate(ArrayList<VideoInfo> passedItem)
 	{
-		mSearchWord = word;
+		mList.clear();
+		mList.addAll(passedItem);
 	}
 
 	public String convertDuration(long duration)
@@ -204,20 +199,6 @@ public class VideoListAdapter extends AbstractEditableListAdapter
 
 		return convertView;
 
-	}
-
-	@Override
-	public void notifyDataSetChanged()
-	{
-		if (mPendingList.size() > 0)
-		{
-			mList.clear();
-			mList.addAll(this.mPendingList);
-
-			mPendingList.clear();
-		}
-
-		super.notifyDataSetChanged();
 	}
 
 	public void loadBitmap(long id, ImageView imageView)

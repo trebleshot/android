@@ -10,10 +10,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class VideoListFragment extends AbstractEditableListFragment<VideoListAdapter> implements FragmentTitle
+public class VideoListFragment extends AbstractEditableListFragment<VideoListAdapter.VideoInfo, VideoListAdapter> implements FragmentTitle
 {
 	@Override
-	protected VideoListAdapter onAdapter()
+	public VideoListAdapter onAdapter()
 	{
 		return new VideoListAdapter(getActivity());
 	}

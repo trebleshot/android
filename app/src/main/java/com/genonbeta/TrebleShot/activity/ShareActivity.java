@@ -44,6 +44,7 @@ public class ShareActivity extends Activity
 	public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
 
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
+	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
 	private EditText mStatusText;
 	private Transaction mTransaction;
@@ -51,6 +52,7 @@ public class ShareActivity extends Activity
 	private DeviceRegistry mDeviceRegistry;
 	private ProgressDialog mProgressOrganizeFiles;
 	private ProgressDialog mProgressConnect;
+	private ConnectionHandler mConnectionHandler;
 	private ArrayList<FileState> mFiles = new ArrayList<>();
 
 	@Override
@@ -73,7 +75,16 @@ public class ShareActivity extends Activity
 		mProgressConnect = new ProgressDialog(this);
 		mProgressConnect.setIndeterminate(true);
 		mProgressConnect.setCancelable(false);
-		mProgressConnect.setMessage("Communicating");
+		mProgressConnect.setMessage(getString(R.string.progress_communicate));
+
+		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
+		{
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			{
+				showChooserDialog((NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position));
+			}
+		});
 
 		if (getIntent() != null && getIntent().getAction() != null)
 		{
@@ -101,61 +112,28 @@ public class ShareActivity extends Activity
 							}
 						});
 
-						mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
+						registerHandler(new ConnectionHandler()
 						{
 							@Override
-							public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp)
 							{
-								final NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
-
-								new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+								try
 								{
-									@Override
-									public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+									json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+									json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+
+									JSONObject response = new JSONObject(process.waitForResponse());
+
+									if (response.getBoolean(Keyword.RESULT))
 									{
-										final String deviceIp = addressHolder.address;
 
-										mProgressConnect.show();
-
-										CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-												new JsonResponseHandler()
-												{
-													@Override
-													public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-													{
-														try
-														{
-															json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-															json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
-
-															JSONObject response = new JSONObject(process.waitForResponse());
-
-															if (response.getBoolean(Keyword.RESULT))
-															{
-
-															}
-															else
-																showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-														} catch (Exception e)
-														{
-															showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-														}
-														finally
-														{
-															mProgressConnect.cancel();
-														}
-													}
-
-													@Override
-													public void onError(Exception e)
-													{
-														e.printStackTrace();
-														showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-													}
-												}
-										);
 									}
-								}).show();
+									else
+										showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+								} catch (Exception e)
+								{
+									showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+								}
 							}
 						});
 					}
@@ -175,7 +153,7 @@ public class ShareActivity extends Activity
 							fileNames.add(fileName);
 						}
 
-						registerClickListener(fileUris, fileNames);
+						registerClickListenerFiles(fileUris, fileNames);
 					}
 					break;
 				case ACTION_SEND_MULTIPLE:
@@ -183,11 +161,20 @@ public class ShareActivity extends Activity
 					ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 					ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
-					registerClickListener(fileUris, fileNames);
+					registerClickListenerFiles(fileUris, fileNames);
 					break;
 				default:
 					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).show();
 					finish();
+			}
+
+			if (mConnectionHandler != null && getIntent().hasExtra(EXTRA_DEVICE_ID))
+			{
+				String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+				NetworkDevice chosenDevice = mDeviceRegistry.getNetworkDeviceById(deviceId);
+
+				if (chosenDevice != null)
+					showChooserDialog(chosenDevice);
 			}
 		}
 	}
@@ -206,87 +193,6 @@ public class ShareActivity extends Activity
 	{
 		mStatusText.getText().clear();
 		mStatusText.getText().append(charSequence);
-	}
-
-	protected void handleFiles(final NetworkDevice device)
-	{
-		mProgressConnect.show();
-		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
-
-		CoolCommunication.Messenger.send(device.ip, AppConfig.COMMUNATION_SERVER_PORT, null,
-				new JsonResponseHandler()
-				{
-					@Override
-					public void onConfigure(CoolCommunication.Messenger.Process process)
-					{
-						process.setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
-					}
-
-					@Override
-					public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-					{
-						JSONArray filesArray = new JSONArray();
-
-						try
-						{
-							int groupId = ApplicationHelper.getUniqueNumber();
-							Transaction.EditingSession editingSession = mTransaction.edit();
-
-							json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-							json.put(Keyword.GROUP_ID, groupId);
-
-							for (FileState fileState : mFiles)
-							{
-								int requestId = ApplicationHelper.getUniqueNumber();
-								AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileState.fileName, 0, fileState.file);
-								JSONObject thisJson = new JSONObject();
-
-								try
-								{
-									thisJson.put(Keyword.FILE_NAME, fileState.fileName);
-									thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
-									thisJson.put(Keyword.REQUEST_ID, requestId);
-									thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
-
-									filesArray.put(thisJson);
-
-									editingSession.registerTransaction(sender);
-								} catch (Exception e)
-								{
-									Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
-								}
-							}
-
-							json.put(Keyword.FILES_INDEX, filesArray);
-
-							JSONObject response = new JSONObject(process.waitForResponse());
-
-							if (!response.getBoolean(Keyword.RESULT))
-							{
-								Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
-								editingSession.removeTransactionGroup(groupId);
-
-								showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
-							}
-						} catch (Exception e)
-						{
-							showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
-						}
-						finally
-						{
-							mProgressConnect.cancel();
-						}
-					}
-
-					@Override
-					public void onError(Exception e)
-					{
-
-						mProgressConnect.cancel();
-						showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
-					}
-				}
-		);
 	}
 
 	protected void organizeFiles(File file, String fileName)
@@ -347,28 +253,107 @@ public class ShareActivity extends Activity
 		}.start();
 	}
 
-	protected void registerClickListener(final ArrayList<Uri> fileUris,
-										 final ArrayList<CharSequence> fileNames)
+	protected void registerHandler(ConnectionHandler handler)
+	{
+		mConnectionHandler = handler;
+	}
+
+	protected void registerClickListenerFiles(final ArrayList<Uri> fileUris,
+											  final ArrayList<CharSequence> fileNames)
 	{
 		organizeFiles(fileUris, fileNames);
 
-		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
+		registerHandler(new ConnectionHandler()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp)
 			{
-				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+				device = mDeviceRegistry.getNetworkDevice(chosenIp);
+				JSONArray filesArray = new JSONArray();
 
-				new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+				try
 				{
-					@Override
-					public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+					int groupId = ApplicationHelper.getUniqueNumber();
+					Transaction.EditingSession editingSession = mTransaction.edit();
+
+					json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+					json.put(Keyword.GROUP_ID, groupId);
+
+					for (FileState fileState : mFiles)
 					{
-						handleFiles(mDeviceRegistry.getNetworkDevice(addressHolder.address));
+						int requestId = ApplicationHelper.getUniqueNumber();
+						AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileState.fileName, 0, fileState.file);
+						JSONObject thisJson = new JSONObject();
+
+						try
+						{
+							thisJson.put(Keyword.FILE_NAME, fileState.fileName);
+							thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
+							thisJson.put(Keyword.REQUEST_ID, requestId);
+							thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
+
+							filesArray.put(thisJson);
+
+							editingSession.registerTransaction(sender);
+						} catch (Exception e)
+						{
+							Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
+						}
 					}
-				}).show();
+
+					json.put(Keyword.FILES_INDEX, filesArray);
+
+					JSONObject response = new JSONObject(process.waitForResponse());
+
+					if (!response.getBoolean(Keyword.RESULT))
+					{
+						Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
+						editingSession.removeTransactionGroup(groupId);
+
+						showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+					}
+				} catch (Exception e)
+				{
+					showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+				}
 			}
 		});
+	}
+
+	protected void showChooserDialog(final NetworkDevice device)
+	{
+		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
+		mDeviceRegistry.updateLastUsageTime(device, System.currentTimeMillis());
+
+		new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+		{
+			@Override
+			public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+			{
+				final String deviceIp = addressHolder.address;
+
+				mProgressConnect.show();
+
+				CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
+						new JsonResponseHandler()
+						{
+							@Override
+							public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
+							{
+								mConnectionHandler.onHandle(process, json, device, deviceIp);
+								mProgressConnect.cancel();
+							}
+
+							@Override
+							public void onError(Exception e)
+							{
+								mProgressConnect.cancel();
+								showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
+							}
+						}
+				);
+			}
+		}).show();
 	}
 
 	protected void showToast(String msg)
@@ -376,6 +361,17 @@ public class ShareActivity extends Activity
 		Looper.prepare();
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 		Looper.loop();
+	}
+
+	protected void updateStats(NetworkDevice device)
+	{
+		mProgressConnect.show();
+		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
+	}
+
+	private interface ConnectionHandler
+	{
+		public void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp);
 	}
 
 	private class FileState

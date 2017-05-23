@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class PendingTransferListAdapter extends AbstractEditableListAdapter
+public class PendingTransferListAdapter extends AbstractEditableListAdapter<CursorItem>
 {
 	public static final String FIELD_TRANSFER_TOTAL_COUNT = "pseudoTotalCount";
 
@@ -68,16 +68,16 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 	}
 
 	@Override
-	protected void onSearch(String word)
+	public ArrayList<CursorItem> onLoad()
 	{
-
+		return mTransaction.getTable(mSelect);
 	}
 
 	@Override
-	protected void onUpdate()
+	public void onUpdate(ArrayList<CursorItem> passedItem)
 	{
 		mList.clear();
-		mList.addAll(mTransaction.getTable(mSelect));
+		mList.addAll(passedItem);
 	}
 
 	private void initialize(Context context)
@@ -106,6 +106,14 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 	public SQLQuery.Select getSelect()
 	{
 		return mSelect;
+	}
+
+	public PendingTransferListAdapter setSelect(SQLQuery.Select select)
+	{
+		if (select != null)
+			mSelect = select;
+
+		return this;
 	}
 
 	@Override
@@ -161,13 +169,5 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter
 		});
 
 		return view;
-	}
-
-	public PendingTransferListAdapter setSelect(SQLQuery.Select select)
-	{
-		if (select != null)
-			mSelect = select;
-
-		return this;
 	}
 }

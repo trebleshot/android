@@ -10,10 +10,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class MusicListFragment extends AbstractEditableListFragment<MusicListAdapter> implements FragmentTitle
+public class MusicListFragment extends AbstractEditableListFragment<MusicListAdapter.MusicInfo, MusicListAdapter> implements FragmentTitle
 {
 	@Override
-	protected MusicListAdapter onAdapter()
+	public MusicListAdapter onAdapter()
 	{
 		return new MusicListAdapter(getActivity());
 	}

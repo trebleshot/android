@@ -23,61 +23,21 @@ public class NetworkDeviceInfoLoader
 	{
 	}
 
-	public NetworkDevice startLoadingOnCurrentThread(final DeviceRegistry deviceRegistry, final String deviceIp) throws ConnectException
-	{
-		final NetworkDevice device = deviceRegistry.getNetworkDevice(deviceIp);
-
-		CoolCommunication.Messenger.sendOnCurrentThread(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, new JsonResponseHandler()
-		{
-			@Override
-			public void onConfigure(CoolCommunication.Messenger.Process process)
-			{
-				super.onConfigure(process);
-
-				try
-				{
-					Thread.sleep(1500);
-				} catch (InterruptedException e)
-				{
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-			{
-			}
-
-			@Override
-			public void onResponseAvailable(String response)
-			{
-				try
-				{
-					JSONObject json = new JSONObject(response).getJSONObject(Keyword.DEVICE_INFO);
-
-					device.brand = json.getString(Keyword.BRAND);
-					device.model = json.getString(Keyword.MODEL);
-					device.user = json.getString(Keyword.USER);
-					device.deviceId = json.getString(Keyword.SERIAL);
-
-					if (mListener != null)
-						mListener.onInfoAvailable(device);
-				} catch (Exception e)
-				{
-					onError(e);
-				}
-			}
-		});
-
-		if (device.deviceId == null)
-			throw new ConnectException("Serial is needed for " + deviceIp + " in order to list the device");
-
-		return device;
-	}
-
 	public void startLoading(final DeviceRegistry deviceRegistry, final String deviceIp)
 	{
-		CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, new JsonResponseHandler()
+		try
+		{
+			startLoading(false, deviceRegistry, deviceIp);
+		} catch (ConnectException e)
+		{
+			e.printStackTrace();
+		}
+	}
+
+	public NetworkDevice startLoading(boolean currentThread, final DeviceRegistry deviceRegistry, final String deviceIp) throws ConnectException
+	{
+		final NetworkDevice device = deviceRegistry.getNetworkDevice(deviceIp);
+		final JsonResponseHandler handler = new JsonResponseHandler()
 		{
 			@Override
 			public void onConfigure(CoolCommunication.Messenger.Process process)
@@ -104,12 +64,12 @@ public class NetworkDeviceInfoLoader
 				try
 				{
 					JSONObject json = new JSONObject(response).getJSONObject(Keyword.DEVICE_INFO);
-					NetworkDevice device = deviceRegistry.getNetworkDevice(deviceIp);
 
 					device.brand = json.getString(Keyword.BRAND);
 					device.model = json.getString(Keyword.MODEL);
 					device.user = json.getString(Keyword.USER);
 					device.deviceId = json.getString(Keyword.SERIAL);
+					device.lastUsageTime = System.currentTimeMillis();
 
 					if (mListener != null)
 						mListener.onInfoAvailable(device);
@@ -118,7 +78,19 @@ public class NetworkDeviceInfoLoader
 					onError(e);
 				}
 			}
-		});
+		};
+
+		if (currentThread)
+		{
+			CoolCommunication.Messenger.sendOnCurrentThread(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
+
+			if (device.deviceId == null)
+				throw new ConnectException("Serial is needed for " + deviceIp + " in order to list the device");
+		}
+		else
+			CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
+
+		return device;
 	}
 
 	public static interface OnInfoAvailableListener

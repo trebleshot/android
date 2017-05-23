@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.SearchView;
@@ -22,13 +21,11 @@ import com.genonbeta.TrebleShot.helper.GAnimater;
 
 import java.util.ArrayList;
 
-public abstract class AbstractEditableListFragment<T extends AbstractEditableListAdapter> extends ListFragment
+public abstract class AbstractEditableListFragment<T, E extends AbstractEditableListAdapter<T>> extends com.genonbeta.TrebleShot.app.ListFragment<T, E>
 {
-	private T mAdapter;
 	private ActionMode mActionMode;
 	private ActionModeListener mActionModeListener;
 	private boolean mSearchSupport = true;
-	private boolean mIsLoading = false;
 
 	private Runnable mNotifyListChanges = new Runnable()
 	{
@@ -36,7 +33,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		public void run()
 		{
 			getAdapter().notifyDataSetChanged();
-			setEmptyText(getString(R.string.list_empty_msg));
 
 			if (mActionModeListener != null)
 				mActionModeListener.clearSelectionList();
@@ -45,20 +41,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 				for (int i = 0; i < getListView().getCount(); i++)
 					if (getListView().isItemChecked(i))
 						mActionModeListener.onItemCheckedStateChanged(mActionMode, i, 0, true);
-		}
-	};
-
-	private Runnable mUpdateList = new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			boolean updateSucceed = getAdapter().update();
-
-			if (updateSucceed && getActivity() != null && !isDetached())
-				getActivity().runOnUiThread(mNotifyListChanges);
-
-			mIsLoading = false;
 		}
 	};
 
@@ -78,8 +60,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		}
 	};
 
-	protected abstract T onAdapter();
-
 	protected abstract ActionModeListener onActionModeListener();
 
 	@Override
@@ -94,10 +74,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mAdapter = onAdapter();
 		mActionModeListener = onActionModeListener();
-
-		setListAdapter(mAdapter);
 
 		if (mActionModeListener != null)
 		{
@@ -114,7 +91,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 	public void onResume()
 	{
 		super.onResume();
-		updateInBackground();
+		refreshList();
 	}
 
 	@Override
@@ -143,16 +120,6 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 		}
 	}
 
-	public T getAdapter()
-	{
-		return mAdapter;
-	}
-
-	public boolean isLoading()
-	{
-		return mIsLoading;
-	}
-
 	public void openFile(Uri uri, String type, String chooserText)
 	{
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
@@ -170,26 +137,12 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 			word = word.toLowerCase();
 
 		getAdapter().search(word);
-		updateInBackground();
+		refreshList();
 	}
 
 	public void setSearchSupport(boolean searchSupport)
 	{
 		mSearchSupport = searchSupport;
-	}
-
-	public boolean updateInBackground()
-	{
-		if (getActivity() == null || isLoading())
-			return false;
-
-		mIsLoading = true;
-
-		setEmptyText(getString(R.string.loading));
-
-		new Thread(mUpdateList).start();
-
-		return true;
 	}
 
 	protected abstract class ActionModeListener implements AbsListView.MultiChoiceModeListener
@@ -300,7 +253,7 @@ public abstract class AbstractEditableListFragment<T extends AbstractEditableLis
 				mCheckedList.remove(uri);
 			}
 
-			mSelectAll.setIcon((mCheckedList.size() == mAdapter.getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
+			mSelectAll.setIcon((mCheckedList.size() == getAdapter().getCount()) ? R.drawable.ic_unselect : R.drawable.ic_select);
 
 			mode.setTitle(String.valueOf(getListView().getCheckedItemCount()));
 		}

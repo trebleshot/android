@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationSet;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,27 +15,47 @@ import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.GAnimater;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.widget.ListAdapter;
 
 import java.util.ArrayList;
 
-public class NetworkDeviceListAdapter extends BaseAdapter
+public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 {
 	private boolean mShowLocalAddresses = false;
-	private Context mContext;
 	private DeviceRegistry mDeviceRegistry;
-	private ArrayList<NetworkDevice> mDeviceList = new ArrayList<NetworkDevice>();
+	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
 	public NetworkDeviceListAdapter(Context context, boolean showLocalAddresses)
 	{
+		super(context);
+
 		mShowLocalAddresses = showLocalAddresses;
-		mContext = context;
 		mDeviceRegistry = new DeviceRegistry(context);
+	}
+
+	@Override
+	public ArrayList<NetworkDevice> onLoad()
+	{
+		ArrayList<NetworkDevice> list = new ArrayList<>();
+
+		for (NetworkDevice device : mDeviceRegistry.getDeviceList())
+			if (device.user != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress))
+				list.add(device);
+
+		return list;
+	}
+
+	@Override
+	public void onUpdate(ArrayList<NetworkDevice> passedItem)
+	{
+		mList.clear();
+		mList.addAll(passedItem);
 	}
 
 	@Override
 	public int getCount()
 	{
-		return mDeviceList.size();
+		return mList.size();
 	}
 
 	public DeviceRegistry getDeviceRegistry()
@@ -47,7 +66,7 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 	@Override
 	public Object getItem(int itemId)
 	{
-		return mDeviceList.get(itemId);
+		return mList.get(itemId);
 	}
 
 	@Override
@@ -80,17 +99,5 @@ public class NetworkDeviceListAdapter extends BaseAdapter
 		userImage.setImageDrawable(drawable);
 
 		return view;
-	}
-
-	@Override
-	public void notifyDataSetChanged()
-	{
-		mDeviceList.clear();
-
-		for (NetworkDevice device : mDeviceRegistry.getDeviceList())
-			if (device.user != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress))
-				mDeviceList.add(device);
-
-		super.notifyDataSetChanged();
 	}
 }

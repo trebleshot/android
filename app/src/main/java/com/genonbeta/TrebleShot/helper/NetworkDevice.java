@@ -12,6 +12,7 @@ public class NetworkDevice
 	public String model;
 	public String user;
 	public String deviceId;
+	public long lastUsageTime;
 	public boolean isRestricted = false;
 	public boolean isLocalAddress = false;
 	public String[] availableConnections;
@@ -30,6 +31,7 @@ public class NetworkDevice
 		this.brand = item.getString(DeviceRegistry.FIELD_DEVICES_BRAND);
 		this.model = item.getString(DeviceRegistry.FIELD_DEVICES_MODEL);
 		this.deviceId = item.getString(DeviceRegistry.FIELD_DEVICES_ID);
+		this.lastUsageTime = item.getLong(DeviceRegistry.FIELD_DEVICES_LASTUSAGETIME);
 		this.isRestricted = item.getInt(DeviceRegistry.FIELD_DEVICES_ISRESTRICTED) == 1;
 		this.isLocalAddress = item.getInt(DeviceRegistry.FIELD_DEVICES_ISLOCALADDRESS) == 1;
 
@@ -52,6 +54,7 @@ public class NetworkDevice
 		values.put(DeviceRegistry.FIELD_DEVICES_BRAND, brand);
 		values.put(DeviceRegistry.FIELD_DEVICES_MODEL, model);
 		values.put(DeviceRegistry.FIELD_DEVICES_ID, deviceId);
+		values.put(DeviceRegistry.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
 		values.put(DeviceRegistry.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
 		values.put(DeviceRegistry.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
 	}

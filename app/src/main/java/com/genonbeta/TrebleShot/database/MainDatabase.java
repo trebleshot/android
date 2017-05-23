@@ -39,6 +39,7 @@ public class MainDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_BRAND = "brand";
 	public static final String FIELD_DEVICES_MODEL = "model";
 	public static final String FIELD_DEVICES_ID = "deviceId";
+	public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
 	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
 	public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
 
@@ -46,7 +47,7 @@ public class MainDatabase extends SQLiteDatabase
 
 	public MainDatabase(Context context)
 	{
-		super(context, DATABASE_NAME, null, 1);
+		super(context, DATABASE_NAME, null, 2);
 		mContext = context;
 	}
 
@@ -73,15 +74,22 @@ public class MainDatabase extends SQLiteDatabase
 				.addColumn(FIELD_DEVICES_BRAND, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_DEVICES_MODEL, SQLQuery.Type.TEXT.toString(), true)
 				.addColumn(FIELD_DEVICES_ID, SQLQuery.Type.TEXT.toString(), true)
+				.addColumn(FIELD_DEVICES_LASTUSAGETIME, SQLQuery.Type.INTEGER.toString(), false)
 				.addColumn(FIELD_DEVICES_ISRESTRICTED, SQLQuery.Type.INTEGER.toString(), false)
 				.addColumn(FIELD_DEVICES_ISLOCALADDRESS, SQLQuery.Type.INTEGER.toString(), false)
 				.exec(db);
 	}
 
 	@Override
-	public void onUpgrade(android.database.sqlite.SQLiteDatabase sqLiteDatabase, int i, int i1)
+	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
+		if (old != current)
+		{
+			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
+			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
 
+			onCreate(db);
+		}
 	}
 
 	public long getAffectedRowCount()

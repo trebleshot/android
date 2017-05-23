@@ -40,6 +40,20 @@ public class PendingTransferListActivity extends Activity
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
+	public static void startInstance(Context context, String deviceId)
+	{
+		context.startActivity(new Intent(context, PendingTransferListActivity.class)
+				.setAction(ACTION_LIST_TRANSFERS)
+				.putExtra(EXTRA_DEVICE_ID, deviceId));
+	}
+
+	public static void startInstance(Context context, int groupId)
+	{
+		context.startActivity(new Intent(context, PendingTransferListActivity.class)
+				.setAction(ACTION_LIST_TRANSFERS)
+				.putExtra(EXTRA_GROUP_ID, groupId));
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -140,20 +154,6 @@ public class PendingTransferListActivity extends Activity
 				}
 			}
 		});
-	}
-
-	public static void startInstance(Context context, String deviceId)
-	{
-		context.startActivity(new Intent(context, PendingTransferListActivity.class)
-				.setAction(ACTION_LIST_TRANSFERS)
-				.putExtra(EXTRA_DEVICE_ID, deviceId));
-	}
-
-	public static void startInstance(Context context, int groupId)
-	{
-		context.startActivity(new Intent(context, PendingTransferListActivity.class)
-				.setAction(ACTION_LIST_TRANSFERS)
-				.putExtra(EXTRA_GROUP_ID, groupId));
 	}
 
 	public SQLQuery.Select createLoader()

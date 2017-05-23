@@ -1,7 +1,5 @@
 package com.genonbeta.CoolSocket;
 
-import android.support.v7.app.WindowDecorActionBar;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;

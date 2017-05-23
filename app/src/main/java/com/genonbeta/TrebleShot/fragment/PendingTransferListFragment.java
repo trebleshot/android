@@ -17,7 +17,7 @@ import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
-public class PendingTransferListFragment extends AbstractEditableListFragment<PendingTransferListAdapter> implements FragmentTitle
+public class PendingTransferListFragment extends AbstractEditableListFragment<CursorItem, PendingTransferListAdapter> implements FragmentTitle
 {
 	public Transaction mTransaction;
 	public DeviceRegistry mDeviceRegistry;
@@ -28,7 +28,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Pe
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			updateInBackground();
+			refreshList();
 		}
 	};
 
@@ -45,6 +45,12 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Pe
 	}
 
 	@Override
+	public PendingTransferListAdapter onAdapter()
+	{
+		return new PendingTransferListAdapter(getActivity()).setSelect(mSelect);
+	}
+
+	@Override
 	public void onResume()
 	{
 		super.onResume();
@@ -56,12 +62,6 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Pe
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mReceiver);
-	}
-
-	@Override
-	protected PendingTransferListAdapter onAdapter()
-	{
-		return new PendingTransferListAdapter(getActivity()).setSelect(mSelect);
 	}
 
 	@Override

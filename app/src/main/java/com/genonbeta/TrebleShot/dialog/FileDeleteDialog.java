@@ -7,7 +7,6 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
 
 import java.io.File;
 import java.net.URI;
@@ -66,6 +65,7 @@ public class FileDeleteDialog extends AlertDialog.Builder
 	public static interface Listener
 	{
 		public void onFileDeletion(Context context, File file);
+
 		public void onCompleted(Context context, int fileSize);
 	}
 }

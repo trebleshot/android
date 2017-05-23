@@ -163,6 +163,15 @@ public class DeviceRegistry extends MainDatabase
 		return notifyRemoved() > 0;
 	}
 
+	public boolean updateLastUsageTime(NetworkDevice device, long time)
+	{
+		ContentValues values = new ContentValues();
+		values.put(FIELD_DEVICES_LASTUSAGETIME, time);
+
+		return updateDevice(new SQLQuery.Select(TABLE_DEVICES)
+				.setWhere(FIELD_DEVICES_ID + "=?", device.deviceId), values) > 0;
+	}
+
 	public boolean updateRestriction(String ipAddress, boolean restrict)
 	{
 		return updateRestrictionByDeviceId(getNetworkDevice(ipAddress), restrict);
@@ -179,8 +188,12 @@ public class DeviceRegistry extends MainDatabase
 		ContentValues values = new ContentValues();
 		values.put(FIELD_DEVICES_ISRESTRICTED, restrict ? 1 : 0);
 
-		update(new SQLQuery.Select(TABLE_DEVICES).setWhere(FIELD_DEVICES_ID + "=?", deviceId), values);
+		return updateDevice(new SQLQuery.Select(TABLE_DEVICES).setWhere(FIELD_DEVICES_ID + "=?", deviceId), values) > 0;
+	}
 
-		return notifyUpdated() > 0;
+	public long updateDevice(SQLQuery.Select select, ContentValues values)
+	{
+		update(select, values);
+		return notifyUpdated();
 	}
 }

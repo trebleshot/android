@@ -17,13 +17,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ApplicationListAdapter extends AbstractEditableListAdapter
+public class ApplicationListAdapter extends AbstractEditableListAdapter<ApplicationListAdapter.AppInfo>
 {
 	private boolean mShowSysApps = false;
-	private String mSearchWord;
 	private PackageManager mManager;
-	private ArrayList<AppInfo> mList = new ArrayList<AppInfo>();
-	private ArrayList<AppInfo> mPendingList = new ArrayList<AppInfo>();
+	private ArrayList<AppInfo> mList = new ArrayList<>();
 	private Comparator<AppInfo> mComparator = new Comparator<AppInfo>()
 	{
 		@Override
@@ -41,9 +39,9 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 	}
 
 	@Override
-	protected void onUpdate()
+	public ArrayList<AppInfo> onLoad()
 	{
-		mPendingList.clear();
+		ArrayList<AppInfo> list = new ArrayList<>();
 
 		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA))
 		{
@@ -53,18 +51,21 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 			{
 				String label = (String) appInfo.loadLabel(mManager);
 
-				if (mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(label, mSearchWord)))
-					mPendingList.add(new AppInfo(appInfo.loadLogo(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+				if (getSearchWord() == null || (getSearchWord() != null && ApplicationHelper.searchWord(label, getSearchWord())))
+					list.add(new AppInfo(appInfo.loadLogo(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 			}
 		}
 
-		Collections.sort(mPendingList, mComparator);
+		Collections.sort(list, mComparator);
+
+		return list;
 	}
 
 	@Override
-	protected void onSearch(String word)
+	public void onUpdate(ArrayList<AppInfo> passedItem)
 	{
-		mSearchWord = word;
+		mList.clear();
+		mList.addAll(passedItem);
 	}
 
 	@Override
@@ -99,20 +100,6 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter
 		text2.setText(info.version);
 
 		return view;
-	}
-
-	@Override
-	public void notifyDataSetChanged()
-	{
-		if (mPendingList.size() > 0)
-		{
-			mList.clear();
-			mList.addAll(mPendingList);
-
-			mPendingList.clear();
-		}
-
-		super.notifyDataSetChanged();
 	}
 
 	public void showSystemApps(boolean show)

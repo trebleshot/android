@@ -20,7 +20,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
-public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter> implements FragmentTitle
+public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter.AppInfo, ApplicationListAdapter> implements FragmentTitle
 {
 	private SharedPreferences mPreferences;
 
@@ -34,7 +34,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	}
 
 	@Override
-	protected ApplicationListAdapter onAdapter()
+	public ApplicationListAdapter onAdapter()
 	{
 		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false));
 	}
@@ -59,7 +59,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 		{
 			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
 			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
-			updateInBackground();
+			refreshList();
 
 			return true;
 		}

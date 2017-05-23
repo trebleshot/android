@@ -15,11 +15,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
+public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<ReceivedFilesListAdapter.FileInfo>
 {
-
 	private ArrayList<FileInfo> mList = new ArrayList<>();
-	private String mSearchWord;
 	private File mDefaultPath;
 	private File mPath;
 	private Comparator<FileInfo> mComparator = new Comparator<FileInfo>()
@@ -38,16 +36,9 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 	}
 
 	@Override
-	protected void onSearch(String word)
+	public ArrayList<FileInfo> onLoad()
 	{
-		mSearchWord = word;
-	}
-
-	@Override
-	protected void onUpdate()
-	{
-		mList.clear();
-
+		ArrayList<FileInfo> list = new ArrayList<>();
 		ArrayList<FileInfo> folders = new ArrayList<>();
 		ArrayList<FileInfo> files = new ArrayList<>();
 
@@ -65,10 +56,19 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter
 		Collections.sort(files, mComparator);
 
 		if (mPath.getParentFile() != null && mPath.getParentFile().canRead())
-			mList.add(new FileInfo(mContext.getString(R.string.file_manager_go_up), "", mPath.getParentFile()));
+			list.add(new FileInfo(mContext.getString(R.string.file_manager_go_up), "", mPath.getParentFile()));
 
-		mList.addAll(folders);
-		mList.addAll(files);
+		list.addAll(folders);
+		list.addAll(files);
+
+		return list;
+	}
+
+	@Override
+	public void onUpdate(ArrayList<FileInfo> passedItem)
+	{
+		mList.clear();
+		mList.addAll(passedItem);
 	}
 
 	@Override

@@ -17,12 +17,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MusicListAdapter extends AbstractEditableListAdapter
+public class MusicListAdapter extends AbstractEditableListAdapter<MusicListAdapter.MusicInfo>
 {
 	private ContentResolver mResolver;
-	private String mSearchWord;
 	private ArrayList<MusicInfo> mList = new ArrayList<MusicInfo>();
-	private ArrayList<MusicInfo> mPendingList = new ArrayList<MusicInfo>();
 	private Comparator<MusicInfo> mComparator = new Comparator<MusicInfo>()
 	{
 		@Override
@@ -38,10 +36,10 @@ public class MusicListAdapter extends AbstractEditableListAdapter
 		mResolver = context.getContentResolver();
 	}
 
-	protected void onUpdate()
+	@Override
+	public ArrayList<MusicInfo> onLoad()
 	{
-		mPendingList.clear();
-
+		ArrayList<MusicInfo> list = new ArrayList<>();
 		Cursor cursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
 		if (cursor.moveToFirst())
@@ -55,20 +53,23 @@ public class MusicListAdapter extends AbstractEditableListAdapter
 				MusicInfo info = new MusicInfo(cursor.getString(artistIndex), cursor.getString(songIndex), Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
 				if (mSearchWord == null || (mSearchWord != null && (ApplicationHelper.searchWord(info.artist, mSearchWord) || ApplicationHelper.searchWord(info.song, mSearchWord))))
-					mPendingList.add(info);
+					list.add(info);
 			}
 			while (cursor.moveToNext());
 
-			Collections.sort(mPendingList, mComparator);
+			Collections.sort(list, mComparator);
 		}
 
 		cursor.close();
+
+		return list;
 	}
 
 	@Override
-	protected void onSearch(String word)
+	public void onUpdate(ArrayList<MusicInfo> passedItem)
 	{
-		mSearchWord = word;
+		mList.clear();
+		mList.addAll(passedItem);
 	}
 
 	@Override
@@ -104,21 +105,6 @@ public class MusicListAdapter extends AbstractEditableListAdapter
 
 		return convertView;
 	}
-
-	@Override
-	public void notifyDataSetChanged()
-	{
-		if (mPendingList.size() > 0)
-		{
-			mList.clear();
-			mList.addAll(this.mPendingList);
-
-			mPendingList.clear();
-		}
-
-		super.notifyDataSetChanged();
-	}
-
 
 	public static class MusicInfo
 	{

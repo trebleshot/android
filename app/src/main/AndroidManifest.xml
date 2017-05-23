@@ -39,13 +39,17 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>
+            <meta-data android:name="android.service.chooser.chooser_target_service"
+                       android:value=".service.DeviceChooserService" />
         </activity>
 
-        <activity android:name=".activity.PendingTransferListActivity"
-                  android:theme="@style/AppTheme.NoActionBar.BlackStatusBar" />
+        <activity
+            android:name=".activity.PendingTransferListActivity"
+            android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
 
         <activity
             android:name=".activity.PreferencesActivity"
@@ -69,6 +73,15 @@
             android:name=".service.CommunicationService"
             android:label="Communication Service"/>
 
+        <service
+            android:name=".service.DeviceChooserService"
+            android:label="Device Chooser Provider"
+            android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.chooser.ChooserTargetService"/>
+            </intent-filter>
+        </service>
+
         <receiver android:name=".receiver.NetworkStatusReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
@@ -81,6 +94,7 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

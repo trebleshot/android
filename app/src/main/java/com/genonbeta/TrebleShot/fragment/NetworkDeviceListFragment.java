@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.MenuItemCompat;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,12 +26,12 @@ import com.genonbeta.TrebleShot.helper.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.widget.ListAdapter;
 
-public class NetworkDeviceListFragment extends ListFragment implements FragmentTitle
+public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.ListFragment<NetworkDevice, NetworkDeviceListAdapter> implements FragmentTitle
 {
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private SelfReceiver mReceiver = new SelfReceiver();
-	private NetworkDeviceListAdapter mListAdapter;
 	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private MenuItem mAnimatedSearchMenuItem;
@@ -47,6 +46,9 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 		mIntentFilter.addAction(DeviceRegistry.ACTION_DEVICE_REMOVED);
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
+
+		mNotification = new NotificationUtils(getActivity());
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 	}
 
 	@Override
@@ -54,23 +56,17 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mNotification = new NotificationUtils(getActivity());
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-		mListAdapter = new NetworkDeviceListAdapter(getActivity(), mPreferences.getBoolean("developer_mode", false));
-
-		setListAdapter(mListAdapter);
 		setHasOptionsMenu(true);
+		setEmptyText(getString(R.string.find_device_hint));
 
 		getListView().setDividerHeight(0);
-
-		setEmptyText(getString(R.string.find_device_hint));
 
 		if (mPreferences.getBoolean("developer_mode", false))
 		{
 			NetworkDevice device = new NetworkDevice("127.0.0.1");
 			device.isLocalAddress = true;
 
-			mListAdapter.getDeviceRegistry().registerDevice(device);
+			getAdapter().getDeviceRegistry().registerDevice(device);
 
 			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP)
 					.putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, "127.0.0.1"));
@@ -81,16 +77,23 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	}
 
 	@Override
+	public NetworkDeviceListAdapter onAdapter()
+	{
+		return new NetworkDeviceListAdapter(getActivity(), mPreferences.getBoolean("developer_mode", false));
+	}
+
+
+	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
 
-		final NetworkDevice device = (NetworkDevice) mListAdapter.getItem(position);
+		final NetworkDevice device = (NetworkDevice) getAdapter().getItem(position);
 
 		if (mClickListener != null)
 			mClickListener.onItemClick(l, v, position, id);
 		else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getContext(), mListAdapter.getDeviceRegistry(), mNotification, device).show();
+			new DeviceInfoDialog(getContext(), getAdapter().getDeviceRegistry(), mNotification, device).show();
 	}
 
 	@Override
@@ -98,8 +101,8 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 	{
 		super.onResume();
 
-		mListAdapter.notifyDataSetChanged();
 		getActivity().registerReceiver(mReceiver, mIntentFilter);
+		refreshList();
 	}
 
 	@Override
@@ -156,7 +159,7 @@ public class NetworkDeviceListFragment extends ListFragment implements FragmentT
 
 			if (DeviceRegistry.ACTION_DEVICE_UPDATED.equals(intent.getAction()) || DeviceRegistry.ACTION_DEVICE_REMOVED.equals(intent.getAction()))
 			{
-				mListAdapter.notifyDataSetChanged();
+				refreshList();
 			}
 			else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS))
 			{

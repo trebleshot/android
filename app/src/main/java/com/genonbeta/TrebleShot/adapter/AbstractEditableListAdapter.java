@@ -1,50 +1,26 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.view.LayoutInflater;
-import android.widget.BaseAdapter;
 
-abstract public class AbstractEditableListAdapter extends BaseAdapter
+import com.genonbeta.widget.ListAdapter;
+
+abstract public class AbstractEditableListAdapter<T> extends ListAdapter<T>
 {
-	protected boolean mLockRequested = false;
-	protected Context mContext;
-	protected LayoutInflater mInflater;
+	public String mSearchWord;
 
 	public AbstractEditableListAdapter(Context context)
 	{
-		mContext = context;
-		mInflater = LayoutInflater.from(context);
+		super(context);
 	}
 
-	protected abstract void onSearch(String word);
-
-	protected abstract void onUpdate();
-
-	public Context getContext()
+	public String getSearchWord()
 	{
-		return mContext;
-	}
-
-	public LayoutInflater getInflater()
-	{
-		return mInflater;
+		return mSearchWord;
 	}
 
 	public boolean search(String word)
 	{
-		onSearch(word);
-		return true;
-	}
-
-	public boolean update()
-	{
-		if (mLockRequested)
-			return false;
-
-		mLockRequested = true;
-		onUpdate();
-		mLockRequested = false;
-
+		mSearchWord = word;
 		return true;
 	}
 }

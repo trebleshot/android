@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
-public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter> implements FragmentTitle
+public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter.FileInfo, ReceivedFilesListAdapter> implements FragmentTitle
 {
 	public static final String TAG = ReceivedFilesListFragment.class.getSimpleName();
 
@@ -44,16 +44,10 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 				if (!intent.hasExtra(EXTRA_KEEP_CURRENT))
 					getAdapter().goDefault();
 
-				ReceivedFilesListFragment.this.updateInBackground();
+				refreshList();
 			}
 		}
 	};
-
-	@Override
-	protected ReceivedFilesListAdapter onAdapter()
-	{
-		return new ReceivedFilesListAdapter(getActivity());
-	}
 
 	@Override
 	protected ActionModeListener onActionModeListener()
@@ -72,6 +66,12 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		mMediaScanner.connect();
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
+	}
+
+	@Override
+	public ReceivedFilesListAdapter onAdapter()
+	{
+		return new ReceivedFilesListAdapter(getActivity());
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		else
 		{
 			getAdapter().goPath(fileInfo.file);
-			updateInBackground();
+			refreshList();
 		}
 	}
 
