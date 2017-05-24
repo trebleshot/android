@@ -5,7 +5,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -90,7 +89,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
-			view = LayoutInflater.from(getContext()).inflate(R.layout.list_application, viewGroup, false);
+			view = getInflater().inflate(R.layout.list_application, viewGroup, false);
 
 		AppInfo info = (AppInfo) getItem(position);
 		TextView text = (TextView) view.findViewById(R.id.text);

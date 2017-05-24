@@ -30,7 +30,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 	}
 
 	@Override
-	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileSender>> onProcessList()
+	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileSender>> getProcessList()
 	{
 		return mSend.getProcessList();
 	}

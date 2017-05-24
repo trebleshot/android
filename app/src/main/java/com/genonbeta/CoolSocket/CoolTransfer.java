@@ -199,6 +199,7 @@ abstract public class CoolTransfer<T>
 		{
 			private long mFileSize;
 			private int mTimeout;
+			private ServerSocket mServerSocket;
 
 			public Handler(T extra, int port, File file, long fileSize, byte[] bufferSize, int timeout)
 			{
@@ -219,13 +220,13 @@ abstract public class CoolTransfer<T>
 				{
 					if (Flag.CONTINUE.equals(flag))
 					{
-						ServerSocket serverSocket = new ServerSocket(getPort());
+						mServerSocket = new ServerSocket(getPort());
 
-						flag = onSocketReady(this, serverSocket);
+						flag = onSocketReady(this, getServerSocket());
 
 						if (Flag.CONTINUE.equals(flag))
 						{
-							setSocket(serverSocket.accept());
+							setSocket(getServerSocket().accept());
 
 							flag = onSocketReady(this);
 
@@ -275,7 +276,7 @@ abstract public class CoolTransfer<T>
 							getSocket().close();
 						}
 
-						serverSocket.close();
+						getServerSocket().close();
 
 						if (this.isInterrupted())
 						{
@@ -308,6 +309,11 @@ abstract public class CoolTransfer<T>
 			public long getFileSize()
 			{
 				return mFileSize;
+			}
+
+			public ServerSocket getServerSocket()
+			{
+				return mServerSocket;
 			}
 
 			public long getTimeout()

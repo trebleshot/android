@@ -1,21 +1,31 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
+import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+
+import java.util.ArrayList;
 
 public class PendingTransferListFragment extends AbstractEditableListFragment<CursorItem, PendingTransferListAdapter> implements FragmentTitle
 {
@@ -75,8 +85,55 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 	{
 		super.onListItemClick(l, v, position, id);
 
-		CursorItem item = (CursorItem) getAdapter().getItem(position);
-		PendingTransferListActivity.startInstance(getContext(), item.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+		final CursorItem thisItem = (CursorItem) getAdapter().getItem(position);
+
+		if (getSelect() == null || getSelect().getItems().exists(PendingTransferListAdapter.FLAG_GROUP)
+				&& getSelect().getItems().getBoolean(PendingTransferListAdapter.FLAG_GROUP))
+			PendingTransferListActivity.startInstance(getContext(), thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+		else
+		{
+			if (thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING)
+			{
+				final AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
+				final NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(receiver.deviceId);
+
+				if (device != null)
+				{
+					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
+					{
+						@Override
+						public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+						{
+							Transaction.EditingSession editingSession = mTransaction.edit();
+
+							if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
+							{
+								receiver.flag = Transaction.Flag.RESUME;
+
+								editingSession.updateTransaction(receiver);
+							}
+
+							if (!receiver.ip.equals(addressHolder.address))
+							{
+								receiver.ip = addressHolder.address;
+								ContentValues values = new ContentValues();
+
+								values.put(Transaction.FIELD_TRANSFER_USERIP, addressHolder.address);
+								editingSession.updateTransactionGroup(receiver.groupId, values);
+							}
+
+							getContext().startService(new Intent(mTransaction.getContext(), ServerService.class)
+									.setAction(ServerService.ACTION_START_RECEIVING)
+									.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId));
+
+							editingSession.done();
+						}
+					}).show();
+				}
+				else
+					Toast.makeText(getActivity(), R.string.warning_device_not_exits, Toast.LENGTH_LONG).show();
+			}
+		}
 	}
 
 	@Override

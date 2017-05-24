@@ -108,6 +108,9 @@ public class Transaction extends MainDatabase
 
 		public void done()
 		{
+			if (mCountRegistered == 0 && mCountRemoved == 0 && mCountUpdated == 0)
+				return;
+
 			Intent updateIntent = new Intent(ACTION_TRANSACTION_CHANGE);
 
 			updateIntent.putExtra(EXTRA_COUNT_REGISTERED, mCountRegistered);

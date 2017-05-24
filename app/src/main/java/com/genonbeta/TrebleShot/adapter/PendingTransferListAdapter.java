@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 public class PendingTransferListAdapter extends AbstractEditableListAdapter<CursorItem>
 {
+	public static final String FLAG_GROUP = "flagGroup";
+
 	public static final String FIELD_TRANSFER_TOTAL_COUNT = "pseudoTotalCount";
 
 	private Transaction mTransaction;
@@ -57,6 +59,9 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
 					}
 				}));
+
+		getSelect().getItems()
+				.put(PendingTransferListAdapter.FLAG_GROUP, true);
 	}
 
 	public PendingTransferListAdapter(Context context, SQLQuery.Select select)
@@ -124,7 +129,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 
 		final CursorItem thisItem = (CursorItem) getItem(i);
 		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
-		final boolean isGroup = thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT);
+		final boolean isGroup = getSelect().getItems().exists(FLAG_GROUP) && getSelect().getItems().getBoolean(FLAG_GROUP);
 
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
 		ImageView clearImage = (ImageView) view.findViewById(R.id.list_process_clear_image);

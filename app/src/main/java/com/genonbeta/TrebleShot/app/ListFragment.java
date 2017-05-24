@@ -77,5 +77,6 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 	}
 
 	protected void onListRefreshed()
-	{}
+	{
+	}
 }

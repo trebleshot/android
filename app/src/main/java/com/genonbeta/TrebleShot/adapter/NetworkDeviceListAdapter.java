@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationSet;
@@ -80,7 +79,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	{
 		if (view == null)
 		{
-			view = LayoutInflater.from(mContext).inflate(R.layout.list_network_device, viewGroup, false);
+			view = getInflater().inflate(R.layout.list_network_device, viewGroup, false);
 			AnimationSet set = GAnimater.getAnimation(GAnimater.APPEAR);
 			view.setAnimation(set);
 		}

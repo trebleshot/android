@@ -28,7 +28,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 	private WifiManager.WifiLock mWifiLock;
 	private Transaction mTransaction;
 
-	abstract public ArrayList<CoolTransfer.TransferHandler<E>> onProcessList();
+	abstract public ArrayList<CoolTransfer.TransferHandler<E>> getProcessList();
 
 	@Override
 	public void onCreate()
@@ -44,42 +44,43 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
 		if (intent != null)
-			if (ACTION_CANCEL_JOB.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
+			if (ACTION_CANCEL_JOB.equals(intent.getAction())
+					|| ACTION_CANCEL_KILL.equals(intent.getAction()))
 			{
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
+				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
+				CoolTransfer.TransferHandler<E> handler = findProcessById(groupId);
+
+				if (handler != null)
 				{
-					if (handler.getExtra().groupId == groupId)
-					{
-						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
-						handler.interrupt();
-
-						break;
-					}
-				}
-
-				return START_STICKY;
-			}
-			else if (ACTION_CANCEL_KILL.equals(intent.getAction()))
-			{
-				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
-
-				for (CoolTransfer.TransferHandler<E> handler : onProcessList())
-					if (handler.getExtra().groupId == groupId && handler.getSocket() != null)
+					if (ACTION_CANCEL_KILL.equals(intent.getAction()))
 					{
 						try
 						{
-							handler.getSocket().close();
+							if (handler instanceof CoolTransfer.Receive.Handler)
+							{
+								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) handler);
+
+								if (receiveHandler.getServerSocket() != null)
+									receiveHandler.getServerSocket().close();
+							}
+
+							if (handler.getSocket() != null)
+								handler.getSocket().close();
 						} catch (IOException e)
 						{
 							e.printStackTrace();
 						}
-
-						break;
 					}
-
-				return START_STICKY;
+					else
+					{
+						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
+						handler.interrupt();
+					}
+				}
+				else
+					mNotification.cancel(notificationId);
 			}
 
 		return START_NOT_STICKY;
@@ -98,5 +99,25 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 	public WifiManager.WifiLock getWifiLock()
 	{
 		return mWifiLock;
+	}
+
+	public CoolTransfer.TransferHandler<E> findProcessById(int groupId)
+	{
+		for (CoolTransfer.TransferHandler<E> handler : getProcessList())
+			if (handler.getExtra().groupId == groupId)
+				return handler;
+
+		return null;
+	}
+
+	public E findExtraById(int groupId)
+	{
+		CoolTransfer.TransferHandler<E> handler = findProcessById(groupId);
+		return handler == null ? null : handler.getExtra();
+	}
+
+	public boolean isProcessRunning(int groupId)
+	{
+		return findProcessById(groupId) != null;
 	}
 }

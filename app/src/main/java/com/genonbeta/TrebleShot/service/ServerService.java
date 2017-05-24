@@ -36,13 +36,13 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	private MediaScannerConnection mMediaScanner;
 
 	@Override
-	public IBinder onBind(Intent p1)
+	public IBinder onBind(Intent intent)
 	{
 		return null;
 	}
 
 	@Override
-	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileReceiver>> onProcessList()
+	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileReceiver>> getProcessList()
 	{
 		return mReceive.getProcessList();
 	}
@@ -68,16 +68,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID))
 			{
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
-				AwaitedFileReceiver runningReceiver = null;
-
-				for (CoolTransfer.TransferHandler<AwaitedFileReceiver> handler : mReceive.getProcessList())
-				{
-					if (handler.getExtra().groupId == groupId)
-					{
-						runningReceiver = handler.getExtra();
-						break;
-					}
-				}
+				AwaitedFileReceiver runningReceiver = findExtraById(groupId);
 
 				if (runningReceiver == null)
 					doJob(groupId);

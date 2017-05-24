@@ -145,7 +145,7 @@
     <string name="open_wifi_settings_short">Kablosuz</string>
     <string name="pending_transfers">Bekleyen aktarımlar</string>
     <string name="cancel_progress">İşlem iptal ediliyor</string>
-    <string name="dialog_message_available_networks_no_network">Kullanilir ağ yok</string>
+    <string name="dialog_message_available_networks_no_network">Kullanılabilir ağ yok</string>
     <string name="dialog_message_remove_certain_transaction">Devam ederseniz listede görmüş olduğunuz bekleyen aktarımlar silinecek</string>
     <string name="dialog_message_remove_device">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
     <string name="dialog_msg_remove_queue_job">Bekleyen %d işlem kaldırılacak</string>

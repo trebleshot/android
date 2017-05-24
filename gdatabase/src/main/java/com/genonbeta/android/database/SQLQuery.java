@@ -24,6 +24,8 @@ public class SQLQuery
 
 	public static class Select
 	{
+		private CursorItem mItems = new CursorItem();
+
 		public String tag;
 		public String tableName;
 		public String[] columns;
@@ -38,6 +40,11 @@ public class SQLQuery
 		{
 			this.tableName = tableName;
 			this.columns = columns;
+		}
+
+		public CursorItem getItems()
+		{
+			return mItems;
 		}
 
 		public Select setHaving(String having)
