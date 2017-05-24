@@ -39,7 +39,11 @@ public class MusicListAdapter extends AbstractEditableListAdapter<MusicListAdapt
 	public ArrayList<MusicInfo> onLoad()
 	{
 		ArrayList<MusicInfo> list = new ArrayList<>();
-		Cursor cursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+		Cursor cursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+				null,
+				MediaStore.Audio.Media.IS_MUSIC + "=?",
+				new String[]{String.valueOf(1)},
+				null);
 
 		if (cursor.moveToFirst())
 		{
