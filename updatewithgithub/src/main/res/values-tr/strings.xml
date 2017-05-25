@@ -13,7 +13,7 @@
     <string name="uwg_no_update_available">Kullanabilir sürüm bulunmuyor</string>
     <string name="uwg_update_available">Güncelleme mevcut</string>
     <string name="uwg_update_body" formatted="false">Şuanki sürüm: %s\nKullanılabilir sürüm: %s\nYayın tarihi: %s\n\n%s</string>
-    <string name="uwg_update_exists">İndirilecek olan dosyanın ismiyle eşleşen dosya var. İsterseniz İndirmeler\'i açabilir ve güncellemeyi indirebilirsiniz</string>
+    <string name="uwg_update_exists">İndirilecek olan dosyanın ismiyle eşleşen dosya var. İsterseniz İndirmeler\'i açabilir veya güncellemeyi indirebilirsiniz</string>
     <string name="uwg_version_check_error">Şuanda denetlenemiyor. Bir hata oluştu</string>
     <string name="uwg_download">İndir</string>
 </resources>

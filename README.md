@@ -11,3 +11,6 @@
 </ul>
 <br />
 See the development process: <a href="https://trello.com/b/YmbwDHHo">Trello</a>
+<br />
+<br />
+This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
