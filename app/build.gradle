@@ -11,6 +11,12 @@ android {
         versionCode 44
         versionName "1.2.0-beta.5"
     }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
     buildTypes {
         release {
             minifyEnabled false
