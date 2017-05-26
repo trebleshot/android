@@ -122,9 +122,7 @@ public class GitHubUpdater
 											downloadRequest.setDescription(mContext.getString(R.string.uwg_downloading_update_description, applicationName));
 											downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, applicationName + " v" + lastVersionName + ".apk");
 											downloadRequest.setMimeType("application/vnd.android.package-archive");
-
-											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB)
-												downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+											downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
 											manager.enqueue(downloadRequest);
 										}

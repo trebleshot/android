@@ -9,7 +9,7 @@ android:
     - android-25
     - extra-android-m2repository
 
-script: ./gradlew build connectedCheck
+script: ./gradlew -Dorg.gradle.jvmargs=-Xmx1536m assembleDebug lintDebug testDebugUnitTest
 
 licenses:
   - '.+'
