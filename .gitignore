@@ -2,6 +2,7 @@
 /build
 /.gradle
 /.idea
+/projectFilesBackup
 TSMAT.iml
 local.properties
 *.apk
