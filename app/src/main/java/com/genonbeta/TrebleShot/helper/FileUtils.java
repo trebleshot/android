@@ -5,6 +5,7 @@ import android.content.Context;
 import java.io.File;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.util.Locale;
 
 public class FileUtils
 {
@@ -26,7 +27,7 @@ public class FileUtils
 		int expression = (int) (Math.log(bytes) / Math.log(unit));
 		String prefix = (si ? "kMGTPE" : "KMGTPE").charAt(expression - 1) + (si ? "i" : "");
 
-		return String.format("%.1f %sB", bytes / Math.pow(unit, expression), prefix);
+		return String.format(Locale.getDefault(), "%.1f %sB", bytes / Math.pow(unit, expression), prefix);
 	}
 
 	public static File getUniqueFile(File file)

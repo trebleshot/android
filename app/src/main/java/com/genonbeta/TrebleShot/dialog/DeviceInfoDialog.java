@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.NonNull;
@@ -30,7 +31,9 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 		final NetworkDevice deviceUpdated = registry.getNetworkDevice(device.ip);
 
+		@SuppressLint("InflateParams")
 		View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
+
 		TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
 		TextView ipText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
 		SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);

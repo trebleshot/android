@@ -3,55 +3,50 @@
             android:layout_height="fill_parent"
             android:orientation="vertical">
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
 
-        <LinearLayout
+        <TextView
+            style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/abc_dialog_padding_material">
+            android:text="@string/device_brand_info"/>
 
-            <TextView
-                style="@style/marqueeText.primary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/device_brand_info"/>
+        <TextView
+            android:id="@+id/device_info_brand_and_model"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/device_info_brand_and_model"
-                style="@style/marqueeText.secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
 
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"/>
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/saved_connections"/>
 
-            <TextView
-                style="@style/marqueeText.primary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/saved_connections"/>
+        <TextView
+            android:id="@+id/device_info_ip_address"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-            <TextView
-                android:id="@+id/device_info_ip_address"
-                style="@style/marqueeText.secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
 
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/device_info_access_switcher"
+            style="@style/marqueeText.primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/allow_access"/>
 
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/device_info_access_switcher"
-                style="@style/marqueeText.primary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/allow_access"/>
-
-        </LinearLayout>
-    </ScrollView>
+    </LinearLayout>
 </ScrollView>

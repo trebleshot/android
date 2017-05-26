@@ -15,7 +15,8 @@
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
         android:padding="15dp"
-        android:src="@drawable/ic_file_upload_black_24dp"/>
+        android:src="@drawable/ic_file_upload_black_24dp"
+        android:contentDescription="@string/image"/>
 
     <ImageView
         android:id="@+id/list_process_clear_image"
@@ -27,7 +28,8 @@
         android:background="@drawable/checkable_item_background"
         android:padding="15dp"
         android:src="@drawable/ic_close_black_24dp"
-        android:tint="#EE7788"/>
+        android:tint="#EE7788"
+        android:contentDescription="@string/clear_the_list"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

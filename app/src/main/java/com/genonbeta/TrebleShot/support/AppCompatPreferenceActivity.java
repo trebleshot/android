@@ -12,7 +12,7 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class AppCompatPreferenceActivity extends PreferenceActivity
+public abstract class AppCompatPreferenceActivity extends PreferenceActivity
 {
 	private AppCompatDelegate mDelegate;
 

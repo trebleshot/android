@@ -38,14 +38,12 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 
 	private Context mContext;
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader(this);
-	private SharedPreferences mPreferences;
 	private DeviceRegistry mDeviceRegistry;
 
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
 		mContext = context;
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 		mDeviceRegistry = new DeviceRegistry(context);
 
 		if (ACTION_SCAN_DEVICES.equals(intent.getAction()))

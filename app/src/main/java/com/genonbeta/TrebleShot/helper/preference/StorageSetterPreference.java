@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.helper.preference;
 
+import android.os.Build;
 import android.preference.EditTextPreference;
+import android.support.annotation.RequiresApi;
 import android.text.Editable;
 import android.view.View;
 import android.widget.EditText;
@@ -13,11 +15,13 @@ import java.io.File;
 
 public class StorageSetterPreference extends EditTextPreference
 {
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr, int defStyleRes)
 	{
 		super(context, attrs, defStyleAttr, defStyleRes);
 	}
 
+	@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 	public StorageSetterPreference(android.content.Context context, android.util.AttributeSet attrs, int defStyleAttr)
 	{
 		super(context, attrs, defStyleAttr, defStyleAttr);

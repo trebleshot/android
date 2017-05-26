@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.provider;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ActionProvider;
@@ -39,6 +40,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 	@Override
 	public View onCreateActionView()
 	{
+		@SuppressLint("InflateParams")
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_running_process, null);
 
 		mReloadImage = (ImageView) view.findViewById(R.id.layout_running_process_reload_image);

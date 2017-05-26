@@ -9,6 +9,7 @@
         android:id="@+id/layout_running_process_reload_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_refresh_white_24dp"/>
+        android:src="@drawable/ic_refresh_white_24dp"
+        android:contentDescription="@string/refresh"/>
 
 </LinearLayout>

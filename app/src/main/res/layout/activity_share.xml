@@ -23,7 +23,7 @@
             android:padding="15dp"
             android:src="@drawable/ic_create_black_24dp"
             android:visibility="gone"
-            />
+            android:contentDescription="@string/tap_to_edit"/>
 
         <EditText
             android:id="@+id/activity_share_info_text"

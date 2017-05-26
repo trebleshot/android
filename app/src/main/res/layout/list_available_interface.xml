@@ -2,8 +2,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:id="@+id/pending_queue_list_layout"
-                android:paddingLeft="@dimen/abc_dialog_padding_material"
-                android:paddingRight="@dimen/abc_dialog_padding_material"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"
                 android:paddingTop="10dip"
                 android:paddingBottom="10dip">
 

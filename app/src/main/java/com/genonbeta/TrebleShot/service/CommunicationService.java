@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.service;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -186,6 +187,7 @@ public class CommunicationService extends Service
 			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 		}
 
+		@SuppressLint("HardwareIds")
 		@Override
 		public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp)
 		{

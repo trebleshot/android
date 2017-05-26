@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.genonbeta.TrebleShot">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -15,7 +16,11 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:allowBackup="true"
+        android:fullBackupContent="true"
+        tools:ignore="GoogleAppIndexingWarning">
+
         <activity
             android:name=".activity.TrebleShotActivity"
             android:label="@string/app_name"
@@ -94,7 +99,6 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

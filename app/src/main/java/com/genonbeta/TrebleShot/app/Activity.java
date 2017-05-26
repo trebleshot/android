@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.genonbeta.TrebleShot.service.CommunicationService;
 
-public class Activity extends AppCompatActivity
+public abstract class Activity extends AppCompatActivity
 {
 	private SharedPreferences mPreferences;
 

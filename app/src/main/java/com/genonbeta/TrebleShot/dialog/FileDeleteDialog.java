@@ -62,10 +62,9 @@ public class FileDeleteDialog extends AlertDialog.Builder
 		);
 	}
 
-	public static interface Listener
+	public interface Listener
 	{
-		public void onFileDeletion(Context context, File file);
-
-		public void onCompleted(Context context, int fileSize);
+		void onFileDeletion(Context context, File file);
+		void onCompleted(Context context, int fileSize);
 	}
 }

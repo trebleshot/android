@@ -180,7 +180,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 
 		if (convertView == null)
 		{
-			convertView = getInflater().inflate(R.layout.list_video, null);
+			convertView = getInflater().inflate(R.layout.list_video, parent);
 			holder = new ViewHolder();
 			holder.titleView = (TextView) convertView.findViewById(R.id.text);
 			holder.durationView = (TextView) convertView.findViewById(R.id.duration);
