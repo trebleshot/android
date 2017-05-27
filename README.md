@@ -1,6 +1,9 @@
 # TrebleShot open-source file and text sharing application
 Send and receive files over available connections without making any effort
 
+## Get it from
+[<img src="https://f-droid.org/badge/get-it-on.png">](https://f-droid.org/repository/browse/?fdfilter=TrebleShot&fdid=com.genonbeta.TrebleShot)
+
 ## Main features
 * Pause or resume transfers even when an error is given
 * Share your videos and songs within the application
