@@ -2,9 +2,7 @@
 Send and receive files over available connections without making any effort
 
 ## Get it from
-[<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/repository/browse/?fdfilter=TrebleShot&fdid=com.genonbeta.TrebleShot)
-
-[<img src="https://play.google.com/intl/en_us/badges/images/badge_new.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
+[<img src="https://f-droid.org/badge/get-it-on.png" width="160">](https://f-droid.org/repository/browse/?fdfilter=TrebleShot&fdid=com.genonbeta.TrebleShot) [<img src="https://play.google.com/intl/en_us/badges/images/badge_new.png" width="160">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
 * Pause or resume transfers even when an error is given
