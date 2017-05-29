@@ -1,10 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,11 +30,13 @@ import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.TimeoutException;
 
 public class ShareActivity extends Activity
 {
@@ -115,25 +119,16 @@ public class ShareActivity extends Activity
 						registerHandler(new ConnectionHandler()
 						{
 							@Override
-							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp)
+							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException
 							{
-								try
-								{
-									json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-									json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+								json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+								json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+							}
 
-									JSONObject response = new JSONObject(process.waitForResponse());
+							@Override
+							public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp)
+							{
 
-									if (response.getBoolean(Keyword.RESULT))
-									{
-
-									}
-									else
-										showToast(getString(R.string.mesg_fileSendError, getString(R.string.mesg_notAllowed)));
-								} catch (Exception e)
-								{
-									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
-								}
 							}
 						});
 					}
@@ -265,57 +260,52 @@ public class ShareActivity extends Activity
 
 		registerHandler(new ConnectionHandler()
 		{
+			private int mGroupId;
+
 			@Override
-			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp)
+			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException
 			{
-				device = mDeviceRegistry.getNetworkDevice(chosenIp);
 				JSONArray filesArray = new JSONArray();
 
-				try
+				mGroupId = ApplicationHelper.getUniqueNumber();
+				Transaction.EditingSession editingSession = mTransaction.edit();
+
+				json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+				json.put(Keyword.GROUP_ID, mGroupId);
+
+				for (FileState fileState : mFiles)
 				{
-					int groupId = ApplicationHelper.getUniqueNumber();
-					Transaction.EditingSession editingSession = mTransaction.edit();
+					int requestId = ApplicationHelper.getUniqueNumber();
+					AwaitedFileSender sender = new AwaitedFileSender(device, requestId, mGroupId, fileState.fileName, 0, fileState.file);
+					JSONObject thisJson = new JSONObject();
 
-					json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-					json.put(Keyword.GROUP_ID, groupId);
-
-					for (FileState fileState : mFiles)
+					try
 					{
-						int requestId = ApplicationHelper.getUniqueNumber();
-						AwaitedFileSender sender = new AwaitedFileSender(device, requestId, groupId, fileState.fileName, 0, fileState.file);
-						JSONObject thisJson = new JSONObject();
+						thisJson.put(Keyword.FILE_NAME, fileState.fileName);
+						thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
+						thisJson.put(Keyword.REQUEST_ID, requestId);
+						thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
 
-						try
-						{
-							thisJson.put(Keyword.FILE_NAME, fileState.fileName);
-							thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
-							thisJson.put(Keyword.REQUEST_ID, requestId);
-							thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
+						filesArray.put(thisJson);
 
-							filesArray.put(thisJson);
-
-							editingSession.registerTransaction(sender);
-						} catch (Exception e)
-						{
-							Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
-						}
-					}
-
-					json.put(Keyword.FILES_INDEX, filesArray);
-
-					JSONObject response = new JSONObject(process.waitForResponse());
-
-					if (!response.getBoolean(Keyword.RESULT))
+						editingSession.registerTransaction(sender);
+					} catch (Exception e)
 					{
-						Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
-						editingSession.removeTransactionGroup(groupId);
-
-						showToast(getString(R.string.mesg_fileSendError, getString(R.string.mesg_notAllowed)));
+						Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
 					}
-				} catch (Exception e)
-				{
-					showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 				}
+
+				json.put(Keyword.FILES_INDEX, filesArray);
+				editingSession.done();
+			}
+
+			@Override
+			public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp)
+			{
+				mTransaction
+						.edit()
+						.removeTransactionGroup(mGroupId)
+						.done();
 			}
 		});
 	}
@@ -331,6 +321,7 @@ public class ShareActivity extends Activity
 			public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
 			{
 				final String deviceIp = addressHolder.address;
+				final NetworkDevice specifiedDevice = mDeviceRegistry.getNetworkDevice(deviceIp);
 
 				mProgressConnect.show();
 
@@ -340,7 +331,43 @@ public class ShareActivity extends Activity
 							@Override
 							public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
 							{
-								mConnectionHandler.onHandle(process, json, device, deviceIp);
+								try
+								{
+									mConnectionHandler.onHandle(process, json, specifiedDevice, deviceIp);
+
+									JSONObject jsonObject = new JSONObject(process.waitForResponse());
+
+									if (!jsonObject.has(Keyword.RESULT) || jsonObject.getBoolean(Keyword.RESULT))
+										mConnectionHandler.onError(process, specifiedDevice, deviceIp);
+
+									if (jsonObject.has(Keyword.RESULT) && !jsonObject.getBoolean(Keyword.RESULT))
+									{
+										Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG);
+
+										snackbar.setAction(R.string.ques_why, new View.OnClickListener()
+										{
+											@Override
+											public void onClick(View v)
+											{
+												AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
+
+												builder.setMessage(getString(R.string.text_notAllowedHelp,
+														device.user,
+														ApplicationHelper.getNameOfThisDevice(ShareActivity.this)));
+
+												builder.setNegativeButton(R.string.butn_close, null);
+												builder.show();
+											}
+										});
+
+										snackbar.show();
+									}
+								} catch (Exception e)
+								{
+									mConnectionHandler.onError(process, specifiedDevice, deviceIp);
+									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
+								}
+
 								mProgressConnect.cancel();
 							}
 
@@ -348,6 +375,7 @@ public class ShareActivity extends Activity
 							public void onError(Exception e)
 							{
 								mProgressConnect.cancel();
+								mConnectionHandler.onError(null, specifiedDevice, deviceIp);
 								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
 							}
 						}
@@ -371,7 +399,9 @@ public class ShareActivity extends Activity
 
 	private interface ConnectionHandler
 	{
-		public void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp);
+		public void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException;
+
+		public void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp);
 	}
 
 	private class FileState

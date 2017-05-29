@@ -19,7 +19,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 {
 	public static final String TAG = "ClientService";
 
-	public final static String ACTION_SEND = "com.genonbeta.TrebleShot.client.ACTION_SEND";
+	public static final String ACTION_SEND = "com.genonbeta.TrebleShot.client.ACTION_SEND";
 
 	private Send mSend = new Send();
 
@@ -62,7 +62,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 					}
 				} catch (Exception e)
 				{
-					getNotificationUtils().showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
+
 				}
 			}
 
@@ -80,7 +80,6 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 					.edit()
 					.updateTransaction(handler.getExtra())
 					.done();
-			//getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, "<?>"));
 
 			return Flag.CANCEL_ALL;
 		}
@@ -94,7 +93,6 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		@Override
 		public void onTransferCompleted(TransferHandler<AwaitedFileSender> handler)
 		{
-			//getNotificationUtils().showToast(getString(R.string.file_sent_msg, handler.getExtra().fileName));
 			getTransactionInstance()
 					.edit()
 					.removeTransaction(handler.getExtra())
@@ -104,7 +102,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		@Override
 		public void onInterrupted(TransferHandler<AwaitedFileSender> handler)
 		{
-			//getNotificationUtils().showToast(getString(R.string.file_send_cancelled_msg, handler.getExtra().fileName));
+
 		}
 
 		@Override

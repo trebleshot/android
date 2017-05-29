@@ -101,7 +101,7 @@
     <string name="text_music">Music</string>
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Show system apps</string>
-    <string name="show_system_apps_summary">In share screen show system apps</string>
+    <string name="text_showSystemAppsSummary">In share screen show system apps</string>
     <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">You are not allowed</string>
     <string name="text_connectionProblem">Connection problem</string>
@@ -155,4 +155,6 @@
     <string name="text_chooserTargetService">Device Chooser Provider</string>
     <string name="text_pendingTransferEditor">Pending Transfers</string>
     <string name="text_error">Error</string>
+    <string name="ques_why">Why?</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s. Device list > %2$s > Allow to access > (enable it)</string>
 </resources>

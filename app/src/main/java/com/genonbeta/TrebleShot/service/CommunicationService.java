@@ -20,6 +20,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
@@ -51,7 +52,6 @@ public class CommunicationService extends Service
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader();
 	private NotificationUtils mNotification;
-	private SharedPreferences mPreferences;
 	private String mReceivedClipboardIndex;
 	private Transaction mTransaction;
 	private DeviceRegistry mDeviceRegistry;
@@ -71,7 +71,6 @@ public class CommunicationService extends Service
 			stopSelf();
 
 		mNotification = new NotificationUtils(this);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mTransaction = new Transaction(this);
 		mDeviceRegistry = new DeviceRegistry(this);
 	}
@@ -212,7 +211,7 @@ public class CommunicationService extends Service
 				deviceInformation.put(Keyword.SERIAL, Build.SERIAL);
 				deviceInformation.put(Keyword.BRAND, Build.BRAND);
 				deviceInformation.put(Keyword.MODEL, Build.MODEL);
-				deviceInformation.put(Keyword.USER, mPreferences.getString("device_name", Build.BOARD.toUpperCase()));
+				deviceInformation.put(Keyword.USER, ApplicationHelper.getNameOfThisDevice(getApplicationContext()));
 
 				response.put(Keyword.APP_INFO, appInfo);
 				response.put(Keyword.DEVICE_INFO, deviceInformation);

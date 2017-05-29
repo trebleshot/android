@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
@@ -81,6 +82,12 @@ public class ApplicationHelper
 		}
 
 		return stringBuilder.toString().toUpperCase();
+	}
+
+	public static String getNameOfThisDevice(Context context)
+	{
+		return PreferenceManager.getDefaultSharedPreferences(context)
+				.getString("device_name", Build.BOARD.toUpperCase());
 	}
 
 	public static NetworkDeviceScanner getNetworkDeviceScanner()

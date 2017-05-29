@@ -93,7 +93,7 @@
     <string name="text_music">Müzik</string>
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Sistem uygulamalarını göster</string>
-    <string name="show_system_apps_summary">İşaretlenirse paylaş ekranında gösterilir</string>
+    <string name="text_showSystemAppsSummary">İşaretlenirse paylaş ekranında gösterilir</string>
     <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">İzniniz yok</string>
     <string name="text_connectionProblem">Bağlantı sorunu</string>
@@ -147,4 +147,5 @@
     <string name="text_communicationService">Haberleşme Servisi</string>
     <string name="text_serverService">Sunucu Servis</string>
     <string name="text_pendingTransferEditor">Bekleyen Aktarımlar</string>
+    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin. \n\nAygıt listesi > %2$s > Erişime izin ver > (etkin)</string>
 </resources>

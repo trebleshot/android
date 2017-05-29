@@ -50,7 +50,7 @@
         <CheckBoxPreference
             android:key="show_system_apps"
             android:title="@string/text_showSystemApps"
-            android:summary="@string/show_system_apps_summary"/>
+            android:summary="@string/text_showSystemAppsSummary"/>
 
         <com.genonbeta.TrebleShot.helper.preference.StorageSetterPreference
             android:key="storage_path"

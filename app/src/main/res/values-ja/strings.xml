@@ -93,7 +93,7 @@
     <string name="text_music">音楽</string>
     <string name="text_video">ビデオ</string>
     <string name="text_showSystemApps">システムアプリを表示</string>
-    <string name="show_system_apps_summary">共有画面にシステムアプリを表示します</string>
+    <string name="text_showSystemAppsSummary">共有画面にシステムアプリを表示します</string>
     <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">許可されていません</string>
     <string name="text_connectionProblem">接続の問題が発生しました</string>
