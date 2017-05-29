@@ -27,7 +27,10 @@ Send and receive files over available connections without making any effort
 
 ## Supported languages
 * English
+* Japanese (Contributors: *naofum)
 * Turkish
+
+**Caution: Language files structure are being updated. Please do not work on them until this message is removed
 
 See the development process: https://trello.com/b/YmbwDHHo
 
