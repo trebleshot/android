@@ -51,6 +51,9 @@
                        android:value=".service.DeviceChooserService" />
         </activity>
 
+        <activity android:name=".activity.FilePickerActivity"
+                  android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
+
         <activity
             android:label="@string/text_pendingTransferEditor"
             android:name=".activity.PendingTransferListActivity"

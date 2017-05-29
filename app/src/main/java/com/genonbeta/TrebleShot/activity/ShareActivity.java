@@ -337,7 +337,7 @@ public class ShareActivity extends Activity
 
 									JSONObject jsonObject = new JSONObject(process.waitForResponse());
 
-									if (!jsonObject.has(Keyword.RESULT) || jsonObject.getBoolean(Keyword.RESULT))
+									if (!jsonObject.has(Keyword.RESULT) || !jsonObject.getBoolean(Keyword.RESULT))
 										mConnectionHandler.onError(process, specifiedDevice, deviceIp);
 
 									if (jsonObject.has(Keyword.RESULT) && !jsonObject.getBoolean(Keyword.RESULT))
@@ -364,6 +364,7 @@ public class ShareActivity extends Activity
 									}
 								} catch (Exception e)
 								{
+									e.printStackTrace();
 									mConnectionHandler.onError(process, specifiedDevice, deviceIp);
 									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 								}
@@ -374,6 +375,7 @@ public class ShareActivity extends Activity
 							@Override
 							public void onError(Exception e)
 							{
+								e.printStackTrace();
 								mProgressConnect.cancel();
 								mConnectionHandler.onError(null, specifiedDevice, deviceIp);
 								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));

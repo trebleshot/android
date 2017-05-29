@@ -13,6 +13,15 @@
         android:gravity="center">
 
         <TextView
+            android:id="@+id/layout_transaction_editor_saveto_text"
+            style="@style/condensedCapsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_saveTo"
+            android:textColor="#39B"
+            android:textSize="20sp"/>
+
+        <TextView
             android:id="@+id/layout_transaction_editor_remove_text"
             style="@style/condensedCapsText"
             android:layout_width="wrap_content"
@@ -20,6 +29,8 @@
             android:text="@string/butn_removeAll"
             android:textColor="#39B"
             android:textSize="20sp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginEnd="20dp"/>
 
@@ -30,9 +41,7 @@
             android:layout_height="wrap_content"
             android:text="@string/butn_close"
             android:textColor="#39B"
-            android:textSize="20sp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginStart="20dp"/>
+            android:textSize="20sp"/>
 
     </LinearLayout>
 

@@ -55,6 +55,7 @@ public class PendingTransferListActivity extends Activity
 
 		TextView closeTextView = (TextView) findViewById(R.id.layout_transaction_editor_close_text);
 		TextView removeTextView = (TextView) findViewById(R.id.layout_transaction_editor_remove_text);
+		TextView saveToTextView = (TextView) findViewById(R.id.layout_transaction_editor_saveto_text);
 
 		closeTextView.setOnClickListener(new View.OnClickListener()
 		{
@@ -62,6 +63,15 @@ public class PendingTransferListActivity extends Activity
 			public void onClick(View v)
 			{
 				finish();
+			}
+		});
+
+		saveToTextView.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				startActivity(new Intent(PendingTransferListActivity.this, FilePickerActivity.class));
 			}
 		});
 

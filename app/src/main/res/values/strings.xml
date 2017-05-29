@@ -157,4 +157,5 @@
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
     <string name="text_notAllowedHelp">Check if you are allowed on %1$s. Device list > %2$s > Allow to access > (enable it)</string>
+    <string name="butn_saveTo">Save to</string>
 </resources>
