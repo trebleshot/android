@@ -120,7 +120,7 @@ public class CommunicationService extends Service
 
 				if (!mTransaction.transactionGroupExists(groupId))
 				{
-					mNotification.showToast(R.string.something_went_wrong);
+					mNotification.showToast(R.string.mesg_somethingWentWrong);
 					return START_NOT_STICKY;
 				}
 
@@ -162,7 +162,7 @@ public class CommunicationService extends Service
 				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false))
 				{
 					((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", mReceivedClipboardIndex));
-					Toast.makeText(this, R.string.clipboard_text_copied, Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
 				}
 			}
 		}

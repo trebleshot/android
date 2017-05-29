@@ -16,7 +16,7 @@
         android:layout_centerVertical="true"
         android:padding="15dp"
         android:src="@drawable/ic_file_upload_black_24dp"
-        android:contentDescription="@string/image"/>
+        android:contentDescription="@string/text_image"/>
 
     <ImageView
         android:id="@+id/list_process_clear_image"
@@ -29,7 +29,7 @@
         android:padding="15dp"
         android:src="@drawable/ic_close_black_24dp"
         android:tint="#EE7788"
-        android:contentDescription="@string/clear_the_list"/>
+        android:contentDescription="@string/text_clearList"/>
 
     <LinearLayout
         android:layout_width="wrap_content"

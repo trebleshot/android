@@ -3,6 +3,6 @@
 
     <item
         android:id="@+id/received_device_options_open_in_file_manager"
-        android:title="@string/open_in_file_manager"/>
+        android:title="@string/butn_showOnFileManager"/>
 
 </menu>

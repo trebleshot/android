@@ -82,21 +82,21 @@ public class NotificationUtils
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.connection_permission));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.allow_device_to_connect));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.text_connectionPermission));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.ques_allowDeviceToConnect));
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
-				.setContentTitle(mContext.getString(R.string.connection_permission))
-				.setContentText(mContext.getString(R.string.allow_device_to_connect))
+				.setContentTitle(mContext.getString(R.string.text_connectionPermission))
+				.setContentText(mContext.getString(R.string.ques_allowDeviceToConnect))
 				.setContentInfo(device.deviceId)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
-				.setTicker(mContext.getString(R.string.connection_permission));
+				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.butn_accept), positiveIntent)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.butn_reject), negativeIntent)
+				.setTicker(mContext.getString(R.string.text_connectionPermission));
 
 		return notification.show();
 	}
@@ -104,7 +104,7 @@ public class NotificationUtils
 	public DynamicNotification notifyTransferRequest(boolean halfRestriction, AwaitedFileReceiver receiver, NetworkDevice device, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
-		String message = numberOfFiles > 1 ? mContext.getString(R.string.multi_transfer_que, String.valueOf(numberOfFiles)) : receiver.fileName;
+		String message = numberOfFiles > 1 ? mContext.getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : receiver.fileName;
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
 		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
@@ -126,13 +126,13 @@ public class NotificationUtils
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.receive_the_file_que));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.ques_receiveFile));
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, message);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.receive_the_file_que))
+				.setContentTitle(mContext.getString(R.string.ques_receiveFile))
 				.setContentText(message)
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
@@ -140,9 +140,9 @@ public class NotificationUtils
 						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, receiver.groupId), 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(halfRestriction ? R.string.reject_restricted : R.string.reject), negativeIntent)
-				.setTicker(mContext.getString(R.string.receive_the_file_que))
+				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.butn_accept), positiveIntent)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(halfRestriction ? R.string.butn_block : R.string.butn_reject), negativeIntent)
+				.setTicker(mContext.getString(R.string.ques_receiveFile))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
 		return notification.show();
@@ -166,19 +166,19 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(isIncoming ? R.string.cancel_receiving : R.string.cancel_sending));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending));
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, transaction.fileName);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 
 		notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
 				.setContentTitle(transaction.fileName)
-				.setContentText(mContext.getString(isIncoming ? R.string.receiving_msg : R.string.sending_msg))
+				.setContentText(mContext.getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
 						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
 				.setOngoing(true)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.cancel_receiving : R.string.cancel_sending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), cancelIntent, 0));
 
 		return notification.show();
 	}
@@ -203,24 +203,24 @@ public class NotificationUtils
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), rejectIntent, 0);
 
 		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.copy_to_clipboard_question));
+		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.ques_copyToClipboard));
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, text);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.copy_to_clipboard_question))
-				.setContentText(mContext.getString(R.string.received_text))
+				.setContentTitle(mContext.getString(R.string.ques_copyToClipboard))
+				.setContentText(mContext.getString(R.string.text_textReceived))
 				.setStyle(new NotificationCompat.BigTextStyle()
 						.bigText(text)
-						.setBigContentTitle(mContext.getString(R.string.copy_to_clipboard_question)))
+						.setBigContentTitle(mContext.getString(R.string.ques_copyToClipboard)))
 				.setContentInfo(device.user)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, ApplicationHelper.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.accept), positiveIntent)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.reject), negativeIntent)
-				.setTicker(mContext.getString(R.string.received_text_info))
+				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.butn_accept), positiveIntent)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.butn_reject), negativeIntent)
+				.setTicker(mContext.getString(R.string.text_receivedTextSummary))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
 
 		return notification.show();
@@ -240,7 +240,7 @@ public class NotificationUtils
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(receiver.fileName)
-				.setContentText(mContext.getString(R.string.file_received_msg))
+				.setContentText(mContext.getString(R.string.text_fileReceived))
 				.setContentInfo(device.user)
 				.setAutoCancel(true)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), openIntent, 0));
@@ -253,8 +253,8 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(mContext.getString(R.string.multiple_receive))
-				.setContentText(mContext.getString(R.string.multiple_receive_done_summary, String.valueOf(numberOfFiles)))
+				.setContentTitle(mContext.getString(R.string.text_multipleFileReceiveCompleted))
+				.setContentText(mContext.getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, numberOfFiles, numberOfFiles))
 				.setAutoCancel(true)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class)
 						.setAction(TrebleShotActivity.ACTION_OPEN_RECEIVED_FILES), 0));
@@ -267,8 +267,8 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
-				.setContentTitle(mContext.getString(R.string.error))
-				.setContentText(mContext.getString(R.string.file_receiving_error_msg, receiver.fileName))
+				.setContentTitle(mContext.getString(R.string.text_error))
+				.setContentText(mContext.getString(R.string.mesg_fileReceiveError, receiver.fileName))
 				.setAutoCancel(true)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
 						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
@@ -285,10 +285,10 @@ public class NotificationUtils
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_warning)
 				.setOngoing(true)
-				.setContentTitle(mContext.getString(R.string.stop_progress))
-				.setContentText(mContext.getString(R.string.cancel_progress))
+				.setContentTitle(mContext.getString(R.string.text_stopping))
+				.setContentText(mContext.getString(R.string.text_cancellingTransfer))
 				.setProgress(0, 0, true)
-				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.kill_immediately), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), killIntent, 0));
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.butn_killNow), PendingIntent.getService(mContext, ApplicationHelper.getUniqueNumber(), killIntent, 0));
 
 		return notification.show();
 	}

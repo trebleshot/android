@@ -28,10 +28,10 @@ public class FileDeleteDialog extends AlertDialog.Builder
 		for (Object path : items)
 			files.add(URI.create(path.toString()));
 
-		setTitle(R.string.delete_confirm);
-		setMessage(activity.getString(R.string.delete_warning, files.size()));
-		setNegativeButton(R.string.cancel, null);
-		setPositiveButton(R.string.delete, new DialogInterface.OnClickListener()
+		setTitle(R.string.text_deleteConfirm);
+		setMessage(activity.getResources().getQuantityString(R.plurals.ques_deleteFile, files.size(), files.size()));
+		setNegativeButton(R.string.butn_cancel, null);
+		setPositiveButton(R.string.butn_delete, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dailog, int p2)

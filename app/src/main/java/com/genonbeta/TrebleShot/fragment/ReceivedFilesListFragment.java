@@ -108,7 +108,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		switch (item.getItemId())
 		{
 			case (R.id.received_device_options_open_in_file_manager):
-				openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.pick_file_manager));
+				openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
 				return true;
 		}
 
@@ -123,7 +123,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
 
 		if (fileInfo.file.isFile())
-			openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.file_open_app_chooser_msg));
+			openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.text_fileOpenAppChoose));
 		else
 		{
 			getAdapter().goPath(fileInfo.file);
@@ -134,7 +134,7 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.received_files);
+		return context.getString(R.string.text_receivedFiles);
 	}
 
 	private class ChoiceListener extends ActionModeListener

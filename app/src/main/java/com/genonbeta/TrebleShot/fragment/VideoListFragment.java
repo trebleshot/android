@@ -30,13 +30,13 @@ public class VideoListFragment extends AbstractEditableListFragment<VideoListAda
 		super.onListItemClick(l, v, position, id);
 
 		VideoListAdapter.VideoInfo videoInfo = (VideoListAdapter.VideoInfo) getAdapter().getItem(position);
-		openFile(videoInfo.uri, "video/*", getString(R.string.file_open_app_chooser_msg));
+		openFile(videoInfo.uri, "video/*", getString(R.string.text_fileOpenAppChoose));
 	}
 
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.video);
+		return context.getString(R.string.text_video);
 	}
 
 	private class ChoiceListener extends ActionModeListener

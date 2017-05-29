@@ -59,8 +59,8 @@ public class StorageSetterPreference extends EditTextPreference
 		File appDir = ApplicationHelper.getApplicationDirectory(getContext());
 
 		if (!editable.toString().equals(appDir.getAbsolutePath()) && editable.toString().length() > 0 && positiveResult)
-			Toast.makeText(getContext(), R.string.error_rejected_path, Toast.LENGTH_LONG).show();
+			Toast.makeText(getContext(), R.string.mesg_enteredPathNotRead, Toast.LENGTH_LONG).show();
 		else if (!appDir.isDirectory())
-			Toast.makeText(getContext(), getContext().getString(R.string.error_default_path, appDir.getAbsolutePath()), Toast.LENGTH_LONG).show();
+			Toast.makeText(getContext(), getContext().getString(R.string.mesg_pathUnavailable, appDir.getAbsolutePath()), Toast.LENGTH_LONG).show();
 	}
 }

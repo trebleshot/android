@@ -45,7 +45,7 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<Receiv
 
 		for (File file : fileIndex)
 			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isDirectory() && file.canRead())
-				folders.add(new FileInfo(file.getName(), mContext.getString(R.string.folder), file));
+				folders.add(new FileInfo(file.getName(), mContext.getString(R.string.text_folder), file));
 
 		for (File file : fileIndex)
 			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isFile() && file.canRead())
@@ -55,7 +55,7 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<Receiv
 		Collections.sort(files, mComparator);
 
 		if (mPath.getParentFile() != null && mPath.getParentFile().canRead())
-			list.add(new FileInfo(mContext.getString(R.string.file_manager_go_up), "", mPath.getParentFile()));
+			list.add(new FileInfo(mContext.getString(R.string.butn_goUp), "", mPath.getParentFile()));
 
 		list.addAll(folders);
 		list.addAll(files);

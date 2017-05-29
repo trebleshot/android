@@ -60,7 +60,7 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 
 			shareIntent.putExtra(Intent.EXTRA_TEXT, mEditTextEditor.getText().toString());
 			shareIntent.setType("text/*");
-			startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.file_share_app_chooser_msg)) : shareIntent);
+			startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 
 			return true;
 		}
@@ -71,6 +71,6 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.share_text);
+		return context.getString(R.string.text_shareText);
 	}
 }

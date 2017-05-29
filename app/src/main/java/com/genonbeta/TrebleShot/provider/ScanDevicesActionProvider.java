@@ -67,7 +67,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 							getContext().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
 						else
 						{
-							Toast.makeText(getContext(), R.string.stopping_msg, Toast.LENGTH_SHORT).show();
+							Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
 							ApplicationHelper.getNetworkDeviceScanner().interrupt();
 						}
 					}

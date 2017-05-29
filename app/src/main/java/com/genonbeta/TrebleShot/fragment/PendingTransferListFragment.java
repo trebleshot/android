@@ -131,7 +131,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 					}).show();
 				}
 				else
-					Toast.makeText(getActivity(), R.string.warning_device_not_exits, Toast.LENGTH_LONG).show();
+					Toast.makeText(getActivity(), R.string.mesg_deviceNotExits, Toast.LENGTH_LONG).show();
 			}
 		}
 	}
@@ -139,7 +139,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.pending_transfers);
+		return context.getString(R.string.text_pendingTransfers);
 	}
 
 	public SQLQuery.Select getSelect()

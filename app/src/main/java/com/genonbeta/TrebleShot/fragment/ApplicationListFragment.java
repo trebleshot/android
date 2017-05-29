@@ -88,9 +88,9 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 		{
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-			dialogBuilder.setMessage(R.string.launch_application_question);
-			dialogBuilder.setNegativeButton(R.string.cancel, null);
-			dialogBuilder.setPositiveButton(R.string.launch, new DialogInterface.OnClickListener()
+			dialogBuilder.setMessage(R.string.ques_launchApplication);
+			dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
+			dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
 			{
 				@Override
 				public void onClick(DialogInterface dialog, int which)
@@ -102,13 +102,13 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 			dialogBuilder.show();
 		}
 		else
-			Toast.makeText(getActivity(), R.string.launch_application_error, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.application);
+		return context.getString(R.string.text_application);
 	}
 
 	private class ChoiceListener extends ActionModeListener

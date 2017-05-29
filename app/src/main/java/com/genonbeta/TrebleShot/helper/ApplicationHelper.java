@@ -25,14 +25,14 @@ public class ApplicationHelper
 	{
 		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-		File testPath = new File(prefs.getString("storage_path", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.app_name)));
+		File testPath = new File(prefs.getString("storage_path", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.text_appName)));
 
 		if (testPath.isDirectory())
 			return testPath;
 		else if (!testPath.exists() && testPath.mkdirs())
 			return testPath;
 
-		File appDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.app_name));
+		File appDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.text_appName));
 
 		if (!appDir.exists())
 			appDir.mkdirs();

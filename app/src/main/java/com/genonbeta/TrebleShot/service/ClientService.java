@@ -62,7 +62,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 					}
 				} catch (Exception e)
 				{
-					getNotificationUtils().showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+					getNotificationUtils().showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 				}
 			}
 

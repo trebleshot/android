@@ -3,10 +3,6 @@ package com.genonbeta.TrebleShot.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -65,7 +61,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 				context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, (ApplicationHelper.getNetworkDeviceScanner().scan(list, this)) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE));
 			}
 			else
-				Toast.makeText(context, R.string.concurrent_caution_scan, Toast.LENGTH_SHORT).show();
+				Toast.makeText(context, R.string.mesg_stillScanning, Toast.LENGTH_SHORT).show();
 		}
 		else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
 		{

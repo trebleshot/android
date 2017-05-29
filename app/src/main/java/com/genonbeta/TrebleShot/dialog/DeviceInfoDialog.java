@@ -40,7 +40,10 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 		modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
 
-		ipText.setText(device.availableConnections.length > 1 ? context.getString(R.string.available_connections, device.availableConnections.length) : device.availableConnections[0]);
+		ipText.setText(device.availableConnections.length > 1 ?
+				context.getResources().getQuantityString(R.plurals.text_availableConnections,
+						device.availableConnections.length,
+						device.availableConnections.length) : device.availableConnections[0]);
 		accessSwitch.setChecked(!device.isRestricted);
 
 		accessSwitch.setOnCheckedChangeListener(
@@ -56,8 +59,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 		setTitle(device.user);
 		setView(rootView);
-		setPositiveButton(R.string.close, null);
-		setNeutralButton(R.string.thread_queue_short, new DialogInterface.OnClickListener()
+		setPositiveButton(R.string.butn_close, null);
+		setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dialogInterface, int p2)
@@ -67,17 +70,17 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				}
 		);
 
-		setNegativeButton(R.string.remove, new DialogInterface.OnClickListener()
+		setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
 		{
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{
 				AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
 
-				askPermission.setTitle(R.string.dialog_title_remove_device);
-				askPermission.setMessage(R.string.dialog_message_remove_device);
-				askPermission.setNegativeButton(R.string.cancel, null);
-				askPermission.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener()
+				askPermission.setTitle(R.string.ques_removeDevice);
+				askPermission.setMessage(R.string.text_removeDeviceSummary);
+				askPermission.setNegativeButton(R.string.butn_cancel, null);
+				askPermission.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dialog, int which)

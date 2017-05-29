@@ -216,7 +216,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 				if (shareIntent != null)
 				{
-					startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.file_share_app_chooser_msg)) : shareIntent);
+					startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 					return true;
 				}
 			}

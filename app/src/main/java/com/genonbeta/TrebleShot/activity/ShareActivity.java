@@ -70,12 +70,12 @@ public class ShareActivity extends Activity
 		mProgressOrganizeFiles = new ProgressDialog(this);
 		mProgressOrganizeFiles.setIndeterminate(true);
 		mProgressOrganizeFiles.setCancelable(false);
-		mProgressOrganizeFiles.setMessage(getString(R.string.progress_organize_files));
+		mProgressOrganizeFiles.setMessage(getString(R.string.mesg_organizingFiles));
 
 		mProgressConnect = new ProgressDialog(this);
 		mProgressConnect.setIndeterminate(true);
 		mProgressConnect.setCancelable(false);
-		mProgressConnect.setMessage(getString(R.string.progress_communicate));
+		mProgressConnect.setMessage(getString(R.string.mesg_communicating));
 
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -129,10 +129,10 @@ public class ShareActivity extends Activity
 
 									}
 									else
-										showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+										showToast(getString(R.string.mesg_fileSendError, getString(R.string.mesg_notAllowed)));
 								} catch (Exception e)
 								{
-									showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 								}
 							}
 						});
@@ -164,7 +164,7 @@ public class ShareActivity extends Activity
 					registerClickListenerFiles(fileUris, fileNames);
 					break;
 				default:
-					Toast.makeText(this, R.string.type_not_supported_msg, Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
 					finish();
 			}
 
@@ -246,7 +246,7 @@ public class ShareActivity extends Activity
 						if (mFiles.size() == 1)
 							appendStatusText(mFiles.get(0).fileName);
 						else if (mFiles.size() > 1)
-							appendStatusText(getString(R.string.item_selected, String.valueOf(mFiles.size())));
+							appendStatusText(getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
 					}
 				});
 			}
@@ -310,11 +310,11 @@ public class ShareActivity extends Activity
 						Log.d(TAG, "Keyword did not accept the request remove pre-added senders");
 						editingSession.removeTransactionGroup(groupId);
 
-						showToast(getString(R.string.file_sending_error_msg, getString(R.string.not_allowed_error)));
+						showToast(getString(R.string.mesg_fileSendError, getString(R.string.mesg_notAllowed)));
 					}
 				} catch (Exception e)
 				{
-					showToast(getString(R.string.file_sending_error_msg, getString(R.string.communication_problem)));
+					showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 				}
 			}
 		});
@@ -348,7 +348,7 @@ public class ShareActivity extends Activity
 							public void onError(Exception e)
 							{
 								mProgressConnect.cancel();
-								showToast(getString(R.string.file_sending_error_msg, getString(R.string.connection_problem)));
+								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
 							}
 						}
 				);

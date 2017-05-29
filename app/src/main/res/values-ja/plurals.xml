@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="other">%d ファイルを削除しますか</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="other">%d ファイルを受信しました</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="other">%d 選択</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="other">%d の保留中の転送が削除されます</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="other">%d 接続</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="other">%d ファイルを受信しますか?</item>
+    </plurals>
+</resources>

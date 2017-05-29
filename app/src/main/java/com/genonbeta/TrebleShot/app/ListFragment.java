@@ -61,7 +61,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 
 		setListAdapter(mAdapter);
 		getLoaderManager().initLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
-		setEmptyText(getString(R.string.list_empty_msg));
+		setEmptyText(getString(R.string.text_listEmpty));
 	}
 
 	public abstract E onAdapter();

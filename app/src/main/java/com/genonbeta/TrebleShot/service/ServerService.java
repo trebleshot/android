@@ -73,7 +73,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				if (runningReceiver == null)
 					doJob(groupId);
 				else
-					Toast.makeText(this, getString(R.string.ongoing_list_warning, runningReceiver.fileName), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, runningReceiver.fileName), Toast.LENGTH_SHORT).show();
 			}
 		}
 

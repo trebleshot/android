@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="#0000"
         android:ellipsize="end"
-        android:hint="@string/tap_to_edit"
+        android:hint="@string/text_typeText"
         android:inputType="textMultiLine"
         android:overScrollMode="never"
         android:padding="10dp"/>

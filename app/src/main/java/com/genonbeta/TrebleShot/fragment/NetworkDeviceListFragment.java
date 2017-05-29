@@ -56,7 +56,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		super.onActivityCreated(savedInstanceState);
 
 		setHasOptionsMenu(true);
-		setEmptyText(getString(R.string.find_device_hint));
+		setEmptyText(getString(R.string.text_findDevicesHint));
 
 		getListView().setDividerHeight(0);
 
@@ -136,7 +136,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	@Override
 	public CharSequence getFragmentTitle(Context context)
 	{
-		return context.getString(R.string.device_list);
+		return context.getString(R.string.text_deviceList);
 	}
 
 	public void setOnListClickListener(AbsListView.OnItemClickListener listener)
@@ -165,12 +165,12 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 				String scanStatus = intent.getStringExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS);
 
 				if (DeviceScannerProvider.STATUS_OK.equals(scanStatus))
-					showSnackbar(R.string.devices_scanning_msg);
+					showSnackbar(R.string.mesg_scanningDevices);
 				else if (DeviceScannerProvider.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
 				{
-					Snackbar bar = Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), R.string.no_network_interface_msg, Snackbar.LENGTH_SHORT);
+					Snackbar bar = Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), R.string.mesg_noNetwork, Snackbar.LENGTH_SHORT);
 
-					bar.setAction(R.string.open_wifi_settings_short, new View.OnClickListener()
+					bar.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
 					{
 						@Override
 						public void onClick(View view)
@@ -184,7 +184,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 			}
 			else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction()))
 			{
-				showSnackbar(R.string.scan_completed);
+				showSnackbar(R.string.mesg_scanCompleted);
 			}
 		}
 	}

@@ -67,7 +67,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		setSupportActionBar(toolbar);
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
 
@@ -155,10 +155,10 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-			builder.setTitle(R.string.about);
-			builder.setMessage(R.string.about_summary);
-			builder.setNegativeButton(R.string.close, null);
-			builder.setPositiveButton(R.string.see_source_code, new DialogInterface.OnClickListener()
+			builder.setTitle(R.string.text_about);
+			builder.setMessage(R.string.text_aboutSummary);
+			builder.setNegativeButton(R.string.butn_close, null);
+			builder.setPositiveButton(R.string.butn_seeSourceCode, new DialogInterface.OnClickListener()
 			{
 				@Override
 				public void onClick(DialogInterface dialog, int which)
@@ -218,7 +218,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		if (fragment instanceof FragmentTitle)
 			setTitle(((FragmentTitle) fragment).getFragmentTitle(this));
 		else
-			setTitle(R.string.app_name);
+			setTitle(R.string.text_appName);
 	}
 
 	public void checkCurrentRequestedFragment(Intent intent)
@@ -241,7 +241,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_check_for_updates);
 
 		item.setChecked(true);
-		item.setTitle(R.string.version_available_text);
+		item.setTitle(R.string.text_newVersionAvailable);
 	}
 
 	private void sendThisApplication()
@@ -263,6 +263,6 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 			e.printStackTrace();
 		}
 
-		startActivity(Intent.createChooser(sendIntent, getString(R.string.file_share_app_chooser_msg)));
+		startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
 	}
 }

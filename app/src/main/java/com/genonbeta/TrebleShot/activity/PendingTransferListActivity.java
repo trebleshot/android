@@ -72,11 +72,11 @@ public class PendingTransferListActivity extends Activity
 			{
 				AlertDialog.Builder dialog = new AlertDialog.Builder(PendingTransferListActivity.this);
 
-				dialog.setTitle(R.string.dialog_title_remove_certain_transactions);
-				dialog.setMessage(R.string.dialog_message_remove_certain_transaction);
+				dialog.setTitle(R.string.question_removeAll);
+				dialog.setMessage(R.string.text_removeCertainPendingTransfersSummary);
 
-				dialog.setNegativeButton(R.string.cancel, null);
-				dialog.setPositiveButton(R.string.remove_all, new DialogInterface.OnClickListener()
+				dialog.setNegativeButton(R.string.butn_cancel, null);
+				dialog.setPositiveButton(R.string.butn_removeAll, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dialog, int which)

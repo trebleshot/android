@@ -149,13 +149,15 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 			{
 				AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
 
-				dialog.setTitle(R.string.dialog_title_remove_queue_job);
+				dialog.setTitle(R.string.ques_removeQueue);
 				dialog.setMessage(isGroup ?
-						mContext.getString(R.string.dialog_msg_remove_queue_job, thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
-						mContext.getString(R.string.warning_remove_pending_transfer, thisItem.getString(Transaction.FIELD_TRANSFER_NAME)));
+						mContext.getResources().getQuantityString(R.plurals.text_removeQueueSummary,
+								thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT),
+								thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
+						mContext.getString(R.string.text_removePendingTransferSummary, thisItem.getString(Transaction.FIELD_TRANSFER_NAME)));
 
-				dialog.setNegativeButton(R.string.close, null);
-				dialog.setPositiveButton(R.string.proceed, new DialogInterface.OnClickListener()
+				dialog.setNegativeButton(R.string.butn_close, null);
+				dialog.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dialog, int which)

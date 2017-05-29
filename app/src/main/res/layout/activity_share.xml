@@ -23,7 +23,7 @@
             android:padding="15dp"
             android:src="@drawable/ic_create_black_24dp"
             android:visibility="gone"
-            android:contentDescription="@string/tap_to_edit"/>
+            android:contentDescription="@string/text_typeText"/>
 
         <EditText
             android:id="@+id/activity_share_info_text"
@@ -42,7 +42,7 @@
             android:clickable="false"
             android:ellipsize="end"
             android:focusable="false"
-            android:hint="@string/empty"
+            android:hint="@string/text_empty"
             android:inputType="textMultiLine"
             android:maxLines="4"/>
 

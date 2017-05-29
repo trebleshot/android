@@ -58,8 +58,8 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 					break;
 				}
 
-		setTitle(R.string.dialog_title_available_networks);
-		setNegativeButton(R.string.cancel, null);
+		setTitle(R.string.text_availableNetworks);
+		setNegativeButton(R.string.butn_cancel, null);
 
 		if (mAvailableInterfaces.size() > 0)
 			setAdapter(new DeviceListAdapter(), new DialogInterface.OnClickListener()
@@ -71,7 +71,7 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 				}
 			});
 		else
-			setMessage(R.string.dialog_message_available_networks_no_network);
+			setMessage(R.string.text_noNetworkAvailable);
 	}
 
 	public abstract static class OnDeviceSelectedListener

@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_centerInParent="true"
             android:id="@+id/image"
-            android:contentDescription="@string/image"/>
+            android:contentDescription="@string/text_image"/>
 
         <TextView
             android:id="@+id/duration"

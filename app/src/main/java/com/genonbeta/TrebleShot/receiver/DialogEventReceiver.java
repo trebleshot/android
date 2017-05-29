@@ -74,7 +74,7 @@ public class DialogEventReceiver extends BroadcastReceiver
 					}
 			);
 		else
-			dialogBuilder.setNegativeButton(R.string.close, null);
+			dialogBuilder.setNegativeButton(R.string.butn_close, null);
 
 		Dialog dialog = dialogBuilder.create();
 		dialog.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
