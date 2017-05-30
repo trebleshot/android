@@ -52,10 +52,11 @@
             android:title="@string/text_showSystemApps"
             android:summary="@string/text_showSystemAppsSummary"/>
 
-        <com.genonbeta.TrebleShot.helper.preference.StorageSetterPreference
-            android:key="storage_path"
+        <PreferenceScreen
             android:title="@string/text_storagePath"
-            android:summary="@string/text_storagePathSummary"/>
+            android:summary="@string/text_storagePathSummary">
+            <intent android:action="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
+        </PreferenceScreen>
 
     </PreferenceCategory>
 

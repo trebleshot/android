@@ -1,20 +1,27 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
+import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+
+import java.util.ArrayList;
 
 /**
  * Created by: veli
@@ -28,19 +35,10 @@ public class PendingTransferListActivity extends Activity
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
-	public static void startInstance(Context context, String deviceId)
-	{
-		context.startActivity(new Intent(context, PendingTransferListActivity.class)
-				.setAction(ACTION_LIST_TRANSFERS)
-				.putExtra(EXTRA_DEVICE_ID, deviceId));
-	}
+	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-	public static void startInstance(Context context, int groupId)
-	{
-		context.startActivity(new Intent(context, PendingTransferListActivity.class)
-				.setAction(ACTION_LIST_TRANSFERS)
-				.putExtra(EXTRA_GROUP_ID, groupId));
-	}
+	private Transaction mTransaction;
+	private PendingTransferListFragment mPendingFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -50,8 +48,8 @@ public class PendingTransferListActivity extends Activity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.layout_transaction_editor);
 
-		final Transaction transaction = new Transaction(this);
-		final PendingTransferListFragment pendingFragment = (PendingTransferListFragment) getSupportFragmentManager().findFragmentById(R.id.layout_transaction_editor_fragment_pendinglist);
+		mTransaction = new Transaction(this);
+		mPendingFragment = (PendingTransferListFragment) getSupportFragmentManager().findFragmentById(R.id.layout_transaction_editor_fragment_pendinglist);
 
 		TextView closeTextView = (TextView) findViewById(R.id.layout_transaction_editor_close_text);
 		TextView removeTextView = (TextView) findViewById(R.id.layout_transaction_editor_remove_text);
@@ -71,7 +69,8 @@ public class PendingTransferListActivity extends Activity
 			@Override
 			public void onClick(View v)
 			{
-				startActivity(new Intent(PendingTransferListActivity.this, FilePickerActivity.class));
+				startActivityForResult(new Intent(PendingTransferListActivity.this, FilePickerActivity.class)
+						.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY), REQUEST_CHOOSE_FOLDER);
 			}
 		});
 
@@ -91,9 +90,9 @@ public class PendingTransferListActivity extends Activity
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						transaction
+						mTransaction
 								.edit()
-								.removeTransaction(pendingFragment.getAdapter().getSelect())
+								.removeTransaction(mPendingFragment.getAdapter().getSelect())
 								.done();
 					}
 				});
@@ -102,7 +101,57 @@ public class PendingTransferListActivity extends Activity
 			}
 		});
 
-		pendingFragment.setSelect(createLoader());
+		mPendingFragment.setSelect(createLoader());
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (data != null)
+		{
+			if (resultCode == Activity.RESULT_OK)
+			{
+				switch (requestCode)
+				{
+					case REQUEST_CHOOSE_FOLDER:
+						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH))
+						{
+							String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
+							ArrayList<CursorItem> list = mTransaction.getTable(mPendingFragment.getAdapter().getSelect());
+							Transaction.EditingSession editingSession = mTransaction.edit();
+
+							for (CursorItem cursorItem : list)
+							{
+								Log.d(PendingTransferListActivity.class.getSimpleName(), "We're there");
+
+								if (cursorItem.getInt(Transaction.FIELD_TRANSFER_TYPE) != Transaction.TYPE_TRANSFER_TYPE_INCOMING)
+									continue;
+
+								AwaitedFileReceiver fileReceiver = new AwaitedFileReceiver(cursorItem);
+
+								Log.d(PendingTransferListActivity.class.getSimpleName(), "Going on");
+
+								if (Transaction.Flag.PENDING.equals(fileReceiver.flag))
+								{
+									Log.d(PendingTransferListActivity.class.getSimpleName(), "Done");
+
+									ContentValues values = new ContentValues();
+									values.put(Transaction.FIELD_TRANSFER_FILE, selectedPath);
+
+									editingSession.updateTransaction(fileReceiver.requestId, values);
+								}
+							}
+
+							editingSession.done();
+
+							Toast.makeText(this, "We're okay: " + data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH), Toast.LENGTH_SHORT).show();
+						}
+						break;
+				}
+			}
+		}
 	}
 
 	public SQLQuery.Select createLoader()
@@ -118,5 +167,20 @@ public class PendingTransferListActivity extends Activity
 			select.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(getIntent().getIntExtra(EXTRA_GROUP_ID, -1)));
 
 		return select;
+	}
+
+
+	public static void startInstance(Context context, String deviceId)
+	{
+		context.startActivity(new Intent(context, PendingTransferListActivity.class)
+				.setAction(ACTION_LIST_TRANSFERS)
+				.putExtra(EXTRA_DEVICE_ID, deviceId));
+	}
+
+	public static void startInstance(Context context, int groupId)
+	{
+		context.startActivity(new Intent(context, PendingTransferListActivity.class)
+				.setAction(ACTION_LIST_TRANSFERS)
+				.putExtra(EXTRA_GROUP_ID, groupId));
 	}
 }

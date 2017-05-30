@@ -216,7 +216,7 @@ public class CommunicationService extends Service
 				response.put(Keyword.APP_INFO, appInfo);
 				response.put(Keyword.DEVICE_INFO, deviceInformation);
 
-				if (receivedMessage.has(Keyword.REQUEST) && !receivedMessage.getString(Keyword.REQUEST).equals(""))
+				if (receivedMessage.has(Keyword.REQUEST) && receivedMessage.getString(Keyword.REQUEST).length() > 0)
 					if (!mDeviceRegistry.exists(clientIp))
 					{
 						device.isRestricted = true;

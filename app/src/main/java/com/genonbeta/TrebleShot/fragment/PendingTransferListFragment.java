@@ -17,7 +17,9 @@ import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
+import com.genonbeta.TrebleShot.dialog.FixFilePathDialog;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
@@ -97,7 +99,13 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 				final AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
 				final NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(receiver.deviceId);
 
-				if (device != null)
+				FileUtils.Conflict conflict = FileUtils.isFileConflicted(getContext(), receiver);
+
+				if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict))
+				{
+					new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
+				}
+				else if (device != null)
 				{
 					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
 					{

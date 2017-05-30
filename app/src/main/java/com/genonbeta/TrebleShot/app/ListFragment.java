@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.ListAdapter;

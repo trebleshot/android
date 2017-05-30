@@ -158,4 +158,17 @@
     <string name="ques_why">Why?</string>
     <string name="text_notAllowedHelp">Check if you are allowed on %1$s. Device list > %2$s > Allow to access > (enable it)</string>
     <string name="butn_saveTo">Save to</string>
+    <string name="mesg_secureExit">Press again to exit</string>
+    <string name="butn_create">Create</string>
+    <string name="text_createFolder">Create folder</string>
+    <string name="mesg_fileAlreadyExists">File already exists</string>
+    <string name="mesg_folderCreateError">Folder couldn\'t be created</string>
+    <string name="mesg_permissionRequired">TrebleShot can\'t send or receive files without permission</string>
+    <string name="butn_settings">Settings</string>
+    <string name="butn_selectThis">Select this</string>
+    <string name="butn_newFile">New file</string>
+    <string name="butn_keepFile">Keep</string>
+    <string name="text_fixFileSaveLocation">Fix save location</string>
+    <string name="text_fileConflictNoChoice">The folder you choose for %s file is currently unavailable and current file name conflicts with a file in default folder. If it\'s a partly received file of the same file select \'Keep\' or select \'New file\' to generate new file</string>
+    <string name="text_fileConflictUseDefault">The folder you choose for %s file is currently unavailable. Proceed to use default folder</string>
 </resources>

@@ -1,12 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.support.v7.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,7 +36,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.TimeoutException;
 
 public class ShareActivity extends Activity
 {
@@ -364,7 +363,6 @@ public class ShareActivity extends Activity
 									}
 								} catch (Exception e)
 								{
-									e.printStackTrace();
 									mConnectionHandler.onError(process, specifiedDevice, deviceIp);
 									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 								}
@@ -375,7 +373,6 @@ public class ShareActivity extends Activity
 							@Override
 							public void onError(Exception e)
 							{
-								e.printStackTrace();
 								mProgressConnect.cancel();
 								mConnectionHandler.onError(null, specifiedDevice, deviceIp);
 								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
@@ -393,16 +390,9 @@ public class ShareActivity extends Activity
 		Looper.loop();
 	}
 
-	protected void updateStats(NetworkDevice device)
-	{
-		mProgressConnect.show();
-		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
-	}
-
 	private interface ConnectionHandler
 	{
 		public void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException;
-
 		public void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp);
 	}
 

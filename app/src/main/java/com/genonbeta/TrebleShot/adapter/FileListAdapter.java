@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,21 +15,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<ReceivedFilesListAdapter.FileInfo>
+public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter.FileInfo>
 {
+	private boolean mShowDirectories = true;
+	private boolean mShowFiles = true;
+	private String mFileMatch;
+
 	private ArrayList<FileInfo> mList = new ArrayList<>();
 	private File mDefaultPath;
 	private File mPath;
 	private Comparator<FileInfo> mComparator = new Comparator<FileInfo>()
 	{
 		@Override
-		public int compare(ReceivedFilesListAdapter.FileInfo compareFrom, ReceivedFilesListAdapter.FileInfo compareTo)
+		public int compare(FileListAdapter.FileInfo compareFrom, FileListAdapter.FileInfo compareTo)
 		{
 			return compareFrom.fileName.toLowerCase().compareTo(compareTo.fileName.toLowerCase());
 		}
 	};
 
-	public ReceivedFilesListAdapter(Context context)
+	public FileListAdapter(Context context)
 	{
 		super(context);
 		mPath = mDefaultPath = ApplicationHelper.getApplicationDirectory(mContext);
@@ -41,21 +46,40 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<Receiv
 		ArrayList<FileInfo> folders = new ArrayList<>();
 		ArrayList<FileInfo> files = new ArrayList<>();
 
-		File[] fileIndex = mPath.listFiles();
+		if (mPath != null)
+		{
+			File[] fileIndex = mPath.listFiles();
 
-		for (File file : fileIndex)
-			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isDirectory() && file.canRead())
-				folders.add(new FileInfo(file.getName(), mContext.getString(R.string.text_folder), file));
+			if (mShowDirectories)
+			{
+				for (File file : fileIndex)
+					if (applySearch(file.getName()) && file.isDirectory() && file.canRead())
+						folders.add(new FileInfo(file.getName(), mContext.getString(R.string.text_folder), file));
 
-		for (File file : fileIndex)
-			if ((mSearchWord == null || (mSearchWord != null && ApplicationHelper.searchWord(file.getName(), mSearchWord))) && file.isFile() && file.canRead())
-				files.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
+				Collections.sort(folders, mComparator);
+			}
 
-		Collections.sort(folders, mComparator);
-		Collections.sort(files, mComparator);
+			if (mShowFiles)
+			{
+				for (File file : fileIndex)
+					if ((mFileMatch == null || file.getName().matches(mFileMatch)) && applySearch(file.getName()) && file.isFile() && file.canRead())
+						files.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
 
-		if (mPath.getParentFile() != null && mPath.getParentFile().canRead())
-			list.add(new FileInfo(mContext.getString(R.string.butn_goUp), "", mPath.getParentFile()));
+				Collections.sort(files, mComparator);
+			}
+		}
+		else
+		{
+			ArrayList<File> paths = new ArrayList<>();
+
+			File defaultFolder = ApplicationHelper.getApplicationDirectory(getContext());
+			folders.add(new FileInfo(defaultFolder.getName(), "Default Folder", defaultFolder));
+
+			paths.add(Environment.getExternalStorageDirectory());
+
+			for (File storage : paths)
+				folders.add(new FileInfo(storage.getName(), "Storage", storage));
+		}
 
 		list.addAll(folders);
 		list.addAll(files);
@@ -122,6 +146,13 @@ public class ReceivedFilesListAdapter extends AbstractEditableListAdapter<Receiv
 	public void goPath(File path)
 	{
 		mPath = path;
+	}
+
+	public void setConfiguration(boolean showDirectories, boolean showFiles, String fileMatch)
+	{
+		mShowDirectories = showDirectories;
+		mShowFiles = showFiles;
+		mFileMatch = fileMatch;
 	}
 
 	public static class FileInfo

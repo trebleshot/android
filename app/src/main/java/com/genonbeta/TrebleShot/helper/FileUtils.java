@@ -1,6 +1,9 @@
 package com.genonbeta.TrebleShot.helper;
 
 import android.content.Context;
+import android.util.Log;
+
+import com.genonbeta.TrebleShot.database.Transaction;
 
 import java.io.File;
 import java.net.FileNameMap;
@@ -9,6 +12,13 @@ import java.util.Locale;
 
 public class FileUtils
 {
+	public enum Conflict
+	{
+		CURRENTLY_OK,
+		SET_PATH_UNAVAILABLE,
+		DEFAULT_PATH_FILE_EXISTS
+	}
+
 	public static String getFileContentType(String fileUrl)
 	{
 		FileNameMap nameMap = URLConnection.getFileNameMap();
@@ -42,15 +52,34 @@ public class FileUtils
 		{
 			File newFile = new File(mergedFileName + " (" + exceed + ")" + fileExtension);
 
-			if (!newFile.isFile())
+			if (!newFile.exists())
 				return newFile;
 		}
 
 		return null;
 	}
 
+	public static Conflict isFileConflicted(Context context, AwaitedFileReceiver receiver)
+	{
+		if (Transaction.Flag.PENDING.equals(receiver.flag)
+				|| receiver.selectedPath == null
+				|| new File(receiver.selectedPath).canWrite())
+			return Conflict.CURRENTLY_OK;
+		else if (!new File(getSaveLocationForFile(context, receiver)).exists())
+			return Conflict.SET_PATH_UNAVAILABLE;
+
+		return Conflict.DEFAULT_PATH_FILE_EXISTS;
+	}
+
+	public static String getSaveLocationForFile(Context context, AwaitedFileReceiver receiver)
+	{
+		return receiver.selectedPath != null && new File(receiver.selectedPath).canWrite()
+				? receiver.selectedPath + File.separator + receiver.fileName
+				: getSaveLocationForFile(context, receiver.fileName);
+	}
+
 	public static String getSaveLocationForFile(Context context, String file)
 	{
-		return ApplicationHelper.getApplicationDirectory(context).getAbsolutePath() + "/" + file;
+		return ApplicationHelper.getApplicationDirectory(context).getAbsolutePath() + File.separator + file;
 	}
 }

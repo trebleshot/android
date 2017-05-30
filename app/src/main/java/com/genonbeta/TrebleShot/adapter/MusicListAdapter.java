@@ -55,7 +55,7 @@ public class MusicListAdapter extends AbstractEditableListAdapter<MusicListAdapt
 			{
 				MusicInfo info = new MusicInfo(cursor.getString(artistIndex), cursor.getString(songIndex), Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-				if (mSearchWord == null || (mSearchWord != null && (ApplicationHelper.searchWord(info.artist, mSearchWord) || ApplicationHelper.searchWord(info.song, mSearchWord))))
+				if (applySearch(info.artist) || applySearch(info.song))
 					list.add(info);
 			}
 			while (cursor.moveToNext());

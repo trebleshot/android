@@ -50,7 +50,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 			{
 				String label = (String) appInfo.loadLabel(mManager);
 
-				if (getSearchWord() == null || (getSearchWord() != null && ApplicationHelper.searchWord(label, getSearchWord())))
+				if (applySearch(label))
 					list.add(new AppInfo(appInfo.loadLogo(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 			}
 		}

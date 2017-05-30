@@ -26,6 +26,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	private ActionMode mActionMode;
 	private ActionModeListener mActionModeListener;
 	private boolean mSearchSupport = true;
+	private boolean mMultiChoice = true;
 
 	private SearchView.OnQueryTextListener mSearchComposer = new SearchView.OnQueryTextListener()
 	{
@@ -49,6 +50,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
 		setHasOptionsMenu(true);
 	}
 
@@ -59,7 +61,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 		mActionModeListener = onActionModeListener();
 
-		if (mActionModeListener != null)
+		if (mMultiChoice && mActionModeListener != null)
 		{
 			getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 			getListView().setMultiChoiceModeListener(mActionModeListener);
@@ -128,7 +130,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 	public void search(String word)
 	{
-		if (word.equals(""))
+		if (word.length() == 0)
 			word = null;
 		else
 			word = word.toLowerCase();
@@ -140,6 +142,11 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	public void setSearchSupport(boolean searchSupport)
 	{
 		mSearchSupport = searchSupport;
+	}
+
+	public void setMultiChoice(boolean multiChoice)
+	{
+		mMultiChoice = multiChoice;
 	}
 
 	protected abstract class ActionModeListener implements AbsListView.MultiChoiceModeListener

@@ -19,7 +19,7 @@ public class CursorItem
 
 	public boolean exists(String keyName)
 	{
-		return mList.containsKey(keyName);
+		return mList.containsKey(keyName) && mList.get(keyName) != null;
 	}
 
 	public boolean getBoolean(String keyName)

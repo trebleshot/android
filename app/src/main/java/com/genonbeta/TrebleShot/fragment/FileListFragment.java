@@ -13,27 +13,27 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.ReceivedFilesListAdapter;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.GAnimater;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 import java.io.File;
 
-public class ReceivedFilesListFragment extends AbstractEditableListFragment<ReceivedFilesListAdapter.FileInfo, ReceivedFilesListAdapter> implements FragmentTitle
+public class FileListFragment extends AbstractEditableListFragment<FileListAdapter.FileInfo, FileListAdapter>
 {
-	public static final String TAG = ReceivedFilesListFragment.class.getSimpleName();
+	public static final String TAG = FileListFragment.class.getSimpleName();
 
 	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
 	public final static String EXTRA_KEEP_CURRENT = "keepCurrent";
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
+	private OnFileClickedListener mFileClickedListener;
+	private OnPathChangedListener mPathChangedListener;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -60,18 +60,18 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
 		mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
 		mMediaScanner.connect();
+		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
 
 		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
 
 	@Override
-	public ReceivedFilesListAdapter onAdapter()
+	public FileListAdapter onAdapter()
 	{
-		return new ReceivedFilesListAdapter(getActivity());
+		return new FileListAdapter(getActivity());
 	}
 
 	@Override
@@ -120,21 +120,32 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 	{
 		super.onListItemClick(l, v, position, id);
 
-		ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+		FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
 
-		if (fileInfo.file.isFile())
-			openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.text_fileOpenAppChoose));
-		else
-		{
-			getAdapter().goPath(fileInfo.file);
-			refreshList();
-		}
+		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo))
+			if (fileInfo.file.isFile())
+				openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.text_fileOpenAppChoose));
+			else
+				goPath(fileInfo.file);
 	}
 
-	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public void goPath(File file)
 	{
-		return context.getString(R.string.text_receivedFiles);
+		if (mPathChangedListener != null)
+			mPathChangedListener.onPathChanged(file);
+
+		getAdapter().goPath(file);
+		refreshList();
+	}
+
+	public void setOnPathChangedListener(OnPathChangedListener pathChangedListener)
+	{
+		mPathChangedListener = pathChangedListener;
+	}
+
+	public void setOnFileClickedListener(OnFileClickedListener fileClickedListener)
+	{
+		mFileClickedListener = fileClickedListener;
 	}
 
 	private class ChoiceListener extends ActionModeListener
@@ -184,28 +195,25 @@ public class ReceivedFilesListFragment extends AbstractEditableListFragment<Rece
 		@Override
 		public Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
 		{
-			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+			FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
 			return Uri.fromFile(fileInfo.file);
-		}
-
-		@Override
-		public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean isChecked)
-		{
-			super.onItemCheckedStateChanged(mode, position, id, isChecked);
-			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
-
-			if (isChecked && !getAdapter().getPath().equals(fileInfo.file.getParentFile()))
-			{
-				Toast.makeText(getContext(), "Can't select this folder", Toast.LENGTH_SHORT).show();
-				getListView().setItemChecked(position, false);
-			}
 		}
 
 		@Override
 		protected boolean onItemCheckable(int position)
 		{
-			ReceivedFilesListAdapter.FileInfo fileInfo = (ReceivedFilesListAdapter.FileInfo) getAdapter().getItem(position);
+			FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
 			return getAdapter().getPath().equals(fileInfo.file.getParentFile());
 		}
+	}
+
+	public interface OnFileClickedListener
+	{
+		boolean onFileClicked(FileListAdapter.FileInfo fileInfo);
+	}
+
+	public interface OnPathChangedListener
+	{
+		void onPathChanged(File file);
 	}
 }

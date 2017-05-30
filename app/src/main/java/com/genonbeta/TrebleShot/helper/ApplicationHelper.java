@@ -24,21 +24,17 @@ public class ApplicationHelper
 
 	public static File getApplicationDirectory(Context context)
 	{
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		File storagePath = new File(sharedPreferences.getString("storage_path", defaultPath));
 
-		File testPath = new File(prefs.getString("storage_path", Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.text_appName)));
+		if (!storagePath.exists())
+			storagePath.mkdirs();
 
-		if (testPath.isDirectory())
-			return testPath;
-		else if (!testPath.exists() && testPath.mkdirs())
-			return testPath;
+		if (storagePath.canWrite())
+			return storagePath;
 
-		File appDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + context.getString(R.string.text_appName));
-
-		if (!appDir.exists())
-			appDir.mkdirs();
-
-		return appDir;
+		return new File(defaultPath);
 	}
 
 	public static File getFileFromUri(Context context, Uri fileUri)

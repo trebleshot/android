@@ -103,7 +103,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 				long length = cursor.getLong(lengthIndex);
 				info.duration = convertDuration(length);
 
-				if (getSearchWord() == null || (getSearchWord() != null && ApplicationHelper.searchWord(info.title, getSearchWord())))
+				if (applySearch(info.title))
 					list.add(info);
 			}
 			while (cursor.moveToNext());

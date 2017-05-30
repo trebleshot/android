@@ -67,6 +67,14 @@
             android:name=".activity.TextEditorActivity"
             android:label="@string/text_textEditor"/>
 
+        <activity android:name=".activity.StoragePathChangeActivity"
+                  android:theme="@style/Base.Theme.AppCompat.Dialog">
+            <intent-filter>
+                <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
         <service
             android:name=".service.ClientService"
             android:label="@string/text_clientService"

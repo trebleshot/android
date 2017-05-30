@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.annotation.SuppressLint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,20 +16,32 @@ import java.util.ArrayList;
  * Date: 5/29/17 4:29 PM
  */
 
-public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolverRecyclerAdapter.MyHolder>
+public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
 {
-	public ArrayList<File> mList = new ArrayList<>();
+	private ArrayList<File> mList = new ArrayList<>();
+	private OnClickListener mClickListener;
 
 	@Override
-	public MyHolder onCreateViewHolder(ViewGroup parent, int viewType)
+	public Holder onCreateViewHolder(ViewGroup parent, int viewType)
 	{
-		return new MyHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
+		return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
 	}
 
 	@Override
-	public void onBindViewHolder(MyHolder holder, int position)
+	public void onBindViewHolder(final Holder holder, int position)
 	{
 		holder.text.setText(mList.get(position).getName());
+		holder.file = mList.get(position);
+
+		if (mClickListener != null)
+			holder.text.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					mClickListener.onClick(holder);
+				}
+			});
 	}
 
 	@Override
@@ -41,22 +52,42 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 
 	public void goTo(File file)
 	{
-		do
-		{
-			mList.add(file);
-			file = file.getParentFile();
-		}
-		while(file != null && file.canRead());
+		ArrayList<File> list = new ArrayList<>();
+
+		if (file != null)
+			do
+			{
+				list.add(file);
+				file = file.getParentFile();
+			}
+			while (file != null && file.canWrite());
+
+		mList.clear();
+
+		if (list.size() > 0)
+			for (int i = list.size() - 1; i >= 0; i--)
+				mList.add(list.get(i));
 	}
 
-	static class MyHolder extends RecyclerView.ViewHolder
+	public void setOnClickListener(OnClickListener clickListener)
+	{
+		mClickListener = clickListener;
+	}
+
+	public static class Holder extends RecyclerView.ViewHolder
 	{
 		public TextView text;
+		public File file;
 
-		private MyHolder(View view)
+		private Holder(View view)
 		{
 			super(view);
 			this.text = (TextView) view.findViewById(R.id.list_pathresolver_text);
 		}
+	}
+
+	public interface OnClickListener
+	{
+		void onClick(Holder holder);
 	}
 }

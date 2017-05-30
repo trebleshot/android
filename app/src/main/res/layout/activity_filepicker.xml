@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_alignParentTop="true"
-        android:id="@+id/activity_filepicker_fragment_pathresolver"
-        android:scrollbars="none"
+    <LinearLayout
+        android:id="@+id/activity_filepicker_layout_main"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/activity_filepicker_choose_text"
+            style="@style/condensedCapsText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_selectThis"
+            android:textColor="#39B"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
 
     <fragment
-        android:layout_below="@id/activity_filepicker_fragment_pathresolver"
-        android:id="@+id/activity_filepicker_fragment_files"
-        android:name="com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment"
+        android:id="@+id/activitiy_filepicker_fragment_files"
+        android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_above="@id/activity_filepicker_layout_main"/>
 
 </RelativeLayout>

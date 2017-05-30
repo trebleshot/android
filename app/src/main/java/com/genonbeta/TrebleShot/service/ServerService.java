@@ -12,7 +12,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
+import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
 import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.android.database.CursorItem;
@@ -94,7 +94,20 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			return false;
 
 		AwaitedFileReceiver receiver = new AwaitedFileReceiver(receiverInstance);
-		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver.fileName));
+
+		if (FileUtils.isFileConflicted(getApplicationContext(), receiver) != FileUtils.Conflict.CURRENTLY_OK)
+		{
+			receiver.flag = Transaction.Flag.INTERRUPTED;
+
+			getTransactionInstance()
+					.edit()
+					.updateTransaction(receiver)
+					.done();
+
+			return false;
+		}
+
+		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver));
 
 		if (Transaction.Flag.PENDING.equals(receiver.flag))
 		{
@@ -247,7 +260,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				if (mMediaScanner.isConnected())
 					mMediaScanner.scanFile(handler.getFile().getAbsolutePath(), handler.getExtra().fileMimeType);
 
-				sendBroadcast(new Intent(ReceivedFilesListFragment.ACTION_FILE_LIST_CHANGED));
+				sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED));
 			}
 		}
 	}

@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -11,16 +10,15 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -29,7 +27,7 @@ import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
-import com.genonbeta.TrebleShot.fragment.ReceivedFilesListFragment;
+import com.genonbeta.TrebleShot.fragment.ReceivedFilesFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.helper.FileUtils;
@@ -57,6 +55,8 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 	private Fragment mFragmentShareVideo;
 	private Fragment mFragmentShareText;
 
+	private long mExitPressTime;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -77,7 +77,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
-		mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesListFragment.class.getName());
+		mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesFragment.class.getName());
 		mFragmentOnGoingProcessList = Fragment.instantiate(this, PendingTransferListFragment.class.getName());
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
@@ -85,20 +85,6 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		mFragmentShareText = Fragment.instantiate(this, TextShareFragment.class.getName());
 
 		changeFragment(mFragmentDeviceList);
-
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-		{
-			// Should we show an explanation?
-			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS))
-			{
-
-			}
-			else
-			{
-				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSION_ALL);
-			}
-		}
-
 		checkCurrentRequestedFragment(getIntent());
 
 		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
@@ -205,7 +191,16 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		if (drawer.isDrawerOpen(GravityCompat.START))
 			drawer.closeDrawer(GravityCompat.START);
 		else
-			super.onBackPressed();
+		{
+			if ((System.currentTimeMillis() - mExitPressTime) < 2000)
+				finish();
+			else
+			{
+				mExitPressTime = System.currentTimeMillis();
+				Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
+			}
+		}
+
 	}
 
 	public void changeFragment(Fragment fragment)
