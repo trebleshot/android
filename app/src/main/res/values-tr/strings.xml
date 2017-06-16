@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <string name="text_appName">TrebleShot</string>
-    <string name="text_navigationDrawerOpen">Open navigation drawer</string>
-    <string name="text_navigationDrawerClose">Close navigation drawer</string>
+    <string name="text_navigationDrawerOpen">Gezinti çekmecesini aç</string>
+    <string name="text_navigationDrawerClose">Gezinti çekmecesini kapa</string>
     <string name="text_preferences">Ayarlar</string>
     <string name="mesg_loading">Yükleniyor…</string>
     <string name="text_unknownUser">Bilinmeyen Kullanıcı</string>
@@ -29,7 +29,7 @@
     <string name="text_developerMode">Geliştirici modu</string>
     <string name="text_developerModeSummary">Kullanıcı yapılandırmasını devre dışı bırakır</string>
     <string name="text_deviceName">Cihaz adı</string>
-    <string name="text_deviceNameSummary">Diğer cihazlarda gösterilecek</string>
+    <string name="text_deviceNameSummary">Bu isim diğer cihazlarda gösterilecek</string>
     <string name="text_deviceNameTitle">Cihaz adı girin</string>
     <string name="mesg_formatNotSupported">Biçim desteklenmiyor</string>
     <string name="mesg_fileSendError">Dosya gönderilirken birşeyler ters gitti. %s</string>
@@ -147,5 +147,20 @@
     <string name="text_communicationService">Haberleşme Servisi</string>
     <string name="text_serverService">Sunucu Servis</string>
     <string name="text_pendingTransferEditor">Bekleyen Aktarımlar</string>
-    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin. \n\nAygıt listesi > %2$s > Erişime izin ver > (etkin)</string>
-</resources>
+    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin. \n\nAygıt listesi &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
+<string name="ques_why">Neden?</string>
+    <string name="butn_saveTo">Kaydetme yeri</string>
+    <string name="mesg_secureExit">Çıkmak için tekrar basın</string>
+    <string name="butn_create">Oluştur</string>
+    <string name="text_createFolder">Klasör oluştur</string>
+    <string name="mesg_fileAlreadyExists">Dosya zaten var</string>
+    <string name="mesg_folderCreateError">Klasör oluşturulamadı</string>
+    <string name="mesg_permissionRequired">TrebleShot izin olmadan dosyaları gönderemez ve alamaz</string>
+    <string name="butn_settings">Ayarlar</string>
+    <string name="butn_selectThis">Bunu seç</string>
+    <string name="butn_newFile">Yeni dosya</string>
+    <string name="butn_keepFile">Sakla</string>
+    <string name="text_fixFileSaveLocation">Kaydetme yerini düzelt</string>
+    <string name="text_fileConflictUseDefault">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz. Varsayılan klasörü kullanmaya devam edin</string>
+<string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
+    </resources>
