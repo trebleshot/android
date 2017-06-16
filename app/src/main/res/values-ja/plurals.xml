@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <plurals name="ques_deleteFile">
-        <item quantity="other">%d ファイルを削除しますか</item>
-    </plurals>
+	<item quantity="other">%d ファイルを削除しますか?</item>
+</plurals>
     <plurals name="text_fileReceiveCompletedSummary">
         <item quantity="other">%d ファイルを受信しました</item>
     </plurals>
