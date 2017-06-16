@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">ナビゲーションドロワーを開く</string>
@@ -147,4 +147,20 @@
     <string name="text_communicationService">通信サービス</string>
     <string name="text_chooserTargetService">デバイス選択プロバイダー</string>
     <string name="text_pendingTransferEditor">転送の保留中</string>
+<string name="ques_why">なぜ?</string>
+    <string name="text_notAllowedHelp">%1$s で許可されているか確認してください。 デバイスリスト &gt; %2$s &gt; アクセスを許可 &gt; (有効にする)</string>
+    <string name="butn_saveTo">保存...</string>
+    <string name="mesg_secureExit">もう一度押すと終了します</string>
+    <string name="butn_create">作成</string>
+    <string name="text_createFolder">フォルダーを作成</string>
+    <string name="mesg_fileAlreadyExists">ファイルがすでに存在します</string>
+    <string name="mesg_folderCreateError">フォルダーを作成できません</string>
+    <string name="mesg_permissionRequired">アクセス許可がないと TrebleShot はファイルを送信または受信できません</string>
+    <string name="butn_settings">設定</string>
+    <string name="butn_selectThis">これを選択</string>
+    <string name="butn_newFile">新しいファイル</string>
+    <string name="butn_keepFile">残す</string>
+    <string name="text_fixFileSaveLocation">保存場所を修正</string>
+    <string name="text_fileConflictNoChoice">%s ファイル用に選択したフォルダーは現在利用できません。現在のファイル名がデフォルトフォルダー内のファイルと競合します。同じファイルの部分的に受信したファイルの場合は \'残す\' を選択するか、\'新しいファイル\' を選択して新しいファイルを生成します</string>
+    <string name="text_fileConflictUseDefault">%s ファイル用に選択したフォルダーは現在利用できません。デフォルトフォルダーを使用します</string>
 </resources>
