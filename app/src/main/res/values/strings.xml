@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <!--
     Meanings of prefixes:
     butn_ : text represents any kind of button like Button, MenuItem.title, possibly should be short
@@ -6,7 +6,6 @@
     mesg_ : texts used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes explained above
 -->
-
 <resources>
     <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>
@@ -18,7 +17,7 @@
     <string name="text_invited">Invited</string>
     <string name="mesg_connectionFailure">Connection Failure</string>
     <string name="text_available">Available</string>
-    <string name="text_notAvailable">Not available</string>
+    <string name="text_notAvailable">Unavailable</string>
     <string name="text_deviceListEmpty">No device</string>
     <string name="mesg_noNetwork">I need a connection like Wi-Fi to find nearby devices</string>
     <string name="mesg_scanningDevices">Finding nearby devices…</string>
@@ -31,23 +30,23 @@
     <string name="butn_cancelSending">Cancel sending</string>
     <string name="text_receiving">Receiving</string>
     <string name="butn_cancelReceiving">Cancel receiving</string>
-    <string name="text_fileReceived">File is received</string>
+    <string name="text_fileReceived">File has been received</string>
     <string name="butn_scan">Scan</string>
     <string name="text_listEmpty">List is empty</string>
     <string name="text_developerMode">Developer mode</string>
     <string name="text_developerModeSummary">It disables user configuration</string>
     <string name="text_deviceName">Device name</string>
-    <string name="text_deviceNameSummary">This name will be showed on other devices</string>
+    <string name="text_deviceNameSummary">This name will be shown on other devices</string>
     <string name="text_deviceNameTitle">Enter device name</string>
     <string name="mesg_formatNotSupported">Type is not supported</string>
     <string name="mesg_fileSendError">%s cannot be sent</string>
-    <string name="mesg_fileSent">%s is sent</string>
-    <string name="mesg_fileSendCancelled">Sending %s is cancelled</string>
+    <string name="mesg_fileSent">%s has been sent</string>
+    <string name="mesg_fileSendCancelled">Sending %s has been cancelled</string>
     <string name="mesg_fileNameChanged">Saving as %s</string>
-    <string name="mesg_fileReceived">%s file is received</string>
+    <string name="mesg_fileReceived">File %s has been received</string>
     <string name="mesg_fileReceiveError">While receiving %s, something went wrong</string>
     <string name="mesg_fileReceiveCancelled">Cancelled receiving %s</string>
-    <string name="text_multipleFileReceiveCompleted">Files received</string>
+    <string name="text_multipleFileReceiveCompleted">Files has been received</string>
     <string name="text_deviceList">Device list</string>
     <string name="text_fileOpenAppChoose">Open with</string>
     <string name="text_fileShareAppChoose">Choose any application</string>
@@ -55,7 +54,7 @@
     <string name="butn_edit">Edit</string>
     <string name="butn_share">Share</string>
     <string name="butn_delete">Delete</string>
-    <string name="text_deleteConfirm">Delete Confirm</string>
+    <string name="text_deleteConfirm">Confirm Delete</string>
     <string name="mesg_deleteFileStarted">Files will be deleted</string>
     <string name="butn_cancel">Cancel</string>
     <string name="text_refresh">Refresh</string>
@@ -72,11 +71,11 @@
     <string name="mesg_somethingWentWrong">Something went wrong</string>
     <string name="text_findDevicesHint">To find nearby devices touch the search icon</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
-    <string name="text_autoScanDevicesSummary">Scans devices when it\'s necessary</string>
+    <string name="text_autoScanDevicesSummary">Scans devices when it is necessary</string>
     <string name="mesg_stillScanning">Still scanning…</string>
     <string name="text_advanced">Advanced</string>
     <string name="text_storagePath">Storage path</string>
-    <string name="text_storagePathSummary">New files will be saved in it</string>
+    <string name="text_storagePathSummary">New files will be saved to this folder</string>
     <string name="mesg_enteredPathNotRead">The path you entered cannot be used</string>
     <string name="mesg_pathUnavailable">%s currently unavailable</string>
     <string name="butn_showOnFileManager">Show on File Manager</string>
@@ -101,7 +100,7 @@
     <string name="text_music">Music</string>
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Show system apps</string>
-    <string name="text_showSystemAppsSummary">In share screen show system apps</string>
+    <string name="text_showSystemAppsSummary">Show system apps in share screen</string>
     <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">You are not allowed</string>
     <string name="text_connectionProblem">Connection problem</string>
@@ -112,7 +111,7 @@
     <string name="text_aboutSummary">This software is developed by Genonbeta Open-Source Software Organization</string>
     <string name="butn_appLaunch">Launch</string>
     <string name="ques_launchApplication">Do you want to launch this application?</string>
-    <string name="mesg_launchApplicationError">This application can\'t be launched</string>
+    <string name="mesg_launchApplicationError">This application cannot be launched</string>
     <string name="text_enterText">Enter text here…</string>
     <string name="mesg_textCopiedToClipboard">Text copied to clipboard</string>
     <string name="ques_copyToClipboard">Copy to clipboard?</string>
@@ -142,7 +141,7 @@
     <string name="text_removeCertainPendingTransfersSummary">This will remove all the pending transfers that you see in this list</string>
     <string name="text_availableNetworks">Avail. networks for this device</string>
     <string name="text_noNetworkAvailable">No network is available</string>
-    <string name="mesg_deviceNotExits">Sender doesn\'t exist in your devices anymore</string>
+    <string name="mesg_deviceNotExits">Sender does not exist in your devices list any more</string>
     <string name="text_savedConnections">Saved connections</string>
     <string name="text_newVersionAvailable">New version is available!</string>
     <string name="butn_goUp">Go up</string>
@@ -156,19 +155,19 @@
     <string name="text_pendingTransferEditor">Pending Transfers</string>
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
-    <string name="text_notAllowedHelp">Check if you are allowed on %1$s. Device list > %2$s > Allow to access > (enable it)</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s. Device list &gt; %2$s &gt; Allow to access &gt; (enable it)</string>
     <string name="butn_saveTo">Save to</string>
     <string name="mesg_secureExit">Press again to exit</string>
     <string name="butn_create">Create</string>
     <string name="text_createFolder">Create folder</string>
     <string name="mesg_fileAlreadyExists">File already exists</string>
-    <string name="mesg_folderCreateError">Folder couldn\'t be created</string>
-    <string name="mesg_permissionRequired">TrebleShot can\'t send or receive files without permission</string>
+    <string name="mesg_folderCreateError">Folder could not be created</string>
+    <string name="mesg_permissionRequired">TrebleShot cannot send or receive files without permission</string>
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
     <string name="butn_newFile">New file</string>
     <string name="butn_keepFile">Keep</string>
     <string name="text_fixFileSaveLocation">Fix save location</string>
-    <string name="text_fileConflictNoChoice">The folder you choose for %s file is currently unavailable and current file name conflicts with a file in default folder. If it\'s a partly received file of the same file select \'Keep\' or select \'New file\' to generate new file</string>
+    <string name="text_fileConflictNoChoice">The folder you chose for %s file is currently unavailable and current file name conflicts with a file in default folder. If it is a partially received version of the same file select \'Keep\' or select \'New file\' to generate new file</string>
     <string name="text_fileConflictUseDefault">The folder you choose for %s file is currently unavailable. Proceed to use default folder</string>
 </resources>

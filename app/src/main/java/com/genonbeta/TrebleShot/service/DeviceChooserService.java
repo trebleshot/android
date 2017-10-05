@@ -36,8 +36,7 @@ public class DeviceChooserService extends ChooserTargetService
 		DeviceRegistry deviceRegistry = new DeviceRegistry(getApplicationContext());
 		ArrayList<ChooserTarget> list = new ArrayList<>();
 
-		for (NetworkDevice device : deviceRegistry.getDeviceList())
-		{
+		for (NetworkDevice device : deviceRegistry.getDeviceList()) {
 			if (device.isLocalAddress)
 				continue;
 

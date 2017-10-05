@@ -54,8 +54,7 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot)
-		{
+		if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot) {
 			Intent shareIntent = new Intent(item.getItemId() == R.id.file_actions_share ? Intent.ACTION_SEND : ShareActivity.ACTION_SEND);
 
 			shareIntent.putExtra(Intent.EXTRA_TEXT, mEditTextEditor.getText().toString());

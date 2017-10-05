@@ -92,20 +92,16 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 		if (getSelect() == null || getSelect().getItems().exists(PendingTransferListAdapter.FLAG_GROUP)
 				&& getSelect().getItems().getBoolean(PendingTransferListAdapter.FLAG_GROUP))
 			PendingTransferListActivity.startInstance(getContext(), thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
-		else
-		{
-			if (thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING)
-			{
+		else {
+			if (thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING) {
 				final AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
 				final NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(receiver.deviceId);
 
 				FileUtils.Conflict conflict = FileUtils.isFileConflicted(getContext(), receiver);
 
-				if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict))
-				{
+				if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict)) {
 					new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
-				} else if (device != null)
-				{
+				} else if (device != null) {
 					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
@@ -113,15 +109,13 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 						{
 							Transaction.EditingSession editingSession = mTransaction.edit();
 
-							if (receiver.flag.equals(Transaction.Flag.INTERRUPTED))
-							{
+							if (receiver.flag.equals(Transaction.Flag.INTERRUPTED)) {
 								receiver.flag = Transaction.Flag.RESUME;
 
 								editingSession.updateTransaction(receiver);
 							}
 
-							if (!receiver.ip.equals(addressHolder.address))
-							{
+							if (!receiver.ip.equals(addressHolder.address)) {
 								receiver.ip = addressHolder.address;
 								ContentValues values = new ContentValues();
 

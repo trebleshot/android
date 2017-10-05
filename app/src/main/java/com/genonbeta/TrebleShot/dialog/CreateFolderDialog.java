@@ -56,8 +56,7 @@ public class CreateFolderDialog extends AlertDialog.Builder
 
 				if (file.exists())
 					Toast.makeText(getContext(), R.string.mesg_fileAlreadyExists, Toast.LENGTH_SHORT).show();
-				else if (file.mkdir())
-				{
+				else if (file.mkdir()) {
 					mOnCreatedListener.onCreated();
 					dialog.dismiss();
 				} else

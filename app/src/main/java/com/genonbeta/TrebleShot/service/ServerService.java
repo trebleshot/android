@@ -63,10 +63,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	{
 		super.onStartCommand(intent, flags, startId);
 
-		if (intent != null)
-		{
-			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID))
-			{
+		if (intent != null) {
+			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)) {
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 				AwaitedFileReceiver runningReceiver = findExtraById(groupId);
 
@@ -95,8 +93,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 		AwaitedFileReceiver receiver = new AwaitedFileReceiver(receiverInstance);
 
-		if (FileUtils.isFileConflicted(getApplicationContext(), receiver) != FileUtils.Conflict.CURRENTLY_OK)
-		{
+		if (FileUtils.isFileConflicted(getApplicationContext(), receiver) != FileUtils.Conflict.CURRENTLY_OK) {
 			receiver.flag = Transaction.Flag.INTERRUPTED;
 
 			getTransactionInstance()
@@ -109,20 +106,16 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver));
 
-		if (Transaction.Flag.PENDING.equals(receiver.flag))
-		{
-			if (file.isFile())
-			{
+		if (Transaction.Flag.PENDING.equals(receiver.flag)) {
+			if (file.isFile()) {
 				file = FileUtils.getUniqueFile(file);
 				receiver.fileName = file.getName();
 			}
 
-			try
-			{
+			try {
 				if (!file.createNewFile())
 					return false;
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -195,8 +188,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		@Override
 		public Flag onSocketReady(final ServerService.Receive.Handler handler, final ServerSocket serverSocket)
 		{
-			try
-			{
+			try {
 				JSONObject jsonObject = new JSONObject();
 
 				jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
@@ -214,8 +206,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 				if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG)))
 					return Flag.CANCEL_CURRENT;
-			} catch (JSONException e)
-			{
+			} catch (JSONException e) {
 				// It shouldn't have happened.
 				e.printStackTrace();
 			}
@@ -252,8 +243,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 			if (isAdded)
 				getWifiLock().acquire();
-			else
-			{
+			else {
 				if (processList.size() < 1)
 					getWifiLock().release();
 

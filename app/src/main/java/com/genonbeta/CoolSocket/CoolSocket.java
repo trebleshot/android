@@ -57,8 +57,7 @@ abstract public class CoolSocket
 		int len = 0;
 		long calculatedTimeout = timeout != NO_TIMEOUT ? System.currentTimeMillis() + timeout : NO_TIMEOUT;
 
-		do
-		{
+		do {
 			if ((len = inputStream.read(buffer)) > 0)
 				inputStreamResult.write(buffer, 0, len);
 
@@ -152,8 +151,7 @@ abstract public class CoolSocket
 
 	protected boolean respondRequest(Socket socket)
 	{
-		if (this.getConnections().size() < this.mMaxConnections || this.mMaxConnections == 0)
-		{
+		if (this.getConnections().size() < this.mMaxConnections || this.mMaxConnections == 0) {
 			ClientHandler clientRunnable = new ClientHandler(socket);
 			Thread selfThread = new Thread(clientRunnable);
 
@@ -173,21 +171,17 @@ abstract public class CoolSocket
 
 	public boolean start()
 	{
-		if (this.getServerSocket() == null || this.getServerSocket().isClosed())
-		{
-			try
-			{
+		if (this.getServerSocket() == null || this.getServerSocket().isClosed()) {
+			try {
 				this.mServerSocket = new ServerSocket();
 				this.getServerSocket().bind(this.mSocketAddress);
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
 		}
 
-		if (this.getServerThread() == null || Thread.State.TERMINATED.equals(this.getServerThread().getState()))
-		{
+		if (this.getServerThread() == null || Thread.State.TERMINATED.equals(this.getServerThread().getState())) {
 			this.mServerThread = new Thread(this.getSocketRunnable());
 
 			this.getServerThread().setDaemon(true);
@@ -204,8 +198,7 @@ abstract public class CoolSocket
 	{
 		long startTime = System.currentTimeMillis();
 
-		while (this.isServerAlive() && (System.currentTimeMillis() - startTime) < timeout)
-		{
+		while (this.isServerAlive() && (System.currentTimeMillis() - startTime) < timeout) {
 		}
 
 		return this.start();
@@ -218,13 +211,10 @@ abstract public class CoolSocket
 
 		this.getServerThread().interrupt();
 
-		if (!this.getServerSocket().isClosed())
-		{
-			try
-			{
+		if (!this.getServerSocket().isClosed()) {
+			try {
 				this.getServerSocket().close();
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
@@ -254,12 +244,10 @@ abstract public class CoolSocket
 		@Override
 		public void run()
 		{
-			try
-			{
+			try {
 				if (CoolSocket.this.mSocketTimeout > NO_TIMEOUT)
 					this.mSocket.setSoTimeout(CoolSocket.this.mSocketTimeout);
-			} catch (SocketException e)
-			{
+			} catch (SocketException e) {
 				e.printStackTrace();
 			}
 
@@ -275,10 +263,8 @@ abstract public class CoolSocket
 		@Override
 		public void run()
 		{
-			try
-			{
-				do
-				{
+			try {
+				do {
 					Socket request = CoolSocket.this.getServerSocket().accept();
 
 					if (CoolSocket.this.isInterrupted())
@@ -287,8 +273,7 @@ abstract public class CoolSocket
 						respondRequest(request);
 				}
 				while (!CoolSocket.this.isInterrupted());
-			} catch (IOException e)
-			{
+			} catch (IOException e) {
 				CoolSocket.this.onError(e);
 			}
 		}

@@ -65,8 +65,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 
 						if (isAvailable)
 							getContext().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
-						else
-						{
+						else {
 							Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
 							ApplicationHelper.getNetworkDeviceScanner().interrupt();
 						}
@@ -74,8 +73,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 				}
 		);
 
-		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable())
-		{
+		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable()) {
 			RotateAnimation anim = new RotateAnimation(0.0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 
 			anim.setInterpolator(new LinearInterpolator());

@@ -25,8 +25,7 @@ public class FixFilePathDialog extends AlertDialog.Builder
 
 		setTitle(R.string.text_fixFileSaveLocation);
 
-		if (FileUtils.Conflict.SET_PATH_UNAVAILABLE.equals(conflict))
-		{
+		if (FileUtils.Conflict.SET_PATH_UNAVAILABLE.equals(conflict)) {
 			setMessage(getContext().getString(R.string.text_fileConflictUseDefault, receiver.fileName));
 
 			setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
@@ -37,8 +36,7 @@ public class FixFilePathDialog extends AlertDialog.Builder
 					fixConflict(context, transaction, receiver, false);
 				}
 			});
-		} else
-		{
+		} else {
 			setMessage(getContext().getString(R.string.text_fileConflictNoChoice, receiver.fileName));
 
 			setNeutralButton(R.string.butn_keepFile, new DialogInterface.OnClickListener()
@@ -67,8 +65,7 @@ public class FixFilePathDialog extends AlertDialog.Builder
 	{
 		receiver.selectedPath = null;
 
-		if (newFile)
-		{
+		if (newFile) {
 			File uniqueFile = FileUtils.getUniqueFile(new File(FileUtils.getSaveLocationForFile(context, receiver.fileName)));
 			receiver.fileName = uniqueFile.getName();
 		}

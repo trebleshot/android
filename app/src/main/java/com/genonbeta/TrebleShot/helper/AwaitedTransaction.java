@@ -14,6 +14,7 @@ import com.genonbeta.android.database.CursorItem;
 abstract public class AwaitedTransaction
 {
 	public String fileName;
+	public String fileAddress;
 	public String deviceId;
 	public String ip;
 	public int requestId = 0;

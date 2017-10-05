@@ -36,20 +36,16 @@ public class StreamInfo
 
 		streamInfo.uri = uri;
 
-		if (uriType.startsWith("content"))
-		{
+		if (uriType.startsWith("content")) {
 			ContentResolver contentResolver = context.getContentResolver();
 			Cursor cursor = contentResolver.query(uri, null, null, null, null);
 
-			if (cursor != null)
-			{
-				if (cursor.moveToFirst())
-				{
+			if (cursor != null) {
+				if (cursor.moveToFirst()) {
 					int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
 					int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
 
-					if (nameIndex != -1 && sizeIndex != -1)
-					{
+					if (nameIndex != -1 && sizeIndex != -1) {
 						streamInfo.friendlyName = cursor.getString(nameIndex);
 						streamInfo.size = cursor.getLong(sizeIndex);
 						streamInfo.inputStream = contentResolver.openInputStream(uri);
@@ -61,12 +57,10 @@ public class StreamInfo
 
 				cursor.close();
 			}
-		} else if (uriType.startsWith("file"))
-		{
+		} else if (uriType.startsWith("file")) {
 			File file = new File(URI.create(uriType));
 
-			if (file.canRead())
-			{
+			if (file.canRead()) {
 				streamInfo.friendlyName = file.getName();
 				streamInfo.size = file.length();
 				streamInfo.inputStream = new FileInputStream(file);

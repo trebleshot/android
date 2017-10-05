@@ -22,8 +22,7 @@ public class GAnimater
 	{
 		AnimationSet set = new AnimationSet(true);
 
-		if (mode == APPEAR)
-		{
+		if (mode == APPEAR) {
 			Animation animation = new AlphaAnimation(0.0f, 1.0f);
 			animation.setDuration(300);
 			set.addAnimation(animation);
@@ -35,8 +34,7 @@ public class GAnimater
 
 			animation.setDuration(300);
 			set.addAnimation(animation);
-		} else if (mode == DISAPPEAR)
-		{
+		} else if (mode == DISAPPEAR) {
 			Animation animation = new AlphaAnimation(1.0f, 0.0f);
 			animation.setDuration(300);
 			set.addAnimation(animation);

@@ -42,12 +42,10 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 	{
 		ArrayList<AppInfo> list = new ArrayList<>();
 
-		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA))
-		{
+		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
-			{
+			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps) {
 				String label = (String) appInfo.loadLabel(mManager);
 
 				if (applySearch(label))

@@ -26,8 +26,7 @@ public abstract class CoolCommunication extends CoolSocket
 	@Override
 	protected void onPacketReceived(Socket socket)
 	{
-		try
-		{
+		try {
 			PrintWriter writer = getStreamWriter(socket.getOutputStream());
 			String message = readStreamMessage(socket.getInputStream(), getSocketTimeout());
 
@@ -37,11 +36,9 @@ public abstract class CoolCommunication extends CoolSocket
 			writer.flush();
 
 			socket.close();
-		} catch (IOException e)
-		{
+		} catch (IOException e) {
 			this.onError(e);
-		} catch (TimeoutException e)
-		{
+		} catch (TimeoutException e) {
 			this.onError(e);
 		}
 	}
@@ -97,8 +94,7 @@ public abstract class CoolCommunication extends CoolSocket
 
 				Socket socket = new Socket();
 
-				try
-				{
+				try {
 					socket.bind(null);
 					socket.connect(this.mProcess.getSocketAddress());
 
@@ -122,12 +118,10 @@ public abstract class CoolCommunication extends CoolSocket
 						this.mProcess.getResponseHandler().onResponseAvailable(this.mProcess.getResponse());
 
 					return this.mProcess.getResponse();
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onError(e);
-				} finally
-				{
+				} finally {
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onFinal();
 				}
@@ -230,12 +224,10 @@ public abstract class CoolCommunication extends CoolSocket
 
 			public boolean requestFlush()
 			{
-				if (!this.isFlushRequested() && this.getPrintWriter() != null)
-				{
+				if (!this.isFlushRequested() && this.getPrintWriter() != null) {
 					this.mIsFlushRequested = true;
 
-					if (this.getPutLater() != null)
-					{
+					if (this.getPutLater() != null) {
 						this.getPrintWriter().append(this.getPutLater().toString());
 						this.mPutLater = null;
 					}
@@ -243,14 +235,11 @@ public abstract class CoolCommunication extends CoolSocket
 					this.getPrintWriter().append(CoolSocket.END_SEQUENCE);
 					this.getPrintWriter().flush();
 
-					try
-					{
+					try {
 						this.setResponseReceived(readStreamMessage(this.getSocket().getInputStream(), getSocketTimeout()));
-					} catch (IOException e)
-					{
+					} catch (IOException e) {
 						return false;
-					} catch (TimeoutException e)
-					{
+					} catch (TimeoutException e) {
 						return false;
 					}
 
@@ -269,10 +258,8 @@ public abstract class CoolCommunication extends CoolSocket
 			{
 				long timeStart = System.currentTimeMillis();
 
-				if (this.requestFlush())
-				{
-					while (!this.isResponseReceived() && (this.getSocketTimeout() == Messenger.NO_TIMEOUT || (System.currentTimeMillis() - timeStart) < this.getSocketTimeout()))
-					{
+				if (this.requestFlush()) {
+					while (!this.isResponseReceived() && (this.getSocketTimeout() == Messenger.NO_TIMEOUT || (System.currentTimeMillis() - timeStart) < this.getSocketTimeout())) {
 					}
 
 					if (!this.isResponseReceived())

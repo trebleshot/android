@@ -28,8 +28,7 @@ public class TextEditorActivity extends Activity
 
 		if (getIntent() == null || !ACTION_EDIT_TEXT.equals(getIntent().getAction()) || !getIntent().hasExtra(EXTRA_TEXT_INDEX))
 			finish();
-		else
-		{
+		else {
 			setContentView(R.layout.layout_text_editor_activity);
 
 			if (getSupportActionBar() != null)
@@ -52,8 +51,7 @@ public class TextEditorActivity extends Activity
 	{
 		int id = item.getItemId();
 
-		if (id == R.id.menu_action_done)
-		{
+		if (id == R.id.menu_action_done) {
 			Intent intent = new Intent();
 			intent.putExtra(EXTRA_TEXT_INDEX, mEditTextEditor.getText().toString());
 
@@ -61,8 +59,7 @@ public class TextEditorActivity extends Activity
 			finish();
 
 			return true;
-		} else if (id == android.R.id.home)
-		{
+		} else if (id == android.R.id.home) {
 			setResult(RESULT_CANCELED);
 			finish();
 

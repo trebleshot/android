@@ -46,12 +46,10 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		ArrayList<FileInfo> folders = new ArrayList<>();
 		ArrayList<FileInfo> files = new ArrayList<>();
 
-		if (mPath != null)
-		{
+		if (mPath != null) {
 			File[] fileIndex = mPath.listFiles();
 
-			if (mShowDirectories)
-			{
+			if (mShowDirectories) {
 				for (File file : fileIndex)
 					if (applySearch(file.getName()) && file.isDirectory() && file.canRead())
 						folders.add(new FileInfo(file.getName(), mContext.getString(R.string.text_folder), file));
@@ -59,16 +57,14 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 				Collections.sort(folders, mComparator);
 			}
 
-			if (mShowFiles)
-			{
+			if (mShowFiles) {
 				for (File file : fileIndex)
 					if ((mFileMatch == null || file.getName().matches(mFileMatch)) && applySearch(file.getName()) && file.isFile() && file.canRead())
 						files.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
 
 				Collections.sort(files, mComparator);
 			}
-		} else
-		{
+		} else {
 			ArrayList<File> paths = new ArrayList<>();
 
 			File defaultFolder = ApplicationHelper.getApplicationDirectory(getContext());

@@ -1,21 +1,27 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <plurals name="ques_deleteFile">
-        <item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
-    </plurals>
+	<item quantity="one">%d dosyayı silmek istiyor musunuz?</item>
+	<item quantity="other">%d dosyayı silmek istiyor musunuz?</item>
+</plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="other">%d dosya alındı</item>
-    </plurals>
+	<item quantity="one">%d dosya alındı</item>
+	<item quantity="other">%d dosya alındı</item>
+</plurals>
     <plurals name="text_itemSelected">
-        <item quantity="other">%d dosya seçildi</item>
-    </plurals>
+	<item quantity="one">%d dosya seçildi</item>
+	<item quantity="other">%d dosya seçildi</item>
+</plurals>
     <plurals name="text_removeQueueSummary">
-        <item quantity="other">%d bekleyen aktarım kaldırılacak</item>
-    </plurals>
+	<item quantity="one">%d bekleyen aktarım kaldırılacak</item>
+	<item quantity="other">%d bekleyen aktarım kaldırılacak</item>
+</plurals>
     <plurals name="text_availableConnections">
-        <item quantity="other">%d bağlantı</item>
-    </plurals>
+	<item quantity="one">%d bağlantı</item>
+	<item quantity="other">%d bağlantı</item>
+</plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="other">%d dosya alınsın mı?</item>
-    </plurals>
+	<item quantity="one">%d dosya alınsın mı?</item>
+	<item quantity="other">%d dosya alınsın mı?</item>
+</plurals>
 </resources>

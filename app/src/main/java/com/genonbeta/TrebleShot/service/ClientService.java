@@ -51,22 +51,18 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		super.onStartCommand(intent, flags, startId);
 
 		if (intent != null)
-			if (ACTION_SEND.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID))
-			{
-				try
-				{
+			if (ACTION_SEND.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID)) {
+				try {
 					int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
 					CursorItem transaction = getTransactionInstance().getTransaction(requestId);
 
-					if (transaction != null)
-					{
+					if (transaction != null) {
 						AwaitedFileSender awaitedSender = new AwaitedFileSender(transaction);
 						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), awaitedSender.fileUri);
 
 						mSend.send(awaitedSender.ip, awaitedSender.port, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender, false);
 					}
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 
 				}
 			}
@@ -147,11 +143,9 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 			super.onOrientatingStreams(handler, inputStream, outputStream);
 
 			if (handler.getExtra().fileSize > 0)
-				try
-				{
+				try {
 					inputStream.skip(handler.getExtra().fileSize);
-				} catch (IOException e)
-				{
+				} catch (IOException e) {
 					handler.interrupt();
 					e.printStackTrace();
 				}

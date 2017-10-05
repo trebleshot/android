@@ -37,15 +37,11 @@ public class StoragePathChangeActivity extends Activity
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (data != null)
-		{
-			if (resultCode == Activity.RESULT_OK)
-			{
-				switch (requestCode)
-				{
+		if (data != null) {
+			if (resultCode == Activity.RESULT_OK) {
+				switch (requestCode) {
 					case REQUEST_CHOOSE_FOLDER:
-						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH))
-						{
+						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
 							getDefaultPreferences()
 									.edit()
 									.putString("storage_path", data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH))

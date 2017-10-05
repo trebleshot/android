@@ -39,8 +39,7 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()))
-			{
+			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction())) {
 				if (!intent.hasExtra(EXTRA_KEEP_CURRENT))
 					getAdapter().goDefault();
 
@@ -105,8 +104,7 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		switch (item.getItemId())
-		{
+		switch (item.getItemId()) {
 			case (R.id.received_device_options_open_in_file_manager):
 				openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
 				return true;
@@ -165,8 +163,7 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 		public boolean onActionItemClicked(final ActionMode mode, MenuItem item)
 		{
 			if (!super.onActionItemClicked(mode, item))
-				if (item.getItemId() == R.id.file_actions_delete)
-				{
+				if (item.getItemId() == R.id.file_actions_delete) {
 					new FileDeleteDialog(getActivity(), getSharedItemList().toArray(), new FileDeleteDialog.Listener()
 					{
 						@Override

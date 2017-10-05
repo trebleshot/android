@@ -42,16 +42,13 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 		mContext = context;
 		mDeviceRegistry = new DeviceRegistry(context);
 
-		if (ACTION_SCAN_DEVICES.equals(intent.getAction()))
-		{
-			if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable())
-			{
+		if (ACTION_SCAN_DEVICES.equals(intent.getAction())) {
+			if (ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable()) {
 				mDeviceRegistry.removeLocalDevices();
 
 				ArrayList<String> list = NetworkUtils.getInterfacesWithOnlyIp(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-				for (String ip : list)
-				{
+				for (String ip : list) {
 					NetworkDevice device = new NetworkDevice(ip);
 					device.isLocalAddress = true;
 
@@ -61,8 +58,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 				context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, (ApplicationHelper.getNetworkDeviceScanner().scan(list, this)) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE));
 			} else
 				Toast.makeText(context, R.string.mesg_stillScanning, Toast.LENGTH_SHORT).show();
-		} else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
-		{
+		} else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP)) {
 			mInfoLoader.startLoading(mDeviceRegistry, intent.getStringExtra(EXTRA_DEVICE_IP));
 		}
 	}
@@ -76,8 +72,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	@Override
 	public void onInfoAvailable(NetworkDevice device)
 	{
-		if (device.deviceId != null)
-		{
+		if (device.deviceId != null) {
 			mDeviceRegistry.registerDevice(device);
 			mContext.sendBroadcast(new Intent(ACTION_DEVICE_FOUND).putExtra(EXTRA_DEVICE_IP, device.ip));
 		}

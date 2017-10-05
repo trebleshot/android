@@ -26,16 +26,26 @@ import java.util.HashMap;
 public class DeviceChooserDialog extends AlertDialog.Builder
 {
 	private ArrayList<AddressHolder> mAvailableInterfaces = new ArrayList<>();
+	private NetworkDevice mNetworkDevice;
+	private OnDeviceSelectedListener mDeviceSelectedListener;
 
 	public DeviceChooserDialog(Context context, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
 	{
 		super(context);
 
+		mNetworkDevice = networkDevice;
+		mDeviceSelectedListener = listener;
+	}
+
+	@Override
+	public AlertDialog show()
+	{
+		mAvailableInterfaces.clear();
+
 		HashMap<NetworkInterface, String> networkInterfaces = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 		ArrayList<AddressHolder> prefixInterfaces = new ArrayList<>();
 
-		for (NetworkInterface address : networkInterfaces.keySet())
-		{
+		for (NetworkInterface address : networkInterfaces.keySet()) {
 			String interfaceAddress = networkInterfaces.get(address);
 			AddressHolder holder = new AddressHolder();
 
@@ -45,10 +55,9 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 			prefixInterfaces.add(holder);
 		}
 
-		for (String deviceAddress : networkDevice.availableConnections)
+		for (String deviceAddress : mNetworkDevice.availableConnections)
 			for (AddressHolder prefixTested : prefixInterfaces)
-				if (deviceAddress.startsWith(prefixTested.address))
-				{
+				if (deviceAddress.startsWith(prefixTested.address)) {
 					AddressHolder holder = new AddressHolder();
 
 					holder.name = prefixTested.name;
@@ -67,11 +76,13 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					listener.onDeviceSelected(mAvailableInterfaces.get(which), mAvailableInterfaces);
+					mDeviceSelectedListener.onDeviceSelected(mAvailableInterfaces.get(which), mAvailableInterfaces);
 				}
 			});
 		else
 			setMessage(R.string.text_noNetworkAvailable);
+
+		return super.show();
 	}
 
 	public abstract static class OnDeviceSelectedListener

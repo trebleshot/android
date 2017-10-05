@@ -36,8 +36,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 		@Override
 		public void onLoadFinished(Loader<ArrayList<T>> loader, ArrayList<T> data)
 		{
-			if (isResumed())
-			{
+			if (isResumed()) {
 				setListShown(true);
 				mAdapter.onUpdate(data);
 				mAdapter.notifyDataSetChanged();

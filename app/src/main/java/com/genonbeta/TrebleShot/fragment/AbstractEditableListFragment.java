@@ -61,8 +61,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 		mActionModeListener = onActionModeListener();
 
-		if (mMultiChoice && mActionModeListener != null)
-		{
+		if (mMultiChoice && mActionModeListener != null) {
 			getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE_MODAL);
 			getListView().setMultiChoiceModeListener(mActionModeListener);
 		}
@@ -98,8 +97,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 
-		if (mSearchSupport)
-		{
+		if (mSearchSupport) {
 			inflater.inflate(R.menu.search_menu, menu);
 
 			((SearchView) menu.findItem(R.id.search).getActionView())
@@ -112,8 +110,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 	{
 		super.onDetach();
 
-		if (mActionMode != null)
-		{
+		if (mActionMode != null) {
 			mActionMode.finish();
 			mActionMode = null;
 		}
@@ -186,20 +183,17 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item)
 		{
-			if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot)
-			{
+			if (item.getItemId() == R.id.file_actions_share || item.getItemId() == R.id.file_actions_share_trebleshot) {
 				Intent shareIntent = null;
 				String action = (item.getItemId() == R.id.file_actions_share) ? (mCheckedList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND) : (mCheckedList.size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
 
-				if (mCheckedList.size() > 1)
-				{
+				if (mCheckedList.size() > 1) {
 					shareIntent = new Intent(action);
 
 					shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, mCheckedList);
 					shareIntent.setType("*/*");
 
-					if (mCheckedNameList.size() > 1)
-					{
+					if (mCheckedNameList.size() > 1) {
 						ArrayList<CharSequence> nameExit = new ArrayList<>();
 
 						for (Uri fileUri : mCheckedList)
@@ -207,8 +201,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 						shareIntent.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameExit);
 					}
-				} else if (mCheckedList.size() == 1)
-				{
+				} else if (mCheckedList.size() == 1) {
 					Uri fileUri = (Uri) mCheckedList.toArray()[0];
 
 					shareIntent = new Intent(action);
@@ -220,13 +213,11 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 						shareIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, mCheckedNameList.get(fileUri));
 				}
 
-				if (shareIntent != null)
-				{
+				if (shareIntent != null) {
 					startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 					return true;
 				}
-			} else if (item.getItemId() == R.id.file_actions_select)
-			{
+			} else if (item.getItemId() == R.id.file_actions_select) {
 				setItemsChecked(mCheckedList.size() != getListView().getCount());
 				return true;
 			}
@@ -240,14 +231,12 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 			Uri uri = onItemChecked(mode, position, id, isChecked);
 			String name = onProvideName(mode, position);
 
-			if (isChecked)
-			{
+			if (isChecked) {
 				mCheckedList.add(uri);
 
 				if (name != null)
 					mCheckedNameList.put(uri, name);
-			} else
-			{
+			} else {
 				if (mCheckedNameList.containsKey(uri))
 					mCheckedNameList.remove(uri);
 

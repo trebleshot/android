@@ -41,8 +41,7 @@ public class ApplicationHelper
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (String letter : text.split(" "))
-		{
+		for (String letter : text.split(" ")) {
 			if (stringBuilder.length() > breakAfter)
 				break;
 

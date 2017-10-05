@@ -47,12 +47,10 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 
 	private static BitmapWorkerTask getBitmapWorkerTask(ImageView imageView)
 	{
-		if (imageView != null)
-		{
+		if (imageView != null) {
 			final Drawable drawable = imageView.getDrawable();
 
-			if (drawable instanceof AsyncDrawable)
-			{
+			if (drawable instanceof AsyncDrawable) {
 				final AsyncDrawable asyncDrawable = (AsyncDrawable) drawable;
 				return asyncDrawable.getBitmapWorkerTask();
 			}
@@ -65,16 +63,13 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 	{
 		final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
-		if (bitmapWorkerTask != null)
-		{
+		if (bitmapWorkerTask != null) {
 			final long bitmapData = bitmapWorkerTask.getData();
 			// If bitmapData is not yet set or it differs from the new data
-			if (bitmapData == 0 || bitmapData != data)
-			{
+			if (bitmapData == 0 || bitmapData != data) {
 				// Cancel previous task
 				bitmapWorkerTask.cancel(true);
-			} else
-			{
+			} else {
 				// The same work is already in progress
 				return false;
 			}
@@ -89,14 +84,12 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 		ArrayList<VideoInfo> list = new ArrayList<>();
 		Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
-		if (cursor.moveToFirst())
-		{
+		if (cursor.moveToFirst()) {
 			int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
 			int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
 			int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
-			do
-			{
+			do {
 				VideoInfo info = new VideoInfo(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
 				long length = cursor.getLong(lengthIndex);
@@ -130,8 +123,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 		long minutes = (duration - (hours * 3600000)) / 60000;
 		long seconds = (duration - (hours * 3600000) - (minutes * 60000)) / 1000;
 
-		if (hours > 0)
-		{
+		if (hours > 0) {
 			if (hours < 10)
 				string.append("0");
 
@@ -177,8 +169,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 		final VideoInfo info = (VideoInfo) this.getItem(position);
 		final ViewHolder holder;
 
-		if (convertView == null)
-		{
+		if (convertView == null) {
 			convertView = getInflater().inflate(R.layout.list_video, parent, false);
 			holder = new ViewHolder();
 			holder.titleView = (TextView) convertView.findViewById(R.id.text);
@@ -201,8 +192,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 
 	public void loadBitmap(long id, ImageView imageView)
 	{
-		if (cancelPotentialWork(id, imageView))
-		{
+		if (cancelPotentialWork(id, imageView)) {
 			final BitmapWorkerTask task = new BitmapWorkerTask(imageView);
 			final AsyncDrawable asyncDrawable = new AsyncDrawable(getContext().getResources(), mPlaceHolderBitmap, task);
 			imageView.setImageDrawable(asyncDrawable);

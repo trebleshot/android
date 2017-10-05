@@ -51,8 +51,7 @@ abstract public class CoolTransfer<T>
 
 	public ArrayList<TransferHandler<T>> getProcessList()
 	{
-		synchronized (this.mProcess)
-		{
+		synchronized (this.mProcess) {
 			return this.mProcess;
 		}
 	}
@@ -186,12 +185,10 @@ abstract public class CoolTransfer<T>
 
 			if (currentThread)
 				handler.run();
-			else
-			{
+			else {
 				Thread thread = new Thread(handler);
 				thread.start();
 			}
-
 
 			return handler;
 		}
@@ -219,22 +216,18 @@ abstract public class CoolTransfer<T>
 
 				Flag flag = onStart(this);
 
-				try
-				{
-					if (Flag.CONTINUE.equals(flag))
-					{
+				try {
+					if (Flag.CONTINUE.equals(flag)) {
 						mServerSocket = new ServerSocket(getPort());
 
 						flag = onSocketReady(this, getServerSocket());
 
-						if (Flag.CONTINUE.equals(flag))
-						{
+						if (Flag.CONTINUE.equals(flag)) {
 							setSocket(getServerSocket().accept());
 
 							flag = onSocketReady(this);
 
-							if (Flag.CONTINUE.equals(flag))
-							{
+							if (Flag.CONTINUE.equals(flag)) {
 								InputStream inputStream = getSocket().getInputStream();
 								FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
 
@@ -245,22 +238,18 @@ abstract public class CoolTransfer<T>
 								long lastRead = System.currentTimeMillis();
 								long lastNotified = System.currentTimeMillis();
 
-								while (getFile().length() != this.mFileSize)
-								{
-									if ((len = inputStream.read(getBufferSize())) > 0)
-									{
+								while (getFile().length() != this.mFileSize) {
+									if ((len = inputStream.read(getBufferSize())) > 0) {
 										outputStream.write(getBufferSize(), 0, len);
 										outputStream.flush();
 
 										lastRead = System.currentTimeMillis();
 									}
 
-									if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
-									{
+									if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
 										int currentPercent = (int) (((float) 100 / this.mFileSize) * outputStream.getChannel().position());
 
-										if (currentPercent > progressPercent)
-										{
+										if (currentPercent > progressPercent) {
 											onNotify(this, currentPercent);
 											progressPercent = currentPercent;
 										}
@@ -281,23 +270,19 @@ abstract public class CoolTransfer<T>
 
 						getServerSocket().close();
 
-						if (this.isInterrupted())
-						{
+						if (this.isInterrupted()) {
 							flag = Flag.CANCEL_ALL;
 							onInterrupted(this);
-						} else
-						{
+						} else {
 							if (getFile().length() != this.mFileSize)
 								throw new NotYetBoundException();
 							else
 								onTransferCompleted(this);
 						}
 					}
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					flag = onError(this, e);
-				} finally
-				{
+				} finally {
 					onStop(this);
 
 					if (!Flag.CANCEL_ALL.equals(flag))
@@ -374,10 +359,8 @@ abstract public class CoolTransfer<T>
 
 				Flag flag = onStart(this);
 
-				try
-				{
-					if (Flag.CONTINUE.equals(flag))
-					{
+				try {
+					if (Flag.CONTINUE.equals(flag)) {
 						setSocket(new Socket());
 
 						getSocket().bind(null);
@@ -385,8 +368,7 @@ abstract public class CoolTransfer<T>
 
 						flag = onSocketReady(this);
 
-						if (Flag.CONTINUE.equals(flag))
-						{
+						if (Flag.CONTINUE.equals(flag)) {
 							OutputStream outputStream = getSocket().getOutputStream();
 
 							onOrientatingStreams(this, getInputStream(), outputStream);
@@ -396,17 +378,16 @@ abstract public class CoolTransfer<T>
 							long lastNotified = System.currentTimeMillis();
 							long countingStars = 0;
 
-							while ((len = getInputStream().read(getBufferSize())) > 0)
-							{
+							while ((len = getInputStream().read(getBufferSize())) > 0) {
 								outputStream.write(getBufferSize(), 0, len);
 								outputStream.flush();
 
-								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
-								{
-									int currentPercent = 0; // (int) (((float) 100 / getTotalByte()) * outputStream.);
+								countingStars += len;
 
-									if (currentPercent > progressPercent)
-									{
+								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
+									int currentPercent = (int) (((float) 100 / getTotalByte()) * countingStars);
+
+									if (currentPercent > progressPercent) {
 										onNotify(this, currentPercent);
 										progressPercent = currentPercent;
 									}
@@ -424,18 +405,15 @@ abstract public class CoolTransfer<T>
 
 						getSocket().close();
 
-						if (this.isInterrupted())
-						{
+						if (this.isInterrupted()) {
 							flag = Flag.CANCEL_ALL;
 							onInterrupted(this);
 						} else
 							onTransferCompleted(this);
 					}
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					flag = onError(this, e);
-				} finally
-				{
+				} finally {
 					onStop(this);
 
 					if (!Flag.CANCEL_ALL.equals(flag))

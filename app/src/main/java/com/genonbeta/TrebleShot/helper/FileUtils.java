@@ -48,8 +48,7 @@ public class FileUtils
 		String mergedFileName = file.getParent() + File.separator + (pathStartPosition != -1 ? fileName.substring(0, pathStartPosition) : fileName);
 		String fileExtension = pathStartPosition != -1 ? fileName.substring(pathStartPosition) : "";
 
-		for (int exceed = 1; exceed < 999; exceed++)
-		{
+		for (int exceed = 1; exceed < 999; exceed++) {
 			File newFile = new File(mergedFileName + " (" + exceed + ")" + fileExtension);
 
 			if (!newFile.exists())

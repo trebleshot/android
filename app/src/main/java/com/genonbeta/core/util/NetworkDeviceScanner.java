@@ -43,14 +43,12 @@ public class NetworkDeviceScanner
 		if (mIsLockRequested)
 			return;
 
-		if (isScannerAvailable())
-		{
+		if (isScannerAvailable()) {
 			// this sequence only works when threads complete the job
 
 			mIsBreakRequested = false;
 
-			if (mHandler != null)
-			{
+			if (mHandler != null) {
 				setLock(true); // lock scanner
 				mHandler.onThreadsCompleted();
 				setLock(false); // release lock
@@ -61,8 +59,7 @@ public class NetworkDeviceScanner
 
 		mScanner.updateScanner();
 
-		for (int threadsStarted = mNumberOfThreads; threadsStarted > 0; threadsStarted--)
-		{
+		for (int threadsStarted = mNumberOfThreads; threadsStarted > 0; threadsStarted--) {
 			mExecutor.execute(mScanner);
 		}
 	}
@@ -114,32 +111,27 @@ public class NetworkDeviceScanner
 		@Override
 		public void run()
 		{
-			for (int mPosition = 0; mPosition < mDevices.length; mPosition++)
-			{
-				synchronized (mDevices)
-				{
+			for (int mPosition = 0; mPosition < mDevices.length; mPosition++) {
+				synchronized (mDevices) {
 					if (mDevices[mPosition] || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested)
 						continue;
 
 					mDevices[mPosition] = true;
 				}
 
-				try
-				{
+				try {
 					InetAddress inet = InetAddress.getByName(mAddressPrefix + mPosition);
 
 					if (inet.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
 						NetworkDeviceScanner.this.mHandler.onDeviceFound(inet);
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 
 			mThreadsExited--;
 
-			if (mThreadsExited == 0)
-			{
+			if (mThreadsExited == 0) {
 				NetworkDeviceScanner.this.mInterfaces.remove(0);
 				NetworkDeviceScanner.this.nextThread();
 			}

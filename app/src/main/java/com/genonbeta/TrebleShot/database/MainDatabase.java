@@ -83,8 +83,7 @@ public class MainDatabase extends SQLiteDatabase
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
-		if (old != current)
-		{
+		if (old != current) {
 			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
 
@@ -97,17 +96,14 @@ public class MainDatabase extends SQLiteDatabase
 		Cursor cursor = null;
 		long returnCount = 0;
 
-		try
-		{
+		try {
 			cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
 
 			if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
 				returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
-		} catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			// Handle exception here.
-		} finally
-		{
+		} finally {
 			if (cursor != null)
 				cursor.close();
 		}

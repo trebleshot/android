@@ -77,8 +77,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
-		if (view == null)
-		{
+		if (view == null) {
 			view = getInflater().inflate(R.layout.list_network_device, viewGroup, false);
 			AnimationSet set = GAnimater.getAnimation(GAnimater.APPEAR);
 			view.setAnimation(set);

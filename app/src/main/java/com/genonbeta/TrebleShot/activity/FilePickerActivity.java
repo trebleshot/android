@@ -44,10 +44,8 @@ public class FilePickerActivity extends Activity
 	{
 		super.onStart();
 
-		if (getIntent() != null)
-		{
-			if (ACTION_CHOOSE_DIRECTORY.equals(getIntent().getAction()))
-			{
+		if (getIntent() != null) {
+			if (ACTION_CHOOSE_DIRECTORY.equals(getIntent().getAction())) {
 				mFileExplorerFragment
 						.getFileListFragment()
 						.getAdapter()
@@ -67,8 +65,7 @@ public class FilePickerActivity extends Activity
 								.getPath());
 					}
 				});
-			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction()))
-			{
+			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
 				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
 				{
 					@Override

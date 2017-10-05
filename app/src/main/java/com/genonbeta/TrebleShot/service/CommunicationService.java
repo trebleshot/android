@@ -83,10 +83,8 @@ public class CommunicationService extends Service
 		if (intent != null)
 			Log.d(TAG, "onStart() : action = " + intent.getAction());
 
-		if (intent != null)
-		{
-			if (ACTION_FILE_TRANSFER.equals(intent.getAction()))
-			{
+		if (intent != null) {
+			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
 				final String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
@@ -104,21 +102,18 @@ public class CommunicationService extends Service
 							@Override
 							public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
 							{
-								try
-								{
+								try {
 									json.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
 									json.put(Keyword.GROUP_ID, groupId);
 									json.put(Keyword.IS_ACCEPTED, isAccepted);
-								} catch (JSONException e)
-								{
+								} catch (JSONException e) {
 									e.printStackTrace();
 								}
 							}
 						}
 				);
 
-				if (!mTransaction.transactionGroupExists(groupId))
-				{
+				if (!mTransaction.transactionGroupExists(groupId)) {
 					mNotification.showToast(R.string.mesg_somethingWentWrong);
 					return START_NOT_STICKY;
 				}
@@ -132,8 +127,7 @@ public class CommunicationService extends Service
 							.edit()
 							.removeTransactionGroup(groupId)
 							.done();
-			} else if (ACTION_IP.equals(intent.getAction()))
-			{
+			} else if (ACTION_IP.equals(intent.getAction())) {
 				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
@@ -144,8 +138,7 @@ public class CommunicationService extends Service
 					return START_NOT_STICKY;
 
 				mDeviceRegistry.updateRestriction(ipAddress, !isAccepted);
-			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
-			{
+			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
 				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
@@ -156,8 +149,7 @@ public class CommunicationService extends Service
 
 				mDeviceRegistry.updateRestriction(ipAddress, false);
 
-				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false))
-				{
+				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false)) {
 					((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", mReceivedClipboardIndex));
 					Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
 				}
@@ -190,8 +182,7 @@ public class CommunicationService extends Service
 		{
 			NetworkDevice device = new NetworkDevice(clientIp);
 
-			try
-			{
+			try {
 				if (receivedMessage != null)
 					Log.d(TAG, "receivedMessage = " + receivedMessage.toString());
 
@@ -215,34 +206,28 @@ public class CommunicationService extends Service
 				response.put(Keyword.DEVICE_INFO, deviceInformation);
 
 				if (receivedMessage.has(Keyword.REQUEST) && receivedMessage.getString(Keyword.REQUEST).length() > 0)
-					if (!mDeviceRegistry.exists(clientIp))
-					{
+					if (!mDeviceRegistry.exists(clientIp)) {
 						device.isRestricted = true;
 						device = mInfoLoader.startLoading(true, mDeviceRegistry, device.ip);
 
 						mDeviceRegistry.registerDevice(device);
 
-						if (receivedMessage.getString(Keyword.REQUEST).equals(Keyword.REQUEST_TRANSFER))
-						{
+						if (receivedMessage.getString(Keyword.REQUEST).equals(Keyword.REQUEST_TRANSFER)) {
 							shouldContinue = true;
 							halfRestriction = true;
 						} else
 							mNotification.notifyConnectionRequest(device);
-					} else
-					{
+					} else {
 						device = mDeviceRegistry.getNetworkDevice(clientIp);
 
 						if (device.isRestricted)
 							shouldContinue = false;
 					}
 
-				if (shouldContinue && receivedMessage.has(Keyword.REQUEST))
-				{
-					switch (receivedMessage.getString(Keyword.REQUEST))
-					{
+				if (shouldContinue && receivedMessage.has(Keyword.REQUEST)) {
+					switch (receivedMessage.getString(Keyword.REQUEST)) {
 						case (Keyword.REQUEST_TRANSFER):
-							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID))
-							{
+							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID)) {
 								String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
 								JSONArray jsonArray = new JSONArray(jsonIndex);
 
@@ -252,15 +237,13 @@ public class CommunicationService extends Service
 
 								Transaction.EditingSession editingSession = mTransaction.edit();
 
-								for (int i = 0; i < jsonArray.length(); i++)
-								{
+								for (int i = 0; i < jsonArray.length(); i++) {
 									if (!(jsonArray.get(i) instanceof JSONObject))
 										continue;
 
 									JSONObject requestIndex = jsonArray.getJSONObject(i);
 
-									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID))
-									{
+									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
 										count++;
 										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), groupId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
 										editingSession.registerTransaction(heldReceiver);
@@ -269,8 +252,7 @@ public class CommunicationService extends Service
 
 								editingSession.done();
 
-								if (heldReceiver != null && count > 0)
-								{
+								if (heldReceiver != null && count > 0) {
 									result = true;
 									mDeviceRegistry.updateRestrictionByDeviceId(device, true);
 									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, device, count);
@@ -278,8 +260,7 @@ public class CommunicationService extends Service
 							}
 							break;
 						case (Keyword.REQUEST_RESPONSE):
-							if (receivedMessage.has(Keyword.GROUP_ID))
-							{
+							if (receivedMessage.has(Keyword.GROUP_ID)) {
 								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
 
@@ -293,8 +274,7 @@ public class CommunicationService extends Service
 							}
 							break;
 						case (Keyword.REQUEST_SERVER_READY):
-							if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.GROUP_ID) && receivedMessage.has(Keyword.SOCKET_PORT))
-							{
+							if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.GROUP_ID) && receivedMessage.has(Keyword.SOCKET_PORT)) {
 								int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
 								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
 								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
@@ -303,10 +283,8 @@ public class CommunicationService extends Service
 										.edit()
 										.updateAccessPort(requestId, socketPort);
 
-								if (mTransaction.getAffectedRowCount() > 0)
-								{
-									if (receivedMessage.has(Keyword.FILE_SIZE))
-									{
+								if (mTransaction.getAffectedRowCount() > 0) {
+									if (receivedMessage.has(Keyword.FILE_SIZE)) {
 										ContentValues values = new ContentValues();
 										values.put(Transaction.FIELD_TRANSFER_SIZE, receivedMessage.getLong(Keyword.FILE_SIZE));
 										editingSession.updateTransaction(requestId, values);
@@ -314,8 +292,7 @@ public class CommunicationService extends Service
 
 									AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
 
-									if (!clientIp.equals(sender.ip))
-									{
+									if (!clientIp.equals(sender.ip)) {
 										ContentValues values = new ContentValues();
 										values.put(Transaction.FIELD_TRANSFER_USERIP, clientIp);
 										editingSession.updateTransactionGroup(sender.groupId, values);
@@ -334,8 +311,7 @@ public class CommunicationService extends Service
 							}
 							break;
 						case (Keyword.REQUEST_CLIPBOARD):
-							if (receivedMessage.has(Keyword.CLIPBOARD_TEXT))
-							{
+							if (receivedMessage.has(Keyword.CLIPBOARD_TEXT)) {
 								mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
 
 								mNotification.notifyClipboardRequest(device, mReceivedClipboardIndex);
@@ -348,8 +324,7 @@ public class CommunicationService extends Service
 				}
 
 				response.put(Keyword.RESULT, result);
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

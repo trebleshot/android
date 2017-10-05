@@ -55,8 +55,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		if (item.getItemId() == R.id.show_system_apps)
-		{
+		if (item.getItemId() == R.id.show_system_apps) {
 			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
 			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
 			refreshList();
@@ -84,8 +83,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 		final ApplicationListAdapter.AppInfo appInfo = (ApplicationListAdapter.AppInfo) getAdapter().getItem(position);
 		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 
-		if (launchIntent != null)
-		{
+		if (launchIntent != null) {
 			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
 			dialogBuilder.setMessage(R.string.ques_launchApplication);

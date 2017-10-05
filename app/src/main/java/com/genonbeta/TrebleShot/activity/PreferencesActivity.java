@@ -23,8 +23,7 @@ public class PreferencesActivity extends Activity
 	{
 		int id = item.getItemId();
 
-		if (id == android.R.id.home)
-		{
+		if (id == android.R.id.home) {
 			finish();
 			return true;
 		}

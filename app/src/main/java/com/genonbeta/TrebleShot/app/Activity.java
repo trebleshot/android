@@ -36,8 +36,7 @@ public abstract class Activity extends AppCompatActivity
 		super.onStart();
 		startService(new Intent(this, CommunicationService.class));
 
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-		{
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			// Should we show an explanation?
 			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE))
 				Snackbar

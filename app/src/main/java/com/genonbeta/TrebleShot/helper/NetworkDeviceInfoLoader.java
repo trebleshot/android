@@ -25,11 +25,9 @@ public class NetworkDeviceInfoLoader
 
 	public void startLoading(final DeviceRegistry deviceRegistry, final String deviceIp)
 	{
-		try
-		{
+		try {
 			startLoading(false, deviceRegistry, deviceIp);
-		} catch (ConnectException e)
-		{
+		} catch (ConnectException e) {
 			e.printStackTrace();
 		}
 	}
@@ -44,11 +42,9 @@ public class NetworkDeviceInfoLoader
 			{
 				super.onConfigure(process);
 
-				try
-				{
+				try {
 					Thread.sleep(1500);
-				} catch (InterruptedException e)
-				{
+				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
@@ -61,8 +57,7 @@ public class NetworkDeviceInfoLoader
 			@Override
 			public void onResponseAvailable(String response)
 			{
-				try
-				{
+				try {
 					JSONObject json = new JSONObject(response).getJSONObject(Keyword.DEVICE_INFO);
 
 					device.brand = json.getString(Keyword.BRAND);
@@ -73,15 +68,13 @@ public class NetworkDeviceInfoLoader
 
 					if (mListener != null)
 						mListener.onInfoAvailable(device);
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					onError(e);
 				}
 			}
 		};
 
-		if (currentThread)
-		{
+		if (currentThread) {
 			CoolCommunication.Messenger.sendOnCurrentThread(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
 
 			if (device.deviceId == null)

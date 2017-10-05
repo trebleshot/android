@@ -45,14 +45,12 @@ public class MusicListAdapter extends AbstractEditableListAdapter<MusicListAdapt
 				new String[]{String.valueOf(1)},
 				null);
 
-		if (cursor.moveToFirst())
-		{
+		if (cursor.moveToFirst()) {
 			int idIndex = cursor.getColumnIndex(MediaStore.Audio.Media._ID);
 			int artistIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 			int songIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
 
-			do
-			{
+			do {
 				MusicInfo info = new MusicInfo(cursor.getString(artistIndex), cursor.getString(songIndex), Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
 				if (applySearch(info.artist) || applySearch(info.song))

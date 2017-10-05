@@ -43,8 +43,7 @@ public class FileDeleteDialog extends AlertDialog.Builder
 							{
 								Looper.prepare();
 
-								for (URI filePath : files)
-								{
+								for (URI filePath : files) {
 									File file = new File(filePath);
 
 									if (file.delete() && listener != null)

@@ -39,8 +39,7 @@ public class DeviceRegistry extends MainDatabase
 			StringBuilder builder = new StringBuilder();
 
 			for (CursorItem deviceItem : getTable(new SQLQuery.Select(TABLE_DEVICES)
-					.setWhere(FIELD_DEVICES_ID + "=?", item.getString(FIELD_DEVICES_ID))))
-			{
+					.setWhere(FIELD_DEVICES_ID + "=?", item.getString(FIELD_DEVICES_ID)))) {
 				if (builder.length() > 0)
 					builder.append(":");
 

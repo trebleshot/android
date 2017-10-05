@@ -45,21 +45,16 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 	{
 		if (intent != null)
 			if (ACTION_CANCEL_JOB.equals(intent.getAction())
-					|| ACTION_CANCEL_KILL.equals(intent.getAction()))
-			{
+					|| ACTION_CANCEL_KILL.equals(intent.getAction())) {
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
 				CoolTransfer.TransferHandler<E> handler = findProcessById(groupId);
 
-				if (handler != null)
-				{
-					if (ACTION_CANCEL_KILL.equals(intent.getAction()))
-					{
-						try
-						{
-							if (handler instanceof CoolTransfer.Receive.Handler)
-							{
+				if (handler != null) {
+					if (ACTION_CANCEL_KILL.equals(intent.getAction())) {
+						try {
+							if (handler instanceof CoolTransfer.Receive.Handler) {
 								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) handler);
 
 								if (receiveHandler.getServerSocket() != null)
@@ -68,12 +63,10 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 
 							if (handler.getSocket() != null)
 								handler.getSocket().close();
-						} catch (IOException e)
-						{
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
-					} else
-					{
+					} else {
 						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
 						handler.interrupt();
 					}

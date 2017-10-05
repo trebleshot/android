@@ -53,11 +53,9 @@ public abstract class CoolJsonCommunication extends CoolCommunication
 	{
 		JSONObject receivedMessage = null;
 
-		try
-		{
+		try {
 			receivedMessage = new JSONObject(message);
-		} catch (JSONException e)
-		{
+		} catch (JSONException e) {
 			this.onError(e);
 		}
 
@@ -67,16 +65,14 @@ public abstract class CoolJsonCommunication extends CoolCommunication
 		if (receivedMessage == null)
 			receivedMessage = new JSONObject();
 
-		try
-		{
+		try {
 			JSONObject responseJson = new JSONObject();
 
 			this.onJsonMessage(socket, receivedMessage, responseJson, clientIp);
 
 			writer.append((this.getAddTabsToResponse() > NO_TAB) ? responseJson.toString(this.getAddTabsToResponse()) : responseJson.toString());
 			writer.flush();
-		} catch (JSONException e)
-		{
+		} catch (JSONException e) {
 			this.onError(e);
 		}
 	}

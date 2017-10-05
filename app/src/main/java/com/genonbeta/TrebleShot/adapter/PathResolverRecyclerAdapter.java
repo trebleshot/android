@@ -55,8 +55,7 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 		ArrayList<File> list = new ArrayList<>();
 
 		if (file != null)
-			do
-			{
+			do {
 				list.add(file);
 				file = file.getParentFile();
 			}

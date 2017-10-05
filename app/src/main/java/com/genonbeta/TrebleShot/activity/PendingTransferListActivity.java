@@ -109,21 +109,16 @@ public class PendingTransferListActivity extends Activity
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (data != null)
-		{
-			if (resultCode == Activity.RESULT_OK)
-			{
-				switch (requestCode)
-				{
+		if (data != null) {
+			if (resultCode == Activity.RESULT_OK) {
+				switch (requestCode) {
 					case REQUEST_CHOOSE_FOLDER:
-						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH))
-						{
+						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
 							String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
 							ArrayList<CursorItem> list = mTransaction.getTable(mPendingFragment.getAdapter().getSelect());
 							Transaction.EditingSession editingSession = mTransaction.edit();
 
-							for (CursorItem cursorItem : list)
-							{
+							for (CursorItem cursorItem : list) {
 								Log.d(PendingTransferListActivity.class.getSimpleName(), "We're there");
 
 								if (cursorItem.getInt(Transaction.FIELD_TRANSFER_TYPE) != Transaction.TYPE_TRANSFER_TYPE_INCOMING)
@@ -133,8 +128,7 @@ public class PendingTransferListActivity extends Activity
 
 								Log.d(PendingTransferListActivity.class.getSimpleName(), "Going on");
 
-								if (Transaction.Flag.PENDING.equals(fileReceiver.flag))
-								{
+								if (Transaction.Flag.PENDING.equals(fileReceiver.flag)) {
 									Log.d(PendingTransferListActivity.class.getSimpleName(), "Done");
 
 									ContentValues values = new ContentValues();

@@ -45,11 +45,9 @@ public class DialogEventReceiver extends BroadcastReceiver
 						@Override
 						public void onClick(DialogInterface p1, int p2)
 						{
-							try
-							{
+							try {
 								accept.send();
-							} catch (PendingIntent.CanceledException e)
-							{
+							} catch (PendingIntent.CanceledException e) {
 								e.printStackTrace();
 							}
 						}
@@ -63,11 +61,9 @@ public class DialogEventReceiver extends BroadcastReceiver
 						@Override
 						public void onClick(DialogInterface p1, int p2)
 						{
-							try
-							{
+							try {
 								reject.send();
-							} catch (PendingIntent.CanceledException e)
-							{
+							} catch (PendingIntent.CanceledException e) {
 								e.printStackTrace();
 							}
 						}
