@@ -144,7 +144,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 
 			if (handler.getExtra().fileSize > 0)
 				try {
-					inputStream.skip(handler.getExtra().fileSize);
+					handler.skipBytes(handler.getExtra().fileSize);
 				} catch (IOException e) {
 					handler.interrupt();
 					e.printStackTrace();

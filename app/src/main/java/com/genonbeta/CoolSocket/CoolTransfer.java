@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
@@ -342,6 +343,7 @@ abstract public class CoolTransfer<T>
 			private String mServerIp;
 			private InputStream mStream;
 			private long mTotalByte;
+			private long mSkippedBytes = 0;
 
 			public Handler(String serverIp, int port, InputStream stream, long totalLenght, byte[] bufferSize, T extra)
 			{
@@ -376,7 +378,7 @@ abstract public class CoolTransfer<T>
 							int len;
 							int progressPercent = -1;
 							long lastNotified = System.currentTimeMillis();
-							long countingStars = 0;
+							long countingStars = mSkippedBytes;
 
 							while ((len = getInputStream().read(getBufferSize())) > 0) {
 								outputStream.write(getBufferSize(), 0, len);
@@ -436,6 +438,12 @@ abstract public class CoolTransfer<T>
 			public long getTotalByte()
 			{
 				return mTotalByte;
+			}
+
+			public long skipBytes(long bytes) throws IOException
+			{
+				mSkippedBytes = bytes;
+				return getInputStream().skip(bytes);
 			}
 		}
 	}
