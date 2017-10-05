@@ -61,8 +61,7 @@ public class TextEditorActivity extends Activity
 			finish();
 
 			return true;
-		}
-		else if (id == android.R.id.home)
+		} else if (id == android.R.id.home)
 		{
 			setResult(RESULT_CANCELED);
 			finish();

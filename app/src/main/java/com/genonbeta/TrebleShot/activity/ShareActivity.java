@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,16 +25,17 @@ import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.helper.ApplicationHelper;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
-import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
 import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.StreamCorruptedException;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -56,7 +58,7 @@ public class ShareActivity extends Activity
 	private ProgressDialog mProgressOrganizeFiles;
 	private ProgressDialog mProgressConnect;
 	private ConnectionHandler mConnectionHandler;
-	private ArrayList<FileState> mFiles = new ArrayList<>();
+	private ArrayList<StreamInfo> mFiles = new ArrayList<>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -130,8 +132,7 @@ public class ShareActivity extends Activity
 
 							}
 						});
-					}
-					else
+					} else
 					{
 						ArrayList<Uri> fileUris = new ArrayList<>();
 						ArrayList<CharSequence> fileNames = null;
@@ -189,28 +190,6 @@ public class ShareActivity extends Activity
 		mStatusText.getText().append(charSequence);
 	}
 
-	protected void organizeFiles(File file, String fileName)
-	{
-		if (!file.canRead())
-			return;
-
-		if (file.isDirectory())
-		{
-			for (File fileInstance : file.listFiles())
-				organizeFiles(fileInstance, null);
-		}
-		else
-		{
-			FileState fileState = new FileState();
-
-			fileState.file = file;
-			fileState.fileName = fileName != null ? fileName : file.getName();
-			fileState.fileMime = FileUtils.getFileContentType(file.getName());
-
-			mFiles.add(fileState);
-		}
-	}
-
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
 		mProgressOrganizeFiles.show();
@@ -222,12 +201,28 @@ public class ShareActivity extends Activity
 			{
 				super.run();
 
+				ContentResolver contentResolver = getApplicationContext().getContentResolver();
+
 				for (int position = 0; position < fileUris.size(); position++)
 				{
 					Uri fileUri = fileUris.get(position);
 					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
 
-					organizeFiles(ApplicationHelper.getFileFromUri(getApplicationContext(), fileUri), fileName);
+					try
+					{
+						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), fileUri);
+
+						if (fileName != null)
+							streamInfo.friendlyName = fileName;
+
+						mFiles.add(streamInfo);
+					} catch (FileNotFoundException e)
+					{
+						e.printStackTrace();
+					} catch (StreamCorruptedException e)
+					{
+						e.printStackTrace();
+					}
 				}
 
 				mProgressOrganizeFiles.cancel();
@@ -238,7 +233,7 @@ public class ShareActivity extends Activity
 					public void run()
 					{
 						if (mFiles.size() == 1)
-							appendStatusText(mFiles.get(0).fileName);
+							appendStatusText(mFiles.get(0).friendlyName);
 						else if (mFiles.size() > 1)
 							appendStatusText(getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
 					}
@@ -272,25 +267,25 @@ public class ShareActivity extends Activity
 				json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 				json.put(Keyword.GROUP_ID, mGroupId);
 
-				for (FileState fileState : mFiles)
+				for (StreamInfo fileState : mFiles)
 				{
 					int requestId = ApplicationHelper.getUniqueNumber();
-					AwaitedFileSender sender = new AwaitedFileSender(device, requestId, mGroupId, fileState.fileName, 0, fileState.file);
+					AwaitedFileSender sender = new AwaitedFileSender(device, requestId, mGroupId, fileState.friendlyName, 0, fileState.uri);
 					JSONObject thisJson = new JSONObject();
 
 					try
 					{
-						thisJson.put(Keyword.FILE_NAME, fileState.fileName);
-						thisJson.put(Keyword.FILE_SIZE, fileState.file.length());
+						thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
+						thisJson.put(Keyword.FILE_SIZE, fileState.size);
 						thisJson.put(Keyword.REQUEST_ID, requestId);
-						thisJson.put(Keyword.FILE_MIME, fileState.fileMime);
+						thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
 
 						filesArray.put(thisJson);
 
 						editingSession.registerTransaction(sender);
 					} catch (Exception e)
 					{
-						Log.e(TAG, "Sender error on file: " + e.getClass().getName() + " : " + fileState.file.getName());
+						Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
 					}
 				}
 
@@ -393,13 +388,15 @@ public class ShareActivity extends Activity
 	private interface ConnectionHandler
 	{
 		public void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException;
+
 		public void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp);
 	}
 
 	private class FileState
 	{
-		public File file;
+		public Uri fileUri;
 		public String fileName;
 		public String fileMime;
+		public long fileSize;
 	}
 }

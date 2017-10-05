@@ -100,8 +100,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 			});
 
 			dialogBuilder.show();
-		}
-		else
+		} else
 			Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
 	}
 
@@ -120,7 +119,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 
 		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
 		{
-			return Uri.parse("file://" + getItem(pos).codePath);
+			return Uri.parse("fileUri://" + getItem(pos).codePath);
 		}
 
 		@Override

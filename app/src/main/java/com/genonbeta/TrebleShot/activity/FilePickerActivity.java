@@ -67,8 +67,7 @@ public class FilePickerActivity extends Activity
 								.getPath());
 					}
 				});
-			}
-			else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction()))
+			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction()))
 			{
 				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
 				{
@@ -83,11 +82,9 @@ public class FilePickerActivity extends Activity
 						return true;
 					}
 				});
-			}
-			else
+			} else
 				finish();
-		}
-		else
+		} else
 			finish();
 	}
 

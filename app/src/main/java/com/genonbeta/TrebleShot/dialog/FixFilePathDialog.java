@@ -37,8 +37,7 @@ public class FixFilePathDialog extends AlertDialog.Builder
 					fixConflict(context, transaction, receiver, false);
 				}
 			});
-		}
-		else
+		} else
 		{
 			setMessage(getContext().getString(R.string.text_fileConflictNoChoice, receiver.fileName));
 

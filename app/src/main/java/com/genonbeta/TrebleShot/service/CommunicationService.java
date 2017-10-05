@@ -132,8 +132,7 @@ public class CommunicationService extends Service
 							.edit()
 							.removeTransactionGroup(groupId)
 							.done();
-			}
-			else if (ACTION_IP.equals(intent.getAction()))
+			} else if (ACTION_IP.equals(intent.getAction()))
 			{
 				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
@@ -145,8 +144,7 @@ public class CommunicationService extends Service
 					return START_NOT_STICKY;
 
 				mDeviceRegistry.updateRestriction(ipAddress, !isAccepted);
-			}
-			else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
+			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED))
 			{
 				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
@@ -228,11 +226,9 @@ public class CommunicationService extends Service
 						{
 							shouldContinue = true;
 							halfRestriction = true;
-						}
-						else
+						} else
 							mNotification.notifyConnectionRequest(device);
-					}
-					else
+					} else
 					{
 						device = mDeviceRegistry.getNetworkDevice(clientIp);
 
@@ -331,8 +327,7 @@ public class CommunicationService extends Service
 
 									startService(starterIntent);
 									result = true;
-								}
-								else if (mTransaction.transactionGroupExists(groupId))
+								} else if (mTransaction.transactionGroupExists(groupId))
 									response.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 
 								editingSession.done();

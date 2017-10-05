@@ -86,8 +86,7 @@ public class NetworkDeviceInfoLoader
 
 			if (device.deviceId == null)
 				throw new ConnectException("Serial is needed for " + deviceIp + " in order to list the device");
-		}
-		else
+		} else
 			CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
 
 		return device;

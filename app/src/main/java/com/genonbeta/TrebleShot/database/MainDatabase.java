@@ -106,8 +106,7 @@ public class MainDatabase extends SQLiteDatabase
 		} catch (SQLException e)
 		{
 			// Handle exception here.
-		}
-		finally
+		} finally
 		{
 			if (cursor != null)
 				cursor.close();

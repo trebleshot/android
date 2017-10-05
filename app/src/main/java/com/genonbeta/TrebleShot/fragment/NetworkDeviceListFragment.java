@@ -154,13 +154,14 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			((ScanDevicesActionProvider) MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
+
+			if (mAnimatedSearchMenuItem != null)
+				((ScanDevicesActionProvider) MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
 
 			if (DeviceRegistry.ACTION_DEVICE_UPDATED.equals(intent.getAction()) || DeviceRegistry.ACTION_DEVICE_REMOVED.equals(intent.getAction()))
 			{
 				refreshList();
-			}
-			else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS))
+			} else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS))
 			{
 				String scanStatus = intent.getStringExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS);
 
@@ -181,8 +182,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 
 					bar.show();
 				}
-			}
-			else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction()))
+			} else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction()))
 			{
 				showSnackbar(R.string.mesg_scanCompleted);
 			}

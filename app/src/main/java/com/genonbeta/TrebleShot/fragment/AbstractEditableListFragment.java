@@ -207,8 +207,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 						shareIntent.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameExit);
 					}
-				}
-				else if (mCheckedList.size() == 1)
+				} else if (mCheckedList.size() == 1)
 				{
 					Uri fileUri = (Uri) mCheckedList.toArray()[0];
 
@@ -226,8 +225,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 					startActivity((item.getItemId() == R.id.file_actions_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 					return true;
 				}
-			}
-			else if (item.getItemId() == R.id.file_actions_select)
+			} else if (item.getItemId() == R.id.file_actions_select)
 			{
 				setItemsChecked(mCheckedList.size() != getListView().getCount());
 				return true;
@@ -248,8 +246,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 
 				if (name != null)
 					mCheckedNameList.put(uri, name);
-			}
-			else
+			} else
 			{
 				if (mCheckedNameList.containsKey(uri))
 					mCheckedNameList.remove(uri);

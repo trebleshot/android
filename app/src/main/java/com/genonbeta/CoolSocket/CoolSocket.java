@@ -160,8 +160,7 @@ abstract public class CoolSocket
 			this.getConnections().add(clientRunnable);
 
 			selfThread.start();
-		}
-		else
+		} else
 			return false;
 
 		return true;
@@ -193,8 +192,7 @@ abstract public class CoolSocket
 
 			this.getServerThread().setDaemon(true);
 			this.getServerThread().setName("CoolSocket Main Thread");
-		}
-		else if (this.getServerThread().isAlive())
+		} else if (this.getServerThread().isAlive())
 			return false;
 
 		this.getServerThread().start();

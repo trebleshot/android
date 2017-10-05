@@ -37,34 +37,6 @@ public class ApplicationHelper
 		return new File(defaultPath);
 	}
 
-	public static File getFileFromUri(Context context, Uri fileUri)
-	{
-		String fileUriString = fileUri.toString();
-		File file = null;
-
-		if (fileUriString.startsWith("content"))
-		{
-			Cursor cursor = context.getContentResolver().query(fileUri, null, null, null, null);
-
-			if (cursor != null)
-			{
-				if (cursor.moveToFirst())
-				{
-					int dataIndex = cursor.getColumnIndex(MediaStore.MediaColumns.DATA);
-					String dataPath = cursor.getString(dataIndex);
-
-					file = new File(dataPath);
-				}
-
-				cursor.close();
-			}
-		}
-		else if (fileUriString.startsWith("file"))
-			file = new File(URI.create(fileUriString));
-
-		return file;
-	}
-
 	public static String getFirstLetters(String text, int breakAfter)
 	{
 		StringBuilder stringBuilder = new StringBuilder();

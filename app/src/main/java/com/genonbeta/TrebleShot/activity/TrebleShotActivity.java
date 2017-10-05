@@ -112,32 +112,25 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 		if (R.id.menu_activity_main_device_list == item.getItemId())
 		{
 			changeFragment(mFragmentDeviceList);
-		}
-		else if (R.id.menu_activity_main_received_files == item.getItemId())
+		} else if (R.id.menu_activity_main_received_files == item.getItemId())
 		{
 			changeFragment(mFragmentReceivedFiles);
-		}
-		else if (R.id.menu_activity_main_ongoing_process == item.getItemId())
+		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId())
 		{
 			changeFragment(mFragmentOnGoingProcessList);
-		}
-		else if (R.id.menu_activity_main_share_app == item.getItemId())
+		} else if (R.id.menu_activity_main_share_app == item.getItemId())
 		{
 			changeFragment(mFragmentShareApplication);
-		}
-		else if (R.id.menu_activity_main_share_music == item.getItemId())
+		} else if (R.id.menu_activity_main_share_music == item.getItemId())
 		{
 			changeFragment(mFragmentShareMusic);
-		}
-		else if (R.id.menu_activity_main_share_video == item.getItemId())
+		} else if (R.id.menu_activity_main_share_video == item.getItemId())
 		{
 			changeFragment(mFragmentShareVideo);
-		}
-		else if (R.id.menu_activity_main_share_text == item.getItemId())
+		} else if (R.id.menu_activity_main_share_text == item.getItemId())
 		{
 			changeFragment(mFragmentShareText);
-		}
-		else if (R.id.menu_activity_main_about == item.getItemId())
+		} else if (R.id.menu_activity_main_about == item.getItemId())
 		{
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -154,20 +147,16 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 			});
 
 			builder.show();
-		}
-		else if (R.id.menu_activity_main_send_application == item.getItemId())
+		} else if (R.id.menu_activity_main_send_application == item.getItemId())
 		{
 			sendThisApplication();
-		}
-		else if (R.id.menu_activity_main_preferences == item.getItemId())
+		} else if (R.id.menu_activity_main_preferences == item.getItemId())
 		{
 			startActivity(new Intent(this, PreferencesActivity.class));
-		}
-		else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
+		} else if (R.id.menu_activity_main_check_for_updates == item.getItemId())
 		{
 			mUpdater.checkForUpdates(true, null);
-		}
-		else
+		} else
 			return false;
 
 		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -223,8 +212,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 			{
 				changeFragment(mFragmentReceivedFiles);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_received_files);
-			}
-			else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction()))
+			} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction()))
 			{
 				changeFragment(mFragmentOnGoingProcessList);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);

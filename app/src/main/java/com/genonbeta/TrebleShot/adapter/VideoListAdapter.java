@@ -73,8 +73,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 			{
 				// Cancel previous task
 				bitmapWorkerTask.cancel(true);
-			}
-			else
+			} else
 			{
 				// The same work is already in progress
 				return false;
@@ -187,8 +186,7 @@ public class VideoListAdapter extends AbstractEditableListAdapter<VideoListAdapt
 			holder.imageView = (ImageView) convertView.findViewById(R.id.image);
 
 			convertView.setTag(holder);
-		}
-		else
+		} else
 			holder = (ViewHolder) convertView.getTag();
 
 		holder.titleView.setText(info.title);

@@ -2,6 +2,7 @@ package com.genonbeta.CoolSocket;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -93,14 +94,12 @@ abstract public class CoolTransfer<T>
 		private T mExtra;
 		private byte[] mBufferSize;
 		private int mPort;
-		private File mFile;
 		private Status mStatus = Status.PENDING;
 
-		public TransferHandler(int port, File file, byte[] bufferSize, T extra)
+		public TransferHandler(int port, byte[] bufferSize, T extra)
 		{
-			mExtra = extra;
+			this.mExtra = extra;
 			this.mPort = port;
-			this.mFile = file;
 			this.mBufferSize = bufferSize;
 		}
 
@@ -111,14 +110,19 @@ abstract public class CoolTransfer<T>
 			return mBufferSize;
 		}
 
+		public File getFile()
+		{
+			return null;
+		}
+
 		public T getExtra()
 		{
 			return mExtra;
 		}
 
-		public File getFile()
+		public InputStream getInputStream()
 		{
-			return mFile;
+			return null;
 		}
 
 		public int getPort()
@@ -176,21 +180,18 @@ abstract public class CoolTransfer<T>
 
 		}
 
-		public Handler receive(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra)
-		{
-			Handler handler = new Handler(extra, port, file, fileSize, bufferSize, timeOut);
-			Thread thread = new Thread(handler);
-
-			thread.start();
-
-			return handler;
-		}
-
-		public Handler receiveOnCurrentThread(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra)
+		public Handler receive(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra, boolean currentThread)
 		{
 			Handler handler = new Handler(extra, port, file, fileSize, bufferSize, timeOut);
 
-			handler.run();
+			if (currentThread)
+				handler.run();
+			else
+			{
+				Thread thread = new Thread(handler);
+				thread.start();
+			}
+
 
 			return handler;
 		}
@@ -199,12 +200,14 @@ abstract public class CoolTransfer<T>
 		{
 			private long mFileSize;
 			private int mTimeout;
+			private File mFile;
 			private ServerSocket mServerSocket;
 
 			public Handler(T extra, int port, File file, long fileSize, byte[] bufferSize, int timeout)
 			{
-				super(port, file, bufferSize, extra);
+				super(port, bufferSize, extra);
 
+				this.mFile = file;
 				this.mFileSize = fileSize;
 				this.mTimeout = timeout;
 			}
@@ -282,8 +285,7 @@ abstract public class CoolTransfer<T>
 						{
 							flag = Flag.CANCEL_ALL;
 							onInterrupted(this);
-						}
-						else
+						} else
 						{
 							if (getFile().length() != this.mFileSize)
 								throw new NotYetBoundException();
@@ -294,8 +296,7 @@ abstract public class CoolTransfer<T>
 				} catch (Exception e)
 				{
 					flag = onError(this, e);
-				}
-				finally
+				} finally
 				{
 					onStop(this);
 
@@ -309,6 +310,11 @@ abstract public class CoolTransfer<T>
 			public long getFileSize()
 			{
 				return mFileSize;
+			}
+
+			public File getFile()
+			{
+				return mFile;
 			}
 
 			public ServerSocket getServerSocket()
@@ -325,39 +331,40 @@ abstract public class CoolTransfer<T>
 
 	public static abstract class Send<T> extends CoolTransfer<T>
 	{
-		public void onOrientatingStreams(Handler handler, FileInputStream fileInputStream, OutputStream outputStream)
+		public void onOrientatingStreams(Handler handler, InputStream inputStream, OutputStream outputStream)
 		{
-
 		}
 
-		public Handler send(String serverIp, int port, File file, byte[] bufferSize, T extra)
+		public Handler send(String serverIp, int port, InputStream stream, long totalByte, byte[] bufferSize, T extra, boolean currentThread)
 		{
-			Handler handler = new Handler(serverIp, port, file, bufferSize, extra);
-			Thread thread = new Thread(handler);
+			Handler handler = new Handler(serverIp, port, stream, totalByte, bufferSize, extra);
 
-			thread.start();
+			if (currentThread)
+				handler.run();
+			else
+				new Thread(handler).start();
 
 			return handler;
 		}
 
-		public Handler sendOnCurrentThread(String serverIp, int port, File file, byte[] bufferSize, T extra)
+		public Handler send(String serverIp, int port, File file, long totalByte, byte[] bufferSize, T extra, boolean currentThread) throws FileNotFoundException
 		{
-			Handler handler = new Handler(serverIp, port, file, bufferSize, extra);
-
-			handler.run();
-
-			return handler;
+			return send(serverIp, port, new FileInputStream(file), totalByte, bufferSize, extra, currentThread);
 		}
 
 		public class Handler extends CoolTransfer.TransferHandler<T>
 		{
 			private String mServerIp;
+			private InputStream mStream;
+			private long mTotalByte;
 
-			public Handler(String serverIp, int port, File file, byte[] bufferSize, T extra)
+			public Handler(String serverIp, int port, InputStream stream, long totalLenght, byte[] bufferSize, T extra)
 			{
-				super(port, file, bufferSize, extra);
+				super(port, bufferSize, extra);
 
 				this.mServerIp = serverIp;
+				this.mStream = stream;
+				this.mTotalByte = totalLenght;
 			}
 
 			@Override
@@ -380,23 +387,23 @@ abstract public class CoolTransfer<T>
 
 						if (Flag.CONTINUE.equals(flag))
 						{
-							FileInputStream inputStream = new FileInputStream(getFile());
 							OutputStream outputStream = getSocket().getOutputStream();
 
-							onOrientatingStreams(this, inputStream, outputStream);
+							onOrientatingStreams(this, getInputStream(), outputStream);
 
 							int len;
 							int progressPercent = -1;
 							long lastNotified = System.currentTimeMillis();
+							long countingStars = 0;
 
-							while ((len = inputStream.read(getBufferSize())) > 0)
+							while ((len = getInputStream().read(getBufferSize())) > 0)
 							{
 								outputStream.write(getBufferSize(), 0, len);
 								outputStream.flush();
 
 								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay())
 								{
-									int currentPercent = (int) (((float) 100 / getFile().length()) * inputStream.getChannel().position());
+									int currentPercent = 0; // (int) (((float) 100 / getTotalByte()) * outputStream.);
 
 									if (currentPercent > progressPercent)
 									{
@@ -412,7 +419,7 @@ abstract public class CoolTransfer<T>
 							}
 
 							outputStream.close();
-							inputStream.close();
+							getInputStream().close();
 						}
 
 						getSocket().close();
@@ -421,15 +428,13 @@ abstract public class CoolTransfer<T>
 						{
 							flag = Flag.CANCEL_ALL;
 							onInterrupted(this);
-						}
-						else
+						} else
 							onTransferCompleted(this);
 					}
 				} catch (Exception e)
 				{
 					flag = onError(this, e);
-				}
-				finally
+				} finally
 				{
 					onStop(this);
 
@@ -440,9 +445,19 @@ abstract public class CoolTransfer<T>
 				}
 			}
 
+			public InputStream getInputStream()
+			{
+				return mStream;
+			}
+
 			public String getServerIp()
 			{
 				return mServerIp;
+			}
+
+			public long getTotalByte()
+			{
+				return mTotalByte;
 			}
 		}
 	}

@@ -126,8 +126,7 @@ public abstract class CoolCommunication extends CoolSocket
 				{
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onError(e);
-				}
-				finally
+				} finally
 				{
 					if (this.mProcess.getResponseHandler() != null)
 						this.mProcess.getResponseHandler().onFinal();

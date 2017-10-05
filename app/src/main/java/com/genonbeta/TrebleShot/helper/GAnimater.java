@@ -35,8 +35,7 @@ public class GAnimater
 
 			animation.setDuration(300);
 			set.addAnimation(animation);
-		}
-		else if (mode == DISAPPEAR)
+		} else if (mode == DISAPPEAR)
 		{
 			Animation animation = new AlphaAnimation(1.0f, 0.0f);
 			animation.setDuration(300);

@@ -72,14 +72,12 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 						{
 							e.printStackTrace();
 						}
-					}
-					else
+					} else
 					{
 						handler.getExtra().notification = getNotificationUtils().notifyStuckThread(handler.getExtra());
 						handler.interrupt();
 					}
-				}
-				else
+				} else
 					mNotification.cancel(notificationId);
 			}
 

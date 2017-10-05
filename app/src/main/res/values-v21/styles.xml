@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
@@ -9,5 +10,6 @@
 
     <style name="AppTheme.NoActionBar.BlackStatusBar" parent="AppTheme.NoActionBar">
         <item name="android:statusBarColor">#999</item>
-    </style>>
+    </style>
+    >
 </resources>

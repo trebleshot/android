@@ -67,8 +67,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 
 				Collections.sort(files, mComparator);
 			}
-		}
-		else
+		} else
 		{
 			ArrayList<File> paths = new ArrayList<>();
 

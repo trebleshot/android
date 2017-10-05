@@ -128,7 +128,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 			}
 		}
 
-		mReceive.receive(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver);
+		mReceive.receive(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver, false);
 
 		return true;
 	}

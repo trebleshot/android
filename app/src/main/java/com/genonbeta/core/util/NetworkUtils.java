@@ -62,8 +62,7 @@ public class NetworkUtils
 				{
 					isUTF8 = true;
 					baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
-				}
-				else
+				} else
 				{
 					baos.write(bytes, 0, read);
 				}
@@ -71,8 +70,7 @@ public class NetworkUtils
 				count += read;
 			}
 			return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
-		}
-		finally
+		} finally
 		{
 			try
 			{
@@ -156,8 +154,7 @@ public class NetworkUtils
 						if (useIPv4 && isIPv4)
 						{
 							ipAddressList.put(intf, sAddr);
-						}
-						else if (!useIPv4)
+						} else if (!useIPv4)
 						{
 							int delim = sAddr.indexOf('%'); // drop ip6 port suffix
 							ipAddressList.put(intf, (delim < 0 ? sAddr : sAddr.substring(0, delim)));

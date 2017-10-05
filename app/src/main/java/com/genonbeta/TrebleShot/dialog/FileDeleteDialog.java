@@ -65,6 +65,7 @@ public class FileDeleteDialog extends AlertDialog.Builder
 	public interface Listener
 	{
 		void onFileDeletion(Context context, File file);
+
 		void onCompleted(Context context, int fileSize);
 	}
 }

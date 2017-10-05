@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.helper;
 
 import android.content.ContentValues;
+import android.net.Uri;
 
 import com.genonbeta.TrebleShot.database.MainDatabase;
 import com.genonbeta.android.database.CursorItem;
@@ -9,14 +10,14 @@ import java.io.File;
 
 public class AwaitedFileSender extends AwaitedTransaction
 {
-	public File file;
+	public Uri fileUri;
 	public int port;
 
-	public AwaitedFileSender(NetworkDevice networkDevice, int requestId, int groupId, String fileName, long fileSize, File file)
+	public AwaitedFileSender(NetworkDevice networkDevice, int requestId, int groupId, String fileName, long fileSize, Uri fileUri)
 	{
 		super(networkDevice.deviceId, requestId, groupId, networkDevice.ip, fileName, fileSize);
 
-		this.file = file;
+		this.fileUri = fileUri;
 	}
 
 	public AwaitedFileSender(CursorItem item)
@@ -27,7 +28,7 @@ public class AwaitedFileSender extends AwaitedTransaction
 	@Override
 	public void onDatabaseObject(ContentValues values)
 	{
-		values.put(MainDatabase.FIELD_TRANSFER_FILE, file.getAbsolutePath());
+		values.put(MainDatabase.FIELD_TRANSFER_FILE, fileUri.toString());
 		values.put(MainDatabase.FIELD_TRANSFER_ACCESSPORT, port);
 		values.put(MainDatabase.FIELD_TRANSFER_TYPE, MainDatabase.TYPE_TRANSFER_TYPE_OUTGOING);
 	}
@@ -35,7 +36,7 @@ public class AwaitedFileSender extends AwaitedTransaction
 	@Override
 	public void onCreate(CursorItem item)
 	{
-		this.file = new File(item.getString(MainDatabase.FIELD_TRANSFER_FILE));
+		this.fileUri = Uri.parse(item.getString(MainDatabase.FIELD_TRANSFER_FILE));
 		this.port = item.getInt(MainDatabase.FIELD_TRANSFER_ACCESSPORT);
 	}
 }

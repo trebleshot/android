@@ -59,11 +59,9 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 				}
 
 				context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, (ApplicationHelper.getNetworkDeviceScanner().scan(list, this)) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE));
-			}
-			else
+			} else
 				Toast.makeText(context, R.string.mesg_stillScanning, Toast.LENGTH_SHORT).show();
-		}
-		else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
+		} else if (ACTION_ADD_IP.equals(intent.getAction()) && intent.hasExtra(EXTRA_DEVICE_IP))
 		{
 			mInfoLoader.startLoading(mDeviceRegistry, intent.getStringExtra(EXTRA_DEVICE_IP));
 		}

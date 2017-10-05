@@ -104,8 +104,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 				if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict))
 				{
 					new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
-				}
-				else if (device != null)
+				} else if (device != null)
 				{
 					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
 					{
@@ -137,8 +136,7 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 							editingSession.done();
 						}
 					}).show();
-				}
-				else
+				} else
 					Toast.makeText(getActivity(), R.string.mesg_deviceNotExits, Toast.LENGTH_LONG).show();
 			}
 		}

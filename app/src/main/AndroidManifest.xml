@@ -44,15 +44,18 @@
                 <action android:name="android.intent.action.SEND_MULTIPLE"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
                 <data android:mimeType="*/*"/>
             </intent-filter>
-            <meta-data android:name="android.service.chooser.chooser_target_service"
-                       android:value=".service.DeviceChooserService" />
+            <meta-data
+                android:name="android.service.chooser.chooser_target_service"
+                android:value=".service.DeviceChooserService"/>
         </activity>
 
-        <activity android:name=".activity.FilePickerActivity"
-                  android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
+        <activity
+            android:name=".activity.FilePickerActivity"
+            android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
 
         <activity
             android:label="@string/text_pendingTransferEditor"
@@ -67,10 +70,11 @@
             android:name=".activity.TextEditorActivity"
             android:label="@string/text_textEditor"/>
 
-        <activity android:name=".activity.StoragePathChangeActivity"
-                  android:theme="@style/Base.Theme.AppCompat.Dialog">
+        <activity
+            android:name=".activity.StoragePathChangeActivity"
+            android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
-                <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
+                <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -110,6 +114,7 @@
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </receiver>

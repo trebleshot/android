@@ -83,8 +83,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 			anim.setDuration(700);
 
 			mReloadImage.startAnimation(anim);
-		}
-		else
+		} else
 			mReloadImage.setAnimation(null);
 	}
 

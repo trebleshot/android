@@ -1,17 +1,20 @@
 package com.genonbeta.TrebleShot.service;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.IBinder;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.android.database.CursorItem;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
@@ -58,7 +61,9 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 					if (transaction != null)
 					{
 						AwaitedFileSender awaitedSender = new AwaitedFileSender(transaction);
-						mSend.send(awaitedSender.ip, awaitedSender.port, awaitedSender.file, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender);
+						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), awaitedSender.fileUri);
+
+						mSend.send(awaitedSender.ip, awaitedSender.port, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender, false);
 					}
 				} catch (Exception e)
 				{
@@ -137,14 +142,14 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		}
 
 		@Override
-		public void onOrientatingStreams(Handler handler, FileInputStream fileInputStream, OutputStream outputStream)
+		public void onOrientatingStreams(Handler handler, InputStream inputStream, OutputStream outputStream)
 		{
-			super.onOrientatingStreams(handler, fileInputStream, outputStream);
+			super.onOrientatingStreams(handler, inputStream, outputStream);
 
 			if (handler.getExtra().fileSize > 0)
 				try
 				{
-					fileInputStream.getChannel().position(handler.getExtra().fileSize);
+					inputStream.skip(handler.getExtra().fileSize);
 				} catch (IOException e)
 				{
 					handler.interrupt();
