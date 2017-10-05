@@ -1,8 +1,8 @@
 # TrebleShot open-source file and text sharing application
 Send and receive files over available connections without making any effort
 
-## Get it from
-[<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/repository/browse/?fdfilter=TrebleShot&fdid=com.genonbeta.TrebleShot) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
+## Get it on
+[<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
 * Pause or resume transfers even when an error is given
@@ -10,6 +10,14 @@ Send and receive files over available connections without making any effort
 * There is no limit. You can send thousands of files with only one connection
 * You have the updates installed on your phone but your friend doesn't? Send them using TrebleShot
 * You need to send some text information? Just use TrebleShot to do it
+
+## Project status
+[![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
+
+## Donate <img src="https://bitcoin.org/img/icons/logotop.svg" width=90>
+![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
+
+`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`
 
 ## Screenshots
 [<img src="screenshots/screenshot_1.png" width=160>](screenshots/screenshot_1.png)
@@ -21,9 +29,6 @@ Send and receive files over available connections without making any effort
 [<img src="screenshots/screenshot_7.png" width=160>](screenshots/screenshot_7.png)
 [<img src="screenshots/screenshot_8.png" width=160>](screenshots/screenshot_8.png)
 [<img src="screenshots/screenshot_9.png" width=160>](screenshots/screenshot_9.png)
-
-## Project status
-[![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
 
 ## Supported languages
 * English
