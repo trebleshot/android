@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,7 +29,7 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
 	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
-	public final static String EXTRA_KEEP_CURRENT = "keepCurrent";
+	public final static String EXTRA_PATH = "path";
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
@@ -39,11 +40,23 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction())) {
-				if (!intent.hasExtra(EXTRA_KEEP_CURRENT))
-					getAdapter().goDefault();
+			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_PATH)) {
+				final String extraPath = intent.getStringExtra(EXTRA_PATH);
 
-				refreshList();
+				if (extraPath.equals(getAdapter().getPath().getAbsolutePath()))
+					refreshList();
+				else
+					Snackbar
+							.make(getActivity().findViewById(android.R.id.content), "Yeni dosyalar var", Snackbar.LENGTH_LONG)
+							.setAction("Show", new View.OnClickListener()
+							{
+								@Override
+								public void onClick(View v)
+								{
+									goPath(new File(extraPath));
+								}
+							})
+							.show();
 			}
 		}
 	};
@@ -174,10 +187,10 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 						}
 
 						@Override
-						public void onCompleted(Context context, int fileSize)
+						public void onCompleted(Context context, int fileSize, File parent)
 						{
 							context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-									.putExtra(EXTRA_KEEP_CURRENT, true));
+									.putExtra(EXTRA_PATH, parent.getAbsolutePath()));
 						}
 					}).show();
 

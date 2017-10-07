@@ -161,10 +161,14 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 					.removeTransaction(handler.getExtra())
 					.done();
 
+			File finalFileLocation = FileUtils.getUniqueFile(new File(handler.getFile().getParent() + File.separator + handler.getExtra().fileName));
+
+			handler.getFile().renameTo(finalFileLocation);
+
 			if (multiCounter <= 1)
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile());
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), finalFileLocation);
 			else
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), multiCounter);
+				getNotificationUtils().notifyFileReceived(handler.getExtra(), finalFileLocation.getParent(), multiCounter);
 		}
 
 		@Override
@@ -250,7 +254,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 				if (mMediaScanner.isConnected())
 					mMediaScanner.scanFile(handler.getFile().getAbsolutePath(), handler.getExtra().fileMimeType);
 
-				sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED));
+				sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+						.putExtra(FileListFragment.EXTRA_PATH, handler.getFile().getParent()));
 			}
 		}
 	}

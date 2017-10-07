@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.helper;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.database.Transaction;
 
@@ -61,8 +60,8 @@ public class FileUtils
 	public static Conflict isFileConflicted(Context context, AwaitedFileReceiver receiver)
 	{
 		if (Transaction.Flag.PENDING.equals(receiver.flag)
-				|| receiver.selectedPath == null
-				|| new File(receiver.selectedPath).canWrite())
+				|| receiver.fileAddress == null
+				|| new File(receiver.fileAddress).canWrite())
 			return Conflict.CURRENTLY_OK;
 		else if (!new File(getSaveLocationForFile(context, receiver)).exists())
 			return Conflict.SET_PATH_UNAVAILABLE;
@@ -72,9 +71,10 @@ public class FileUtils
 
 	public static String getSaveLocationForFile(Context context, AwaitedFileReceiver receiver)
 	{
-		return receiver.selectedPath != null && new File(receiver.selectedPath).canWrite()
-				? receiver.selectedPath + File.separator + receiver.fileName
-				: getSaveLocationForFile(context, receiver.fileName);
+		File tmpAddress = new File(receiver.fileAddress);
+
+		return tmpAddress.getParentFile() == null ? getSaveLocationForFile(context, receiver.fileAddress)
+				: (tmpAddress.canWrite() ? receiver.fileAddress : getSaveLocationForFile(context, tmpAddress.getName()));
 	}
 
 	public static String getSaveLocationForFile(Context context, String file)

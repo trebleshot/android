@@ -116,7 +116,9 @@ public class FileExplorerFragment extends Fragment
 
 		mFileListFragment.getListView().setPadding(0, 0, 0, 200);
 		mFileListFragment.getListView().setClipToPadding(false);
-		mFileListFragment.goPath(ApplicationHelper.getApplicationDirectory(getActivity()));
+
+		if (mFileListFragment.getAdapter().getPath() == null)
+			mFileListFragment.goPath(ApplicationHelper.getApplicationDirectory(getActivity()));
 	}
 
 	public FloatingActionButton getButtonOfEverything()

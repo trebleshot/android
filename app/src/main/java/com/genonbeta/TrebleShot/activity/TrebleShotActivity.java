@@ -41,6 +41,7 @@ public class TrebleShotActivity extends Activity implements NavigationView.OnNav
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
+	public static final String EXTRA_FILE_PATH = "filePath";
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 

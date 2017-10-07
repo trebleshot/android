@@ -312,6 +312,11 @@ abstract public class CoolTransfer<T>
 			{
 				return mTimeout;
 			}
+
+			public void updateFile(File newAddress)
+			{
+				mFile = newAddress;
+			}
 		}
 	}
 
@@ -378,7 +383,7 @@ abstract public class CoolTransfer<T>
 							int len;
 							int progressPercent = -1;
 							long lastNotified = System.currentTimeMillis();
-							long countingStars = mSkippedBytes;
+							long countingStars = getSkippedBytes();
 
 							while ((len = getInputStream().read(getBufferSize())) > 0) {
 								outputStream.write(getBufferSize(), 0, len);
@@ -438,6 +443,11 @@ abstract public class CoolTransfer<T>
 			public long getTotalByte()
 			{
 				return mTotalByte;
+			}
+
+			public long getSkippedBytes()
+			{
+				return mSkippedBytes;
 			}
 
 			public long skipBytes(long bytes) throws IOException

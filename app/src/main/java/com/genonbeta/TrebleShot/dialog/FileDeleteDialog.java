@@ -43,15 +43,20 @@ public class FileDeleteDialog extends AlertDialog.Builder
 							{
 								Looper.prepare();
 
+								File parentDir = null;
+
 								for (URI filePath : files) {
 									File file = new File(filePath);
+
+									if (parentDir == null)
+										parentDir = file.getParentFile();
 
 									if (file.delete() && listener != null)
 										listener.onFileDeletion(activity, file);
 								}
 
 								if (listener != null)
-									listener.onCompleted(activity, files.size());
+									listener.onCompleted(activity, files.size(), parentDir);
 
 								Looper.loop();
 							}
@@ -65,6 +70,6 @@ public class FileDeleteDialog extends AlertDialog.Builder
 	{
 		void onFileDeletion(Context context, File file);
 
-		void onCompleted(Context context, int fileSize);
+		void onCompleted(Context context, int fileSize, File parent);
 	}
 }

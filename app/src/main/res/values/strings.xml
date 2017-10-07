@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
     Meanings of prefixes:
-    butn_ : text represents any kind of button like Button, MenuItem.title, possibly should be short
+    butn_ : text indicates any kind of button like Button, MenuItem.title, possibly should be short
     ques_ : in that kind of text a question mark should exist
-    mesg_ : texts used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
-    text_ : any kind of text that doesn't belong to the prefixes explained above
+    mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
+    text_ : any kind of text that doesn't belong to the prefixes above
 -->
 <resources>
     <string name="text_appName">TrebleShot</string>
@@ -170,4 +170,7 @@
     <string name="text_fixFileSaveLocation">Fix save location</string>
     <string name="text_fileConflictNoChoice">The folder you chose for %s file is currently unavailable and current file name conflicts with a file in default folder. If it is a partially received version of the same file select \'Keep\' or select \'New file\' to generate new file</string>
     <string name="text_fileConflictUseDefault">The folder you choose for %s file is currently unavailable. Proceed to use default folder</string>
+    <string name="mesg_currentPathUnavailable">This folder cannot be used. Please, choose another folder.</string>
+    <string name="text_defaultFolder">Default Folder</string>
+    <string name="text_storage">Storage</string>
 </resources>

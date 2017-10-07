@@ -36,7 +36,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	public FileListAdapter(Context context)
 	{
 		super(context);
-		mPath = mDefaultPath = ApplicationHelper.getApplicationDirectory(mContext);
+		mDefaultPath = ApplicationHelper.getApplicationDirectory(mContext);
 	}
 
 	@Override
@@ -46,7 +46,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		ArrayList<FileInfo> folders = new ArrayList<>();
 		ArrayList<FileInfo> files = new ArrayList<>();
 
-		if (mPath != null) {
+		if (mPath != null && mPath.canRead()) {
 			File[] fileIndex = mPath.listFiles();
 
 			if (mShowDirectories) {
@@ -68,12 +68,12 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 			ArrayList<File> paths = new ArrayList<>();
 
 			File defaultFolder = ApplicationHelper.getApplicationDirectory(getContext());
-			folders.add(new FileInfo(defaultFolder.getName(), "Default Folder", defaultFolder));
+			folders.add(new FileInfo(defaultFolder.getName(), getContext().getString(R.string.text_defaultFolder), defaultFolder));
 
 			paths.add(Environment.getExternalStorageDirectory());
 
 			for (File storage : paths)
-				folders.add(new FileInfo(storage.getName(), "Storage", storage));
+				folders.add(new FileInfo(storage.getName(), getContext().getString(R.string.text_storage), storage));
 		}
 
 		list.addAll(folders);
@@ -93,6 +93,11 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	public int getCount()
 	{
 		return mList.size();
+	}
+
+	public File getDefaultPath()
+	{
+		return mDefaultPath;
 	}
 
 	@Override
@@ -131,11 +136,6 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		sizeText.setText(fileInfo.fileInfo);
 
 		return convertView;
-	}
-
-	public void goDefault()
-	{
-		goPath(mDefaultPath);
 	}
 
 	public void goPath(File path)

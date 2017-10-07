@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -233,10 +234,10 @@ public class NotificationUtils
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), FileUtils.getFileContentType(file.getAbsolutePath()))
+			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), receiver.fileMimeType)
 					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 		else
-			openIntent.setDataAndType(Uri.fromFile(file), FileUtils.getFileContentType(file.getAbsolutePath()));
+			openIntent.setDataAndType(Uri.fromFile(file), receiver.fileMimeType);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(receiver.fileName)
@@ -248,7 +249,7 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, int numberOfFiles)
+	public DynamicNotification notifyFileReceived(AwaitedFileReceiver receiver, String parentDir, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, receiver.groupId);
 
@@ -257,7 +258,8 @@ public class NotificationUtils
 				.setContentText(mContext.getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, numberOfFiles, numberOfFiles))
 				.setAutoCancel(true)
 				.setContentIntent(PendingIntent.getActivity(mContext, ApplicationHelper.getUniqueNumber(), new Intent(mContext, TrebleShotActivity.class)
-						.setAction(TrebleShotActivity.ACTION_OPEN_RECEIVED_FILES), 0));
+						.setAction(TrebleShotActivity.ACTION_OPEN_RECEIVED_FILES)
+						.putExtra(TrebleShotActivity.EXTRA_FILE_PATH, parentDir), 0));
 
 		return notification.show();
 	}

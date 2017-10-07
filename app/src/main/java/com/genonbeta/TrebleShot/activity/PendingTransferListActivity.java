@@ -139,8 +139,6 @@ public class PendingTransferListActivity extends Activity
 							}
 
 							editingSession.done();
-
-							Toast.makeText(this, "We're okay: " + data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH), Toast.LENGTH_SHORT).show();
 						}
 						break;
 				}

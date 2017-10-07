@@ -163,4 +163,7 @@
     <string name="text_fixFileSaveLocation">Kaydetme yerini düzelt</string>
     <string name="text_fileConflictUseDefault">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz. Varsayılan klasörü kullanmaya devam edin</string>
 <string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
-    </resources>
+    <string name="text_defaultFolder">Varsayılan</string>
+    <string name="text_storage">Depolama</string>
+    <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin</string>
+</resources>

@@ -408,6 +408,7 @@ public class ShareActivity extends Activity
 	private interface ConnectionHandler
 	{
 		void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException;
+
 		void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp);
 	}
 
@@ -416,16 +417,12 @@ public class ShareActivity extends Activity
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			Log.d(TAG, "We're bount to fail");
-
-			if (mShownDeviceChooserDialog != null)
-			{
+			if (mShownDeviceChooserDialog != null && mShownDeviceChooserDialog.isShowing()) {
 				mShownDeviceChooserDialog.cancel();
-				mShownDeviceChooserDialog = null;
-			}
 
-			if (mDeviceChooserDialog != null)
-				mShownDeviceChooserDialog = mDeviceChooserDialog.show();
+				if (mDeviceChooserDialog != null)
+					mShownDeviceChooserDialog = mDeviceChooserDialog.show();
+			}
 		}
 	}
 }

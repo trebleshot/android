@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
@@ -10,6 +11,7 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
+import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 
 import java.io.File;
 
@@ -59,10 +61,12 @@ public class FilePickerActivity extends Activity
 					@Override
 					public void onClick(View v)
 					{
-						finishWithResult(mFileExplorerFragment
-								.getFileListFragment()
-								.getAdapter()
-								.getPath());
+						File selectedPath = mFileExplorerFragment.getFileListFragment().getAdapter().getPath();
+
+						if (selectedPath != null && selectedPath.canWrite())
+							finishWithResult(selectedPath);
+						else
+							Snackbar.make(findViewById(android.R.id.content), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 					}
 				});
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {

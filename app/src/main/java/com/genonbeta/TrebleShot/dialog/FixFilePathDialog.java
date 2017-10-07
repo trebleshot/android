@@ -63,7 +63,7 @@ public class FixFilePathDialog extends AlertDialog.Builder
 
 	public void fixConflict(Context context, Transaction transaction, AwaitedFileReceiver receiver, boolean newFile)
 	{
-		receiver.selectedPath = null;
+		receiver.fileAddress = null;
 
 		if (newFile) {
 			File uniqueFile = FileUtils.getUniqueFile(new File(FileUtils.getSaveLocationForFile(context, receiver.fileName)));
