@@ -13,6 +13,7 @@ Send and receive files over available connections without making any effort
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
+[![Translation Status](https://hosted.weblate.org/widgets/TrebleShot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
 ## Donate <img src="https://bitcoin.org/img/icons/logotop.svg" width=90>
 ![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
