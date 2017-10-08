@@ -20,6 +20,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
+import java.io.File;
+
 public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter.AppInfo, ApplicationListAdapter> implements FragmentTitle
 {
 	private SharedPreferences mPreferences;
@@ -117,7 +119,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 
 		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
 		{
-			return Uri.parse("fileUri://" + getItem(pos).codePath);
+			return Uri.fromFile(new File(getItem(pos).codePath));
 		}
 
 		@Override
