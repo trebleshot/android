@@ -162,4 +162,8 @@
     <string name="text_fixFileSaveLocation">Opslaglocatie repareren</string>
     <string name="text_fileConflictNoChoice">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar en de huidige bestandsnaam conflicteert met een bestand in de standaard map. Als het een gedeeltelijk ontvangen bestand betreft van hetzelfde bestand, selecteer dan \'Behouden\' of selecteer \'Nieuw bestand\' om een nieuw bestand te genereren</string>
     <string name="text_fileConflictUseDefault">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar. Ga door met de standaard map</string>
+<string name="mesg_currentPathUnavailable">Deze map kan niet worden gebruikt. Kies een andere map.</string>
+    <string name="text_defaultFolder">Standaard map</string>
+    <string name="text_storage">Opslag</string>
+    <string name="text_receiveFiles">Bestanden ontvangen</string>
 </resources>
