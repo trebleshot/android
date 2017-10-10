@@ -57,6 +57,7 @@ public class FileUtils
 		return null;
 	}
 
+	// TODO: 9.10.2017 Maybe an obsolete code ??
 	public static Conflict isFileConflicted(Context context, AwaitedFileReceiver receiver)
 	{
 		if (Transaction.Flag.PENDING.equals(receiver.flag)
@@ -74,7 +75,7 @@ public class FileUtils
 		File tmpAddress = new File(receiver.fileAddress);
 
 		return tmpAddress.getParentFile() == null ? getSaveLocationForFile(context, receiver.fileAddress)
-				: (tmpAddress.canWrite() ? receiver.fileAddress : getSaveLocationForFile(context, tmpAddress.getName()));
+				: (tmpAddress.getParentFile().canWrite() ? receiver.fileAddress : getSaveLocationForFile(context, tmpAddress.getName()));
 	}
 
 	public static String getSaveLocationForFile(Context context, String file)

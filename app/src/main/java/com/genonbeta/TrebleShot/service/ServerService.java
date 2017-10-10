@@ -93,6 +93,8 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 		AwaitedFileReceiver receiver = new AwaitedFileReceiver(receiverInstance);
 
+		// TODO: 9.10.2017 Going forward still
+		/*
 		if (FileUtils.isFileConflicted(getApplicationContext(), receiver) != FileUtils.Conflict.CURRENTLY_OK) {
 			receiver.flag = Transaction.Flag.INTERRUPTED;
 
@@ -102,7 +104,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 					.done();
 
 			return false;
-		}
+		}*/
 
 		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver));
 

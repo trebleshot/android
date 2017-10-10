@@ -18,9 +18,11 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.Transaction;
 import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
 import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
+import com.genonbeta.TrebleShot.helper.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -119,20 +121,17 @@ public class PendingTransferListActivity extends Activity
 							Transaction.EditingSession editingSession = mTransaction.edit();
 
 							for (CursorItem cursorItem : list) {
-								Log.d(PendingTransferListActivity.class.getSimpleName(), "We're there");
-
 								if (cursorItem.getInt(Transaction.FIELD_TRANSFER_TYPE) != Transaction.TYPE_TRANSFER_TYPE_INCOMING)
 									continue;
 
 								AwaitedFileReceiver fileReceiver = new AwaitedFileReceiver(cursorItem);
-
-								Log.d(PendingTransferListActivity.class.getSimpleName(), "Going on");
+								File realPath = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), fileReceiver));
 
 								if (Transaction.Flag.PENDING.equals(fileReceiver.flag)) {
-									Log.d(PendingTransferListActivity.class.getSimpleName(), "Done");
-
 									ContentValues values = new ContentValues();
-									values.put(Transaction.FIELD_TRANSFER_FILE, selectedPath);
+									values.put(Transaction.FIELD_TRANSFER_FILE, selectedPath + File.separator + realPath.getName());
+
+									Log.d(PendingTransferListActivity.class.getName(), "Path: " + selectedPath + File.separator + realPath.getName());
 
 									editingSession.updateTransaction(fileReceiver.requestId, values);
 								}

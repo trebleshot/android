@@ -97,11 +97,12 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 				final AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
 				final NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(receiver.deviceId);
 
-				FileUtils.Conflict conflict = FileUtils.isFileConflicted(getContext(), receiver);
+				// TODO: 9.10.2017 Remove it all or come up with a solution
+				//FileUtils.Conflict conflict = FileUtils.isFileConflicted(getContext(), receiver);
+				//if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict)) {
+				//	new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
 
-				if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict)) {
-					new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
-				} else if (device != null) {
+				if (device != null) {
 					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
