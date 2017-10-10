@@ -125,7 +125,7 @@
     <string name="text_removeCertainPendingTransfersSummary">Devam ederseniz listede görmüş olduğunuz bekleyen aktarımlar silinecek</string>
     <string name="text_removeDeviceSummary">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
     <string name="text_availableNetworks">Cihaza bağl. için uygun ağlar</string>
-    <string name="question_removeAll">Hepsini kaldır?</string>
+    <string name="ques_removeAll">Hepsini kaldır?</string>
     <string name="ques_removeDevice">Bu cihazı kaldır?</string>
     <string name="ques_removeQueue">İş kuyruğunu kaldır?</string>
     <string name="butn_killNow">Şimdi durdur</string>

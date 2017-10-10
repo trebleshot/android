@@ -129,7 +129,7 @@
     <string name="ques_removeDevice">Dit apparaat verwijderen?</string>
     <string name="text_removeDeviceSummary">Als u een apparaat verwijderd, dan worden de bijbehorende overdrachten ook verwijderd</string>
     <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
-    <string name="question_removeAll">Alles verwijderen?</string>
+    <string name="ques_removeAll">Alles verwijderen?</string>
     <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten in de wachtrij die u op deze lijst ziet</string>
     <string name="text_availableNetworks">Beschikbare netwerken voor dit apparaat</string>
     <string name="text_noNetworkAvailable">Er is geen netwerk beschikbaar</string>

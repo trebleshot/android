@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">Хотите удалить %d файл?</item>
+	<item quantity="few">Хотите удалить %d файла?</item>
+	<item quantity="many">Хотите удалить %d файлов?</item>
+	<item quantity="other"></item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">%d файл получен</item>
+	<item quantity="few">%d файла получено</item>
+	<item quantity="many">%d файлов получено</item>
+	<item quantity="other"></item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">%d файл выбран</item>
+	<item quantity="few">%d файла выбрано</item>
+	<item quantity="many">%d файлов выбрано</item>
+	<item quantity="other"></item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">Принять %d файл?</item>
+	<item quantity="few">Принять %d файла?</item>
+	<item quantity="many">Принять %d файлов?</item>
+	<item quantity="other"></item>
+</plurals>
+</resources>

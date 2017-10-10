@@ -137,7 +137,7 @@
     <string name="ques_removeDevice">Remove this device?</string>
     <string name="text_removeDeviceSummary">When you remove a device, its transfers will also be removed</string>
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
-    <string name="question_removeAll">Remove all?</string>
+    <string name="ques_removeAll">Remove all?</string>
     <string name="text_removeCertainPendingTransfersSummary">This will remove all the pending transfers that you see in this list</string>
     <string name="text_availableNetworks">Avail. networks for this device</string>
     <string name="text_noNetworkAvailable">No network is available</string>

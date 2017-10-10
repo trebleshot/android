@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
@@ -83,7 +82,7 @@ public class PendingTransferListActivity extends Activity
 			{
 				AlertDialog.Builder dialog = new AlertDialog.Builder(PendingTransferListActivity.this);
 
-				dialog.setTitle(R.string.question_removeAll);
+				dialog.setTitle(R.string.ques_removeAll);
 				dialog.setMessage(R.string.text_removeCertainPendingTransfersSummary);
 
 				dialog.setNegativeButton(R.string.butn_cancel, null);

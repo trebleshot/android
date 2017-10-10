@@ -131,7 +131,7 @@
     <string name="ques_removeDevice">このデバイスを削除しますか?</string>
     <string name="text_removeDeviceSummary">デバイスを削除すると、残りの転送も削除されます</string>
     <string name="text_removePendingTransferSummary">これにより %s キューから削除されます</string>
-    <string name="question_removeAll">すべて削除しますか?</string>
+    <string name="ques_removeAll">すべて削除しますか?</string>
     <string name="text_removeCertainPendingTransfersSummary">これによりこのリストからすべての保留中の転送が削除されます</string>
     <string name="text_availableNetworks">このデバイスで利用可能なネットワーク</string>
     <string name="text_noNetworkAvailable">ネットワークが利用できません</string>
