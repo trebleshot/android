@@ -165,6 +165,6 @@
 <string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
     <string name="text_defaultFolder">Varsayılan</string>
     <string name="text_storage">Depolama</string>
-    <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin</string>
+    <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin.</string>
     <string name="text_receiveFiles">Dosya al</string>
 </resources>
