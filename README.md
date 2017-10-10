@@ -15,7 +15,7 @@ Send and receive files over available connections without making any effort
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
 [![Translation Status](https://hosted.weblate.org/widgets/TrebleShot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
-## Donate <img src="https://bitcoin.org/img/icons/logotop.svg" width=90>
+## Donate [<img src="https://bitcoin.org/img/icons/logotop.svg" width=90>](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
 ![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
 
 `1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`
@@ -33,7 +33,8 @@ Send and receive files over available connections without making any effort
 
 ## Supported languages
 * English
-* Japanese (Contributors: naofum)
+* Dutch
+* Japanese
 * Turkish
 
 See the development process: https://trello.com/b/YmbwDHHo
