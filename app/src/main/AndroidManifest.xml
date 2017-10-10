@@ -119,6 +119,16 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name=".service.CommunicationToggleTile"
+            android:icon="@drawable/ic_whatshot_white_24dp"
+            android:label="@string/text_receiveFiles"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="${applicationId}.provider"

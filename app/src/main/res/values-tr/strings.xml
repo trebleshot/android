@@ -166,4 +166,5 @@
     <string name="text_defaultFolder">Varsayılan</string>
     <string name="text_storage">Depolama</string>
     <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin</string>
+    <string name="text_receiveFiles">Dosya al</string>
 </resources>

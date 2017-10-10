@@ -173,4 +173,5 @@
     <string name="mesg_currentPathUnavailable">This folder cannot be used. Please, choose another folder.</string>
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
+    <string name="text_receiveFiles">Receive files</string>
 </resources>
