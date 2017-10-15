@@ -163,4 +163,8 @@
     <string name="text_fixFileSaveLocation">保存場所を修正</string>
     <string name="text_fileConflictNoChoice">%s ファイル用に選択したフォルダーは現在利用できません。現在のファイル名がデフォルトフォルダー内のファイルと競合します。同じファイルの部分的に受信したバージョンの場合は \'残す\' を選択するか、\'新しいファイル\' を選択して新しいファイルを生成します</string>
     <string name="text_fileConflictUseDefault">%s ファイル用に選択したフォルダーは現在利用できません。デフォルトフォルダーを使用します</string>
+<string name="mesg_currentPathUnavailable">このフォルダーは使用できません。別のフォルダーを選択してください。</string>
+    <string name="text_defaultFolder">デフォルトのフォルダー</string>
+    <string name="text_storage">ストレージ</string>
+    <string name="text_receiveFiles">ファイルを受信</string>
 </resources>
