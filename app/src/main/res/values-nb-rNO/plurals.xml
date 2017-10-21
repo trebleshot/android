@@ -20,7 +20,7 @@
 	<item quantity="other">%d tilkoblinger</item>
 </plurals>
     <plurals name="ques_receiveMultipleFiles">
-	<item quantity="one">Motta denne fila?</item>
-	<item quantity="other">Motta %d filer?</item>
+	<item quantity="one">Ta imot denne fila?</item>
+	<item quantity="other">Ta imot %d filer?</item>
 </plurals>
 </resources>
