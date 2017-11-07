@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.net.wifi.WifiManager;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
-import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.AwaitedTransaction;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.ArrayList;
  * Date: 4/29/17 2:59 PM
  */
 
-abstract public class AbstractTransactionService<E extends AwaitedTransaction> extends Service
+abstract public class AbstractTransactionService<E extends TransactionObject> extends Service
 {
 	public static final String TAG = AbstractTransactionService.class.getSimpleName();
 
@@ -26,7 +26,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 
 	private NotificationUtils mNotification;
 	private WifiManager.WifiLock mWifiLock;
-	private Transaction mTransaction;
+	private AccessDatabase mDatabase;
 
 	abstract public ArrayList<CoolTransfer.TransferHandler<E>> getProcessList();
 
@@ -37,7 +37,7 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE)).createWifiLock(TAG);
 		mNotification = new NotificationUtils(this);
-		mTransaction = new Transaction(this);
+		mDatabase = new AccessDatabase(this);
 	}
 
 	@Override
@@ -82,9 +82,9 @@ abstract public class AbstractTransactionService<E extends AwaitedTransaction> e
 		return mNotification;
 	}
 
-	public Transaction getTransactionInstance()
+	public AccessDatabase getDatabase()
 	{
-		return mTransaction;
+		return mDatabase;
 	}
 
 	public WifiManager.WifiLock getWifiLock()

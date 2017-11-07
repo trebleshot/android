@@ -14,5 +14,5 @@
     <string name="uwg_version_check_error">Couldn\'t check new version. An error occurred</string>
     <string name="uwg_no_update_available">No updates is currently available</string>
     <string name="uwg_cancel">Cancel</string>
-    <string name="uwg_update_exists">There is a file matching with the name of the new update. You can download anyway, or open Downloads</string>
+    <string name="uwg_update_exists">There is a file matching with the mName of the new update. You can download anyway, or open Downloads</string>
 </resources>

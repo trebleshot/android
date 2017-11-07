@@ -2,12 +2,11 @@ package com.genonbeta.TrebleShot.io;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
 
-import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

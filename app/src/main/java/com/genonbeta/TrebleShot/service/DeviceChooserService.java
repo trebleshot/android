@@ -15,9 +15,10 @@ import android.support.v4.content.ContextCompat;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,10 +34,10 @@ public class DeviceChooserService extends ChooserTargetService
 	@Override
 	public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
 	{
-		DeviceRegistry deviceRegistry = new DeviceRegistry(getApplicationContext());
+		AccessDatabase database = new AccessDatabase(getApplicationContext());
 		ArrayList<ChooserTarget> list = new ArrayList<>();
 
-		for (NetworkDevice device : deviceRegistry.getDeviceList()) {
+		for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
 			if (device.isLocalAddress)
 				continue;
 
@@ -44,7 +45,7 @@ public class DeviceChooserService extends ChooserTargetService
 
 			bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
 
-			String firstLetters = ApplicationHelper.getFirstLetters(device.user, 1);
+			String firstLetters = AppUtils.getFirstLetters(device.user, 1);
 			TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(this, R.color.colorTextDrawable), 100);
 			Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(bitmap);

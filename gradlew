@@ -12,7 +12,7 @@ DEFAULT_JVM_OPTS=""
 APP_NAME="Gradle"
 APP_BASE_NAME=`basename "$0"`
 
-# Use the maximum available, or set MAX_FD != -1 to use that value.
+# Use the maximum available, or set MAX_FD != -1 to use that mValue.
 MAX_FD="maximum"
 
 warn ( ) {
@@ -102,7 +102,7 @@ fi
 
 # For Darwin, add options to specify how the application appears in the dock
 if $darwin; then
-    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:name=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
+    GRADLE_OPTS="$GRADLE_OPTS \"-Xdock:mName=$APP_NAME\" \"-Xdock:icon=$APP_HOME/media/gradle.icns\""
 fi
 
 # For Cygwin, switch paths to Windows format before running java
@@ -112,7 +112,7 @@ if $cygwin ; then
     JAVACMD=`cygpath --unix "$JAVACMD"`
 
     # We build the pattern for arguments to be converted via cygpath
-    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -type d 2>/dev/null`
+    ROOTDIRSRAW=`find -L / -maxdepth 1 -mindepth 1 -mType d 2>/dev/null`
     SEP=""
     for dir in $ROOTDIRSRAW ; do
         ROOTDIRS="$ROOTDIRS$SEP$dir"

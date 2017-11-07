@@ -17,7 +17,6 @@ import android.widget.AbsListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.AbstractEditableListAdapter;
-import com.genonbeta.TrebleShot.helper.GAnimater;
 
 import java.util.ArrayList;
 
@@ -67,8 +66,6 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 		}
 
 		getListView().setDividerHeight(0);
-
-		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
 
 	@Override

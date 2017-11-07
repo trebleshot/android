@@ -1,7 +1,5 @@
-package com.genonbeta.TrebleShot.helper;
+package com.genonbeta.TrebleShot.util;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
-import com.genonbeta.CoolSocket.CoolJsonCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
 
 import org.json.JSONObject;

@@ -14,10 +14,9 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -38,7 +37,7 @@ public class PendingTransferListActivity extends Activity
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-	private Transaction mTransaction;
+	private AccessDatabase mDatabase;
 	private PendingTransferListFragment mPendingFragment;
 
 	@Override
@@ -49,7 +48,7 @@ public class PendingTransferListActivity extends Activity
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.layout_transaction_editor);
 
-		mTransaction = new Transaction(this);
+		mDatabase = new AccessDatabase(this);
 		mPendingFragment = (PendingTransferListFragment) getSupportFragmentManager().findFragmentById(R.id.layout_transaction_editor_fragment_pendinglist);
 
 		TextView closeTextView = (TextView) findViewById(R.id.layout_transaction_editor_close_text);
@@ -91,10 +90,7 @@ public class PendingTransferListActivity extends Activity
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						mTransaction
-								.edit()
-								.removeTransaction(mPendingFragment.getAdapter().getSelect())
-								.done();
+						mDatabase.delete(mPendingFragment.getAdapter().getSelect());
 					}
 				});
 
@@ -116,14 +112,19 @@ public class PendingTransferListActivity extends Activity
 					case REQUEST_CHOOSE_FOLDER:
 						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
 							String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
-							ArrayList<CursorItem> list = mTransaction.getTable(mPendingFragment.getAdapter().getSelect());
-							Transaction.EditingSession editingSession = mTransaction.edit();
+							ArrayList<CursorItem> list = mDatabase.getTable(mPendingFragment.getAdapter().getSelect());
+
+
+							// FIXME: 3.11.2017 Save path changer... Apply new changes
+
+							/*
+							Transaction.EditingSession editingSession = mDatabase.edit();
 
 							for (CursorItem cursorItem : list) {
 								if (cursorItem.getInt(Transaction.FIELD_TRANSFER_TYPE) != Transaction.TYPE_TRANSFER_TYPE_INCOMING)
 									continue;
 
-								AwaitedFileReceiver fileReceiver = new AwaitedFileReceiver(cursorItem);
+								PendingReceiver fileReceiver = new PendingReceiver(cursorItem);
 								File realPath = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), fileReceiver));
 
 								if (Transaction.Flag.PENDING.equals(fileReceiver.flag)) {
@@ -137,6 +138,7 @@ public class PendingTransferListActivity extends Activity
 							}
 
 							editingSession.done();
+							*/
 						}
 						break;
 				}
@@ -146,15 +148,16 @@ public class PendingTransferListActivity extends Activity
 
 	public SQLQuery.Select createLoader()
 	{
-		SQLQuery.Select select = new SQLQuery.Select(Transaction.TABLE_TRANSFER);
+		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
 
 		select.getItems()
 				.put(PendingTransferListAdapter.FLAG_GROUP, false);
 
+		// TODO: 3.11.2017 Don't forget to fix here FIELD_TRANSFERGROUP_DEVICEID
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_DEVICE_ID))
-			select.setWhere(Transaction.FIELD_TRANSFER_DEVICEID + "=?", getIntent().getStringExtra(EXTRA_DEVICE_ID));
+			select.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", getIntent().getStringExtra(EXTRA_DEVICE_ID));
 		else if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID))
-			select.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(getIntent().getIntExtra(EXTRA_GROUP_ID, -1)));
+			select.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(getIntent().getIntExtra(EXTRA_GROUP_ID, -1)));
 
 		return select;
 	}

@@ -22,7 +22,7 @@
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
-            android:name=".activity.TrebleShotActivity"
+            android:name=".activity.HomeActivity"
             android:label="@string/text_appName"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar">

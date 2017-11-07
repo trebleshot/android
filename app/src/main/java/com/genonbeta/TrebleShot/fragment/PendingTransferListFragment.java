@@ -1,10 +1,8 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
@@ -13,17 +11,13 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
 import com.genonbeta.TrebleShot.adapter.PendingTransferListAdapter;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
-import com.genonbeta.TrebleShot.database.MainDatabase;
-import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
-import com.genonbeta.TrebleShot.dialog.FixFilePathDialog;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.FileUtils;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -31,49 +25,22 @@ import java.util.ArrayList;
 
 public class PendingTransferListFragment extends AbstractEditableListFragment<CursorItem, PendingTransferListAdapter> implements FragmentTitle
 {
-	public Transaction mTransaction;
-	public DeviceRegistry mDeviceRegistry;
 	public SQLQuery.Select mSelect;
-	public IntentFilter mFilter = new IntentFilter();
-	public BroadcastReceiver mReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			refreshList();
-		}
-	};
+	public AccessDatabase mDatabase;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		mFilter.addAction(Transaction.ACTION_TRANSACTION_CHANGE);
-
-		mTransaction = new Transaction(getContext());
-		mDeviceRegistry = new DeviceRegistry(getContext());
 
 		setSearchSupport(false);
+		mDatabase = new AccessDatabase(getActivity());
 	}
 
 	@Override
 	public PendingTransferListAdapter onAdapter()
 	{
 		return new PendingTransferListAdapter(getActivity()).setSelect(mSelect);
-	}
-
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		getActivity().registerReceiver(mReceiver, mFilter);
-	}
-
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		getActivity().unregisterReceiver(mReceiver);
 	}
 
 	@Override
@@ -91,48 +58,37 @@ public class PendingTransferListFragment extends AbstractEditableListFragment<Cu
 
 		if (getSelect() == null || getSelect().getItems().exists(PendingTransferListAdapter.FLAG_GROUP)
 				&& getSelect().getItems().getBoolean(PendingTransferListAdapter.FLAG_GROUP))
-			PendingTransferListActivity.startInstance(getContext(), thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
+			PendingTransferListActivity.startInstance(getContext(), thisItem.getInt(AccessDatabase.FIELD_TRANSFER_GROUPID));
 		else {
-			if (thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING) {
-				final AwaitedFileReceiver receiver = new AwaitedFileReceiver(thisItem);
-				final NetworkDevice device = mDeviceRegistry.getNetworkDeviceById(receiver.deviceId);
+			if (TransactionObject.Type.INCOMING.equals(TransactionObject.Type.valueOf(thisItem.getString(AccessDatabase.FIELD_TRANSFER_TYPE)))) {
+				final TransactionObject transaction = new TransactionObject(thisItem);
 
-				// TODO: 9.10.2017 Remove it all or come up with a solution
-				//FileUtils.Conflict conflict = FileUtils.isFileConflicted(getContext(), receiver);
-				//if (!FileUtils.Conflict.CURRENTLY_OK.equals(conflict)) {
-				//	new FixFilePathDialog(getContext(), mTransaction, receiver, conflict).show();
+				try {
+					final TransactionObject.Group groupInstance = new TransactionObject.Group(transaction.groupId);
+					mDatabase.reconstruct(groupInstance);
 
-				if (device != null) {
-					new DeviceChooserDialog(getActivity(), device, new DeviceChooserDialog.OnDeviceSelectedListener()
+					final NetworkDevice device = new NetworkDevice(groupInstance.deviceId);
+					mDatabase.reconstruct(device);
+
+					new DeviceChooserDialog(getActivity(), mDatabase, device, new DeviceChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
-						public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+						public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
 						{
-							Transaction.EditingSession editingSession = mTransaction.edit();
+							transaction.flag = TransactionObject.Flag.RESUME;
+							groupInstance.connectionAdapter = connection.adapterName;
 
-							if (receiver.flag.equals(Transaction.Flag.INTERRUPTED)) {
-								receiver.flag = Transaction.Flag.RESUME;
+							mDatabase.publish(transaction);
+							mDatabase.publish(groupInstance);
 
-								editingSession.updateTransaction(receiver);
-							}
-
-							if (!receiver.ip.equals(addressHolder.address)) {
-								receiver.ip = addressHolder.address;
-								ContentValues values = new ContentValues();
-
-								values.put(Transaction.FIELD_TRANSFER_USERIP, addressHolder.address);
-								editingSession.updateTransactionGroup(receiver.groupId, values);
-							}
-
-							getContext().startService(new Intent(mTransaction.getContext(), ServerService.class)
+							getContext().startService(new Intent(mDatabase.getContext(), ServerService.class)
 									.setAction(ServerService.ACTION_START_RECEIVING)
-									.putExtra(CommunicationService.EXTRA_GROUP_ID, receiver.groupId));
-
-							editingSession.done();
+									.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId));
 						}
 					}).show();
-				} else
+				} catch (Exception e) {
 					Toast.makeText(getActivity(), R.string.mesg_deviceNotExits, Toast.LENGTH_LONG).show();
+				}
 			}
 		}
 	}

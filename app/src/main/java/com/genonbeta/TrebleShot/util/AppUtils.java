@@ -1,25 +1,19 @@
-package com.genonbeta.TrebleShot.helper;
+package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.MediaStore;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.core.util.NetworkDeviceScanner;
 
 import java.io.File;
-import java.net.URI;
 
-public class ApplicationHelper
+public class AppUtils
 {
-	public static final String TAG = ApplicationHelper.class.getSimpleName();
+	public static final String TAG = AppUtils.class.getSimpleName();
 
-	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
 	private static int mUniqueNumber = 0;
 
 	public static File getApplicationDirectory(Context context)
@@ -51,20 +45,28 @@ public class ApplicationHelper
 		return stringBuilder.toString().toUpperCase();
 	}
 
-	public static String getNameOfThisDevice(Context context)
+	public static String getLocalDeviceName(Context context)
 	{
 		return PreferenceManager.getDefaultSharedPreferences(context)
 				.getString("device_name", Build.BOARD.toUpperCase());
 	}
 
-	public static NetworkDeviceScanner getNetworkDeviceScanner()
-	{
-		return mDeviceScanner;
-	}
-
 	public static int getUniqueNumber()
 	{
 		return (int) System.currentTimeMillis() + (++mUniqueNumber);
+	}
+
+	public static NetworkDevice getLocalDevice(Context context)
+	{
+		NetworkDevice device = new NetworkDevice(Build.SERIAL);
+
+		device.brand = Build.BRAND;
+		device.model = Build.MODEL;
+		device.user = AppUtils.getLocalDeviceName(context);
+		device.isRestricted = false;
+		device.isLocalAddress = true;
+
+		return device;
 	}
 
 	public static boolean searchWord(String word, String searchThis)

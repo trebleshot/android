@@ -10,8 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.MainDatabase;
-import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -29,7 +29,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 
 	public static final String FIELD_TRANSFER_TOTAL_COUNT = "pseudoTotalCount";
 
-	private Transaction mTransaction;
+	private AccessDatabase mDatabase;
 	private ArrayList<CursorItem> mList = new ArrayList<>();
 	private SQLQuery.Select mSelect;
 
@@ -38,9 +38,9 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 		super(context);
 
 		initialize(context);
-		setSelect(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-				.setOrderBy(Transaction.FIELD_TRANSFER_ID + " DESC")
-				.setGroupBy(MainDatabase.FIELD_TRANSFER_GROUPID)
+		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				.setOrderBy(AccessDatabase.FIELD_TRANSFER_ID + " DESC")
+				.setGroupBy(AccessDatabase.FIELD_TRANSFER_GROUPID)
 				.setLoadListener(new SQLQuery.Select.LoadListener()
 				{
 					@Override
@@ -52,8 +52,8 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 					@Override
 					public void onLoad(SQLiteDatabase db, Cursor cursor, CursorItem item)
 					{
-						ArrayList<CursorItem> itemList = mTransaction.getTable(new SQLQuery.Select(Transaction.TABLE_TRANSFER)
-								.setWhere(Transaction.FIELD_TRANSFER_GROUPID + "=?", item.getString(Transaction.FIELD_TRANSFER_GROUPID)));
+						ArrayList<CursorItem> itemList = mDatabase.getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", item.getString(AccessDatabase.FIELD_TRANSFER_GROUPID)));
 
 						item.putAll(itemList.get(0)); // First item will be loaded first so better show it
 						item.put(FIELD_TRANSFER_TOTAL_COUNT, itemList.size());
@@ -75,7 +75,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 	@Override
 	public ArrayList<CursorItem> onLoad()
 	{
-		return mTransaction.getTable(mSelect);
+		return mDatabase.getTable(mSelect);
 	}
 
 	@Override
@@ -87,7 +87,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 
 	private void initialize(Context context)
 	{
-		mTransaction = new Transaction(context);
+		mDatabase = new AccessDatabase(context);
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 			view = getInflater().inflate(R.layout.list_pending_transfer, viewGroup, false);
 
 		final CursorItem thisItem = (CursorItem) getItem(i);
-		final boolean isIncoming = thisItem.getInt(MainDatabase.FIELD_TRANSFER_TYPE) == MainDatabase.TYPE_TRANSFER_TYPE_INCOMING;
+		final boolean isIncoming = TransactionObject.Type.INCOMING.equals(TransactionObject.Type.valueOf(thisItem.getString(AccessDatabase.FIELD_TRANSFER_TYPE)));
 		final boolean isGroup = getSelect().getItems().exists(FLAG_GROUP) && getSelect().getItems().getBoolean(FLAG_GROUP);
 
 		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
@@ -138,8 +138,8 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 		TextView countText = (TextView) view.findViewById(R.id.list_process_count_text);
 
 		typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
-		mainText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_NAME));
-		statusText.setText(thisItem.getString(MainDatabase.FIELD_TRANSFER_FLAG));
+		mainText.setText(thisItem.getString(AccessDatabase.FIELD_TRANSFER_NAME));
+		statusText.setText(thisItem.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
 		countText.setText((thisItem.exists(FIELD_TRANSFER_TOTAL_COUNT) && thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) > 1) ? "+" + (thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT) - 1) : "");
 
 		clearImage.setOnClickListener(new View.OnClickListener()
@@ -154,7 +154,7 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 						mContext.getResources().getQuantityString(R.plurals.text_removeQueueSummary,
 								thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT),
 								thisItem.getInt(FIELD_TRANSFER_TOTAL_COUNT)) :
-						mContext.getString(R.string.text_removePendingTransferSummary, thisItem.getString(Transaction.FIELD_TRANSFER_NAME)));
+						mContext.getString(R.string.text_removePendingTransferSummary, thisItem.getString(AccessDatabase.FIELD_TRANSFER_NAME)));
 
 				dialog.setNegativeButton(R.string.butn_close, null);
 				dialog.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
@@ -162,14 +162,15 @@ public class PendingTransferListAdapter extends AbstractEditableListAdapter<Curs
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						Transaction.EditingSession editingSession = mTransaction.edit();
 
+						// FIXME: 3.11.2017 This also needs to be fixed
+						/*
 						if (isGroup)
 							editingSession.removeTransactionGroup(thisItem.getInt(Transaction.FIELD_TRANSFER_GROUPID));
 						else
+							mDatabase.delete(thisItem);
 							editingSession.removeTransaction(thisItem.getInt(Transaction.FIELD_TRANSFER_ID));
-
-						editingSession.done();
+							*/
 					}
 				}).show();
 			}

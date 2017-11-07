@@ -1,4 +1,4 @@
-package com.genonbeta.core.util;
+package com.genonbeta.TrebleShot.util;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -107,36 +107,36 @@ public class NetworkUtils
 		return macAddressList;
 	}
 
-	public static HashMap<NetworkInterface, String> getInterfaces(boolean useIPv4, String[] avoidedInterfaces)
+	public static ArrayList<AddressedInterface> getInterfaces(boolean useIPv4, String[] avoidedInterfaces)
 	{
-		HashMap<NetworkInterface, String> ipAddressList = new HashMap<NetworkInterface, String>();
+		ArrayList<AddressedInterface> filteredInterfaceList = new ArrayList<>();
 
 		try {
-			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+			List<NetworkInterface> interfaceList = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-			for (NetworkInterface intf : interfaces) {
-				boolean breaker = false;
+			for (NetworkInterface interfaceInstance : interfaceList) {
+				boolean avoidedInterface = false;
 
 				for (String match : avoidedInterfaces) {
-					if (intf.getDisplayName().contains(match))
-						breaker = true;
+					if (interfaceInstance.getDisplayName().contains(match))
+						avoidedInterface = true;
 				}
 
-				if (breaker)
+				if (avoidedInterface)
 					continue;
 
-				List<InetAddress> addrs = Collections.list(intf.getInetAddresses());
+				List<InetAddress> inetAddressList = Collections.list(interfaceInstance.getInetAddresses());
 
-				for (InetAddress addr : addrs) {
-					if (!addr.isLoopbackAddress()) {
-						String sAddr = addr.getHostAddress().toUpperCase();
-						boolean isIPv4 = addr instanceof Inet4Address;
+				for (InetAddress address : inetAddressList) {
+					if (!address.isLoopbackAddress()) {
+						String interfaceAddress = address.getHostAddress().toUpperCase();
+						boolean isIPv4 = address instanceof Inet4Address;
 
 						if (useIPv4 && isIPv4) {
-							ipAddressList.put(intf, sAddr);
+							filteredInterfaceList.add(new AddressedInterface(interfaceInstance, interfaceAddress));
 						} else if (!useIPv4) {
-							int delim = sAddr.indexOf('%'); // drop ip6 port suffix
-							ipAddressList.put(intf, (delim < 0 ? sAddr : sAddr.substring(0, delim)));
+							int delim = interfaceAddress.indexOf('%'); // drop ip6 port suffix
+							filteredInterfaceList.add(new AddressedInterface(interfaceInstance, (delim < 0 ? interfaceAddress : interfaceAddress.substring(0, delim))));
 						}
 					}
 				}
@@ -144,16 +144,7 @@ public class NetworkUtils
 		} catch (Exception e) {
 		}
 
-		return ipAddressList;
-	}
-
-	public static ArrayList<String> getInterfacesWithOnlyIp(boolean useIPv4, String[] avoidedInterfaces)
-	{
-		ArrayList<String> list = new ArrayList<String>();
-
-		list.addAll(getInterfaces(useIPv4, avoidedInterfaces).values());
-
-		return list;
+		return filteredInterfaceList;
 	}
 
 	public static String getAddressPrefix(String ipv4Address)

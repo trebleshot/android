@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.provider;
 
 import android.annotation.SuppressLint;
+import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ActionProvider;
@@ -13,7 +14,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 
 /**
@@ -61,19 +62,19 @@ public class ScanDevicesActionProvider extends ActionProvider
 					@Override
 					public void onClick(View view)
 					{
-						boolean isAvailable = ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable();
+						boolean isAvailable = DeviceScannerProvider.getDeviceScanner().isScannerAvailable();
 
 						if (isAvailable)
 							getContext().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
 						else {
 							Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
-							ApplicationHelper.getNetworkDeviceScanner().interrupt();
+							DeviceScannerProvider.getDeviceScanner().interrupt();
 						}
 					}
 				}
 		);
 
-		if (!ApplicationHelper.getNetworkDeviceScanner().isScannerAvailable()) {
+		if (!DeviceScannerProvider.getDeviceScanner().isScannerAvailable()) {
 			RotateAnimation anim = new RotateAnimation(0.0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
 
 			anim.setInterpolator(new LinearInterpolator());

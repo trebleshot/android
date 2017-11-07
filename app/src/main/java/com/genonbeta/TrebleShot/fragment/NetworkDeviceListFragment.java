@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -19,35 +20,32 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
 
 public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.ListFragment<NetworkDevice, NetworkDeviceListAdapter> implements FragmentTitle
 {
-	private IntentFilter mIntentFilter = new IntentFilter();
-	private SelfReceiver mReceiver = new SelfReceiver();
 	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private MenuItem mAnimatedSearchMenuItem;
 	private AbsListView.OnItemClickListener mClickListener;
+	private IntentFilter mIntentFilter = new IntentFilter();
+	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
-		mIntentFilter.addAction(DeviceRegistry.ACTION_DEVICE_UPDATED);
-		mIntentFilter.addAction(DeviceRegistry.ACTION_DEVICE_REMOVED);
-		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
-		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
-
 		mNotification = new NotificationUtils(getActivity());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
+		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
 	}
 
 	@Override
@@ -59,16 +57,6 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		setEmptyText(getString(R.string.text_findDevicesHint));
 
 		getListView().setDividerHeight(0);
-
-		if (mPreferences.getBoolean("developer_mode", false)) {
-			NetworkDevice device = new NetworkDevice("127.0.0.1");
-			device.isLocalAddress = true;
-
-			getAdapter().getDeviceRegistry().registerDevice(device);
-
-			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_ADD_IP)
-					.putExtra(DeviceScannerProvider.EXTRA_DEVICE_IP, "127.0.0.1"));
-		}
 
 		if (mPreferences.getBoolean("scan_devices_auto", false))
 			getActivity().sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
@@ -90,15 +78,14 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		if (mClickListener != null)
 			mClickListener.onItemClick(l, v, position, id);
 		else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getContext(), getAdapter().getDeviceRegistry(), mNotification, device).show();
+			new DeviceInfoDialog(getContext(), getAdapter().getDatabase(), mNotification, device).show();
 	}
 
 	@Override
 	public void onResume()
 	{
 		super.onResume();
-
-		getActivity().registerReceiver(mReceiver, mIntentFilter);
+		getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
 		refreshList();
 	}
 
@@ -106,7 +93,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	public void onPause()
 	{
 		super.onPause();
-		getActivity().unregisterReceiver(mReceiver);
+		getActivity().unregisterReceiver(mStatusReceiver);
 	}
 
 	@Override
@@ -146,7 +133,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT).show();
 	}
 
-	private class SelfReceiver extends BroadcastReceiver
+	private class StatusReceiver extends BroadcastReceiver
 	{
 		@Override
 		public void onReceive(Context context, Intent intent)
@@ -154,9 +141,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 			if (mAnimatedSearchMenuItem != null)
 				((ScanDevicesActionProvider) MenuItemCompat.getActionProvider(mAnimatedSearchMenuItem)).refreshStatus();
 
-			if (DeviceRegistry.ACTION_DEVICE_UPDATED.equals(intent.getAction()) || DeviceRegistry.ACTION_DEVICE_REMOVED.equals(intent.getAction())) {
-				refreshList();
-			} else if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS)) {
+			if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS)) {
 				String scanStatus = intent.getStringExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS);
 
 				if (DeviceScannerProvider.STATUS_OK.equals(scanStatus))

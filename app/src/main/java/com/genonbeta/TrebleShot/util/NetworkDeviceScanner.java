@@ -1,12 +1,16 @@
-package com.genonbeta.core.util;
+package com.genonbeta.TrebleShot.util;
+
+import android.util.Log;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 public class NetworkDeviceScanner
 {
-	private ArrayList<String> mInterfaces = new ArrayList<String>();
+	private ArrayList<AddressedInterface> mInterfaces = new ArrayList<>();
 	private ScannerExecutor mExecutor = new ScannerExecutor();
 	private Scanner mScanner = new Scanner();
 	private boolean mIsBreakRequested = false;
@@ -64,14 +68,14 @@ public class NetworkDeviceScanner
 		}
 	}
 
-	public boolean scan(ArrayList<String> interfaces, ScannerHandler handler)
+	public boolean scan(ArrayList<AddressedInterface> interfaceList, ScannerHandler handler)
 	{
-		if (!isScannerAvailable() || interfaces.size() < 1)
+		if (!isScannerAvailable() || interfaceList.size() < 1)
 			return false;
 
-		mInterfaces.addAll(interfaces);
-
+		mInterfaces.addAll(interfaceList);
 		mHandler = handler;
+
 		nextThread();
 
 		return true;
@@ -82,11 +86,11 @@ public class NetworkDeviceScanner
 		mIsLockRequested = lock;
 	}
 
-	public static interface ScannerHandler
+	public interface ScannerHandler
 	{
-		public void onDeviceFound(InetAddress address);
+		void onDeviceFound(InetAddress address, NetworkInterface networkInterface);
 
-		public void onThreadsCompleted();
+		void onThreadsCompleted();
 	}
 
 	protected class Scanner implements Runnable
@@ -101,9 +105,7 @@ public class NetworkDeviceScanner
 
 		public void updateScanner()
 		{
-			String ipAddress = NetworkDeviceScanner.this.mInterfaces.get(0);
-
-			mAddressPrefix = NetworkUtils.getAddressPrefix(ipAddress);
+			mAddressPrefix = NetworkUtils.getAddressPrefix(mInterfaces.get(0).getAssociatedAddress());
 			mDevices = new boolean[256];
 			mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
 		}
@@ -120,10 +122,10 @@ public class NetworkDeviceScanner
 				}
 
 				try {
-					InetAddress inet = InetAddress.getByName(mAddressPrefix + mPosition);
+					InetAddress ınetAddress = InetAddress.getByName(mAddressPrefix + mPosition);
 
-					if (inet.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
-						NetworkDeviceScanner.this.mHandler.onDeviceFound(inet);
+					if (ınetAddress.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
+						NetworkDeviceScanner.this.mHandler.onDeviceFound(ınetAddress, mInterfaces.get(0).getNetworkInterface());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

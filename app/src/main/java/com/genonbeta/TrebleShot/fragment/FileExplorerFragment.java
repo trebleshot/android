@@ -14,7 +14,7 @@ import android.widget.ImageView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.File;
 
@@ -118,7 +118,7 @@ public class FileExplorerFragment extends Fragment
 		mFileListFragment.getListView().setClipToPadding(false);
 
 		if (mFileListFragment.getAdapter().getPath() == null)
-			mFileListFragment.goPath(ApplicationHelper.getApplicationDirectory(getActivity()));
+			mFileListFragment.goPath(AppUtils.getApplicationDirectory(getActivity()));
 	}
 
 	public FloatingActionButton getButtonOfEverything()

@@ -1,6 +1,5 @@
-package com.genonbeta.TrebleShot.helper;
+package com.genonbeta.TrebleShot.util;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.config.AppConfig;
 
 public abstract class ResponseHandler extends CoolCommunication.Messenger.ResponseHandler

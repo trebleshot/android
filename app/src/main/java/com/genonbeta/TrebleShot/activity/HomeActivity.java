@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
@@ -30,14 +31,15 @@ import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
 import com.genonbeta.TrebleShot.fragment.ReceivedFilesFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
 
 import java.io.File;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class TrebleShotActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";

@@ -13,10 +13,12 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
-import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.android.database.SQLQuery;
+
+import java.util.ArrayList;
 
 /**
  * Created by: veli
@@ -25,77 +27,82 @@ import com.genonbeta.TrebleShot.helper.NotificationUtils;
 
 public class DeviceInfoDialog extends AlertDialog.Builder
 {
-	public DeviceInfoDialog(@NonNull final Context context, final DeviceRegistry registry, final NotificationUtils utils, final NetworkDevice device)
+	public DeviceInfoDialog(@NonNull final Context context, final AccessDatabase database, final NotificationUtils utils, final NetworkDevice device)
 	{
 		super(context);
 
-		final NetworkDevice deviceUpdated = registry.getNetworkDevice(device.ip);
+		try {
+			database.reconstruct(device);
 
-		@SuppressLint("InflateParams")
-		View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
+			@SuppressLint("InflateParams")
+			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
 
-		TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
-		TextView ipText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
-		SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);
+			TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
+			TextView ipText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
+			SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);
 
-		modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
+			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
 
-		ipText.setText(device.availableConnections.length > 1 ?
-				context.getResources().getQuantityString(R.plurals.text_availableConnections,
-						device.availableConnections.length,
-						device.availableConnections.length) : device.availableConnections[0]);
-		accessSwitch.setChecked(!device.isRestricted);
+			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", device.deviceId), NetworkDevice.Connection.class);
 
-		accessSwitch.setOnCheckedChangeListener(
-				new CompoundButton.OnCheckedChangeListener()
-				{
-					@Override
-					public void onCheckedChanged(CompoundButton button, boolean isChecked)
+			if (connections.size() > 0)
+				ipText.setText(connections.size() > 1 ?
+						context.getResources().getQuantityString(R.plurals.text_availableConnections,
+								connections.size(),
+								connections.size()) : connections.get(0).ipAddress);
+
+			accessSwitch.setChecked(!device.isRestricted);
+
+			accessSwitch.setOnCheckedChangeListener(
+					new CompoundButton.OnCheckedChangeListener()
 					{
-						registry.updateRestrictionByDeviceId(device, !isChecked);
+						@Override
+						public void onCheckedChanged(CompoundButton button, boolean isChecked)
+						{
+							device.isRestricted = !isChecked;
+							database.publish(device);
+						}
 					}
-				}
-		);
+			);
 
-		setTitle(device.user);
-		setView(rootView);
-		setPositiveButton(R.string.butn_close, null);
-		setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialogInterface, int p2)
+			setTitle(device.user);
+			setView(rootView);
+			setPositiveButton(R.string.butn_close, null);
+			setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
 					{
-						PendingTransferListActivity.startInstance(context, device.deviceId);
+						@Override
+						public void onClick(DialogInterface dialogInterface, int p2)
+						{
+							PendingTransferListActivity.startInstance(context, device.deviceId);
+						}
 					}
-				}
-		);
+			);
 
-		setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialog, int which)
+			setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
 			{
-				AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
-
-				askPermission.setTitle(R.string.ques_removeDevice);
-				askPermission.setMessage(R.string.text_removeDeviceSummary);
-				askPermission.setNegativeButton(R.string.butn_cancel, null);
-				askPermission.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
+				@Override
+				public void onClick(DialogInterface dialog, int which)
 				{
-					@Override
-					public void onClick(DialogInterface dialog, int which)
+					AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
+
+					askPermission.setTitle(R.string.ques_removeDevice);
+					askPermission.setMessage(R.string.text_removeDeviceSummary);
+					askPermission.setNegativeButton(R.string.butn_cancel, null);
+					askPermission.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
 					{
-						registry.removeDeviceWithInstances(device);
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							database.remove(device);
+						}
+					});
 
-						new Transaction(context)
-								.edit()
-								.removeDeviceTransactionGroup(device)
-								.done();
-					}
-				});
-
-				askPermission.show();
-			}
-		});
+					askPermission.show();
+				}
+			});
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

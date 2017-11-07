@@ -18,9 +18,8 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
-import com.genonbeta.TrebleShot.helper.FileUtils;
-import com.genonbeta.TrebleShot.helper.GAnimater;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.io.File;
 
@@ -76,8 +75,6 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 
 		mMediaScanner.connect();
 		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
-
-		GAnimater.applyLayoutAnimation(getListView(), GAnimater.APPEAR);
 	}
 
 	@Override
@@ -119,7 +116,7 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 	{
 		switch (item.getItemId()) {
 			case (R.id.received_device_options_open_in_file_manager):
-				openFile(Uri.fromFile(ApplicationHelper.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
+				openFile(Uri.fromFile(AppUtils.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
 				return true;
 		}
 

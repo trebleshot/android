@@ -258,8 +258,10 @@ abstract public class CoolTransfer<T>
 										lastNotified = System.currentTimeMillis();
 									}
 
-									if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isInterrupted())
+									if ((this.mTimeout > 0 && (System.currentTimeMillis() - lastRead) > this.mTimeout) || this.isInterrupted()) {
+										System.out.println("CoolTransfer: Timed out... Exiting.");
 										break;
+									}
 								}
 
 								outputStream.close();

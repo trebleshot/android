@@ -1,8 +1,6 @@
-package com.genonbeta.TrebleShot.helper;
+package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-
-import com.genonbeta.TrebleShot.database.Transaction;
 
 import java.io.File;
 import java.net.FileNameMap;
@@ -11,13 +9,6 @@ import java.util.Locale;
 
 public class FileUtils
 {
-	public enum Conflict
-	{
-		CURRENTLY_OK,
-		SET_PATH_UNAVAILABLE,
-		DEFAULT_PATH_FILE_EXISTS
-	}
-
 	public static String getFileContentType(String fileUrl)
 	{
 		FileNameMap nameMap = URLConnection.getFileNameMap();
@@ -39,8 +30,11 @@ public class FileUtils
 		return String.format(Locale.getDefault(), "%.1f %sB", bytes / Math.pow(unit, expression), prefix);
 	}
 
-	public static File getUniqueFile(File file)
+	public static File getUniqueFile(File file, boolean tryActualFile)
 	{
+		if (tryActualFile && !file.isFile())
+			return file;
+
 		String fileName = file.getName();
 		int pathStartPosition = fileName.lastIndexOf(".");
 
@@ -57,29 +51,8 @@ public class FileUtils
 		return null;
 	}
 
-	// TODO: 9.10.2017 Maybe an obsolete code ??
-	public static Conflict isFileConflicted(Context context, AwaitedFileReceiver receiver)
-	{
-		if (Transaction.Flag.PENDING.equals(receiver.flag)
-				|| receiver.fileAddress == null
-				|| new File(receiver.fileAddress).canWrite())
-			return Conflict.CURRENTLY_OK;
-		else if (!new File(getSaveLocationForFile(context, receiver)).exists())
-			return Conflict.SET_PATH_UNAVAILABLE;
-
-		return Conflict.DEFAULT_PATH_FILE_EXISTS;
-	}
-
-	public static String getSaveLocationForFile(Context context, AwaitedFileReceiver receiver)
-	{
-		File tmpAddress = new File(receiver.fileAddress);
-
-		return tmpAddress.getParentFile() == null ? getSaveLocationForFile(context, receiver.fileAddress)
-				: (tmpAddress.getParentFile().canWrite() ? receiver.fileAddress : getSaveLocationForFile(context, tmpAddress.getName()));
-	}
-
 	public static String getSaveLocationForFile(Context context, String file)
 	{
-		return ApplicationHelper.getApplicationDirectory(context).getAbsolutePath() + File.separator + file;
+		return AppUtils.getApplicationDirectory(context).getAbsolutePath() + File.separator + file;
 	}
 }

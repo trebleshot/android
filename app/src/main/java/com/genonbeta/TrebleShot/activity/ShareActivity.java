@@ -1,15 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
-import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.os.Looper;
 import android.support.design.widget.Snackbar;
@@ -21,21 +18,18 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
-import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
-import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
-import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.JsonResponseHandler;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.io.StreamInfo;
-import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.service.Keyword;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,9 +53,7 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
 	private EditText mStatusText;
-	private Transaction mTransaction;
 	private NetworkDeviceListFragment mDeviceListFragment;
-	private DeviceRegistry mDeviceRegistry;
 	private ProgressDialog mProgressOrganizeFiles;
 	private ProgressDialog mProgressConnect;
 	private ConnectionHandler mConnectionHandler;
@@ -70,7 +62,7 @@ public class ShareActivity extends Activity
 	private IntentFilter mStatusReceiverFilter = new IntentFilter();
 	private AlertDialog mShownDeviceChooserDialog;
 	private DeviceChooserDialog mDeviceChooserDialog;
-
+	private AccessDatabase mDatabase;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -79,10 +71,9 @@ public class ShareActivity extends Activity
 
 		setContentView(R.layout.activity_share);
 
-		mTransaction = new Transaction(getApplicationContext());
-		mDeviceRegistry = new DeviceRegistry(getApplicationContext());
+		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-		mStatusText = (EditText) findViewById(R.id.activity_share_info_text);
+		mStatusText = findViewById(R.id.activity_share_info_text);
 
 		mProgressOrganizeFiles = new ProgressDialog(this);
 		mProgressOrganizeFiles.setIndeterminate(true);
@@ -94,13 +85,7 @@ public class ShareActivity extends Activity
 		mProgressConnect.setCancelable(false);
 		mProgressConnect.setMessage(getString(R.string.mesg_communicating));
 
-		mStatusReceiverFilter.addAction(DeviceRegistry.ACTION_DEVICE_UPDATED);
-		mStatusReceiverFilter.addAction(DeviceRegistry.ACTION_DEVICE_REMOVED);
-		mStatusReceiverFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
-		mStatusReceiverFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
-		mStatusReceiverFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-		mStatusReceiverFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION);
-		mStatusReceiverFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+		// FIXME: 3.11.2017 define new constanst in table of Connection and use observer
 
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -137,14 +122,14 @@ public class ShareActivity extends Activity
 						registerHandler(new ConnectionHandler()
 						{
 							@Override
-							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException
+							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException
 							{
 								json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
 								json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
 							}
 
 							@Override
-							public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp)
+							public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection)
 							{
 
 							}
@@ -180,10 +165,14 @@ public class ShareActivity extends Activity
 
 			if (mConnectionHandler != null && getIntent().hasExtra(EXTRA_DEVICE_ID)) {
 				String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
-				NetworkDevice chosenDevice = mDeviceRegistry.getNetworkDeviceById(deviceId);
+				NetworkDevice chosenDevice = new NetworkDevice(deviceId);
 
-				if (chosenDevice != null)
+				try {
+					mDatabase.reconstruct(chosenDevice);
 					showChooserDialog(chosenDevice);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
@@ -281,19 +270,21 @@ public class ShareActivity extends Activity
 			private int mGroupId;
 
 			@Override
-			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException
+			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException
 			{
 				JSONArray filesArray = new JSONArray();
 
-				mGroupId = ApplicationHelper.getUniqueNumber();
-				Transaction.EditingSession editingSession = mTransaction.edit();
+				mGroupId = AppUtils.getUniqueNumber();
+
+				TransactionObject.Group groupInstance = new TransactionObject.Group(mGroupId, device.deviceId, connection.adapterName);
+				mDatabase.publish(groupInstance);
 
 				json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 				json.put(Keyword.GROUP_ID, mGroupId);
 
 				for (StreamInfo fileState : mFiles) {
-					int requestId = ApplicationHelper.getUniqueNumber();
-					AwaitedFileSender sender = new AwaitedFileSender(device, requestId, mGroupId, fileState.friendlyName, 0, fileState.uri);
+					int requestId = AppUtils.getUniqueNumber();
+					TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, 0, TransactionObject.Type.OUTGOING);
 					JSONObject thisJson = new JSONObject();
 
 					try {
@@ -304,39 +295,36 @@ public class ShareActivity extends Activity
 
 						filesArray.put(thisJson);
 
-						editingSession.registerTransaction(sender);
+						mDatabase.publish(transactionObject);
 					} catch (Exception e) {
 						Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
 					}
 				}
 
 				json.put(Keyword.FILES_INDEX, filesArray);
-				editingSession.done();
 			}
 
 			@Override
-			public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp)
+			public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection)
 			{
-				mTransaction
-						.edit()
-						.removeTransactionGroup(mGroupId)
-						.done();
+				// TODO: 3.11.2017 Remove group definer from the database
 			}
 		});
 	}
 
 	protected void showChooserDialog(final NetworkDevice device)
 	{
-		mDeviceRegistry.updateRestrictionByDeviceId(device, false);
-		mDeviceRegistry.updateLastUsageTime(device, System.currentTimeMillis());
+		device.isRestricted = false;
+		device.lastUsageTime = System.currentTimeMillis();
 
-		mDeviceChooserDialog = new DeviceChooserDialog(ShareActivity.this, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+		mDatabase.publish(device);
+
+		mDeviceChooserDialog = new DeviceChooserDialog(ShareActivity.this, mDatabase, device, new DeviceChooserDialog.OnDeviceSelectedListener()
 		{
 			@Override
-			public void onDeviceSelected(DeviceChooserDialog.AddressHolder addressHolder, ArrayList<DeviceChooserDialog.AddressHolder> availableInterfaces)
+			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 			{
-				final String deviceIp = addressHolder.address;
-				final NetworkDevice specifiedDevice = mDeviceRegistry.getNetworkDevice(deviceIp);
+				final String deviceIp = connection.ipAddress;
 
 				mProgressConnect.show();
 
@@ -347,12 +335,16 @@ public class ShareActivity extends Activity
 							public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
 							{
 								try {
-									mConnectionHandler.onHandle(process, json, specifiedDevice, deviceIp);
+									NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+
+									json.put(Keyword.SERIAL, localDevice.deviceId);
+
+									mConnectionHandler.onHandle(process, json, device, connection);
 
 									JSONObject jsonObject = new JSONObject(process.waitForResponse());
 
 									if (!jsonObject.has(Keyword.RESULT) || !jsonObject.getBoolean(Keyword.RESULT))
-										mConnectionHandler.onError(process, specifiedDevice, deviceIp);
+										mConnectionHandler.onError(process, device, connection);
 
 									if (jsonObject.has(Keyword.RESULT) && !jsonObject.getBoolean(Keyword.RESULT)) {
 										Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG);
@@ -366,7 +358,7 @@ public class ShareActivity extends Activity
 
 												builder.setMessage(getString(R.string.text_notAllowedHelp,
 														device.user,
-														ApplicationHelper.getNameOfThisDevice(ShareActivity.this)));
+														AppUtils.getLocalDeviceName(ShareActivity.this)));
 
 												builder.setNegativeButton(R.string.butn_close, null);
 												builder.show();
@@ -376,7 +368,7 @@ public class ShareActivity extends Activity
 										snackbar.show();
 									}
 								} catch (Exception e) {
-									mConnectionHandler.onError(process, specifiedDevice, deviceIp);
+									mConnectionHandler.onError(process, device, connection);
 									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
 								}
 
@@ -387,7 +379,7 @@ public class ShareActivity extends Activity
 							public void onError(Exception e)
 							{
 								mProgressConnect.cancel();
-								mConnectionHandler.onError(null, specifiedDevice, deviceIp);
+								mConnectionHandler.onError(null, device, connection);
 								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
 							}
 						}
@@ -407,9 +399,9 @@ public class ShareActivity extends Activity
 
 	private interface ConnectionHandler
 	{
-		void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, String chosenIp) throws JSONException;
+		void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException;
 
-		void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, String chosenIp);
+		void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection);
 	}
 
 	private class StatusUpdateReceiver extends BroadcastReceiver

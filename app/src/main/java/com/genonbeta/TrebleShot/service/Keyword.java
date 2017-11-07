@@ -20,7 +20,7 @@ public class Keyword
 	public static final String SOCKET_PORT = "socketPort";
 	public static final String FLAG = "flag";
 	public static final String FLAG_GROUP_EXISTS = "flagGroupExists";
-	public static final String FILE_NAME = "fileName";
+	public static final String FILE_NAME = "file";
 	public static final String FILE_SIZE = "fileSize";
 	public static final String FILE_MIME = "fileMime";
 	public static final String DEVICE_INFO = "deviceInfo";
@@ -32,4 +32,6 @@ public class Keyword
 	public static final String VERSION_NAME = "versionName";
 	public static final String VERSION_CODE = "versionCode";
 	public static final String APP_INFO = "appInfo";
+	public static final String UNKNOWN_INTERFACE = "unk0";
+	public static final String SKIPPED_BYTES = "skippedBytes";
 }

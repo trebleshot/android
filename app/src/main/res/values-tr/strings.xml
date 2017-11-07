@@ -51,7 +51,7 @@
     <string name="mesg_deleteFileStarted">Dosyalar silinecek</string>
     <string name="butn_cancel">İptal</string>
     <string name="text_refresh">Yenile</string>
-    <string name="butn_shareTrebleshot">TrebleShot\'ı paylaş</string>
+    <string name="butn_shareTrebleshot">Uygulamayı paylaş</string>
     <string name="text_about">Hakkında</string>
     <string name="text_clearList">Listeyi temizle</string>
     <string name="mesg_deviceListCleared">Cihaz listesi temizlendi</string>
@@ -148,7 +148,7 @@
     <string name="text_serverService">Sunucu Servis</string>
     <string name="text_pendingTransferEditor">Bekleyen Aktarımlar</string>
     <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin. \n\nAygıt listesi &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
-<string name="ques_why">Neden?</string>
+    <string name="ques_why">Neden?</string>
     <string name="butn_saveTo">Kaydetme yeri</string>
     <string name="mesg_secureExit">Çıkmak için tekrar basın</string>
     <string name="butn_create">Oluştur</string>
@@ -162,7 +162,7 @@
     <string name="butn_keepFile">Sakla</string>
     <string name="text_fixFileSaveLocation">Kaydetme yerini düzelt</string>
     <string name="text_fileConflictUseDefault">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz. Varsayılan klasörü kullanmaya devam edin</string>
-<string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
+    <string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
     <string name="text_defaultFolder">Varsayılan</string>
     <string name="text_storage">Depolama</string>
     <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin</string>

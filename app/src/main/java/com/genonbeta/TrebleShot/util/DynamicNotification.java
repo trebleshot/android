@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.helper;
+package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.support.v4.app.NotificationManagerCompat;

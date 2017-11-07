@@ -10,13 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.core.util.NetworkUtils;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.android.database.SQLQuery;
 
-import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by: veli
@@ -25,14 +23,16 @@ import java.util.HashMap;
 
 public class DeviceChooserDialog extends AlertDialog.Builder
 {
-	private ArrayList<AddressHolder> mAvailableInterfaces = new ArrayList<>();
+	private ArrayList<NetworkDevice.Connection> mAvailableInterfaces = new ArrayList<>();
 	private NetworkDevice mNetworkDevice;
+	private AccessDatabase mDatabase;
 	private OnDeviceSelectedListener mDeviceSelectedListener;
 
-	public DeviceChooserDialog(Context context, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
+	public DeviceChooserDialog(Context context, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
 	{
 		super(context);
 
+		mDatabase = database;
 		mNetworkDevice = networkDevice;
 		mDeviceSelectedListener = listener;
 	}
@@ -42,14 +42,17 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 	{
 		mAvailableInterfaces.clear();
 
+		// FIXME: 3.11.2017 Use new structure
+		/*
+
 		HashMap<NetworkInterface, String> networkInterfaces = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
-		ArrayList<AddressHolder> prefixInterfaces = new ArrayList<>();
+		ArrayList<Network> prefixInterfaces = new ArrayList<>();
 
 		for (NetworkInterface address : networkInterfaces.keySet()) {
 			String interfaceAddress = networkInterfaces.get(address);
 			AddressHolder holder = new AddressHolder();
 
-			holder.name = address.getDisplayName();
+			holder.adapterName = address.getDisplayName();
 			holder.address = NetworkUtils.getAddressPrefix(interfaceAddress);
 
 			prefixInterfaces.add(holder);
@@ -60,12 +63,16 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 				if (deviceAddress.startsWith(prefixTested.address)) {
 					AddressHolder holder = new AddressHolder();
 
-					holder.name = prefixTested.name;
+					holder.adapterName = prefixTested.adapterName;
 					holder.address = deviceAddress;
 
 					mAvailableInterfaces.add(holder);
 					break;
 				}
+				*/
+
+		mAvailableInterfaces.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId), NetworkDevice.Connection.class));
 
 		setTitle(R.string.text_availableNetworks);
 		setNegativeButton(R.string.butn_cancel, null);
@@ -87,13 +94,7 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 
 	public abstract static class OnDeviceSelectedListener
 	{
-		public abstract void onDeviceSelected(AddressHolder addressHolder, ArrayList<AddressHolder> availableInterfaces);
-	}
-
-	public class AddressHolder
-	{
-		public String name;
-		public String address;
+		public abstract void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces);
 	}
 
 	private class DeviceListAdapter extends BaseAdapter
@@ -122,13 +123,13 @@ public class DeviceChooserDialog extends AlertDialog.Builder
 			if (convertView == null)
 				convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent, false);
 
-			AddressHolder address = (AddressHolder) getItem(position);
+			NetworkDevice.Connection address = (NetworkDevice.Connection) getItem(position);
 
 			TextView textView1 = (TextView) convertView.findViewById(R.id.pending_available_interface_text1);
 			TextView textView2 = (TextView) convertView.findViewById(R.id.pending_available_interface_text2);
 
-			textView1.setText(address.address);
-			textView2.setText(address.name);
+			textView1.setText(address.ipAddress);
+			textView2.setText(address.adapterName);
 
 			return convertView;
 		}
