@@ -1,11 +1,8 @@
 package com.genonbeta.TrebleShot.util;
 
-import android.util.Log;
-
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.concurrent.Executor;
 
 public class NetworkDeviceScanner

@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -54,13 +55,13 @@
         </activity>
 
         <activity
-            android:name=".activity.FilePickerActivity"
-            android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
+            android:label="@string/text_fileExplorer"
+            android:name=".activity.FilePickerActivity"/>
 
         <activity
-            android:label="@string/text_pendingTransferEditor"
-            android:name=".activity.PendingTransferListActivity"
-            android:theme="@style/AppTheme.NoActionBar.BlackStatusBar"/>
+            android:label="@string/text_transactionViewer"
+            android:name=".activity.TransactionActivity"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".activity.PreferencesActivity"

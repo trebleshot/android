@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.service;
+package com.genonbeta.TrebleShot.app;
 
 import android.app.Service;
 import android.content.Intent;
@@ -6,8 +6,9 @@ import android.net.wifi.WifiManager;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,8 +58,9 @@ abstract public class AbstractTransactionService<E extends TransactionObject> ex
 							if (handler instanceof CoolTransfer.Receive.Handler) {
 								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) handler);
 
-								if (receiveHandler.getServerSocket() != null)
+								if (receiveHandler.getServerSocket() != null) {
 									receiveHandler.getServerSocket().close();
+								}
 							}
 
 							if (handler.getSocket() != null)

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
 {
-	private ArrayList<File> mList = new ArrayList<>();
+	private ArrayList<Holder.Index> mList = new ArrayList<>();
 	private OnClickListener mClickListener;
 
 	@Override
@@ -30,8 +30,8 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 	@Override
 	public void onBindViewHolder(final Holder holder, int position)
 	{
-		holder.text.setText(mList.get(position).getName());
-		holder.file = mList.get(position);
+		holder.index = mList.get(position);
+		holder.text.setText(holder.index.name);
 
 		if (mClickListener != null)
 			holder.text.setOnClickListener(new View.OnClickListener()
@@ -50,22 +50,21 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 		return mList.size();
 	}
 
-	public void goTo(File file)
+	public void goTo(String[] paths)
 	{
-		ArrayList<File> list = new ArrayList<>();
-
-		if (file != null)
-			do {
-				list.add(file);
-				file = file.getParentFile();
-			}
-			while (file != null && file.canWrite());
-
 		mList.clear();
 
-		if (list.size() > 0)
-			for (int i = list.size() - 1; i >= 0; i--)
-				mList.add(list.get(i));
+		StringBuilder mergedPath = new StringBuilder();
+
+		if (paths != null)
+			for (String path : paths) {
+				if (mergedPath.length() > 0)
+					mergedPath.append(File.separator);
+
+				mergedPath.append(path);
+
+				mList.add(new Holder.Index(path, mergedPath.toString()));
+			}
 	}
 
 	public void setOnClickListener(OnClickListener clickListener)
@@ -76,12 +75,24 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 	public static class Holder extends RecyclerView.ViewHolder
 	{
 		public TextView text;
-		public File file;
+		public Index index;
 
 		private Holder(View view)
 		{
 			super(view);
 			this.text = (TextView) view.findViewById(R.id.list_pathresolver_text);
+		}
+
+		public static class Index
+		{
+			public String name;
+			public String path;
+
+			public Index(String name, String path)
+			{
+				this.name = name;
+				this.path = path;
+			}
 		}
 	}
 

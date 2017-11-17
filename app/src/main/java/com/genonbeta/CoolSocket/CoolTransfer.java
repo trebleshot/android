@@ -105,6 +105,16 @@ abstract public class CoolTransfer<T>
 
 		protected abstract void onRun();
 
+		public void interrupt()
+		{
+			this.mInterrupted = true;
+		}
+
+		public boolean isInterrupted()
+		{
+			return this.mInterrupted;
+		}
+
 		public byte[] getBufferSize()
 		{
 			return mBufferSize;
@@ -150,14 +160,8 @@ abstract public class CoolTransfer<T>
 			this.mStatus = status;
 		}
 
-		public void interrupt()
+		public void setFile(File file)
 		{
-			this.mInterrupted = true;
-		}
-
-		public boolean isInterrupted()
-		{
-			return this.mInterrupted;
 		}
 
 		@Override
@@ -221,10 +225,16 @@ abstract public class CoolTransfer<T>
 					if (Flag.CONTINUE.equals(flag)) {
 						mServerSocket = new ServerSocket(getPort());
 
+						if (getTimeout() != CoolSocket.NO_TIMEOUT)
+							getServerSocket().setSoTimeout(getTimeout());
+
 						flag = onSocketReady(this, getServerSocket());
 
 						if (Flag.CONTINUE.equals(flag)) {
 							setSocket(getServerSocket().accept());
+
+							if (getTimeout() != CoolSocket.NO_TIMEOUT)
+								getSocket().setSoTimeout(getTimeout());
 
 							flag = onSocketReady(this);
 
@@ -269,19 +279,21 @@ abstract public class CoolTransfer<T>
 							}
 
 							getSocket().close();
+
 						}
 
 						getServerSocket().close();
 
-						if (this.isInterrupted()) {
-							flag = Flag.CANCEL_ALL;
-							onInterrupted(this);
-						} else {
-							if (getFile().length() != this.mFileSize)
-								throw new NotYetBoundException();
-							else
-								onTransferCompleted(this);
-						}
+						if (!Flag.CANCEL_CURRENT.equals(flag))
+							if (this.isInterrupted()) {
+								flag = Flag.CANCEL_ALL;
+								onInterrupted(this);
+							} else {
+								if (getFile().length() != this.mFileSize)
+									throw new NotYetBoundException();
+								else
+									onTransferCompleted(this);
+							}
 					}
 				} catch (Exception e) {
 					flag = onError(this, e);
@@ -310,9 +322,14 @@ abstract public class CoolTransfer<T>
 				return mServerSocket;
 			}
 
-			public long getTimeout()
+			public int getTimeout()
 			{
 				return mTimeout;
+			}
+
+			public void setFile(File file)
+			{
+				this.mFile = file;
 			}
 
 			public void updateFile(File newAddress)

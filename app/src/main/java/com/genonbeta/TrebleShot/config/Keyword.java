@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.service;
+package com.genonbeta.TrebleShot.config;
 
 /**
  * Created by: veli
@@ -23,6 +23,7 @@ public class Keyword
 	public static final String FILE_NAME = "file";
 	public static final String FILE_SIZE = "fileSize";
 	public static final String FILE_MIME = "fileMime";
+	public static final String DIRECTORY = "directory";
 	public static final String DEVICE_INFO = "deviceInfo";
 	public static final String BRAND = "brand";
 	public static final String MODEL = "model";
@@ -34,4 +35,5 @@ public class Keyword
 	public static final String APP_INFO = "appInfo";
 	public static final String UNKNOWN_INTERFACE = "unk0";
 	public static final String SKIPPED_BYTES = "skippedBytes";
+	public static final String NESTED_FOLDER = "nestedFolder";
 }

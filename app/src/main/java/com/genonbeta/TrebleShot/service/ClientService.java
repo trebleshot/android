@@ -3,13 +3,15 @@ package com.genonbeta.TrebleShot.service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.IBinder;
-import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.app.AbstractTransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.android.database.SQLQuery;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,7 +64,7 @@ public class ClientService extends AbstractTransactionService<TransactionObject>
 					NetworkDevice.Connection connection = new NetworkDevice.Connection(group.deviceId, group.connectionAdapter);
 					getDatabase().reconstruct(connection);
 
-					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(transactionObject.file));
+					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(transactionObject.file), true);
 
 					mSend.send(connection.ipAddress, transactionObject.accessPort, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, transactionObject, false);
 				} catch (Exception e) {
@@ -97,6 +99,10 @@ public class ClientService extends AbstractTransactionService<TransactionObject>
 		public void onTransferCompleted(TransferHandler<TransactionObject> handler)
 		{
 			getDatabase().remove(handler.getExtra());
+
+			if (getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(handler.getExtra().groupId))) == null)
+				getDatabase().remove(new TransactionObject.Group(handler.getExtra().groupId));
 		}
 
 		@Override
@@ -142,9 +148,9 @@ public class ClientService extends AbstractTransactionService<TransactionObject>
 		{
 			super.onOrientatingStreams(handler, inputStream, outputStream);
 
-			if (handler.getExtra().fileSize > 0)
+			if (handler.getExtra().skippedBytes > 0)
 				try {
-					handler.skipBytes(handler.getExtra().fileSize);
+					handler.skipBytes(handler.getExtra().skippedBytes);
 				} catch (IOException e) {
 					handler.interrupt();
 					e.printStackTrace();

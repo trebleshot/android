@@ -1,14 +1,36 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+
+import com.genonbeta.TrebleShot.R;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
 import java.util.Locale;
 
 public class FileUtils
 {
+	public static File getApplicationDirectory(Context context)
+	{
+		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		File storagePath = new File(sharedPreferences.getString("storage_path", defaultPath));
+
+		if (!storagePath.exists())
+			storagePath.mkdirs();
+
+		if (storagePath.canWrite())
+			return storagePath;
+
+		return new File(defaultPath);
+	}
+
 	public static String getFileContentType(String fileUrl)
 	{
 		FileNameMap nameMap = URLConnection.getFileNameMap();
@@ -51,8 +73,26 @@ public class FileUtils
 		return null;
 	}
 
-	public static String getSaveLocationForFile(Context context, String file)
+	public static File getIncomingTransactionFile(Context context, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
 	{
-		return AppUtils.getApplicationDirectory(context).getAbsolutePath() + File.separator + file;
+		String transactionFile = (transactionObject.directory != null ? transactionObject.directory + File.separator : "") + transactionObject.file;
+		boolean useCustom = false;
+
+		if (group.savePath != null) {
+			File customPath = new File(group.savePath);
+			useCustom = (!customPath.exists() && customPath.mkdirs()) || customPath.canWrite();
+		}
+
+		File file = new File((!useCustom ? FileUtils.getApplicationDirectory(context).getAbsolutePath() : group.savePath) + File.separator + transactionFile);
+
+		File parent = file.getParentFile();
+
+		if ((!parent.exists() && !parent.mkdirs()) || !parent.canWrite())
+			throw new IOException("Parent dir " + parent.getAbsolutePath() + " cannot be used");
+
+		if (!file.createNewFile() && (!file.isFile() || !file.canWrite()))
+			throw new IOException("File cannot be created or you don't have permission write on it");
+
+		return file;
 	}
 }

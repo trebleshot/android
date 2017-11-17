@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_appName">TrebleShot</string>
+<resources>
+    <string name="text_appName">TrebleShot</string>
     <string name="text_preferences">Настройки</string>
     <string name="mesg_loading">Загрузка…</string>
     <string name="butn_accept">Принять</string>
@@ -35,4 +36,4 @@
     <string name="text_createFolder">Создать папку</string>
     <string name="mesg_fileAlreadyExists">Файл уже существует</string>
     <string name="butn_settings">Настройки</string>
-    </resources>
+</resources>

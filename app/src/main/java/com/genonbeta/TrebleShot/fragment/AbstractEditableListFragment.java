@@ -95,7 +95,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 		super.onCreateOptionsMenu(menu, inflater);
 
 		if (mSearchSupport) {
-			inflater.inflate(R.menu.search_menu, menu);
+			inflater.inflate(R.menu.actions_search, menu);
 
 			((SearchView) menu.findItem(R.id.search).getActionView())
 					.setOnQueryTextListener(mSearchComposer);
@@ -159,7 +159,7 @@ public abstract class AbstractEditableListFragment<T, E extends AbstractEditable
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu)
 		{
-			mode.getMenuInflater().inflate(R.menu.share_actions, menu);
+			mode.getMenuInflater().inflate(R.menu.actions_share, menu);
 
 			mSelectAll = menu.findItem(R.id.file_actions_select);
 			mActionMode = mode;

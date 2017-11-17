@@ -3,10 +3,12 @@ package com.genonbeta.TrebleShot.dialog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 
 import java.io.File;
 import java.net.URI;
@@ -51,14 +53,32 @@ public class FileDeleteDialog extends AlertDialog.Builder
 									if (parentDir == null)
 										parentDir = file.getParentFile();
 
-									if (file.delete() && listener != null)
-										listener.onFileDeletion(activity, file);
+									if (file.isDirectory())
+										delete(file);
+
+									deleteFile(file);
 								}
 
 								if (listener != null)
 									listener.onCompleted(activity, files.size(), parentDir);
 
 								Looper.loop();
+							}
+
+							private void delete(File file)
+							{
+								for (File thisFile : file.listFiles()) {
+									if (thisFile.isDirectory())
+										delete(thisFile);
+
+									deleteFile(thisFile);
+								}
+							}
+
+							private void deleteFile(File file)
+							{
+								if (file.delete() && listener != null)
+									listener.onFileDeletion(activity, file);
 							}
 						}).start();
 					}

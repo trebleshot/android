@@ -4,15 +4,14 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationSet;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.ListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -86,7 +85,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 		ImageView userImage = (ImageView) view.findViewById(R.id.network_device_list_device_image);
 
 		NetworkDevice device = (NetworkDevice) getItem(position);
-		String firstLetters = AppUtils.getFirstLetters(device.user, 1);
+		String firstLetters = TextUtils.getFirstLetters(device.user, 1);
 
 		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.colorTextDrawable), 100);
 

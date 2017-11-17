@@ -10,8 +10,6 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.support.annotation.RequiresApi;
 
-import com.genonbeta.TrebleShot.R;
-
 /**
  * created by: Veli
  * date: 10.10.2017 07:58

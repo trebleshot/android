@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.database.ContentObserver;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -20,12 +19,13 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
-import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
 
 public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.ListFragment<NetworkDevice, NetworkDeviceListAdapter> implements FragmentTitle
 {
@@ -39,13 +39,14 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		super.onCreate(savedInstanceState);
-
 		mNotification = new NotificationUtils(getActivity());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED);
+		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+
+		super.onCreate(savedInstanceState);
 	}
 
 	@Override
@@ -100,7 +101,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.network_devices_options, menu);
+		inflater.inflate(R.menu.actions_network_device, menu);
 
 		mAnimatedSearchMenuItem = menu.findItem(R.id.network_devices_scan);
 	}
@@ -130,7 +131,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 
 	private void showSnackbar(int resId)
 	{
-		Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), resId, Snackbar.LENGTH_SHORT).show();
+		Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), resId, Snackbar.LENGTH_LONG).show();
 	}
 
 	private class StatusReceiver extends BroadcastReceiver
@@ -144,8 +145,8 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 			if (DeviceScannerProvider.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS)) {
 				String scanStatus = intent.getStringExtra(DeviceScannerProvider.EXTRA_SCAN_STATUS);
 
-				if (DeviceScannerProvider.STATUS_OK.equals(scanStatus))
-					showSnackbar(R.string.mesg_scanningDevices);
+				if (DeviceScannerProvider.STATUS_OK.equals(scanStatus) || DeviceScannerProvider.SCANNER_NOT_AVAILABLE.equals(scanStatus))
+					showSnackbar(DeviceScannerProvider.STATUS_OK.equals(scanStatus) ? R.string.mesg_scanningDevices : R.string.mesg_stillScanning);
 				else if (DeviceScannerProvider.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus)) {
 					Snackbar bar = Snackbar.make(NetworkDeviceListFragment.this.getActivity().findViewById(android.R.id.content), R.string.mesg_noNetwork, Snackbar.LENGTH_SHORT);
 
@@ -162,6 +163,10 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 				}
 			} else if (DeviceScannerProvider.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
 				showSnackbar(R.string.mesg_scanCompleted);
+			} else if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
+					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
+					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_DEVICES)) {
+				refreshList();
 			}
 		}
 	}

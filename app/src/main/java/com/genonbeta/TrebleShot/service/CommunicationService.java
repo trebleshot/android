@@ -1,20 +1,20 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.JsonResponseHandler;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
@@ -24,8 +24,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.Socket;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.security.Key;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 public class CommunicationService extends Service
 {
@@ -90,30 +94,33 @@ public class CommunicationService extends Service
 					NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
 					mDatabase.reconstruct(networkDevice);
 
-					NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
+					final NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
 					mDatabase.reconstruct(connection);
 
-					CoolCommunication.Messenger.send(connection.ipAddress, AppConfig.COMMUNATION_SERVER_PORT, null,
-							new JsonResponseHandler()
-							{
-								@Override
-								public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-								{
-									try {
-										json.put(Keyword.SERIAL, localDevice.deviceId);
-										json.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-										json.put(Keyword.GROUP_ID, groupId);
-										json.put(Keyword.IS_ACCEPTED, isAccepted);
+					CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+					{
+						@Override
+						public void onConnect(CoolSocket.Client connect)
+						{
+							try {
+								JSONObject jsonObject = new JSONObject();
 
-										Log.d(TAG, "We pushed the results hopefully: " + isAccepted);
-									} catch (JSONException e) {
-										e.printStackTrace();
-									}
-								}
+								jsonObject.put(Keyword.SERIAL, localDevice.deviceId);
+								jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
+								jsonObject.put(Keyword.GROUP_ID, groupId);
+								jsonObject.put(Keyword.IS_ACCEPTED, isAccepted);
+
+								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+								activeConnection.reply(jsonObject.toString());
+							} catch (JSONException e) {
+								e.printStackTrace();
+							} catch (TimeoutException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
-					);
-
-					Log.d(TAG, "About to send the result. isAccepted: " + isAccepted);
+						}
+					});
 
 					if (isAccepted)
 						startService(new Intent(this, ServerService.class)
@@ -124,7 +131,8 @@ public class CommunicationService extends Service
 				} catch (Exception e) {
 					e.printStackTrace();
 
-					mNotification.showToast(R.string.mesg_somethingWentWrong);
+					if (isAccepted)
+						mNotification.showToast(R.string.mesg_somethingWentWrong);
 				}
 
 			} else if (ACTION_IP.equals(intent.getAction())) {
@@ -168,32 +176,26 @@ public class CommunicationService extends Service
 		stopForeground(true);
 	}
 
-	public class CommunicationServer extends CoolJsonCommunication
+	public class CommunicationServer extends CoolSocket
 	{
 		public CommunicationServer()
 		{
-			super(AppConfig.COMMUNATION_SERVER_PORT);
-			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+			super(AppConfig.COMMUNICATION_SERVER_PORT);
+			setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
 		}
 
-		@SuppressLint("HardwareIds")
 		@Override
-		public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp)
+		protected void onConnected(ActiveConnection activeConnection)
 		{
 			try {
-				if (receivedMessage != null)
-					Log.d(TAG, "receivedMessage = " + receivedMessage.toString());
+				ActiveConnection.Response clientRequest = activeConnection.receive();
+				JSONObject replyJSON = clientRequest.totalLength > 0 ? new JSONObject(clientRequest.response) : new JSONObject();
 
 				JSONObject deviceInformation = new JSONObject();
 				JSONObject appInfo = new JSONObject();
 
 				boolean result = false;
 				boolean shouldContinue = false;
-
-				PackageInfo packageInfo = getPackageManager().getPackageInfo(getApplicationInfo().packageName, 0);
-
-				appInfo.put(Keyword.VERSION_CODE, packageInfo.versionCode);
-				appInfo.put(Keyword.VERSION_NAME, packageInfo.versionName);
 
 				NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
@@ -202,11 +204,14 @@ public class CommunicationService extends Service
 				deviceInformation.put(Keyword.MODEL, localDevice.model);
 				deviceInformation.put(Keyword.USER, localDevice.user);
 
-				response.put(Keyword.APP_INFO, appInfo);
-				response.put(Keyword.DEVICE_INFO, deviceInformation);
+				appInfo.put(Keyword.VERSION_CODE, localDevice.buildNumber);
+				appInfo.put(Keyword.VERSION_NAME, localDevice.buildName);
 
-				if (receivedMessage.has(Keyword.SERIAL)) {
-					String serialNumber = receivedMessage.getString(Keyword.SERIAL);
+				replyJSON.put(Keyword.APP_INFO, appInfo);
+				replyJSON.put(Keyword.DEVICE_INFO, deviceInformation);
+
+				if (replyJSON.has(Keyword.SERIAL)) {
+					String serialNumber = replyJSON.getString(Keyword.SERIAL);
 					NetworkDevice device = new NetworkDevice(serialNumber);
 
 					try {
@@ -217,8 +222,12 @@ public class CommunicationService extends Service
 					} catch (Exception e1) {
 						e1.printStackTrace();
 
-						device.isRestricted = false;
-						device = mInfoLoader.startLoading(true, mDatabase, clientIp);
+						device = mInfoLoader.startLoading(true, mDatabase, activeConnection.getClientAddress());
+
+						if (device == null)
+							throw new Exception("Could not reach to the opposite server");
+
+						device.isRestricted = true;
 
 						mDatabase.publish(device);
 						mNotification.notifyConnectionRequest(device);
@@ -226,64 +235,94 @@ public class CommunicationService extends Service
 						shouldContinue = false;
 					}
 
-					if (shouldContinue && receivedMessage.has(Keyword.REQUEST)) {
-						NetworkDevice.Connection connection = new NetworkDevice.Connection(clientIp);
+					final NetworkDevice.Connection connection = new NetworkDevice.Connection(activeConnection.getClientAddress());
 
-						try {
-							mDatabase.reconstruct(connection);
-						} catch (Exception e) {
-							connection.adapterName = Keyword.UNKNOWN_INTERFACE;
-						}
+					try {
+						mDatabase.reconstruct(connection);
+					} catch (Exception e) {
+						connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+					}
 
-						connection.deviceId = device.deviceId;
-						mDatabase.publish(connection);
+					connection.lastCheckedDate = System.currentTimeMillis();
+					connection.deviceId = device.deviceId;
 
-						switch (receivedMessage.getString(Keyword.REQUEST)) {
+					mDatabase.publish(connection);
+
+					if (shouldContinue && replyJSON.has(Keyword.REQUEST)) {
+						switch (replyJSON.getString(Keyword.REQUEST)) {
 							case (Keyword.REQUEST_TRANSFER):
-								if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID)) {
-									String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
-									JSONArray jsonArray = new JSONArray(jsonIndex);
+								if (replyJSON.has(Keyword.FILES_INDEX) && replyJSON.has(Keyword.GROUP_ID)) {
+									String jsonIndex = replyJSON.getString(Keyword.FILES_INDEX);
+									final JSONArray jsonArray = new JSONArray(jsonIndex);
+									final int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									final NetworkDevice finalDevice = device;
 
-									int count = 0;
-									int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
+									result = true;
 
-									TransactionObject.Group group = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
-									TransactionObject transactionObject = null;
+									new Thread()
+									{
+										@Override
+										public void run()
+										{
+											super.run();
 
-									mDatabase.publish(group);
+											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
+											TransactionObject transactionObject = null;
 
+											mDatabase.publish(group);
+											DynamicNotification notification = mNotification.notifyPrepareFiles(group);
 
-									for (int i = 0; i < jsonArray.length(); i++) {
-										if (!(jsonArray.get(i) instanceof JSONObject))
-											continue;
+											int count = 0;
+											int total = jsonArray.length();
+											long lastNotified = System.currentTimeMillis();
 
-										JSONObject requestIndex = jsonArray.getJSONObject(i);
+											for (int i = 0; i < jsonArray.length(); i++) {
+												try {
+													if (!(jsonArray.get(i) instanceof JSONObject))
+														continue;
 
-										if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
-											count++;
-											transactionObject = new TransactionObject(
-													requestIndex.getInt(Keyword.REQUEST_ID),
-													groupId,
-													requestIndex.getString(Keyword.FILE_NAME),
-													"." + UUID.randomUUID() + ".tshare",
-													requestIndex.getString(Keyword.FILE_MIME),
-													requestIndex.getLong(Keyword.FILE_SIZE),
-													TransactionObject.Type.INCOMING);
+													JSONObject requestIndex = jsonArray.getJSONObject(i);
 
-											mDatabase.publish(transactionObject);
+													if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
+														count++;
+
+														transactionObject = new TransactionObject(
+																requestIndex.getInt(Keyword.REQUEST_ID),
+																groupId,
+																requestIndex.getString(Keyword.FILE_NAME),
+																"." + UUID.randomUUID() + ".tshare",
+																requestIndex.getString(Keyword.FILE_MIME),
+																requestIndex.getLong(Keyword.FILE_SIZE),
+																TransactionObject.Type.INCOMING);
+
+														if (requestIndex.has(Keyword.DIRECTORY))
+															transactionObject.directory = requestIndex.getString(Keyword.DIRECTORY);
+
+														mDatabase.publish(transactionObject);
+													}
+
+												} catch (JSONException e) {
+													e.printStackTrace();
+												}
+
+												if ((System.currentTimeMillis() - lastNotified) > 1000) {
+													lastNotified = System.currentTimeMillis();
+													notification.updateProgress(total, count, false);
+												}
+											}
+
+											notification.cancel();
+
+											if (transactionObject != null && count > 0)
+												mNotification.notifyTransferRequest(transactionObject, finalDevice, count);
 										}
-									}
-
-									if (transactionObject != null && count > 0) {
-										result = true;
-										mNotification.notifyTransferRequest(transactionObject, device, count);
-									}
+									}.start();
 								}
 								break;
 							case (Keyword.REQUEST_RESPONSE):
-								if (receivedMessage.has(Keyword.GROUP_ID)) {
-									int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
-									boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
+								if (replyJSON.has(Keyword.GROUP_ID)) {
+									int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									boolean isAccepted = replyJSON.getBoolean(Keyword.IS_ACCEPTED);
 
 									if (!isAccepted)
 										mDatabase.remove(new TransactionObject.Group(groupId));
@@ -292,10 +331,10 @@ public class CommunicationService extends Service
 								}
 								break;
 							case (Keyword.REQUEST_SERVER_READY):
-								if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.GROUP_ID) && receivedMessage.has(Keyword.SOCKET_PORT)) {
-									int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
-									int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
-									int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
+								if (replyJSON.has(Keyword.REQUEST_ID) && replyJSON.has(Keyword.GROUP_ID) && replyJSON.has(Keyword.SOCKET_PORT)) {
+									int requestId = replyJSON.getInt(Keyword.REQUEST_ID);
+									int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									int socketPort = replyJSON.getInt(Keyword.SOCKET_PORT);
 
 									TransactionObject.Group group = new TransactionObject.Group(groupId);
 									mDatabase.reconstruct(group);
@@ -306,8 +345,8 @@ public class CommunicationService extends Service
 
 										transactionObject.accessPort = socketPort;
 
-										if (receivedMessage.has(Keyword.SKIPPED_BYTES))
-											transactionObject.skippedBytes = receivedMessage.getInt(Keyword.SKIPPED_BYTES);
+										if (replyJSON.has(Keyword.SKIPPED_BYTES))
+											transactionObject.skippedBytes = replyJSON.getInt(Keyword.SKIPPED_BYTES);
 
 										mDatabase.publish(transactionObject);
 
@@ -322,14 +361,14 @@ public class CommunicationService extends Service
 
 										result = true;
 									} catch (Exception e) {
-										response.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
+										replyJSON.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 									}
 								}
 
 								break;
 							case (Keyword.REQUEST_CLIPBOARD):
-								if (receivedMessage.has(Keyword.CLIPBOARD_TEXT)) {
-									mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
+								if (replyJSON.has(Keyword.CLIPBOARD_TEXT)) {
+									mReceivedClipboardIndex = replyJSON.getString(Keyword.CLIPBOARD_TEXT);
 									mNotification.notifyClipboardRequest(device, mReceivedClipboardIndex);
 
 									result = true;
@@ -339,15 +378,12 @@ public class CommunicationService extends Service
 					}
 				}
 
-				response.put(Keyword.RESULT, result);
+				replyJSON.put(Keyword.RESULT, result);
+
+				activeConnection.reply(replyJSON.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		@Override
-		protected void onError(Exception exception)
-		{
 		}
 	}
 }

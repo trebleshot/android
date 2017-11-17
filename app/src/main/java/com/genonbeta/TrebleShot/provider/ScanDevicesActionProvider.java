@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.provider;
 
 import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothClass;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.view.ActionProvider;
@@ -14,7 +13,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 
 /**

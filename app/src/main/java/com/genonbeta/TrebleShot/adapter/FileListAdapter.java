@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.io.File;
@@ -36,7 +35,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	public FileListAdapter(Context context)
 	{
 		super(context);
-		mDefaultPath = AppUtils.getApplicationDirectory(mContext);
+		mDefaultPath = FileUtils.getApplicationDirectory(mContext);
 	}
 
 	@Override
@@ -67,7 +66,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		} else {
 			ArrayList<File> paths = new ArrayList<>();
 
-			File defaultFolder = AppUtils.getApplicationDirectory(getContext());
+			File defaultFolder = FileUtils.getApplicationDirectory(getContext());
 			folders.add(new FileInfo(defaultFolder.getName(), getContext().getString(R.string.text_defaultFolder), defaultFolder));
 
 			paths.add(Environment.getExternalStorageDirectory());
@@ -126,7 +125,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
 		if (convertView == null)
-			convertView = getInflater().inflate(R.layout.list_received_file, parent, false);
+			convertView = getInflater().inflate(R.layout.list_file, parent, false);
 
 		TextView fileNameText = (TextView) convertView.findViewById(R.id.text);
 		TextView sizeText = (TextView) convertView.findViewById(R.id.text2);

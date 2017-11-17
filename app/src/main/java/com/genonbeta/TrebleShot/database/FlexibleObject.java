@@ -4,7 +4,6 @@ import android.content.ContentValues;
 
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLValues;
 
 /**
  * created by: Veli
@@ -14,9 +13,14 @@ import com.genonbeta.android.database.SQLValues;
 public interface FlexibleObject
 {
 	SQLQuery.Select getWhere();
+
 	ContentValues getValues();
+
 	void reconstruct(CursorItem item);
+
 	void onCreateObject(AccessDatabase database);
+
 	void onUpdateObject(AccessDatabase database);
+
 	void onRemoveObject(AccessDatabase database);
 }

@@ -1,14 +1,9 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -18,26 +13,27 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.DeviceChooserDialog;
+import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.JsonResponseHandler;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.io.StreamInfo;
-import com.genonbeta.TrebleShot.service.Keyword;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TransactionObject;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.StreamCorruptedException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
+import java.net.URI;
 import java.util.ArrayList;
 
 public class ShareActivity extends Activity
@@ -52,17 +48,12 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
-	private EditText mStatusText;
-	private NetworkDeviceListFragment mDeviceListFragment;
-	private ProgressDialog mProgressOrganizeFiles;
-	private ProgressDialog mProgressConnect;
-	private ConnectionHandler mConnectionHandler;
+	private String mSharedText;
 	private ArrayList<StreamInfo> mFiles = new ArrayList<>();
-	private StatusUpdateReceiver mStatusReceiver = new StatusUpdateReceiver();
-	private IntentFilter mStatusReceiverFilter = new IntentFilter();
-	private AlertDialog mShownDeviceChooserDialog;
-	private DeviceChooserDialog mDeviceChooserDialog;
+	private EditText mStatusText;
 	private AccessDatabase mDatabase;
+	private ProgressDialog mProgressDialog;
+	private NetworkDeviceListFragment mDeviceListFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -71,22 +62,10 @@ public class ShareActivity extends Activity
 
 		setContentView(R.layout.activity_share);
 
+		mProgressDialog = new ProgressDialog(this);
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 		mStatusText = findViewById(R.id.activity_share_info_text);
-
-		mProgressOrganizeFiles = new ProgressDialog(this);
-		mProgressOrganizeFiles.setIndeterminate(true);
-		mProgressOrganizeFiles.setCancelable(false);
-		mProgressOrganizeFiles.setMessage(getString(R.string.mesg_organizingFiles));
-
-		mProgressConnect = new ProgressDialog(this);
-		mProgressConnect.setIndeterminate(true);
-		mProgressConnect.setCancelable(false);
-		mProgressConnect.setMessage(getString(R.string.mesg_communicating));
-
-		// FIXME: 3.11.2017 define new constanst in table of Connection and use observer
-
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
@@ -119,21 +98,9 @@ public class ShareActivity extends Activity
 							}
 						});
 
-						registerHandler(new ConnectionHandler()
-						{
-							@Override
-							public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException
-							{
-								json.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-								json.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
-							}
+						mSharedText = mStatusText.getText().toString();
 
-							@Override
-							public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection)
-							{
-
-							}
-						});
+						onRequestReady();
 					} else {
 						ArrayList<Uri> fileUris = new ArrayList<>();
 						ArrayList<CharSequence> fileNames = null;
@@ -162,33 +129,7 @@ public class ShareActivity extends Activity
 					Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
 					finish();
 			}
-
-			if (mConnectionHandler != null && getIntent().hasExtra(EXTRA_DEVICE_ID)) {
-				String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
-				NetworkDevice chosenDevice = new NetworkDevice(deviceId);
-
-				try {
-					mDatabase.reconstruct(chosenDevice);
-					showChooserDialog(chosenDevice);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
 		}
-	}
-
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		registerReceiver(mStatusReceiver, mStatusReceiverFilter);
-	}
-
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		unregisterReceiver(mStatusReceiver);
 	}
 
 	@Override
@@ -201,15 +142,53 @@ public class ShareActivity extends Activity
 				appendStatusText(data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX));
 	}
 
+	protected void onRequestReady()
+	{
+		if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
+			String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+			NetworkDevice chosenDevice = new NetworkDevice(deviceId);
+
+			try {
+				mDatabase.reconstruct(chosenDevice);
+				showChooserDialog(chosenDevice);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	protected void appendStatusText(CharSequence charSequence)
 	{
 		mStatusText.getText().clear();
 		mStatusText.getText().append(charSequence);
 	}
 
+	protected void createFolderStructure(ProgressDialog dialog, File file, String folderName)
+	{
+		for (File thisFile : file.listFiles()) {
+			if (thisFile.isDirectory()) {
+				createFolderStructure(dialog, thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName());
+				continue;
+			}
+
+			dialog.setMax(dialog.getMax() + 1);
+			dialog.setProgress(dialog.getProgress() + 1);
+
+			try {
+				mFiles.add(StreamInfo.getStreamInfo(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
+			} catch (Exception e) {
+			}
+		}
+	}
+
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
-		mProgressOrganizeFiles.show();
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setMax(fileUris.size());
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.setMessage(getString(R.string.mesg_organizingFiles));
+
+		mProgressDialog.show();
 
 		new Thread()
 		{
@@ -218,14 +197,14 @@ public class ShareActivity extends Activity
 			{
 				super.run();
 
-				ContentResolver contentResolver = getApplicationContext().getContentResolver();
-
 				for (int position = 0; position < fileUris.size(); position++) {
+					mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
+
 					Uri fileUri = fileUris.get(position);
 					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
 
 					try {
-						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), fileUri);
+						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), fileUri, false);
 
 						if (fileName != null)
 							streamInfo.friendlyName = fileName;
@@ -235,81 +214,34 @@ public class ShareActivity extends Activity
 						e.printStackTrace();
 					} catch (StreamCorruptedException e) {
 						e.printStackTrace();
+					} catch (StreamInfo.FolderStateException e) {
+						File parentFolder = new File(URI.create(fileUri.toString()));
+						createFolderStructure(mProgressDialog, parentFolder, parentFolder.getName());
 					}
 				}
-
-				mProgressOrganizeFiles.cancel();
 
 				runOnUiThread(new Runnable()
 				{
 					@Override
 					public void run()
 					{
+						mProgressDialog.cancel();
+
 						if (mFiles.size() == 1)
 							appendStatusText(mFiles.get(0).friendlyName);
 						else if (mFiles.size() > 1)
 							appendStatusText(getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
+
+						onRequestReady();
 					}
 				});
 			}
 		}.start();
 	}
 
-	protected void registerHandler(ConnectionHandler handler)
-	{
-		mConnectionHandler = handler;
-	}
-
-	protected void registerClickListenerFiles(final ArrayList<Uri> fileUris,
-											  final ArrayList<CharSequence> fileNames)
+	protected void registerClickListenerFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
 		organizeFiles(fileUris, fileNames);
-
-		registerHandler(new ConnectionHandler()
-		{
-			private int mGroupId;
-
-			@Override
-			public void onHandle(CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException
-			{
-				JSONArray filesArray = new JSONArray();
-
-				mGroupId = AppUtils.getUniqueNumber();
-
-				TransactionObject.Group groupInstance = new TransactionObject.Group(mGroupId, device.deviceId, connection.adapterName);
-				mDatabase.publish(groupInstance);
-
-				json.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-				json.put(Keyword.GROUP_ID, mGroupId);
-
-				for (StreamInfo fileState : mFiles) {
-					int requestId = AppUtils.getUniqueNumber();
-					TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, 0, TransactionObject.Type.OUTGOING);
-					JSONObject thisJson = new JSONObject();
-
-					try {
-						thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
-						thisJson.put(Keyword.FILE_SIZE, fileState.size);
-						thisJson.put(Keyword.REQUEST_ID, requestId);
-						thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
-
-						filesArray.put(thisJson);
-
-						mDatabase.publish(transactionObject);
-					} catch (Exception e) {
-						Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
-					}
-				}
-
-				json.put(Keyword.FILES_INDEX, filesArray);
-			}
-
-			@Override
-			public void onError(CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection)
-			{
-				// TODO: 3.11.2017 Remove group definer from the database
-			}
-		});
 	}
 
 	protected void showChooserDialog(final NetworkDevice device)
@@ -319,37 +251,111 @@ public class ShareActivity extends Activity
 
 		mDatabase.publish(device);
 
-		mDeviceChooserDialog = new DeviceChooserDialog(ShareActivity.this, mDatabase, device, new DeviceChooserDialog.OnDeviceSelectedListener()
+		new ConnectionChooserDialog(ShareActivity.this, mDatabase, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 		{
 			@Override
 			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 			{
 				final String deviceIp = connection.ipAddress;
 
-				mProgressConnect.show();
+				mProgressDialog.setMessage(getString(R.string.mesg_communicating));
+				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				mProgressDialog.setMax(0);
+				mProgressDialog.setCancelable(false);
+				mProgressDialog.setProgress(0);
 
-				CoolCommunication.Messenger.send(deviceIp, AppConfig.COMMUNATION_SERVER_PORT, null,
-						new JsonResponseHandler()
-						{
-							@Override
-							public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-							{
-								try {
-									NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+				runOnUiThread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						mProgressDialog.show();
+					}
+				});
 
-									json.put(Keyword.SERIAL, localDevice.deviceId);
+				CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+				{
+					@Override
+					public void onConnect(CoolSocket.Client client)
+					{
+						try {
+							final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(deviceIp, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
 
-									mConnectionHandler.onHandle(process, json, device, connection);
+							JSONObject clientResponse;
+							JSONObject jsonRequest = new JSONObject()
+									.put(Keyword.SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
 
-									JSONObject jsonObject = new JSONObject(process.waitForResponse());
+							if (mSharedText == null) {
+								JSONArray filesArray = new JSONArray();
+								int groupId = AppUtils.getUniqueNumber();
+								TransactionObject.Group groupInstance = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
 
-									if (!jsonObject.has(Keyword.RESULT) || !jsonObject.getBoolean(Keyword.RESULT))
-										mConnectionHandler.onError(process, device, connection);
+								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+								jsonRequest.put(Keyword.GROUP_ID, groupId);
 
-									if (jsonObject.has(Keyword.RESULT) && !jsonObject.getBoolean(Keyword.RESULT)) {
-										Snackbar snackbar = Snackbar.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG);
+								ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
-										snackbar.setAction(R.string.ques_why, new View.OnClickListener()
+								mProgressDialog.setMax(mFiles.size());
+
+								for (StreamInfo fileState : mFiles) {
+									mProgressDialog.setSecondaryProgress(mProgressDialog.getSecondaryProgress() + 1);
+
+									int requestId = AppUtils.getUniqueNumber();
+									JSONObject thisJson = new JSONObject();
+
+									TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, fileState.size, TransactionObject.Type.OUTGOING);
+
+									if (fileState.directory != null)
+										transactionObject.directory = fileState.directory;
+
+									pendingRegistry.add(transactionObject);
+
+									try {
+										thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
+										thisJson.put(Keyword.FILE_SIZE, fileState.size);
+										thisJson.put(Keyword.REQUEST_ID, requestId);
+										thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
+
+										if (fileState.directory != null)
+											thisJson.put(Keyword.DIRECTORY, fileState.directory);
+
+										filesArray.put(thisJson);
+									} catch (Exception e) {
+										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
+									}
+								}
+
+								jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+
+								activeConnection.reply(jsonRequest.toString());
+								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+
+								clientResponse = new JSONObject(response.response);
+
+								if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+									mDatabase.publish(groupInstance);
+
+									for (TransactionObject transactionObject : pendingRegistry) {
+										mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
+										mDatabase.publish(transactionObject);
+									}
+
+									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
+								}
+							} else {
+								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+								jsonRequest.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+
+								activeConnection.reply(jsonRequest.toString());
+								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+
+								clientResponse = new JSONObject(response.response);
+							}
+
+							if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
+								Snackbar
+										.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
+										.setAction(R.string.ques_why, new View.OnClickListener()
 										{
 											@Override
 											public void onClick(View v)
@@ -363,58 +369,22 @@ public class ShareActivity extends Activity
 												builder.setNegativeButton(R.string.butn_close, null);
 												builder.show();
 											}
-										});
-
-										snackbar.show();
-									}
-								} catch (Exception e) {
-									mConnectionHandler.onError(process, device, connection);
-									showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_communicationProblem)));
-								}
-
-								mProgressConnect.cancel();
+										}).show();
 							}
-
-							@Override
-							public void onError(Exception e)
-							{
-								mProgressConnect.cancel();
-								mConnectionHandler.onError(null, device, connection);
-								showToast(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
-							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							showSnackbar(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
 						}
-				);
+
+						mProgressDialog.cancel();
+					}
+				});
 			}
-		});
-
-		mShownDeviceChooserDialog = mDeviceChooserDialog.show();
+		}).show();
 	}
 
-	protected void showToast(String msg)
+	protected void showSnackbar(String msg)
 	{
-		Looper.prepare();
-		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-		Looper.loop();
-	}
-
-	private interface ConnectionHandler
-	{
-		void onHandle(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json, NetworkDevice device, NetworkDevice.Connection connection) throws JSONException;
-
-		void onError(com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, NetworkDevice device, NetworkDevice.Connection connection);
-	}
-
-	private class StatusUpdateReceiver extends BroadcastReceiver
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (mShownDeviceChooserDialog != null && mShownDeviceChooserDialog.isShowing()) {
-				mShownDeviceChooserDialog.cancel();
-
-				if (mDeviceChooserDialog != null)
-					mShownDeviceChooserDialog = mDeviceChooserDialog.show();
-			}
-		}
+		Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 	}
 }

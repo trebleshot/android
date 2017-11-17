@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.database;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
@@ -23,6 +25,14 @@ public class AccessDatabase extends SQLiteDatabase
 
 	public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
+	public static final String ACTION_DATABASE_CHANGE = "com.genonbeta.intent.action.DATABASE_CHANGE";
+	public static final String EXTRA_TABLE_NAME = "tableName";
+	public static final String EXTRA_AFFECTED_ITEM_COUNT = "affectedItemCount";
+	public static final String EXTRA_CHANGE_TYPE = "changeType";
+	public static final String TYPE_REMOVE = "typeRemove";
+	public static final String TYPE_INSERT = "typeInsert";
+	public static final String TYPE_UPDATE = "typeUpdate";
+
 	public static final String TABLE_TRANSFER = "transfer";
 	public static final String FIELD_TRANSFER_ID = "id";
 	public static final String FIELD_TRANSFER_FILE = "file";
@@ -30,6 +40,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFER_SIZE = "size";
 	public static final String FIELD_TRANSFER_MIME = "mime";
 	public static final String FIELD_TRANSFER_TYPE = "type";
+	public static final String FIELD_TRANSFER_DIRECTORY = "directory";
 	public static final String FIELD_TRANSFER_SKIPPEDBYTES = "skippedBytes";
 	public static final String FIELD_TRANSFER_GROUPID = "groupId";
 	public static final String FIELD_TRANSFER_FLAG = "flag";
@@ -47,6 +58,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_USER = "user";
 	public static final String FIELD_DEVICES_BRAND = "brand";
 	public static final String FIELD_DEVICES_MODEL = "model";
+	public static final String FIELD_DEVICES_BUILDNAME = "buildName";
 	public static final String FIELD_DEVICES_BUILDNUMBER = "buildNumber";
 	public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
 	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
@@ -56,12 +68,13 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
 	public static final String FIELD_DEVICECONNECTION_DEVICEID = "deviceId";
 	public static final String FIELD_DEVICECONNECTION_ADAPTERNAME = "adapterName";
+	public static final String FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
 
 	private Context mContext;
 
 	public AccessDatabase(Context context)
 	{
-		super(context, DATABASE_NAME, null, 3);
+		super(context, DATABASE_NAME, null, 4);
 		mContext = context;
 	}
 
@@ -78,6 +91,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
@@ -94,6 +108,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
@@ -102,7 +117,8 @@ public class AccessDatabase extends SQLiteDatabase
 		sqlValues.defineTable(TABLE_DEVICECONNECTION)
 				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false));
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
 
 		SQLQuery.createTables(db, sqlValues);
 	}
@@ -110,12 +126,23 @@ public class AccessDatabase extends SQLiteDatabase
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
-		if (old != current) {
-			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
+		if (old <= 3)
+		{
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
+			db.execSQL("DROP TABLE `" + TABLE_TRANSFERGROUP + "`");
+			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
+			db.execSQL("DROP TABLE `" + TABLE_DEVICECONNECTION + "`");
 
 			onCreate(db);
 		}
+	}
+
+	protected void broadcast(SQLQuery.Select select, String type)
+	{
+		getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
+				.putExtra(EXTRA_TABLE_NAME, select.tableName)
+				.putExtra(EXTRA_CHANGE_TYPE, type)
+				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
 	}
 
 	public <T extends FlexibleObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
@@ -137,6 +164,16 @@ public class AccessDatabase extends SQLiteDatabase
 		}
 
 		return returnedList;
+	}
+
+	@Override
+	public int delete(SQLQuery.Select select)
+	{
+		int returnedItems = super.delete(select);
+
+		broadcast(select, TYPE_REMOVE);
+
+		return returnedItems;
 	}
 
 	public long getAffectedRowCount()
@@ -172,6 +209,8 @@ public class AccessDatabase extends SQLiteDatabase
 		} else {
 			object.onCreateObject(this);
 			getWritableDatabase().insert(object.getWhere().tableName, null, object.getValues());
+
+			broadcast(object.getWhere(), TYPE_REMOVE);
 		}
 	}
 
@@ -189,5 +228,15 @@ public class AccessDatabase extends SQLiteDatabase
 			throw new Exception("No data was returned from the query");
 
 		object.reconstruct(item);
+	}
+
+	@Override
+	public int update(SQLQuery.Select select, ContentValues values)
+	{
+		int returnedItems = super.update(select, values);
+
+		broadcast(select, TYPE_UPDATE);
+
+		return returnedItems;
 	}
 }

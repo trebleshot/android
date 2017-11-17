@@ -7,9 +7,9 @@
             android:title="@string/text_deviceList"/>
 
         <item
-            android:id="@+id/menu_activity_main_received_files"
+            android:id="@+id/menu_activity_main_file_explorer"
             android:icon="@drawable/ic_file_download_white_24dp"
-            android:title="@string/text_receivedFiles"/>
+            android:title="@string/text_fileExplorer"/>
 
         <item
             android:id="@+id/menu_activity_main_ongoing_process"
@@ -38,7 +38,7 @@
                 <item
                     android:id="@+id/menu_activity_main_share_text"
                     android:icon="@drawable/ic_textsms_white_24dp"
-                    android:title="@string/text_shareText"/>
+                    android:title="@string/text_shareTextShort"/>
             </group>
         </menu>
     </item>

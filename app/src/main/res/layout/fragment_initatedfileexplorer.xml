@@ -5,7 +5,7 @@
               android:layout_height="match_parent">
 
     <fragment
-        android:id="@+id/fragment_receivedfiles_fragment_files"
+        android:id="@+id/fragment_initiatedfileexplorer_fragment_fileexplorer"
         android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

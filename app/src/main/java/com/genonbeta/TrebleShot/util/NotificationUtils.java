@@ -9,15 +9,15 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
+import com.genonbeta.TrebleShot.activity.TransactionActivity;
+import com.genonbeta.TrebleShot.app.AbstractTransactionService;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
-import com.genonbeta.TrebleShot.service.AbstractTransactionService;
 import com.genonbeta.TrebleShot.service.ClientService;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
@@ -81,12 +81,6 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.text_connectionPermission));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, mContext.getString(R.string.ques_allowDeviceToConnect));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
-
 		notification.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.text_connectionPermission))
 				.setContentText(mContext.getString(R.string.ques_allowDeviceToConnect))
@@ -104,10 +98,9 @@ public class NotificationUtils
 	public DynamicNotification notifyTransferRequest(TransactionObject transactionObject, NetworkDevice device, int numberOfFiles)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
-		String message = numberOfFiles > 1 ? mContext.getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transactionObject.friendlyName; // TODO: 4.11.2017 Add the file name
+		String message = numberOfFiles > 1 ? mContext.getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transactionObject.friendlyName;
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
-		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
 		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transactionObject.groupId);
@@ -121,19 +114,13 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.ques_receiveFile));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, message);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
-
 		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.ques_receiveFile))
 				.setContentText(message)
 				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
-						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0))
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
+						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.butn_accept), positiveIntent)
@@ -156,27 +143,19 @@ public class NotificationUtils
 
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
-		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
 
 		cancelIntent.setAction(AbstractTransactionService.ACTION_CANCEL_JOB);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
 		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
-		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), cancelIntent, 0);
-
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, transaction.file);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-
 		notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
 				.setContentTitle(transaction.friendlyName)
 				.setContentText(mContext.getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
 				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
-						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
+						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
@@ -225,22 +204,10 @@ public class NotificationUtils
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileReceived(TransactionObject transactionObject, File file) throws Exception
+	public DynamicNotification notifyFileReceived(TransactionObject transactionObject, NetworkDevice device, File file)
 	{
-		TransactionObject.Group group = new TransactionObject.Group(transactionObject.groupId);
-		mDatabase.reconstruct(group);
-
-		NetworkDevice device = new NetworkDevice(group.deviceId);
-		mDatabase.reconstruct(device);
-
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
-
-		try {
-			mDatabase.reconstruct(device);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
 			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), transactionObject.fileMimeType)
@@ -281,9 +248,24 @@ public class NotificationUtils
 				.setContentTitle(mContext.getString(R.string.text_error))
 				.setContentText(mContext.getString(R.string.mesg_fileReceiveError, transactionObject.friendlyName))
 				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, PendingTransferListActivity.class)
-						.setAction(PendingTransferListActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(PendingTransferListActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0));
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
+						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0));
+
+		return notification.show();
+	}
+
+	public DynamicNotification notifyPrepareFiles(TransactionObject.Group group)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, group.groupId);
+
+		notification.setSmallIcon(android.R.drawable.stat_sys_download)
+				.setContentTitle(mContext.getString(R.string.text_preparingFiles))
+				.setContentText(mContext.getString(R.string.text_savingDetails))
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
+						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, group.groupId), 0));
 
 		return notification.show();
 	}

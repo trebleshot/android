@@ -17,6 +17,7 @@ public class TransactionObject implements FlexibleObject
 	public String friendlyName;
 	public String file;
 	public String fileMimeType;
+	public String directory;
 	public int requestId;
 	public int groupId;
 	public int accessPort;
@@ -73,6 +74,7 @@ public class TransactionObject implements FlexibleObject
 		values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
 		values.put(AccessDatabase.FIELD_TRANSFER_ACCESSPORT, accessPort);
 		values.put(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
+		values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
 
 		return values;
 	}
@@ -90,6 +92,7 @@ public class TransactionObject implements FlexibleObject
 		this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
 		this.accessPort = item.getInt(AccessDatabase.FIELD_TRANSFER_ACCESSPORT);
 		this.skippedBytes = item.getInt(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
+		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
 	}
 
 	@Override

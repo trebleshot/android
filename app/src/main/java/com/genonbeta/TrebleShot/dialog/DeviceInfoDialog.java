@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.dialog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
@@ -12,10 +13,12 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.PendingTransferListActivity;
+import com.genonbeta.TrebleShot.activity.TransactionActivity;
+import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -38,16 +41,18 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
 
 			TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
-			TextView ipText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
+			TextView addressText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
+			TextView versionText = (TextView) rootView.findViewById(R.id.device_info_version);
 			SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);
 
 			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
+			versionText.setText(device.buildName);
 
 			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", device.deviceId), NetworkDevice.Connection.class);
 
 			if (connections.size() > 0)
-				ipText.setText(connections.size() > 1 ?
+				addressText.setText(connections.size() > 1 ?
 						context.getResources().getQuantityString(R.plurals.text_availableConnections,
 								connections.size(),
 								connections.size()) : connections.get(0).ipAddress);
@@ -74,7 +79,43 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 						@Override
 						public void onClick(DialogInterface dialogInterface, int p2)
 						{
-							PendingTransferListActivity.startInstance(context, device.deviceId);
+							final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+							final TransactionGroupListAdapter adapter = new TransactionGroupListAdapter(getContext())
+									.setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
+											.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", device.deviceId));
+
+							builder.setPositiveButton(R.string.butn_close, null);
+
+							new Thread()
+							{
+								@Override
+								public void run()
+								{
+									super.run();
+
+									Looper.prepare();
+
+									adapter.onUpdate(adapter.onLoad());
+									adapter.notifyDataSetChanged();
+
+									if (adapter.getCount() > 0) {
+										builder.setAdapter(adapter, new DialogInterface.OnClickListener()
+										{
+											@Override
+											public void onClick(DialogInterface dialogInterface, int i)
+											{
+												TransactionActivity.startInstance(getContext(), ((TransactionObject.Group) adapter.getItem(i)).groupId);
+											}
+										});
+									} else
+										builder.setMessage(R.string.text_listEmpty);
+
+									builder.show();
+
+									Looper.loop();
+								}
+							}.start();
 						}
 					}
 			);

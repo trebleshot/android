@@ -48,7 +48,7 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.fragment_text_share, menu);
+		inflater.inflate(R.menu.actions_share_text, menu);
 	}
 
 	@Override

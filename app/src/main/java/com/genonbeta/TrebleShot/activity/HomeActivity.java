@@ -12,28 +12,35 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
+import com.genonbeta.TrebleShot.fragment.InitiatedFileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
-import com.genonbeta.TrebleShot.fragment.PendingTransferListFragment;
-import com.genonbeta.TrebleShot.fragment.ReceivedFilesFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
+import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TextUtils;
 
 import java.io.File;
 
@@ -51,8 +58,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private NavigationView mNavigationView;
 	private GitHubUpdater mUpdater;
 	private Fragment mFragmentDeviceList;
-	private Fragment mFragmentReceivedFiles;
-	private Fragment mFragmentOnGoingProcessList;
+	private Fragment mFragmentFileExplorer;
+	private Fragment mFragmentTransactions;
 	private Fragment mFragmentShareApplication;
 	private Fragment mFragmentShareMusic;
 	private Fragment mFragmentShareVideo;
@@ -80,8 +87,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
-		mFragmentReceivedFiles = Fragment.instantiate(this, ReceivedFilesFragment.class.getName());
-		mFragmentOnGoingProcessList = Fragment.instantiate(this, PendingTransferListFragment.class.getName());
+		mFragmentFileExplorer = Fragment.instantiate(this, InitiatedFileExplorerFragment.class.getName());
+		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
 		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
@@ -107,6 +114,48 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 						highlightUpdater(versionName);
 				}
 			});
+
+		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+
+		if (!mPreferences.contains("migrated_version")) {
+			if (localDevice.buildNumber == 49) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+				builder.setTitle(R.string.text_importantNotice);
+				builder.setMessage(R.string.text_migrateNotice49);
+				builder.setPositiveButton(R.string.butn_close, null);
+				builder.show();
+			}
+		} else if (mPreferences.getInt("migrated_version", localDevice.buildNumber) < localDevice.buildNumber) {
+			// migrating to a new version
+		}
+
+		mPreferences.edit()
+				.putInt("migrated_version", localDevice.buildNumber)
+				.apply();
+	}
+
+	@Override
+	protected void onStart()
+	{
+		super.onStart();
+
+		View headerView = mNavigationView.getHeaderView(0);
+
+		if (headerView != null) {
+			NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+
+			ImageView imageView = headerView.findViewById(R.id.header_main_image);
+			TextView deviceNameText = headerView.findViewById(R.id.header_main_text1);
+			TextView versionText = headerView.findViewById(R.id.header_main_text2);
+
+			String firstLetters = TextUtils.getFirstLetters(localDevice.user, 1);
+			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.colorTextDrawable), 100);
+
+			imageView.setImageDrawable(drawable);
+			deviceNameText.setText(localDevice.user);
+			versionText.setText(localDevice.buildName);
+		}
 	}
 
 	@Override
@@ -114,10 +163,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		if (R.id.menu_activity_main_device_list == item.getItemId()) {
 			changeFragment(mFragmentDeviceList);
-		} else if (R.id.menu_activity_main_received_files == item.getItemId()) {
-			changeFragment(mFragmentReceivedFiles);
+		} else if (R.id.menu_activity_main_file_explorer == item.getItemId()) {
+			changeFragment(mFragmentFileExplorer);
 		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId()) {
-			changeFragment(mFragmentOnGoingProcessList);
+			changeFragment(mFragmentTransactions);
 		} else if (R.id.menu_activity_main_share_app == item.getItemId()) {
 			changeFragment(mFragmentShareApplication);
 		} else if (R.id.menu_activity_main_share_music == item.getItemId()) {
@@ -199,10 +248,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		if (intent != null)
 			if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
-				changeFragment(mFragmentReceivedFiles);
-				mNavigationView.setCheckedItem(R.id.menu_activity_main_received_files);
+				changeFragment(mFragmentFileExplorer);
+				mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);
 			} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
-				changeFragment(mFragmentOnGoingProcessList);
+				changeFragment(mFragmentTransactions);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
 			}
 	}

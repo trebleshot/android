@@ -3,15 +3,11 @@ package com.genonbeta.CoolSocket;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -25,6 +21,9 @@ import java.util.concurrent.TimeoutException;
 abstract public class CoolSocket
 {
 	public static final int NO_TIMEOUT = -1;
+
+	public static final String HEADER_SEPARATOR = "\nHEADER_END\n";
+	public static final String HEADER_ITEM_LENGTH = "length";
 
 	private Thread mServerThread;
 	private ServerSocket mServerSocket;
@@ -48,11 +47,35 @@ abstract public class CoolSocket
 		this.mSocketAddress = new InetSocketAddress(address, port);
 	}
 
-	abstract void onConnected(ActiveConnection activeConnection);
+	protected abstract void onConnected(ActiveConnection activeConnection);
 
 	public ArrayList<ActiveConnection> getConnections()
 	{
 		return this.mConnections;
+	}
+
+	public static <T> T connect(final Client.ConnectionHandler handler, Class<T> clazz)
+	{
+		Client clientInstance = new Client();
+
+		handler.onConnect(clientInstance);
+
+		return clientInstance.getReturn() != null ? clazz.cast(clientInstance.getReturn()) : null;
+	}
+
+	public static void connect(final Client.ConnectionHandler handler)
+	{
+		final Client clientInstance = new Client();
+
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				handler.onConnect(clientInstance);
+			}
+		}.start();
 	}
 
 	public int getLocalPort()
@@ -100,7 +123,7 @@ abstract public class CoolSocket
 		return this.getServerThread().isAlive();
 	}
 
-	protected boolean respondRequest(Socket socket)
+	protected boolean respondRequest(final Socket socket)
 	{
 		if (this.getConnections().size() < this.mMaxConnections || this.mMaxConnections == 0) {
 			final ActiveConnection connectionHandler = new ActiveConnection(socket);
@@ -120,6 +143,15 @@ abstract public class CoolSocket
 					}
 
 					onConnected(connectionHandler);
+
+
+					try {
+						socket.getInputStream().close();
+						socket.getOutputStream().close();
+						socket.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 
 					CoolSocket.this.getConnections().remove(this);
 				}
@@ -205,16 +237,27 @@ abstract public class CoolSocket
 	public static class ActiveConnection
 	{
 		private Socket mSocket;
-		private long mTimeout = NO_TIMEOUT;
+		private int mTimeout = NO_TIMEOUT;
 
 		public ActiveConnection(Socket socket)
 		{
 			this.mSocket = socket;
 		}
 
+		public ActiveConnection(Socket socket, int timeout)
+		{
+			this(socket);
+			setTimeout(timeout);
+		}
+
 		public InetAddress getAddress()
 		{
 			return this.getSocket().getInetAddress();
+		}
+
+		public String getClientAddress()
+		{
+			return this.getAddress().getHostAddress();
 		}
 
 		public Socket getSocket()
@@ -227,67 +270,88 @@ abstract public class CoolSocket
 			return mTimeout;
 		}
 
-		protected Response receive(String message) throws IOException, TimeoutException, JSONException
+		public Response receive() throws IOException, TimeoutException, JSONException
 		{
 			byte[] buffer = new byte[8096];
 			int len;
 			long calculatedTimeout = getTimeout() != NO_TIMEOUT ? System.currentTimeMillis() + getTimeout() : NO_TIMEOUT;
 
-			DataInputStream inputStream = new DataInputStream(getSocket().getInputStream());
+			InputStream inputStream = getSocket().getInputStream();
 			ByteArrayOutputStream headerIndex = new ByteArrayOutputStream();
 			ByteArrayOutputStream receivedMessage = new ByteArrayOutputStream();
 
-			inputStream.readFully(buffer);
-			headerIndex.write(buffer);
-
-			JSONObject headerJSON = new JSONObject(headerIndex.toString());
-			long totalLength = headerJSON.getLong("length");
+			Response response = new Response();
+			response.remoteAddress = getSocket().getRemoteSocketAddress();
 
 			do {
-				if ((len = inputStream.read(buffer)) > 0)
-					receivedMessage.write(buffer, 0, len);
+				if ((len = inputStream.read(buffer)) > 0) {
+					if (response.totalLength > 0) {
+						receivedMessage.write(buffer, 0, len);
+						receivedMessage.flush();
+					} else {
+						headerIndex.write(buffer, 0, len);
+						headerIndex.flush();
+
+						if (headerIndex.toString().contains(HEADER_SEPARATOR)) {
+							String headerString = headerIndex.toString();
+							int headerEndPoint = headerString.indexOf(HEADER_SEPARATOR);
+
+							JSONObject headerJSON = new JSONObject(headerString.substring(0, headerEndPoint));
+							response.totalLength = headerJSON.getLong(HEADER_ITEM_LENGTH);
+							response.headerIndex = headerJSON;
+
+							if (headerEndPoint < headerIndex.size())
+								receivedMessage.write(headerString.substring(headerEndPoint + (HEADER_SEPARATOR.length())).getBytes());
+						}
+					}
+				}
 
 				if (calculatedTimeout != NO_TIMEOUT && System.currentTimeMillis() > calculatedTimeout)
 					throw new TimeoutException("Read timed out!");
 			}
-			while (totalLength != receivedMessage.size());
+			while (response.totalLength != receivedMessage.size() && response.totalLength != 0);
 
-			Response response = new Response();
-
-			response.remoteAddress = getSocket().getRemoteSocketAddress();
-			response.headerIndex = headerJSON;
 			response.response = receivedMessage.toString();
 
 			return response;
 		}
 
-		protected void reply(String string) throws TimeoutException, IOException, JSONException
+		public void reply(String out) throws TimeoutException, IOException, JSONException
 		{
+			byte[] outputBytes = out == null ? new byte[0] : out.getBytes();
+
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			PrintWriter outputWriter = new PrintWriter(outputStream);
+
+			JSONObject headerJSON = new JSONObject()
+					.put(HEADER_ITEM_LENGTH, outputBytes.length);
+
+			outputWriter.write(headerJSON.toString() + HEADER_SEPARATOR);
+			outputWriter.flush();
+
 			byte[] buffer = new byte[8096];
 			int len;
 			long calculatedTimeout = getTimeout() != NO_TIMEOUT ? System.currentTimeMillis() + getTimeout() : NO_TIMEOUT;
 
-			DataInputStream inputStream = new DataInputStream(getSocket().getInputStream());
+			ByteArrayInputStream inputStream = new ByteArrayInputStream(outputBytes);
+			DataOutputStream remoteOutputStream = new DataOutputStream(getSocket().getOutputStream());
 
-			inputStream.readFully(buffer);
-
-			ByteArrayOutputStream headerReadable = new ByteArrayOutputStream();
-			DataOutputStream headerWriter = new DataOutputStream(headerReadable);
-			headerReadable.write(buffer);
-
-			JSONObject headerJSON = new JSONObject(headerReadable.toString());
-			long totalLength = headerJSON.getLong("length");
-
-			ByteArrayOutputStream receivedMessage = new ByteArrayOutputStream();
+			remoteOutputStream.write(outputStream.toByteArray());
+			remoteOutputStream.flush();
 
 			do {
 				if ((len = inputStream.read(buffer)) > 0)
-					receivedMessage.write(buffer, 0, len);
+					remoteOutputStream.write(buffer, 0, len);
 
 				if (calculatedTimeout != NO_TIMEOUT && System.currentTimeMillis() > calculatedTimeout)
 					throw new TimeoutException("Read timed out!");
 			}
-			while (totalLength != receivedMessage.size());
+			while (len != -1);
+		}
+
+		public void setTimeout(int timeout)
+		{
+			this.mTimeout = timeout;
 		}
 
 		public class Response
@@ -295,6 +359,7 @@ abstract public class CoolSocket
 			public SocketAddress remoteAddress;
 			public JSONObject headerIndex;
 			public String response;
+			public long totalLength;
 
 			public Response()
 			{
@@ -323,48 +388,36 @@ abstract public class CoolSocket
 		}
 	}
 
-	abstract public static class Connect
+	public static class Client
 	{
-		private String returnedMessage;
+		private Object mReturn;
 
-		public void Connect()
-		{
-		}
-
-		public ActiveConnection connect(SocketAddress socketAddress) throws IOException
+		public ActiveConnection connect(SocketAddress socketAddress, int operationTimeout) throws IOException
 		{
 			Socket socket = new Socket();
+
+			if (operationTimeout != NO_TIMEOUT)
+				socket.setSoTimeout(operationTimeout);
 
 			socket.bind(null);
 			socket.connect(socketAddress);
 
-			return new ActiveConnection(socket);
+			return new ActiveConnection(socket, operationTimeout);
 		}
 
-		public void doConnect(boolean currentThread, final ConnectionHandler handler)
+		public interface ConnectionHandler
 		{
-			if (currentThread) {
-				handler.onConnect(this);
-			} else
-				new Thread()
-				{
-					@Override
-					public void run()
-					{
-						super.run();
-						handler.onConnect(Connect.this);
-					}
-				}.start();
+			void onConnect(Client client);
 		}
 
-		interface ConnectionHandler
+		public Object getReturn()
 		{
-			void onConnect(Connect connect);
+			return mReturn;
 		}
-	}
 
-	public static PrintWriter getStreamWriter(OutputStream outputStream)
-	{
-		return new PrintWriter(new BufferedOutputStream(outputStream));
+		public void setReturn(Object returnedObject)
+		{
+			this.mReturn = returnedObject;
+		}
 	}
 }

@@ -146,8 +146,8 @@
     <string name="text_serverService">サーバーサービス</string>
     <string name="text_communicationService">通信サービス</string>
     <string name="text_chooserTargetService">デバイス選択プロバイダー</string>
-    <string name="text_pendingTransferEditor">転送の保留中</string>
-<string name="ques_why">なぜ?</string>
+    <string name="text_transactionViewer">転送の保留中</string>
+    <string name="ques_why">なぜ?</string>
     <string name="text_notAllowedHelp">%1$s で許可されているか確認してください。 デバイスリスト &gt; %2$s &gt; アクセスを許可 &gt; (有効にする)</string>
     <string name="butn_saveTo">保存...</string>
     <string name="mesg_secureExit">もう一度押すと終了します</string>

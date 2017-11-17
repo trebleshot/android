@@ -24,11 +24,13 @@ public class StreamInfo
 {
 	public String friendlyName;
 	public String mimeType;
+	public String directory;
 	public InputStream inputStream;
-	public long size;
 	public Uri uri;
+	public Type type;
+	public long size;
 
-	public static StreamInfo getStreamInfo(Context context, Uri uri) throws FileNotFoundException, StreamCorruptedException
+	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
 	{
 		StreamInfo streamInfo = new StreamInfo();
 		String uriType = uri.toString();
@@ -47,8 +49,11 @@ public class StreamInfo
 					if (nameIndex != -1 && sizeIndex != -1) {
 						streamInfo.friendlyName = cursor.getString(nameIndex);
 						streamInfo.size = cursor.getLong(sizeIndex);
-						streamInfo.inputStream = contentResolver.openInputStream(uri);
 						streamInfo.mimeType = contentResolver.getType(uri);
+						streamInfo.type = Type.STREAM;
+
+						if (openStreams)
+							streamInfo.inputStream = contentResolver.openInputStream(uri);
 
 						return streamInfo;
 					}
@@ -60,15 +65,39 @@ public class StreamInfo
 			File file = new File(URI.create(uriType));
 
 			if (file.canRead()) {
+				if (file.isDirectory())
+					throw new FolderStateException();
+
 				streamInfo.friendlyName = file.getName();
 				streamInfo.size = file.length();
-				streamInfo.inputStream = new FileInputStream(file);
 				streamInfo.mimeType = FileUtils.getFileContentType(file.getName());
+				streamInfo.type = Type.FILE;
+
+				if (openStreams)
+					streamInfo.inputStream = new FileInputStream(file);
 
 				return streamInfo;
 			}
 		}
 
 		throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
+	}
+
+	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams, String directory) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	{
+		StreamInfo streamInfo = getStreamInfo(context, uri, openStreams);
+		streamInfo.directory = directory;
+
+		return streamInfo;
+	}
+
+	public enum Type
+	{
+		STREAM,
+		FILE
+	}
+
+	public static class FolderStateException extends Exception
+	{
 	}
 }

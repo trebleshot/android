@@ -1,13 +1,14 @@
 package com.genonbeta.TrebleShot.util;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.service.Keyword;
 
 import org.json.JSONObject;
 
 import java.net.ConnectException;
-import java.net.Socket;
+import java.net.InetSocketAddress;
 
 public class NetworkDeviceInfoLoader
 {
@@ -33,63 +34,49 @@ public class NetworkDeviceInfoLoader
 
 	public NetworkDevice startLoading(boolean currentThread, final AccessDatabase database, final String ipAddress) throws ConnectException
 	{
-		final NetworkDevice device = new NetworkDevice();
-		final JsonResponseHandler handler = new JsonResponseHandler()
+		CoolSocket.Client.ConnectionHandler connectionHandler = new CoolSocket.Client.ConnectionHandler()
 		{
 			@Override
-			public void onConfigure(CoolCommunication.Messenger.Process process)
+			public void onConnect(CoolSocket.Client client)
 			{
-				super.onConfigure(process);
-
 				try {
 					Thread.sleep(1500);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
 
-			@Override
-			public void onJsonMessage(Socket socket, CoolCommunication.Messenger.Process process, JSONObject json)
-			{
-			}
+					NetworkDevice device = new NetworkDevice();
 
-			@Override
-			public void onResponseAvailable(String response)
-			{
-				try {
-					JSONObject jsonResponse = new JSONObject(response);
+					CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+
+					activeConnection.reply(null);
+					CoolSocket.ActiveConnection.Response clientResponse = activeConnection.receive();
+
+					JSONObject jsonResponse = new JSONObject(clientResponse.response);
 					JSONObject deviceInfo = jsonResponse.getJSONObject(Keyword.DEVICE_INFO);
+					JSONObject appInfo = jsonResponse.getJSONObject(Keyword.APP_INFO);
 
 					device.brand = deviceInfo.getString(Keyword.BRAND);
 					device.model = deviceInfo.getString(Keyword.MODEL);
 					device.user = deviceInfo.getString(Keyword.USER);
 					device.deviceId = deviceInfo.getString(Keyword.SERIAL);
 					device.lastUsageTime = System.currentTimeMillis();
-					device.buildNumber = jsonResponse
-							.getJSONObject(Keyword.APP_INFO)
-							.getInt(Keyword.VERSION_CODE);
+					device.buildNumber = appInfo.getInt(Keyword.VERSION_CODE);
+					device.buildName = appInfo.getString(Keyword.VERSION_NAME);
 
 					if (mListener != null)
 						mListener.onInfoAvailable(database, device, ipAddress);
+
+					client.setReturn(device);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		};
 
-		try {
-			if (currentThread) {
-				CoolCommunication.Messenger.sendOnCurrentThread(ipAddress, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
+		if (currentThread)
+			return CoolSocket.connect(connectionHandler, NetworkDevice.class);
+		else
+			CoolSocket.connect(connectionHandler);
 
-				if (device.deviceId == null)
-					throw new ConnectException("Serial is needed for " + ipAddress + " in order to list the device");
-			} else
-				CoolCommunication.Messenger.send(ipAddress, AppConfig.COMMUNATION_SERVER_PORT, null, handler);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return device;
+		return null;
 	}
 
 	public interface OnInfoAvailableListener
