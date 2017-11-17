@@ -6,27 +6,29 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.AbstractTransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.MainDatabase;
-import com.genonbeta.TrebleShot.database.Transaction;
+import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.FileUtils;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
-public class ServerService extends AbstractTransactionService<AwaitedFileReceiver>
+public class ServerService extends AbstractTransactionService<TransactionObject>
 {
 	public static final String TAG = "ServerService";
 
@@ -42,7 +44,7 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	}
 
 	@Override
-	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileReceiver>> getProcessList()
+	public ArrayList<CoolTransfer.TransferHandler<TransactionObject>> getProcessList()
 	{
 		return mReceive.getProcessList();
 	}
@@ -63,15 +65,17 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 	{
 		super.onStartCommand(intent, flags, startId);
 
+		Log.d(TAG, "onStart()");
+
 		if (intent != null) {
 			if (ACTION_START_RECEIVING.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)) {
 				int groupId = intent.getIntExtra(CommunicationService.EXTRA_GROUP_ID, -1);
-				AwaitedFileReceiver runningReceiver = findExtraById(groupId);
+				TransactionObject runningReceiver = findExtraById(groupId);
 
 				if (runningReceiver == null)
 					doJob(groupId);
 				else
-					Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, runningReceiver.fileName), Toast.LENGTH_SHORT).show();
+					Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, runningReceiver.friendlyName), Toast.LENGTH_SHORT).show();
 			}
 		}
 
@@ -80,113 +84,83 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 
 	public boolean doJob(int groupId)
 	{
-		SQLQuery.Select selectQuery = new SQLQuery.Select(MainDatabase.TABLE_TRANSFER)
-				.setWhere(MainDatabase.FIELD_TRANSFER_TYPE + "=? AND " + MainDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + MainDatabase.FIELD_TRANSFER_FLAG + " != ?",
-						String.valueOf(MainDatabase.TYPE_TRANSFER_TYPE_INCOMING),
-						String.valueOf(groupId),
-						Transaction.Flag.INTERRUPTED.toString());
+		TransactionObject.Group group = new TransactionObject.Group(groupId);
 
-		CursorItem receiverInstance = getTransactionInstance().getFirstFromTable(selectQuery);
+		try {
+			getDatabase().reconstruct(group);
 
-		if (receiverInstance == null)
-			return false;
+			CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+					.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
+							TransactionObject.Type.INCOMING.toString(),
+							String.valueOf(groupId),
+							TransactionObject.Flag.INTERRUPTED.toString()));
 
-		AwaitedFileReceiver receiver = new AwaitedFileReceiver(receiverInstance);
-
-		// TODO: 9.10.2017 Going forward still
-		/*
-		if (FileUtils.isFileConflicted(getApplicationContext(), receiver) != FileUtils.Conflict.CURRENTLY_OK) {
-			receiver.flag = Transaction.Flag.INTERRUPTED;
-
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(receiver)
-					.done();
-
-			return false;
-		}*/
-
-		File file = new File(FileUtils.getSaveLocationForFile(getApplicationContext(), receiver));
-
-		if (Transaction.Flag.PENDING.equals(receiver.flag)) {
-			if (file.isFile()) {
-				file = FileUtils.getUniqueFile(file);
-				receiver.fileName = file.getName();
-			}
-
-			try {
-				if (!file.createNewFile())
-					return false;
-			} catch (IOException e) {
-				e.printStackTrace();
+			if (receiverInstance == null) {
+				getDatabase().remove(group);
 				return false;
 			}
-		}
 
-		mReceive.receive(0, file, receiver.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, receiver, false);
+			Log.d(TAG, "We exist");
+
+			TransactionObject transactionObject = new TransactionObject(receiverInstance);
+			File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), transactionObject, group);
+
+			mReceive.receive(0, file, transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, transactionObject, false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
 
 		return true;
 	}
 
-	public class Receive extends CoolTransfer.Receive<AwaitedFileReceiver>
+	public class Receive extends CoolTransfer.Receive<TransactionObject>
 	{
 		public int multiCounter = 0;
 
 		@Override
-		public Flag onError(TransferHandler<AwaitedFileReceiver> handler, Exception error)
+		public Flag onError(TransferHandler<TransactionObject> handler, Exception error)
 		{
-			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
+			error.printStackTrace();
 
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(handler.getExtra())
-					.done();
+			handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
 
+			getDatabase().publish(handler.getExtra());
 			getNotificationUtils().notifyReceiveError(handler.getExtra());
 
 			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public void onNotify(TransferHandler<AwaitedFileReceiver> handler, int percent)
+		public void onNotify(TransferHandler<TransactionObject> handler, int percent)
 		{
 			handler.getExtra().notification.updateProgress(100, percent, false);
 		}
 
 		@Override
-		public void onTransferCompleted(TransferHandler<AwaitedFileReceiver> handler)
+		public void onTransferCompleted(TransferHandler<TransactionObject> handler)
 		{
 			multiCounter++;
 
-			getTransactionInstance()
-					.edit()
-					.removeTransaction(handler.getExtra())
-					.done();
+			getDatabase().remove(handler.getExtra());
 
-			File finalFileLocation = FileUtils.getUniqueFile(new File(handler.getFile().getParent() + File.separator + handler.getExtra().fileName));
+			File finalFileLocation = FileUtils.getUniqueFile(new File(handler.getFile().getParent() + File.separator + handler.getExtra().friendlyName), true);
 
 			handler.getFile().renameTo(finalFileLocation);
-
-			if (multiCounter <= 1)
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), finalFileLocation);
-			else
-				getNotificationUtils().notifyFileReceived(handler.getExtra(), finalFileLocation.getParent(), multiCounter);
+			handler.setFile(finalFileLocation);
 		}
 
 		@Override
-		public void onInterrupted(TransferHandler<AwaitedFileReceiver> handler)
+		public void onInterrupted(TransferHandler<TransactionObject> handler)
 		{
 			handler.getExtra().notification.cancel();
-			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
+			handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
 
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(handler.getExtra())
-					.done();
+			getDatabase().publish(handler.getExtra());
 		}
 
 		@Override
-		public Flag onSocketReady(TransferHandler<AwaitedFileReceiver> handler)
+		public Flag onSocketReady(TransferHandler<TransactionObject> handler)
 		{
 			return Flag.CONTINUE;
 		}
@@ -194,26 +168,67 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		@Override
 		public Flag onSocketReady(final ServerService.Receive.Handler handler, final ServerSocket serverSocket)
 		{
+			Flag flag = CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+			{
+				@Override
+				public void onConnect(CoolSocket.Client client)
+				{
+					client.setReturn(Flag.CANCEL_ALL);
+
+					try {
+						NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+						JSONObject jsonObject = new JSONObject();
+
+						jsonObject.put(Keyword.SERIAL, localDevice.deviceId);
+						jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
+						jsonObject.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
+						jsonObject.put(Keyword.GROUP_ID, handler.getExtra().groupId);
+						jsonObject.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
+
+						TransactionObject.Group group = new TransactionObject.Group(handler.getExtra().groupId);
+						getDatabase().reconstruct(group);
+
+						NetworkDevice.Connection connection = new NetworkDevice.Connection(group.deviceId, group.connectionAdapter);
+						getDatabase().reconstruct(connection);
+
+						if (handler.getFile().length() > 0)
+							jsonObject.put(Keyword.SKIPPED_BYTES, handler.getFile().length());
+
+						CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), CoolSocket.NO_TIMEOUT);
+
+						activeConnection.reply(jsonObject.toString());
+
+						JSONObject response = new JSONObject(activeConnection.receive().response);
+
+						if (response.getBoolean(Keyword.RESULT))
+							client.setReturn(Flag.CONTINUE);
+						else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG)))
+							client.setReturn(Flag.CANCEL_CURRENT);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}, Flag.class);
+
+			if (!Flag.CONTINUE.equals(flag)) {
+				handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
+				getDatabase().publish(handler.getExtra());
+			}
+
+			return flag;
+		}
+
+		@Override
+		public Flag onStart(TransferHandler<TransactionObject> handler)
+		{
 			try {
-				JSONObject jsonObject = new JSONObject();
+				handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
+				handler.getExtra().flag = TransactionObject.Flag.RUNNING;
 
-				jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_SERVER_READY);
-				jsonObject.put(Keyword.REQUEST_ID, handler.getExtra().requestId);
-				jsonObject.put(Keyword.GROUP_ID, handler.getExtra().groupId);
-				jsonObject.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
+				getDatabase().publish(handler.getExtra());
 
-				if (handler.getFile().length() > 0)
-					jsonObject.put(Keyword.FILE_SIZE, handler.getFile().length());
-
-				JSONObject response = new JSONObject(CoolCommunication.Messenger.sendOnCurrentThread(handler.getExtra().ip, AppConfig.COMMUNATION_SERVER_PORT, jsonObject.toString(), null));
-
-				if (response.getBoolean(Keyword.RESULT))
-					return Flag.CONTINUE;
-
-				if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG)))
-					return Flag.CANCEL_CURRENT;
-			} catch (JSONException e) {
-				// It shouldn't have happened.
+				return Flag.CONTINUE;
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
@@ -221,29 +236,29 @@ public class ServerService extends AbstractTransactionService<AwaitedFileReceive
 		}
 
 		@Override
-		public Flag onStart(TransferHandler<AwaitedFileReceiver> handler)
+		public void onPrepareNext(TransferHandler<TransactionObject> handler)
 		{
-			Log.d(TAG, "onStart(): " + handler.getFile().getName());
+			try {
+				TransactionObject.Group group = new TransactionObject.Group(handler.getExtra().groupId);
+				getDatabase().reconstruct(group);
 
-			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
-			handler.getExtra().flag = Transaction.Flag.RUNNING;
+				NetworkDevice device = new NetworkDevice(group.deviceId);
+				getDatabase().reconstruct(device);
 
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(handler.getExtra())
-					.done();
-
-			return Flag.CONTINUE;
+				if (!doJob(handler.getExtra().groupId))
+					if (multiCounter <= 1)
+						getNotificationUtils().notifyFileReceived(handler.getExtra(), device, handler.getFile());
+					else
+						getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile().getParent(), multiCounter);
+			} catch (Exception e) {
+				handler.getExtra().notification.cancel();
+			}
 		}
 
 		@Override
-		public void onPrepareNext(TransferHandler<AwaitedFileReceiver> handler)
-		{
-			doJob(handler.getExtra().groupId);
-		}
-
-		@Override
-		public void onProcessListChanged(ArrayList<TransferHandler<AwaitedFileReceiver>> processList, TransferHandler<AwaitedFileReceiver> handler, boolean isAdded)
+		public void onProcessListChanged
+				(ArrayList<TransferHandler<TransactionObject>> processList, TransferHandler<TransactionObject> handler,
+				 boolean isAdded)
 		{
 			super.onProcessListChanged(processList, handler, isAdded);
 

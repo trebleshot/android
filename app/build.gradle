@@ -1,15 +1,15 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '25.0.3'
+    compileSdkVersion 26
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 48
-        versionName "1.2.2.2"
+        targetSdkVersion 26
+        versionCode 49
+        versionName "1.2.3"
     }
 
     lintOptions {
@@ -32,9 +32,9 @@ dependencies {
     compile project(path: ':updatewithgithub')
     compile project(path: ':gdatabase')
 
-    compile 'com.android.support:design:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:26.0.2'
+    compile 'com.android.support:cardview-v7:26.0.2'
+    compile 'com.android.support:appcompat-v7:26.0.2'
 
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 }

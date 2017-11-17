@@ -1,38 +1,35 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.os.Build;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.genonbeta.CoolSocket.CoolCommunication;
-import com.genonbeta.CoolSocket.CoolJsonCommunication;
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.DeviceRegistry;
-import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
-import com.genonbeta.TrebleShot.helper.AwaitedFileReceiver;
-import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
-import com.genonbeta.TrebleShot.helper.JsonResponseHandler;
-import com.genonbeta.TrebleShot.helper.NetworkDevice;
-import com.genonbeta.TrebleShot.helper.NetworkDeviceInfoLoader;
-import com.genonbeta.TrebleShot.helper.NotificationUtils;
+import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.Socket;
+import java.io.File;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.security.Key;
+import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 public class CommunicationService extends Service
 {
@@ -42,19 +39,17 @@ public class CommunicationService extends Service
 	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
 	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
 
-	public static final String EXTRA_DEVICE_IP = "extraDeviceIp";
+	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
-	public static final String EXTRA_HALF_RESTRICT = "extraHalfRestrict";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader();
 	private NotificationUtils mNotification;
 	private String mReceivedClipboardIndex;
-	private Transaction mTransaction;
-	private DeviceRegistry mDeviceRegistry;
+	private AccessDatabase mDatabase;
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -71,8 +66,7 @@ public class CommunicationService extends Service
 			stopSelf();
 
 		mNotification = new NotificationUtils(this);
-		mTransaction = new Transaction(this);
-		mDeviceRegistry = new DeviceRegistry(this);
+		mDatabase = new AccessDatabase(this);
 	}
 
 	@Override
@@ -85,69 +79,83 @@ public class CommunicationService extends Service
 
 		if (intent != null) {
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
-				final String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
-				final boolean isHalfRestriction = intent.hasExtra(EXTRA_HALF_RESTRICT);
 
 				mNotification.cancel(notificationId);
 
-				if (!isHalfRestriction || isAccepted)
-					mDeviceRegistry.updateRestriction(ipAddress, false);
+				try {
+					final NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-				CoolCommunication.Messenger.send(ipAddress, AppConfig.COMMUNATION_SERVER_PORT, null,
-						new JsonResponseHandler()
+					TransactionObject.Group transactionGroup = new TransactionObject.Group(groupId);
+					mDatabase.reconstruct(transactionGroup);
+
+					NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
+					mDatabase.reconstruct(networkDevice);
+
+					final NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
+					mDatabase.reconstruct(connection);
+
+					CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+					{
+						@Override
+						public void onConnect(CoolSocket.Client connect)
 						{
-							@Override
-							public void onJsonMessage(Socket socket, com.genonbeta.CoolSocket.CoolCommunication.Messenger.Process process, JSONObject json)
-							{
-								try {
-									json.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-									json.put(Keyword.GROUP_ID, groupId);
-									json.put(Keyword.IS_ACCEPTED, isAccepted);
-								} catch (JSONException e) {
-									e.printStackTrace();
-								}
+							try {
+								JSONObject jsonObject = new JSONObject();
+
+								jsonObject.put(Keyword.SERIAL, localDevice.deviceId);
+								jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
+								jsonObject.put(Keyword.GROUP_ID, groupId);
+								jsonObject.put(Keyword.IS_ACCEPTED, isAccepted);
+
+								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+								activeConnection.reply(jsonObject.toString());
+							} catch (JSONException e) {
+								e.printStackTrace();
+							} catch (TimeoutException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
 						}
-				);
+					});
 
-				if (!mTransaction.transactionGroupExists(groupId)) {
-					mNotification.showToast(R.string.mesg_somethingWentWrong);
-					return START_NOT_STICKY;
+					if (isAccepted)
+						startService(new Intent(this, ServerService.class)
+								.setAction(ServerService.ACTION_START_RECEIVING)
+								.putExtra(EXTRA_GROUP_ID, groupId));
+					else
+						mDatabase.remove(transactionGroup);
+				} catch (Exception e) {
+					e.printStackTrace();
+
+					if (isAccepted)
+						mNotification.showToast(R.string.mesg_somethingWentWrong);
 				}
 
-				if (isAccepted)
-					startService(new Intent(this, ServerService.class)
-							.setAction(ServerService.ACTION_START_RECEIVING)
-							.putExtra(EXTRA_GROUP_ID, groupId));
-				else
-					mTransaction
-							.edit()
-							.removeTransactionGroup(groupId)
-							.done();
 			} else if (ACTION_IP.equals(intent.getAction())) {
-				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
+				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
 				mNotification.cancel(notificationId);
 
-				if (!mDeviceRegistry.exists(ipAddress))
-					return START_NOT_STICKY;
+				NetworkDevice device = new NetworkDevice(deviceId);
 
-				mDeviceRegistry.updateRestriction(ipAddress, !isAccepted);
+				try {
+					mDatabase.reconstruct(device);
+					device.isRestricted = !isAccepted;
+					mDatabase.publish(device);
+				} catch (Exception e) {
+					e.printStackTrace();
+					return START_NOT_STICKY;
+				}
 			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
-				String ipAddress = intent.getStringExtra(EXTRA_DEVICE_IP);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
 				mNotification.cancel(notificationId);
-
-				if (!mDeviceRegistry.exists(ipAddress))
-					return START_NOT_STICKY;
-
-				mDeviceRegistry.updateRestriction(ipAddress, false);
 
 				if (intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false)) {
 					((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", mReceivedClipboardIndex));
@@ -168,170 +176,214 @@ public class CommunicationService extends Service
 		stopForeground(true);
 	}
 
-	public class CommunicationServer extends CoolJsonCommunication
+	public class CommunicationServer extends CoolSocket
 	{
 		public CommunicationServer()
 		{
-			super(AppConfig.COMMUNATION_SERVER_PORT);
-			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+			super(AppConfig.COMMUNICATION_SERVER_PORT);
+			setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
 		}
 
-		@SuppressLint("HardwareIds")
 		@Override
-		public void onJsonMessage(Socket socket, JSONObject receivedMessage, JSONObject response, String clientIp)
+		protected void onConnected(ActiveConnection activeConnection)
 		{
-			NetworkDevice device = new NetworkDevice(clientIp);
-
 			try {
-				if (receivedMessage != null)
-					Log.d(TAG, "receivedMessage = " + receivedMessage.toString());
+				ActiveConnection.Response clientRequest = activeConnection.receive();
+				JSONObject replyJSON = clientRequest.totalLength > 0 ? new JSONObject(clientRequest.response) : new JSONObject();
 
 				JSONObject deviceInformation = new JSONObject();
 				JSONObject appInfo = new JSONObject();
+
 				boolean result = false;
-				boolean shouldContinue = true;
-				boolean halfRestriction = false;
+				boolean shouldContinue = false;
 
-				PackageInfo packageInfo = getPackageManager().getPackageInfo(getApplicationInfo().packageName, 0);
+				NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-				appInfo.put(Keyword.VERSION_CODE, packageInfo.versionCode);
-				appInfo.put(Keyword.VERSION_NAME, packageInfo.versionName);
+				deviceInformation.put(Keyword.SERIAL, localDevice.deviceId);
+				deviceInformation.put(Keyword.BRAND, localDevice.brand);
+				deviceInformation.put(Keyword.MODEL, localDevice.model);
+				deviceInformation.put(Keyword.USER, localDevice.user);
 
-				deviceInformation.put(Keyword.SERIAL, Build.SERIAL);
-				deviceInformation.put(Keyword.BRAND, Build.BRAND);
-				deviceInformation.put(Keyword.MODEL, Build.MODEL);
-				deviceInformation.put(Keyword.USER, ApplicationHelper.getNameOfThisDevice(getApplicationContext()));
+				appInfo.put(Keyword.VERSION_CODE, localDevice.buildNumber);
+				appInfo.put(Keyword.VERSION_NAME, localDevice.buildName);
 
-				response.put(Keyword.APP_INFO, appInfo);
-				response.put(Keyword.DEVICE_INFO, deviceInformation);
+				replyJSON.put(Keyword.APP_INFO, appInfo);
+				replyJSON.put(Keyword.DEVICE_INFO, deviceInformation);
 
-				if (receivedMessage.has(Keyword.REQUEST) && receivedMessage.getString(Keyword.REQUEST).length() > 0)
-					if (!mDeviceRegistry.exists(clientIp)) {
-						device.isRestricted = true;
-						device = mInfoLoader.startLoading(true, mDeviceRegistry, device.ip);
+				if (replyJSON.has(Keyword.SERIAL)) {
+					String serialNumber = replyJSON.getString(Keyword.SERIAL);
+					NetworkDevice device = new NetworkDevice(serialNumber);
 
-						mDeviceRegistry.registerDevice(device);
+					try {
+						mDatabase.reconstruct(device);
 
-						if (receivedMessage.getString(Keyword.REQUEST).equals(Keyword.REQUEST_TRANSFER)) {
+						if (!device.isRestricted)
 							shouldContinue = true;
-							halfRestriction = true;
-						} else
-							mNotification.notifyConnectionRequest(device);
-					} else {
-						device = mDeviceRegistry.getNetworkDevice(clientIp);
+					} catch (Exception e1) {
+						e1.printStackTrace();
 
-						if (device.isRestricted)
-							shouldContinue = false;
+						device = mInfoLoader.startLoading(true, mDatabase, activeConnection.getClientAddress());
+
+						if (device == null)
+							throw new Exception("Could not reach to the opposite server");
+
+						device.isRestricted = true;
+
+						mDatabase.publish(device);
+						mNotification.notifyConnectionRequest(device);
+
+						shouldContinue = false;
 					}
 
-				if (shouldContinue && receivedMessage.has(Keyword.REQUEST)) {
-					switch (receivedMessage.getString(Keyword.REQUEST)) {
-						case (Keyword.REQUEST_TRANSFER):
-							if (receivedMessage.has(Keyword.FILES_INDEX) && receivedMessage.has(Keyword.GROUP_ID)) {
-								String jsonIndex = receivedMessage.getString(Keyword.FILES_INDEX);
-								JSONArray jsonArray = new JSONArray(jsonIndex);
+					final NetworkDevice.Connection connection = new NetworkDevice.Connection(activeConnection.getClientAddress());
 
-								int count = 0;
-								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
-								AwaitedFileReceiver heldReceiver = null;
+					try {
+						mDatabase.reconstruct(connection);
+					} catch (Exception e) {
+						connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+					}
 
-								Transaction.EditingSession editingSession = mTransaction.edit();
+					connection.lastCheckedDate = System.currentTimeMillis();
+					connection.deviceId = device.deviceId;
 
-								for (int i = 0; i < jsonArray.length(); i++) {
-									if (!(jsonArray.get(i) instanceof JSONObject))
-										continue;
+					mDatabase.publish(connection);
 
-									JSONObject requestIndex = jsonArray.getJSONObject(i);
+					if (shouldContinue && replyJSON.has(Keyword.REQUEST)) {
+						switch (replyJSON.getString(Keyword.REQUEST)) {
+							case (Keyword.REQUEST_TRANSFER):
+								if (replyJSON.has(Keyword.FILES_INDEX) && replyJSON.has(Keyword.GROUP_ID)) {
+									String jsonIndex = replyJSON.getString(Keyword.FILES_INDEX);
+									final JSONArray jsonArray = new JSONArray(jsonIndex);
+									final int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									final NetworkDevice finalDevice = device;
 
-									if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
-										count++;
-										heldReceiver = new AwaitedFileReceiver(device, requestIndex.getInt(Keyword.REQUEST_ID), groupId, requestIndex.getString(Keyword.FILE_NAME), requestIndex.getLong(Keyword.FILE_SIZE), requestIndex.getString(Keyword.FILE_MIME));
-										editingSession.registerTransaction(heldReceiver);
+									result = true;
+
+									new Thread()
+									{
+										@Override
+										public void run()
+										{
+											super.run();
+
+											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
+											TransactionObject transactionObject = null;
+
+											mDatabase.publish(group);
+											DynamicNotification notification = mNotification.notifyPrepareFiles(group);
+
+											int count = 0;
+											int total = jsonArray.length();
+											long lastNotified = System.currentTimeMillis();
+
+											for (int i = 0; i < jsonArray.length(); i++) {
+												try {
+													if (!(jsonArray.get(i) instanceof JSONObject))
+														continue;
+
+													JSONObject requestIndex = jsonArray.getJSONObject(i);
+
+													if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
+														count++;
+
+														transactionObject = new TransactionObject(
+																requestIndex.getInt(Keyword.REQUEST_ID),
+																groupId,
+																requestIndex.getString(Keyword.FILE_NAME),
+																"." + UUID.randomUUID() + ".tshare",
+																requestIndex.getString(Keyword.FILE_MIME),
+																requestIndex.getLong(Keyword.FILE_SIZE),
+																TransactionObject.Type.INCOMING);
+
+														if (requestIndex.has(Keyword.DIRECTORY))
+															transactionObject.directory = requestIndex.getString(Keyword.DIRECTORY);
+
+														mDatabase.publish(transactionObject);
+													}
+
+												} catch (JSONException e) {
+													e.printStackTrace();
+												}
+
+												if ((System.currentTimeMillis() - lastNotified) > 1000) {
+													lastNotified = System.currentTimeMillis();
+													notification.updateProgress(total, count, false);
+												}
+											}
+
+											notification.cancel();
+
+											if (transactionObject != null && count > 0)
+												mNotification.notifyTransferRequest(transactionObject, finalDevice, count);
+										}
+									}.start();
+								}
+								break;
+							case (Keyword.REQUEST_RESPONSE):
+								if (replyJSON.has(Keyword.GROUP_ID)) {
+									int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									boolean isAccepted = replyJSON.getBoolean(Keyword.IS_ACCEPTED);
+
+									if (!isAccepted)
+										mDatabase.remove(new TransactionObject.Group(groupId));
+
+									result = true;
+								}
+								break;
+							case (Keyword.REQUEST_SERVER_READY):
+								if (replyJSON.has(Keyword.REQUEST_ID) && replyJSON.has(Keyword.GROUP_ID) && replyJSON.has(Keyword.SOCKET_PORT)) {
+									int requestId = replyJSON.getInt(Keyword.REQUEST_ID);
+									int groupId = replyJSON.getInt(Keyword.GROUP_ID);
+									int socketPort = replyJSON.getInt(Keyword.SOCKET_PORT);
+
+									TransactionObject.Group group = new TransactionObject.Group(groupId);
+									mDatabase.reconstruct(group);
+
+									try {
+										TransactionObject transactionObject = new TransactionObject(requestId);
+										mDatabase.reconstruct(transactionObject);
+
+										transactionObject.accessPort = socketPort;
+
+										if (replyJSON.has(Keyword.SKIPPED_BYTES))
+											transactionObject.skippedBytes = replyJSON.getInt(Keyword.SKIPPED_BYTES);
+
+										mDatabase.publish(transactionObject);
+
+										if (!group.connectionAdapter.equals(connection.adapterName)) {
+											group.connectionAdapter = connection.adapterName;
+											mDatabase.publish(group);
+										}
+
+										startService(new Intent(getApplicationContext(), ClientService.class)
+												.setAction(ClientService.ACTION_SEND)
+												.putExtra(EXTRA_REQUEST_ID, requestId));
+
+										result = true;
+									} catch (Exception e) {
+										replyJSON.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 									}
 								}
 
-								editingSession.done();
+								break;
+							case (Keyword.REQUEST_CLIPBOARD):
+								if (replyJSON.has(Keyword.CLIPBOARD_TEXT)) {
+									mReceivedClipboardIndex = replyJSON.getString(Keyword.CLIPBOARD_TEXT);
+									mNotification.notifyClipboardRequest(device, mReceivedClipboardIndex);
 
-								if (heldReceiver != null && count > 0) {
 									result = true;
-									mDeviceRegistry.updateRestrictionByDeviceId(device, true);
-									mNotification.notifyTransferRequest(halfRestriction, heldReceiver, device, count);
 								}
-							}
-							break;
-						case (Keyword.REQUEST_RESPONSE):
-							if (receivedMessage.has(Keyword.GROUP_ID)) {
-								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
-								boolean isAccepted = receivedMessage.getBoolean(Keyword.IS_ACCEPTED);
-
-								if (!isAccepted)
-									mTransaction
-											.edit()
-											.removeTransactionGroup(groupId)
-											.done();
-
-								result = true;
-							}
-							break;
-						case (Keyword.REQUEST_SERVER_READY):
-							if (receivedMessage.has(Keyword.REQUEST_ID) && receivedMessage.has(Keyword.GROUP_ID) && receivedMessage.has(Keyword.SOCKET_PORT)) {
-								int requestId = receivedMessage.getInt(Keyword.REQUEST_ID);
-								int groupId = receivedMessage.getInt(Keyword.GROUP_ID);
-								int socketPort = receivedMessage.getInt(Keyword.SOCKET_PORT);
-
-								Transaction.EditingSession editingSession = mTransaction
-										.edit()
-										.updateAccessPort(requestId, socketPort);
-
-								if (mTransaction.getAffectedRowCount() > 0) {
-									if (receivedMessage.has(Keyword.FILE_SIZE)) {
-										ContentValues values = new ContentValues();
-										values.put(Transaction.FIELD_TRANSFER_SIZE, receivedMessage.getLong(Keyword.FILE_SIZE));
-										editingSession.updateTransaction(requestId, values);
-									}
-
-									AwaitedFileSender sender = new AwaitedFileSender(mTransaction.getTransaction(requestId));
-
-									if (!clientIp.equals(sender.ip)) {
-										ContentValues values = new ContentValues();
-										values.put(Transaction.FIELD_TRANSFER_USERIP, clientIp);
-										editingSession.updateTransactionGroup(sender.groupId, values);
-									}
-
-									Intent starterIntent = new Intent(getApplicationContext(), ClientService.class)
-											.setAction(ClientService.ACTION_SEND)
-											.putExtra(EXTRA_REQUEST_ID, requestId);
-
-									startService(starterIntent);
-									result = true;
-								} else if (mTransaction.transactionGroupExists(groupId))
-									response.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
-
-								editingSession.done();
-							}
-							break;
-						case (Keyword.REQUEST_CLIPBOARD):
-							if (receivedMessage.has(Keyword.CLIPBOARD_TEXT)) {
-								mReceivedClipboardIndex = receivedMessage.getString(Keyword.CLIPBOARD_TEXT);
-
-								mNotification.notifyClipboardRequest(device, mReceivedClipboardIndex);
-								mDeviceRegistry.updateRestrictionByDeviceId(device, true);
-
-								result = true;
-							}
-							break;
+								break;
+						}
 					}
 				}
 
-				response.put(Keyword.RESULT, result);
+				replyJSON.put(Keyword.RESULT, result);
+
+				activeConnection.reply(replyJSON.toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}
-
-		@Override
-		protected void onError(Exception exception)
-		{
 		}
 	}
 }

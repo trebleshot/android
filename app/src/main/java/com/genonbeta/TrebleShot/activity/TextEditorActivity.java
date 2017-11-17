@@ -42,7 +42,7 @@ public class TextEditorActivity extends Activity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		getMenuInflater().inflate(R.menu.action_text_editor, menu);
+		getMenuInflater().inflate(R.menu.actions_text_editor, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
 

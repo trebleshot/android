@@ -1,0 +1,78 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_fileName"/>
+
+        <TextView
+            android:id="@+id/transaction_info_file_name"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
+
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_fileSize"/>
+
+        <TextView
+            android:id="@+id/transaction_info_file_size"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_empty"/>
+
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
+
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_fileMime"/>
+
+        <TextView
+            android:id="@+id/transaction_info_file_mime"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_empty"/>
+
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
+
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_fileStatus"/>
+
+        <TextView
+            android:id="@+id/transaction_info_file_status"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_empty"/>
+
+    </LinearLayout>
+</ScrollView>

@@ -49,7 +49,7 @@ public class CursorItem
 
 	public String getString(String keyName)
 	{
-		return String.valueOf(mList.get(keyName));
+		return mList.get(keyName) == null ? null : String.valueOf(mList.get(keyName));
 	}
 
 	public int lenght()

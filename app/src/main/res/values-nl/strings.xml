@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_appName">TrebleShot</string>
+<resources>
+    <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Navigatiebalk openen</string>
     <string name="text_navigationDrawerClose">Navigatiebalk sluiten</string>
     <string name="text_preferences">Voorkeuren</string>
@@ -144,7 +145,7 @@
     <string name="text_serverService">Serverdienst</string>
     <string name="text_communicationService">Communicatiedienst</string>
     <string name="text_chooserTargetService">Apparaatkiezer</string>
-    <string name="text_pendingTransferEditor">Overdrachten in wachtrij</string>
+    <string name="text_transactionViewer">Overdrachten in wachtrij</string>
     <string name="text_error">Fout</string>
     <string name="ques_why">Waarom?</string>
     <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s. Apparaatlijst &gt; %2$s &gt; Toegang toestaan &gt; (schakel het in)</string>

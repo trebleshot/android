@@ -51,7 +51,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.application_list, menu);
+		inflater.inflate(R.menu.actions_application, menu);
 	}
 
 	@Override

@@ -1,24 +1,24 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
+import android.net.Uri;
 import android.os.IBinder;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.app.AbstractTransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.Transaction;
-import com.genonbeta.TrebleShot.helper.AwaitedFileSender;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.StreamInfo;
-import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.android.database.SQLQuery;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class ClientService extends AbstractTransactionService<AwaitedFileSender>
+public class ClientService extends AbstractTransactionService<TransactionObject>
 {
 	public static final String TAG = "ClientService";
 
@@ -33,7 +33,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 	}
 
 	@Override
-	public ArrayList<CoolTransfer.TransferHandler<AwaitedFileSender>> getProcessList()
+	public ArrayList<CoolTransfer.TransferHandler<TransactionObject>> getProcessList()
 	{
 		return mSend.getProcessList();
 	}
@@ -54,82 +54,88 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 			if (ACTION_SEND.equals(intent.getAction()) && intent.hasExtra(CommunicationService.EXTRA_REQUEST_ID)) {
 				try {
 					int requestId = intent.getIntExtra(CommunicationService.EXTRA_REQUEST_ID, -1);
-					CursorItem transaction = getTransactionInstance().getTransaction(requestId);
 
-					if (transaction != null) {
-						AwaitedFileSender awaitedSender = new AwaitedFileSender(transaction);
-						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), awaitedSender.fileUri);
+					TransactionObject transactionObject = new TransactionObject(requestId);
+					getDatabase().reconstruct(transactionObject);
 
-						mSend.send(awaitedSender.ip, awaitedSender.port, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, awaitedSender, false);
-					}
+					TransactionObject.Group group = new TransactionObject.Group(transactionObject.groupId);
+					getDatabase().reconstruct(group);
+
+					NetworkDevice.Connection connection = new NetworkDevice.Connection(group.deviceId, group.connectionAdapter);
+					getDatabase().reconstruct(connection);
+
+					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(transactionObject.file), true);
+
+					mSend.send(connection.ipAddress, transactionObject.accessPort, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, transactionObject, false);
 				} catch (Exception e) {
-
+					e.printStackTrace();
 				}
 			}
 
 		return START_STICKY;
 	}
 
-	public class Send extends CoolTransfer.Send<AwaitedFileSender>
+	public class Send extends CoolTransfer.Send<TransactionObject>
 	{
 		@Override
-		public Flag onError(TransferHandler<AwaitedFileSender> handler, Exception error)
+		public Flag onError(TransferHandler<TransactionObject> handler, Exception error)
 		{
-			handler.getExtra().flag = Transaction.Flag.INTERRUPTED;
+			error.printStackTrace();
 
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(handler.getExtra())
-					.done();
+			handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
+
+			getDatabase().publish(handler.getExtra());
 
 			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public void onNotify(TransferHandler<AwaitedFileSender> handler, int percent)
+		public void onNotify(TransferHandler<TransactionObject> handler, int percent)
 		{
 			handler.getExtra().notification.updateProgress(100, percent, false);
 		}
 
 		@Override
-		public void onTransferCompleted(TransferHandler<AwaitedFileSender> handler)
+		public void onTransferCompleted(TransferHandler<TransactionObject> handler)
 		{
-			getTransactionInstance()
-					.edit()
-					.removeTransaction(handler.getExtra())
-					.done();
+			getDatabase().remove(handler.getExtra());
+
+			if (getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(handler.getExtra().groupId))) == null)
+				getDatabase().remove(new TransactionObject.Group(handler.getExtra().groupId));
 		}
 
 		@Override
-		public void onInterrupted(TransferHandler<AwaitedFileSender> handler)
+		public void onInterrupted(TransferHandler<TransactionObject> handler)
 		{
-
 		}
 
 		@Override
-		public Flag onSocketReady(TransferHandler<AwaitedFileSender> handler)
+		public Flag onSocketReady(TransferHandler<TransactionObject> handler)
 		{
 			return Flag.CONTINUE;
 		}
 
 		@Override
-		public Flag onStart(TransferHandler<AwaitedFileSender> handler)
+		public Flag onStart(TransferHandler<TransactionObject> handler)
 		{
-			getWifiLock().acquire();
+			try {
+				handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
+				handler.getExtra().flag = TransactionObject.Flag.RUNNING;
 
-			handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
-			handler.getExtra().flag = Transaction.Flag.RUNNING;
+				getWifiLock().acquire();
+				getDatabase().publish(handler.getExtra());
 
-			getTransactionInstance()
-					.edit()
-					.updateTransaction(handler.getExtra())
-					.done();
+				return Flag.CONTINUE;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
-			return Flag.CONTINUE;
+			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public void onStop(TransferHandler<AwaitedFileSender> handler)
+		public void onStop(TransferHandler<TransactionObject> handler)
 		{
 			super.onStop(handler);
 
@@ -142,9 +148,9 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		{
 			super.onOrientatingStreams(handler, inputStream, outputStream);
 
-			if (handler.getExtra().fileSize > 0)
+			if (handler.getExtra().skippedBytes > 0)
 				try {
-					handler.skipBytes(handler.getExtra().fileSize);
+					handler.skipBytes(handler.getExtra().skippedBytes);
 				} catch (IOException e) {
 					handler.interrupt();
 					e.printStackTrace();
@@ -152,7 +158,7 @@ public class ClientService extends AbstractTransactionService<AwaitedFileSender>
 		}
 
 		@Override
-		public void onProcessListChanged(ArrayList<TransferHandler<AwaitedFileSender>> processList, TransferHandler<AwaitedFileSender> handler, boolean isAdded)
+		public void onProcessListChanged(ArrayList<TransferHandler<TransactionObject>> processList, TransferHandler<TransactionObject> handler, boolean isAdded)
 		{
 			super.onProcessListChanged(processList, handler, isAdded);
 

@@ -3,10 +3,14 @@ package com.genonbeta.TrebleShot.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,7 +18,7 @@ import android.widget.ImageView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
-import com.genonbeta.TrebleShot.helper.ApplicationHelper;
+import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.io.File;
 
@@ -32,6 +36,13 @@ public class FileExplorerFragment extends Fragment
 	private PathResolverRecyclerAdapter mAdapter;
 	private FloatingActionButton mButtonOfEverything;
 
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+	}
+
 	@Nullable
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -39,9 +50,9 @@ public class FileExplorerFragment extends Fragment
 		View view = inflater.inflate(R.layout.fragment_fileexplorer, container, false);
 
 		mRecyclerView = (RecyclerView) view.findViewById(R.id.fragment_fileexplorer_pathresolver);
-		mButtonOfEverything = (FloatingActionButton) view.findViewById(R.id.fragment_fileexplorer_boe);
 		mHomeButton = (ImageView) view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
 		mFileListFragment = new FileListFragment();
+		mButtonOfEverything = (FloatingActionButton) view.findViewById(R.id.fragment_fileexplorer_boe);
 
 		mRecyclerView.setHasFixedSize(true);
 
@@ -62,7 +73,7 @@ public class FileExplorerFragment extends Fragment
 			@Override
 			public void onClick(PathResolverRecyclerAdapter.Holder holder)
 			{
-				mFileListFragment.goPath(holder.file);
+				mFileListFragment.goPath(new File(holder.index.path));
 			}
 		});
 
@@ -80,29 +91,11 @@ public class FileExplorerFragment extends Fragment
 			@Override
 			public void onPathChanged(File file)
 			{
-				mAdapter.goTo(file);
+				mAdapter.goTo(file == null ? null : file.getAbsolutePath().split(File.separator));
 				mAdapter.notifyDataSetChanged();
 
 				if (mAdapter.getItemCount() > 0)
 					mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
-
-				mButtonOfEverything.setVisibility(file == null || !file.canWrite() ? View.GONE : View.VISIBLE);
-			}
-		});
-
-		mButtonOfEverything.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				new CreateFolderDialog(getContext(), mFileListFragment.getAdapter().getPath(), new CreateFolderDialog.OnCreatedListener()
-				{
-					@Override
-					public void onCreated()
-					{
-						mFileListFragment.refreshList();
-					}
-				}).show();
 			}
 		});
 
@@ -118,7 +111,38 @@ public class FileExplorerFragment extends Fragment
 		mFileListFragment.getListView().setClipToPadding(false);
 
 		if (mFileListFragment.getAdapter().getPath() == null)
-			mFileListFragment.goPath(ApplicationHelper.getApplicationDirectory(getActivity()));
+			mFileListFragment.goPath(FileUtils.getApplicationDirectory(getActivity()));
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_file_explorer, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.actions_file_explorer_create_folder) {
+			if (mFileListFragment.getAdapter().getPath() != null && mFileListFragment.getAdapter().getPath().canWrite())
+				new CreateFolderDialog(getContext(), mFileListFragment.getAdapter().getPath(), new CreateFolderDialog.OnCreatedListener()
+				{
+					@Override
+					public void onCreated()
+					{
+						mFileListFragment.refreshList();
+					}
+				}).show();
+			else
+				Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
+
+			return true;
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	public FloatingActionButton getButtonOfEverything()

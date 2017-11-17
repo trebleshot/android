@@ -11,7 +11,6 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 
 import java.io.File;
 
@@ -28,7 +27,6 @@ public class FilePickerActivity extends Activity
 	public static final String EXTRA_CHOSEN_PATH = "chosenPath";
 
 	private FileExplorerFragment mFileExplorerFragment;
-	private View mLayoutMain;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -36,7 +34,6 @@ public class FilePickerActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_filepicker);
 
-		mLayoutMain = findViewById(R.id.activity_filepicker_layout_main);
 		mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
 		mFileExplorerFragment.getFileListFragment().setMultiChoice(false);
 	}
@@ -48,6 +45,8 @@ public class FilePickerActivity extends Activity
 
 		if (getIntent() != null) {
 			if (ACTION_CHOOSE_DIRECTORY.equals(getIntent().getAction())) {
+				getSupportActionBar().setTitle(R.string.text_chooseFolder);
+
 				mFileExplorerFragment
 						.getFileListFragment()
 						.getAdapter()
@@ -55,8 +54,8 @@ public class FilePickerActivity extends Activity
 
 				mFileExplorerFragment.getFileListFragment().refreshList();
 
-				mLayoutMain.setVisibility(View.VISIBLE);
-				mLayoutMain.setOnClickListener(new View.OnClickListener()
+				mFileExplorerFragment.getButtonOfEverything().setVisibility(View.VISIBLE);
+				mFileExplorerFragment.getButtonOfEverything().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
@@ -70,6 +69,8 @@ public class FilePickerActivity extends Activity
 					}
 				});
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
+				getSupportActionBar().setTitle(R.string.text_chooseFile);
+
 				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
 				{
 					@Override

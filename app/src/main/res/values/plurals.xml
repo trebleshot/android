@@ -24,4 +24,16 @@
         <item quantity="one">Receive this file?</item>
         <item quantity="other">Receive %d files?</item>
     </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">Just now</item>
+        <item quantity="other">%d seconds ago</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">A minute ago</item>
+        <item quantity="other">%d minutes ago</item>
+    </plurals>
 </resources>

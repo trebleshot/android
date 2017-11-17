@@ -12,14 +12,32 @@ import java.util.ArrayList;
 
 public class SQLQuery
 {
-	public enum Type
+	public static void createTables(SQLiteDatabase db, SQLValues values)
 	{
-		INTEGER,
-		DOUBLE,
-		TEXT,
-		DATE,
-		BLOB,
-		TIMESTAMP
+		for (SQLValues.Table table : values.getTables().values())
+		{
+			StringBuilder stringBuilder = new StringBuilder();
+
+			stringBuilder.append("CREATE TABLE `");
+			stringBuilder.append(table.getName());
+			stringBuilder.append("` (");
+
+			int count = 0;
+
+			for (SQLValues.Column columnString : table.getColumns().values())
+			{
+				if (count > 0)
+					stringBuilder.append(", ");
+
+				stringBuilder.append(columnString.toString());
+
+				count++;
+			}
+
+			stringBuilder.append(")");
+
+			db.execSQL(stringBuilder.toString());
+		}
 	}
 
 	public static class Select
@@ -89,71 +107,6 @@ public class SQLQuery
 		{
 			public void onOpen(com.genonbeta.android.database.SQLiteDatabase db, Cursor cursor);
 			public void onLoad(com.genonbeta.android.database.SQLiteDatabase db, Cursor cursor, CursorItem item);
-		}
-	}
-
-	public static class CreateTable
-	{
-		private String mTableName;
-		private ArrayList<String> mColumns = new ArrayList<>();
-
-		public CreateTable(String tableName)
-		{
-			mTableName = tableName;
-		}
-
-		public CreateTable addColumn(String columnName, String type, boolean nullable)
-		{
-			mColumns.add("`" + columnName + "` " + type + " " + ((nullable) ? "null" : "not null"));
-			return this;
-		}
-
-		public CreateTable addColumn(String columnName, String type, boolean nullable, String extra)
-		{
-			mColumns.add("`" + columnName + "` " + type + " " + ((nullable) ? "null" : "not null") + " " + extra);
-			return this;
-		}
-
-		public CreateTable applyColumns(CreateTable table)
-		{
-			mColumns.addAll(table.getColumnList());
-			return this;
-		}
-
-		public SQLQuery.CreateTable exec(SQLiteDatabase db)
-		{
-			db.execSQL(getQuery());
-			return this;
-		}
-
-		public ArrayList<String> getColumnList()
-		{
-			return mColumns;
-		}
-
-		public String getQuery()
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-
-			stringBuilder.append("CREATE TABLE `");
-			stringBuilder.append(mTableName);
-			stringBuilder.append("` (");
-
-			int count = 0;
-
-			for (String columnString : mColumns)
-			{
-				if (count > 0)
-					stringBuilder.append(", ");
-
-				stringBuilder.append(columnString);
-
-				count++;
-			}
-
-			stringBuilder.append(")");
-
-			return stringBuilder.toString();
 		}
 	}
 }

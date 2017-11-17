@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.ListAdapter;
@@ -29,7 +28,9 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 		@Override
 		public Loader<ArrayList<T>> onCreateLoader(int id, Bundle args)
 		{
-			setListShown(false);
+			if (mAdapter.getCount() == 0)
+				setListShown(false);
+
 			return new ListAdapter.Loader<>(mAdapter);
 		}
 
@@ -38,6 +39,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 		{
 			if (isResumed()) {
 				setListShown(true);
+
 				mAdapter.onUpdate(data);
 				mAdapter.notifyDataSetChanged();
 
@@ -53,11 +55,16 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 	};
 
 	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		mAdapter = onAdapter();
+	}
+
+	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
-		mAdapter = onAdapter();
 
 		setListAdapter(mAdapter);
 		getLoaderManager().initLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
@@ -73,7 +80,8 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 
 	public void refreshList()
 	{
-		getLoaderManager().restartLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
+		if (!getLoaderManager().hasRunningLoaders())
+			getLoaderManager().restartLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
 	}
 
 	protected void onListRefreshed()

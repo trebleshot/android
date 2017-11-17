@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -18,7 +17,7 @@ import android.view.View;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 
-import static com.genonbeta.TrebleShot.activity.TrebleShotActivity.REQUEST_PERMISSION_ALL;
+import static com.genonbeta.TrebleShot.activity.HomeActivity.REQUEST_PERMISSION_ALL;
 
 public abstract class Activity extends AppCompatActivity
 {
