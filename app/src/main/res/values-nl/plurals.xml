@@ -29,7 +29,7 @@
 	<item quantity="other">%d bestanden</item>
 </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="zero">Zojuist</item>
+	<item quantity="one">Eén seconde geleden</item>
 	<item quantity="other">%d seconden geleden</item>
 </plurals>
     <plurals name="text_minutesAgo">
