@@ -32,7 +32,7 @@
     <string name="text_deviceNameSummary">Deze naam zal worden weergegeven op andere apparaten</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Type wordt niet ondersteund</string>
-    <string name="mesg_fileSendError">%s kan niet worden verstuurd</string>
+    <string name="mesg_fileSendError">Het bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
     <string name="mesg_fileSendCancelled">Het versturen van %s is geannuleerd</string>
     <string name="mesg_fileNameChanged">Bezig met opslaan als %s</string>
@@ -81,8 +81,8 @@
     <string name="text_notification">Melding</string>
     <string name="text_useSounds">Geluiden</string>
     <string name="text_useSoundsSummary">Geluiden gebruiken</string>
-    <string name="text_useVibration">Trillen</string>
-    <string name="text_useVibrationSummary">Trilling gebruiken</string>
+    <string name="text_useVibration">Trillen en melding</string>
+    <string name="text_useVibrationSummary">Trilling gebruiken en meldingen weergeven</string>
     <string name="text_useLights">Lichten</string>
     <string name="text_useLightSummary">Lichten gebruiken</string>
     <string name="mesg_scanCompleted">Scannen voltooid</string>
@@ -98,7 +98,7 @@
     <string name="mesg_notAllowed">U heeft geen toestemming</string>
     <string name="text_connectionProblem">Verbindingsprobleem</string>
     <string name="text_communicationProblem">Communicatieprobleem</string>
-    <string name="butn_multiSelect">Alles selecteren/deselecteren</string>
+    <string name="butn_multiSelect">Multi-selectie</string>
     <string name="butn_receive">Ontvangen</string>
     <string name="butn_block">Blokkeren</string>
     <string name="text_aboutSummary">Deze software is ontwikkeld door Genonbeta Open-Source Software Organization</string>
@@ -132,7 +132,7 @@
     <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
     <string name="ques_removeAll">Alles verwijderen?</string>
     <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten in de wachtrij die u op deze lijst ziet</string>
-    <string name="text_availableNetworks">Beschikbare netwerken voor dit apparaat</string>
+    <string name="text_availableNetworks">Geregistreerde netwerken</string>
     <string name="text_noNetworkAvailable">Er is geen netwerk beschikbaar</string>
     <string name="mesg_deviceNotExits">De verstuurder bestaat niet meer in uw apparaatlijst</string>
     <string name="text_savedConnections">Opgeslagen verbindingen</string>
@@ -148,7 +148,9 @@
     <string name="text_transactionViewer">Overdrachten in wachtrij</string>
     <string name="text_error">Fout</string>
     <string name="ques_why">Waarom?</string>
-    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s. Apparaatlijst &gt; %2$s &gt; Toegang toestaan &gt; (schakel het in)</string>
+    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s. 
+\n
+\nApparaatlijst &gt; %2$s &gt; Toegang toestaan &gt; (schakel het in)</string>
     <string name="butn_saveTo">Opslaan naar</string>
     <string name="mesg_secureExit">Druk nogmaals om af te sluiten</string>
     <string name="butn_create">Creëren</string>
@@ -167,4 +169,44 @@
     <string name="text_defaultFolder">Standaard map</string>
     <string name="text_storage">Opslag</string>
     <string name="text_receiveFiles">Bestanden ontvangen</string>
+<string name="butn_refresh">\@string/text_refresh</string>
+    <string name="mesg_pathSaved">De map is succesvol opgeslagen</string>
+    <string name="butn_search">Zoeken</string>
+    <string name="butn_changeConnection">Verbinding wijzigen</string>
+    <string name="text_fileName">Bestandsnaam</string>
+    <string name="text_fileSize">Bestandsgrootte</string>
+    <string name="text_fileMime">Bestandssoort</string>
+    <string name="text_fileStatus">Bestandsstatus</string>
+    <string name="butn_resume">Hervatten</string>
+    <string name="text_transactionDetails">Overdrachtsgegevens</string>
+    <string name="text_fileExplorer">Bestandsverkenner</string>
+    <string name="butn_createFolder">Map creëren</string>
+    <string name="text_chooseFolder">Map kiezen</string>
+    <string name="text_chooseFile">Bestand kiezen</string>
+    <string name="mesg_pathSameError">De gekozen map mag niet dezelfde zijn als de oude</string>
+    <string name="ques_checkOldFiles">Controleren op beschadigde bestanden?</string>
+    <string name="text_checkOldFiles">TrebleShot zal deels ontvangen bestanden verplaatsen naar de door u gekozen map. Dit kan even duren. U kunt dit overslaan door op Afwijzen te drukken</string>
+    <string name="mesg_newFilesReceived">Nieuwe bestanden ontvangen</string>
+    <string name="butn_show">Weergeven</string>
+    <string name="text_preparingFiles">Bezig met voorbereiden van bestanden</string>
+    <string name="text_savingDetails">Bezig met opslaan van gegevens vóór de ontvangst</string>
+    <string name="text_version">Versie</string>
+    <string name="text_flagPending">In wachtrij</string>
+    <string name="text_flagRunning">Lopend</string>
+    <string name="text_flagInterrupted">Onderbroken</string>
+    <string name="text_flagResume">Hervat</string>
+    <string name="text_unknown">Onbekend</string>
+    <string name="text_importantNotice">Belangrijke mededeling</string>
+    <string name="text_migrateNotice49">Bedankt voor het kiezen voor een open bron-applicatie en dat u helpt ons sterker te maken. Lees dit bericht als u een oude versie heeft geüpdatet. Deze versie van TrebleShot kan niet communiceren met apparaten die een oudere versie draaien. We hebben TrebleShot\'s communicatiemechanisme bijgewerkt. Werk apparaten die een oudere versie draaien bij naar de nieuwste versie zodat TrebleShot goed kan blijven werken.</string>
+    <string name="text_longAgo">Lang geleden</string>
+    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
+    <string name="text_interfaceWireless">Wi-Fi</string>
+    <string name="text_interfaceBluetooth">Bluetooth</string>
+    <string name="text_interfaceEthernet">Ethernet</string>
+    <string name="text_interfacUnknown">\@string/text_unknown</string>
+    <string name="text_shareTextShort">Tekst</string>
+    <string name="butn_feelLucky">Een gokje wagen</string>
+    <string name="butn_connectionList">Verbindingen</string>
+    <string name="text_feelLuckyFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
+    <string name="text_feelLuckyOngoing">TrebleShot zal de beslissing voor u nemen</string>
 </resources>
