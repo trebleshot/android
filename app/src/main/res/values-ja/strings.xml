@@ -42,7 +42,7 @@
     <string name="text_multipleFileReceiveCompleted">完了しました</string>
     <string name="text_deviceList">デバイスリスト</string>
     <string name="text_fileOpenAppChoose">アプリで開く</string>
-    <string name="text_fileShareAppChoose">アプリで共有</string>
+    <string name="text_fileShareAppChoose">アプリケーションを選択</string>
     <string name="text_receivedFiles">受信したファイル</string>
     <string name="butn_edit">編集</string>
     <string name="butn_share">共有</string>
