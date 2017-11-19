@@ -18,4 +18,13 @@
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="other">%d ファイルを受信しますか?</item>
     </plurals>
+<plurals name="text_files">
+	<item quantity="other">%d ファイル</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="other">%d 秒前</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="other">%d 分前</item>
+</plurals>
 </resources>
