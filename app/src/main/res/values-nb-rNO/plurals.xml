@@ -23,4 +23,16 @@
 	<item quantity="one">Ta imot denne fila?</item>
 	<item quantity="other">Ta imot %d filer?</item>
 </plurals>
+<plurals name="text_files">
+	<item quantity="one">ei fil</item>
+	<item quantity="other">%d filer</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">Akkurat nå</item>
+	<item quantity="other">%d sekunder siden</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="one">Ett minutt siden</item>
+	<item quantity="other">%d minutter siden</item>
+</plurals>
 </resources>
