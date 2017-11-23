@@ -27,9 +27,6 @@ Send and receive files over available connections without making any effort
 [<img src="screenshots/screenshot_4.png" width=160>](screenshots/screenshot_4.png)
 [<img src="screenshots/screenshot_5.png" width=160>](screenshots/screenshot_5.png)
 [<img src="screenshots/screenshot_6.png" width=160>](screenshots/screenshot_6.png)
-[<img src="screenshots/screenshot_7.png" width=160>](screenshots/screenshot_7.png)
-[<img src="screenshots/screenshot_8.png" width=160>](screenshots/screenshot_8.png)
-[<img src="screenshots/screenshot_9.png" width=160>](screenshots/screenshot_9.png)
 
 ## Supported languages
 * English
