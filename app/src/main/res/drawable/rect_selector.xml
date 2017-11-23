@@ -5,11 +5,6 @@
             <solid android:color="@color/clickableItemBackground"/>
         </shape>
     </item>
-    <item android:state_pressed="true">
-        <shape>
-            <solid android:color="@color/clickableItemBackground"/>
-        </shape>
-    </item>
     <item>
         <shape>
             <solid android:color="@color/transparentColor"/>

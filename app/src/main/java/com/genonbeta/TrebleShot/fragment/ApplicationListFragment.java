@@ -4,11 +4,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
-import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,11 +16,10 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.app.ShareableListFragment;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 
-import java.io.File;
-
-public class ApplicationListFragment extends AbstractEditableListFragment<ApplicationListAdapter.AppInfo, ApplicationListAdapter> implements FragmentTitle
+public class ApplicationListFragment extends ShareableListFragment<ApplicationListAdapter.PackageHolder, ApplicationListAdapter> implements TitleSupport
 {
 	private SharedPreferences mPreferences;
 
@@ -39,12 +36,6 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	public ApplicationListAdapter onAdapter()
 	{
 		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false));
-	}
-
-	@Override
-	protected ActionModeListener onActionModeListener()
-	{
-		return new ChoiceListener();
 	}
 
 	@Override
@@ -82,7 +73,7 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	{
 		super.onListItemClick(l, v, position, id);
 
-		final ApplicationListAdapter.AppInfo appInfo = (ApplicationListAdapter.AppInfo) getAdapter().getItem(position);
+		final ApplicationListAdapter.PackageHolder appInfo = (ApplicationListAdapter.PackageHolder) getAdapter().getItem(position);
 		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 
 		if (launchIntent != null) {
@@ -105,27 +96,8 @@ public class ApplicationListFragment extends AbstractEditableListFragment<Applic
 	}
 
 	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_application);
-	}
-
-	private class ChoiceListener extends ActionModeListener
-	{
-		public ApplicationListAdapter.AppInfo getItem(int position)
-		{
-			return (ApplicationListAdapter.AppInfo) getAdapter().getItem(position);
-		}
-
-		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
-		{
-			return Uri.fromFile(new File(getItem(pos).codePath));
-		}
-
-		@Override
-		public String onProvideName(ActionMode mode, int position)
-		{
-			return getItem(position).label + "_" + getItem(position).version + ".apk";
-		}
 	}
 }

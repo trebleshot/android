@@ -60,6 +60,8 @@ public class TextUtils
 
 	public static boolean searchWord(String word, String searchThis)
 	{
-		return word.toLowerCase().contains(searchThis);
+		return searchThis == null
+				|| searchThis.length() == 0
+				|| word.toLowerCase().contains(searchThis.toLowerCase());
 	}
 }

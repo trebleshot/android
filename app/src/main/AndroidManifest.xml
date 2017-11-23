@@ -13,13 +13,14 @@
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
+        android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/text_appName"
         android:theme="@style/AppTheme"
-        android:allowBackup="true"
-        android:fullBackupContent="true"
         tools:ignore="GoogleAppIndexingWarning">
 
         <activity
@@ -55,12 +56,12 @@
         </activity>
 
         <activity
-            android:label="@string/text_fileExplorer"
-            android:name=".activity.FilePickerActivity"/>
+            android:name=".activity.FilePickerActivity"
+            android:label="@string/text_fileExplorer"/>
 
         <activity
-            android:label="@string/text_transactionViewer"
             android:name=".activity.TransactionActivity"
+            android:label="@string/text_transactionViewer"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
@@ -126,7 +127,7 @@
             android:label="@string/text_receiveFiles"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE" />
+                <action android:name="android.service.quicksettings.action.QS_TILE"/>
             </intent-filter>
         </service>
 

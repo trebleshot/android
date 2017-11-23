@@ -5,7 +5,10 @@
     <item
         android:id="@+id/actions_file_explorer_create_folder"
         android:icon="@drawable/ic_add_white_24dp"
-        android:title="@string/butn_createFolder"
-        app:showAsAction="always"/>
+        android:title="@string/butn_createFolder"/>
+
+    <item
+        android:id="@+id/actions_file_explorer_open_file_manager"
+        android:title="@string/butn_showOnFileManager"/>
 
 </menu>

@@ -1,10 +1,17 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class AppUtils
 {
@@ -25,7 +32,11 @@ public class AppUtils
 
 	public static NetworkDevice getLocalDevice(Context context)
 	{
-		NetworkDevice device = new NetworkDevice(Build.SERIAL);
+		String serial = Build.VERSION.SDK_INT < 26
+				? Build.SERIAL
+				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
+
+		NetworkDevice device = new NetworkDevice(serial);
 
 		device.brand = Build.BRAND;
 		device.model = Build.MODEL;

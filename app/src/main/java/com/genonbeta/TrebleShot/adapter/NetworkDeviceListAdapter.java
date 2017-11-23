@@ -75,14 +75,20 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	}
 
 	@Override
+	public ArrayList<NetworkDevice> getList()
+	{
+		return mList;
+	}
+
+	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
 			view = getInflater().inflate(R.layout.list_network_device, viewGroup, false);
 
-		TextView deviceText = (TextView) view.findViewById(R.id.network_device_list_device_text);
-		TextView userText = (TextView) view.findViewById(R.id.network_device_list_user_text);
-		ImageView userImage = (ImageView) view.findViewById(R.id.network_device_list_device_image);
+		TextView deviceText = view.findViewById(R.id.network_device_list_device_text);
+		TextView userText = view.findViewById(R.id.network_device_list_user_text);
+		ImageView userImage = view.findViewById(R.id.network_device_list_device_image);
 
 		NetworkDevice device = (NetworkDevice) getItem(position);
 		String firstLetters = TextUtils.getFirstLetters(device.user, 1);

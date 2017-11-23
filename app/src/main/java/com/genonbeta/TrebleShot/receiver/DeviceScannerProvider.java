@@ -3,10 +3,7 @@ package com.genonbeta.TrebleShot.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
-import android.widget.Toast;
 
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -52,11 +49,11 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 			if (mDeviceScanner.isScannerAvailable()) {
 				ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-				NetworkDevice device = AppUtils.getLocalDevice(context);
-				mDatabase.publish(device);
+				NetworkDevice localDevice = AppUtils.getLocalDevice(context);
+				mDatabase.publish(localDevice);
 
 				for (AddressedInterface addressedInterface : interfaceList) {
-					NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), Build.SERIAL, System.currentTimeMillis());
+					NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.deviceId, System.currentTimeMillis());
 					mDatabase.publish(connection);
 				}
 

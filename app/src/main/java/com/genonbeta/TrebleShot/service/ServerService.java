@@ -9,7 +9,7 @@ import android.widget.Toast;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.AbstractTransactionService;
+import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -28,7 +28,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 
-public class ServerService extends AbstractTransactionService<TransactionObject>
+public class ServerService extends TransactionService<TransactionObject>
 {
 	public static final String TAG = "ServerService";
 
@@ -95,7 +95,9 @@ public class ServerService extends AbstractTransactionService<TransactionObject>
 							String.valueOf(groupId),
 							TransactionObject.Flag.INTERRUPTED.toString()));
 
-			if (receiverInstance == null) {
+			if (receiverInstance == null
+					&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))) == null) {
 				getDatabase().remove(group);
 				return false;
 			}

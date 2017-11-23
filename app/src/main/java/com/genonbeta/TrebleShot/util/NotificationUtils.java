@@ -7,15 +7,15 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.FileProvider;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
-import com.genonbeta.TrebleShot.app.AbstractTransactionService;
+import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.ClientService;
@@ -144,7 +144,7 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
 
-		cancelIntent.setAction(AbstractTransactionService.ACTION_CANCEL_JOB);
+		cancelIntent.setAction(TransactionService.ACTION_CANCEL_JOB);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
 		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
@@ -259,10 +259,18 @@ public class NotificationUtils
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, group.groupId);
 
+		Intent cancelIntent = new Intent(mContext, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_CANCEL_INDEXING)
+				.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId())
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId);
+
+		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), cancelIntent, 0);
+
 		notification.setSmallIcon(android.R.drawable.stat_sys_download)
 				.setContentTitle(mContext.getString(R.string.text_preparingFiles))
 				.setContentText(mContext.getString(R.string.text_savingDetails))
-				.setAutoCancel(true)
+				.setAutoCancel(false)
+				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(R.string.butn_cancel), negativeIntent)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, group.groupId), 0));
@@ -275,7 +283,7 @@ public class NotificationUtils
 		boolean isIncoming = TransactionObject.Type.INCOMING.equals(transaction.type);
 
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
-		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(AbstractTransactionService.ACTION_CANCEL_KILL);
+		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(TransactionService.ACTION_CANCEL_KILL);
 
 		notification.setSmallIcon(android.R.drawable.stat_sys_warning)
 				.setOngoing(true)

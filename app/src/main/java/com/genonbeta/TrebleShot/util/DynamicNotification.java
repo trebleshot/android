@@ -1,8 +1,10 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
+
+import com.genonbeta.TrebleShot.config.AppConfig;
 
 /**
  * Created by: veli
@@ -16,7 +18,7 @@ public class DynamicNotification extends NotificationCompat.Builder
 
 	public DynamicNotification(Context context, NotificationManagerCompat manager)
 	{
-		super(context);
+		super(context, AppConfig.DEFAULT_NOTIFICATION_CHANNEL);
 		mManager = manager;
 	}
 

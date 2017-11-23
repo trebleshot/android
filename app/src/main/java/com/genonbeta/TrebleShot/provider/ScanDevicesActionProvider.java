@@ -42,7 +42,7 @@ public class ScanDevicesActionProvider extends ActionProvider
 		@SuppressLint("InflateParams")
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_running_process, null);
 
-		mReloadImage = (ImageView) view.findViewById(R.id.layout_running_process_reload_image);
+		mReloadImage = view.findViewById(R.id.layout_running_process_reload_image);
 
 		checkScanStatus();
 

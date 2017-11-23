@@ -23,13 +23,12 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 
-public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.ListFragment<NetworkDevice, NetworkDeviceListAdapter> implements FragmentTitle
+public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.ListFragment<NetworkDevice, NetworkDeviceListAdapter> implements TitleSupport
 {
-	private NotificationUtils mNotification;
 	private SharedPreferences mPreferences;
 	private MenuItem mAnimatedSearchMenuItem;
 	private AbsListView.OnItemClickListener mClickListener;
@@ -39,7 +38,6 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		mNotification = new NotificationUtils(getActivity());
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
 		mIntentFilter.addAction(DeviceScannerProvider.ACTION_SCAN_STARTED);
@@ -79,7 +77,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 		if (mClickListener != null)
 			mClickListener.onItemClick(l, v, position, id);
 		else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getContext(), getAdapter().getDatabase(), mNotification, device).show();
+			new DeviceInfoDialog(getContext(), getAdapter().getDatabase(), device).show();
 	}
 
 	@Override
@@ -119,7 +117,7 @@ public class NetworkDeviceListFragment extends com.genonbeta.TrebleShot.app.List
 	}
 
 	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_deviceList);
 	}

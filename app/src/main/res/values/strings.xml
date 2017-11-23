@@ -88,7 +88,7 @@
     <string name="text_notification">Notification</string>
     <string name="text_useSounds">Sounds</string>
     <string name="text_useSoundsSummary">Use sounds</string>
-    <string name="text_useVibration">Vibration and Heads-up</string>
+    <string name="text_useVibration">Vibration and Heads-up notification</string>
     <string name="text_useVibrationSummary">Use vibration and show heads-up notifications</string>
     <string name="text_useLights">Lights</string>
     <string name="text_useLightSummary">Use lights</string>
@@ -162,7 +162,7 @@
     <string name="text_createFolder">Create folder</string>
     <string name="mesg_fileAlreadyExists">File already exists</string>
     <string name="mesg_folderCreateError">Folder could not be created</string>
-    <string name="mesg_permissionRequired">TrebleShot cannot send or receive files without permission</string>
+    <string name="text_requestPermissionStorageSummary">This permission allows TrebleShot to write your storage and allows you to receive and share files. Rejecting will cause the fundamental features stop.</string>
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
     <string name="butn_newFile">New file</string>
@@ -212,6 +212,21 @@
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Feel lucky</string>
     <string name="butn_connectionList">Connections</string>
-    <string name="text_feelLuckyFailed">None of the connections worked for the device. Its address may have been changed. Try reconnecting to the network while TrebleShot is open.</string>
+    <string name="text_feelLuckyFailed">None of the connections worked for the device. Its address may have changed. Try reconnecting to the network while TrebleShot is open.</string>
     <string name="text_feelLuckyOngoing">TrebleShot will decide for you</string>
+    <string name="butn_retry_all">Retry all</string>
+    <string name="butn_ask">Ask</string>
+    <string name="text_permissionRequest">Permission request</string>
+    <string name="text_requestPermissionStorage">Storage permission</string>
+    <string name="text_requestPermissionReadPhoneState">Read phone state permission</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot uses your phone\'s serial number to create long-term identity number for your device which helps other devices running TrebleShot to recognize your device. Your device is running Oreo or higher and TrebleShot requires this permission to gather the serial number. Rejecting will cause TrebleShot stop.</string>
+    <string name="text_mediaDirectory">Media directory</string>
+    <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
+    <string name="mesg_notEnoughSpace">Not enough space</string>
+    <string name="text_totalIncomingSize">Total size of incoming files</string>
+    <string name="text_totalOutgoingSize">Total size of outgoing files</string>
+    <string name="text_availableDiskSpace">Available disk space</string>
+    <string name="text_savePath">Save path</string>
+    <string name="text_transactionGroupDetails">Transaction group details</string>
+    <string name="text_usedConnection">Used connection</string>
 </resources>

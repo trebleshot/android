@@ -18,9 +18,9 @@ import java.util.ArrayList;
  * Date: 4/29/17 2:59 PM
  */
 
-abstract public class AbstractTransactionService<E extends TransactionObject> extends Service
+abstract public class TransactionService<E extends TransactionObject> extends Service
 {
-	public static final String TAG = AbstractTransactionService.class.getSimpleName();
+	public static final String TAG = TransactionService.class.getSimpleName();
 
 	public final static String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
 	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";

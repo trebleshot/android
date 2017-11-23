@@ -1,22 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:id="@+id/layout"
-              android:padding="15dip"
-              android:background="@drawable/checkable_item_background"
-              android:orientation="vertical"
-              android:gravity="center_vertical">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/rect_selector"
+    android:padding="15dp">
 
-    <TextView
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/text_image"
+        android:src="@drawable/default_album_art"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginRight="23dp"
+        android:layout_marginEnd="23dp"/>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/text"
-        style="@style/marqueeText.primary"/>
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/image"
+        android:layout_toRightOf="@id/image"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/text2"
-        style="@style/marqueeText.secondary"/>
+        <TextView
+            android:id="@+id/text"
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/text2"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+</RelativeLayout>

@@ -19,8 +19,14 @@ abstract public class ListAdapter<T> extends android.widget.BaseAdapter
 	public ListAdapter(Context context)
 	{
 		mContext = context;
-		this.mInflater = LayoutInflater.from(context);
+		mInflater = LayoutInflater.from(context);
 	}
+
+	public abstract ArrayList<T> onLoad();
+
+	public abstract void onUpdate(ArrayList<T> passedItem);
+
+	public abstract ArrayList<T> getList();
 
 	public Context getContext()
 	{
@@ -31,10 +37,6 @@ abstract public class ListAdapter<T> extends android.widget.BaseAdapter
 	{
 		return mInflater;
 	}
-
-	public abstract ArrayList<T> onLoad();
-
-	public abstract void onUpdate(ArrayList<T> passedItem);
 
 	public static class Loader<E> extends AsyncTaskLoader<ArrayList<E>>
 	{

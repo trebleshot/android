@@ -34,7 +34,7 @@ public class TextEditorActivity extends Activity
 			if (getSupportActionBar() != null)
 				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-			mEditTextEditor = (EditText) findViewById(R.id.layout_text_editor_activity_text_text_box);
+			mEditTextEditor = findViewById(R.id.layout_text_editor_activity_text_text_box);
 			mEditTextEditor.getText().append(getIntent().getStringExtra(EXTRA_TEXT_INDEX));
 		}
 	}

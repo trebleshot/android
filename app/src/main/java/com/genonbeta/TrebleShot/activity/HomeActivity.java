@@ -18,6 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,23 +31,25 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
-import com.genonbeta.TrebleShot.fragment.InitiatedFileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextShareFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.util.PredetachListener;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupported
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
@@ -55,7 +58,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
 	private SharedPreferences mPreferences;
+	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
+	private DrawerLayout mDrawerLayout;
 	private GitHubUpdater mUpdater;
 	private Fragment mFragmentDeviceList;
 	private Fragment mFragmentFileExplorer;
@@ -73,21 +78,27 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
-		drawer.addDrawerListener(toggle);
-		toggle.syncState();
+		mDrawerLayout = findViewById(R.id.drawer_layout);
+
+		if (mDrawerLayout != null) {
+			ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
+			mDrawerLayout.addDrawerListener(toggle);
+			toggle.syncState();
+		}
 
 		mUpdater = new GitHubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		mNavigationView = (NavigationView) findViewById(R.id.nav_view);
+		mActionMode = findViewById(R.id.content_powerful_action_mode);
+		mNavigationView = findViewById(R.id.nav_view);
 		mNavigationView.setNavigationItemSelectedListener(this);
 
+		mActionMode.setContainerLayout(findViewById(R.id.content_powerful_action_mode_layout));
+
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
-		mFragmentFileExplorer = Fragment.instantiate(this, InitiatedFileExplorerFragment.class.getName());
+		mFragmentFileExplorer = Fragment.instantiate(this, FileExplorerFragment.class.getName());
 		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
@@ -200,8 +211,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		} else
 			return false;
 
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-		drawer.closeDrawer(GravityCompat.START);
+		if (mDrawerLayout != null)
+			mDrawerLayout.closeDrawer(GravityCompat.START);
 
 		return true;
 	}
@@ -216,10 +227,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	@Override
 	public void onBackPressed()
 	{
-		DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-		if (drawer.isDrawerOpen(GravityCompat.START))
-			drawer.closeDrawer(GravityCompat.START);
+		if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
+			mDrawerLayout.closeDrawer(GravityCompat.START);
 		else {
 			if ((System.currentTimeMillis() - mExitPressTime) < 2000)
 				finish();
@@ -228,18 +237,22 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
 			}
 		}
-
 	}
 
 	public void changeFragment(Fragment fragment)
 	{
+		Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+
+		if (removedFragment != null && removedFragment instanceof PredetachListener)
+			((PredetachListener) removedFragment).onPrepareDetach();
+
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
 		ft.replace(R.id.content_frame, fragment);
 		ft.commit();
 
-		if (fragment instanceof FragmentTitle)
-			setTitle(((FragmentTitle) fragment).getFragmentTitle(this));
+		if (fragment instanceof TitleSupport)
+			setTitle(((TitleSupport) fragment).getTitle(this));
 		else
 			setTitle(R.string.text_appName);
 	}
@@ -262,6 +275,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		item.setChecked(true);
 		item.setTitle(R.string.text_newVersionAvailable);
+	}
+
+	public PowerfulActionMode getPowerfulActionMode()
+	{
+		return mActionMode;
 	}
 
 	private void sendThisApplication()

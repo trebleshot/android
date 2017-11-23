@@ -30,7 +30,7 @@ import java.util.ArrayList;
 
 public class DeviceInfoDialog extends AlertDialog.Builder
 {
-	public DeviceInfoDialog(@NonNull final Context context, final AccessDatabase database, final NotificationUtils utils, final NetworkDevice device)
+	public DeviceInfoDialog(@NonNull final Context context, final AccessDatabase database, final NetworkDevice device)
 	{
 		super(context);
 
@@ -40,10 +40,10 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			@SuppressLint("InflateParams")
 			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
 
-			TextView modelText = (TextView) rootView.findViewById(R.id.device_info_brand_and_model);
-			TextView addressText = (TextView) rootView.findViewById(R.id.device_info_ip_address);
-			TextView versionText = (TextView) rootView.findViewById(R.id.device_info_version);
-			SwitchCompat accessSwitch = (SwitchCompat) rootView.findViewById(R.id.device_info_access_switcher);
+			TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
+			TextView addressText = rootView.findViewById(R.id.device_info_ip_address);
+			TextView versionText = rootView.findViewById(R.id.device_info_version);
+			SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
 
 			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
 			versionText.setText(device.buildName);
