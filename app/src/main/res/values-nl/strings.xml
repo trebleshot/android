@@ -209,4 +209,18 @@
     <string name="butn_connectionList">Verbindingen</string>
     <string name="text_feelLuckyFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
     <string name="text_feelLuckyOngoing">TrebleShot zal de beslissing voor u nemen</string>
+<string name="butn_retry_all">Alles opnieuw proberen</string>
+    <string name="butn_ask">Vragen</string>
+    <string name="text_permissionRequest">Toestemmingsverzoek</string>
+    <string name="text_requestPermissionStorage">Toestemming voor opslag</string>
+    <string name="text_requestPermissionReadPhoneState">Toestemming voor telefoonstatus</string>
+    <string name="text_mediaDirectory">Mediamap</string>
+    <string name="text_emulatedMediaDirectory">Geëmuleerd (%s)</string>
+    <string name="mesg_notEnoughSpace">Onvoldoende ruimte</string>
+    <string name="text_totalIncomingSize">Totale grootte van inkomende bestanden</string>
+    <string name="text_totalOutgoingSize">Totale grootte van uitgaande bestanden</string>
+    <string name="text_availableDiskSpace">Beschikbare schijfruimte</string>
+    <string name="text_savePath">Opslagpad</string>
+    <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
+    <string name="text_usedConnection">Gebruikte verbinding</string>
 </resources>
