@@ -8,8 +8,8 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 49
-        versionName "1.2.3"
+        versionCode 50
+        versionName "1.2.4"
     }
 
     lintOptions {

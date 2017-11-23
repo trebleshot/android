@@ -5,27 +5,35 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.util.Shareable;
+import com.genonbeta.TrebleShot.util.SweetImageLoader;
+import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class ApplicationListAdapter extends AbstractEditableListAdapter<ApplicationListAdapter.AppInfo>
+public class ApplicationListAdapter
+		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder>
+		implements SweetImageLoader.Handler<ApplicationListAdapter.PackageHolder, Drawable>
 {
 	private boolean mShowSysApps = false;
 	private PackageManager mManager;
-	private ArrayList<AppInfo> mList = new ArrayList<>();
-	private Comparator<AppInfo> mComparator = new Comparator<AppInfo>()
+	private ArrayList<PackageHolder> mList = new ArrayList<>();
+	private Comparator<PackageHolder> mComparator = new Comparator<PackageHolder>()
 	{
 		@Override
-		public int compare(ApplicationListAdapter.AppInfo compareFrom, ApplicationListAdapter.AppInfo compareTo)
+		public int compare(PackageHolder compareFrom, PackageHolder compareTo)
 		{
-			return compareFrom.label.toLowerCase().compareTo(compareTo.label.toLowerCase());
+			return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
 		}
 	};
 
@@ -37,9 +45,15 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 	}
 
 	@Override
-	public ArrayList<AppInfo> onLoad()
+	public Drawable onLoadBitmap(PackageHolder object)
 	{
-		ArrayList<AppInfo> list = new ArrayList<>();
+		return object.icon;
+	}
+
+	@Override
+	public ArrayList<PackageHolder> onLoad()
+	{
+		ArrayList<PackageHolder> list = new ArrayList<>();
 
 		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
@@ -47,8 +61,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps) {
 				String label = (String) appInfo.loadLabel(mManager);
 
-				if (applySearch(label))
-					list.add(new AppInfo(appInfo.loadLogo(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+				list.add(new PackageHolder(appInfo.loadIcon(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 			}
 		}
 
@@ -58,7 +71,7 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 	}
 
 	@Override
-	public void onUpdate(ArrayList<AppInfo> passedItem)
+	public void onUpdate(ArrayList<PackageHolder> passedItem)
 	{
 		mList.clear();
 		mList.addAll(passedItem);
@@ -82,18 +95,26 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 		return 0;
 	}
 
+	public ArrayList<PackageHolder> getList()
+	{
+		return mList;
+	}
+
 	@Override
 	public View getView(int position, View view, ViewGroup viewGroup)
 	{
 		if (view == null)
 			view = getInflater().inflate(R.layout.list_application, viewGroup, false);
 
-		AppInfo info = (AppInfo) getItem(position);
-		TextView text = (TextView) view.findViewById(R.id.text);
-		TextView text2 = (TextView) view.findViewById(R.id.text2);
+		PackageHolder info = (PackageHolder) getItem(position);
+		TextView text1 = view.findViewById(R.id.text);
+		TextView text2 = view.findViewById(R.id.text2);
+		ImageView image = view.findViewById(R.id.image);
 
-		text.setText(info.label);
+		text1.setText(info.friendlyName);
 		text2.setText(info.version);
+
+		SweetImageLoader.load(this, getContext(), image, info);
 
 		return view;
 	}
@@ -103,20 +124,18 @@ public class ApplicationListAdapter extends AbstractEditableListAdapter<Applicat
 		mShowSysApps = show;
 	}
 
-	public static class AppInfo
+	public static class PackageHolder extends Shareable
 	{
 		public Drawable icon;
-		public String label;
 		public String version;
-		public String codePath;
 		public String packageName;
 
-		public AppInfo(Drawable icon, String label, String version, String codePath, String packageName)
+		public PackageHolder(Drawable icon, String friendlyName, String version, String codePath, String packageName)
 		{
+			super(friendlyName, friendlyName + "_" + version + ".apk", Uri.fromFile(new File(codePath)));
+
 			this.icon = icon;
-			this.label = label;
 			this.version = version;
-			this.codePath = codePath;
 			this.packageName = packageName;
 		}
 	}

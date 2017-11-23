@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -23,6 +24,7 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TransactionObject;
 
@@ -48,8 +50,8 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
-	private String mSharedText;
 	private ArrayList<StreamInfo> mFiles = new ArrayList<>();
+	private String mSharedText;
 	private EditText mStatusText;
 	private AccessDatabase mDatabase;
 	private ProgressDialog mProgressDialog;
@@ -84,10 +86,12 @@ public class ShareActivity extends Activity
 					if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 						appendStatusText(getIntent().getStringExtra(Intent.EXTRA_TEXT));
 
-						ImageView editButton = (ImageView) findViewById(R.id.activity_share_edit_button);
+						ImageButton actionButton = findViewById(R.id.activity_share_edit_button);
 
-						editButton.setVisibility(View.VISIBLE);
-						editButton.setOnClickListener(new View.OnClickListener()
+						actionButton.setImageResource(R.drawable.ic_create_black_24dp);
+						actionButton.setVisibility(View.VISIBLE);
+						actionButton.setContentDescription(getString(R.string.text_typeText));
+						actionButton.setOnClickListener(new View.OnClickListener()
 						{
 							@Override
 							public void onClick(View view)
@@ -163,11 +167,14 @@ public class ShareActivity extends Activity
 		mStatusText.getText().append(charSequence);
 	}
 
-	protected void createFolderStructure(ProgressDialog dialog, File file, String folderName)
+	protected void createFolderStructure(Interrupter interrupter, ProgressDialog dialog, File file, String folderName)
 	{
 		for (File thisFile : file.listFiles()) {
+			if (interrupter.interrupted())
+				break;
+
 			if (thisFile.isDirectory()) {
-				createFolderStructure(dialog, thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName());
+				createFolderStructure(interrupter, dialog, thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName());
 				continue;
 			}
 
@@ -183,10 +190,20 @@ public class ShareActivity extends Activity
 
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
+		final Interrupter interrupter = new Interrupter();
+
 		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 		mProgressDialog.setMax(fileUris.size());
 		mProgressDialog.setCancelable(false);
 		mProgressDialog.setMessage(getString(R.string.mesg_organizingFiles));
+		mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+				interrupter.interrupt();
+			}
+		});
 
 		mProgressDialog.show();
 
@@ -198,6 +215,9 @@ public class ShareActivity extends Activity
 				super.run();
 
 				for (int position = 0; position < fileUris.size(); position++) {
+					if (interrupter.interrupted())
+						break;
+
 					mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
 
 					Uri fileUri = fileUris.get(position);
@@ -216,8 +236,13 @@ public class ShareActivity extends Activity
 						e.printStackTrace();
 					} catch (StreamInfo.FolderStateException e) {
 						File parentFolder = new File(URI.create(fileUri.toString()));
-						createFolderStructure(mProgressDialog, parentFolder, parentFolder.getName());
+						createFolderStructure(interrupter, mProgressDialog, parentFolder, parentFolder.getName());
 					}
+				}
+
+				if (interrupter.interrupted()) {
+					mFiles.clear();
+					finish();
 				}
 
 				runOnUiThread(new Runnable()
@@ -241,6 +266,20 @@ public class ShareActivity extends Activity
 
 	protected void registerClickListenerFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
+		ImageButton actionButton = findViewById(R.id.activity_share_edit_button);
+
+		actionButton.setImageResource(R.drawable.ic_close_black_24dp);
+		actionButton.setVisibility(View.VISIBLE);
+		actionButton.setContentDescription(getString(R.string.butn_close));
+		actionButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				finish();
+			}
+		});
+
 		organizeFiles(fileUris, fileNames);
 	}
 
@@ -257,12 +296,22 @@ public class ShareActivity extends Activity
 			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 			{
 				final String deviceIp = connection.ipAddress;
+				final Interrupter interrupter = new Interrupter();
 
 				mProgressDialog.setMessage(getString(R.string.mesg_communicating));
 				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				mProgressDialog.setMax(0);
 				mProgressDialog.setCancelable(false);
 				mProgressDialog.setProgress(0);
+				mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i)
+					{
+						interrupter.interrupt();
+					}
+				});
+
 
 				runOnUiThread(new Runnable()
 				{
@@ -298,6 +347,9 @@ public class ShareActivity extends Activity
 								mProgressDialog.setMax(mFiles.size());
 
 								for (StreamInfo fileState : mFiles) {
+									if (interrupter.interrupted())
+										break;
+
 									mProgressDialog.setSecondaryProgress(mProgressDialog.getSecondaryProgress() + 1);
 
 									int requestId = AppUtils.getUniqueNumber();
@@ -336,11 +388,17 @@ public class ShareActivity extends Activity
 									mDatabase.publish(groupInstance);
 
 									for (TransactionObject transactionObject : pendingRegistry) {
+										if (interrupter.interrupted())
+											break;
+
 										mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
 										mDatabase.publish(transactionObject);
 									}
 
-									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
+									if (interrupter.interrupted())
+										mDatabase.remove(groupInstance);
+									else
+										TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 								}
 							} else {
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);

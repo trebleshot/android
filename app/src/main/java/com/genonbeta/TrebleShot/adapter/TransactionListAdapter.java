@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -10,14 +8,13 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
-import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -25,7 +22,7 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransactionListAdapter extends AbstractEditableListAdapter<TransactionObject>
+public class TransactionListAdapter extends ShareableListAdapter<TransactionObject>
 {
 	private AccessDatabase mDatabase;
 	private ArrayList<TransactionObject> mList = new ArrayList<>();
@@ -84,7 +81,8 @@ public class TransactionListAdapter extends AbstractEditableListAdapter<Transact
 		mergedList.addAll(mDatabase.castQuery((getPath() == null
 				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
 				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
-						String.valueOf(getGroupId()), getPath())).setGroupBy(null), TransactionObject.class));
+				String.valueOf(getGroupId()), getPath())
+		).setGroupBy(null), TransactionObject.class));
 
 		return mergedList;
 	}
@@ -124,6 +122,11 @@ public class TransactionListAdapter extends AbstractEditableListAdapter<Transact
 		return 0;
 	}
 
+	public ArrayList<TransactionObject> getList()
+	{
+		return mList;
+	}
+
 	public SQLQuery.Select getSelect()
 	{
 		return mSelect;
@@ -150,20 +153,23 @@ public class TransactionListAdapter extends AbstractEditableListAdapter<Transact
 
 		final TransactionObject transactionObject = (TransactionObject) getItem(i);
 
-		ImageView typeImage = (ImageView) view.findViewById(R.id.list_process_type_image);
-		TextView mainText = (TextView) view.findViewById(R.id.list_process_name_text);
-		TextView statusText = (TextView) view.findViewById(R.id.list_process_status_text);
+		ImageView typeImage = view.findViewById(R.id.list_process_type_image);
+		TextView mainText = view.findViewById(R.id.list_process_name_text);
+		TextView statusText = view.findViewById(R.id.list_process_status_text);
+		TextView sizeText = view.findViewById(R.id.list_process_size_text);
 
 		if (transactionObject instanceof TransactionFolder) {
 			typeImage.setImageResource(R.drawable.ic_folder_black_24dp);
 			mainText.setText(transactionObject.friendlyName);
 			statusText.setText(R.string.text_folder);
+			sizeText.setText(null);
 		} else {
-			final boolean isIncoming = transactionObject.type.equals(TransactionObject.Type.INCOMING);
+			boolean isIncoming = transactionObject.type.equals(TransactionObject.Type.INCOMING);
 
 			typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 			mainText.setText(transactionObject.friendlyName);
 			statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(transactionObject.flag)).toLowerCase());
+			sizeText.setText(FileUtils.sizeExpression(transactionObject.fileSize, false));
 		}
 
 		return view;

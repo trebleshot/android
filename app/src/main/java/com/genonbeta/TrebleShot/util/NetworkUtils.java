@@ -19,8 +19,8 @@ public class NetworkUtils
 	{
 		StringBuilder sbuf = new StringBuilder();
 
-		for (int idx = 0; idx < bytes.length; idx++) {
-			int intVal = bytes[idx] & 0xff;
+		for (byte aByte : bytes) {
+			int intVal = aByte & 0xff;
 
 			if (intVal < 0x10)
 				sbuf.append("0");
@@ -73,7 +73,7 @@ public class NetworkUtils
 
 	public static ArrayList<String> getMACAddressList(String interfaceName)
 	{
-		ArrayList<String> macAddressList = new ArrayList<String>();
+		ArrayList<String> macAddressList = new ArrayList<>();
 
 		try {
 			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
@@ -91,8 +91,8 @@ public class NetworkUtils
 
 				StringBuilder buf = new StringBuilder();
 
-				for (int idx = 0; idx < mac.length; idx++)
-					buf.append(String.format("%02X:", mac[idx]));
+				for (byte aMac : mac)
+					buf.append(String.format("%02X:", aMac));
 
 				if (buf.length() > 0)
 					buf.deleteCharAt(buf.length() - 1);

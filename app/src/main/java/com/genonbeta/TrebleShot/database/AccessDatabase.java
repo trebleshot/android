@@ -126,8 +126,7 @@ public class AccessDatabase extends SQLiteDatabase
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
-		if (old <= 3)
-		{
+		if (old <= 3) {
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFERGROUP + "`");
 			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
@@ -152,7 +151,7 @@ public class AccessDatabase extends SQLiteDatabase
 
 		try {
 			for (CursorItem item : itemList) {
-				T newClazz = clazz.cast(clazz.newInstance());
+				T newClazz = clazz.newInstance();
 
 				newClazz.reconstruct(item);
 				returnedList.add(newClazz);

@@ -13,7 +13,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -25,13 +27,13 @@ import java.util.ArrayList;
  * date: 9.11.2017 23:39
  */
 
-public class TransactionGroupListAdapter extends AbstractEditableListAdapter<TransactionGroupListAdapter.PreloadedGroup>
+public class TransactionGroupListAdapter extends ShareableListAdapter<TransactionGroupListAdapter.PreloadedGroup>
 {
 	public static final String FIELD_TRANSACTIONCOUNT = "transactionCount";
 	public static final String FIELD_DEVICENAME = "deviceName";
 
 	private AccessDatabase mDatabase;
-	private ArrayList<TransactionObject.Group> mList = new ArrayList<>();
+	private ArrayList<TransactionGroupListAdapter.PreloadedGroup> mList = new ArrayList<>();
 	private SQLQuery.Select mSelect;
 
 	public TransactionGroupListAdapter(Context context)
@@ -102,6 +104,11 @@ public class TransactionGroupListAdapter extends AbstractEditableListAdapter<Tra
 		return 0;
 	}
 
+	public ArrayList<PreloadedGroup> getList()
+	{
+		return mList;
+	}
+
 	public SQLQuery.Select getSelect()
 	{
 		return mSelect;
@@ -115,10 +122,10 @@ public class TransactionGroupListAdapter extends AbstractEditableListAdapter<Tra
 
 		final PreloadedGroup group = (PreloadedGroup) getItem(i);
 
-		ImageView userImage = (ImageView) view.findViewById(R.id.list_transaction_group_image_device);
-		TextView titleText = (TextView) view.findViewById(R.id.list_transaction_group_text_title);
-		TextView text1 = (TextView) view.findViewById(R.id.list_transaction_group_text_text1);
-		TextView text2 = (TextView) view.findViewById(R.id.list_transaction_group_text_text2);
+		ImageView userImage = view.findViewById(R.id.list_transaction_group_image_device);
+		TextView titleText = view.findViewById(R.id.list_transaction_group_text_title);
+		TextView text1 = view.findViewById(R.id.list_transaction_group_text_text1);
+		TextView text2 = view.findViewById(R.id.list_transaction_group_text_text2);
 
 		String firstLetters = TextUtils.getFirstLetters(group.deviceName, 1);
 
@@ -126,7 +133,7 @@ public class TransactionGroupListAdapter extends AbstractEditableListAdapter<Tra
 
 		titleText.setText(group.deviceName);
 		text1.setText(getContext().getResources().getQuantityString(R.plurals.text_files, group.transactionCount, group.transactionCount));
-		//text2.setText(getContext().getString(R.string.mesg_countOutgoing, group.countOutgoing));
+		text2.setText(TimeUtils.getTimeAgo(getContext(), group.dateCreated));
 		userImage.setImageDrawable(drawable);
 
 		return view;

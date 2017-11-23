@@ -29,7 +29,7 @@
             android:summary="@string/text_useSoundsSummary"/>
 
         <CheckBoxPreference
-            android:key="notification_lights"
+            android:key="notification_light"
             android:title="@string/text_useLights"
             android:summary="@string/text_useLightSummary"/>
 

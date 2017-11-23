@@ -36,4 +36,5 @@
         <item quantity="one">A minute ago</item>
         <item quantity="other">%d minutes ago</item>
     </plurals>
+
 </resources>

@@ -124,7 +124,7 @@
     <string name="text_noNetworkAvailable">Kullanılabilir ağ yok</string>
     <string name="text_removeCertainPendingTransfersSummary">Devam ederseniz listede görmüş olduğunuz bekleyen aktarımlar silinecek</string>
     <string name="text_removeDeviceSummary">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
-    <string name="text_availableNetworks">Cihaza bağl. için uygun ağlar</string>
+    <string name="text_availableNetworks">Kaydedilmiş ağlar</string>
     <string name="ques_removeAll">Hepsini kaldır?</string>
     <string name="ques_removeDevice">Bu cihazı kaldır?</string>
     <string name="ques_removeQueue">İş kuyruğunu kaldır?</string>
@@ -155,7 +155,7 @@
     <string name="text_createFolder">Klasör oluştur</string>
     <string name="mesg_fileAlreadyExists">Dosya zaten var</string>
     <string name="mesg_folderCreateError">Klasör oluşturulamadı</string>
-    <string name="mesg_permissionRequired">TrebleShot izin olmadan dosyaları gönderemez ve alamaz</string>
+    <string name="text_requestPermissionStorageSummary">TrebleShot izin olmadan dosyaları gönderemez ve alamaz</string>
     <string name="butn_settings">Ayarlar</string>
     <string name="butn_selectThis">Bunu seç</string>
     <string name="butn_newFile">Yeni dosya</string>
@@ -173,8 +173,8 @@
     <string name="text_chooseFolder">Klasör seçin</string>
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
-    <string name="ques_checkOldFiles">Geçici dosyları kontrol et?</string>
-    <string name="text_checkOldFiles">TrebleShot yarım kalmış aktarımların dosyalarını seçtiğiniz klasöre aktaracak ve bu biraz zaman alabilir. Reddet\'e basarak basarak bu işlemi atlayabilirsiniz</string>
+    <string name="ques_checkOldFiles">Geçici dosyaları kontrol et?</string>
+    <string name="text_checkOldFiles">TrebleShot yarım kalmış aktarımların dosyalarını seçtiğiniz klasöre aktaracak ve bu biraz zaman alabilir. Reddet\'e basarak bu işlemi atlayabilirsiniz</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -206,5 +206,20 @@
     <string name="butn_feelLucky">Yerime seç</string>
     <string name="butn_connectionList">Bağlantılar</string>
     <string name="text_feelLuckyFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.</string>
-    <string name="text_feelLuckyOngoing">TreblleShot sizin yerinize karar verecek.</string>
+    <string name="text_feelLuckyOngoing">TrebleShot sizin yerinize karar verecek</string>
+    <string name="butn_retry_all">Tekrar dene</string>
+    <string name="butn_ask">Sor</string>
+    <string name="text_permissionRequest">İzin isteği</string>
+    <string name="text_requestPermissionStorage">Depolama izni</string>
+    <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot cihazınızın diğer TrebleShot kullanan cihazlar tarafından tanınmasına yardımcı olan uzun süreli kimlik oluşturmak için cihazınızın seri numarası kullanır. Cihazınız Android Oreo sürümünde veya üstünde çalıştırmaktadır ve seri alınabilmesi için bu iznin sağlanması gerekmektedir. Reddetmik uygulamanın durmasına yol açacaktır.</string>
+    <string name="text_mediaDirectory">Medya klasörü</string>
+    <string name="text_emulatedMediaDirectory">Yansıma (%s)</string>
+    <string name="mesg_notEnoughSpace">Yeterli alan yok</string>
+    <string name="text_totalIncomingSize">Gelen dosyaların toplam boyutu</string>
+    <string name="text_totalOutgoingSize">Giden dosyaların toplam boyutu</string>
+    <string name="text_availableDiskSpace">Kullanabilir disk alanı</string>
+    <string name="text_savePath">Kaydetme yeri</string>
+    <string name="text_transactionGroupDetails">Aktarım grubu detayları</string>
+    <string name="text_usedConnection">Kullanılan bağlantı</string>
 </resources>

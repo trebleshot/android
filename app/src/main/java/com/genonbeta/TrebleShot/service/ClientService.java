@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.os.IBinder;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
-import com.genonbeta.TrebleShot.app.AbstractTransactionService;
+import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.StreamInfo;
@@ -18,7 +18,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-public class ClientService extends AbstractTransactionService<TransactionObject>
+public class ClientService extends TransactionService<TransactionObject>
 {
 	public static final String TAG = "ClientService";
 

@@ -36,12 +36,12 @@
         android:layout_marginRight="10dp"
         android:background="#eee"/>
 
-    <LinearLayout
-        android:id="@+id/fragment_fileexplorer_fragment_files"
+    <fragment
+        android:name="com.genonbeta.TrebleShot.fragment.FileListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/fragment_fileexplorer_separator"
-        android:orientation="vertical"/>
+        android:id="@+id/fragment_fileexplorer_fragment_files"
+        android:layout_below="@id/fragment_fileexplorer_separator"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fragment_fileexplorer_boe"

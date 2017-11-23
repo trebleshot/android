@@ -58,6 +58,9 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 
 		if (paths != null)
 			for (String path : paths) {
+				if (path.length() == 0)
+					continue;
+
 				if (mergedPath.length() > 0)
 					mergedPath.append(File.separator);
 
@@ -80,7 +83,7 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 		private Holder(View view)
 		{
 			super(view);
-			this.text = (TextView) view.findViewById(R.id.list_pathresolver_text);
+			this.text = view.findViewById(R.id.list_pathresolver_text);
 		}
 
 		public static class Index

@@ -8,22 +8,22 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.view.ActionMode;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
 
-public class FileListFragment extends AbstractEditableListFragment<FileListAdapter.FileInfo, FileListAdapter> implements FragmentTitle
+public class FileListFragment extends ShareableListFragment<FileListAdapter.FileHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
@@ -61,12 +61,6 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 	};
 
 	@Override
-	protected ActionModeListener onActionModeListener()
-	{
-		return new ChoiceListener();
-	}
-
-	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
@@ -75,6 +69,9 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 
 		mMediaScanner.connect();
 		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
+
+		if (getAdapter().getPath() == null)
+			goPath(FileUtils.getApplicationDirectory(getActivity()));
 	}
 
 	@Override
@@ -105,42 +102,66 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-	{
-		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.actions_received_files, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		switch (item.getItemId()) {
-			case (R.id.received_device_options_open_in_file_manager):
-				openFile(Uri.fromFile(FileUtils.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
-				return true;
-		}
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
 
-		FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
+		FileListAdapter.FileHolder fileInfo = (FileListAdapter.FileHolder) getAdapter().getItem(position);
 
 		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo))
-			if (fileInfo.file.isFile())
+			if (!fileInfo.isFolder)
 				openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.text_fileOpenAppChoose));
 			else
 				goPath(fileInfo.file);
+	}
+
+	@Override
+	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+	{
+		super.onCreateActionMenu(context, actionMode, menu);
+		actionMode.getMenuInflater().inflate(R.menu.action_mode_file, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+	{
+		if (item.getItemId() == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
+			new FileDeleteDialog<>(getActivity(), getSelectionList(), new FileDeleteDialog.Listener()
+			{
+				@Override
+				public void onFileDeletion(Context context, File file)
+				{
+					if (mMediaScanner.isConnected())
+						mMediaScanner.scanFile(file.getAbsolutePath(), "*/*");
+				}
+
+				@Override
+				public void onCompleted(Context context, int fileSize)
+				{
+					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+							.putExtra(EXTRA_PATH, getAdapter().getPath().getAbsolutePath()));
+				}
+			}).show();
+
+			return true;
+		}
+
+		return super.onActionMenuItemSelected(context, actionMode, item);
 	}
 
 	public void goPath(File file)
 	{
 		if (mPathChangedListener != null)
 			mPathChangedListener.onPathChanged(file);
+
+		PowerfulActionMode powerfulActionMode = getPowerfulActionMode();
+
+		if (powerfulActionMode != null
+				&& ((file == null && getAdapter().getPath() != null)
+				|| (file != null && !file.equals(getAdapter().getPath()))
+		))
+			powerfulActionMode.finish(this);
 
 		getAdapter().goPath(file);
 		refreshList();
@@ -156,73 +177,9 @@ public class FileListFragment extends AbstractEditableListFragment<FileListAdapt
 		mFileClickedListener = fileClickedListener;
 	}
 
-	private class ChoiceListener extends ActionModeListener
-	{
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu)
-		{
-			if (!super.onCreateActionMode(mode, menu))
-				return false;
-
-			mode.getMenuInflater().inflate(R.menu.actions_file, menu);
-
-			return true;
-		}
-
-		@Override
-		public boolean onActionItemClicked(final ActionMode mode, MenuItem item)
-		{
-			if (!super.onActionItemClicked(mode, item))
-				if (item.getItemId() == R.id.file_actions_delete) {
-					new FileDeleteDialog(getActivity(), getSharedItemList().toArray(), new FileDeleteDialog.Listener()
-					{
-						@Override
-						public void onFileDeletion(Context context, File file)
-						{
-							if (mMediaScanner.isConnected())
-								mMediaScanner.scanFile(file.getAbsolutePath(), "*/*");
-						}
-
-						@Override
-						public void onCompleted(Context context, int fileSize, File parent)
-						{
-							context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-									.putExtra(EXTRA_PATH, parent.getAbsolutePath()));
-						}
-					}).show();
-
-					mode.finish();
-
-					return true;
-				}
-
-			return false;
-		}
-
-		@Override
-		public Uri onItemChecked(ActionMode mode, int position, long id, boolean isChecked)
-		{
-			FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
-			return Uri.fromFile(fileInfo.file);
-		}
-
-		@Override
-		protected boolean onItemCheckable(int position)
-		{
-			FileListAdapter.FileInfo fileInfo = (FileListAdapter.FileInfo) getAdapter().getItem(position);
-			return getAdapter().getPath().equals(fileInfo.file.getParentFile());
-		}
-	}
-
-	@Override
-	public CharSequence getFragmentTitle(Context context)
-	{
-		return context.getString(R.string.text_fileExplorer);
-	}
-
 	public interface OnFileClickedListener
 	{
-		boolean onFileClicked(FileListAdapter.FileInfo fileInfo);
+		boolean onFileClicked(FileListAdapter.FileHolder fileInfo);
 	}
 
 	public interface OnPathChangedListener

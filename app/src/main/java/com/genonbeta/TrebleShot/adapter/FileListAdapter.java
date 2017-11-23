@@ -1,34 +1,41 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.Shareable;
+import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter.FileInfo>
+public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHolder>
 {
 	private boolean mShowDirectories = true;
 	private boolean mShowFiles = true;
 	private String mFileMatch;
 
-	private ArrayList<FileInfo> mList = new ArrayList<>();
+	private ArrayList<FileHolder> mList = new ArrayList<>();
 	private File mDefaultPath;
 	private File mPath;
-	private Comparator<FileInfo> mComparator = new Comparator<FileInfo>()
+	private Comparator<FileHolder> mComparator = new Comparator<FileHolder>()
 	{
 		@Override
-		public int compare(FileListAdapter.FileInfo compareFrom, FileListAdapter.FileInfo compareTo)
+		public int compare(FileListAdapter.FileHolder compareFrom, FileListAdapter.FileHolder compareTo)
 		{
-			return compareFrom.fileName.toLowerCase().compareTo(compareTo.fileName.toLowerCase());
+			return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
 		}
 	};
 
@@ -39,40 +46,53 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	}
 
 	@Override
-	public ArrayList<FileInfo> onLoad()
+	public ArrayList<FileHolder> onLoad()
 	{
-		ArrayList<FileInfo> list = new ArrayList<>();
-		ArrayList<FileInfo> folders = new ArrayList<>();
-		ArrayList<FileInfo> files = new ArrayList<>();
+		ArrayList<FileHolder> list = new ArrayList<>();
+		ArrayList<FileHolder> folders = new ArrayList<>();
+		ArrayList<FileHolder> files = new ArrayList<>();
 
-		if (mPath != null && mPath.canRead()) {
+		if (mPath != null) {
 			File[] fileIndex = mPath.listFiles();
 
-			if (mShowDirectories) {
-				for (File file : fileIndex)
-					if (applySearch(file.getName()) && file.isDirectory() && file.canRead())
-						folders.add(new FileInfo(file.getName(), mContext.getString(R.string.text_folder), file));
+			if (fileIndex != null && fileIndex.length > 0) {
+				for (File file : fileIndex) {
+					if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
+						continue;
+
+					if (file.isDirectory() && mShowDirectories)
+						folders.add(new FileHolder(file.getName(), mContext.getString(R.string.text_folder), file, true));
+					else if (file.isFile() && mShowFiles)
+						files.add(new FileHolder(file.getName(), FileUtils.sizeExpression(file.length(), false), file, false));
+				}
 
 				Collections.sort(folders, mComparator);
-			}
-
-			if (mShowFiles) {
-				for (File file : fileIndex)
-					if ((mFileMatch == null || file.getName().matches(mFileMatch)) && applySearch(file.getName()) && file.isFile() && file.canRead())
-						files.add(new FileInfo(file.getName(), FileUtils.sizeExpression(file.length(), false), file));
-
 				Collections.sort(files, mComparator);
 			}
 		} else {
-			ArrayList<File> paths = new ArrayList<>();
+			ArrayList<File> referencedDirectoryList = new ArrayList<>();
 
 			File defaultFolder = FileUtils.getApplicationDirectory(getContext());
-			folders.add(new FileInfo(defaultFolder.getName(), getContext().getString(R.string.text_defaultFolder), defaultFolder));
+			folders.add(new FileHolder(defaultFolder.getName(), getContext().getString(R.string.text_defaultFolder), defaultFolder, true));
 
-			paths.add(Environment.getExternalStorageDirectory());
+			if (Build.VERSION.SDK_INT >= 21)
+				referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
+			else if (Build.VERSION.SDK_INT >= 19)
+				referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalFilesDirs(null)));
+			else
+				referencedDirectoryList.add(Environment.getExternalStorageDirectory());
 
-			for (File storage : paths)
-				folders.add(new FileInfo(storage.getName(), getContext().getString(R.string.text_storage), storage));
+			for (File mediaDir : referencedDirectoryList) {
+				String mediaName = mediaDir.getName();
+				String[] splitName = mediaDir.getAbsolutePath().split(File.separator);
+
+				if (splitName.length >= 4 && splitName[2].equals("emulated"))
+					mediaName = getContext().getString(R.string.text_emulatedMediaDirectory, splitName[3]);
+				else if (splitName.length >= 3)
+					mediaName = splitName[2];
+
+				folders.add(new FileHolder(mediaName, getContext().getString(R.string.text_mediaDirectory), mediaDir, true));
+			}
 		}
 
 		list.addAll(folders);
@@ -82,7 +102,7 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 	}
 
 	@Override
-	public void onUpdate(ArrayList<FileInfo> passedItem)
+	public void onUpdate(ArrayList<FileHolder> passedItem)
 	{
 		mList.clear();
 		mList.addAll(passedItem);
@@ -105,13 +125,13 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		return mList.get(itemId);
 	}
 
-	public ArrayList<FileInfo> getList()
+	public ArrayList<FileHolder> getList()
 	{
 		return mList;
 	}
 
 	@Override
-	public long getItemId(int p1)
+	public long getItemId(int position)
 	{
 		return 0;
 	}
@@ -127,11 +147,13 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_file, parent, false);
 
-		TextView fileNameText = (TextView) convertView.findViewById(R.id.text);
-		TextView sizeText = (TextView) convertView.findViewById(R.id.text2);
-		FileInfo fileInfo = (FileInfo) getItem(position);
+		ImageView typeImage = convertView.findViewById(R.id.image);
+		TextView fileNameText = convertView.findViewById(R.id.text);
+		TextView sizeText = convertView.findViewById(R.id.text2);
+		FileHolder fileInfo = (FileHolder) getItem(position);
 
-		fileNameText.setText(fileInfo.fileName);
+		typeImage.setVisibility(fileInfo.isFolder ? View.VISIBLE : View.GONE);
+		fileNameText.setText(fileInfo.friendlyName);
 		sizeText.setText(fileInfo.fileInfo);
 
 		return convertView;
@@ -149,17 +171,19 @@ public class FileListAdapter extends AbstractEditableListAdapter<FileListAdapter
 		mFileMatch = fileMatch;
 	}
 
-	public static class FileInfo
+	public static class FileHolder extends Shareable
 	{
-		public String fileName;
 		public String fileInfo;
 		public File file;
+		public boolean isFolder;
 
-		public FileInfo(String name, String size, File file)
+		public FileHolder(String friendlyName, String size, File file, boolean isFolder)
 		{
-			this.fileName = name;
+			super(friendlyName, friendlyName, Uri.fromFile(file));
+
 			this.fileInfo = size;
 			this.file = file;
+			this.isFolder = isFolder;
 		}
 	}
 }

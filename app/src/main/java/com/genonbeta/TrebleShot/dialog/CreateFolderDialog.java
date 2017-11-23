@@ -28,7 +28,7 @@ public class CreateFolderDialog extends AlertDialog.Builder
 
 		final View view = LayoutInflater.from(getContext()).inflate(R.layout.layout_createfolder, null);
 
-		mFileNameEditText = (EditText) view.findViewById(R.id.layout_createfolder_edittext);
+		mFileNameEditText = view.findViewById(R.id.layout_createfolder_edittext);
 
 		setTitle(R.string.text_createFolder);
 		setNegativeButton(R.string.butn_close, null);

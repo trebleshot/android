@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.receiver.DeviceScannerProvider;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
+import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeoutException;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-	private ArrayList<NetworkDevice.Connection> mAvailableInterfaces = new ArrayList<>();
+	private ArrayList<NetworkDevice.Connection> mConnections = new ArrayList<>();
 	private NetworkDevice mNetworkDevice;
 	private AccessDatabase mDatabase;
 	private OnDeviceSelectedListener mDeviceSelectedListener;
@@ -61,18 +61,20 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 	@Override
 	public AlertDialog show()
 	{
-		mAvailableInterfaces.clear();
+		mConnections.clear();
 
-		mAvailableInterfaces.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+		mConnections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId), NetworkDevice.Connection.class));
 
-		if (mAvailableInterfaces.size() > 0) {
+		if (mConnections.size() > 0) {
+			setMessage(null);
+
 			setAdapter(new ConnectionListAdapter(), new DialogInterface.OnClickListener()
 			{
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					mDeviceSelectedListener.onDeviceSelected(mAvailableInterfaces.get(which), mAvailableInterfaces);
+					mDeviceSelectedListener.onDeviceSelected(mConnections.get(which), mConnections);
 				}
 			});
 
@@ -82,11 +84,20 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 				public void onClick(DialogInterface dialogInterface, int i)
 				{
 					final ProgressDialog feelLucky = new ProgressDialog(getContext());
+					final Interrupter interrupter = new Interrupter();
 
 					feelLucky.setTitle(R.string.text_feelLuckyOngoing);
-					feelLucky.setMax(mAvailableInterfaces.size());
+					feelLucky.setMax(mConnections.size());
 					feelLucky.setCancelable(false);
 					feelLucky.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+					feelLucky.setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i)
+						{
+							interrupter.interrupt();
+						}
+					});
 
 					feelLucky.show();
 
@@ -102,7 +113,10 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 							@SuppressLint("UseSparseArrays")
 							HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
 
-							for (NetworkDevice.Connection connection : mAvailableInterfaces) {
+							for (NetworkDevice.Connection connection : mConnections) {
+								if (interrupter.interrupted())
+									break;
+
 								feelLucky.setProgress(feelLucky.getProgress() + 1);
 
 								final NetworkDevice.Connection finalConnection = connection;
@@ -116,7 +130,20 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 										try {
 											long startTime = System.currentTimeMillis();
-											CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
+											final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
+
+											interrupter.useCloser(new Interrupter.Closer()
+											{
+												@Override
+												public void onClose()
+												{
+													try {
+														activeConnection.getSocket().close();
+													} catch (IOException e) {
+														e.printStackTrace();
+													}
+												}
+											});
 
 											activeConnection.reply(null);
 											activeConnection.receive();
@@ -140,36 +167,37 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 							feelLucky.cancel();
 
-							if (calculatedConnections.size() < 1) {
-								AlertDialog.Builder sorryDialog = new AlertDialog.Builder(getContext());
+							if (!interrupter.interrupted())
+								if (calculatedConnections.size() < 1) {
+									AlertDialog.Builder sorryDialog = new AlertDialog.Builder(getContext());
 
-								sorryDialog.setTitle(R.string.text_error);
-								sorryDialog.setMessage(R.string.text_feelLuckyFailed);
-								sorryDialog.setNegativeButton(R.string.butn_close, null);
-								sorryDialog.setPositiveButton(R.string.butn_connectionList, new DialogInterface.OnClickListener()
-								{
-									@Override
-									public void onClick(DialogInterface dialogInterface, int i)
+									sorryDialog.setTitle(R.string.text_error);
+									sorryDialog.setMessage(R.string.text_feelLuckyFailed);
+									sorryDialog.setNegativeButton(R.string.butn_close, null);
+									sorryDialog.setPositiveButton(R.string.butn_connectionList, new DialogInterface.OnClickListener()
 									{
-										show();
-									}
-								});
+										@Override
+										public void onClick(DialogInterface dialogInterface, int i)
+										{
+											show();
+										}
+									});
 
-								sorryDialog.show();
-							} else {
-								ArrayList<Integer> comparedList = new ArrayList<>(calculatedConnections.keySet());
+									sorryDialog.show();
+								} else {
+									ArrayList<Integer> comparedList = new ArrayList<>(calculatedConnections.keySet());
 
-								Collections.sort(comparedList, new Comparator<Integer>()
-								{
-									@Override
-									public int compare(Integer integer1, Integer integer2)
+									Collections.sort(comparedList, new Comparator<Integer>()
 									{
-										return integer1 < integer2 ? -1 : 1;
-									}
-								});
+										@Override
+										public int compare(Integer integer1, Integer integer2)
+										{
+											return integer1 < integer2 ? -1 : 1;
+										}
+									});
 
-								mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), mAvailableInterfaces);
-							}
+									mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), mConnections);
+								}
 
 							Looper.loop();
 						}
@@ -213,13 +241,13 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 		@Override
 		public int getCount()
 		{
-			return mAvailableInterfaces.size();
+			return mConnections.size();
 		}
 
 		@Override
 		public Object getItem(int position)
 		{
-			return mAvailableInterfaces.get(position);
+			return mConnections.get(position);
 		}
 
 		@Override
@@ -236,9 +264,9 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 			NetworkDevice.Connection address = (NetworkDevice.Connection) getItem(position);
 
-			TextView textView1 = (TextView) convertView.findViewById(R.id.pending_available_interface_text1);
-			TextView textView2 = (TextView) convertView.findViewById(R.id.pending_available_interface_text2);
-			TextView textView3 = (TextView) convertView.findViewById(R.id.pending_available_interface_text3);
+			TextView textView1 = convertView.findViewById(R.id.pending_available_interface_text1);
+			TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);
+			TextView textView3 = convertView.findViewById(R.id.pending_available_interface_text3);
 
 			for (AddressedInterface addressedInterface : mNetworkInterfaces)
 				if (address.adapterName.equals(addressedInterface.getNetworkInterface().getDisplayName())) {

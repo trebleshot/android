@@ -155,7 +155,7 @@
     <string name="text_createFolder">フォルダーを作成</string>
     <string name="mesg_fileAlreadyExists">ファイルがすでに存在します</string>
     <string name="mesg_folderCreateError">フォルダーを作成できません</string>
-    <string name="mesg_permissionRequired">アクセス許可がないと TrebleShot はファイルを送信または受信できません</string>
+    <string name="text_requestPermissionStorageSummary">アクセス許可がないと TrebleShot はファイルを送信または受信できません</string>
     <string name="butn_settings">設定</string>
     <string name="butn_selectThis">これを選択</string>
     <string name="butn_newFile">新しいファイル</string>

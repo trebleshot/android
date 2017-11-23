@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +16,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
@@ -24,10 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.security.Key;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -37,6 +37,7 @@ public class CommunicationService extends Service
 
 	public static final String ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER";
 	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
+	public static final String ACTION_CANCEL_INDEXING = "com.genonbeta.TrebleShot.action.CANCEL_INDEXING";
 	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
@@ -47,6 +48,7 @@ public class CommunicationService extends Service
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader();
+	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private NotificationUtils mNotification;
 	private String mReceivedClipboardIndex;
 	private AccessDatabase mDatabase;
@@ -128,6 +130,7 @@ public class CommunicationService extends Service
 								.putExtra(EXTRA_GROUP_ID, groupId));
 					else
 						mDatabase.remove(transactionGroup);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 
@@ -152,6 +155,16 @@ public class CommunicationService extends Service
 					e.printStackTrace();
 					return START_NOT_STICKY;
 				}
+			} else if (ACTION_CANCEL_INDEXING.equals(intent.getAction())) {
+				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
+				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+
+				mNotification.cancel(notificationId);
+
+				Interrupter interrupter = getOngoingIndexList().get(groupId);
+
+				if (interrupter != null)
+					interrupter.interrupt();
 			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
@@ -187,6 +200,9 @@ public class CommunicationService extends Service
 		@Override
 		protected void onConnected(ActiveConnection activeConnection)
 		{
+			if (getConnectionCountByAddress(activeConnection.getAddress()) > 3)
+				return;
+
 			try {
 				ActiveConnection.Response clientRequest = activeConnection.receive();
 				JSONObject replyJSON = clientRequest.totalLength > 0 ? new JSONObject(clientRequest.response) : new JSONObject();
@@ -251,7 +267,7 @@ public class CommunicationService extends Service
 					if (shouldContinue && replyJSON.has(Keyword.REQUEST)) {
 						switch (replyJSON.getString(Keyword.REQUEST)) {
 							case (Keyword.REQUEST_TRANSFER):
-								if (replyJSON.has(Keyword.FILES_INDEX) && replyJSON.has(Keyword.GROUP_ID)) {
+								if (replyJSON.has(Keyword.FILES_INDEX) && replyJSON.has(Keyword.GROUP_ID) && getOngoingIndexList().size() < 1) {
 									String jsonIndex = replyJSON.getString(Keyword.FILES_INDEX);
 									final JSONArray jsonArray = new JSONArray(jsonIndex);
 									final int groupId = replyJSON.getInt(Keyword.GROUP_ID);
@@ -266,10 +282,14 @@ public class CommunicationService extends Service
 										{
 											super.run();
 
+											Interrupter interrupter = new Interrupter();
 											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
 											TransactionObject transactionObject = null;
 
 											mDatabase.publish(group);
+
+											getOngoingIndexList().put(group.groupId, interrupter);
+
 											DynamicNotification notification = mNotification.notifyPrepareFiles(group);
 
 											int count = 0;
@@ -277,6 +297,9 @@ public class CommunicationService extends Service
 											long lastNotified = System.currentTimeMillis();
 
 											for (int i = 0; i < jsonArray.length(); i++) {
+												if (interrupter.interrupted())
+													break;
+
 												try {
 													if (!(jsonArray.get(i) instanceof JSONObject))
 														continue;
@@ -312,8 +335,11 @@ public class CommunicationService extends Service
 											}
 
 											notification.cancel();
+											getOngoingIndexList().remove(group.groupId);
 
-											if (transactionObject != null && count > 0)
+											if (interrupter.interrupted())
+												mDatabase.remove(group);
+											else if (transactionObject != null && count > 0)
 												mNotification.notifyTransferRequest(transactionObject, finalDevice, count);
 										}
 									}.start();
@@ -385,5 +411,10 @@ public class CommunicationService extends Service
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public synchronized ArrayMap<Integer, Interrupter> getOngoingIndexList()
+	{
+		return mOngoingIndexList;
 	}
 }

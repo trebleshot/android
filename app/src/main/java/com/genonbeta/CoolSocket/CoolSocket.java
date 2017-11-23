@@ -49,11 +49,6 @@ abstract public class CoolSocket
 
 	protected abstract void onConnected(ActiveConnection activeConnection);
 
-	public ArrayList<ActiveConnection> getConnections()
-	{
-		return this.mConnections;
-	}
-
 	public static <T> T connect(final Client.ConnectionHandler handler, Class<T> clazz)
 	{
 		Client clientInstance = new Client();
@@ -76,6 +71,22 @@ abstract public class CoolSocket
 				handler.onConnect(clientInstance);
 			}
 		}.start();
+	}
+
+	public int getConnectionCountByAddress(InetAddress address)
+	{
+		int returnObject = 0;
+
+		for (ActiveConnection activeConnection : getConnections())
+			if (activeConnection.getAddress().equals(address))
+				returnObject++;
+
+		return returnObject;
+	}
+
+	public synchronized ArrayList<ActiveConnection> getConnections()
+	{
+		return this.mConnections;
 	}
 
 	public int getLocalPort()
@@ -125,10 +136,10 @@ abstract public class CoolSocket
 
 	protected boolean respondRequest(final Socket socket)
 	{
-		if (this.getConnections().size() < this.mMaxConnections || this.mMaxConnections == 0) {
+		if (this.getConnections().size() <= this.mMaxConnections || this.mMaxConnections == 0) {
 			final ActiveConnection connectionHandler = new ActiveConnection(socket);
 
-			this.getConnections().add(connectionHandler);
+			CoolSocket.this.getConnections().add(connectionHandler);
 
 			new Thread()
 			{
@@ -144,16 +155,15 @@ abstract public class CoolSocket
 
 					onConnected(connectionHandler);
 
-
 					try {
 						socket.getInputStream().close();
 						socket.getOutputStream().close();
 						socket.close();
 					} catch (IOException e) {
 						e.printStackTrace();
+					} finally {
+						CoolSocket.this.getConnections().remove(connectionHandler);
 					}
-
-					CoolSocket.this.getConnections().remove(this);
 				}
 			}.start();
 		} else
@@ -268,6 +278,12 @@ abstract public class CoolSocket
 		public long getTimeout()
 		{
 			return mTimeout;
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			return obj instanceof ActiveConnection ? ((ActiveConnection) obj).toString().equals(toString()) : super.equals(obj);
 		}
 
 		public Response receive() throws IOException, TimeoutException, JSONException

@@ -1,16 +1,15 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.net.Uri;
-import android.view.ActionMode;
 import android.view.View;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.app.ShareableListFragment;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 
-public class MusicListFragment extends AbstractEditableListFragment<MusicListAdapter.MusicInfo, MusicListAdapter> implements FragmentTitle
+public class MusicListFragment extends ShareableListFragment<MusicListAdapter.SongHolder, MusicListAdapter> implements TitleSupport
 {
 	@Override
 	public MusicListAdapter onAdapter()
@@ -18,34 +17,19 @@ public class MusicListFragment extends AbstractEditableListFragment<MusicListAda
 		return new MusicListAdapter(getActivity());
 	}
 
-	@Override
-	protected ActionModeListener onActionModeListener()
-	{
-		return new ChoiceListener();
-	}
 
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
 
-		MusicListAdapter.MusicInfo musicInfo = (MusicListAdapter.MusicInfo) getAdapter().getItem(position);
+		MusicListAdapter.SongHolder musicInfo = (MusicListAdapter.SongHolder) getAdapter().getItem(position);
 		openFile(musicInfo.uri, "audio/*", getString(R.string.text_fileOpenAppChoose));
 	}
 
 	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_music);
-	}
-
-	private class ChoiceListener extends ActionModeListener
-	{
-		public Uri onItemChecked(ActionMode mode, int pos, long id, boolean isChecked)
-		{
-			MusicListAdapter.MusicInfo info = (MusicListAdapter.MusicInfo) getAdapter().getItem(pos);
-
-			return info.uri;
-		}
 	}
 }

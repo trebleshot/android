@@ -35,7 +35,6 @@ public class FilePickerActivity extends Activity
 		setContentView(R.layout.activity_filepicker);
 
 		mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
-		mFileExplorerFragment.getFileListFragment().setMultiChoice(false);
 	}
 
 	@Override
@@ -53,6 +52,9 @@ public class FilePickerActivity extends Activity
 						.setConfiguration(true, false, null);
 
 				mFileExplorerFragment.getFileListFragment().refreshList();
+
+				mFileExplorerFragment.getFileListFragment().getListView().setPadding(0, 0, 0, 200);
+				mFileExplorerFragment.getFileListFragment().getListView().setClipToPadding(false);
 
 				mFileExplorerFragment.getButtonOfEverything().setVisibility(View.VISIBLE);
 				mFileExplorerFragment.getButtonOfEverything().setOnClickListener(new View.OnClickListener()
@@ -74,7 +76,7 @@ public class FilePickerActivity extends Activity
 				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
 				{
 					@Override
-					public boolean onFileClicked(FileListAdapter.FileInfo fileInfo)
+					public boolean onFileClicked(FileListAdapter.FileHolder fileInfo)
 					{
 						if (!fileInfo.file.isFile())
 							return false;

@@ -15,14 +15,14 @@ import android.widget.EditText;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 
 /**
  * Created by: veli
  * Date: 4/9/17 12:06 PM
  */
 
-public class TextShareFragment extends Fragment implements FragmentTitle
+public class TextShareFragment extends Fragment implements TitleSupport
 {
 	private EditText mEditTextEditor;
 
@@ -32,7 +32,7 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 	{
 		View view = inflater.inflate(R.layout.layout_text_editor_activity, container, false);
 
-		mEditTextEditor = (EditText) view.findViewById(R.id.layout_text_editor_activity_text_text_box);
+		mEditTextEditor = view.findViewById(R.id.layout_text_editor_activity_text_text_box);
 
 		return view;
 	}
@@ -68,7 +68,7 @@ public class TextShareFragment extends Fragment implements FragmentTitle
 	}
 
 	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_shareText);
 	}

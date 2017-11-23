@@ -11,8 +11,9 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
+import com.genonbeta.TrebleShot.app.ListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.support.FragmentTitle;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -21,7 +22,7 @@ import com.genonbeta.android.database.SQLQuery;
  * date: 10.11.2017 00:15
  */
 
-public class TransactionGroupListFragment extends AbstractEditableListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter> implements FragmentTitle
+public class TransactionGroupListFragment extends ListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter> implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
 	public AccessDatabase mDatabase;
@@ -45,11 +46,11 @@ public class TransactionGroupListFragment extends AbstractEditableListFragment<T
 	{
 		super.onActivityCreated(savedInstanceState);
 
+		getListView().setDividerHeight(0);
+
 		mDatabase = new AccessDatabase(getActivity());
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
-
-		setSearchSupport(false);
 
 		if (getSelect() == null) {
 			setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
@@ -77,12 +78,6 @@ public class TransactionGroupListFragment extends AbstractEditableListFragment<T
 	}
 
 	@Override
-	protected ActionModeListener onActionModeListener()
-	{
-		return null;
-	}
-
-	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
 		super.onListItemClick(l, v, position, id);
@@ -93,7 +88,7 @@ public class TransactionGroupListFragment extends AbstractEditableListFragment<T
 	}
 
 	@Override
-	public CharSequence getFragmentTitle(Context context)
+	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_pendingTransfers);
 	}
