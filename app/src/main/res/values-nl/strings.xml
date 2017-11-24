@@ -157,7 +157,7 @@
     <string name="text_createFolder">Map creëren</string>
     <string name="mesg_fileAlreadyExists">Bestand bestaat al</string>
     <string name="mesg_folderCreateError">De map kan niet worden gecreëerd</string>
-    <string name="text_requestPermissionStorageSummary">TrebleShot kan geen bestanden versturen of ontvangen zonder uw toestemming</string>
+    <string name="text_requestPermissionStorageSummary">TrebleShot kan geen bestanden versturen of ontvangen zonder uw toestemming.</string>
     <string name="butn_settings">Instellingen</string>
     <string name="butn_selectThis">Selecteer dit</string>
     <string name="butn_newFile">Nieuw bestand</string>
