@@ -223,4 +223,5 @@
     <string name="text_savePath">Opslagpad</string>
     <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
     <string name="text_usedConnection">Gebruikte verbinding</string>
-</resources>
+<string name="text_requestPermissionReadPhoneStateSummary">TrebleShot gebruikt het serienummer van uw telefoon om een semi-permanent identiteitsnummer te creëren voor uw apparaat. Dit helpt andere TrebleShot-gebruikers om uw apparaat te herkennen. Uw apparaat moet Oreo of hoger draaien en TrebleShot moet hiervoor toestemming krijgen. Door dit af te wijzen zal TrebleShot stoppen met draaien.</string>
+    </resources>
