@@ -157,7 +157,7 @@
     <string name="text_createFolder">Map creëren</string>
     <string name="mesg_fileAlreadyExists">Bestand bestaat al</string>
     <string name="mesg_folderCreateError">De map kan niet worden gecreëerd</string>
-    <string name="text_requestPermissionStorageSummary">TrebleShot kan geen bestanden versturen of ontvangen zonder uw toestemming</string>
+    <string name="text_requestPermissionStorageSummary">TrebleShot kan geen bestanden versturen of ontvangen zonder uw toestemming.</string>
     <string name="butn_settings">Instellingen</string>
     <string name="butn_selectThis">Selecteer dit</string>
     <string name="butn_newFile">Nieuw bestand</string>
@@ -209,4 +209,19 @@
     <string name="butn_connectionList">Verbindingen</string>
     <string name="text_feelLuckyFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
     <string name="text_feelLuckyOngoing">TrebleShot zal de beslissing voor u nemen</string>
-</resources>
+<string name="butn_retry_all">Alles opnieuw proberen</string>
+    <string name="butn_ask">Vragen</string>
+    <string name="text_permissionRequest">Toestemmingsverzoek</string>
+    <string name="text_requestPermissionStorage">Toestemming voor opslag</string>
+    <string name="text_requestPermissionReadPhoneState">Toestemming voor telefoonstatus</string>
+    <string name="text_mediaDirectory">Mediamap</string>
+    <string name="text_emulatedMediaDirectory">Geëmuleerd (%s)</string>
+    <string name="mesg_notEnoughSpace">Onvoldoende ruimte</string>
+    <string name="text_totalIncomingSize">Totale grootte van inkomende bestanden</string>
+    <string name="text_totalOutgoingSize">Totale grootte van uitgaande bestanden</string>
+    <string name="text_availableDiskSpace">Beschikbare schijfruimte</string>
+    <string name="text_savePath">Opslagpad</string>
+    <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
+    <string name="text_usedConnection">Gebruikte verbinding</string>
+<string name="text_requestPermissionReadPhoneStateSummary">TrebleShot gebruikt het serienummer van uw telefoon om een semi-permanent identiteitsnummer te creëren voor uw apparaat. Dit helpt andere TrebleShot-gebruikers om uw apparaat te herkennen. Uw apparaat moet Oreo of hoger draaien en TrebleShot moet hiervoor toestemming krijgen. Door dit af te wijzen zal TrebleShot stoppen met draaien.</string>
+    </resources>
