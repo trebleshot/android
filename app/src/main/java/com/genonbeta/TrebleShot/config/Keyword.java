@@ -35,5 +35,7 @@ public class Keyword
 	public static final String APP_INFO = "appInfo";
 	public static final String UNKNOWN_INTERFACE = "unk0";
 	public static final String SKIPPED_BYTES = "skippedBytes";
-	public static final String NESTED_FOLDER = "nestedFolder";
+	public static final String MODE = "mode";
+	public static final String MODE_RECEIVE = "modeReceive";
+	public static final String MODE_SEND = "modeSend";
 }

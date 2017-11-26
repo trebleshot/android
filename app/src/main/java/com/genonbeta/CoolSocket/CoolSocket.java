@@ -240,6 +240,14 @@ abstract public class CoolSocket
 		return true;
 	}
 
+	public void onServerStarted()
+	{
+	}
+
+	public void onServerStopped()
+	{
+	}
+
 	public void onInternalError(Exception exception)
 	{
 	}
@@ -389,6 +397,8 @@ abstract public class CoolSocket
 		public void run()
 		{
 			try {
+				onServerStarted();
+
 				do {
 					Socket request = CoolSocket.this.getServerSocket().accept();
 
@@ -400,6 +410,8 @@ abstract public class CoolSocket
 				while (!CoolSocket.this.isInterrupted());
 			} catch (IOException e) {
 				CoolSocket.this.onInternalError(e);
+			} finally {
+				onServerStopped();
 			}
 		}
 	}

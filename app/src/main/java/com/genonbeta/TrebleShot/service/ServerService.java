@@ -107,7 +107,7 @@ public class ServerService extends TransactionService<TransactionObject>
 			TransactionObject transactionObject = new TransactionObject(receiverInstance);
 			File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), transactionObject, group);
 
-			mReceive.receive(0, file, transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, 10000, transactionObject, false);
+			mReceive.receive(0, file, transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, transactionObject, false);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;

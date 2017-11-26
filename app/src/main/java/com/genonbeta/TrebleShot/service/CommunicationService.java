@@ -262,7 +262,8 @@ public class CommunicationService extends Service
 					connection.lastCheckedDate = System.currentTimeMillis();
 					connection.deviceId = device.deviceId;
 
-					mDatabase.publish(connection);
+					mDatabase.remove(new NetworkDevice.Connection(device.deviceId, connection.adapterName)); // Remove old connection that has the connection adapter name and device id with old ip address
+					mDatabase.publish(connection); // now register the new connection
 
 					if (shouldContinue && replyJSON.has(Keyword.REQUEST)) {
 						switch (replyJSON.getString(Keyword.REQUEST)) {

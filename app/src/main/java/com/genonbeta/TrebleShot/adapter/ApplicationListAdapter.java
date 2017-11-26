@@ -47,7 +47,7 @@ public class ApplicationListAdapter
 	@Override
 	public Drawable onLoadBitmap(PackageHolder object)
 	{
-		return object.icon;
+		return object.appInfo.loadIcon(mManager);
 	}
 
 	@Override
@@ -58,11 +58,8 @@ public class ApplicationListAdapter
 		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps) {
-				String label = (String) appInfo.loadLabel(mManager);
-
-				list.add(new PackageHolder(appInfo.loadIcon(mManager), label, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
-			}
+			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
+				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 		}
 
 		Collections.sort(list, mComparator);
@@ -126,15 +123,15 @@ public class ApplicationListAdapter
 
 	public static class PackageHolder extends Shareable
 	{
-		public Drawable icon;
+		public ApplicationInfo appInfo;
 		public String version;
 		public String packageName;
 
-		public PackageHolder(Drawable icon, String friendlyName, String version, String codePath, String packageName)
+		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String codePath, String packageName)
 		{
 			super(friendlyName, friendlyName + "_" + version + ".apk", Uri.fromFile(new File(codePath)));
 
-			this.icon = icon;
+			this.appInfo = appInfo;
 			this.version = version;
 			this.packageName = packageName;
 		}
