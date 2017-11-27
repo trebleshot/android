@@ -1,8 +1,11 @@
 package com.genonbeta.TrebleShot.receiver;
 
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.IBinder;
+import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -19,7 +22,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 
-public class DeviceScannerProvider extends BroadcastReceiver implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvailableListener
+public class DeviceScannerService extends Service implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvailableListener
 {
 	public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES";
 	public static final String ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED";
@@ -32,37 +35,45 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	public static final String SCANNER_NOT_AVAILABLE = "genonbeta.intent.status.SCANNER_NOT_AVAILABLE";
 
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
-
-	private Context mContext;
 	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader(this);
 	private AccessDatabase mDatabase;
 
 	@Override
-	public void onReceive(Context context, Intent intent)
+	public void onCreate()
 	{
-		mContext = context;
-		mDatabase = new AccessDatabase(context);
+		super.onCreate();
+		mDatabase = new AccessDatabase(getApplicationContext());
+	}
 
-		if (ACTION_SCAN_DEVICES.equals(intent.getAction())) {
-			String result = null;
+	@Override
+	public int onStartCommand(Intent intent, int flags, int startId)
+	{
+		super.onStartCommand(intent, flags, startId);
 
-			if (mDeviceScanner.isScannerAvailable()) {
-				ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+		if (intent != null)
+			if (ACTION_SCAN_DEVICES.equals(intent.getAction())) {
+				String result = SCANNER_NOT_AVAILABLE;
 
-				NetworkDevice localDevice = AppUtils.getLocalDevice(context);
-				mDatabase.publish(localDevice);
+				if (mDeviceScanner.isScannerAvailable()) {
+					ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-				for (AddressedInterface addressedInterface : interfaceList) {
-					NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.deviceId, System.currentTimeMillis());
-					mDatabase.publish(connection);
+					NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+					mDatabase.publish(localDevice);
+
+					for (AddressedInterface addressedInterface : interfaceList) {
+						NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.deviceId, System.currentTimeMillis());
+						mDatabase.publish(connection);
+					}
+
+					result = mDeviceScanner.scan(interfaceList, this) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE;
 				}
 
-				result = mDeviceScanner.scan(interfaceList, this) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE;
-			} else
-				result = SCANNER_NOT_AVAILABLE;
+				getApplicationContext().sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, result));
 
-			context.sendBroadcast(new Intent(ACTION_SCAN_STARTED).putExtra(EXTRA_SCAN_STATUS, result));
-		}
+				return START_STICKY;
+			}
+
+		return START_NOT_STICKY;
 	}
 
 	@Override
@@ -79,7 +90,7 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	{
 		if (device.deviceId != null) {
 			NetworkDevice.Connection connection = new NetworkDevice.Connection(ipAddress);
-			NetworkDevice localDevice = AppUtils.getLocalDevice(mContext);
+			NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
 			try {
 				mDatabase.reconstruct(connection);
@@ -104,11 +115,18 @@ public class DeviceScannerProvider extends BroadcastReceiver implements NetworkD
 	@Override
 	public void onThreadsCompleted()
 	{
-		mContext.sendBroadcast(new Intent(ACTION_DEVICE_SCAN_COMPLETED));
+		getApplicationContext().sendBroadcast(new Intent(ACTION_DEVICE_SCAN_COMPLETED));
 	}
 
 	public static NetworkDeviceScanner getDeviceScanner()
 	{
 		return mDeviceScanner;
+	}
+
+	@Nullable
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		return null;
 	}
 }

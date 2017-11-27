@@ -1,9 +1,11 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;

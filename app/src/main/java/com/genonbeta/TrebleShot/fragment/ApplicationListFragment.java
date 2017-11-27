@@ -4,13 +4,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -18,10 +23,14 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
-public class ApplicationListFragment extends ShareableListFragment<ApplicationListAdapter.PackageHolder, ApplicationListAdapter> implements TitleSupport
+public class ApplicationListFragment
+		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, ApplicationListAdapter>
+		implements TitleSupport
 {
 	private SharedPreferences mPreferences;
+
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
@@ -51,8 +60,8 @@ public class ApplicationListFragment extends ShareableListFragment<ApplicationLi
 		if (item.getItemId() == R.id.show_system_apps) {
 			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
 			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
-			refreshList();
 
+			refreshList();
 			return true;
 		}
 
@@ -69,10 +78,21 @@ public class ApplicationListFragment extends ShareableListFragment<ApplicationLi
 	}
 
 	@Override
+	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+	{
+		boolean result = super.onCreateActionMenu(context, actionMode, menu);
+
+		MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
+
+		if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			shareOthers.setVisible(false);
+
+		return result;
+	}
+
+	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		super.onListItemClick(l, v, position, id);
-
 		final ApplicationListAdapter.PackageHolder appInfo = (ApplicationListAdapter.PackageHolder) getAdapter().getItem(position);
 		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 

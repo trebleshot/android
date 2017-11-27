@@ -9,9 +9,13 @@ import android.util.Log;
 import com.genonbeta.TrebleShot.R;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;
+import java.nio.channels.FileChannel;
 import java.util.Locale;
 
 public class FileUtils
@@ -26,6 +30,20 @@ public class FileUtils
 			return storagePath;
 
 		return new File(defaultPath);
+	}
+
+	public static void copyFile(File source, File destination) throws IOException
+	{
+		FileChannel sourceChannel = null;
+		FileChannel destChannel = null;
+
+		sourceChannel = new FileInputStream(source).getChannel();
+		destChannel = new FileOutputStream(destination).getChannel();
+
+		destChannel.transferFrom(sourceChannel, 0, sourceChannel.size());
+
+		sourceChannel.close();
+		destChannel.close();
 	}
 
 	public static String getFileContentType(String fileUrl)

@@ -35,7 +35,8 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 					try {
 						// The interface may not be created properly yet and we should give some time
 						Thread.sleep(1700);
-						context.sendBroadcast(new Intent(DeviceScannerProvider.ACTION_SCAN_DEVICES));
+						context.startService(new Intent(context, DeviceScannerService.class)
+								.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

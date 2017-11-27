@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +34,9 @@ import java.io.File;
 public class NotificationUtils
 {
 	public static final String TAG = "NotificationUtils";
+	public static final String NOTIFICATION_CHANNEL_HIGH = "tsHighPriority";
+	public static final String NOTIFICATION_CHANNEL_LOW = "tsLowPriority";
+
 	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
 
 	private Context mContext;
@@ -45,6 +50,18 @@ public class NotificationUtils
 		mManager = NotificationManagerCompat.from(context);
 		mDatabase = new AccessDatabase(context);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+
+			NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_appName), NotificationManager.IMPORTANCE_HIGH);
+			channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
+			channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
+			notificationManager.createNotificationChannel(channelHigh);
+
+			NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_appName), NotificationManager.IMPORTANCE_NONE);
+			notificationManager.createNotificationChannel(channelLow);
+		}
 	}
 
 	public NotificationUtils cancel(int notificationId)
@@ -81,7 +98,8 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		notification.setSmallIcon(android.R.drawable.stat_notify_error)
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
+				.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.text_connectionPermission))
 				.setContentText(mContext.getString(R.string.ques_allowDeviceToConnect))
 				.setContentInfo(device.user)
@@ -114,7 +132,8 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
+				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.ques_receiveFile))
 				.setContentText(message)
 				.setContentInfo(device.user)
@@ -149,7 +168,8 @@ public class NotificationUtils
 		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
-		notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
 				.setContentTitle(transaction.friendlyName)
 				.setContentText(mContext.getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
 				.setContentInfo(device.user)
@@ -186,7 +206,9 @@ public class NotificationUtils
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
 		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification
+				.setChannelId(NOTIFICATION_CHANNEL_HIGH)
+				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.ques_copyToClipboard))
 				.setContentText(mContext.getString(R.string.text_textReceived))
 				.setStyle(new NotificationCompat.BigTextStyle()
@@ -209,13 +231,13 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
 		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-			openIntent.setDataAndType(FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file), transactionObject.fileMimeType)
-					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-		else
-			openIntent.setDataAndType(Uri.fromFile(file), transactionObject.fileMimeType);
+		openIntent.setDataAndType(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+				? FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file)
+				: Uri.fromFile(file), transactionObject.fileMimeType)
+				.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(transactionObject.friendlyName)
 				.setContentText(mContext.getString(R.string.text_fileReceived))
 				.setContentInfo(device.user)
@@ -229,7 +251,8 @@ public class NotificationUtils
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.text_multipleFileReceiveCompleted))
 				.setContentText(mContext.getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, numberOfFiles, numberOfFiles))
 				.setAutoCancel(true)
@@ -244,7 +267,8 @@ public class NotificationUtils
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
 
-		notification.setSmallIcon(android.R.drawable.stat_notify_error)
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
+				.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.text_error))
 				.setContentText(mContext.getString(R.string.mesg_fileReceiveError, transactionObject.friendlyName))
 				.setAutoCancel(true)
@@ -266,7 +290,8 @@ public class NotificationUtils
 
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), cancelIntent, 0);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download)
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(android.R.drawable.stat_sys_download)
 				.setContentTitle(mContext.getString(R.string.text_preparingFiles))
 				.setContentText(mContext.getString(R.string.text_savingDetails))
 				.setAutoCancel(false)
@@ -285,7 +310,8 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
 		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(TransactionService.ACTION_CANCEL_KILL);
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_warning)
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(android.R.drawable.stat_sys_warning)
 				.setOngoing(true)
 				.setContentTitle(mContext.getString(R.string.text_stopping))
 				.setContentText(mContext.getString(R.string.text_cancellingTransfer))

@@ -20,7 +20,7 @@
     <string name="text_notAvailable">Unavailable</string>
     <string name="text_deviceListEmpty">No device</string>
     <string name="mesg_noNetwork">I need a connection like Wi-Fi to find nearby devices</string>
-    <string name="mesg_scanningDevices">Finding nearby devices…</string>
+    <string name="mesg_scanningDevices">Finding nearby devices</string>
     <string name="ques_receiveFile">Receive file?</string>
     <string name="butn_accept">Accept</string>
     <string name="butn_reject">Reject</string>
@@ -72,7 +72,7 @@
     <string name="text_findDevicesHint">To find nearby devices touch the search icon</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
     <string name="text_autoScanDevicesSummary">Scans devices when it is necessary</string>
-    <string name="mesg_stillScanning">Still scanning…</string>
+    <string name="mesg_stillScanning">Still scanning</string>
     <string name="text_advanced">Advanced</string>
     <string name="text_storagePath">Storage path</string>
     <string name="text_storagePathSummary">New files will be saved to this folder</string>
@@ -84,7 +84,7 @@
     <string name="text_allowToAccess">Allow to access</string>
     <string name="text_connectionPermission">Connection permission</string>
     <string name="ques_allowDeviceToConnect">Allow this device to connect?</string>
-    <string name="mesg_stopping">Stopping…</string>
+    <string name="mesg_stopping">Stopping</string>
     <string name="text_notification">Notification</string>
     <string name="text_useSounds">Sounds</string>
     <string name="text_useSoundsSummary">Use sounds</string>

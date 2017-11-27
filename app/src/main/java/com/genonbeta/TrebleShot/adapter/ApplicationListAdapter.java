@@ -59,7 +59,7 @@ public class ApplicationListAdapter
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
 			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
-				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+					list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 		}
 
 		Collections.sort(list, mComparator);

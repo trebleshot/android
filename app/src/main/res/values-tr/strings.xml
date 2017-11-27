@@ -13,7 +13,7 @@
     <string name="text_notAvailable">Kullanılamaz</string>
     <string name="text_deviceListEmpty">Cihaz listesi boş</string>
     <string name="mesg_noNetwork">Yakın cihazları bulmam için kablosuz benzeri bir ağa bağlanmam gerek</string>
-    <string name="mesg_scanningDevices">Cihazlar bulunuyor…</string>
+    <string name="mesg_scanningDevices">Cihazlar bulunuyor</string>
     <string name="ques_receiveFile">Dosya alınsın mı?</string>
     <string name="butn_accept">Kabul et</string>
     <string name="butn_reject">Reddet</string>
@@ -65,7 +65,7 @@
     <string name="text_findDevicesHint">Cihazları bulmak için arama simgesine dokunun</string>
     <string name="text_autoScanDevices">Cihazları otomatik tara</string>
     <string name="text_autoScanDevicesSummary">Gerekli durumlarda tarama başlatılır</string>
-    <string name="mesg_stillScanning">Halen arıyor…</string>
+    <string name="mesg_stillScanning">Halen arıyor</string>
     <string name="text_advanced">Gelişmiş</string>
     <string name="text_storagePath">Dosyaları saklama konumu</string>
     <string name="text_storagePathSummary">Alınan dosyalar bu klasörde saklanacak</string>
@@ -77,7 +77,7 @@
     <string name="text_allowToAccess">Erişime izin ver</string>
     <string name="text_connectionPermission">Bağlantı izni</string>
     <string name="ques_allowDeviceToConnect">Cihaza izin ver?</string>
-    <string name="mesg_stopping">Durduruluyor…</string>
+    <string name="mesg_stopping">Durduruluyor</string>
     <string name="text_notification">Bildirim</string>
     <string name="text_useSounds">Ses</string>
     <string name="text_useSoundsSummary">Bildirimlerde ses kullan</string>

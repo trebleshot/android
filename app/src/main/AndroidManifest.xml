@@ -104,6 +104,15 @@
             </intent-filter>
         </service>
 
+        <service android:name=".receiver.DeviceScannerService">
+            <intent-filter>
+                <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
+                <action android:name="genonbeta.intent.action.ADD_IP"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
+
         <receiver android:name=".receiver.NetworkStatusReceiver">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
@@ -112,14 +121,6 @@
             </intent-filter>
         </receiver>
         <receiver android:name=".receiver.DialogEventReceiver"/>
-        <receiver android:name=".receiver.DeviceScannerProvider">
-            <intent-filter>
-                <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
-                <action android:name="genonbeta.intent.action.ADD_IP"/>
-
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </receiver>
 
         <service
             android:name=".service.CommunicationToggleTile"

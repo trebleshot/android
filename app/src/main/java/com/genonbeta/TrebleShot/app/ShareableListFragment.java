@@ -3,19 +3,29 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.util.Shareable;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.StreamCorruptedException;
+import java.net.URI;
 import java.util.ArrayList;
 
 public abstract class ShareableListFragment<T extends Shareable, E extends ShareableListAdapter<T>>
@@ -57,6 +67,25 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 			((SearchView) menu.findItem(R.id.search).getActionView())
 					.setOnQueryTextListener(mSearchComposer);
+		}
+	}
+
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id)
+	{
+		super.onListItemClick(l, v, position, id);
+
+		Shareable shareable = (Shareable) getAdapter().getItem(position);
+
+		try {
+			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), shareable.uri, false);
+			openFile(shareable.uri, streamInfo.mimeType, getString(R.string.text_fileOpenAppChoose));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (StreamCorruptedException e) {
+			e.printStackTrace();
+		} catch (StreamInfo.FolderStateException e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -154,44 +183,56 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 	public void openFile(Uri uri, String type, String chooserText)
 	{
-		Intent openIntent = new Intent(Intent.ACTION_VIEW);
+		try {
+			Intent openIntent = new Intent(Intent.ACTION_VIEW);
+			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri, false);
 
-		openIntent.setDataAndType(uri, type);
+			if (StreamInfo.Type.FILE.equals(streamInfo.type) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+				openIntent.setDataAndType(FileProvider.getUriForFile(getActivity(), getActivity().getPackageName() + ".provider", new File(URI.create(streamInfo.uri.toString()))), type);
+			else
+				openIntent.setDataAndType(uri, type);
 
-		startActivity(Intent.createChooser(openIntent, chooserText));
+			openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+			startActivity(Intent.createChooser(openIntent, chooserText));
+		} catch (RuntimeException e) {
+
+		} catch(Exception e) {
+
+		}
 	}
 
-	public boolean search(String word)
-	{
-		if (getPowerfulActionMode() != null)
-			getPowerfulActionMode().finish(this);
+public boolean search(String word)
+		{
+		if(getPowerfulActionMode()!=null)
+		getPowerfulActionMode().finish(this);
 
-		if ((word == null || word.length() == 0) && lockRefresh(false) && mCachedList.size() != 0) {
-			mCachedList.clear();
-			getAdapter().onUpdate(mCachedList);
-			getAdapter().notifyDataSetChanged();
-		} else {
-			lockRefresh(true);
+		if((word==null||word.length()==0)&&lockRefresh(false)&&mCachedList.size()!=0){
+		mCachedList.clear();
+		getAdapter().onUpdate(mCachedList);
+		getAdapter().notifyDataSetChanged();
+		}else{
+		lockRefresh(true);
 
-			if (mCachedList.size() == 0)
-				mCachedList.addAll(getAdapter().getList());
+		if(mCachedList.size()==0)
+		mCachedList.addAll(getAdapter().getList());
 
-			ArrayList<T> searchableList = new ArrayList<>();
+		ArrayList<T> searchableList=new ArrayList<>();
 
-			for (T shareable : mCachedList)
-				if (shareable.searchMatches(word))
-					searchableList.add(shareable);
+		for(T shareable:mCachedList)
+		if(shareable.searchMatches(word))
+		searchableList.add(shareable);
 
-			getAdapter().onUpdate(searchableList);
-			getAdapter().notifyDataSetChanged();
+		getAdapter().onUpdate(searchableList);
+		getAdapter().notifyDataSetChanged();
 		}
 
 
-		return getAdapter().getCount() > 0;
-	}
+		return getAdapter().getCount()>0;
+		}
 
-	public void setSearchSupport(boolean searchSupport)
-	{
-		mSearchSupport = searchSupport;
-	}
-}
+public void setSearchSupport(boolean searchSupport)
+		{
+		mSearchSupport=searchSupport;
+		}
+		}

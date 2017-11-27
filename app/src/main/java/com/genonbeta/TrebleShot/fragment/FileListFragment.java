@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
@@ -104,13 +105,11 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		super.onListItemClick(l, v, position, id);
-
 		FileListAdapter.FileHolder fileInfo = (FileListAdapter.FileHolder) getAdapter().getItem(position);
 
 		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo))
 			if (!fileInfo.isFolder)
-				openFile(Uri.fromFile(fileInfo.file), FileUtils.getFileContentType(fileInfo.file.getAbsolutePath()), getString(R.string.text_fileOpenAppChoose));
+				super.onListItemClick(l, v, position, id);
 			else
 				goPath(fileInfo.file);
 	}
@@ -120,6 +119,12 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	{
 		super.onCreateActionMenu(context, actionMode, menu);
 		actionMode.getMenuInflater().inflate(R.menu.action_mode_file, menu);
+
+		MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
+
+		if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			shareOthers.setVisible(false);
+
 		return true;
 	}
 

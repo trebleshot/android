@@ -6,6 +6,5 @@
         android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="0"
         android:title="@string/butn_scan"
-        app:showAsAction="always"
-        app:actionProviderClass="com.genonbeta.TrebleShot.provider.ScanDevicesActionProvider"/>
+        app:showAsAction="always"/>
 </menu>

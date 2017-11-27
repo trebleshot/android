@@ -6,13 +6,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -46,6 +50,14 @@ import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
@@ -284,21 +296,40 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private void sendThisApplication()
 	{
-		File apkFile = new File(getPackageCodePath());
-		Intent sendIntent = new Intent(Intent.ACTION_SEND);
+		new Handler(Looper.myLooper()).post(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				try {
+					PackageManager pm = getPackageManager();
+					Intent sendIntent = new Intent(Intent.ACTION_SEND);
+					PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
 
-		sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(apkFile));
-		sendIntent.setType(FileUtils.getFileContentType(apkFile.getAbsolutePath()));
+					String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-		try {
-			PackageManager pm = getPackageManager();
-			PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
+					sendIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName);
 
-			sendIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk");
-		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
-		}
+					File codeFile = new File(FileUtils.
+							getApplicationDirectory(getApplicationContext()).getAbsolutePath()  + File.separator + fileName);
 
-		startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
+					codeFile = FileUtils.getUniqueFile(codeFile, true);
+
+					FileUtils.copyFile(new File(getApplicationInfo().sourceDir), codeFile);
+
+					sendIntent.putExtra(Intent.EXTRA_STREAM, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+							? FileProvider.getUriForFile(HomeActivity.this, getPackageName() + ".provider", codeFile)
+							: Uri.fromFile(codeFile))
+							.setType(FileUtils.getFileContentType(codeFile.getAbsolutePath()))
+							.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+					startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (PackageManager.NameNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 }
