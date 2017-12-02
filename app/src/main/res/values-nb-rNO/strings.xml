@@ -162,8 +162,8 @@
     <string name="butn_newFile">Ny fil</string>
     <string name="butn_keepFile">Behold</string>
     <string name="text_fixFileSaveLocation">Fiks lagringsplassering</string>
-    <string name="text_fileConflictNoChoice">Mappen du valgte for %s-filen er ikke tilgjengelig for øyeblikket, og gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil, velg \"Behold\", eller velg \"Ny fil\", for å generer ny fil.</string>
-    <string name="text_fileConflictUseDefault"></string>
+    <string name="text_fileConflictNoChoice">Mappen du valgte for %s-filen er ikke tilgjengelig for øyeblikket, og gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil, velg \"Behold\", eller velg \"Ny fil\", for å generere ny fil.</string>
+    <string name="text_fileConflictUseDefault"/>
     <string name="mesg_currentPathUnavailable">Mappen kan ikke brukes. Velg en annen mappe.</string>
     <string name="text_defaultFolder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>
