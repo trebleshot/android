@@ -206,7 +206,7 @@
     <string name="butn_feelLucky">Yerime seç</string>
     <string name="butn_connectionList">Bağlantılar</string>
     <string name="text_feelLuckyFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot sizin yerinize karar verecek.</string>
+    <string name="text_feelLuckyOngoing">TrebleShot sizin yerinize karar verecek</string>
     <string name="butn_retry_all">Tekrar dene</string>
     <string name="butn_ask">Sor</string>
     <string name="text_permissionRequest">İzin isteği</string>
@@ -223,4 +223,5 @@
     <string name="text_transactionGroupDetails">Aktarım grubu detayları</string>
     <string name="text_usedConnection">Kullanılan bağlantı</string>
     <string name="text_flagRemoved">Kaldırıldı</string>
+    <string name="butn_copyToClipboard">Panoya kopyala</string>
 </resources>
