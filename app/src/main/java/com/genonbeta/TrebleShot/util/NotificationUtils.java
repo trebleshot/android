@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
+import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -187,10 +188,9 @@ public class NotificationUtils
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, AppUtils.getUniqueNumber());
 
 		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
-		Intent dialogIntent = new Intent(mContext, DialogEventReceiver.class);
+		Intent activityIntent = new Intent(mContext, TextEditorActivity.class);
 
-		acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD);
-		acceptIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
+		acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD).putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 
@@ -200,11 +200,10 @@ public class NotificationUtils
 		PendingIntent positiveIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		dialogIntent.setAction(DialogEventReceiver.ACTION_DIALOG);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_TITLE, mContext.getString(R.string.ques_copyToClipboard));
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_MESSAGE, text);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_POSITIVE_INTENT, positiveIntent);
-		dialogIntent.putExtra(DialogEventReceiver.EXTRA_NEGATIVE_INTENT, negativeIntent);
+		activityIntent
+				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+				.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, text)
+				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		notification
 				.setChannelId(NOTIFICATION_CHANNEL_HIGH)
@@ -215,7 +214,7 @@ public class NotificationUtils
 						.bigText(text)
 						.setBigContentTitle(mContext.getString(R.string.ques_copyToClipboard)))
 				.setContentInfo(device.user)
-				.setContentIntent(PendingIntent.getBroadcast(mContext, AppUtils.getUniqueNumber(), dialogIntent, 0))
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), activityIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(android.R.drawable.ic_menu_send, mContext.getString(R.string.butn_accept), positiveIntent)

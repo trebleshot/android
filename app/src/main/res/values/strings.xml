@@ -230,4 +230,5 @@
     <string name="text_transactionGroupDetails">Transaction group details</string>
     <string name="text_usedConnection">Used connection</string>
     <string name="text_flagRemoved">Removed</string>
+    <string name="butn_copyToClipboard">Copy to clipboard</string>
 </resources>

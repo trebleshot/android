@@ -98,7 +98,8 @@ public class ShareActivity extends Activity
 							{
 								startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
 										.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-										.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mStatusText.getText().toString()), REQUEST_CODE_EDIT_BOX);
+										.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mStatusText.getText().toString())
+										.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 							}
 						});
 
@@ -411,23 +412,29 @@ public class ShareActivity extends Activity
 							}
 
 							if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
-								Snackbar
-										.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
-										.setAction(R.string.ques_why, new View.OnClickListener()
-										{
-											@Override
-											public void onClick(View v)
+								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.NOT_ALLOWED))
+									Snackbar
+											.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
+											.setAction(R.string.ques_why, new View.OnClickListener()
 											{
-												AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
+												@Override
+												public void onClick(View v)
+												{
+													AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
 
-												builder.setMessage(getString(R.string.text_notAllowedHelp,
-														device.user,
-														AppUtils.getLocalDeviceName(ShareActivity.this)));
+													builder.setMessage(getString(R.string.text_notAllowedHelp,
+															device.user,
+															AppUtils.getLocalDeviceName(ShareActivity.this)));
 
-												builder.setNegativeButton(R.string.butn_close, null);
-												builder.show();
-											}
-										}).show();
+													builder.setNegativeButton(R.string.butn_close, null);
+													builder.show();
+												}
+											}).show();
+								else
+									Snackbar
+											.make(findViewById(android.R.id.content), R.string.mesg_somethingWentWrong, Snackbar.LENGTH_LONG)
+											.show();
+
 							}
 						} catch (Exception e) {
 							e.printStackTrace();
