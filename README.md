@@ -34,6 +34,7 @@ Send and receive files over available connections without making any effort
 * Japanese
 * Norwegian Bokmål
 * Turkish
+
 (Huge thanks to all language contributors)
 
 See the development process: https://trello.com/b/YmbwDHHo
