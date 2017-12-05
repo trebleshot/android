@@ -28,6 +28,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.security.Key;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
@@ -265,7 +266,9 @@ public class CommunicationService extends Service
 					mDatabase.remove(new NetworkDevice.Connection(device.deviceId, connection.adapterName)); // Remove old connection that has the connection adapter name and device id with old ip address
 					mDatabase.publish(connection); // now register the new connection
 
-					if (shouldContinue && replyJSON.has(Keyword.REQUEST)) {
+					if (!shouldContinue)
+						replyJSON.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
+					else if (replyJSON.has(Keyword.REQUEST)) {
 						switch (replyJSON.getString(Keyword.REQUEST)) {
 							case (Keyword.REQUEST_TRANSFER):
 								if (replyJSON.has(Keyword.FILES_INDEX) && replyJSON.has(Keyword.GROUP_ID) && getOngoingIndexList().size() < 1) {
@@ -363,32 +366,37 @@ public class CommunicationService extends Service
 									int groupId = replyJSON.getInt(Keyword.GROUP_ID);
 									int socketPort = replyJSON.getInt(Keyword.SOCKET_PORT);
 
-									TransactionObject.Group group = new TransactionObject.Group(groupId);
-									mDatabase.reconstruct(group);
-
 									try {
-										TransactionObject transactionObject = new TransactionObject(requestId);
-										mDatabase.reconstruct(transactionObject);
+										TransactionObject.Group group = new TransactionObject.Group(groupId);
+										mDatabase.reconstruct(group);
 
-										transactionObject.accessPort = socketPort;
+										try {
+											TransactionObject transactionObject = new TransactionObject(requestId);
+											mDatabase.reconstruct(transactionObject);
 
-										if (replyJSON.has(Keyword.SKIPPED_BYTES))
-											transactionObject.skippedBytes = replyJSON.getInt(Keyword.SKIPPED_BYTES);
+											transactionObject.accessPort = socketPort;
 
-										mDatabase.publish(transactionObject);
+											if (replyJSON.has(Keyword.SKIPPED_BYTES))
+												transactionObject.skippedBytes = replyJSON.getInt(Keyword.SKIPPED_BYTES);
 
-										if (!group.connectionAdapter.equals(connection.adapterName)) {
-											group.connectionAdapter = connection.adapterName;
-											mDatabase.publish(group);
+											mDatabase.publish(transactionObject);
+
+											if (!group.connectionAdapter.equals(connection.adapterName)) {
+												group.connectionAdapter = connection.adapterName;
+												mDatabase.publish(group);
+											}
+
+											startService(new Intent(getApplicationContext(), ClientService.class)
+													.setAction(ClientService.ACTION_SEND)
+													.putExtra(EXTRA_REQUEST_ID, requestId));
+
+											result = true;
+										} catch (Exception e) {
+											replyJSON.put(Keyword.ERROR, Keyword.NOT_FOUND);
+											replyJSON.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 										}
-
-										startService(new Intent(getApplicationContext(), ClientService.class)
-												.setAction(ClientService.ACTION_SEND)
-												.putExtra(EXTRA_REQUEST_ID, requestId));
-
-										result = true;
-									} catch (Exception e) {
-										replyJSON.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
+									}catch (Exception e) {
+										replyJSON.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
 									}
 								}
 

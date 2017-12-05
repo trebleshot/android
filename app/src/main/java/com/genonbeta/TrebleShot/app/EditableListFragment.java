@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.AbsListView;
 
@@ -31,8 +32,10 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		super.onActivityCreated(savedInstanceState);
 		getListView().setDividerHeight(0);
 
-		if (getPowerfulActionMode() != null)
+		if (getPowerfulActionMode() != null) {
 			getPowerfulActionMode().enableFor(this);
+			setHasOptionsMenu(true);
+		}
 	}
 
 	@Override
@@ -40,6 +43,25 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 	{
 		super.onResume();
 		refreshList();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_abs_editable_list, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.actions_abs_editable_multi_select) {
+			getPowerfulActionMode().start(this);
+		}
+
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override
@@ -56,6 +78,8 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		getListView().setClipToPadding(false);
 
 		lockRefresh(true);
+
+		actionMode.setTitle(String.valueOf(0));
 
 		return false;
 	}

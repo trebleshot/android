@@ -29,10 +29,12 @@ Send and receive files over available connections without making any effort
 [<img src="screenshots/screenshot_6.png" width=160>](screenshots/screenshot_6.png)
 
 ## Supported languages
-* English
 * Dutch
+* English
 * Japanese
+* Norwegian Bokmål
 * Turkish
+(Huge thanks to all language contributors)
 
 See the development process: https://trello.com/b/YmbwDHHo
 

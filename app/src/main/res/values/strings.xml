@@ -229,4 +229,5 @@
     <string name="text_savePath">Save path</string>
     <string name="text_transactionGroupDetails">Transaction group details</string>
     <string name="text_usedConnection">Used connection</string>
+    <string name="text_flagRemoved">Removed</string>
 </resources>

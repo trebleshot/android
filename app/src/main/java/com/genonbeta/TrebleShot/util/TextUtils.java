@@ -53,6 +53,8 @@ public class TextUtils
 				return R.string.text_flagInterrupted;
 			case RESUME:
 				return R.string.text_flagResume;
+			case REMOVED:
+				return R.string.text_flagRemoved;
 			default:
 				return R.string.text_unknown;
 		}

@@ -44,9 +44,11 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 
 		ArrayList<TransactionObject> incomingList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ? AND "
 								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(mGroup.groupId),
-						TransactionObject.Flag.INTERRUPTED.toString()), TransactionObject.class);
+						TransactionObject.Flag.INTERRUPTED.toString(),
+						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
 
 		mTotalIncoming = 0;
 		mTotalOutgoing = 0;

@@ -68,10 +68,11 @@ public class VideoListAdapter
 		if (cursor.moveToFirst()) {
 			int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
 			int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
+			int displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
 			int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
 			do {
-				VideoHolder info = new VideoHolder(cursor.getInt(idIndex), cursor.getString(titleIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+				VideoHolder info = new VideoHolder(cursor.getInt(idIndex), cursor.getString(titleIndex), cursor.getString(displayIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 				info.duration = TimeUtils.getDuration(cursor.getLong(lengthIndex));
 
 				list.add(info);
@@ -142,9 +143,9 @@ public class VideoListAdapter
 		public String thumbnail;
 		public String duration;
 
-		public VideoHolder(int id, String friendlyName, String thumbnail, Uri uri)
+		public VideoHolder(int id, String friendlyName, String displayName, String thumbnail, Uri uri)
 		{
-			super(friendlyName, friendlyName, uri);
+			super(friendlyName, displayName, uri);
 
 			this.id = id;
 			this.thumbnail = thumbnail;

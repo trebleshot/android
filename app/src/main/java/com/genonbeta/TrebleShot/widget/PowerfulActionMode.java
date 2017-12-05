@@ -81,6 +81,11 @@ public class PowerfulActionMode extends Toolbar
 				});
 	}
 
+	public boolean hasActive(Callback callback)
+	{
+		return mActiveActionModes.containsKey(callback);
+	}
+
 	public void finish(@NonNull final Callback callback)
 	{
 		final Holder holder = mActiveActionModes.get(callback);
@@ -188,7 +193,6 @@ public class PowerfulActionMode extends Toolbar
 
 		holder.overriddenClickListener = callback.getActionModeListView().getOnItemClickListener();
 		holder.previousChoiceMode = callback.getActionModeListView().getChoiceMode();
-
 
 		callback.getActionModeListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
 

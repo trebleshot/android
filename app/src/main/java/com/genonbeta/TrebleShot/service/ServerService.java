@@ -90,10 +90,11 @@ public class ServerService extends TransactionService<TransactionObject>
 			getDatabase().reconstruct(group);
 
 			CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-					.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
+					.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
 							TransactionObject.Type.INCOMING.toString(),
 							String.valueOf(groupId),
-							TransactionObject.Flag.INTERRUPTED.toString()));
+							TransactionObject.Flag.INTERRUPTED.toString(),
+							TransactionObject.Flag.REMOVED.toString()));
 
 			if (receiverInstance == null
 					&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
@@ -204,18 +205,19 @@ public class ServerService extends TransactionService<TransactionObject>
 
 						if (response.getBoolean(Keyword.RESULT))
 							client.setReturn(Flag.CONTINUE);
-						else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG)))
+						else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
 							client.setReturn(Flag.CANCEL_CURRENT);
+
+							if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.NOT_FOUND)) {
+								handler.getExtra().flag = TransactionObject.Flag.REMOVED;
+								getDatabase().publish(handler.getExtra());
+							}
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}, Flag.class);
-
-			if (!Flag.CONTINUE.equals(flag)) {
-				handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
-				getDatabase().publish(handler.getExtra());
-			}
 
 			return flag;
 		}

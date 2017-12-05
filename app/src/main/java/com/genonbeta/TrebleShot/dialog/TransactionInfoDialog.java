@@ -71,7 +71,8 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 				}
 			});
 
-			if (TransactionObject.Type.INCOMING.equals(transactionObject.type))
+			if (TransactionObject.Type.INCOMING.equals(transactionObject.type)
+					&& !TransactionObject.Flag.REMOVED.equals(transactionObject.flag))
 				setNeutralButton(R.string.butn_resume, new DialogInterface.OnClickListener()
 				{
 					@Override

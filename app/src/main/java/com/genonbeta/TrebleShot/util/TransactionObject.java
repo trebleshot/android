@@ -204,6 +204,7 @@ public class TransactionObject implements FlexibleObject
 		INTERRUPTED,
 		PENDING,
 		RESUME,
-		RUNNING
+		RUNNING,
+		REMOVED
 	}
 }

@@ -38,4 +38,7 @@ public class Keyword
 	public static final String MODE = "mode";
 	public static final String MODE_RECEIVE = "modeReceive";
 	public static final String MODE_SEND = "modeSend";
+	public static final String ERROR = "error";
+	public static final String NOT_ALLOWED = "notAllowed";
+	public static final String NOT_FOUND = "notFound";
 }

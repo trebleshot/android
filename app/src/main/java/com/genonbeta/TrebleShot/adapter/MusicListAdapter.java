@@ -169,7 +169,7 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 
 		public SongHolder(String displayName, String artist, String song, int albumId, Uri uri)
 		{
-			super(displayName, displayName, uri);
+			super(artist + " - " + song, displayName, uri);
 
 			this.artist = artist;
 			this.song = song;
@@ -179,7 +179,8 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 		@Override
 		public boolean searchMatches(String searchWord)
 		{
-			return TextUtils.searchWord(artist, searchWord) || TextUtils.searchWord(song, searchWord);
+			return TextUtils.searchWord(artist, searchWord)
+					|| TextUtils.searchWord(song, searchWord);
 		}
 	}
 

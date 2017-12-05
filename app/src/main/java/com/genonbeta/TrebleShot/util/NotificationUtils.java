@@ -272,6 +272,8 @@ public class NotificationUtils
 				.setContentTitle(mContext.getString(R.string.text_error))
 				.setContentText(mContext.getString(R.string.mesg_fileReceiveError, transactionObject.friendlyName))
 				.setAutoCancel(true)
+				.setDefaults(getNotificationSettings())
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0));

@@ -201,7 +201,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfacUnknown">\@string/text_unknown</string>
+    <string name="text_interfacUnknown">@string/text_unknown</string>
     <string name="text_shareTextShort">Metin</string>
     <string name="butn_feelLucky">Yerime seç</string>
     <string name="butn_connectionList">Bağlantılar</string>
@@ -222,4 +222,5 @@
     <string name="text_savePath">Kaydetme yeri</string>
     <string name="text_transactionGroupDetails">Aktarım grubu detayları</string>
     <string name="text_usedConnection">Kullanılan bağlantı</string>
+    <string name="text_flagRemoved">Kaldırıldı</string>
 </resources>
