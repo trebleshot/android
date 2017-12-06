@@ -13,7 +13,7 @@
     <string name="text_notAvailable">Niet-beschikbaar</string>
     <string name="text_deviceListEmpty">Geen apparaat</string>
     <string name="mesg_noNetwork">Ik heb een verbinding, zoals bijv. Wi-Fi, nodig om apparaten te vinden</string>
-    <string name="mesg_scanningDevices">Bezig met zoeken naar apparaten…</string>
+    <string name="mesg_scanningDevices">Bezig met zoeken naar apparaten</string>
     <string name="ques_receiveFile">Wilt u het bestand ontvangen?</string>
     <string name="butn_accept">Accepteren</string>
     <string name="butn_reject">Afwijzen</string>
@@ -65,7 +65,7 @@
     <string name="text_findDevicesHint">Druk op het zoekpictogram om nabije apparaten te vinden</string>
     <string name="text_autoScanDevices">Automatisch zoeken naar apparaten</string>
     <string name="text_autoScanDevicesSummary">Zoekt, wanneer nodig, naar apparaten</string>
-    <string name="mesg_stillScanning">Nog steeds bezig met scannen…</string>
+    <string name="mesg_stillScanning">Nog steeds bezig met scannen</string>
     <string name="text_advanced">Geavanceerd</string>
     <string name="text_storagePath">Opslagpad</string>
     <string name="text_storagePathSummary">Nieuwe bestanden worden opgeslagen in deze map</string>
@@ -77,7 +77,7 @@
     <string name="text_allowToAccess">Sta toe om toegang te krijgen</string>
     <string name="text_connectionPermission">Toegang tot verbinding</string>
     <string name="ques_allowDeviceToConnect">Wilt u dit apparaat toestaan om verbinding te maken?</string>
-    <string name="mesg_stopping">Bezig met stoppen…</string>
+    <string name="mesg_stopping">Bezig met stoppen</string>
     <string name="text_notification">Melding</string>
     <string name="text_useSounds">Geluiden</string>
     <string name="text_useSoundsSummary">Geluiden gebruiken</string>
@@ -224,4 +224,6 @@
     <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
     <string name="text_usedConnection">Gebruikte verbinding</string>
 <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot gebruikt het serienummer van uw telefoon om een semi-permanent identiteitsnummer te creëren voor uw apparaat. Dit helpt andere TrebleShot-gebruikers om uw apparaat te herkennen. Uw apparaat moet Oreo of hoger draaien en TrebleShot moet hiervoor toestemming krijgen. Door dit af te wijzen zal TrebleShot stoppen met draaien.</string>
-    </resources>
+    <string name="text_flagRemoved">Verwijderd</string>
+    <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
+</resources>
