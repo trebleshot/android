@@ -5,11 +5,14 @@ import android.net.Uri;
 import android.os.IBinder;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.StreamInfo;
+import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -75,6 +78,12 @@ public class ClientService extends TransactionService<TransactionObject>
 		return START_STICKY;
 	}
 
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+	}
+
 	public class Send extends CoolTransfer.Send<TransactionObject>
 	{
 		@Override
@@ -90,9 +99,10 @@ public class ClientService extends TransactionService<TransactionObject>
 		}
 
 		@Override
-		public void onNotify(TransferHandler<TransactionObject> handler, int percent)
+		public void onNotify(TransferHandler<TransactionObject> handler, int percentage, int groupPercentage, long eta)
 		{
-			handler.getExtra().notification.updateProgress(100, percent, false);
+			handler.getExtra().notification.setContentText(getString(R.string.text_reaminingTime, TimeUtils.getDuration(eta)));
+			handler.getExtra().notification.updateProgress(100, groupPercentage == -1 ? percentage : groupPercentage, false);
 		}
 
 		@Override
@@ -126,6 +136,13 @@ public class ClientService extends TransactionService<TransactionObject>
 				getWifiLock().acquire();
 				getDatabase().publish(handler.getExtra());
 
+				if (handler.getGroupTotalByte() > 0)
+					onNotify(handler, 0, MathUtils.calculatePercentage(handler.getGroupTotalByte(), handler.getGroupTransferredByte()), handler.getTimeRemaining());
+				else
+					handler.getExtra().notification.show();
+
+				startForeground(handler.getExtra().notification.getNotificationId(), handler.getExtra().notification.build());
+
 				return Flag.CONTINUE;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -140,7 +157,7 @@ public class ClientService extends TransactionService<TransactionObject>
 			super.onStop(handler);
 
 			handler.getExtra().notification.cancel();
-			getWifiLock().release();
+			stopForeground(true);
 		}
 
 		@Override
@@ -164,8 +181,9 @@ public class ClientService extends TransactionService<TransactionObject>
 
 			if (isAdded)
 				getWifiLock().acquire();
-			else if (processList.size() < 1)
+			else if (processList.size() < 1) {
 				getWifiLock().release();
+			}
 		}
 	}
 }

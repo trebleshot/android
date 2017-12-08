@@ -231,4 +231,7 @@
     <string name="text_usedConnection">Used connection</string>
     <string name="text_flagRemoved">Removed</string>
     <string name="butn_copyToClipboard">Copy to clipboard</string>
+    <string name="text_communicationServiceRunning">TrebleShot can share files now</string>
+    <string name="text_communicationServiceStop">Tap to end session</string>
+    <string name="text_reaminingTime">ETA %s</string>
 </resources>

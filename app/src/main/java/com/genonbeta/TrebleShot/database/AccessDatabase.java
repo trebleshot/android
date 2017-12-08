@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
-import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.FlexibleObject;
+import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
@@ -143,6 +142,27 @@ public class AccessDatabase extends SQLiteDatabase
 				.putExtra(EXTRA_TABLE_NAME, select.tableName)
 				.putExtra(EXTRA_CHANGE_TYPE, type)
 				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
+	}
+
+	public void calculateTransactionSize(int groupId, TransactionObject.Group.Size sizeObject)
+	{
+		sizeObject.incoming = 0;
+		sizeObject.outgoing = 0;
+
+		ArrayList<TransactionObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ? AND "
+								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
+						String.valueOf(groupId),
+						TransactionObject.Flag.INTERRUPTED.toString(),
+						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
+
+		for (TransactionObject transactionObject : transactionList) {
+			if (TransactionObject.Type.INCOMING.equals(transactionObject.type))
+				sizeObject.incoming += transactionObject.fileSize;
+			else
+				sizeObject.outgoing += transactionObject.fileSize;
+		}
 	}
 
 	@Override

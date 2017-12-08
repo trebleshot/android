@@ -1,10 +1,14 @@
 package com.genonbeta.TrebleShot.service;
 
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.content.FileProvider;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
@@ -40,6 +44,7 @@ public class CommunicationService extends Service
 	public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
 	public static final String ACTION_CANCEL_INDEXING = "com.genonbeta.TrebleShot.action.CANCEL_INDEXING";
 	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
+	public static final String ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
@@ -79,6 +84,10 @@ public class CommunicationService extends Service
 
 		if (intent != null)
 			Log.d(TAG, "onStart() : action = " + intent.getAction());
+
+		startForeground(NotificationUtils.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, mNotification
+				.getCommunicationServiceNotification()
+				.build());
 
 		if (intent != null) {
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
@@ -175,6 +184,8 @@ public class CommunicationService extends Service
 					((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", mReceivedClipboardIndex));
 					Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
 				}
+			} else if (ACTION_END_SESSION.equals(intent.getAction())) {
+				stopSelf();
 			}
 		}
 
@@ -395,7 +406,7 @@ public class CommunicationService extends Service
 											replyJSON.put(Keyword.ERROR, Keyword.NOT_FOUND);
 											replyJSON.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 										}
-									}catch (Exception e) {
+									} catch (Exception e) {
 										replyJSON.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
 									}
 								}

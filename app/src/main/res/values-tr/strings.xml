@@ -224,4 +224,7 @@
     <string name="text_usedConnection">Kullanılan bağlantı</string>
     <string name="text_flagRemoved">Kaldırıldı</string>
     <string name="butn_copyToClipboard">Panoya kopyala</string>
+    <string name="text_communicationServiceRunning">TrebleShot dosya paylaşabilir</string>
+    <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
+    <string name="text_reaminingTime">Kalan %s</string>
 </resources>

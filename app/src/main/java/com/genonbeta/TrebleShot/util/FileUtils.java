@@ -71,9 +71,6 @@ public class FileUtils
 		String transactionFile = (transactionObject.directory != null ? transactionObject.directory + File.separator : "") + transactionObject.file;
 
 		File file = new File(getSavePath(context, group) + File.separator + transactionFile);
-
-		Log.d("FUCKER", "File name  " + file.getAbsolutePath());
-
 		File parentFile = file.getParentFile();
 
 		if (parentFile != null)

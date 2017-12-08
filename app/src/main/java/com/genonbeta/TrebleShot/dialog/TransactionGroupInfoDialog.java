@@ -13,10 +13,8 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
-import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
-import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -27,8 +25,7 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 {
 	private AccessDatabase mDatabase;
 	private TransactionObject.Group mGroup;
-	private long mTotalIncoming = 0;
-	private long mTotalOutgoing = 0;
+	private TransactionObject.Group.Size mTransactionSize = new TransactionObject.Group.Size();
 
 	public TransactionGroupInfoDialog(Context context, AccessDatabase database, TransactionObject.Group group)
 	{
@@ -42,25 +39,9 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 	{
 		long freeSpace = FileUtils.getSavePath(getContext(), mGroup).getFreeSpace();
 
-		ArrayList<TransactionObject> incomingList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ? AND "
-								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-						String.valueOf(mGroup.groupId),
-						TransactionObject.Flag.INTERRUPTED.toString(),
-						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
+		mDatabase.calculateTransactionSize(mGroup.groupId, mTransactionSize);
 
-		mTotalIncoming = 0;
-		mTotalOutgoing = 0;
-
-		for (TransactionObject transactionObject : incomingList) {
-			if (TransactionObject.Type.INCOMING.equals(transactionObject.type))
-				mTotalIncoming = mTotalIncoming + transactionObject.fileSize;
-			else
-				mTotalOutgoing = mTotalOutgoing + transactionObject.fileSize;
-		}
-
-		return freeSpace >= mTotalIncoming;
+		return freeSpace >= mTransactionSize.incoming;
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -78,8 +59,8 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 
 		File savePathFile = FileUtils.getSavePath(getContext(), mGroup);
 
-		incomingSize.setText(FileUtils.sizeExpression(mTotalIncoming, false));
-		outgoingSize.setText(FileUtils.sizeExpression(mTotalOutgoing, false));
+		incomingSize.setText(FileUtils.sizeExpression(mTransactionSize.incoming, false));
+		outgoingSize.setText(FileUtils.sizeExpression(mTransactionSize.outgoing, false));
 		availableDisk.setText(FileUtils.sizeExpression(savePathFile.getFreeSpace(), false));
 		savePath.setText(savePathFile.getAbsolutePath());
 

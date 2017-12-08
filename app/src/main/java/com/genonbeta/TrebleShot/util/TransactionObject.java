@@ -192,6 +192,12 @@ public class TransactionObject implements FlexibleObject
 
 			return values;
 		}
+
+		public static class Size
+		{
+			public long incoming = 0;
+			public long outgoing = 0;
+		}
 	}
 
 	public enum Type

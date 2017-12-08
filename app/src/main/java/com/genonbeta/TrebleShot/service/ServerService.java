@@ -16,7 +16,9 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -73,7 +75,7 @@ public class ServerService extends TransactionService<TransactionObject>
 				TransactionObject runningReceiver = findExtraById(groupId);
 
 				if (runningReceiver == null)
-					doJob(groupId);
+					doJob(groupId, null);
 				else
 					Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, runningReceiver.friendlyName), Toast.LENGTH_SHORT).show();
 			}
@@ -82,7 +84,7 @@ public class ServerService extends TransactionService<TransactionObject>
 		return START_STICKY;
 	}
 
-	public boolean doJob(int groupId)
+	public boolean doJob(int groupId, CoolTransfer.TransferHandler previousHandler)
 	{
 		TransactionObject.Group group = new TransactionObject.Group(groupId);
 
@@ -108,7 +110,8 @@ public class ServerService extends TransactionService<TransactionObject>
 			TransactionObject transactionObject = new TransactionObject(receiverInstance);
 			File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), transactionObject, group);
 
-			mReceive.receive(0, file, transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, transactionObject, false);
+			mReceive.receive(0, file, transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, transactionObject, false)
+					.linkTo(previousHandler);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -117,10 +120,15 @@ public class ServerService extends TransactionService<TransactionObject>
 		return true;
 	}
 
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		stopForeground(true);
+	}
+
 	public class Receive extends CoolTransfer.Receive<TransactionObject>
 	{
-		public int multiCounter = 0;
-
 		@Override
 		public Flag onError(TransferHandler<TransactionObject> handler, Exception error)
 		{
@@ -128,6 +136,7 @@ public class ServerService extends TransactionService<TransactionObject>
 
 			handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
 
+			stopForeground(true);
 			getDatabase().publish(handler.getExtra());
 			getNotificationUtils().notifyReceiveError(handler.getExtra());
 
@@ -135,16 +144,15 @@ public class ServerService extends TransactionService<TransactionObject>
 		}
 
 		@Override
-		public void onNotify(TransferHandler<TransactionObject> handler, int percent)
+		public void onNotify(TransferHandler<TransactionObject> handler, int percentage, int groupPercentage, long eta)
 		{
-			handler.getExtra().notification.updateProgress(100, percent, false);
+			handler.getExtra().notification.setContentText(getString(R.string.text_reaminingTime, TimeUtils.getDuration(eta)));
+			handler.getExtra().notification.updateProgress(100, groupPercentage == -1 ? percentage : groupPercentage, false);
 		}
 
 		@Override
 		public void onTransferCompleted(TransferHandler<TransactionObject> handler)
 		{
-			multiCounter++;
-
 			getDatabase().remove(handler.getExtra());
 
 			File finalFileLocation = FileUtils.getUniqueFile(new File(handler.getFile().getParent() + File.separator + handler.getExtra().friendlyName), true);
@@ -160,6 +168,7 @@ public class ServerService extends TransactionService<TransactionObject>
 			handler.getExtra().flag = TransactionObject.Flag.INTERRUPTED;
 
 			getDatabase().publish(handler.getExtra());
+			stopForeground(true);
 		}
 
 		@Override
@@ -225,11 +234,26 @@ public class ServerService extends TransactionService<TransactionObject>
 		@Override
 		public Flag onStart(TransferHandler<TransactionObject> handler)
 		{
+			if (handler.getGroupTransferredFileCount() == 0) {
+				TransactionObject.Group.Size sizeTotal = new TransactionObject.Group.Size();
+
+				getDatabase().calculateTransactionSize(handler.getExtra().groupId, sizeTotal);
+
+				handler.setGroupTotalByte(sizeTotal.incoming);
+			}
+
 			try {
 				handler.getExtra().notification = getNotificationUtils().notifyFileTransaction(handler.getExtra());
 				handler.getExtra().flag = TransactionObject.Flag.RUNNING;
 
+				if (handler.getGroupTotalByte() > 0)
+					onNotify(handler, 0, MathUtils.calculatePercentage(handler.getGroupTotalByte(), handler.getGroupTransferredByte()), handler.getTimeRemaining());
+				else
+					handler.getExtra().notification.show();
+
 				getDatabase().publish(handler.getExtra());
+
+				startForeground(handler.getExtra().notification.getNotificationId(), handler.getExtra().notification.build());
 
 				return Flag.CONTINUE;
 			} catch (Exception e) {
@@ -249,11 +273,14 @@ public class ServerService extends TransactionService<TransactionObject>
 				NetworkDevice device = new NetworkDevice(group.deviceId);
 				getDatabase().reconstruct(device);
 
-				if (!doJob(handler.getExtra().groupId))
-					if (multiCounter <= 1)
+				if (!doJob(handler.getExtra().groupId, handler)) {
+					stopForeground(true);
+
+					if (handler.getGroupTransferredFileCount() <= 1)
 						getNotificationUtils().notifyFileReceived(handler.getExtra(), device, handler.getFile());
 					else
-						getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile().getParent(), multiCounter);
+						getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile().getParent(), handler.getGroupTransferredFileCount());
+				}
 			} catch (Exception e) {
 				handler.getExtra().notification.cancel();
 			}

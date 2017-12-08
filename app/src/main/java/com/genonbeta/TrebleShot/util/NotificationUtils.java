@@ -34,6 +34,8 @@ import java.io.File;
 
 public class NotificationUtils
 {
+	public static final int SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID = 1;
+
 	public static final String TAG = "NotificationUtils";
 	public static final String NOTIFICATION_CHANNEL_HIGH = "tsHighPriority";
 	public static final String NOTIFICATION_CHANNEL_LOW = "tsLowPriority";
@@ -69,6 +71,21 @@ public class NotificationUtils
 	{
 		mManager.cancel(notificationId);
 		return this;
+	}
+
+	public DynamicNotification getCommunicationServiceNotification()
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID);
+
+		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+				.setSmallIcon(R.drawable.ic_whatshot_white_24dp)
+				.setContentTitle(mContext.getString(R.string.text_communicationServiceRunning))
+				.setContentText(mContext.getString(R.string.text_communicationServiceStop))
+				.setAutoCancel(true)
+				.setContentIntent(PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, CommunicationService.class)
+						.setAction(CommunicationService.ACTION_END_SESSION), 0));
+
+		return notification.show();
 	}
 
 	public int getNotificationSettings()
@@ -180,7 +197,7 @@ public class NotificationUtils
 				.setOngoing(true)
 				.addAction(android.R.drawable.ic_menu_close_clear_cancel, mContext.getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
-		return notification.show();
+		return notification;
 	}
 
 	public DynamicNotification notifyClipboardRequest(NetworkDevice device, CharSequence text)
@@ -250,11 +267,13 @@ public class NotificationUtils
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
 
-		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.text_multipleFileReceiveCompleted))
 				.setContentText(mContext.getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, numberOfFiles, numberOfFiles))
 				.setAutoCancel(true)
+				.setDefaults(getNotificationSettings())
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, HomeActivity.class)
 						.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
 						.putExtra(HomeActivity.EXTRA_FILE_PATH, parentDir), 0));
