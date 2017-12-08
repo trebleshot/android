@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.database.SQLException;
 
 import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
@@ -144,27 +145,6 @@ public class AccessDatabase extends SQLiteDatabase
 				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
 	}
 
-	public <T extends FlexibleObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
-	{
-		ArrayList<T> returnedList = new ArrayList<>();
-		ArrayList<CursorItem> itemList = getTable(select);
-
-		try {
-			for (CursorItem item : itemList) {
-				T newClazz = clazz.newInstance();
-
-				newClazz.reconstruct(item);
-				returnedList.add(newClazz);
-			}
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		}
-
-		return returnedList;
-	}
-
 	@Override
 	public int delete(SQLQuery.Select select)
 	{
@@ -200,33 +180,14 @@ public class AccessDatabase extends SQLiteDatabase
 		return mContext;
 	}
 
-	public void publish(FlexibleObject object)
+	@Override
+	public long insert(String tableName, String nullColumnHack, ContentValues contentValues)
 	{
-		if (getFirstFromTable(object.getWhere()) != null) {
-			object.onUpdateObject(this);
-			update(object.getWhere(), object.getValues());
-		} else {
-			object.onCreateObject(this);
-			getWritableDatabase().insert(object.getWhere().tableName, null, object.getValues());
+		long returnedItems = super.insert(tableName, nullColumnHack, contentValues);
 
-			broadcast(object.getWhere(), TYPE_REMOVE);
-		}
-	}
+		broadcast(new SQLQuery.Select(tableName), TYPE_INSERT);
 
-	public void remove(FlexibleObject object)
-	{
-		object.onRemoveObject(this);
-		delete(object.getWhere());
-	}
-
-	public void reconstruct(FlexibleObject object) throws Exception
-	{
-		CursorItem item = getFirstFromTable(object.getWhere());
-
-		if (item == null)
-			throw new Exception("No data was returned from the query");
-
-		object.reconstruct(item);
+		return super.insert(tableName, nullColumnHack, contentValues);
 	}
 
 	@Override

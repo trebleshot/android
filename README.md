@@ -1,5 +1,5 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections without making any effort
+Send and receive files over available connections without making any effort. Please read "Wiki" to learn more.
 
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)

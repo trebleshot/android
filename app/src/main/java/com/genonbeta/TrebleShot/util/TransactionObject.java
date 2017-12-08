@@ -3,9 +3,10 @@ package com.genonbeta.TrebleShot.util;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.database.FlexibleObject;
 import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 /**
  * Created by: veli
@@ -96,19 +97,19 @@ public class TransactionObject implements FlexibleObject
 	}
 
 	@Override
-	public void onCreateObject(AccessDatabase database)
+	public void onCreateObject(SQLiteDatabase database)
 	{
 
 	}
 
 	@Override
-	public void onUpdateObject(AccessDatabase database)
+	public void onUpdateObject(SQLiteDatabase database)
 	{
 
 	}
 
 	@Override
-	public void onRemoveObject(AccessDatabase database)
+	public void onRemoveObject(SQLiteDatabase database)
 	{
 
 	}
@@ -153,19 +154,19 @@ public class TransactionObject implements FlexibleObject
 		}
 
 		@Override
-		public void onCreateObject(AccessDatabase database)
+		public void onCreateObject(SQLiteDatabase database)
 		{
 			this.dateCreated = System.currentTimeMillis();
 		}
 
 		@Override
-		public void onUpdateObject(AccessDatabase database)
+		public void onUpdateObject(SQLiteDatabase database)
 		{
 
 		}
 
 		@Override
-		public void onRemoveObject(AccessDatabase database)
+		public void onRemoveObject(SQLiteDatabase database)
 		{
 			database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));

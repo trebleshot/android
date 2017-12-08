@@ -27,6 +27,27 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		super(context, name, factory, version);
 	}
 
+	public <T extends FlexibleObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
+	{
+		ArrayList<T> returnedList = new ArrayList<>();
+		ArrayList<CursorItem> itemList = getTable(select);
+
+		try {
+			for (CursorItem item : itemList) {
+				T newClazz = clazz.newInstance();
+
+				newClazz.reconstruct(item);
+				returnedList.add(newClazz);
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		}
+
+		return returnedList;
+	}
+
 	public int delete(SQLQuery.Select select)
 	{
 		return getWritableDatabase().delete(select.tableName, select.where, select.whereArgs);
@@ -84,6 +105,11 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		return identityList;
 	}
 
+	public long insert(String tableName, String nullColumnHack, ContentValues contentValues)
+	{
+		return getWritableDatabase().insert(tableName, nullColumnHack, contentValues);
+	}
+
 	public void removeOldItems(HashMap<Long, Long> ids, String tableName)
 	{
 		StringBuilder idsToValues = new StringBuilder();
@@ -97,6 +123,33 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		}
 
 		getWritableDatabase().execSQL("DELETE FROM " + tableName + " WHERE " + COLUMN_ID + " IN (" + idsToValues.toString() + ")");
+	}
+
+	public void publish(FlexibleObject object)
+	{
+		if (getFirstFromTable(object.getWhere()) != null) {
+			object.onUpdateObject(this);
+			update(object.getWhere(), object.getValues());
+		} else {
+			object.onCreateObject(this);
+			insert(object.getWhere().tableName, null, object.getValues());
+		}
+	}
+
+	public void remove(FlexibleObject object)
+	{
+		object.onRemoveObject(this);
+		delete(object.getWhere());
+	}
+
+	public void reconstruct(FlexibleObject object) throws Exception
+	{
+		CursorItem item = getFirstFromTable(object.getWhere());
+
+		if (item == null)
+			throw new Exception("No data was returned from the query");
+
+		object.reconstruct(item);
 	}
 
 	public int update(SQLQuery.Select select, ContentValues values)

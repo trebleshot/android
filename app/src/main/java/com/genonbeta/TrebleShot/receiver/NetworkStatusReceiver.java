@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.preference.PreferenceManager;
 
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.DeviceScannerService;
 
 public class NetworkStatusReceiver extends BroadcastReceiver
 {

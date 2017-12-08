@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.database;
+package com.genonbeta.android.database;
 
 import android.content.ContentValues;
 
@@ -18,9 +18,9 @@ public interface FlexibleObject
 
 	void reconstruct(CursorItem item);
 
-	void onCreateObject(AccessDatabase database);
+	void onCreateObject(SQLiteDatabase database);
 
-	void onUpdateObject(AccessDatabase database);
+	void onUpdateObject(SQLiteDatabase database);
 
-	void onRemoveObject(AccessDatabase database);
+	void onRemoveObject(SQLiteDatabase database);
 }

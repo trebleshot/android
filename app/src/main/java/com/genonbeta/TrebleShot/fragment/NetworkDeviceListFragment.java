@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.ListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.receiver.DeviceScannerService;
+import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 

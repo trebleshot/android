@@ -104,7 +104,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".receiver.DeviceScannerService">
+        <service android:name=".service.DeviceScannerService">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>

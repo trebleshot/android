@@ -3,9 +3,10 @@ package com.genonbeta.TrebleShot.util;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.database.FlexibleObject;
+import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
@@ -73,19 +74,19 @@ public class NetworkDevice implements FlexibleObject
 	}
 
 	@Override
-	public void onCreateObject(AccessDatabase database)
+	public void onCreateObject(SQLiteDatabase database)
 	{
 
 	}
 
 	@Override
-	public void onUpdateObject(AccessDatabase database)
+	public void onUpdateObject(SQLiteDatabase database)
 	{
 
 	}
 
 	@Override
-	public void onRemoveObject(AccessDatabase database)
+	public void onRemoveObject(SQLiteDatabase database)
 	{
 		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
@@ -165,19 +166,19 @@ public class NetworkDevice implements FlexibleObject
 		}
 
 		@Override
-		public void onCreateObject(AccessDatabase database)
+		public void onCreateObject(SQLiteDatabase database)
 		{
 
 		}
 
 		@Override
-		public void onUpdateObject(AccessDatabase database)
+		public void onUpdateObject(SQLiteDatabase database)
 		{
 
 		}
 
 		@Override
-		public void onRemoveObject(AccessDatabase database)
+		public void onRemoveObject(SQLiteDatabase database)
 		{
 
 		}

@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.receiver;
+package com.genonbeta.TrebleShot.service;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
