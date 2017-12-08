@@ -84,16 +84,19 @@
         <service
             android:name=".service.ClientService"
             android:label="@string/text_clientService"
-            android:process=":transfer"/>
+            android:process=":transfer"
+            android:enabled="true"/>
 
         <service
             android:name=".service.ServerService"
             android:label="@string/text_serverService"
-            android:process=":transfer"/>
+            android:process=":transfer"
+            android:enabled="true"/>
 
         <service
             android:name=".service.CommunicationService"
-            android:label="@string/text_communicationService"/>
+            android:label="@string/text_communicationService"
+            android:enabled="true"/>
 
         <service
             android:name=".service.DeviceChooserService"

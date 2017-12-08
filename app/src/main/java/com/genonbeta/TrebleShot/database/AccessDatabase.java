@@ -187,7 +187,7 @@ public class AccessDatabase extends SQLiteDatabase
 
 		broadcast(new SQLQuery.Select(tableName), TYPE_INSERT);
 
-		return super.insert(tableName, nullColumnHack, contentValues);
+		return returnedItems;
 	}
 
 	@Override
