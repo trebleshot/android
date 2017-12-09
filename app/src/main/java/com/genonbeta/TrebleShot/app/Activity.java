@@ -44,7 +44,11 @@ public abstract class Activity extends AppCompatActivity
 	protected void onStart()
 	{
 		super.onStart();
-		startService(new Intent(this, CommunicationService.class));
+
+		if (Build.VERSION.SDK_INT >= 26)
+			startForegroundService(new Intent(this, CommunicationService.class));
+		else
+			startService(new Intent(this, CommunicationService.class));
 	}
 
 	@Override
