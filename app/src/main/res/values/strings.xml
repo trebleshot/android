@@ -78,7 +78,7 @@
     <string name="text_storagePathSummary">New files will be saved to this folder</string>
     <string name="mesg_enteredPathNotRead">The path you entered cannot be used</string>
     <string name="mesg_pathUnavailable">%s currently unavailable</string>
-    <string name="butn_showOnFileManager">Show on File Manager</string>
+    <string name="butn_showOnFileManager">Show on file manager</string>
     <string name="text_chooseFileManager">Choose file manager</string>
     <string name="text_ipAddress">IP Address</string>
     <string name="text_allowToAccess">Allow to access</string>
@@ -234,4 +234,5 @@
     <string name="text_communicationServiceRunning">TrebleShot can share files now</string>
     <string name="text_communicationServiceStop">Tap to end session</string>
     <string name="text_reaminingTime">ETA %s</string>
+    <string name="butn_showFiles">Show files</string>
 </resources>

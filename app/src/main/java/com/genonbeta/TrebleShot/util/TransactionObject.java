@@ -193,10 +193,20 @@ public class TransactionObject implements FlexibleObject
 			return values;
 		}
 
-		public static class Size
+		public static class Index
 		{
 			public long incoming = 0;
 			public long outgoing = 0;
+			public int incomingCount = 0;
+			public int outgoingCount = 0;
+
+			public void reset()
+			{
+				incoming = 0;
+				outgoing = 0;
+				incomingCount = 0;
+				outgoingCount = 0;
+			}
 		}
 	}
 

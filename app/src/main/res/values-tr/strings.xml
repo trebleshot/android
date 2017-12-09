@@ -71,7 +71,7 @@
     <string name="text_storagePathSummary">Alınan dosyalar bu klasörde saklanacak</string>
     <string name="mesg_enteredPathNotRead">Girmiş olduğunuz klasör yolu kullanılamaz</string>
     <string name="mesg_pathUnavailable">%s şu anda kullanabilir değil</string>
-    <string name="butn_showOnFileManager">Dosya yöneticisi ile aç</string>
+    <string name="butn_showOnFileManager">Dosya yöneticisinde aç</string>
     <string name="text_chooseFileManager">Dosya yöneticisini seçin</string>
     <string name="text_ipAddress">IP Adresi</string>
     <string name="text_allowToAccess">Erişime izin ver</string>
@@ -227,4 +227,5 @@
     <string name="text_communicationServiceRunning">TrebleShot dosya paylaşabilir</string>
     <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
     <string name="text_reaminingTime">Kalan %s</string>
+    <string name="butn_showFiles">Dosyaları göster</string>
 </resources>

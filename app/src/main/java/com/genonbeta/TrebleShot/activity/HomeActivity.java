@@ -280,7 +280,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 					File requestedDirectory = new File(intent.getStringExtra(EXTRA_FILE_PATH));
 
 					if (requestedDirectory.isDirectory() && requestedDirectory.canRead())
-						((FileExplorerFragment)mFragmentFileExplorer).requestPath(requestedDirectory);
+						((FileExplorerFragment)mFragmentFileExplorer)
+								.requestPath(requestedDirectory);
 				}
 
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);

@@ -179,7 +179,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 
 	public void requestPath(File file)
 	{
-		if (getFileListFragment() == null) {
+		if (getFileListFragment() == null || !getFileListFragment().isAdded()) {
 			mRequestedPath = file;
 			return;
 		}

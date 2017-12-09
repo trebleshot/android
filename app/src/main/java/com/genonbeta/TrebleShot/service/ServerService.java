@@ -235,11 +235,11 @@ public class ServerService extends TransactionService<TransactionObject>
 		public Flag onStart(TransferHandler<TransactionObject> handler)
 		{
 			if (handler.getGroupTransferredFileCount() == 0) {
-				TransactionObject.Group.Size sizeTotal = new TransactionObject.Group.Size();
+				TransactionObject.Group.Index indexInstance = new TransactionObject.Group.Index();
 
-				getDatabase().calculateTransactionSize(handler.getExtra().groupId, sizeTotal);
+				getDatabase().calculateTransactionSize(handler.getExtra().groupId, indexInstance);
 
-				handler.setGroupTotalByte(sizeTotal.incoming);
+				handler.setGroupTotalByte(indexInstance.incoming);
 			}
 
 			try {
