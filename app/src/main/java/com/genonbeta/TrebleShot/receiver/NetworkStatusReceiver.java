@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class NetworkStatusReceiver extends BroadcastReceiver
 {
@@ -24,7 +25,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
 		if (!preferences.getBoolean("serviceLock", false) && preferences.getBoolean("allow_autoconnect", true) && info.isConnected())
-			context.startService(new Intent(context, CommunicationService.class));
+			AppUtils.startForegroundService(context, new Intent(context, CommunicationService.class));
 
 		if (preferences.getBoolean("scan_devices_auto", false) && info.isConnected())
 			new Thread()

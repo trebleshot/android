@@ -14,6 +14,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransactionObject;
@@ -82,7 +83,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 
 						database.publish(transactionObject);
 
-						getContext().startService(new Intent(getContext(), ServerService.class)
+						AppUtils.startForegroundService(getContext(), new Intent(getContext(), ServerService.class)
 								.setAction(ServerService.ACTION_START_RECEIVING)
 								.putExtra(CommunicationService.EXTRA_GROUP_ID, transactionObject.groupId));
 					}

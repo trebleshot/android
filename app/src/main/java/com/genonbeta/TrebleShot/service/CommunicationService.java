@@ -135,7 +135,7 @@ public class CommunicationService extends Service
 					});
 
 					if (isAccepted)
-						startService(new Intent(this, ServerService.class)
+						AppUtils.startForegroundService(this, new Intent(this, ServerService.class)
 								.setAction(ServerService.ACTION_START_RECEIVING)
 								.putExtra(EXTRA_GROUP_ID, groupId));
 					else
@@ -397,7 +397,7 @@ public class CommunicationService extends Service
 												mDatabase.publish(group);
 											}
 
-											startService(new Intent(getApplicationContext(), ClientService.class)
+											AppUtils.startForegroundService(getApplicationContext(), new Intent(getApplicationContext(), ClientService.class)
 													.setAction(ClientService.ACTION_SEND)
 													.putExtra(EXTRA_REQUEST_ID, requestId));
 

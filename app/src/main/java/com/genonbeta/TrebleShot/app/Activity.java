@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 
 public abstract class Activity extends AppCompatActivity
 {
@@ -44,11 +45,7 @@ public abstract class Activity extends AppCompatActivity
 	protected void onStart()
 	{
 		super.onStart();
-
-		if (Build.VERSION.SDK_INT >= 26)
-			startForegroundService(new Intent(this, CommunicationService.class));
-		else
-			startService(new Intent(this, CommunicationService.class));
+		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
 	}
 
 	@Override

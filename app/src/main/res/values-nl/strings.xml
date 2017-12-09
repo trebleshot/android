@@ -168,7 +168,7 @@
 <string name="mesg_currentPathUnavailable">Deze map kan niet worden gebruikt. Kies een andere map.</string>
     <string name="text_defaultFolder">Standaard map</string>
     <string name="text_storage">Opslag</string>
-    <string name="text_receiveFiles">Bestanden ontvangen</string>
+    <string name="text_shareFiles">Bestanden ontvangen</string>
 <string name="butn_refresh">\@string/text_refresh</string>
     <string name="mesg_pathSaved">De map is succesvol opgeslagen</string>
     <string name="butn_search">Zoeken</string>

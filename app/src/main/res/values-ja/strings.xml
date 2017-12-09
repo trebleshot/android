@@ -166,5 +166,5 @@
 <string name="mesg_currentPathUnavailable">このフォルダーは使用できません。別のフォルダーを選択してください。</string>
     <string name="text_defaultFolder">デフォルトのフォルダー</string>
     <string name="text_storage">ストレージ</string>
-    <string name="text_receiveFiles">ファイルを受信</string>
+    <string name="text_shareFiles">ファイルを受信</string>
 </resources>

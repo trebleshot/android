@@ -173,7 +173,7 @@
     <string name="mesg_currentPathUnavailable">This folder cannot be used. Please, choose another folder.</string>
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
-    <string name="text_receiveFiles">Receive files</string>
+    <string name="text_shareFiles">Share files</string>
     <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">The directory has been saved successfully</string>
     <string name="butn_search">Search</string>

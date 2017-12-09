@@ -10,6 +10,8 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.support.annotation.RequiresApi;
 
+import com.genonbeta.TrebleShot.util.AppUtils;
+
 /**
  * created by: Veli
  * date: 10.10.2017 07:58
@@ -57,7 +59,7 @@ public class CommunicationToggleTile extends TileService
 		if (isMyServiceRunning(CommunicationService.class))
 			stopService(new Intent(getApplicationContext(), CommunicationService.class));
 		else
-			startService(new Intent(getApplicationContext(), CommunicationService.class));
+			AppUtils.startForegroundService(this, new Intent(getApplicationContext(), CommunicationService.class));
 
 		updateTileState();
 	}

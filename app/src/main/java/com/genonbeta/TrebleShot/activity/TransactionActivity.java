@@ -41,6 +41,7 @@ import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.ServerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
@@ -342,7 +343,7 @@ public class TransactionActivity extends Activity implements
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transaction_resume_all) {
-			startService(new Intent(this, ServerService.class)
+			AppUtils.startForegroundService(this, new Intent(this, ServerService.class)
 					.setAction(ServerService.ACTION_START_RECEIVING)
 					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
 		} else if (id == R.id.actions_transaction_retry_all) {

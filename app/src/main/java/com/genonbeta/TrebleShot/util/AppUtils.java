@@ -4,11 +4,14 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+
+import com.genonbeta.TrebleShot.service.CommunicationService;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -54,5 +57,13 @@ public class AppUtils
 		}
 
 		return device;
+	}
+
+	public static void startForegroundService(Context context, Intent intent)
+	{
+		if (Build.VERSION.SDK_INT >= 26)
+			context.startForegroundService(intent);
+		else
+			context.startService(intent);
 	}
 }

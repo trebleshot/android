@@ -64,7 +64,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 		mConnections.clear();
 
 		mConnections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId), NetworkDevice.Connection.class));
+				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId)
+				.setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class));
 
 		if (mConnections.size() > 0) {
 			setMessage(null);

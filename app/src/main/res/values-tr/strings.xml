@@ -166,7 +166,7 @@
     <string name="text_defaultFolder">Varsayılan</string>
     <string name="text_storage">Depolama</string>
     <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin.</string>
-    <string name="text_receiveFiles">Dosya al</string>
+    <string name="text_shareFiles">Dosya paylaş</string>
     <string name="text_transactionDetails">Aktarım detayı</string>
     <string name="text_fileExplorer">Dosya gezgini</string>
     <string name="butn_createFolder">Klasör oluştur</string>
