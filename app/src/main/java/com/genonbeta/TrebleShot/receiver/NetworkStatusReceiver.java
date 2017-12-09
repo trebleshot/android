@@ -24,7 +24,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 	{
 		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		if (!preferences.getBoolean("serviceLock", false) && preferences.getBoolean("allow_autoconnect", true) && info.isConnected())
+		if (preferences.getBoolean("allow_autoconnect", false) && info.isConnected())
 			AppUtils.startForegroundService(context, new Intent(context, CommunicationService.class));
 
 		if (preferences.getBoolean("scan_devices_auto", false) && info.isConnected())
