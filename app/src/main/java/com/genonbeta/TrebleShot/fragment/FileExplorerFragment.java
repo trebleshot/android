@@ -39,6 +39,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 	private LinearLayoutManager mLayoutManager;
 	private PathResolverRecyclerAdapter mAdapter;
 	private FloatingActionButton mButtonOfEverything;
+	private File mRequestedPath = null;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -66,7 +67,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 			@Override
 			public void onClick(PathResolverRecyclerAdapter.Holder holder)
 			{
-				mFileListFragment.goPath(new File(holder.index.path));
+				requestPath(new File(holder.index.path));
 			}
 		});
 
@@ -75,7 +76,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 			@Override
 			public void onClick(View v)
 			{
-				mFileListFragment.goPath(null);
+				requestPath(null);
 			}
 		});
 
@@ -99,6 +100,15 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 		mRecyclerView.setAdapter(mAdapter);
 
 		return view;
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		if(mRequestedPath != null)
+			requestPath(mRequestedPath);
 	}
 
 	@Override
@@ -165,5 +175,17 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 	public RecyclerView getRecyclerView()
 	{
 		return mRecyclerView;
+	}
+
+	public void requestPath(File file)
+	{
+		if (getFileListFragment() == null) {
+			mRequestedPath = file;
+			return;
+		}
+
+		mRequestedPath = null;
+
+		getFileListFragment().goPath(file);
 	}
 }

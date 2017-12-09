@@ -14,4 +14,6 @@
     <color name="itemBackground">#000000</color>
     <color name="colorTextDrawable">#004b76</color>
     <color name="notEnoughSpaceMenuTint">#f76534</color>
+    <color name="textColorPrimary">#232323</color>
+    <color name="textColorSecondary">#707070</color>
 </resources>

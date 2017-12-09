@@ -274,6 +274,15 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (intent != null)
 			if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
 				changeFragment(mFragmentFileExplorer);
+
+				if (intent.hasExtra(EXTRA_FILE_PATH))
+				{
+					File requestedDirectory = new File(intent.getStringExtra(EXTRA_FILE_PATH));
+
+					if (requestedDirectory.isDirectory() && requestedDirectory.canRead())
+						((FileExplorerFragment)mFragmentFileExplorer).requestPath(requestedDirectory);
+				}
+
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);
 			} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
 				changeFragment(mFragmentTransactions);

@@ -278,8 +278,14 @@ public class ServerService extends TransactionService<TransactionObject>
 
 					if (handler.getGroupTransferredFileCount() <= 1)
 						getNotificationUtils().notifyFileReceived(handler.getExtra(), device, handler.getFile());
-					else
-						getNotificationUtils().notifyFileReceived(handler.getExtra(), handler.getFile().getParent(), handler.getGroupTransferredFileCount());
+					else {
+						String parentDir = handler.getFile().getParent();
+						String savePath = handler.getExtra().directory != null && handler.getExtra().directory.length() > 0
+								? parentDir.substring(0, parentDir.length() - handler.getExtra().directory.length())
+								: parentDir;
+
+						getNotificationUtils().notifyFileReceived(handler.getExtra(), savePath, handler.getGroupTransferredFileCount());
+					}
 				}
 			} catch (Exception e) {
 				handler.getExtra().notification.cancel();

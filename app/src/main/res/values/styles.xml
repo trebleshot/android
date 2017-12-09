@@ -52,8 +52,8 @@
     </style>
 
     <style name="marqueeText.primary" parent="@style/marqueeText">
-        <item name="android:textColor">?android:attr/textColorPrimary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
     </style>
 
     <style name="marqueeText.primary.big" parent="@style/marqueeText.primary">
@@ -61,11 +61,11 @@
     </style>
 
     <style name="marqueeText.secondary" parent="@style/marqueeText">
-        <item name="android:textColor">?android:attr/textColorSecondary</item>
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textColor">@color/textColorSecondary</item>
     </style>
 
-    <style name="condensedCapsText" parent="@style/marqueeText">
+    <style name="condensedCapsText" parent="@style/marqueeText.secondary">
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>

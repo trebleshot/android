@@ -270,11 +270,15 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 			TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);
 			TextView textView3 = convertView.findViewById(R.id.pending_available_interface_text3);
 
+			boolean accessible = false;
+
 			for (AddressedInterface addressedInterface : mNetworkInterfaces)
 				if (address.adapterName.equals(addressedInterface.getNetworkInterface().getDisplayName())) {
-					textView1.setTextColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+					accessible = true;
 					break;
 				}
+
+			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.textColorPrimary));
 
 			int availableName = TextUtils.getAdapterName(address);
 
