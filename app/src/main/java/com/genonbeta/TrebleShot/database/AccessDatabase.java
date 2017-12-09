@@ -144,10 +144,9 @@ public class AccessDatabase extends SQLiteDatabase
 				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
 	}
 
-	public void calculateTransactionSize(int groupId, TransactionObject.Group.Size sizeObject)
+	public void calculateTransactionSize(int groupId, TransactionObject.Group.Index indexObject)
 	{
-		sizeObject.incoming = 0;
-		sizeObject.outgoing = 0;
+		indexObject.reset();
 
 		ArrayList<TransactionObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
@@ -158,10 +157,14 @@ public class AccessDatabase extends SQLiteDatabase
 						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
 
 		for (TransactionObject transactionObject : transactionList) {
-			if (TransactionObject.Type.INCOMING.equals(transactionObject.type))
-				sizeObject.incoming += transactionObject.fileSize;
-			else
-				sizeObject.outgoing += transactionObject.fileSize;
+			if (TransactionObject.Type.INCOMING.equals(transactionObject.type)) {
+				indexObject.incoming += transactionObject.fileSize;
+				indexObject.incomingCount++;
+			}
+			else {
+				indexObject.outgoing += transactionObject.fileSize;
+				indexObject.outgoingCount++;
+			}
 		}
 	}
 

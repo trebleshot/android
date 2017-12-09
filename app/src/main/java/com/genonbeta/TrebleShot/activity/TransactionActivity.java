@@ -99,6 +99,7 @@ public class TransactionActivity extends Activity implements
 	private PathResolverRecyclerAdapter mAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
 	private PowerfulActionMode mPowafulActionMode;
+	private NavigationView mNavigationView;
 	private MenuItem mInfoMenu;
 
 	@Override
@@ -127,8 +128,8 @@ public class TransactionActivity extends Activity implements
 			toggle.syncState();
 		}
 
-		NavigationView navigationView = findViewById(R.id.nav_view);
-		navigationView.setNavigationItemSelectedListener(this);
+		mNavigationView = findViewById(R.id.nav_view);
+		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mRecyclerView.setHasFixedSize(true);
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
@@ -180,7 +181,7 @@ public class TransactionActivity extends Activity implements
 
 				applyPath(null);
 
-				View view = navigationView.getHeaderView(0);
+				View view = mNavigationView.getHeaderView(0);
 				View layoutView = view.findViewById(R.id.header_transaction_layout);
 				ImageView imageView = view.findViewById(R.id.header_transaction_image);
 				TextView deviceNameText = view.findViewById(R.id.header_transaction_text1);
@@ -391,6 +392,12 @@ public class TransactionActivity extends Activity implements
 			});
 
 			dialog.show();
+		} else if (id == R.id.drawer_transaction_show_files) {
+			startActivity(new Intent(this, HomeActivity.class)
+					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils
+							.getSavePath(this, mGroup)
+							.getAbsolutePath()));
 		} else if (id == R.id.drawer_transaction_connection) {
 			new ConnectionChooserDialog(this, mDatabase, mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
 			{
@@ -475,6 +482,9 @@ public class TransactionActivity extends Activity implements
 						mInfoMenu.setTitle(R.string.mesg_notEnoughSpace);
 						MenuItemCompat.setIconTintList(mInfoMenu, ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.notEnoughSpaceMenuTint)));
 					}
+
+					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
+					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
 				}
 			});
 		}

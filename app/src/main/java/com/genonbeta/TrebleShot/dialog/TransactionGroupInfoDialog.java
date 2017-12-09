@@ -25,7 +25,7 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 {
 	private AccessDatabase mDatabase;
 	private TransactionObject.Group mGroup;
-	private TransactionObject.Group.Size mTransactionSize = new TransactionObject.Group.Size();
+	private TransactionObject.Group.Index mTransactionIndex = new TransactionObject.Group.Index();
 
 	public TransactionGroupInfoDialog(Context context, AccessDatabase database, TransactionObject.Group group)
 	{
@@ -39,9 +39,9 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 	{
 		long freeSpace = FileUtils.getSavePath(getContext(), mGroup).getFreeSpace();
 
-		mDatabase.calculateTransactionSize(mGroup.groupId, mTransactionSize);
+		mDatabase.calculateTransactionSize(mGroup.groupId, getIndex());
 
-		return freeSpace >= mTransactionSize.incoming;
+		return freeSpace >= getIndex().incoming;
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -59,8 +59,8 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 
 		File savePathFile = FileUtils.getSavePath(getContext(), mGroup);
 
-		incomingSize.setText(FileUtils.sizeExpression(mTransactionSize.incoming, false));
-		outgoingSize.setText(FileUtils.sizeExpression(mTransactionSize.outgoing, false));
+		incomingSize.setText(FileUtils.sizeExpression(getIndex().incoming, false));
+		outgoingSize.setText(FileUtils.sizeExpression(getIndex().outgoing, false));
 		availableDisk.setText(FileUtils.sizeExpression(savePathFile.getFreeSpace(), false));
 		savePath.setText(savePathFile.getAbsolutePath());
 
@@ -80,5 +80,10 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		setPositiveButton(R.string.butn_close, null);
 
 		return super.show();
+	}
+
+	public TransactionObject.Group.Index getIndex()
+	{
+		return mTransactionIndex;
 	}
 }

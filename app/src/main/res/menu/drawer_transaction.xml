@@ -12,6 +12,11 @@
             android:title="@string/butn_saveTo"/>
 
         <item
+            android:id="@+id/drawer_transaction_show_files"
+            android:icon="@drawable/ic_folder_white_24dp"
+            android:title="@string/butn_showFiles"/>
+
+        <item
             android:id="@+id/drawer_transaction_connection"
             android:icon="@drawable/ic_swap_vert_white_24dp"
             android:title="@string/butn_changeConnection"/>
