@@ -226,4 +226,7 @@
 <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot gebruikt het serienummer van uw telefoon om een semi-permanent identiteitsnummer te creëren voor uw apparaat. Dit helpt andere TrebleShot-gebruikers om uw apparaat te herkennen. Uw apparaat moet Oreo of hoger draaien en TrebleShot moet hiervoor toestemming krijgen. Door dit af te wijzen zal TrebleShot stoppen met draaien.</string>
     <string name="text_flagRemoved">Verwijderd</string>
     <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
+<string name="text_communicationServiceRunning">TrebleShot kan nu bestanden delen</string>
+    <string name="text_communicationServiceStop">Raak aan om sessie te beëindigen</string>
+    <string name="text_reaminingTime">Verwacht over %s</string>
 </resources>
