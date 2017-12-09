@@ -13,7 +13,7 @@
     <string name="text_notAvailable">利用できません</string>
     <string name="text_deviceListEmpty">デバイスが見つかりません</string>
     <string name="mesg_noNetwork">他のデバイスを探すには Wi-Fi などの接続が必要です</string>
-    <string name="mesg_scanningDevices">近くのデバイスを探しています…</string>
+    <string name="mesg_scanningDevices">近くのデバイスを探しています</string>
     <string name="ques_receiveFile">ファイルを受信しますか?</string>
     <string name="butn_accept">同意</string>
     <string name="butn_reject">拒否</string>
@@ -65,7 +65,7 @@
     <string name="text_findDevicesHint">近くのデバイスを探すには検索アイコンをタッチしてください</string>
     <string name="text_autoScanDevices">デバイスを自動スキャン</string>
     <string name="text_autoScanDevicesSummary">必要なときにデバイスをスキャンします</string>
-    <string name="mesg_stillScanning">スキャンしています…</string>
+    <string name="mesg_stillScanning">スキャンしています</string>
     <string name="text_advanced">詳細</string>
     <string name="text_storagePath">ストレージパス</string>
     <string name="text_storagePathSummary">新しいファイルが保存されます</string>
@@ -77,7 +77,7 @@
     <string name="text_allowToAccess">アクセスを許可する</string>
     <string name="text_connectionPermission">接続アクセス許可</string>
     <string name="ques_allowDeviceToConnect">このデバイスの接続を許可しますか?</string>
-    <string name="mesg_stopping">停止しています…</string>
+    <string name="mesg_stopping">停止しています</string>
     <string name="text_notification">通知</string>
     <string name="text_useSounds">サウンド</string>
     <string name="text_useSoundsSummary">サウンドを使用します</string>
@@ -99,7 +99,7 @@
     <string name="text_connectionProblem">接続の問題が発生しました</string>
     <string name="text_communicationProblem">通信の問題が発生しました</string>
     <string name="text_error">エラー</string>
-    <string name="butn_multiSelect">すべて選択/選択解除</string>
+    <string name="butn_multiSelect">複数選択</string>
     <string name="butn_receive">受信</string>
     <string name="butn_block">ブロック</string>
     <string name="text_aboutSummary">このソフトウェアは Genonbeta オープンソースソフトウェア組織によって開発されました</string>
@@ -133,7 +133,7 @@
     <string name="text_removePendingTransferSummary">これにより %s キューから削除されます</string>
     <string name="ques_removeAll">すべて削除しますか?</string>
     <string name="text_removeCertainPendingTransfersSummary">これによりこのリストからすべての保留中の転送が削除されます</string>
-    <string name="text_availableNetworks">このデバイスで利用可能なネットワーク</string>
+    <string name="text_availableNetworks">登録済みの接続</string>
     <string name="text_noNetworkAvailable">ネットワークが利用できません</string>
     <string name="mesg_deviceNotExits">送信者はお使いのデバイスにもう存在しません。 デバイス同士を接続した後に続行できます</string>
     <string name="text_savedConnections">保存した接続</string>
@@ -148,7 +148,9 @@
     <string name="text_chooserTargetService">デバイス選択プロバイダー</string>
     <string name="text_transactionViewer">転送の保留中</string>
     <string name="ques_why">なぜ?</string>
-    <string name="text_notAllowedHelp">%1$s で許可されているか確認してください。 デバイスリスト &gt; %2$s &gt; アクセスを許可 &gt; (有効にする)</string>
+    <string name="text_notAllowedHelp">%1$s で許可されているか確認してください。
+\n
+\nデバイスリスト &gt; %2$s &gt; アクセスを許可 &gt; (有効にする)</string>
     <string name="butn_saveTo">保存...</string>
     <string name="mesg_secureExit">もう一度押すと終了します</string>
     <string name="butn_create">作成</string>
@@ -167,4 +169,12 @@
     <string name="text_defaultFolder">デフォルトのフォルダー</string>
     <string name="text_storage">ストレージ</string>
     <string name="text_receiveFiles">ファイルを受信</string>
-</resources>
+<string name="butn_refresh">\@string/text_refresh</string>
+    <string name="mesg_pathSaved">ディレクトリが正常に保存されました</string>
+    <string name="butn_search">検索</string>
+    <string name="butn_changeConnection">接続の変更</string>
+    <string name="text_fileName">ファイル名</string>
+    <string name="text_fileSize">ファイルサイズ</string>
+    <string name="text_fileMime">ファイルの種類</string>
+    <string name="text_fileStatus">ファイルの状態</string>
+    </resources>
