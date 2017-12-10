@@ -229,4 +229,5 @@
 <string name="text_communicationServiceRunning">TrebleShot kan nu bestanden delen</string>
     <string name="text_communicationServiceStop">Raak aan om sessie te beëindigen</string>
     <string name="text_reaminingTime">Verwacht over %s</string>
+<string name="butn_showFiles">Bestanden weergeven</string>
 </resources>
