@@ -287,8 +287,6 @@ public class ShareActivity extends Activity
 	protected void showChooserDialog(final NetworkDevice device)
 	{
 		device.isRestricted = false;
-		device.lastUsageTime = System.currentTimeMillis();
-
 		mDatabase.publish(device);
 
 		new ConnectionChooserDialog(ShareActivity.this, mDatabase, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
@@ -436,6 +434,9 @@ public class ShareActivity extends Activity
 											.show();
 
 							}
+
+							device.lastUsageTime = System.currentTimeMillis();
+							mDatabase.publish(device);
 						} catch (Exception e) {
 							e.printStackTrace();
 							showSnackbar(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));

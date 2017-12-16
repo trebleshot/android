@@ -8,8 +8,8 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardUseCompatPadding="true"
-        app:cardBackgroundColor="@color/itemBackground">
+        app:cardBackgroundColor="@color/videoBackground"
+        app:cardUseCompatPadding="true">
 
         <RelativeLayout
             android:id="@+id/layout"
@@ -30,31 +30,34 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:background="#BBFFFFFF"
-                android:padding="8dp"
-                android:textColor="#000"
-                />
+                android:background="@color/videoDescriptionBackground"
+                android:textColor="@color/videoTextColor"
+                android:padding="8dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:background="@drawable/rect_selector">
+                android:background="@color/videoDescriptionBackground"
+                android:padding="10dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/text"
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="#99FFFFFF"
-                    android:padding="10dp">
+                    android:textColor="@color/videoTextColor"
+                    android:maxLines="3"/>
 
-                    <TextView
-                        android:id="@+id/text"
-                        style="@style/marqueeText.primary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="3"/>
-                </LinearLayout>
             </LinearLayout>
+
+            <View
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="5dp"
+                android:background="@drawable/state_selected_image"/>
+
         </RelativeLayout>
+
     </android.support.v7.widget.CardView>
 </LinearLayout>

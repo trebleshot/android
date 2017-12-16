@@ -154,7 +154,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		TextView sizeText = convertView.findViewById(R.id.text2);
 		FileHolder fileInfo = (FileHolder) getItem(position);
 
-		typeImage.setVisibility(fileInfo.isFolder ? View.VISIBLE : View.GONE);
+		typeImage.setImageResource(fileInfo.isFolder ? R.drawable.ic_folder_black_36dp : R.drawable.ic_insert_drive_file_black_36dp);
 		fileNameText.setText(fileInfo.friendlyName);
 		sizeText.setText(fileInfo.fileInfo);
 

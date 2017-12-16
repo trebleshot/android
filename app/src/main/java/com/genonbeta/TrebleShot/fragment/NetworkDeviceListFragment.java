@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -66,7 +67,7 @@ public class NetworkDeviceListFragment
 	}
 
 	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState)
+	public void onViewCreated(View view, final Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
@@ -75,16 +76,12 @@ public class NetworkDeviceListFragment
 			@Override
 			public void onScrollStateChanged(AbsListView view, int scrollState)
 			{
+				if (scrollState == SCROLL_STATE_IDLE)
+					mSwipeRefreshLayout.setEnabled(view.getFirstVisiblePosition() == 0);
 			}
 
 			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
-			{
-				if (firstVisibleItem == 0)
-					mSwipeRefreshLayout.setEnabled(true);
-				else if (mSwipeRefreshLayout.isEnabled())
-					mSwipeRefreshLayout.setEnabled(false);
-			}
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {}
 		});
 
 		mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()

@@ -278,7 +278,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 					break;
 				}
 
-			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.textColorPrimary));
+			// FIXME: 16.12.2017 remove wrong color
+			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.unavailableConnection));
 
 			int availableName = TextUtils.getAdapterName(address);
 

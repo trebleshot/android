@@ -108,7 +108,11 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 			mDatabase.publish(connection);
 
 			if (!localDevice.deviceId.equals(device.deviceId))
+			{
+				device.lastUsageTime = System.currentTimeMillis();
+
 				mDatabase.publish(device);
+			}
 		}
 	}
 

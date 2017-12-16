@@ -35,7 +35,8 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	public ArrayList<NetworkDevice> onLoad()
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
-		ArrayList<NetworkDevice> dbList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class);
+		ArrayList<NetworkDevice> dbList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
+				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class);
 
 		for (NetworkDevice device : dbList)
 			if (device.user != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress))

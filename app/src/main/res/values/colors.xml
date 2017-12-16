@@ -3,17 +3,14 @@
     <color name="colorPrimary">#009951</color>
     <color name="colorPrimaryDark">#007941</color>
     <color name="windowBackground">#ffffff</color>
-    <color name="colorAccent">#106c00</color>
+    <color name="navigationColor">#000000</color>
+    <color name="colorAccent">#00662e</color>
     <color name="actionModeBackground">#077155</color>
     <color name="actionModeColorPrimary">#175040</color>
-    <color name="clickableItemBackground">#eee</color>
-    <color name="boxColor">#e6e6e6</color>
-    <color name="transparentColor">#00000000</color>
-    <color name="transparentColor2">#20ffffff</color>
-    <color name="navigationColor">#000000</color>
-    <color name="itemBackground">#000000</color>
-    <color name="colorTextDrawable">#004b76</color>
+    <color name="videoBackground">#000000</color>
+    <color name="videoDescriptionBackground">#a04e4e4e</color>
+    <color name="videoTextColor">@android:color/white</color>
+    <color name="colorTextDrawable">@color/colorAccent</color>
     <color name="notEnoughSpaceMenuTint">#f76534</color>
-    <color name="textColorPrimary">#232323</color>
-    <color name="textColorSecondary">#707070</color>
+    <color name="unavailableConnection">#f76534</color>
 </resources>

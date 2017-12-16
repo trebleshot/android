@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
     <style name="AppTheme" parent="@style/Theme.AppCompat.Light">
         <item name="actionBarStyle">@style/MyActionBar</item>
         <item name="actionBarTheme">@style/MyApp.ActionBarTheme</item>
@@ -25,16 +26,11 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.BlackStatusBar" parent="AppTheme.NoActionBar">
-
-    </style>>
-
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
     <style name="MyApp.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-        <!-- THIS is where you can color the arrow! -->
         <item name="colorControlNormal">#FFF</item>
     </style>
 
@@ -53,7 +49,7 @@
 
     <style name="marqueeText.primary" parent="@style/marqueeText">
         <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-        <item name="android:textColor">@color/textColorPrimary</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="marqueeText.primary.big" parent="@style/marqueeText.primary">
@@ -62,7 +58,7 @@
 
     <style name="marqueeText.secondary" parent="@style/marqueeText">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-        <item name="android:textColor">@color/textColorSecondary</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="condensedCapsText" parent="@style/marqueeText.secondary">
