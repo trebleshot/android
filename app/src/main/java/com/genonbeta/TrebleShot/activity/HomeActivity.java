@@ -298,6 +298,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private void sendThisApplication()
 	{
+		// FIXME: 18.12.2017 Does not work when a different storage is chosen
+
 		new Handler(Looper.myLooper()).post(new Runnable()
 		{
 			@Override
