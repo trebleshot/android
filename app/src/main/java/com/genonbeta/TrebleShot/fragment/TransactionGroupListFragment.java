@@ -5,25 +5,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
-import com.genonbeta.TrebleShot.app.ListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
+
+import java.util.ArrayList;
 
 /**
  * created by: Veli
  * date: 10.11.2017 00:15
  */
 
-public class TransactionGroupListFragment extends ListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter> implements TitleSupport
+public class TransactionGroupListFragment
+		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter>
+		implements TitleSupport
 {
+	private ArrayList<TransactionGroupListAdapter.PreloadedGroup> mSelectionList = new ArrayList<>();
 	public SQLQuery.Select mSelect;
 	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
@@ -52,9 +60,8 @@ public class TransactionGroupListFragment extends ListFragment<TransactionGroupL
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 
-		if (getSelect() == null) {
+		if (getSelect() == null)
 			setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
-		}
 	}
 
 	@Override
@@ -85,6 +92,62 @@ public class TransactionGroupListFragment extends ListFragment<TransactionGroupL
 		final TransactionObject.Group thisGroup = (TransactionObject.Group) getAdapter().getItem(position);
 
 		TransactionActivity.startInstance(getActivity(), thisGroup.groupId);
+	}
+
+	@Override
+	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+	{
+		super.onCreateActionMenu(context, actionMode, menu);
+		actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+	{
+		super.onPrepareActionMenu(context, actionMode);
+		getSelectionList().clear();
+		return true;
+	}
+
+	@Override
+	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.action_mode_abs_editable_multi_select) {
+			getSelectionList().clear();
+			setSelection(getListView().getCheckedItemCount() != getAdapter().getCount());
+
+			return false;
+		} else if (id == R.id.action_mode_group_delete) {
+			for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : mSelectionList)
+				mDatabase.remove(preloadedGroup);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
+	{
+		super.onItemChecked(context, actionMode, position, isSelected);
+
+		TransactionGroupListAdapter.PreloadedGroup preloadedGroup = (TransactionGroupListAdapter.PreloadedGroup) getAdapter().getItem(position);
+
+		if (isSelected)
+			getSelectionList().add(preloadedGroup);
+		else
+			getSelectionList().remove(preloadedGroup);
+
+		actionMode.setTitle(String.valueOf(getSelectionList().size()));
+	}
+
+	public ArrayList<TransactionGroupListAdapter.PreloadedGroup> getSelectionList()
+	{
+		return mSelectionList;
 	}
 
 	@Override

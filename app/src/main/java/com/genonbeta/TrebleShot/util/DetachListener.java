@@ -5,7 +5,7 @@ package com.genonbeta.TrebleShot.util;
  * date: 19.11.2017 20:16
  */
 
-public interface PredetachListener
+public interface DetachListener
 {
 	void onPrepareDetach();
 }

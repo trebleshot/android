@@ -19,6 +19,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -39,15 +40,14 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -94,7 +94,7 @@ public class TransactionActivity extends Activity implements
 	};
 
 	private RecyclerView mRecyclerView;
-	private ImageView mHomeButton;
+	private AppCompatImageButton mHomeButton;
 	private LinearLayoutManager mLayoutManager;
 	private PathResolverRecyclerAdapter mAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
@@ -344,8 +344,8 @@ public class TransactionActivity extends Activity implements
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transaction_resume_all) {
-			AppUtils.startForegroundService(this, new Intent(this, ServerService.class)
-					.setAction(ServerService.ACTION_START_RECEIVING)
+			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+					.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
 					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();

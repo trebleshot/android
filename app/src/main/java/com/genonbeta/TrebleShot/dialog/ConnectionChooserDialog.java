@@ -18,10 +18,10 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
@@ -278,7 +278,6 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 					break;
 				}
 
-			// FIXME: 16.12.2017 remove wrong color
 			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.unavailableConnection));
 
 			int availableName = TextUtils.getAdapterName(address);

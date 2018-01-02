@@ -1,12 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;

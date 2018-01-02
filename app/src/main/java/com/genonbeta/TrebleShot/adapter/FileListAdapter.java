@@ -1,20 +1,18 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.Shareable;
-import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
@@ -149,14 +147,17 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_file, parent, false);
 
-		ImageView typeImage = convertView.findViewById(R.id.image);
-		TextView fileNameText = convertView.findViewById(R.id.text);
-		TextView sizeText = convertView.findViewById(R.id.text2);
-		FileHolder fileInfo = (FileHolder) getItem(position);
+		FileHolder holder = (FileHolder) getItem(position);
 
-		typeImage.setImageResource(fileInfo.isFolder ? R.drawable.ic_folder_black_36dp : R.drawable.ic_insert_drive_file_black_36dp);
-		fileNameText.setText(fileInfo.friendlyName);
-		sizeText.setText(fileInfo.fileInfo);
+		ImageView typeImage = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
+		TextView text3 = convertView.findViewById(R.id.text3);
+
+		typeImage.setImageResource(holder.isFolder ? R.drawable.ic_folder_black_24dp : R.drawable.ic_whatshot_white_24dp);
+		text1.setText(holder.friendlyName);
+		text2.setText(holder.fileInfo);
+		text3.setText(TimeUtils.getTimeAgo(getContext(), holder.file.lastModified()));
 
 		return convertView;
 	}

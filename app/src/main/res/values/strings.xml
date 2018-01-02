@@ -38,7 +38,7 @@
     <string name="text_deviceName">Device name</string>
     <string name="text_deviceNameSummary">This name will be shown on other devices</string>
     <string name="text_deviceNameTitle">Enter device name</string>
-    <string name="mesg_formatNotSupported">Type is not supported</string>
+    <string name="mesg_formatNotSupported">The format is not supported</string>
     <string name="mesg_fileSendError">File cannot be sent. %s</string>
     <string name="mesg_fileSent">%s has been sent</string>
     <string name="mesg_fileSendCancelled">Sending %s has been cancelled</string>
@@ -123,7 +123,7 @@
     <string name="text_textEditor">Text editor</string>
     <string name="butn_done">Done</string>
     <string name="text_empty">(empty)</string>
-    <string name="text_shareText">Share text</string>
+    <string name="text_textStream">Text stream</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Pending transfers</string>
     <string name="text_stopping">Stopping!</string>
@@ -233,6 +233,20 @@
     <string name="butn_copyToClipboard">Copy to clipboard</string>
     <string name="text_communicationServiceRunning">TrebleShot can share files now</string>
     <string name="text_communicationServiceStop">Tap to end session</string>
-    <string name="text_reaminingTime">ETA %s</string>
+    <string name="text_remainingTime">ETA %s</string>
     <string name="butn_showFiles">Show files</string>
+    <string name="butn_trustZoneDevice">Set as TrustZone device</string>
+    <string name="butn_turnTrustZoneOn">Turn TrustZone on</string>
+    <string name="butn_turnTrustZoneOff">Turn TrustZone off</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="text_trustZoneEnabledSummary">Set TrustZone default enabled when the app starts</string>
+    <string name="butn_typeNewEntry">Type new entry</string>
+    <string name="butn_download">Download</string>
+    <string name="mesg_clipboardUpdateNotice">Would you like to update the text?\nPress again to exit</string>
+    <string name="mesg_textSaveNotice">Would you like to save this text?\nPress again to exit</string>
+    <string name="butn_update">Update</string>
+    <string name="butn_save">Save</string>
+    <string name="mesg_textShareLimit">Only a single text can be shared at a time</string>
+    <string name="text_timeJustNow">Just now</string>
+    <string name="mesg_providerNotAllowedError">Default folder is not accessible for other applications</string>
 </resources>

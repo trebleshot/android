@@ -12,5 +12,5 @@
     <color name="videoTextColor">@android:color/white</color>
     <color name="colorTextDrawable">@color/colorAccent</color>
     <color name="notEnoughSpaceMenuTint">#f76534</color>
-    <color name="unavailableConnection">#f76534</color>
+    <color name="unavailableConnection">#555</color>
 </resources>

@@ -4,6 +4,7 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 import org.json.JSONObject;
 
@@ -42,8 +43,6 @@ public class NetworkDeviceInfoLoader
 				try {
 					Thread.sleep(1500);
 
-					NetworkDevice device = new NetworkDevice();
-
 					CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 					activeConnection.reply(null);
@@ -53,10 +52,16 @@ public class NetworkDeviceInfoLoader
 					JSONObject deviceInfo = jsonResponse.getJSONObject(Keyword.DEVICE_INFO);
 					JSONObject appInfo = jsonResponse.getJSONObject(Keyword.APP_INFO);
 
+					NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.SERIAL));
+
+					try {
+						database.reconstruct(device);
+					} catch (Exception e) {
+					}
+
 					device.brand = deviceInfo.getString(Keyword.BRAND);
 					device.model = deviceInfo.getString(Keyword.MODEL);
 					device.user = deviceInfo.getString(Keyword.USER);
-					device.deviceId = deviceInfo.getString(Keyword.SERIAL);
 					device.lastUsageTime = System.currentTimeMillis();
 					device.buildNumber = appInfo.getInt(Keyword.VERSION_CODE);
 					device.buildName = appInfo.getString(Keyword.VERSION_NAME);

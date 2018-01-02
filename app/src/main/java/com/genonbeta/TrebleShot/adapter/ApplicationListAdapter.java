@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.Shareable;
+import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -59,7 +59,7 @@ public class ApplicationListAdapter
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
 			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
-					list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
 		}
 
 		Collections.sort(list, mComparator);

@@ -14,6 +14,11 @@
             android:summary="@string/text_deviceNameSummary"
             android:dialogTitle="@string/text_deviceNameTitle"/>
 
+        <CheckBoxPreference
+            android:key="trust_always"
+            android:title="@string/text_trustZoneEnabled"
+            android:summary="@string/text_trustZoneEnabledSummary"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/text_notification">

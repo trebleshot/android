@@ -1,10 +1,10 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
@@ -19,6 +19,7 @@ public class NetworkDevice implements FlexibleObject
 	public String buildName;
 	public int buildNumber;
 	public long lastUsageTime;
+	public boolean isTrusted = false;
 	public boolean isRestricted = false;
 	public boolean isLocalAddress = false;
 
@@ -55,6 +56,7 @@ public class NetworkDevice implements FlexibleObject
 		values.put(AccessDatabase.FIELD_DEVICES_BUILDNUMBER, buildNumber);
 		values.put(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
 		values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
+		values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
 		values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
 
 		return values;
@@ -69,6 +71,7 @@ public class NetworkDevice implements FlexibleObject
 		this.model = item.getString(AccessDatabase.FIELD_DEVICES_MODEL);
 		this.buildName = item.getString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
 		this.lastUsageTime = item.getLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
+		this.isTrusted = item.getInt(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
 		this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
 		this.isLocalAddress = item.getInt(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
 	}

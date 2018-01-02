@@ -117,7 +117,7 @@
     <string name="text_textEditor">Metin editörü</string>
     <string name="butn_done">Bitti</string>
     <string name="text_empty">(boş)</string>
-    <string name="text_shareText">Metin yolla</string>
+    <string name="text_textStream">Metin akışı</string>
     <string name="butn_wifiSettings">Kablosuz</string>
     <string name="text_pendingTransfers">Bekleyen aktarımlar</string>
     <string name="text_cancellingTransfer">İşlem iptal ediliyor</string>
@@ -212,7 +212,7 @@
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="text_requestPermissionStorage">Depolama izni</string>
     <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot diğer TrebleShot kullanan cihazlar tarafından tanınmasına yardımcı olan uzun süreli kimlik oluşturmak için cihazınızın seri numarası kullanır. Cihazınız Android Oreo sürümünde veya üstünde çalıştırmaktadır ve seri alınabilmesi için bu iznin sağlanması gerekmektedir. Reddetmik uygulamanın durmasına yol açacaktır.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot diğer TrebleShot kullanan cihazlar tarafından tanınmasına yardımcı olan uzun süreli kimlik oluşturmak için cihazınızın seri numarası kullanır. Cihazınız Android Oreo sürümünde veya üstünde çalıştırmaktadır ve seri numarasının alınabilmesi için bu iznin sağlanması gerekmektedir. Reddetmik uygulamanın durmasına yol açacaktır.</string>
     <string name="text_mediaDirectory">Medya klasörü</string>
     <string name="text_emulatedMediaDirectory">Yansıma (%s)</string>
     <string name="mesg_notEnoughSpace">Yeterli alan yok</string>
@@ -226,6 +226,19 @@
     <string name="butn_copyToClipboard">Panoya kopyala</string>
     <string name="text_communicationServiceRunning">TrebleShot dosya paylaşabilir</string>
     <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
-    <string name="text_reaminingTime">Kalan %s</string>
+    <string name="text_remainingTime">Kalan %s</string>
     <string name="butn_showFiles">Dosyaları göster</string>
+    <string name="butn_trustZoneDevice">GüvenliBölge cihazı</string>
+    <string name="butn_turnTrustZoneOn">GüvenliBölge\'yi etkinleştir</string>
+    <string name="butn_turnTrustZoneOff">GüvenliBölge\'yi sonlandır</string>
+    <string name="text_trustZoneEnabled">GüvenliBölge</string>
+    <string name="text_trustZoneEnabledSummary">Hep kullanabilir olarak başlat (önerilmez)</string>
+    <string name="butn_typeNewEntry">Yeni girdi girin</string>
+    <string name="butn_download">İndir</string>
+    <string name="mesg_clipboardUpdateNotice">Metni güncellemek ister misiniz?\nÇıkmak için tekrar basın</string>
+    <string name="mesg_textSaveNotice">Metni kaydetmek ister misiniz?\nÇıkmak için tekrar basın</string>
+    <string name="butn_update">Güncelle</string>
+    <string name="butn_save">Kaydet</string>
+    <string name="mesg_textShareLimit">Aynı anda sadece bir metin içeriği paylaşılabilir</string>
+    <string name="text_timeJustNow">Az önce</string>
 </resources>

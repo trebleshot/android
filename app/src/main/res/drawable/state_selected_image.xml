@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_activated="true"
-        android:drawable="@drawable/ic_check_circle_white_24dp"/>
+        android:drawable="@drawable/state_selected_drawable"/>
     <item>
         <shape>
             <solid android:color="@android:color/transparent"/>

@@ -13,9 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.Shareable;
+import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 

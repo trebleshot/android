@@ -9,13 +9,14 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageButton
             android:id="@+id/fragment_fileexplorer_pathresolver_home"
+            style="?attr/toolbarNavigationButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
-            android:tint="@color/colorAccent"
-            android:src="@drawable/ic_home_black_24dp"/>
+            android:src="@drawable/ic_home_black_24dp"
+            android:tint="@color/colorAccent"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/fragment_fileexplorer_pathresolver"
@@ -38,19 +39,19 @@
         android:background="#eee"/>
 
     <fragment
+        android:id="@+id/fragment_fileexplorer_fragment_files"
         android:name="com.genonbeta.TrebleShot.fragment.FileListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/fragment_fileexplorer_fragment_files"
         android:layout_below="@id/fragment_fileexplorer_separator"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fragment_fileexplorer_boe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_margin="@dimen/fab_margin"
         android:src="@drawable/ic_done_white_24dp"
         android:visibility="gone"/>

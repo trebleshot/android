@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.service;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -10,9 +8,9 @@ import android.support.annotation.Nullable;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -107,8 +105,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 
 			mDatabase.publish(connection);
 
-			if (!localDevice.deviceId.equals(device.deviceId))
-			{
+			if (!localDevice.deviceId.equals(device.deviceId)) {
 				device.lastUsageTime = System.currentTimeMillis();
 
 				mDatabase.publish(device);

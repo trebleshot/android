@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,10 +24,10 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -86,7 +87,7 @@ public class ShareActivity extends Activity
 					if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 						appendStatusText(getIntent().getStringExtra(Intent.EXTRA_TEXT));
 
-						ImageButton actionButton = findViewById(R.id.activity_share_edit_button);
+						AppCompatImageButton actionButton = findViewById(R.id.activity_share_edit_button);
 
 						actionButton.setImageResource(R.drawable.ic_create_black_24dp);
 						actionButton.setVisibility(View.VISIBLE);

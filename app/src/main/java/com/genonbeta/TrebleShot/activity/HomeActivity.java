@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -36,14 +37,14 @@ import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
-import com.genonbeta.TrebleShot.fragment.TextShareFragment;
+import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
-import com.genonbeta.TrebleShot.util.PredetachListener;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -107,10 +108,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
 		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
-		mFragmentShareText = Fragment.instantiate(this, TextShareFragment.class.getName());
-
-		changeFragment(mFragmentDeviceList);
-		checkCurrentRequestedFragment(getIntent());
+		mFragmentShareText = Fragment.instantiate(this, TextStreamListFragment.class.getName());
 
 		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
 			highlightUpdater(mPreferences.getString("availableVersion", null));
@@ -148,6 +146,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mPreferences.edit()
 				.putInt("migrated_version", localDevice.buildNumber)
 				.apply();
+
+		changeFragment(mFragmentDeviceList);
+		mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
+
+		checkCurrentRequestedFragment(getIntent());
 	}
 
 	@Override
@@ -247,8 +250,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 
-		if (removedFragment != null && removedFragment instanceof PredetachListener)
-			((PredetachListener) removedFragment).onPrepareDetach();
+		if (removedFragment != null && removedFragment instanceof DetachListener)
+			((DetachListener) removedFragment).onPrepareDetach();
 
 		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
@@ -265,18 +268,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		if (intent != null)
 			if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
-				changeFragment(mFragmentFileExplorer);
+				File requestedDirectory = intent.hasExtra(EXTRA_FILE_PATH)
+						? new File(intent.getStringExtra(EXTRA_FILE_PATH))
+						: null;
 
-				if (intent.hasExtra(EXTRA_FILE_PATH))
-				{
-					File requestedDirectory = new File(intent.getStringExtra(EXTRA_FILE_PATH));
-
-					if (requestedDirectory.isDirectory() && requestedDirectory.canRead())
-						((FileExplorerFragment)mFragmentFileExplorer)
-								.requestPath(requestedDirectory);
-				}
-
-				mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);
+				openFolder(requestedDirectory != null && requestedDirectory.isDirectory() && requestedDirectory.canRead()
+						? requestedDirectory
+						: null);
 			} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
 				changeFragment(mFragmentTransactions);
 				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
@@ -296,10 +294,18 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return mActionMode;
 	}
 
+	private void openFolder(@Nullable File requestedFolder)
+	{
+		changeFragment(mFragmentFileExplorer);
+		mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);
+
+		if (requestedFolder != null)
+			((FileExplorerFragment) mFragmentFileExplorer)
+					.requestPath(requestedFolder);
+	}
+
 	private void sendThisApplication()
 	{
-		// FIXME: 18.12.2017 Does not work when a different storage is chosen
-
 		new Handler(Looper.myLooper()).post(new Runnable()
 		{
 			@Override
@@ -312,22 +318,24 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 					String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-					sendIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName);
-
 					File codeFile = new File(FileUtils.
-							getApplicationDirectory(getApplicationContext()).getAbsolutePath()  + File.separator + fileName);
+							getApplicationDirectory(getApplicationContext()).getAbsolutePath() + File.separator + fileName);
 
 					codeFile = FileUtils.getUniqueFile(codeFile, true);
 
 					FileUtils.copyFile(new File(getApplicationInfo().sourceDir), codeFile);
 
-					sendIntent.putExtra(Intent.EXTRA_STREAM, Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-							? FileProvider.getUriForFile(HomeActivity.this, getPackageName() + ".provider", codeFile)
-							: Uri.fromFile(codeFile))
-							.setType(FileUtils.getFileContentType(codeFile.getAbsolutePath()))
-							.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					try {
+						sendIntent
+								.putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
+								.putExtra(Intent.EXTRA_STREAM, FileUtils.getUriForFile(HomeActivity.this, codeFile, sendIntent))
+								.setType(FileUtils.getFileContentType(codeFile.getAbsolutePath()));
 
-					startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
+						startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
+					} catch (IllegalArgumentException e) {
+						Toast.makeText(HomeActivity.this, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
+						openFolder(FileUtils.getApplicationDirectory(HomeActivity.this));
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (PackageManager.NameNotFoundException e) {

@@ -11,10 +11,10 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -150,7 +150,6 @@ public class TransactionGroupListAdapter extends ShareableListAdapter<Transactio
 	public static class PreloadedGroup extends TransactionObject.Group
 	{
 		public int transactionCount;
-
 		public String deviceName;
 
 		@Override

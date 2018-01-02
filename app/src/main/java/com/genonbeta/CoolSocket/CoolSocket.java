@@ -20,6 +20,8 @@ import java.util.concurrent.TimeoutException;
 
 abstract public class CoolSocket
 {
+	public static final String TAG = CoolSocket.class.getSimpleName();
+
 	public static final int NO_TIMEOUT = -1;
 
 	public static final String HEADER_SEPARATOR = "\nHEADER_END\n";
@@ -156,9 +158,13 @@ abstract public class CoolSocket
 					onConnected(connectionHandler);
 
 					try {
-						socket.getInputStream().close();
-						socket.getOutputStream().close();
-						socket.close();
+						if (!socket.isClosed()) {
+							System.out.println(TAG + ": You should close connections in the end of onConnected(ActiveConnection) method");
+
+							socket.getInputStream().close();
+							socket.getOutputStream().close();
+							socket.close();
+						}
 					} catch (IOException e) {
 						e.printStackTrace();
 					} finally {
@@ -203,7 +209,7 @@ abstract public class CoolSocket
 			this.mServerThread = new Thread(this.getSocketRunnable());
 
 			this.getServerThread().setDaemon(true);
-			this.getServerThread().setName("CoolSocket Main Thread");
+			this.getServerThread().setName(TAG + " Main Thread");
 		} else if (this.getServerThread().isAlive())
 			return false;
 
@@ -266,6 +272,15 @@ abstract public class CoolSocket
 		{
 			this(socket);
 			setTimeout(timeout);
+		}
+
+		@Override
+		protected void finalize() throws Throwable
+		{
+			super.finalize();
+
+			if (getSocket() != null && !getSocket().isClosed())
+				System.out.println(TAG + ": Connections should be closed before their references are being destroyed");
 		}
 
 		public InetAddress getAddress()

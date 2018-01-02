@@ -7,7 +7,7 @@ import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.Shareable;
+import com.genonbeta.TrebleShot.object.Shareable;
 
 import java.io.File;
 import java.net.URI;

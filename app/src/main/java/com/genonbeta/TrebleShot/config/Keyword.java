@@ -41,4 +41,5 @@ public class Keyword
 	public static final String ERROR = "error";
 	public static final String NOT_ALLOWED = "notAllowed";
 	public static final String NOT_FOUND = "notFound";
+	public static final String BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate";
 }

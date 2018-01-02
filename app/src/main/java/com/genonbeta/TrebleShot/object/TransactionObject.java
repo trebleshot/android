@@ -1,8 +1,9 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.FlexibleObject;
 import com.genonbeta.android.database.SQLQuery;

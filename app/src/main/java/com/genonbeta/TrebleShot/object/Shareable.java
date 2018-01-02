@@ -1,6 +1,8 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.object;
 
 import android.net.Uri;
+
+import com.genonbeta.TrebleShot.util.TextUtils;
 
 /**
  * created by: Veli
@@ -12,6 +14,10 @@ public class Shareable
 	public String friendlyName;
 	public String fileName;
 	public Uri uri;
+
+	public Shareable()
+	{
+	}
 
 	public Shareable(String friendlyName, String fileName, Uri uri)
 	{

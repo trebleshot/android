@@ -117,7 +117,7 @@
     <string name="text_textEditor">テキストエディター</string>
     <string name="butn_done">完了</string>
     <string name="text_empty">(空)</string>
-    <string name="text_shareText">テキストを共有</string>
+    <string name="text_textStream">テキストを共有</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">転送の保留中</string>
     <string name="text_stopping">停止しています!</string>

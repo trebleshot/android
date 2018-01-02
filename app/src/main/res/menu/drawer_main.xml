@@ -12,6 +12,11 @@
             android:title="@string/text_fileExplorer"/>
 
         <item
+            android:id="@+id/menu_activity_main_share_text"
+            android:icon="@drawable/ic_textsms_white_24dp"
+            android:title="@string/text_textStream"/>
+
+        <item
             android:id="@+id/menu_activity_main_ongoing_process"
             android:icon="@drawable/ic_swap_vert_white_24dp"
             android:title="@string/text_pendingTransfers"/>
@@ -34,11 +39,6 @@
                     android:id="@+id/menu_activity_main_share_video"
                     android:icon="@drawable/ic_video_library_white_24dp"
                     android:title="@string/text_video"/>
-
-                <item
-                    android:id="@+id/menu_activity_main_share_text"
-                    android:icon="@drawable/ic_textsms_white_24dp"
-                    android:title="@string/text_shareTextShort"/>
             </group>
         </menu>
     </item>

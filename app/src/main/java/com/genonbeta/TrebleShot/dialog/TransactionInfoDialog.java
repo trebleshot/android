@@ -12,12 +12,11 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 
 /**
  * created by: Veli
@@ -83,8 +82,8 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 
 						database.publish(transactionObject);
 
-						AppUtils.startForegroundService(getContext(), new Intent(getContext(), ServerService.class)
-								.setAction(ServerService.ACTION_START_RECEIVING)
+						AppUtils.startForegroundService(getContext(), new Intent(getContext(), CommunicationService.class)
+								.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
 								.putExtra(CommunicationService.EXTRA_GROUP_ID, transactionObject.groupId));
 					}
 				});

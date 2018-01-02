@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,10 +9,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 
-import com.genonbeta.TrebleShot.service.CommunicationService;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 public class AppUtils
 {
@@ -66,4 +61,6 @@ public class AppUtils
 		else
 			context.startService(intent);
 	}
+
+
 }

@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.util;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 
 import java.util.HashMap;
 

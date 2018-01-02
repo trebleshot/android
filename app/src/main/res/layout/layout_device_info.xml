@@ -42,17 +42,48 @@
             android:layout_width="wrap_content"
             android:layout_height="10dp"/>
 
-        <TextView
-            style="@style/marqueeText.primary"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_version"/>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/device_info_version"
-            style="@style/marqueeText.secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <TextView
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_version"/>
+
+                <TextView
+                    android:id="@+id/device_info_version"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="right">
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/device_info_get_update_button"
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/butn_download"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <View
             android:layout_width="wrap_content"
@@ -64,6 +95,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/text_allowToAccess"/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
+
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/device_info_trust_switcher"
+            style="@style/marqueeText.primary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/text_appName"
+            android:text="@string/butn_trustZoneDevice"/>
 
     </LinearLayout>
 </ScrollView>
