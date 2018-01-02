@@ -177,4 +177,24 @@
     <string name="text_fileSize">ファイルサイズ</string>
     <string name="text_fileMime">ファイルの種類</string>
     <string name="text_fileStatus">ファイルの状態</string>
+    <string name="butn_resume">再開</string>
+    <string name="text_transactionDetails">トランザクションの詳細</string>
+    <string name="text_fileExplorer">ファイルエクスプローラー</string>
+    <string name="butn_createFolder">フォルダーを作成</string>
+    <string name="text_chooseFolder">フォルダーを選択</string>
+    <string name="text_chooseFile">ファイルを選択</string>
+    <string name="mesg_pathSameError">選択するフォルダーは古いものと別にする必要があります</string>
+    <string name="ques_checkOldFiles">壊れたファイルをチェックしますか?</string>
+    <string name="text_checkOldFiles">TrebleShot は部分的に受信したファイルを選択したフォルダーに移動します。しばらく時間がかかることがあります。拒否をタップすることでこれをスキップできます</string>
+    <string name="mesg_newFilesReceived">新しいファイルを受信しました</string>
+    <string name="butn_show">表示</string>
+    <string name="text_preparingFiles">ファイルの準備中</string>
+    <string name="text_savingDetails">受信する前に詳細情報を保存</string>
+    <string name="text_version">バージョン</string>
+    <string name="text_flagPending">保留</string>
+    <string name="text_flagRunning">実行中</string>
+    <string name="text_flagInterrupted">中断</string>
+    <string name="text_flagResume">再開</string>
+    <string name="text_unknown">不明</string>
+    <string name="text_importantNotice">重要なお知らせ</string>
     </resources>
