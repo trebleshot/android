@@ -6,18 +6,17 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -43,6 +42,7 @@ import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
+import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -62,6 +62,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
+	private FloatingActionButton mFAB;
 	private SharedPreferences mPreferences;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
@@ -98,6 +99,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
+		mFAB = findViewById(R.id.content_fab);
+
 		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mActionMode.setContainerLayout(findViewById(R.id.content_powerful_action_mode_layout));
@@ -131,7 +134,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
 		if (!mPreferences.contains("migrated_version")) {
-			if (localDevice.buildNumber == 49) {
+			if (localDevice.versionNumber == 49) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
 				builder.setTitle(R.string.text_importantNotice);
@@ -139,12 +142,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				builder.setPositiveButton(R.string.butn_close, null);
 				builder.show();
 			}
-		} else if (mPreferences.getInt("migrated_version", localDevice.buildNumber) < localDevice.buildNumber) {
+		} else if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
 			// migrating to a new version
 		}
 
 		mPreferences.edit()
-				.putInt("migrated_version", localDevice.buildNumber)
+				.putInt("migrated_version", localDevice.versionNumber)
 				.apply();
 
 		changeFragment(mFragmentDeviceList);
@@ -167,12 +170,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			TextView deviceNameText = headerView.findViewById(R.id.header_main_text1);
 			TextView versionText = headerView.findViewById(R.id.header_main_text2);
 
-			String firstLetters = TextUtils.getFirstLetters(localDevice.user, 1);
-			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.colorTextDrawable), 100);
+			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 1);
+			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 			imageView.setImageDrawable(drawable);
-			deviceNameText.setText(localDevice.user);
-			versionText.setText(localDevice.buildName);
+			deviceNameText.setText(localDevice.nickname);
+			versionText.setText(localDevice.versionName);
 		}
 	}
 
@@ -262,6 +265,14 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			setTitle(((TitleSupport) fragment).getTitle(this));
 		else
 			setTitle(R.string.text_appName);
+
+		boolean fabSupported = fragment instanceof FABSupport;
+
+		if (fabSupported)
+			fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+
+		if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
+			mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
 	}
 
 	public void checkCurrentRequestedFragment(Intent intent)

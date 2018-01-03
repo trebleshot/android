@@ -6,12 +6,10 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -127,7 +125,7 @@ public class NotificationUtils
 				.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.text_connectionPermission))
 				.setContentText(mContext.getString(R.string.ques_allowDeviceToConnect))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, AppUtils.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
@@ -161,7 +159,7 @@ public class NotificationUtils
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.ques_receiveFile))
 				.setContentText(message)
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0))
@@ -197,7 +195,7 @@ public class NotificationUtils
 				.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
 				.setContentTitle(transaction.friendlyName)
 				.setContentText(mContext.getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
@@ -239,7 +237,7 @@ public class NotificationUtils
 				.setStyle(new NotificationCompat.BigTextStyle()
 						.bigText(object.text)
 						.setBigContentTitle(mContext.getString(R.string.ques_copyToClipboard)))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), activityIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
@@ -267,7 +265,7 @@ public class NotificationUtils
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(transactionObject.friendlyName)
 				.setContentText(mContext.getString(R.string.text_fileReceived))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setAutoCancel(true)
 				.addAction(R.drawable.ic_folder_white_24dp, mContext.getString(R.string.butn_showFiles),
 						PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, HomeActivity.class)

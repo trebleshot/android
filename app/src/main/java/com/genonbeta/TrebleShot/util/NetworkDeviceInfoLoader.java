@@ -5,6 +5,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONObject;
 
@@ -13,27 +14,46 @@ import java.net.InetSocketAddress;
 
 public class NetworkDeviceInfoLoader
 {
-	private OnInfoAvailableListener mListener;
-
-	public NetworkDeviceInfoLoader(OnInfoAvailableListener listener)
+	public static NetworkDevice.Connection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
 	{
-		mListener = listener;
+		NetworkDevice.Connection connection = new NetworkDevice.Connection(ipAddress);
+
+		processConnection(database, device, connection);
+
+		return connection;
 	}
 
-	public NetworkDeviceInfoLoader()
-	{
-	}
-
-	public void startLoading(final AccessDatabase database, final String ipAddress)
+	public static void processConnection(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
 	{
 		try {
-			startLoading(false, database, ipAddress);
+			database.reconstruct(connection);
+		} catch (Exception e) {
+			connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+		}
+
+		connection.lastCheckedDate = System.currentTimeMillis();
+		connection.deviceId = device.deviceId;
+
+		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
+								+ AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND "
+								+ AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",
+						connection.deviceId, connection.adapterName, connection.ipAddress));
+
+		database.publish(connection);
+
+	}
+
+	public static void load(final AccessDatabase database, final String ipAddress, OnDeviceRegisteredListener listener)
+	{
+		try {
+			load(false, database, ipAddress, listener);
 		} catch (ConnectException e) {
 			e.printStackTrace();
 		}
 	}
 
-	public NetworkDevice startLoading(boolean currentThread, final AccessDatabase database, final String ipAddress) throws ConnectException
+	public static NetworkDevice load(boolean currentThread, final AccessDatabase database, final String ipAddress, final OnDeviceRegisteredListener listener) throws ConnectException
 	{
 		CoolSocket.Client.ConnectionHandler connectionHandler = new CoolSocket.Client.ConnectionHandler()
 		{
@@ -61,13 +81,24 @@ public class NetworkDeviceInfoLoader
 
 					device.brand = deviceInfo.getString(Keyword.BRAND);
 					device.model = deviceInfo.getString(Keyword.MODEL);
-					device.user = deviceInfo.getString(Keyword.USER);
+					device.nickname = deviceInfo.getString(Keyword.USER);
 					device.lastUsageTime = System.currentTimeMillis();
-					device.buildNumber = appInfo.getInt(Keyword.VERSION_CODE);
-					device.buildName = appInfo.getString(Keyword.VERSION_NAME);
+					device.versionNumber = appInfo.getInt(Keyword.VERSION_CODE);
+					device.versionName = appInfo.getString(Keyword.VERSION_NAME);
 
-					if (mListener != null)
-						mListener.onInfoAvailable(database, device, ipAddress);
+					if (device.deviceId != null) {
+						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
+						NetworkDevice.Connection connection = processConnection(database, device, ipAddress);
+
+						if (!localDevice.deviceId.equals(device.deviceId)) {
+							device.lastUsageTime = System.currentTimeMillis();
+
+							database.publish(device);
+
+							if (listener != null)
+								listener.onDeviceRegistered(database, device, connection);
+						}
+					}
 
 					client.setReturn(device);
 				} catch (Exception e) {
@@ -84,8 +115,8 @@ public class NetworkDeviceInfoLoader
 		return null;
 	}
 
-	public interface OnInfoAvailableListener
+	public interface OnDeviceRegisteredListener
 	{
-		void onInfoAvailable(AccessDatabase database, NetworkDevice device, String ipAddress);
+		void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection);
 	}
 }

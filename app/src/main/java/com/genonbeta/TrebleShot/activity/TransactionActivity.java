@@ -173,7 +173,7 @@ public class TransactionActivity extends Activity implements
 				mInfoDialog = new TransactionGroupInfoDialog(this, mDatabase, mGroup);
 
 				if (getSupportActionBar() != null) {
-					getSupportActionBar().setTitle(mDevice.user);
+					getSupportActionBar().setTitle(mDevice.nickname);
 					getSupportActionBar().setSubtitle(TimeUtils.getTimeAgo(getApplicationContext(), mGroup.dateCreated));
 				}
 
@@ -187,8 +187,8 @@ public class TransactionActivity extends Activity implements
 				TextView deviceNameText = view.findViewById(R.id.header_transaction_text1);
 				TextView versionText = view.findViewById(R.id.header_transaction_text2);
 
-				String firstLetters = TextUtils.getFirstLetters(mDevice.user, 1);
-				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.colorTextDrawable), 100);
+				String firstLetters = TextUtils.getFirstLetters(mDevice.nickname, 1);
+				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 				layoutView.setOnClickListener(new View.OnClickListener()
 				{
@@ -204,8 +204,8 @@ public class TransactionActivity extends Activity implements
 				});
 
 				imageView.setImageDrawable(drawable);
-				deviceNameText.setText(mDevice.user);
-				versionText.setText(mDevice.buildName);
+				deviceNameText.setText(mDevice.nickname);
+				versionText.setText(mDevice.versionName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

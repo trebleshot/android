@@ -13,4 +13,5 @@ public class AppConfig
 	public final static String APP_UPDATE_REPO = "https://api.github.com/repos/genonbeta/TrebleShot/releases";
 	public final static String APPLICATION_REPO = "http://github.com/genonbeta/TrebleShot";
 	public final static String DEFAULT_NOTIFICATION_CHANNEL = "defNotChannel";
+	public final static String ACCESS_POINT_PREFIX = "TS_";
 }

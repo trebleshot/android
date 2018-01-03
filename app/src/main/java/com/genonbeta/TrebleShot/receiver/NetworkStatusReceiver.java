@@ -5,25 +5,39 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.HotspotUtils;
 
 public class NetworkStatusReceiver extends BroadcastReceiver
 {
+	public static final String WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED";
+
 	@Override
 	public void onReceive(Context context, Intent intent)
 	{
+		SharedPreferences preferences = getSharedPreferences(context);
+
+		if (WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
+		{
+			HotspotUtils hotspotUtils = HotspotUtils.getInstance(context);
+
+			if (WifiManager.WIFI_STATE_DISABLED
+					== intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1) % 10)
+				hotspotUtils.unloadPreviousConfig();
+		}
+
 		if (intent.hasExtra("networkInfo"))
-			evaluateTheCondition((NetworkInfo) intent.getParcelableExtra("networkInfo"), context);
+			evaluateTheCondition((NetworkInfo) intent.getParcelableExtra("networkInfo"), context, preferences);
 	}
 
-	protected void evaluateTheCondition(NetworkInfo info, final Context context)
+	protected void evaluateTheCondition(NetworkInfo info, final Context context, SharedPreferences preferences)
 	{
-		SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
-
 		if (preferences.getBoolean("allow_autoconnect", false) && info.isConnected())
 			AppUtils.startForegroundService(context, new Intent(context, CommunicationService.class));
 
@@ -44,5 +58,10 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 					}
 				}
 			}.start();
+	}
+
+	protected SharedPreferences getSharedPreferences(Context context)
+	{
+		return PreferenceManager.getDefaultSharedPreferences(context);
 	}
 }

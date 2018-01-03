@@ -109,7 +109,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			});
 
 			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
-			versionText.setText(device.buildName);
+			versionText.setText(device.versionName);
 
 			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", device.deviceId), NetworkDevice.Connection.class);
@@ -149,7 +149,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 					}
 			);
 
-			setTitle(device.user);
+			setTitle(device.nickname);
 			setView(rootView);
 			setPositiveButton(R.string.butn_close, null);
 			setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()

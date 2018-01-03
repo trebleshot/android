@@ -4,10 +4,14 @@ import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,6 +30,7 @@ import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
@@ -62,6 +67,7 @@ public class CommunicationService extends Service
 	public final static String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
 	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
 	public final static String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
+	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
@@ -72,12 +78,12 @@ public class CommunicationService extends Service
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
-	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private NotificationUtils mNotificationUtils;
 	private AccessDatabase mDatabase;
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
+	private HotspotUtils mHotspotUtils;
 
 	private Receive mReceive = new Receive();
 	private Send mSend = new Send();
@@ -101,6 +107,7 @@ public class CommunicationService extends Service
 		mNotificationUtils = new NotificationUtils(this);
 		mDatabase = new AccessDatabase(this);
 		mMediaScanner = new MediaScannerConnection(this, null);
+		mHotspotUtils = HotspotUtils.getInstance(this);
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
 				.createWifiLock(TAG);
 
@@ -272,6 +279,9 @@ public class CommunicationService extends Service
 					getNotificationUtils().cancel(notificationId);
 			} else if (ACTION_TOGGLE_SEAMLESS_MODE.equals(intent.getAction())) {
 				updateServiceState(!mSeamlessMode);
+			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
+					&& (Build.VERSION.SDK_INT < 23 || Settings.System.canWrite(this))) {
+				setupHotspot();
 			}
 		}
 
@@ -286,6 +296,9 @@ public class CommunicationService extends Service
 		mCommunicationServer.stop();
 		mSeamlessServer.stop();
 		mMediaScanner.disconnect();
+
+		if (getHotspotUtils().unloadPreviousConfig())
+			getHotspotUtils().disable();
 
 		getWifiLock().release();
 		stopForeground(true);
@@ -309,6 +322,11 @@ public class CommunicationService extends Service
 		return mDatabase;
 	}
 
+	public HotspotUtils getHotspotUtils()
+	{
+		return mHotspotUtils;
+	}
+
 	public NotificationUtils getNotificationUtils()
 	{
 		return mNotificationUtils;
@@ -327,6 +345,14 @@ public class CommunicationService extends Service
 	public boolean isProcessRunning(int groupId)
 	{
 		return findProcessById(groupId) != null;
+	}
+
+	public void setupHotspot()
+	{
+		if (!getHotspotUtils().isEnabled())
+			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
+		else
+			mHotspotUtils.disable();
 	}
 
 	public void startFileReceiving(int groupId) throws Exception
@@ -389,10 +415,10 @@ public class CommunicationService extends Service
 				deviceInformation.put(Keyword.SERIAL, localDevice.deviceId);
 				deviceInformation.put(Keyword.BRAND, localDevice.brand);
 				deviceInformation.put(Keyword.MODEL, localDevice.model);
-				deviceInformation.put(Keyword.USER, localDevice.user);
+				deviceInformation.put(Keyword.USER, localDevice.nickname);
 
-				appInfo.put(Keyword.VERSION_CODE, localDevice.buildNumber);
-				appInfo.put(Keyword.VERSION_NAME, localDevice.buildName);
+				appInfo.put(Keyword.VERSION_CODE, localDevice.versionNumber);
+				appInfo.put(Keyword.VERSION_NAME, localDevice.versionName);
 
 				replyJSON.put(Keyword.APP_INFO, appInfo);
 				replyJSON.put(Keyword.DEVICE_INFO, deviceInformation);
@@ -409,32 +435,23 @@ public class CommunicationService extends Service
 					} catch (Exception e1) {
 						e1.printStackTrace();
 
-						device = mInfoLoader.startLoading(true, mDatabase, activeConnection.getClientAddress());
+						device = NetworkDeviceInfoLoader.load(true, mDatabase, activeConnection.getClientAddress(), null);
 
 						if (device == null)
 							throw new Exception("Could not reach to the opposite server");
 
-						device.isRestricted = true;
+						if (getHotspotUtils().getPreviousConfig() == null) {
+							device.isRestricted = true;
+							mNotificationUtils.notifyConnectionRequest(device);
+						}
 
 						mDatabase.publish(device);
-						mNotificationUtils.notifyConnectionRequest(device);
+
 
 						shouldContinue = false;
 					}
 
-					final NetworkDevice.Connection connection = new NetworkDevice.Connection(activeConnection.getClientAddress());
-
-					try {
-						mDatabase.reconstruct(connection);
-					} catch (Exception e) {
-						connection.adapterName = Keyword.UNKNOWN_INTERFACE;
-					}
-
-					connection.lastCheckedDate = System.currentTimeMillis();
-					connection.deviceId = device.deviceId;
-
-					mDatabase.remove(new NetworkDevice.Connection(device.deviceId, connection.adapterName)); // Remove old connection that has the connection adapter name and device id with old ip address
-					mDatabase.publish(connection); // now register the new connection
+					final NetworkDevice.Connection connection = NetworkDeviceInfoLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
 
 					if (!shouldContinue)
 						replyJSON.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
@@ -594,7 +611,7 @@ public class CommunicationService extends Service
 				while (true) {
 					ActiveConnection.Response currentResponse = activeConnection.receive();
 
-					if(currentResponse.response == null || currentResponse.totalLength < 1)
+					if (currentResponse.response == null || currentResponse.totalLength < 1)
 						break;
 
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
@@ -713,7 +730,7 @@ public class CommunicationService extends Service
 
 					processHolder.transactionObject = new TransactionObject(receiverInstance);
 					File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
-Log.d(TAG, "Received file: " + file);
+					Log.d(TAG, "Received file: " + file);
 					processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
 					if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))

@@ -10,14 +10,15 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-public class NetworkDevice implements FlexibleObject
+public class NetworkDevice
+		implements FlexibleObject
 {
 	public String brand;
 	public String model;
-	public String user;
+	public String nickname;
 	public String deviceId;
-	public String buildName;
-	public int buildNumber;
+	public String versionName;
+	public int versionNumber;
 	public long lastUsageTime;
 	public boolean isTrusted = false;
 	public boolean isRestricted = false;
@@ -49,11 +50,11 @@ public class NetworkDevice implements FlexibleObject
 		ContentValues values = new ContentValues();
 
 		values.put(AccessDatabase.FIELD_DEVICES_ID, deviceId);
-		values.put(AccessDatabase.FIELD_DEVICES_USER, user);
+		values.put(AccessDatabase.FIELD_DEVICES_USER, nickname);
 		values.put(AccessDatabase.FIELD_DEVICES_BRAND, brand);
 		values.put(AccessDatabase.FIELD_DEVICES_MODEL, model);
-		values.put(AccessDatabase.FIELD_DEVICES_BUILDNAME, buildName);
-		values.put(AccessDatabase.FIELD_DEVICES_BUILDNUMBER, buildNumber);
+		values.put(AccessDatabase.FIELD_DEVICES_BUILDNAME, versionName);
+		values.put(AccessDatabase.FIELD_DEVICES_BUILDNUMBER, versionNumber);
 		values.put(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
 		values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
 		values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
@@ -66,10 +67,10 @@ public class NetworkDevice implements FlexibleObject
 	public void reconstruct(CursorItem item)
 	{
 		this.deviceId = item.getString(AccessDatabase.FIELD_DEVICES_ID);
-		this.user = item.getString(AccessDatabase.FIELD_DEVICES_USER);
+		this.nickname = item.getString(AccessDatabase.FIELD_DEVICES_USER);
 		this.brand = item.getString(AccessDatabase.FIELD_DEVICES_BRAND);
 		this.model = item.getString(AccessDatabase.FIELD_DEVICES_MODEL);
-		this.buildName = item.getString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
+		this.versionName = item.getString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
 		this.lastUsageTime = item.getLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
 		this.isTrusted = item.getInt(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
 		this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;

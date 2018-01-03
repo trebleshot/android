@@ -20,7 +20,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 
-public class DeviceScannerService extends Service implements NetworkDeviceScanner.ScannerHandler, NetworkDeviceInfoLoader.OnInfoAvailableListener
+public class DeviceScannerService extends Service implements NetworkDeviceScanner.ScannerHandler
 {
 	public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES";
 	public static final String ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED";
@@ -33,7 +33,6 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 	public static final String SCANNER_NOT_AVAILABLE = "genonbeta.intent.status.SCANNER_NOT_AVAILABLE";
 
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
-	private NetworkDeviceInfoLoader mInfoLoader = new NetworkDeviceInfoLoader(this);
 	private AccessDatabase mDatabase;
 
 	@Override
@@ -78,39 +77,9 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 	public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
 	{
 		NetworkDevice.Connection connection = new NetworkDevice.Connection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
-
 		mDatabase.publish(connection);
-		mInfoLoader.startLoading(mDatabase, address.getHostAddress());
-	}
 
-	@Override
-	public void onInfoAvailable(AccessDatabase database, NetworkDevice device, String ipAddress)
-	{
-		if (device.deviceId != null) {
-			NetworkDevice.Connection connection = new NetworkDevice.Connection(ipAddress);
-			NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-
-			try {
-				mDatabase.reconstruct(connection);
-			} catch (Exception e) {
-				connection.adapterName = Keyword.UNKNOWN_INTERFACE;
-			}
-
-			connection.lastCheckedDate = System.currentTimeMillis();
-			connection.deviceId = device.deviceId;
-
-			mDatabase.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND " + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND " + AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",
-							connection.deviceId, connection.adapterName, connection.ipAddress));
-
-			mDatabase.publish(connection);
-
-			if (!localDevice.deviceId.equals(device.deviceId)) {
-				device.lastUsageTime = System.currentTimeMillis();
-
-				mDatabase.publish(device);
-			}
-		}
+		NetworkDeviceInfoLoader.load(mDatabase, address.getHostAddress(), null);
 	}
 
 	@Override

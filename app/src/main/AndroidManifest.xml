@@ -14,6 +14,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -83,8 +85,8 @@
 
         <service
             android:name=".service.CommunicationService"
-            android:label="@string/text_communicationService"
             android:enabled="true"
+            android:label="@string/text_communicationService"
             android:process=":transfer"/>
 
         <service
@@ -96,7 +98,8 @@
             </intent-filter>
         </service>
 
-        <service android:name=".service.DeviceScannerService">
+        <service
+            android:name=".service.DeviceScannerService">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
@@ -105,14 +108,19 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".receiver.NetworkStatusReceiver">
+        <receiver
+            android:name=".receiver.NetworkStatusReceiver"
+            android:process=":transfer">
             <intent-filter>
                 <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
+                <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED"/>
                 <action android:name="android.net.wifi.STATE_CHANGE"/>
                 <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".receiver.DialogEventReceiver"/>
+        <receiver
+            android:name=".receiver.DialogEventReceiver"
+            android:process=":transfer"/>
 
         <service
             android:name=".service.CommunicationToggleTile"

@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -27,7 +28,11 @@ import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,6 +40,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.StreamCorruptedException;
+import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.util.ArrayList;
@@ -74,7 +80,82 @@ public class ShareActivity extends Activity
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 			{
-				showChooserDialog((NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position));
+				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+
+				if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+					final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+					final Interrupter interrupter = new Interrupter();
+
+					mProgressDialog.setMessage(getString(R.string.mesg_connectingToSelfNetwork));
+					mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+					mProgressDialog.setMax(20);
+					mProgressDialog.setCancelable(false);
+					mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialogInterface, int i)
+						{
+							interrupter.interrupt();
+						}
+					});
+
+					mProgressDialog.show();
+
+					new Thread()
+					{
+						@Override
+						public void run()
+						{
+							super.run();
+
+							long startTime = System.currentTimeMillis();
+							boolean connected = mDeviceListFragment.isConnected(hotspotNetwork);
+
+							if (!connected)
+								mDeviceListFragment.toggleConnection(hotspotNetwork);
+
+							while (!(connected = mDeviceListFragment.isConnected(hotspotNetwork) && NetworkUtils.ping("192.168.43.1", 500))) {
+								try {
+									Thread.sleep(1000);
+
+									int passedTime = (int) (System.currentTimeMillis() - startTime);
+
+									mProgressDialog.setProgress(passedTime / 1000);
+
+									if (passedTime > 20000 || interrupter.interrupted())
+										break;
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+
+							if (connected) {
+								try {
+									NetworkDeviceInfoLoader.load(true, mDatabase, "192.168.43.1", new NetworkDeviceInfoLoader.OnDeviceRegisteredListener()
+									{
+										@Override
+										public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+										{
+											runOnUiThread(new Runnable()
+											{
+												@Override
+												public void run()
+												{
+													doCommunicate(device, connection);
+												}
+											});
+										}
+									});
+								} catch (ConnectException e) {
+									e.printStackTrace();
+								}
+							}
+
+							mProgressDialog.cancel();
+						}
+					}.start();
+				} else
+					showChooserDialog(device);
 			}
 		});
 
@@ -190,6 +271,160 @@ public class ShareActivity extends Activity
 		}
 	}
 
+	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
+	{
+		final String deviceIp = connection.ipAddress;
+		final Interrupter interrupter = new Interrupter();
+
+		mProgressDialog.setMessage(getString(R.string.mesg_communicating));
+		mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+		mProgressDialog.setMax(0);
+		mProgressDialog.setCancelable(false);
+		mProgressDialog.setProgress(0);
+		mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialogInterface, int i)
+			{
+				interrupter.interrupt();
+			}
+		});
+
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				mProgressDialog.show();
+			}
+		});
+
+		CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+		{
+			@Override
+			public void onConnect(CoolSocket.Client client)
+			{
+				try {
+					final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(deviceIp, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
+
+					JSONObject clientResponse;
+					JSONObject jsonRequest = new JSONObject()
+							.put(Keyword.SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
+
+					if (mSharedText == null) {
+						JSONArray filesArray = new JSONArray();
+						int groupId = AppUtils.getUniqueNumber();
+						TransactionObject.Group groupInstance = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
+
+						jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+						jsonRequest.put(Keyword.GROUP_ID, groupId);
+
+						ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
+
+						mProgressDialog.setMax(mFiles.size());
+
+						for (StreamInfo fileState : mFiles) {
+							if (interrupter.interrupted())
+								break;
+
+							mProgressDialog.setSecondaryProgress(mProgressDialog.getSecondaryProgress() + 1);
+
+							int requestId = AppUtils.getUniqueNumber();
+							JSONObject thisJson = new JSONObject();
+
+							TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, fileState.size, TransactionObject.Type.OUTGOING);
+
+							if (fileState.directory != null)
+								transactionObject.directory = fileState.directory;
+
+							pendingRegistry.add(transactionObject);
+
+							try {
+								thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
+								thisJson.put(Keyword.FILE_SIZE, fileState.size);
+								thisJson.put(Keyword.REQUEST_ID, requestId);
+								thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
+
+								if (fileState.directory != null)
+									thisJson.put(Keyword.DIRECTORY, fileState.directory);
+
+								filesArray.put(thisJson);
+							} catch (Exception e) {
+								Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
+							}
+						}
+
+						jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+
+						activeConnection.reply(jsonRequest.toString());
+						CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+
+						clientResponse = new JSONObject(response.response);
+
+						if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+							mDatabase.publish(groupInstance);
+
+							for (TransactionObject transactionObject : pendingRegistry) {
+								if (interrupter.interrupted())
+									break;
+
+								mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
+								mDatabase.publish(transactionObject);
+							}
+
+							if (interrupter.interrupted())
+								mDatabase.remove(groupInstance);
+							else
+								TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
+						}
+					} else {
+						jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+						jsonRequest.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+
+						activeConnection.reply(jsonRequest.toString());
+						CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+
+						clientResponse = new JSONObject(response.response);
+					}
+
+					if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
+						if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.NOT_ALLOWED))
+							Snackbar
+									.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
+									.setAction(R.string.ques_why, new View.OnClickListener()
+									{
+										@Override
+										public void onClick(View v)
+										{
+											AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
+
+											builder.setMessage(getString(R.string.text_notAllowedHelp,
+													device.nickname,
+													AppUtils.getLocalDeviceName(ShareActivity.this)));
+
+											builder.setNegativeButton(R.string.butn_close, null);
+											builder.show();
+										}
+									}).show();
+						else
+							Snackbar
+									.make(findViewById(android.R.id.content), R.string.mesg_somethingWentWrong, Snackbar.LENGTH_LONG)
+									.show();
+
+					}
+
+					device.lastUsageTime = System.currentTimeMillis();
+					mDatabase.publish(device);
+				} catch (Exception e) {
+					e.printStackTrace();
+					showSnackbar(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
+				}
+
+				mProgressDialog.cancel();
+			}
+		});
+	}
+
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
 	{
 		final Interrupter interrupter = new Interrupter();
@@ -295,157 +530,7 @@ public class ShareActivity extends Activity
 			@Override
 			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 			{
-				final String deviceIp = connection.ipAddress;
-				final Interrupter interrupter = new Interrupter();
-
-				mProgressDialog.setMessage(getString(R.string.mesg_communicating));
-				mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-				mProgressDialog.setMax(0);
-				mProgressDialog.setCancelable(false);
-				mProgressDialog.setProgress(0);
-				mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i)
-					{
-						interrupter.interrupt();
-					}
-				});
-
-
-				runOnUiThread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						mProgressDialog.show();
-					}
-				});
-
-				CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
-				{
-					@Override
-					public void onConnect(CoolSocket.Client client)
-					{
-						try {
-							final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(deviceIp, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
-
-							JSONObject clientResponse;
-							JSONObject jsonRequest = new JSONObject()
-									.put(Keyword.SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
-
-							if (mSharedText == null) {
-								JSONArray filesArray = new JSONArray();
-								int groupId = AppUtils.getUniqueNumber();
-								TransactionObject.Group groupInstance = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
-
-								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-								jsonRequest.put(Keyword.GROUP_ID, groupId);
-
-								ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
-
-								mProgressDialog.setMax(mFiles.size());
-
-								for (StreamInfo fileState : mFiles) {
-									if (interrupter.interrupted())
-										break;
-
-									mProgressDialog.setSecondaryProgress(mProgressDialog.getSecondaryProgress() + 1);
-
-									int requestId = AppUtils.getUniqueNumber();
-									JSONObject thisJson = new JSONObject();
-
-									TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, fileState.size, TransactionObject.Type.OUTGOING);
-
-									if (fileState.directory != null)
-										transactionObject.directory = fileState.directory;
-
-									pendingRegistry.add(transactionObject);
-
-									try {
-										thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
-										thisJson.put(Keyword.FILE_SIZE, fileState.size);
-										thisJson.put(Keyword.REQUEST_ID, requestId);
-										thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
-
-										if (fileState.directory != null)
-											thisJson.put(Keyword.DIRECTORY, fileState.directory);
-
-										filesArray.put(thisJson);
-									} catch (Exception e) {
-										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
-									}
-								}
-
-								jsonRequest.put(Keyword.FILES_INDEX, filesArray);
-
-								activeConnection.reply(jsonRequest.toString());
-								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-
-								clientResponse = new JSONObject(response.response);
-
-								if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-									mDatabase.publish(groupInstance);
-
-									for (TransactionObject transactionObject : pendingRegistry) {
-										if (interrupter.interrupted())
-											break;
-
-										mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
-										mDatabase.publish(transactionObject);
-									}
-
-									if (interrupter.interrupted())
-										mDatabase.remove(groupInstance);
-									else
-										TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
-								}
-							} else {
-								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-								jsonRequest.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
-
-								activeConnection.reply(jsonRequest.toString());
-								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-
-								clientResponse = new JSONObject(response.response);
-							}
-
-							if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
-								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.NOT_ALLOWED))
-									Snackbar
-											.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
-											.setAction(R.string.ques_why, new View.OnClickListener()
-											{
-												@Override
-												public void onClick(View v)
-												{
-													AlertDialog.Builder builder = new AlertDialog.Builder(ShareActivity.this);
-
-													builder.setMessage(getString(R.string.text_notAllowedHelp,
-															device.user,
-															AppUtils.getLocalDeviceName(ShareActivity.this)));
-
-													builder.setNegativeButton(R.string.butn_close, null);
-													builder.show();
-												}
-											}).show();
-								else
-									Snackbar
-											.make(findViewById(android.R.id.content), R.string.mesg_somethingWentWrong, Snackbar.LENGTH_LONG)
-											.show();
-
-							}
-
-							device.lastUsageTime = System.currentTimeMillis();
-							mDatabase.publish(device);
-						} catch (Exception e) {
-							e.printStackTrace();
-							showSnackbar(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
-						}
-
-						mProgressDialog.cancel();
-					}
-				});
+				doCommunicate(device, connection);
 			}
 		}).show();
 	}

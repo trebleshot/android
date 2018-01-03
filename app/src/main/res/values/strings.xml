@@ -249,4 +249,10 @@
     <string name="mesg_textShareLimit">Only a single text can be shared at a time</string>
     <string name="text_timeJustNow">Just now</string>
     <string name="mesg_providerNotAllowedError">Default folder is not accessible for other applications</string>
+    <string name="mesg_errorHotspotPermission">TrebleShot needs permission to set up hotspot</string>
+    <string name="R.string.text_trebleshotNetwork">TrebleShot Network</string>
+    <string name="butn_connect">Connect</string>
+    <string name="butn_disconnect">Disconnect</string>
+    <string name="text_trebleshotNetworkDescription">This is open network created by another TrebleShot device. You can directly send files to them.</string>
+    <string name="mesg_connectingToSelfNetwork">Connecting to TrebleShot network. Automatically gives up if the estimated time reaches 20 seconds</string>
 </resources>
