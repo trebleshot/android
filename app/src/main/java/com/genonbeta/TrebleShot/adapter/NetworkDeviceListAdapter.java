@@ -119,7 +119,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 		ImageView userImage = view.findViewById(R.id.network_device_list_device_image);
 
 		userText.setText(device.nickname);
-		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.R_string_text_trebleshotNetwork) : device.model);
+		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotNetwork) : device.model);
 
 		userImage.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
 				? firstLetters

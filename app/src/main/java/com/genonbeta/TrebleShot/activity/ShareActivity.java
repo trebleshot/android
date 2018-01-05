@@ -5,14 +5,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatImageButton;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -28,10 +27,8 @@ import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
-import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 
 import org.json.JSONArray;
@@ -59,10 +56,11 @@ public class ShareActivity extends Activity
 
 	private ArrayList<StreamInfo> mFiles = new ArrayList<>();
 	private String mSharedText;
-	private EditText mStatusText;
 	private AccessDatabase mDatabase;
 	private ProgressDialog mProgressDialog;
 	private NetworkDeviceListFragment mDeviceListFragment;
+	private Toolbar mToolbar;
+	private FloatingActionButton mFAB;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -71,10 +69,14 @@ public class ShareActivity extends Activity
 
 		setContentView(R.layout.activity_share);
 
+		mToolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
+
+		mFAB = findViewById(R.id.content_fab);
 		mProgressDialog = new ProgressDialog(this);
+
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-		mStatusText = findViewById(R.id.activity_share_info_text);
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
@@ -86,10 +88,11 @@ public class ShareActivity extends Activity
 					final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
 					final Interrupter interrupter = new Interrupter();
 
-					mProgressDialog.setMessage(getString(R.string.mesg_connectingToSelfNetwork));
+					mProgressDialog.setMessage(getString(R.string.mesg_connectingToSelfHotspot));
+					mProgressDialog.setCancelable(false);
 					mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 					mProgressDialog.setMax(20);
-					mProgressDialog.setCancelable(false);
+					mProgressDialog.setProgress(0);
 					mProgressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
 					{
 						@Override
@@ -109,12 +112,12 @@ public class ShareActivity extends Activity
 							super.run();
 
 							long startTime = System.currentTimeMillis();
-							boolean connected = mDeviceListFragment.isConnected(hotspotNetwork);
+							boolean connected = mDeviceListFragment.isConnectedToNetwork(hotspotNetwork);
 
 							if (!connected)
 								mDeviceListFragment.toggleConnection(hotspotNetwork);
 
-							while (!(connected = mDeviceListFragment.isConnected(hotspotNetwork) && NetworkUtils.ping("192.168.43.1", 500))) {
+							while (!(connected = mDeviceListFragment.isConnectedToNetwork(hotspotNetwork) && NetworkUtils.ping("192.168.43.1", 500))) {
 								try {
 									Thread.sleep(1000);
 
@@ -141,6 +144,7 @@ public class ShareActivity extends Activity
 												@Override
 												public void run()
 												{
+													mProgressDialog.cancel();
 													doCommunicate(device, connection);
 												}
 											});
@@ -148,16 +152,27 @@ public class ShareActivity extends Activity
 									});
 								} catch (ConnectException e) {
 									e.printStackTrace();
+									mProgressDialog.cancel();
 								}
 							}
-
-							mProgressDialog.cancel();
 						}
 					}.start();
 				} else
 					showChooserDialog(device);
 			}
 		});
+
+		mFAB.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				fabClicked();
+			}
+		});
+
+		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
+		mDeviceListFragment.getListView().setClipToPadding(false);
 
 		if (getIntent() != null && getIntent().getAction() != null) {
 			String action = getIntent().getAction();
@@ -166,26 +181,9 @@ public class ShareActivity extends Activity
 				case ACTION_SEND:
 				case Intent.ACTION_SEND:
 					if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
-						appendStatusText(getIntent().getStringExtra(Intent.EXTRA_TEXT));
+						mSharedText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
 
-						AppCompatImageButton actionButton = findViewById(R.id.activity_share_edit_button);
-
-						actionButton.setImageResource(R.drawable.ic_create_black_24dp);
-						actionButton.setVisibility(View.VISIBLE);
-						actionButton.setContentDescription(getString(R.string.text_typeText));
-						actionButton.setOnClickListener(new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View view)
-							{
-								startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
-										.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-										.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mStatusText.getText().toString())
-										.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
-							}
-						});
-
-						mSharedText = mStatusText.getText().toString();
+						mToolbar.setTitle(getString(R.string.text_shareText));
 
 						onRequestReady();
 					} else {
@@ -202,7 +200,7 @@ public class ShareActivity extends Activity
 							fileNames.add(fileName);
 						}
 
-						registerClickListenerFiles(fileUris, fileNames);
+						organizeFiles(fileUris, fileNames);
 					}
 					break;
 				case ACTION_SEND_MULTIPLE:
@@ -210,7 +208,7 @@ public class ShareActivity extends Activity
 					ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 					ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
-					registerClickListenerFiles(fileUris, fileNames);
+					organizeFiles(fileUris, fileNames);
 					break;
 				default:
 					Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
@@ -226,7 +224,7 @@ public class ShareActivity extends Activity
 
 		if (resultCode == RESULT_OK)
 			if (requestCode == REQUEST_CODE_EDIT_BOX && data != null && data.hasExtra(TextEditorActivity.EXTRA_TEXT_INDEX))
-				appendStatusText(data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX));
+				mSharedText = data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX);
 	}
 
 	protected void onRequestReady()
@@ -242,12 +240,6 @@ public class ShareActivity extends Activity
 				e.printStackTrace();
 			}
 		}
-	}
-
-	protected void appendStatusText(CharSequence charSequence)
-	{
-		mStatusText.getText().clear();
-		mStatusText.getText().append(charSequence);
 	}
 
 	protected void createFolderStructure(Interrupter interrupter, ProgressDialog dialog, File file, String folderName)
@@ -271,6 +263,11 @@ public class ShareActivity extends Activity
 		}
 	}
 
+	protected Snackbar createSnackbar(int resId, String... objects)
+	{
+		return Snackbar.make(mDeviceListFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+	}
+
 	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
 	{
 		final String deviceIp = connection.ipAddress;
@@ -290,14 +287,7 @@ public class ShareActivity extends Activity
 			}
 		});
 
-		runOnUiThread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				mProgressDialog.show();
-			}
-		});
+		mProgressDialog.show();
 
 		CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
 		{
@@ -379,7 +369,7 @@ public class ShareActivity extends Activity
 						}
 					} else {
 						jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-						jsonRequest.put(Keyword.CLIPBOARD_TEXT, mStatusText.getText().toString());
+						jsonRequest.put(Keyword.CLIPBOARD_TEXT, mSharedText);
 
 						activeConnection.reply(jsonRequest.toString());
 						CoolSocket.ActiveConnection.Response response = activeConnection.receive();
@@ -389,8 +379,7 @@ public class ShareActivity extends Activity
 
 					if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
 						if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.NOT_ALLOWED))
-							Snackbar
-									.make(findViewById(android.R.id.content), R.string.mesg_notAllowed, Snackbar.LENGTH_LONG)
+							createSnackbar(R.string.mesg_notAllowed)
 									.setAction(R.string.ques_why, new View.OnClickListener()
 									{
 										@Override
@@ -407,22 +396,35 @@ public class ShareActivity extends Activity
 										}
 									}).show();
 						else
-							Snackbar
-									.make(findViewById(android.R.id.content), R.string.mesg_somethingWentWrong, Snackbar.LENGTH_LONG)
-									.show();
-
+							createSnackbar(R.string.mesg_somethingWentWrong).show();
 					}
 
 					device.lastUsageTime = System.currentTimeMillis();
 					mDatabase.publish(device);
 				} catch (Exception e) {
 					e.printStackTrace();
-					showSnackbar(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)));
+					createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem));
 				}
 
 				mProgressDialog.cancel();
 			}
 		});
+	}
+
+	protected void fabClicked()
+	{
+		if (mSharedText != null)
+			mFAB.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
+							.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+							.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
+							.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
+				}
+			});
 	}
 
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
@@ -490,34 +492,15 @@ public class ShareActivity extends Activity
 						mProgressDialog.cancel();
 
 						if (mFiles.size() == 1)
-							appendStatusText(mFiles.get(0).friendlyName);
+							mToolbar.setTitle(mFiles.get(0).friendlyName);
 						else if (mFiles.size() > 1)
-							appendStatusText(getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
+							mToolbar.setTitle((getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size())));
 
 						onRequestReady();
 					}
 				});
 			}
 		}.start();
-	}
-
-	protected void registerClickListenerFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
-	{
-		ImageButton actionButton = findViewById(R.id.activity_share_edit_button);
-
-		actionButton.setImageResource(R.drawable.ic_close_black_24dp);
-		actionButton.setVisibility(View.VISIBLE);
-		actionButton.setContentDescription(getString(R.string.butn_close));
-		actionButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
-			{
-				finish();
-			}
-		});
-
-		organizeFiles(fileUris, fileNames);
 	}
 
 	protected void showChooserDialog(final NetworkDevice device)
@@ -533,10 +516,5 @@ public class ShareActivity extends Activity
 				doCommunicate(device, connection);
 			}
 		}).show();
-	}
-
-	protected void showSnackbar(String msg)
-	{
-		Snackbar.make(findViewById(android.R.id.content), msg, Snackbar.LENGTH_SHORT).show();
 	}
 }

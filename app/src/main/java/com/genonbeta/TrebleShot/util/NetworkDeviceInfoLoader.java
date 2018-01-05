@@ -41,7 +41,6 @@ public class NetworkDeviceInfoLoader
 						connection.deviceId, connection.adapterName, connection.ipAddress));
 
 		database.publish(connection);
-
 	}
 
 	public static void load(final AccessDatabase database, final String ipAddress, OnDeviceRegisteredListener listener)

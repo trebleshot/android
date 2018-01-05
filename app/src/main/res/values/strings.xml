@@ -250,9 +250,21 @@
     <string name="text_timeJustNow">Just now</string>
     <string name="mesg_providerNotAllowedError">Default folder is not accessible for other applications</string>
     <string name="mesg_errorHotspotPermission">TrebleShot needs permission to set up hotspot</string>
-    <string name="R.string.text_trebleshotNetwork">TrebleShot Network</string>
+    <string name="text_trebleshotNetwork">TrebleShot Network</string>
     <string name="butn_connect">Connect</string>
     <string name="butn_disconnect">Disconnect</string>
-    <string name="text_trebleshotNetworkDescription">This is open network created by another TrebleShot device. You can directly send files to them.</string>
-    <string name="mesg_connectingToSelfNetwork">Connecting to TrebleShot network. Automatically gives up if the estimated time reaches 20 seconds</string>
+    <string name="text_trebleshotHotspotDescription">This is open network created by another TrebleShot device. You can directly send files to them.</string>
+    <string name="mesg_connectingToSelfHotspot">Connecting to the TrebleShot Hotspot. Automatically gives up when the estimated time reaches 20 seconds</string>
+    <string name="mesg_warningHotspotMobileActive">Mobile data is active. Others may connect to your network</string>
+    <string name="butn_skip">Skip</string>
+    <string name="mesg_scanningSelfHotspot">Searching for a TrebleShot Hotspot</string>
+    <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot Hotspot</string>
+    <string name="butn_enable">Enable</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">To be able search for a TrebleShot Hotspot, location permission is needed</string>
+    <string name="butn_locationSettings">Location</string>
+    <string name="mesg_locationDisabledSelfHotspot">Location should be enabled, to be able to show search results</string>
+    <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot Hotspot</string>
+    <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot Hotspot</string>
+    <string name="mesg_startingSelfHotspot">Starting the TrebleShot Hotspot</string>
+    <string name="text_shareText">Share text</string>
 </resources>

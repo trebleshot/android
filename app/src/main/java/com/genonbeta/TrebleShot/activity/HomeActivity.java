@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -249,30 +250,56 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		}
 	}
 
-	public void changeFragment(Fragment fragment)
+	public boolean changeFragment(final Fragment fragment)
 	{
-		Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+		new Thread()
+		{
+			@Override
+			public void run()
+			{
+				super.run();
 
-		if (removedFragment != null && removedFragment instanceof DetachListener)
-			((DetachListener) removedFragment).onPrepareDetach();
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 
-		FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
 
-		ft.replace(R.id.content_frame, fragment);
-		ft.commit();
+				if (fragment == removedFragment)
+					return;
 
-		if (fragment instanceof TitleSupport)
-			setTitle(((TitleSupport) fragment).getTitle(this));
-		else
-			setTitle(R.string.text_appName);
+				if (removedFragment != null && removedFragment instanceof DetachListener)
+					((DetachListener) removedFragment).onPrepareDetach();
 
-		boolean fabSupported = fragment instanceof FABSupport;
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-		if (fabSupported)
-			fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+				ft.replace(R.id.content_frame, fragment);
+				ft.commit();
 
-		if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
-			mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
+				runOnUiThread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						setTitle(fragment instanceof TitleSupport
+								? ((TitleSupport) fragment).getTitle(HomeActivity.this)
+								: getString(R.string.text_appName));
+
+						boolean fabSupported = fragment instanceof FABSupport;
+
+						if (fabSupported)
+							fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+
+						if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
+							mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
+					}
+				});
+			}
+		}.start();
+
+		return true;
 	}
 
 	public void checkCurrentRequestedFragment(Intent intent)

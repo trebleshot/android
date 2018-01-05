@@ -465,7 +465,7 @@ public class TransactionActivity extends Activity implements
 			@Override
 			public void run()
 			{
-				Snackbar.make(findViewById(android.R.id.content), R.string.mesg_pathSaved, Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(mTransactionFragment.getView(), R.string.mesg_pathSaved, Snackbar.LENGTH_SHORT).show();
 			}
 		});
 	}

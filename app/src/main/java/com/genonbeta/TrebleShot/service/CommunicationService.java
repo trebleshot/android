@@ -363,7 +363,7 @@ public class CommunicationService extends Service
 		NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
 		getDatabase().reconstruct(networkDevice);
 
-		final NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
+		NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
 		getDatabase().reconstruct(connection);
 
 		CoolSocket.connect(new SeamlessClientHandler(transactionGroup, connection, networkDevice));
@@ -443,12 +443,13 @@ public class CommunicationService extends Service
 						if (getHotspotUtils().getPreviousConfig() == null) {
 							device.isRestricted = true;
 							mNotificationUtils.notifyConnectionRequest(device);
+
+							shouldContinue = false;
 						}
+						else
+							shouldContinue = true;
 
 						mDatabase.publish(device);
-
-
-						shouldContinue = false;
 					}
 
 					final NetworkDevice.Connection connection = NetworkDeviceInfoLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());

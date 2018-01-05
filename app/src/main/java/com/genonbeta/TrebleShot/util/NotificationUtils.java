@@ -90,8 +90,8 @@ public class NotificationUtils
 
 	public int getNotificationSettings()
 	{
-		int makeSound = (mPreferences.getBoolean("notification_sound", false)) ? NotificationCompat.DEFAULT_SOUND : 0;
-		int vibrate = (mPreferences.getBoolean("notification_vibrate", false)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
+		int makeSound = (mPreferences.getBoolean("notification_sound", true)) ? NotificationCompat.DEFAULT_SOUND : 0;
+		int vibrate = (mPreferences.getBoolean("notification_vibrate", true)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
 		int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
 
 		return makeSound | vibrate | light;
