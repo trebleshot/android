@@ -42,7 +42,7 @@
         <activity
             android:name=".activity.ShareActivity"
             android:label="@string/text_appName"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar.GreyStatusBar">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
                 <action android:name="android.intent.action.SEND"/>

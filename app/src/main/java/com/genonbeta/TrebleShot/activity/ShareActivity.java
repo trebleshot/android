@@ -70,13 +70,14 @@ public class ShareActivity extends Activity
 		setContentView(R.layout.activity_share);
 
 		mToolbar = findViewById(R.id.toolbar);
+
 		setSupportActionBar(mToolbar);
 
 		mFAB = findViewById(R.id.content_fab);
 		mProgressDialog = new ProgressDialog(this);
-
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
+
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
 			@Override
@@ -182,9 +183,6 @@ public class ShareActivity extends Activity
 				case Intent.ACTION_SEND:
 					if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 						mSharedText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
-
-						mToolbar.setTitle(getString(R.string.text_shareText));
-
 						onRequestReady();
 					} else {
 						ArrayList<Uri> fileUris = new ArrayList<>();

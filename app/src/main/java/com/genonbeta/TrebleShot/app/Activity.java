@@ -48,15 +48,6 @@ public abstract class Activity extends AppCompatActivity
 		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
 	}
 
-	@Override
-	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-	{
-		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-		finish();
-		startActivity(new Intent(this, HomeActivity.class));
-	}
-
 	protected SharedPreferences getDefaultPreferences()
 	{
 		if (mPreferences == null)
