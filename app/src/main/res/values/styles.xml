@@ -25,8 +25,8 @@
     </style>
 
     <style name="AppTheme.NoActionBar.GreyStatusBar" parent="@style/AppTheme.NoActionBar">
-        <item name="colorPrimaryDark">#ccc</item>
-        <item name="colorPrimary">#3aa66a</item>
+        <item name="colorPrimaryDark">#bbb</item>
+        <item name="colorPrimary">#bbb</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>

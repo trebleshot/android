@@ -267,4 +267,8 @@
     <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot Hotspot</string>
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot Hotspot</string>
     <string name="text_shareText">Share text</string>
+    <string name="butn_checkAll">Check all</string>
+    <string name="butn_undoAll">Undo all</string>
+    <string name="text_previewAndEditList"><![CDATA[Preview & Edit list]]></string>
+    <string name="text_selectableNotCheckedNotice">Not checked items will be skipped</string>
 </resources>

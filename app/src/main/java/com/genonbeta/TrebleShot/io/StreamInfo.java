@@ -24,18 +24,21 @@ public class StreamInfo
 {
 	public String friendlyName;
 	public String mimeType;
-	public String directory;
 	public InputStream inputStream;
 	public Uri uri;
 	public Type type;
 	public long size;
 
-	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	public StreamInfo()
 	{
-		StreamInfo streamInfo = new StreamInfo();
+
+	}
+
+	public StreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	{
 		String uriType = uri.toString();
 
-		streamInfo.uri = uri;
+		this.uri = uri;
 
 		if (uriType.startsWith("content")) {
 			ContentResolver contentResolver = context.getContentResolver();
@@ -47,15 +50,13 @@ public class StreamInfo
 					int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
 
 					if (nameIndex != -1 && sizeIndex != -1) {
-						streamInfo.friendlyName = cursor.getString(nameIndex);
-						streamInfo.size = cursor.getLong(sizeIndex);
-						streamInfo.mimeType = contentResolver.getType(uri);
-						streamInfo.type = Type.STREAM;
+						this.friendlyName = cursor.getString(nameIndex);
+						this.size = cursor.getLong(sizeIndex);
+						this.mimeType = contentResolver.getType(uri);
+						this.type = Type.STREAM;
 
 						if (openStreams)
-							streamInfo.inputStream = contentResolver.openInputStream(uri);
-
-						return streamInfo;
+							this.inputStream = contentResolver.openInputStream(uri);
 					}
 				}
 
@@ -68,27 +69,21 @@ public class StreamInfo
 				if (file.isDirectory())
 					throw new FolderStateException();
 
-				streamInfo.friendlyName = file.getName();
-				streamInfo.size = file.length();
-				streamInfo.mimeType = FileUtils.getFileContentType(file.getName());
-				streamInfo.type = Type.FILE;
+				this.friendlyName = file.getName();
+				this.size = file.length();
+				this.mimeType = FileUtils.getFileContentType(file.getName());
+				this.type = Type.FILE;
 
 				if (openStreams)
-					streamInfo.inputStream = new FileInputStream(file);
-
-				return streamInfo;
+					this.inputStream = new FileInputStream(file);
 			}
-		}
-
-		throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
+		} else
+			throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
 	}
 
-	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams, String directory) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
 	{
-		StreamInfo streamInfo = getStreamInfo(context, uri, openStreams);
-		streamInfo.directory = directory;
-
-		return streamInfo;
+		return new StreamInfo(context, uri, openStreams);
 	}
 
 	public enum Type

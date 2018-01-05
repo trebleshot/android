@@ -130,17 +130,15 @@ public class TextStreamListFragment
 
 			return true;
 		} else if (id == R.id.action_mode_text_stream_share || id == R.id.action_mode_text_stream_share_ts) {
-			String action = (item.getItemId() == R.id.action_mode_text_stream_share) ? (getSelectionList().size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND) : (getSelectionList().size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
-
 			if (getSelectionList().size() == 1) {
 				TextStreamObject streamObject = getSelectionList().get(0);
 
-				Intent shareIntent = new Intent(action)
+				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_text_stream_share
+						? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
 						.putExtra(Intent.EXTRA_TEXT, streamObject.text)
 						.setType("text/*");
 
 				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-
 				return true;
 			} else
 				Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();

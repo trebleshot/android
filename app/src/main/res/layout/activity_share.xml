@@ -11,42 +11,31 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.CardView
-            android:id="@+id/toolbar_layout"
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            app:cardBackgroundColor="@color/colorPrimary"
-            app:cardUseCompatPadding="true">
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-        </android.support.v7.widget.CardView>
-
-        <fragment
-            android:layout_below="@id/toolbar_layout"
-            android:id="@+id/activity_share_fragment"
-            android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:tag="mainFragment"/>
-
-    </RelativeLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/content_fab"
-        android:layout_width="wrap_content"
+    <fragment
+        android:id="@+id/activity_share_fragment"
+        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_edit_white_24dp"/>
+        android:layout_below="@id/toolbar"
+        android:tag="mainFragment"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>
+
+<android.support.design.widget.FloatingActionButton
+android:id="@+id/content_fab"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_gravity="bottom|end"
+android:layout_margin="@dimen/fab_margin"
+app:srcCompat="@drawable/ic_edit_white_24dp"/>
+
+    </android.support.design.widget.CoordinatorLayout>

@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -22,9 +23,11 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
+import com.genonbeta.TrebleShot.dialog.SelectedEditorDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
@@ -54,7 +57,7 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
-	private ArrayList<StreamInfo> mFiles = new ArrayList<>();
+	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private AccessDatabase mDatabase;
 	private ProgressDialog mProgressDialog;
@@ -255,8 +258,9 @@ public class ShareActivity extends Activity
 			dialog.setProgress(dialog.getProgress() + 1);
 
 			try {
-				mFiles.add(StreamInfo.getStreamInfo(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
+				mFiles.add(new SelectableStream(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -311,34 +315,37 @@ public class ShareActivity extends Activity
 
 						mProgressDialog.setMax(mFiles.size());
 
-						for (StreamInfo fileState : mFiles) {
+						for (SelectableStream selectableStream : mFiles) {
 							if (interrupter.interrupted())
 								break;
+
+							if (!selectableStream.isSelectableSelected())
+								continue;
 
 							mProgressDialog.setSecondaryProgress(mProgressDialog.getSecondaryProgress() + 1);
 
 							int requestId = AppUtils.getUniqueNumber();
 							JSONObject thisJson = new JSONObject();
 
-							TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, fileState.friendlyName, fileState.uri.toString(), fileState.mimeType, fileState.size, TransactionObject.Type.OUTGOING);
+							TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, selectableStream.friendlyName, selectableStream.uri.toString(), selectableStream.mimeType, selectableStream.size, TransactionObject.Type.OUTGOING);
 
-							if (fileState.directory != null)
-								transactionObject.directory = fileState.directory;
+							if (selectableStream.directory != null)
+								transactionObject.directory = selectableStream.directory;
 
 							pendingRegistry.add(transactionObject);
 
 							try {
-								thisJson.put(Keyword.FILE_NAME, fileState.friendlyName);
-								thisJson.put(Keyword.FILE_SIZE, fileState.size);
+								thisJson.put(Keyword.FILE_NAME, selectableStream.friendlyName);
+								thisJson.put(Keyword.FILE_SIZE, selectableStream.size);
 								thisJson.put(Keyword.REQUEST_ID, requestId);
-								thisJson.put(Keyword.FILE_MIME, fileState.mimeType);
+								thisJson.put(Keyword.FILE_MIME, selectableStream.mimeType);
 
-								if (fileState.directory != null)
-									thisJson.put(Keyword.DIRECTORY, fileState.directory);
+								if (selectableStream.directory != null)
+									thisJson.put(Keyword.DIRECTORY, selectableStream.directory);
 
 								filesArray.put(thisJson);
 							} catch (Exception e) {
-								Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + fileState.friendlyName);
+								Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + selectableStream.friendlyName);
 							}
 						}
 
@@ -401,7 +408,8 @@ public class ShareActivity extends Activity
 					mDatabase.publish(device);
 				} catch (Exception e) {
 					e.printStackTrace();
-					createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem));
+					createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
+							.show();
 				}
 
 				mProgressDialog.cancel();
@@ -423,6 +431,8 @@ public class ShareActivity extends Activity
 							.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 				}
 			});
+		else
+			new SelectedEditorDialog<>(this, mFiles).show();
 	}
 
 	protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
@@ -461,12 +471,12 @@ public class ShareActivity extends Activity
 					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
 
 					try {
-						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), fileUri, false);
+						SelectableStream selectableStream = new SelectableStream(getApplicationContext(), fileUri, false, null);
 
 						if (fileName != null)
-							streamInfo.friendlyName = fileName;
+							selectableStream.friendlyName = fileName;
 
-						mFiles.add(streamInfo);
+						mFiles.add(selectableStream);
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
 					} catch (StreamCorruptedException e) {
@@ -514,5 +524,38 @@ public class ShareActivity extends Activity
 				doCommunicate(device, connection);
 			}
 		}).show();
+	}
+
+	private class SelectableStream
+			extends StreamInfo
+			implements Selectable
+	{
+		private boolean isSelected = true;
+
+		public String directory;
+
+		public SelectableStream(Context context, Uri uri, boolean openStreams, String directory) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+		{
+			super(context, uri, openStreams);
+			this.directory = directory;
+		}
+
+		@Override
+		public String getSelectableFriendlyName()
+		{
+			return this.friendlyName;
+		}
+
+		@Override
+		public boolean isSelectableSelected()
+		{
+			return this.isSelected;
+		}
+
+		@Override
+		public void setSelectableSelected(boolean selected)
+		{
+			this.isSelected = selected;
+		}
 	}
 }

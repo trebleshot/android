@@ -106,10 +106,6 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 			String action = (item.getItemId() == R.id.action_mode_share_all_apps) ? (getSelectionList().size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND) : (getSelectionList().size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
 
 			if (getSelectionList().size() > 1) {
-				shareIntent = new Intent(action);
-
-				shareIntent.setType("*/*");
-
 				ArrayList<Uri> uriList = new ArrayList<>();
 				ArrayList<CharSequence> nameList = new ArrayList<>();
 
@@ -118,16 +114,17 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 					nameList.add(sharedItem.fileName);
 				}
 
-				shareIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList);
-				shareIntent.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameList);
+				shareIntent = new Intent(action)
+						.setType("*/*")
+						.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
+						.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameList);
 			} else if (getSelectionList().size() == 1) {
 				T sharedItem = getSelectionList().get(0);
 
-				shareIntent = new Intent(action);
-
-				shareIntent.putExtra(Intent.EXTRA_STREAM, sharedItem.uri);
-				shareIntent.putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName);
-				shareIntent.setType("*/*");
+				shareIntent = new Intent(action)
+						.putExtra(Intent.EXTRA_STREAM, sharedItem.uri)
+						.putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName)
+						.setType("*/*");
 			}
 
 			if (shareIntent != null)

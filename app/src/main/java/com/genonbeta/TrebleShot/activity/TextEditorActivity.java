@@ -81,9 +81,10 @@ public class TextEditorActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		if ((System.currentTimeMillis() - mBackPressTime) < 3000)
+		if ((System.currentTimeMillis() - mBackPressTime) < 3000
+				|| (mTextStreamObject == null && mEditTextEditor.getText().length() == 0))
 			super.onBackPressed();
-		else if (mTextStreamObject != null || mEditTextEditor.getText().length() > 0)
+		else
 			Snackbar.make(findViewById(android.R.id.content), mTextStreamObject != null ? R.string.mesg_clipboardUpdateNotice : R.string.mesg_textSaveNotice, Snackbar.LENGTH_LONG)
 					.setAction(mTextStreamObject != null ? R.string.butn_update : R.string.butn_save, new View.OnClickListener()
 					{
@@ -146,11 +147,12 @@ public class TextEditorActivity extends Activity
 
 			return true;
 		} else if (id == R.id.menu_action_share || id == R.id.menu_action_share_trebleshot) {
-			Intent shareIntent = new Intent(item.getItemId() == R.id.menu_action_share ? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
+			Intent shareIntent = new Intent(item.getItemId() == R.id.menu_action_share
+					? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
 					.putExtra(Intent.EXTRA_TEXT, mEditTextEditor.getText().toString())
 					.setType("text/*");
-			startActivity((item.getItemId() == R.id.menu_action_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 
+			startActivity((item.getItemId() == R.id.menu_action_share) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
 			return true;
 		} else if (id == android.R.id.home) {
 			onBackPressed();

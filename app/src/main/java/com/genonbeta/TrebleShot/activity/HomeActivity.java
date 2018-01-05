@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -252,6 +253,21 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	public boolean changeFragment(final Fragment fragment)
 	{
+		final Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+
+		if (fragment == removedFragment)
+			return false;
+
+		runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (removedFragment != null && removedFragment instanceof DetachListener)
+					((DetachListener) removedFragment).onPrepareDetach();
+			}
+		});
+
 		new Thread()
 		{
 			@Override
@@ -264,14 +280,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-
-				Fragment removedFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
-
-				if (fragment == removedFragment)
-					return;
-
-				if (removedFragment != null && removedFragment instanceof DetachListener)
-					((DetachListener) removedFragment).onPrepareDetach();
 
 				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
