@@ -20,6 +20,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
 import com.genonbeta.TrebleShot.util.DetachListener;
+import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 import java.io.File;
@@ -29,14 +30,15 @@ import java.io.File;
  * Date: 5/30/17 10:47 AM
  */
 
-public class FileExplorerFragment extends Fragment implements TitleSupport, DetachListener
+public class FileExplorerFragment
+		extends Fragment
+		implements TitleSupport, DetachListener
 {
 	private RecyclerView mRecyclerView;
 	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
 	private LinearLayoutManager mLayoutManager;
 	private PathResolverRecyclerAdapter mAdapter;
-	private FloatingActionButton mButtonOfEverything;
 	private File mRequestedPath = null;
 
 	@Override
@@ -54,7 +56,6 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Deta
 
 		mRecyclerView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
 		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
-		mButtonOfEverything = view.findViewById(R.id.fragment_fileexplorer_boe);
 		mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		mAdapter = new PathResolverRecyclerAdapter();
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
@@ -132,7 +133,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Deta
 					}
 				}).show();
 			else
-				Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(mFileListFragment.getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 
 			return true;
 		}
@@ -145,11 +146,6 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Deta
 	{
 		if (mFileListFragment != null)
 			mFileListFragment.onPrepareDetach();
-	}
-
-	public FloatingActionButton getButtonOfEverything()
-	{
-		return mButtonOfEverything;
 	}
 
 	public FileListFragment getFileListFragment()

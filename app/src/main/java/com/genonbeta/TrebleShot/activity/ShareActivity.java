@@ -74,12 +74,25 @@ public class ShareActivity extends Activity
 
 		mToolbar = findViewById(R.id.toolbar);
 
-		setSupportActionBar(mToolbar);
-
 		mFAB = findViewById(R.id.content_fab);
 		mProgressDialog = new ProgressDialog(this);
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
+
+		setSupportActionBar(mToolbar);
+
+		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
+		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
+		mDeviceListFragment.getListView().setClipToPadding(false);
+
+		mFAB.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				fabClicked();
+			}
+		});
 
 		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
 		{
@@ -165,18 +178,6 @@ public class ShareActivity extends Activity
 					showChooserDialog(device);
 			}
 		});
-
-		mFAB.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				fabClicked();
-			}
-		});
-
-		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
-		mDeviceListFragment.getListView().setClipToPadding(false);
 
 		if (getIntent() != null && getIntent().getAction() != null) {
 			String action = getIntent().getAction();

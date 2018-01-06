@@ -7,7 +7,7 @@ package com.genonbeta.TrebleShot.object;
 
 public interface Selectable
 {
-	public String getSelectableFriendlyName();
-	public boolean isSelectableSelected();
-	public void setSelectableSelected(boolean selected);
+	String getSelectableFriendlyName();
+	boolean isSelectableSelected();
+	void setSelectableSelected(boolean selected);
 }

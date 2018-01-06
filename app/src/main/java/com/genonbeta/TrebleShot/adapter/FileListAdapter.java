@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -82,16 +83,45 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 			else
 				referencedDirectoryList.add(Environment.getExternalStorageDirectory());
 
+			folders.add(new FileHolder(mContext.getString(R.string.text_fileRoot), getContext().getString(R.string.text_mediaDirectory), new File("."), true));
+
 			for (File mediaDir : referencedDirectoryList) {
-				String mediaName = mediaDir.getName();
-				String[] splitName = mediaDir.getAbsolutePath().split(File.separator);
+				FileHolder fileHolder = new FileHolder(mediaDir.getName(), getContext().getString(R.string.text_mediaDirectory), mediaDir, true);
+				String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
-				if (splitName.length >= 4 && splitName[2].equals("emulated"))
-					mediaName = getContext().getString(R.string.text_emulatedMediaDirectory, splitName[3]);
-				else if (splitName.length >= 3)
-					mediaName = splitName[2];
+				StringBuilder stringBuilder = new StringBuilder();
 
-				folders.add(new FileHolder(mediaName, getContext().getString(R.string.text_mediaDirectory), mediaDir, true));
+				for (String name : splitPath) {
+					stringBuilder.append(stringBuilder.length());
+					stringBuilder.append(" => ");
+					stringBuilder.append(name);
+					stringBuilder.append("; ");
+				}
+
+				Log.d("Filelist", stringBuilder.toString());
+
+				if (splitPath.length >= 2
+						&& splitPath[1].equals("storage")
+						&& splitPath[splitPath.length - 1].equals(getContext().getPackageName())) {
+					if (splitPath.length >= 4 && splitPath[2].equals("emulated"))
+					{
+						File file = new File(buildPath(splitPath, 4));
+
+						if (file.canWrite()) {
+							fileHolder.file = file;
+							fileHolder.friendlyName = getContext().getString(R.string.text_emulatedMediaDirectory, splitPath[3]);
+						}
+					} else if (splitPath.length >= 3) {
+						File file = new File(buildPath(splitPath, 3));
+
+						if (file.canWrite()) {
+							fileHolder.file = file;
+							fileHolder.friendlyName = splitPath[2];
+						}
+					}
+				}
+
+				folders.add(fileHolder);
 			}
 		}
 
@@ -106,6 +136,19 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 	{
 		mList.clear();
 		mList.addAll(passedItem);
+	}
+
+	public String buildPath(String[] splitPath, int count)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; (i < count && i < splitPath.length); i ++)
+		{
+			stringBuilder.append(File.separator);
+			stringBuilder.append(splitPath[i]);
+		}
+
+		return stringBuilder.toString();
 	}
 
 	@Override

@@ -241,4 +241,27 @@
     <string name="butn_save">Kaydet</string>
     <string name="mesg_textShareLimit">Aynı anda sadece bir metin içeriği paylaşılabilir</string>
     <string name="text_timeJustNow">Az önce</string>
+    <string name="mesg_providerNotAllowedError">Varsayılan klasöre diğer uygulamalar tarafından erişilemiyor</string>
+    <string name="mesg_errorHotspotPermission">Hotspot başlatabilmesi için TrebleShot\'a izin vermelisiniz</string>
+    <string name="text_trebleshotHotspot">TrebleShot Hotspot</string>
+    <string name="butn_connect">Bağlan</string>
+    <string name="butn_disconnect">Bağlantıyı kes</string>
+    <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.</string>
+    <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor. 20 saniyeden fazla sürmemesi gerekir</string>
+    <string name="mesg_warningHotspotMobileActive">Mobil veri etkin. Başkaları ağınıza bağlanalabilir</string>
+    <string name="butn_skip">Geç</string>
+    <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
+    <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuz\'u etkinleştirmek ister misiniz?</string>
+    <string name="butn_enable">Etkinleştir</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot Hotspot\'u bulabilmek için Konum İzni gereklidir</string>
+    <string name="butn_locationSettings">Konum</string>
+    <string name="mesg_locationDisabledSelfHotspot">Arama sonuçlarını gösterebilmek için Konum etkin olmalıdır</string>
+    <string name="mesg_scanningDevicesSelfHotspot">TrebleShot Hotspot\'u üzerinde cihazlar aranıyor</string>
+    <string name="mesg_stoppingSelfHotspot">TrebleShot Hotspot\'unuz devre dışı bırakılıyor</string>
+    <string name="mesg_startingSelfHotspot">TrebleShot Hotspot\'unuz başlatılıyor</string>
+    <string name="text_shareWithTrebleshot">@string/butn_shareWithTrebleshot</string>
+    <string name="butn_checkAll">Hepsini şeç</string>
+    <string name="butn_undoAll">Geri al</string>
+    <string name="text_selectableNotCheckedNotice">Seçili olmayan nesneler atlanacak</string>
+    <string name="text_previewAndEditList">"Listeyi Önizle ve Düzenle</string>
 </resources>
