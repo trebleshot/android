@@ -15,12 +15,14 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
-import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * created by: Veli
@@ -39,7 +41,7 @@ public class ImageListAdapter
         @Override
         public int compare(ImageHolder compareFrom, ImageHolder compareTo)
         {
-            return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
+            return (int)(compareTo.mod_time - compareFrom.mod_time);
         }
     };
 
@@ -66,11 +68,17 @@ public class ImageListAdapter
 
         if (cursor.moveToFirst()) {
             int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            int titleIndex = cursor.getColumnIndex(MediaStore.Images.Media.TITLE);
             int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
+            int modTime = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
 
             do {
-                ImageHolder info = new ImageHolder(cursor.getInt(idIndex), cursor.getString(titleIndex), cursor.getString(displayIndex), null, Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+                ImageHolder info = new ImageHolder(
+                        cursor.getInt(idIndex),
+                        cursor.getString(displayIndex),
+                        cursor.getString(displayIndex),
+                        null,
+                        Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)),
+                        Long.parseLong(cursor.getString(modTime)));
 
                 list.add(info);
             }
@@ -123,9 +131,11 @@ public class ImageListAdapter
         ImageHolder info = (ImageHolder) this.getItem(position);
 
         TextView titleView = convertView.findViewById(R.id.text);
+        TextView dateView = convertView.findViewById(R.id.text2);
         ImageView imageView = convertView.findViewById(R.id.image);
 
         titleView.setText(info.friendlyName);
+        dateView.setText(info.mod_time_string);
 
         SweetImageLoader.load(this, getContext(), imageView, info);
 
@@ -136,13 +146,19 @@ public class ImageListAdapter
     {
         public long id;
         public String thumbnail;
+        public long mod_time;
+        public String mod_time_string;
 
-        public ImageHolder(int id, String friendlyName, String displayName, String thumbnail, Uri uri)
+        public ImageHolder(int id, String friendlyName, String filename, String thumbnail, Uri uri, long mod_time)
         {
-            super(friendlyName, displayName, uri);
+            super(friendlyName, filename, uri);
 
             this.id = id;
             this.thumbnail = thumbnail;
+            this.mod_time = mod_time/1000;
+            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
+            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+            this.mod_time_string = sdf.format(new Date(mod_time));
         }
     }
 }
