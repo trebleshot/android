@@ -440,7 +440,7 @@ public class TransactionActivity extends Activity implements
 		mTransactionFragment.getAdapter().setPath(path);
 	}
 
-	private Snackbar createSnackbar(int resId, String... objects)
+	private Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(mTransactionFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}

@@ -286,7 +286,7 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	private Snackbar createSnackbar(int resId, String... objects)
+	private Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
