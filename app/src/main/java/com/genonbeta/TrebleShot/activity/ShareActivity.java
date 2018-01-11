@@ -296,7 +296,7 @@ public class ShareActivity extends Activity
 			}
 	}
 
-	protected Snackbar createSnackbar(int resId, String... objects)
+	protected Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(mDeviceListFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
