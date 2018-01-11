@@ -258,7 +258,7 @@
     <string name="mesg_warningHotspotMobileActive">Mobile data is active. Others may connect to your network</string>
     <string name="butn_skip">Skip</string>
     <string name="mesg_scanningSelfHotspot">Searching for a TrebleShot Hotspot</string>
-    <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot Hotspot</string>
+    <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot Hotspot?</string>
     <string name="butn_enable">Enable</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">"Location Permission is needed to be able search for a TrebleShot Hotspot "</string>
     <string name="butn_locationSettings">Location</string>
