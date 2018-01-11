@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,6 +25,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -81,6 +83,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentShareText;
 
 	private long mExitPressTime;
+
+	private boolean mIsStopped = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -155,16 +159,19 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				.putInt("migrated_version", localDevice.versionNumber)
 				.apply();
 
-		changeFragment(mFragmentDeviceList);
-		mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
-
-		checkCurrentRequestedFragment(getIntent());
+		if (!checkCurrentRequestedFragment(getIntent()))
+		{
+			changeFragment(mFragmentDeviceList);
+			mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
+		}
 	}
 
 	@Override
 	protected void onStart()
 	{
 		super.onStart();
+
+		mIsStopped = false;
 
 		View headerView = mNavigationView.getHeaderView(0);
 
@@ -182,6 +189,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			deviceNameText.setText(localDevice.nickname);
 			versionText.setText(localDevice.versionName);
 		}
+	}
+
+	@Override
+	protected void onStop()
+	{
+		super.onStop();
+		mIsStopped = true;
 	}
 
 	@Override
@@ -263,73 +277,58 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (fragment == removedFragment)
 			return false;
 
-		runOnUiThread(new Runnable()
+		if (removedFragment != null && removedFragment instanceof DetachListener)
+			((DetachListener) removedFragment).onPrepareDetach();
+
+		new Handler().postDelayed(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				if (removedFragment != null && removedFragment instanceof DetachListener)
-					((DetachListener) removedFragment).onPrepareDetach();
-			}
-		});
-
-		new Thread()
-		{
-			@Override
-			public void run()
-			{
-				super.run();
-
-				try {
-					Thread.sleep(300);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
 				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
 				ft.replace(R.id.content_frame, fragment);
-				ft.commit();
 
-				runOnUiThread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						setTitle(fragment instanceof TitleSupport
-								? ((TitleSupport) fragment).getTitle(HomeActivity.this)
-								: getString(R.string.text_appName));
+				if (!mIsStopped)
+					ft.commit();
 
-						boolean fabSupported = fragment instanceof FABSupport;
+				setTitle(fragment instanceof TitleSupport
+						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
+						: getString(R.string.text_appName));
 
-						if (fabSupported)
-							fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+				boolean fabSupported = fragment instanceof FABSupport;
 
-						if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
-							mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
-					}
-				});
+				if (fabSupported)
+					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+
+				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
+					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
 			}
-		}.start();
+		}, 200);
 
 		return true;
 	}
 
-	public void checkCurrentRequestedFragment(Intent intent)
+	public boolean checkCurrentRequestedFragment(Intent intent)
 	{
-		if (intent != null)
-			if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
-				File requestedDirectory = intent.hasExtra(EXTRA_FILE_PATH)
-						? new File(intent.getStringExtra(EXTRA_FILE_PATH))
-						: null;
+		if (intent == null)
+			return false;
 
-				openFolder(requestedDirectory != null && requestedDirectory.isDirectory() && requestedDirectory.canRead()
-						? requestedDirectory
-						: null);
-			} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
-				changeFragment(mFragmentTransactions);
-				mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
-			}
+		if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
+			File requestedDirectory = intent.hasExtra(EXTRA_FILE_PATH)
+					? new File(intent.getStringExtra(EXTRA_FILE_PATH))
+					: null;
+
+			openFolder(requestedDirectory != null && requestedDirectory.isDirectory() && requestedDirectory.canRead()
+					? requestedDirectory
+					: null);
+		} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
+			changeFragment(mFragmentTransactions);
+			mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
+		} else
+			return false;
+
+		return true;
 	}
 
 	private void highlightUpdater(String availableVersion)

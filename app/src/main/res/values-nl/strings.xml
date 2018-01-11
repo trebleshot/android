@@ -8,7 +8,7 @@
     <string name="text_unknownUser">Onbekende gebruiker</string>
     <string name="text_connected">Verbonden</string>
     <string name="text_invited">Uitgenodigd</string>
-    <string name="mesg_connectionFailure">Verbindingsfout</string>
+    <string name="mesg_connectionFailure">Verbinding mislukt</string>
     <string name="text_available">Beschikbaar</string>
     <string name="text_notAvailable">Niet-beschikbaar</string>
     <string name="text_deviceListEmpty">Geen apparaat</string>
@@ -31,7 +31,7 @@
     <string name="text_deviceName">Apparaatnaam</string>
     <string name="text_deviceNameSummary">Deze naam zal worden weergegeven op andere apparaten</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
-    <string name="mesg_formatNotSupported">Type wordt niet ondersteund</string>
+    <string name="mesg_formatNotSupported">Het formaat wordt niet ondersteund</string>
     <string name="mesg_fileSendError">Het bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
     <string name="mesg_fileSendCancelled">Het versturen van %s is geannuleerd</string>
@@ -226,4 +226,8 @@
 <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot gebruikt het serienummer van uw telefoon om een semi-permanent identiteitsnummer te creëren voor uw apparaat. Dit helpt andere TrebleShot-gebruikers om uw apparaat te herkennen. Uw apparaat moet Oreo of hoger draaien en TrebleShot moet hiervoor toestemming krijgen. Door dit af te wijzen zal TrebleShot stoppen met draaien.</string>
     <string name="text_flagRemoved">Verwijderd</string>
     <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
+<string name="text_communicationServiceRunning">TrebleShot kan nu bestanden delen</string>
+    <string name="text_communicationServiceStop">Raak aan om sessie te beëindigen</string>
+    <string name="text_reaminingTime">Verwacht over %s</string>
+<string name="butn_showFiles">Bestanden weergeven</string>
 </resources>

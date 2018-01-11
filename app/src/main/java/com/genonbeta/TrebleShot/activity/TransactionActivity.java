@@ -45,6 +45,7 @@ import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
@@ -101,6 +102,7 @@ public class TransactionActivity extends Activity implements
 	private PowerfulActionMode mPowafulActionMode;
 	private NavigationView mNavigationView;
 	private MenuItem mInfoMenu;
+	private MenuItem mStartMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -228,7 +230,7 @@ public class TransactionActivity extends Activity implements
 							final String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
 
 							if (selectedPath.equals(mGroup.savePath) || ((mGroup.savePath == null || mGroup.savePath.length() == 0 || new File(mGroup.savePath).canWrite()) && selectedPath.equals(FileUtils.getApplicationDirectory(getApplicationContext()).getAbsolutePath()))) {
-								Snackbar.make(findViewById(android.R.id.content), R.string.mesg_pathSameError, Snackbar.LENGTH_SHORT).show();
+								createSnackbar(R.string.mesg_pathSameError).show();
 							} else {
 
 								AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
@@ -333,6 +335,8 @@ public class TransactionActivity extends Activity implements
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		mInfoMenu = menu.findItem(R.id.actions_transaction_show_info);
+		mStartMenu = menu.findItem(R.id.actions_transaction_resume_all);
+
 		updateCalculations();
 
 		return super.onPrepareOptionsMenu(menu);
@@ -406,6 +410,9 @@ public class TransactionActivity extends Activity implements
 				{
 					mGroup.connectionAdapter = connection.adapterName;
 					mDatabase.publish(mGroup);
+
+					createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
+							.show();
 				}
 			}).show();
 		} else
@@ -431,6 +438,11 @@ public class TransactionActivity extends Activity implements
 	{
 		mTransactionFragment.getAdapter().setGroupId(mGroup.groupId);
 		mTransactionFragment.getAdapter().setPath(path);
+	}
+
+	private Snackbar createSnackbar(int resId, Object... objects)
+	{
+		return Snackbar.make(mTransactionFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	@Override
@@ -465,7 +477,7 @@ public class TransactionActivity extends Activity implements
 			@Override
 			public void run()
 			{
-				Snackbar.make(mTransactionFragment.getView(), R.string.mesg_pathSaved, Snackbar.LENGTH_SHORT).show();
+				createSnackbar(R.string.mesg_pathSaved).show();
 			}
 		});
 	}
@@ -485,6 +497,9 @@ public class TransactionActivity extends Activity implements
 
 					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
 					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
+
+					if (mStartMenu != null)
+						mStartMenu.setVisible(mInfoDialog.getIndex().incomingCount > 0);
 				}
 			});
 		}

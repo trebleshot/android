@@ -117,10 +117,10 @@ public class NetworkUtils
 			for (NetworkInterface interfaceInstance : interfaceList) {
 				boolean avoidedInterface = false;
 
-				for (String match : avoidedInterfaces) {
-					if (interfaceInstance.getDisplayName().contains(match))
-						avoidedInterface = true;
-				}
+				if (avoidedInterfaces != null && avoidedInterfaces.length > 0)
+					for (String match : avoidedInterfaces)
+						if (interfaceInstance.getDisplayName().contains(match))
+							avoidedInterface = true;
 
 				if (avoidedInterface)
 					continue;

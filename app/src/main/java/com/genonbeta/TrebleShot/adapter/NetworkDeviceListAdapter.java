@@ -14,6 +14,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.ListAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -131,5 +132,13 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	public static class HotspotNetwork extends NetworkDevice
 	{
 		public ScanResult scanResult;
+
+		public HotspotNetwork()
+		{
+			super();
+
+			this.versionName = "stamp";
+			this.versionNumber = -1;
+		}
 	}
 }

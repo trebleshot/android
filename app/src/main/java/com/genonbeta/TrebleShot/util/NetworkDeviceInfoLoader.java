@@ -60,8 +60,6 @@ public class NetworkDeviceInfoLoader
 			public void onConnect(CoolSocket.Client client)
 			{
 				try {
-					Thread.sleep(1500);
-
 					CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 					activeConnection.reply(null);
@@ -101,7 +99,8 @@ public class NetworkDeviceInfoLoader
 
 					client.setReturn(device);
 				} catch (Exception e) {
-					e.printStackTrace();
+					if (listener != null && listener instanceof OnDeviceRegisteredErrorListener)
+						((OnDeviceRegisteredErrorListener) listener).onError(e);
 				}
 			}
 		};
@@ -117,5 +116,10 @@ public class NetworkDeviceInfoLoader
 	public interface OnDeviceRegisteredListener
 	{
 		void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection);
+	}
+
+	public interface OnDeviceRegisteredErrorListener extends OnDeviceRegisteredListener
+	{
+		void onError(Exception error);
 	}
 }

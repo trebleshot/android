@@ -89,17 +89,6 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 				FileHolder fileHolder = new FileHolder(mediaDir.getName(), getContext().getString(R.string.text_mediaDirectory), mediaDir, true);
 				String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
-				StringBuilder stringBuilder = new StringBuilder();
-
-				for (String name : splitPath) {
-					stringBuilder.append(stringBuilder.length());
-					stringBuilder.append(" => ");
-					stringBuilder.append(name);
-					stringBuilder.append("; ");
-				}
-
-				Log.d("Filelist", stringBuilder.toString());
-
 				if (splitPath.length >= 2
 						&& splitPath[1].equals("storage")
 						&& splitPath[splitPath.length - 1].equals(getContext().getPackageName())) {

@@ -71,6 +71,7 @@ public class NetworkDevice
 		this.brand = item.getString(AccessDatabase.FIELD_DEVICES_BRAND);
 		this.model = item.getString(AccessDatabase.FIELD_DEVICES_MODEL);
 		this.versionName = item.getString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
+		this.versionNumber = item.getInt(AccessDatabase.FIELD_DEVICES_BUILDNUMBER);
 		this.lastUsageTime = item.getLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
 		this.isTrusted = item.getInt(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
 		this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -215,9 +216,10 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 			getAdapter().onUpdate(searchableList);
 			getAdapter().notifyDataSetChanged();
 		} else if (!loadIfRequested() && mCachedList.size() != 0) {
-			mCachedList.clear();
 			getAdapter().onUpdate(mCachedList);
 			getAdapter().notifyDataSetChanged();
+
+			mCachedList.clear();
 		}
 
 		return getAdapter().getCount() > 0;

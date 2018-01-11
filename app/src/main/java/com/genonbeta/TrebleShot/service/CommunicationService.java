@@ -22,11 +22,15 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
+import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
+import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -68,12 +72,14 @@ public class CommunicationService extends Service
 	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
 	public final static String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
 	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
+	public final static String ACTION_TRANSFER_STATE_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TRANSFER_STATE_CHANGE";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
+	public static final String EXTRA_TRANSFER_STATE = "extraTraansferState";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
@@ -355,18 +361,9 @@ public class CommunicationService extends Service
 			mHotspotUtils.disable();
 	}
 
-	public void startFileReceiving(int groupId) throws Exception
+	public void startFileReceiving(int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
 	{
-		TransactionObject.Group transactionGroup = new TransactionObject.Group(groupId);
-		getDatabase().reconstruct(transactionGroup);
-
-		NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
-		getDatabase().reconstruct(networkDevice);
-
-		NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
-		getDatabase().reconstruct(connection);
-
-		CoolSocket.connect(new SeamlessClientHandler(transactionGroup, connection, networkDevice));
+		CoolSocket.connect(new SeamlessClientHandler(new TransferInstance(getDatabase(), groupId)));
 	}
 
 	public void updateServiceState(boolean seamlessMode)
@@ -598,15 +595,11 @@ public class CommunicationService extends Service
 				int groupId = new JSONObject(mainRequest.response)
 						.getInt(Keyword.GROUP_ID);
 
-				TransactionObject.Group transactionGroup = new TransactionObject.Group(groupId);
-				getDatabase().reconstruct(transactionGroup);
-
-				NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
-				getDatabase().reconstruct(networkDevice);
+				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress());
 
 				activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
 
-				processHolder.group = transactionGroup;
+				processHolder.group = transferInstance.getGroup();
 				processHolder.activeConnection = activeConnection;
 
 				while (true) {
@@ -631,7 +624,6 @@ public class CommunicationService extends Service
 						getDatabase().publish(processHolder.transactionObject);
 
 						currentReply.put(Keyword.RESULT, true);
-
 					} catch (Exception e) {
 						currentReply.put(Keyword.RESULT, false);
 						currentReply.put(Keyword.ERROR, Keyword.NOT_FOUND);
@@ -682,15 +674,11 @@ public class CommunicationService extends Service
 
 	private class SeamlessClientHandler implements CoolSocket.Client.ConnectionHandler
 	{
-		private TransactionObject.Group mGroup;
-		private NetworkDevice.Connection mConnection;
-		private NetworkDevice mDevice;
+		private TransferInstance mTransfer;
 
-		public SeamlessClientHandler(TransactionObject.Group group, NetworkDevice.Connection connection, NetworkDevice device)
+		public SeamlessClientHandler(TransferInstance transferInstance)
 		{
-			mGroup = group;
-			mConnection = connection;
-			mDevice = device;
+			mTransfer = transferInstance;
 		}
 
 		@Override
@@ -700,16 +688,16 @@ public class CommunicationService extends Service
 			CoolSocket.ActiveConnection activeConnection = null;
 
 			try {
-				activeConnection = client.connect(new InetSocketAddress(mConnection.ipAddress, AppConfig.SEAMLESS_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SEAMLESS_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 				activeConnection.reply(new JSONObject()
-						.put(Keyword.GROUP_ID, mGroup.groupId)
+						.put(Keyword.GROUP_ID, mTransfer.getGroup().groupId)
 						.toString());
 
 				CoolSocket.ActiveConnection.Response mainRequest = activeConnection.receive();
 
 				processHolder.activeConnection = activeConnection;
-				processHolder.group = mGroup;
+				processHolder.group = mTransfer.getGroup();
 
 				if (!new JSONObject(mainRequest.response).getBoolean(Keyword.RESULT))
 					throw new IOException("Request was not accepted");
@@ -731,7 +719,7 @@ public class CommunicationService extends Service
 
 					processHolder.transactionObject = new TransactionObject(receiverInstance);
 					File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
-					Log.d(TAG, "Received file: " + file);
+
 					processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
 					if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
@@ -740,7 +728,7 @@ public class CommunicationService extends Service
 
 				if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
 					if (processHolder.transferHandler.getGroupTransferredFileCount() == 1)
-						getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mDevice, processHolder.transferHandler.getFile());
+						getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
 					else if (processHolder.transferHandler.getGroupTransferredFileCount() > 1) {
 						String parentDir = processHolder.transferHandler.getFile().getParent();
 						String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
@@ -999,6 +987,17 @@ public class CommunicationService extends Service
 					e.printStackTrace();
 				}
 		}
+	}
+
+	public enum TransferStatus
+	{
+		Started,
+		ErrorDeviceNotFound,
+		ErrorTransactionNotFound,
+		ErrorTransactionGroupNotFound,
+		ErrorConnectionNotFound,
+		ErrorConnectionFailed,
+		Completed
 	}
 
 	private class ProcessHolder

@@ -66,6 +66,7 @@ public class NetworkDeviceListFragment
 	private HotspotUtils mHotspotUtils;
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
+	private boolean mWifiRefreshRequested = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -158,9 +159,14 @@ public class NetworkDeviceListFragment
 
 		final NetworkDevice device = (NetworkDevice) getAdapter().getItem(position);
 
-		if (mClickListener != null)
-			mClickListener.onItemClick(l, v, position, id);
-		else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+		if (mClickListener != null) {
+			if (device.versionNumber != -1
+					&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+				createSnackbar(R.string.mesg_versionNotSupported)
+						.show();
+			else
+				mClickListener.onItemClick(l, v, position, id);
+		} else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
 			final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -179,7 +185,7 @@ public class NetworkDeviceListFragment
 
 			builder.show();
 		} else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getContext(), getAdapter().getDatabase(), device).show();
+			new DeviceInfoDialog(getActivity(), getAdapter().getDatabase(), device).show();
 	}
 
 	@Override
@@ -280,7 +286,7 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	private Snackbar createSnackbar(int resId, String... objects)
+	private Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
@@ -476,7 +482,8 @@ public class NetworkDeviceListFragment
 			} else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())
 					|| (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_DEVICES)))
+					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_DEVICES)
+			))
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();

@@ -4,8 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -57,10 +59,10 @@ public class UpdateUtils
 		socket.close();
 	}
 
-	public static void receiveUpdate(Context context) throws IOException, PackageManager.NameNotFoundException
+	public static void receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter) throws IOException, PackageManager.NameNotFoundException
 	{
 		File defaultDirectory = FileUtils.getApplicationDirectory(context);
-		File filePath = new File(defaultDirectory.getAbsolutePath() + File.separator + "update_" + System.currentTimeMillis() + ".apk");
+		File filePath = new File(defaultDirectory.getAbsolutePath() + File.separator + device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
 		ServerSocket serverSocket = new ServerSocket(AppConfig.COMPATIBLE_UPDATE_CHANNEL_PORT);
 
@@ -90,10 +92,11 @@ public class UpdateUtils
 			}
 		}
 
-		context.startActivity(new Intent(context, HomeActivity.class)
-				.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-				.putExtra(HomeActivity.EXTRA_FILE_PATH, filePath.getParent()));
+		if (interrupter == null || !interrupter.interrupted())
+			context.startActivity(new Intent(context, HomeActivity.class)
+					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+					.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+					.putExtra(HomeActivity.EXTRA_FILE_PATH, filePath.getParent()));
 
 		outputStream.close();
 		inputStream.close();

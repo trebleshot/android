@@ -22,10 +22,7 @@
         android:layout_toRightOf="@id/nav_view"
         android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@color/colorPrimaryDark"/>
+        <include layout="@layout/generic_view_statusbar_space"/>
 
         <include
             layout="@layout/toolbar_transaction"
