@@ -54,8 +54,7 @@ public class GitHubUpdater
 
 				Looper.prepare();
 
-				try
-				{
+				try {
 					Log.d(TAG, "Checking updates");
 
 					mContext.setTheme(mThemeRes);
@@ -71,8 +70,7 @@ public class GitHubUpdater
 
 					JSONArray releases = new JSONArray(result);
 
-					if (releases.length() > 0)
-					{
+					if (releases.length() > 0) {
 						Log.d(TAG, "Reading releases: (total) " + releases.length());
 
 						JSONObject lastRelease = releases.getJSONObject(0);
@@ -90,18 +88,15 @@ public class GitHubUpdater
 
 						final File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + applicationName + " v" + lastVersionName + ".apk");
 
-						if (popupDialog && comLast.compareTo(comCurr) > 0)
-						{
+						if (popupDialog && comLast.compareTo(comCurr) > 0) {
 							Log.d(TAG, "New version found: " + lastVersionName);
 
-							if (lastRelease.has("assets"))
-							{
+							if (lastRelease.has("assets")) {
 								Log.d(TAG, "Reading assets");
 
 								JSONArray releaseAssets = lastRelease.getJSONArray("assets");
 
-								if (releaseAssets.length() > 0)
-								{
+								if (releaseAssets.length() > 0) {
 									Log.d(TAG, "Assets is cached: (total) " + releaseAssets.length());
 
 									final JSONObject firstAsset = releaseAssets.getJSONObject(0);
@@ -140,16 +135,13 @@ public class GitHubUpdater
 									AlertDialog.Builder dialog = new AlertDialog.Builder(mContext)
 											.setTitle(R.string.uwg_update_available);
 
-									if (updateFile.isFile())
-									{
+									if (updateFile.isFile()) {
 										Log.d(TAG, "File is already exists: " + updateFile.getName());
 
 										dialog.setMessage(R.string.uwg_update_exists)
 												.setNeutralButton(R.string.uwg_download, downloadStart)
 												.setPositiveButton(R.string.uwg_open, openDownloads);
-									}
-									else
-									{
+									} else {
 										Log.d(TAG, "Update is downloadable");
 
 										dialog.setMessage(String.format(mContext.getString(R.string.uwg_update_body), appVersionName, lastVersionName, lastVersionDate, lastVersionBody))
@@ -158,26 +150,20 @@ public class GitHubUpdater
 
 									dialog.setNegativeButton(R.string.uwg_later, null)
 											.show();
-								}
-								else
+								} else
 									Log.d(TAG, "No downloadable file is provided");
-							}
-							else
+							} else
 								Toast.makeText(mContext, R.string.uwg_no_update_available, Toast.LENGTH_LONG).show();
-						}
-						else if (popupDialog)
+						} else if (popupDialog)
 							Toast.makeText(mContext, R.string.uwg_currently_latest_version_info, Toast.LENGTH_LONG).show();
 					}
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					e.printStackTrace();
 					Log.d(TAG, "Error occurred");
 
 					if (popupDialog)
 						Toast.makeText(mContext, R.string.uwg_version_check_error, Toast.LENGTH_LONG).show();
-				}
-				finally
-				{
+				} finally {
 					Looper.loop();
 				}
 			}
@@ -188,27 +174,25 @@ public class GitHubUpdater
 	{
 		PackageManager packageManager = context.getPackageManager();
 		ApplicationInfo applicationInfo = null;
-		try
-		{
+
+		try {
 			applicationInfo = packageManager.getApplicationInfo(context.getApplicationInfo().packageName, 0);
-		} catch (final PackageManager.NameNotFoundException e)
-		{
+		} catch (final PackageManager.NameNotFoundException e) {
 		}
+
 		return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown");
 	}
 
 	public boolean isNewVersion(String comparedVersionName)
 	{
-		try
-		{
+		try {
 			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getApplicationInfo().packageName, 0);
 
 			ComparableVersion comparableGiven = new ComparableVersion(comparedVersionName);
 			ComparableVersion comparableCurrent = new ComparableVersion(packageInfo.versionName);
 
 			return comparableGiven.compareTo(comparableCurrent) > 0;
-		} catch (PackageManager.NameNotFoundException e)
-		{
+		} catch (PackageManager.NameNotFoundException e) {
 			e.printStackTrace();
 		}
 
