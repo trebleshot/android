@@ -28,16 +28,16 @@ import java.util.Comparator;
  */
 
 public class ImageListAdapter
-        extends ShareableListAdapter<ImageListAdapter.VideoHolder>
-        implements SweetImageLoader.Handler<ImageListAdapter.VideoHolder, Bitmap>
+        extends ShareableListAdapter<ImageListAdapter.ImageHolder>
+        implements SweetImageLoader.Handler<ImageListAdapter.ImageHolder, Bitmap>
 {
     private ContentResolver mResolver;
     private Bitmap mDefaultImageBitmap;
-    private ArrayList<VideoHolder> mList = new ArrayList<>();
-    private Comparator<VideoHolder> mComparator = new Comparator<VideoHolder>()
+    private ArrayList<ImageHolder> mList = new ArrayList<>();
+    private Comparator<ImageHolder> mComparator = new Comparator<ImageHolder>()
     {
         @Override
-        public int compare(VideoHolder compareFrom, VideoHolder compareTo)
+        public int compare(ImageHolder compareFrom, ImageHolder compareTo)
         {
             return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
         }
@@ -52,27 +52,25 @@ public class ImageListAdapter
     }
 
     @Override
-    public Bitmap onLoadBitmap(VideoHolder object)
+    public Bitmap onLoadBitmap(ImageHolder object)
     {
-        Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
+        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Images.Thumbnails.MINI_KIND, null);
         return bitmap == null ? mDefaultImageBitmap : bitmap;
     }
 
     @Override
-    public ArrayList<VideoHolder> onLoad()
+    public ArrayList<ImageHolder> onLoad()
     {
-        ArrayList<VideoHolder> list = new ArrayList<>();
-        Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        ArrayList<ImageHolder> list = new ArrayList<>();
+        Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
         if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
-            int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
-            int displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
-            int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
+            int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+            int titleIndex = cursor.getColumnIndex(MediaStore.Images.Media.TITLE);
+            int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
 
             do {
-                VideoHolder info = new VideoHolder(cursor.getInt(idIndex), cursor.getString(titleIndex), cursor.getString(displayIndex), null, Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
-                info.duration = TimeUtils.getDuration(cursor.getLong(lengthIndex));
+                ImageHolder info = new ImageHolder(cursor.getInt(idIndex), cursor.getString(titleIndex), cursor.getString(displayIndex), null, Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
                 list.add(info);
             }
@@ -87,7 +85,7 @@ public class ImageListAdapter
     }
 
     @Override
-    public void onUpdate(ArrayList<VideoHolder> passedItem)
+    public void onUpdate(ArrayList<ImageHolder> passedItem)
     {
         mList.clear();
         mList.addAll(passedItem);
@@ -111,7 +109,7 @@ public class ImageListAdapter
         return 0;
     }
 
-    public ArrayList<VideoHolder> getList()
+    public ArrayList<ImageHolder> getList()
     {
         return mList;
     }
@@ -120,29 +118,26 @@ public class ImageListAdapter
     public View getView(int position, View convertView, ViewGroup parent)
     {
         if (convertView == null)
-            convertView = getInflater().inflate(R.layout.list_video, parent, false);
+            convertView = getInflater().inflate(R.layout.list_image, parent, false);
 
-        VideoHolder info = (VideoHolder) this.getItem(position);
+        ImageHolder info = (ImageHolder) this.getItem(position);
 
         TextView titleView = convertView.findViewById(R.id.text);
-        TextView durationView = convertView.findViewById(R.id.duration);
         ImageView imageView = convertView.findViewById(R.id.image);
 
         titleView.setText(info.friendlyName);
-        durationView.setText(info.duration);
 
         SweetImageLoader.load(this, getContext(), imageView, info);
 
         return convertView;
     }
 
-    public static class VideoHolder extends Shareable
+    public static class ImageHolder extends Shareable
     {
         public long id;
         public String thumbnail;
-        public String duration;
 
-        public VideoHolder(int id, String friendlyName, String displayName, String thumbnail, Uri uri)
+        public ImageHolder(int id, String friendlyName, String displayName, String thumbnail, Uri uri)
         {
             super(friendlyName, displayName, uri);
 
