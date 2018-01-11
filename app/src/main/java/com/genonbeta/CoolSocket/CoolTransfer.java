@@ -367,7 +367,7 @@ abstract public class CoolTransfer<T>
 
 								int len = 0;
 								long lastRead = System.currentTimeMillis();
-								long lastNotified = System.currentTimeMillis();
+								long lastNotified = 0;
 
 								incrementGroupTransferredByte(outputStream.getChannel().position());
 
@@ -528,7 +528,7 @@ abstract public class CoolTransfer<T>
 							onOrientatingStreams(this, getInputStream(), outputStream);
 
 							int len = 0;
-							long lastNotified = System.currentTimeMillis();
+							long lastNotified = 0;
 							long countingStars = getSkippedBytes();
 
 							incrementGroupTransferredByte(countingStars);

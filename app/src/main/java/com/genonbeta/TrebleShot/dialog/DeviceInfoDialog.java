@@ -1,13 +1,15 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -23,6 +25,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -40,16 +43,17 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 {
 	private AlertDialog mThisDialog;
 
-	public DeviceInfoDialog(@NonNull final Context context, final AccessDatabase database, final NetworkDevice device)
+	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final NetworkDevice device)
 	{
-		super(context);
+		super(activity);
 
 		try {
 			database.reconstruct(device);
 
 			@SuppressLint("InflateParams")
-			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
+			View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
 
+			TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
 			TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
 			TextView addressText = rootView.findViewById(R.id.device_info_ip_address);
 			TextView versionText = rootView.findViewById(R.id.device_info_version);
@@ -57,23 +61,48 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
 			final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
 
+			if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+				notSupportedText.setVisibility(View.VISIBLE);
+
 			getUpdateButton.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					new ConnectionChooserDialog(context, database, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+					final ProgressDialog progressDialog = new ProgressDialog(getContext());
+					final Interrupter interrupter = new Interrupter();
+
+					progressDialog.setMessage(activity.getString(R.string.mesg_ongoingUpdateDownload));
+					progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							interrupter.interrupt();
+						}
+					});
+
+					interrupter.useCloser(new Interrupter.Closer()
+					{
+						@Override
+						public void onClose()
+						{
+							progressDialog.cancel();
+						}
+					});
+
+					new ConnectionChooserDialog(activity, database, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
 						public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 						{
+							progressDialog.show();
+
 							CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
 							{
 								@Override
 								public void onConnect(CoolSocket.Client client)
 								{
-									Looper.prepare();
-
 									new Thread()
 									{
 										@Override
@@ -82,24 +111,28 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 											super.run();
 
 											try {
-												UpdateUtils.receiveUpdate(context);
+												UpdateUtils.receiveUpdate(activity, device, interrupter);
 
-												if (mThisDialog != null)
+												if (mThisDialog != null && !interrupter.interrupted())
 													mThisDialog.cancel();
 											} catch (Exception e) {
 												e.printStackTrace();
+											} finally {
+												progressDialog.cancel();
 											}
 										}
 									}.start();
 
 									try {
+										Thread.sleep(1500);
+
 										CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 										activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
 
 										CoolSocket.ActiveConnection.Response response = activeConnection.receive();
 									} catch (Exception e) {
 										e.printStackTrace();
-										Toast.makeText(context, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+										progressDialog.cancel();
 									}
 								}
 							});
@@ -116,7 +149,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 			if (connections.size() > 0)
 				addressText.setText(connections.size() > 1 ?
-						context.getResources().getQuantityString(R.plurals.text_availableConnections,
+						activity.getResources().getQuantityString(R.plurals.text_availableConnections,
 								connections.size(),
 								connections.size()) : connections.get(0).ipAddress);
 
@@ -203,7 +236,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
+					AlertDialog.Builder askPermission = new AlertDialog.Builder(activity);
 
 					askPermission.setTitle(R.string.ques_removeDevice);
 					askPermission.setMessage(R.string.text_removeDeviceSummary);

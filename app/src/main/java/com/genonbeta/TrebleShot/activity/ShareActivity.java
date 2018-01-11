@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
@@ -123,39 +124,58 @@ public class ShareActivity extends Activity
 
 					new Thread()
 					{
+						private boolean mConnected = false;
+						private long mStartTime = System.currentTimeMillis();
+						private String mRemoteAddress;
+
 						@Override
 						public void run()
 						{
 							super.run();
 
-							long startTime = System.currentTimeMillis();
-							boolean connected = mDeviceListFragment.isConnectedToNetwork(hotspotNetwork);
-
-							if (!connected)
+							if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork))
 								mDeviceListFragment.toggleConnection(hotspotNetwork);
 
-							while (!(connected = mDeviceListFragment.isConnectedToNetwork(hotspotNetwork) && NetworkUtils.ping("192.168.43.1", 500))) {
+							while (mRemoteAddress == null) {
+								int passedTime = (int) (System.currentTimeMillis() - mStartTime);
+
+								for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
+									if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
+										String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
+
+										if (NetworkUtils.ping(remoteAddress, 1000)) {
+											mRemoteAddress = remoteAddress;
+											break;
+										}
+									}
+								}
+
 								try {
 									Thread.sleep(1000);
-
-									int passedTime = (int) (System.currentTimeMillis() - startTime);
-
 									mProgressDialog.setProgress(passedTime / 1000);
-
-									if (passedTime > 20000 || interrupter.interrupted())
-										break;
 								} catch (InterruptedException e) {
 									e.printStackTrace();
+								} finally {
+									if (passedTime > 20000 || interrupter.interrupted())
+										break;
 								}
 							}
 
-							if (connected) {
+							if (mRemoteAddress != null) {
 								try {
-									NetworkDeviceInfoLoader.load(true, mDatabase, "192.168.43.1", new NetworkDeviceInfoLoader.OnDeviceRegisteredListener()
+									NetworkDeviceInfoLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceInfoLoader.OnDeviceRegisteredErrorListener()
 									{
+										@Override
+										public void onError(Exception error)
+										{
+											mProgressDialog.cancel();
+										}
+
 										@Override
 										public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
 										{
+											mConnected = true;
+
 											runOnUiThread(new Runnable()
 											{
 												@Override
@@ -169,9 +189,16 @@ public class ShareActivity extends Activity
 									});
 								} catch (ConnectException e) {
 									e.printStackTrace();
-									mProgressDialog.cancel();
 								}
 							}
+
+							if (!mConnected) {
+								mProgressDialog.cancel();
+								createSnackbar(R.string.mesg_connectionFailure)
+										.show();
+							}
+
+							// We can't add dialog outside of the else statement as it may close other dialogs as well
 						}
 					}.start();
 				} else
@@ -246,24 +273,27 @@ public class ShareActivity extends Activity
 
 	protected void createFolderStructure(Interrupter interrupter, ProgressDialog dialog, File file, String folderName)
 	{
-		for (File thisFile : file.listFiles()) {
-			if (interrupter.interrupted())
-				break;
+		File[] files = file.listFiles();
 
-			if (thisFile.isDirectory()) {
-				createFolderStructure(interrupter, dialog, thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName());
-				continue;
+		if (files != null)
+			for (File thisFile : files) {
+				if (interrupter.interrupted())
+					break;
+
+				if (thisFile.isDirectory()) {
+					createFolderStructure(interrupter, dialog, thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName());
+					continue;
+				}
+
+				dialog.setMax(dialog.getMax() + 1);
+				dialog.setProgress(dialog.getProgress() + 1);
+
+				try {
+					mFiles.add(new SelectableStream(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-
-			dialog.setMax(dialog.getMax() + 1);
-			dialog.setProgress(dialog.getProgress() + 1);
-
-			try {
-				mFiles.add(new SelectableStream(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	protected Snackbar createSnackbar(int resId, String... objects)

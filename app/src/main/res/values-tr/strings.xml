@@ -263,5 +263,10 @@
     <string name="butn_checkAll">Hepsini şeç</string>
     <string name="butn_undoAll">Geri al</string>
     <string name="text_selectableNotCheckedNotice">Seçili olmayan nesneler atlanacak</string>
-    <string name="text_previewAndEditList">"Listeyi Önizle ve Düzenle</string>
+    <string name="text_previewAndEditList">Listeyi Önizle ve Düzenle</string>
+    <string name="text_fileRoot">Dosya kökü</string>
+    <string name="mesg_versionNotSupported">Bu cihaz artık desteklenmeyen eski bir sürüm kullanıyor. Lütfen ilk önce güncelleyin ve cihazları yeniden tarayın.</string>
+    <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
+    <string name="mesg_connectionUpdated">İletişim \"%s\" bağlantısı üzerinden gerçekleştirilecek</string>
+    <string name="mesg_ongoingUpdateDownload">Güncelleme indiriliyor</string>
 </resources>
