@@ -4,15 +4,30 @@
               android:layout_height="fill_parent"
               android:gravity="center_vertical"
               android:orientation="horizontal"
-              android:padding="15dip">
+              android:padding="15dp">
 
-    <ImageView
-        android:id="@+id/list_transaction_group_image_device"
-        android:layout_width="50dip"
-        android:layout_height="50dip"
-        android:layout_marginEnd="15dp"
-        android:layout_marginRight="15dp"
-        android:contentDescription="@string/text_image"/>
+    <FrameLayout
+        android:id="@+id/layout_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="23dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="23dp"
+        android:layout_marginStart="8dp">
+
+        <ImageView
+            android:id="@+id/list_transaction_group_image_device"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:contentDescription="@string/text_image"/>
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/state_selected_image"
+            android:layout_gravity="center"/>
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
 
@@ -46,9 +47,11 @@ public class TimeUtils
 	{
 		int differ = (int) ((System.currentTimeMillis() - time) / 1000);
 
-		if (differ < 60)
+		if (differ == 0)
+			return context.getString(R.string.text_timeJustNow);
+		else if (differ < 60)
 			return context.getResources().getQuantityString(R.plurals.text_secondsAgo, differ, differ);
-		if (differ < 3600)
+		else if (differ < 3600)
 			return context.getResources().getQuantityString(R.plurals.text_minutesAgo, differ / 60, differ / 60);
 
 		return context.getString(R.string.text_longAgo);

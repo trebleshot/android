@@ -1,20 +1,19 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.Shareable;
-import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
@@ -84,16 +83,34 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 			else
 				referencedDirectoryList.add(Environment.getExternalStorageDirectory());
 
+			folders.add(new FileHolder(mContext.getString(R.string.text_fileRoot), getContext().getString(R.string.text_mediaDirectory), new File("."), true));
+
 			for (File mediaDir : referencedDirectoryList) {
-				String mediaName = mediaDir.getName();
-				String[] splitName = mediaDir.getAbsolutePath().split(File.separator);
+				FileHolder fileHolder = new FileHolder(mediaDir.getName(), getContext().getString(R.string.text_mediaDirectory), mediaDir, true);
+				String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
-				if (splitName.length >= 4 && splitName[2].equals("emulated"))
-					mediaName = getContext().getString(R.string.text_emulatedMediaDirectory, splitName[3]);
-				else if (splitName.length >= 3)
-					mediaName = splitName[2];
+				if (splitPath.length >= 2
+						&& splitPath[1].equals("storage")
+						&& splitPath[splitPath.length - 1].equals(getContext().getPackageName())) {
+					if (splitPath.length >= 4 && splitPath[2].equals("emulated"))
+					{
+						File file = new File(buildPath(splitPath, 4));
 
-				folders.add(new FileHolder(mediaName, getContext().getString(R.string.text_mediaDirectory), mediaDir, true));
+						if (file.canWrite()) {
+							fileHolder.file = file;
+							fileHolder.friendlyName = getContext().getString(R.string.text_emulatedMediaDirectory, splitPath[3]);
+						}
+					} else if (splitPath.length >= 3) {
+						File file = new File(buildPath(splitPath, 3));
+
+						if (file.canWrite()) {
+							fileHolder.file = file;
+							fileHolder.friendlyName = splitPath[2];
+						}
+					}
+				}
+
+				folders.add(fileHolder);
 			}
 		}
 
@@ -108,6 +125,19 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 	{
 		mList.clear();
 		mList.addAll(passedItem);
+	}
+
+	public String buildPath(String[] splitPath, int count)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; (i < count && i < splitPath.length); i ++)
+		{
+			stringBuilder.append(File.separator);
+			stringBuilder.append(splitPath[i]);
+		}
+
+		return stringBuilder.toString();
 	}
 
 	@Override
@@ -149,14 +179,17 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_file, parent, false);
 
-		ImageView typeImage = convertView.findViewById(R.id.image);
-		TextView fileNameText = convertView.findViewById(R.id.text);
-		TextView sizeText = convertView.findViewById(R.id.text2);
-		FileHolder fileInfo = (FileHolder) getItem(position);
+		FileHolder holder = (FileHolder) getItem(position);
 
-		typeImage.setVisibility(fileInfo.isFolder ? View.VISIBLE : View.GONE);
-		fileNameText.setText(fileInfo.friendlyName);
-		sizeText.setText(fileInfo.fileInfo);
+		ImageView typeImage = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
+		TextView text3 = convertView.findViewById(R.id.text3);
+
+		typeImage.setImageResource(holder.isFolder ? R.drawable.ic_folder_black_24dp : R.drawable.ic_whatshot_white_24dp);
+		text1.setText(holder.friendlyName);
+		text2.setText(holder.fileInfo);
+		text3.setText(TimeUtils.getTimeAgo(getContext(), holder.file.lastModified()));
 
 		return convertView;
 	}

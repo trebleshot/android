@@ -6,24 +6,22 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.FileProvider;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
-import com.genonbeta.TrebleShot.app.TransactionService;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
-import com.genonbeta.TrebleShot.service.ClientService;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.ServerService;
 
 import java.io.File;
 
@@ -73,7 +71,7 @@ public class NotificationUtils
 		return this;
 	}
 
-	public DynamicNotification getCommunicationServiceNotification()
+	public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID);
 
@@ -82,6 +80,8 @@ public class NotificationUtils
 				.setContentTitle(mContext.getString(R.string.text_communicationServiceRunning))
 				.setContentText(mContext.getString(R.string.text_communicationServiceStop))
 				.setAutoCancel(true)
+				.addAction(R.drawable.ic_whatshot_white_24dp, mContext.getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),
+						PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE), 0))
 				.setContentIntent(PendingIntent.getService(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, CommunicationService.class)
 						.setAction(CommunicationService.ACTION_END_SESSION), 0));
 
@@ -90,11 +90,16 @@ public class NotificationUtils
 
 	public int getNotificationSettings()
 	{
-		int makeSound = (mPreferences.getBoolean("notification_sound", false)) ? NotificationCompat.DEFAULT_SOUND : 0;
-		int vibrate = (mPreferences.getBoolean("notification_vibrate", false)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
+		int makeSound = (mPreferences.getBoolean("notification_sound", true)) ? NotificationCompat.DEFAULT_SOUND : 0;
+		int vibrate = (mPreferences.getBoolean("notification_vibrate", true)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
 		int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
 
 		return makeSound | vibrate | light;
+	}
+
+	public SharedPreferences getPreferences()
+	{
+		return mPreferences;
 	}
 
 	public DynamicNotification notifyConnectionRequest(NetworkDevice device)
@@ -120,7 +125,7 @@ public class NotificationUtils
 				.setSmallIcon(android.R.drawable.stat_notify_error)
 				.setContentTitle(mContext.getString(R.string.text_connectionPermission))
 				.setContentText(mContext.getString(R.string.ques_allowDeviceToConnect))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getBroadcast(mContext, AppUtils.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
@@ -154,7 +159,7 @@ public class NotificationUtils
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(mContext.getString(R.string.ques_receiveFile))
 				.setContentText(message)
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0))
@@ -179,9 +184,9 @@ public class NotificationUtils
 		boolean isIncoming = TransactionObject.Type.INCOMING.equals(transaction.type);
 
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
-		Intent cancelIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class);
+		Intent cancelIntent = new Intent(mContext, CommunicationService.class);
 
-		cancelIntent.setAction(TransactionService.ACTION_CANCEL_JOB);
+		cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
 		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
 		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
 		cancelIntent.putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
@@ -190,7 +195,7 @@ public class NotificationUtils
 				.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
 				.setContentTitle(transaction.friendlyName)
 				.setContentText(mContext.getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
@@ -200,14 +205,16 @@ public class NotificationUtils
 		return notification;
 	}
 
-	public DynamicNotification notifyClipboardRequest(NetworkDevice device, CharSequence text)
+	public DynamicNotification notifyClipboardRequest(NetworkDevice device, TextStreamObject object)
 	{
-		DynamicNotification notification = new DynamicNotification(mContext, mManager, AppUtils.getUniqueNumber());
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, object.id);
 
-		Intent acceptIntent = new Intent(mContext, CommunicationService.class);
+		Intent acceptIntent = new Intent(mContext, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_CLIPBOARD)
+				.putExtra(CommunicationService.EXTRA_CLIPBOARD_ID, object.id)
+				.putExtra(EXTRA_NOTIFICATION_ID, object.id);
+
 		Intent activityIntent = new Intent(mContext, TextEditorActivity.class);
-
-		acceptIntent.setAction(CommunicationService.ACTION_CLIPBOARD).putExtra(EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
 
@@ -219,7 +226,7 @@ public class NotificationUtils
 
 		activityIntent
 				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-				.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, text)
+				.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
 				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
 		notification
@@ -228,9 +235,9 @@ public class NotificationUtils
 				.setContentTitle(mContext.getString(R.string.ques_copyToClipboard))
 				.setContentText(mContext.getString(R.string.text_textReceived))
 				.setStyle(new NotificationCompat.BigTextStyle()
-						.bigText(text)
+						.bigText(object.text)
 						.setBigContentTitle(mContext.getString(R.string.ques_copyToClipboard)))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), activityIntent, 0))
 				.setDefaults(getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
@@ -245,20 +252,25 @@ public class NotificationUtils
 	public DynamicNotification notifyFileReceived(TransactionObject transactionObject, NetworkDevice device, File file)
 	{
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transactionObject.groupId);
-		Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-		openIntent.setDataAndType(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-				? FileProvider.getUriForFile(mContext, mContext.getApplicationContext().getPackageName() + ".provider", file)
-				: Uri.fromFile(file), transactionObject.fileMimeType)
-				.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+		try {
+			Intent openIntent = new Intent(Intent.ACTION_VIEW);
+
+			openIntent.setDataAndType(FileUtils.getUriForFile(mContext, file, openIntent), transactionObject.fileMimeType);
+			notification.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), openIntent, 0));
+		} catch (Exception e) {
+		}
 
 		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(transactionObject.friendlyName)
 				.setContentText(mContext.getString(R.string.text_fileReceived))
-				.setContentInfo(device.user)
+				.setContentInfo(device.nickname)
 				.setAutoCancel(true)
-				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), openIntent, 0));
+				.addAction(R.drawable.ic_folder_white_24dp, mContext.getString(R.string.butn_showFiles),
+						PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, HomeActivity.class)
+								.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+								.putExtra(HomeActivity.EXTRA_FILE_PATH, file.getParent()), 0));
 
 		return notification.show();
 	}
@@ -325,10 +337,9 @@ public class NotificationUtils
 
 	public DynamicNotification notifyStuckThread(TransactionObject transaction)
 	{
-		boolean isIncoming = TransactionObject.Type.INCOMING.equals(transaction.type);
-
 		DynamicNotification notification = new DynamicNotification(mContext, mManager, transaction.groupId);
-		Intent killIntent = new Intent(mContext, isIncoming ? ServerService.class : ClientService.class).setAction(TransactionService.ACTION_CANCEL_KILL);
+		Intent killIntent = new Intent(mContext, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_CANCEL_KILL);
 
 		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
 				.setSmallIcon(android.R.drawable.stat_sys_warning)

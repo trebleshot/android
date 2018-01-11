@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.view.View;
-import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;

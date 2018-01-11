@@ -115,7 +115,7 @@
     <string name="text_textEditor">Tekstbehandler</string>
     <string name="butn_done">Ferdig</string>
     <string name="text_empty">(tom)</string>
-    <string name="text_shareText">Del tekst</string>
+    <string name="text_textStream">Del tekst</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Ventende overføringer</string>
     <string name="text_stopping">Stopper!</string>

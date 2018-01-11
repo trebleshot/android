@@ -1,13 +1,16 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,10 +21,10 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
@@ -45,185 +48,227 @@ import java.util.concurrent.TimeoutException;
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
 	private ArrayList<NetworkDevice.Connection> mConnections = new ArrayList<>();
-	private NetworkDevice mNetworkDevice;
+	private ArrayList<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
+	private AlertDialog mDialog;
 	private AccessDatabase mDatabase;
+	private NetworkDevice mNetworkDevice;
+	private ConnectionListAdapter mAdapter;
 	private OnDeviceSelectedListener mDeviceSelectedListener;
+	private Activity mActivity;
 
-	public ConnectionChooserDialog(Context context, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
+	public ConnectionChooserDialog(Activity activity, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
 	{
-		super(context);
+		super(activity);
 
+		mAdapter = new ConnectionListAdapter();
+		mActivity = activity;
 		mDatabase = database;
 		mNetworkDevice = networkDevice;
 		mDeviceSelectedListener = listener;
+
+		setAdapter(mAdapter, new DialogInterface.OnClickListener()
+		{
+			@Override
+			public void onClick(DialogInterface dialog, int which)
+			{
+				mDeviceSelectedListener.onDeviceSelected(mConnections.get(which), mConnections);
+			}
+		});
 	}
 
 	@Override
 	public AlertDialog show()
 	{
-		mConnections.clear();
-
-		mConnections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId)
-				.setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class));
+		mAdapter.notifyDataSetChanged();
 
 		if (mConnections.size() > 0) {
 			setMessage(null);
-
-			setAdapter(new ConnectionListAdapter(), new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					mDeviceSelectedListener.onDeviceSelected(mConnections.get(which), mConnections);
-				}
-			});
-
-			setNeutralButton(R.string.butn_feelLucky, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i)
-				{
-					final ProgressDialog feelLucky = new ProgressDialog(getContext());
-					final Interrupter interrupter = new Interrupter();
-
-					feelLucky.setTitle(R.string.text_feelLuckyOngoing);
-					feelLucky.setMax(mConnections.size());
-					feelLucky.setCancelable(false);
-					feelLucky.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-					feelLucky.setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i)
-						{
-							interrupter.interrupt();
-						}
-					});
-
-					feelLucky.show();
-
-					new Thread()
-					{
-						@Override
-						public void run()
-						{
-							super.run();
-
-							Looper.prepare();
-
-							@SuppressLint("UseSparseArrays")
-							HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
-
-							for (NetworkDevice.Connection connection : mConnections) {
-								if (interrupter.interrupted())
-									break;
-
-								feelLucky.setProgress(feelLucky.getProgress() + 1);
-
-								final NetworkDevice.Connection finalConnection = connection;
-
-								Integer calculatedTime = CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
-								{
-									@Override
-									public void onConnect(CoolSocket.Client client)
-									{
-										int outTime = -1;
-
-										try {
-											long startTime = System.currentTimeMillis();
-											final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
-
-											interrupter.useCloser(new Interrupter.Closer()
-											{
-												@Override
-												public void onClose()
-												{
-													try {
-														activeConnection.getSocket().close();
-													} catch (IOException e) {
-														e.printStackTrace();
-													}
-												}
-											});
-
-											activeConnection.reply(null);
-											activeConnection.receive();
-
-											outTime = (int) (System.currentTimeMillis() - startTime);
-										} catch (IOException e) {
-											e.printStackTrace();
-										} catch (JSONException e) {
-											e.printStackTrace();
-										} catch (TimeoutException e) {
-											e.printStackTrace();
-										} finally {
-											client.setReturn(outTime);
-										}
-									}
-								}, Integer.class);
-
-								if (calculatedTime != null && calculatedTime > -1)
-									calculatedConnections.put(calculatedTime, connection);
-							}
-
-							feelLucky.cancel();
-
-							if (!interrupter.interrupted())
-								if (calculatedConnections.size() < 1) {
-									AlertDialog.Builder sorryDialog = new AlertDialog.Builder(getContext());
-
-									sorryDialog.setTitle(R.string.text_error);
-									sorryDialog.setMessage(R.string.text_feelLuckyFailed);
-									sorryDialog.setNegativeButton(R.string.butn_close, null);
-									sorryDialog.setPositiveButton(R.string.butn_connectionList, new DialogInterface.OnClickListener()
-									{
-										@Override
-										public void onClick(DialogInterface dialogInterface, int i)
-										{
-											show();
-										}
-									});
-
-									sorryDialog.show();
-								} else {
-									ArrayList<Integer> comparedList = new ArrayList<>(calculatedConnections.keySet());
-
-									Collections.sort(comparedList, new Comparator<Integer>()
-									{
-										@Override
-										public int compare(Integer integer1, Integer integer2)
-										{
-											return integer1 < integer2 ? -1 : 1;
-										}
-									});
-
-									mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), mConnections);
-								}
-
-							Looper.loop();
-						}
-					}.start();
-				}
-			});
+			setNeutralButton(R.string.butn_feelLucky, null);
 		} else
 			setMessage(R.string.text_noNetworkAvailable);
 
 		setTitle(R.string.text_availableNetworks);
 		setNegativeButton(R.string.butn_cancel, null);
+		setPositiveButton(R.string.text_refresh, null);
 
-		setPositiveButton(R.string.text_refresh, new DialogInterface.OnClickListener()
+		mDialog = super.show();
+
+		startRefreshing();
+
+		mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
 		{
 			@Override
-			public void onClick(DialogInterface dialogInterface, int i)
+			public void onClick(View v)
 			{
 				getContext().startService(new Intent(getContext(), DeviceScannerService.class)
 						.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
-				show();
 			}
 		});
 
+		mDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				final ProgressDialog feelLucky = new ProgressDialog(getContext());
+				final Interrupter interrupter = new Interrupter();
 
-		return super.show();
+				feelLucky.setTitle(R.string.text_feelLuckyOngoing);
+				feelLucky.setMax(mConnections.size());
+				feelLucky.setCancelable(false);
+				feelLucky.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+				feelLucky.setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i)
+					{
+						interrupter.interrupt();
+					}
+				});
+
+				feelLucky.show();
+
+				new Thread()
+				{
+					@Override
+					public void run()
+					{
+						super.run();
+
+						Looper.prepare();
+
+						@SuppressLint("UseSparseArrays") final HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
+
+						for (NetworkDevice.Connection connection : mConnections) {
+							if (interrupter.interrupted())
+								break;
+
+							feelLucky.setProgress(feelLucky.getProgress() + 1);
+
+							final NetworkDevice.Connection finalConnection = connection;
+
+							if (!NetworkUtils.ping(connection.ipAddress, 500))
+								continue;
+
+							Integer calculatedTime = CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+							{
+								@Override
+								public void onConnect(CoolSocket.Client client)
+								{
+									int outTime = -1;
+
+									try {
+										long startTime = System.currentTimeMillis();
+										final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
+
+										interrupter.useCloser(new Interrupter.Closer()
+										{
+											@Override
+											public void onClose()
+											{
+												try {
+													activeConnection.getSocket().close();
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+											}
+										});
+
+										activeConnection.reply(null);
+										activeConnection.receive();
+
+										outTime = (int) (System.currentTimeMillis() - startTime);
+									} catch (IOException e) {
+										e.printStackTrace();
+									} catch (JSONException e) {
+										e.printStackTrace();
+									} catch (TimeoutException e) {
+										e.printStackTrace();
+									} finally {
+										client.setReturn(outTime);
+									}
+								}
+							}, Integer.class);
+
+							if (calculatedTime != null && calculatedTime > -1)
+								calculatedConnections.put(calculatedTime, connection);
+						}
+
+						feelLucky.cancel();
+
+						if (!interrupter.interrupted())
+							if (calculatedConnections.size() < 1) {
+								AlertDialog.Builder sorryDialog = new AlertDialog.Builder(getContext());
+
+								sorryDialog.setTitle(R.string.text_error);
+								sorryDialog.setMessage(R.string.text_feelLuckyFailed);
+								sorryDialog.setNegativeButton(R.string.butn_close, null);
+
+								sorryDialog.show();
+							} else {
+								final ArrayList<Integer> comparedList = new ArrayList<>(calculatedConnections.keySet());
+
+								Collections.sort(comparedList, new Comparator<Integer>()
+								{
+									@Override
+									public int compare(Integer integer1, Integer integer2)
+									{
+										return integer1 < integer2 ? -1 : 1;
+									}
+								});
+
+								if (mActivity != null)
+									mActivity.runOnUiThread(new Runnable()
+									{
+										@Override
+										public void run()
+										{
+											mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), mConnections);
+										}
+									});
+
+								mDialog.cancel();
+							}
+
+						Looper.loop();
+					}
+				}.start();
+			}
+		});
+
+		return mDialog;
+	}
+
+	public void startRefreshing()
+	{
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (mActivity != null && mDialog != null && mDialog.isShowing()) {
+					mActivity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							boolean previousState = mConnections.size() > 0;
+
+							mAdapter.notifyDataSetChanged();
+
+							if (previousState != (mConnections.size() > 0)) {
+								if (mDialog != null && mDialog.isShowing())
+									mDialog.cancel();
+
+								show();
+							}
+						}
+					});
+
+					startRefreshing();
+				}
+			}
+		}, 2000);
 	}
 
 	public abstract static class OnDeviceSelectedListener
@@ -233,12 +278,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 	private class ConnectionListAdapter extends BaseAdapter
 	{
-		private ArrayList<AddressedInterface> mNetworkInterfaces;
-
 		public ConnectionListAdapter()
-		{
-			mNetworkInterfaces = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
-		}
+		{}
 
 		@Override
 		public int getCount()
@@ -278,7 +319,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 					break;
 				}
 
-			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.textColorPrimary));
+			textView1.setTextColor(ContextCompat.getColor(getContext(), accessible ? R.color.colorAccent : R.color.unavailableConnection));
 
 			int availableName = TextUtils.getAdapterName(address);
 
@@ -291,6 +332,21 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 			textView3.setText(TimeUtils.getTimeAgo(getContext(), address.lastCheckedDate));
 
 			return convertView;
+		}
+
+		@Override
+		public void notifyDataSetChanged()
+		{
+			mConnections.clear();
+			mNetworkInterfaces.clear();
+
+			mConnections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId)
+					.setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class));
+
+			mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
+
+			super.notifyDataSetChanged();
 		}
 	}
 }

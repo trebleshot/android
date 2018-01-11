@@ -17,6 +17,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.Selectable;
+import com.genonbeta.TrebleShot.object.Shareable;
+
+import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -25,6 +29,7 @@ import com.genonbeta.TrebleShot.R;
 
 public class PowerfulActionMode extends Toolbar
 {
+	private ArrayList<Shareable> mList = new ArrayList<>();
 	private View mContainerLayout;
 	private MenuInflater mMenuInflater;
 	private ArrayMap<Callback, Holder> mActiveActionModes = new ArrayMap<>();
@@ -81,11 +86,6 @@ public class PowerfulActionMode extends Toolbar
 				});
 	}
 
-	public boolean hasActive(Callback callback)
-	{
-		return mActiveActionModes.containsKey(callback);
-	}
-
 	public void finish(@NonNull final Callback callback)
 	{
 		final Holder holder = mActiveActionModes.get(callback);
@@ -117,14 +117,34 @@ public class PowerfulActionMode extends Toolbar
 		}
 	}
 
+	public boolean hasActive(Callback callback)
+	{
+		return mActiveActionModes.containsKey(callback);
+	}
+
 	public View getContainerLayout()
 	{
 		return mContainerLayout;
 	}
 
+	public ArrayList<Shareable> getList()
+	{
+		return mList;
+	}
+
 	public MenuInflater getMenuInflater()
 	{
 		return mMenuInflater;
+	}
+
+	public boolean isItemSelected(Shareable shareable)
+	{
+		return mList.contains(shareable);
+	}
+
+	public boolean setItemSelected(Shareable shareable, boolean selected)
+	{
+		return (selected) ?  mList.add(shareable) : mList.remove(shareable);
 	}
 
 	public boolean reload(final Callback callback)

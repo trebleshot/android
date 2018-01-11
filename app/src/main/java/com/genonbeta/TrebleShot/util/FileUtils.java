@@ -1,16 +1,20 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.content.FileProvider;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.FileNameMap;
@@ -20,18 +24,6 @@ import java.util.Locale;
 
 public class FileUtils
 {
-	public static File getApplicationDirectory(Context context)
-	{
-		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-		File storagePath = new File(sharedPreferences.getString("storage_path", defaultPath));
-
-		if ((!storagePath.exists() && storagePath.mkdirs()) || storagePath.canWrite())
-			return storagePath;
-
-		return new File(defaultPath);
-	}
-
 	public static void copyFile(File source, File destination) throws IOException
 	{
 		FileChannel sourceChannel = null;
@@ -46,24 +38,24 @@ public class FileUtils
 		destChannel.close();
 	}
 
+	public static File getApplicationDirectory(Context context)
+	{
+		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
+		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		File storagePath = new File(sharedPreferences.getString("storage_path", defaultPath));
+
+		if ((!storagePath.exists() && storagePath.mkdirs()) || storagePath.canWrite())
+			return storagePath;
+
+		return new File(defaultPath);
+	}
+
 	public static String getFileContentType(String fileUrl)
 	{
 		FileNameMap nameMap = URLConnection.getFileNameMap();
 		String fileType = nameMap.getContentTypeFor(fileUrl);
 
 		return (fileType == null) ? "*/*" : fileType;
-	}
-
-	public static File getSavePath(Context context, TransactionObject.Group group)
-	{
-		if (group.savePath != null) {
-			File customPath = new File(group.savePath);
-
-			if ((!customPath.exists() && customPath.mkdirs()) || customPath.canWrite())
-				return customPath;
-		}
-
-		return FileUtils.getApplicationDirectory(context);
 	}
 
 	public static File getIncomingTransactionFile(Context context, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
@@ -80,6 +72,18 @@ public class FileUtils
 					throw new IOException("File cannot be created or you don't have permission write on it");
 
 		return file;
+	}
+
+	public static File getSavePath(Context context, TransactionObject.Group group)
+	{
+		if (group.savePath != null) {
+			File customPath = new File(group.savePath);
+
+			if ((!customPath.exists() && customPath.mkdirs()) || customPath.canWrite())
+				return customPath;
+		}
+
+		return FileUtils.getApplicationDirectory(context);
 	}
 
 	public static File getUniqueFile(File file, boolean tryActualFile)
@@ -101,6 +105,16 @@ public class FileUtils
 		}
 
 		return null;
+	}
+
+	public static Uri getUriForFile(Context context, File file, @Nullable Intent intent)
+	{
+		if (intent != null)
+			intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+				? FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file)
+				: Uri.fromFile(file);
 	}
 
 	public static String sizeExpression(long bytes, boolean notUseByte)

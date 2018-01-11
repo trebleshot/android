@@ -28,7 +28,7 @@
 	<item quantity="other">%d filer</item>
 </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="one">Akkurat nå</item>
+	<item quantity="zero">Akkurat nå</item>
 	<item quantity="other">%d sekunder siden</item>
 </plurals>
     <plurals name="text_minutesAgo">

@@ -19,6 +19,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -39,15 +40,15 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.ServerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -94,13 +95,14 @@ public class TransactionActivity extends Activity implements
 	};
 
 	private RecyclerView mRecyclerView;
-	private ImageView mHomeButton;
+	private AppCompatImageButton mHomeButton;
 	private LinearLayoutManager mLayoutManager;
 	private PathResolverRecyclerAdapter mAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
 	private PowerfulActionMode mPowafulActionMode;
 	private NavigationView mNavigationView;
 	private MenuItem mInfoMenu;
+	private MenuItem mStartMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -173,7 +175,7 @@ public class TransactionActivity extends Activity implements
 				mInfoDialog = new TransactionGroupInfoDialog(this, mDatabase, mGroup);
 
 				if (getSupportActionBar() != null) {
-					getSupportActionBar().setTitle(mDevice.user);
+					getSupportActionBar().setTitle(mDevice.nickname);
 					getSupportActionBar().setSubtitle(TimeUtils.getTimeAgo(getApplicationContext(), mGroup.dateCreated));
 				}
 
@@ -187,8 +189,8 @@ public class TransactionActivity extends Activity implements
 				TextView deviceNameText = view.findViewById(R.id.header_transaction_text1);
 				TextView versionText = view.findViewById(R.id.header_transaction_text2);
 
-				String firstLetters = TextUtils.getFirstLetters(mDevice.user, 1);
-				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.colorTextDrawable), 100);
+				String firstLetters = TextUtils.getFirstLetters(mDevice.nickname, 1);
+				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 				layoutView.setOnClickListener(new View.OnClickListener()
 				{
@@ -204,8 +206,8 @@ public class TransactionActivity extends Activity implements
 				});
 
 				imageView.setImageDrawable(drawable);
-				deviceNameText.setText(mDevice.user);
-				versionText.setText(mDevice.buildName);
+				deviceNameText.setText(mDevice.nickname);
+				versionText.setText(mDevice.versionName);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -228,7 +230,7 @@ public class TransactionActivity extends Activity implements
 							final String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
 
 							if (selectedPath.equals(mGroup.savePath) || ((mGroup.savePath == null || mGroup.savePath.length() == 0 || new File(mGroup.savePath).canWrite()) && selectedPath.equals(FileUtils.getApplicationDirectory(getApplicationContext()).getAbsolutePath()))) {
-								Snackbar.make(findViewById(android.R.id.content), R.string.mesg_pathSameError, Snackbar.LENGTH_SHORT).show();
+								createSnackbar(R.string.mesg_pathSameError).show();
 							} else {
 
 								AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
@@ -333,6 +335,8 @@ public class TransactionActivity extends Activity implements
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		mInfoMenu = menu.findItem(R.id.actions_transaction_show_info);
+		mStartMenu = menu.findItem(R.id.actions_transaction_resume_all);
+
 		updateCalculations();
 
 		return super.onPrepareOptionsMenu(menu);
@@ -344,8 +348,8 @@ public class TransactionActivity extends Activity implements
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transaction_resume_all) {
-			AppUtils.startForegroundService(this, new Intent(this, ServerService.class)
-					.setAction(ServerService.ACTION_START_RECEIVING)
+			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+					.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
 					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();
@@ -406,6 +410,9 @@ public class TransactionActivity extends Activity implements
 				{
 					mGroup.connectionAdapter = connection.adapterName;
 					mDatabase.publish(mGroup);
+
+					createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
+							.show();
 				}
 			}).show();
 		} else
@@ -431,6 +438,11 @@ public class TransactionActivity extends Activity implements
 	{
 		mTransactionFragment.getAdapter().setGroupId(mGroup.groupId);
 		mTransactionFragment.getAdapter().setPath(path);
+	}
+
+	private Snackbar createSnackbar(int resId, String... objects)
+	{
+		return Snackbar.make(mTransactionFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	@Override
@@ -465,7 +477,7 @@ public class TransactionActivity extends Activity implements
 			@Override
 			public void run()
 			{
-				Snackbar.make(findViewById(android.R.id.content), R.string.mesg_pathSaved, Snackbar.LENGTH_SHORT).show();
+				createSnackbar(R.string.mesg_pathSaved).show();
 			}
 		});
 	}
@@ -485,6 +497,9 @@ public class TransactionActivity extends Activity implements
 
 					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
 					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
+
+					if (mStartMenu != null)
+						mStartMenu.setVisible(mInfoDialog.getIndex().incomingCount > 0);
 				}
 			});
 		}

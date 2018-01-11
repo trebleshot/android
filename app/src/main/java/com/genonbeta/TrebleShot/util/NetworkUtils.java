@@ -9,6 +9,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,23 +18,23 @@ public class NetworkUtils
 {
 	public static String bytesToHex(byte[] bytes)
 	{
-		StringBuilder sbuf = new StringBuilder();
+		StringBuilder stringBuilder = new StringBuilder();
 
 		for (byte aByte : bytes) {
 			int intVal = aByte & 0xff;
 
 			if (intVal < 0x10)
-				sbuf.append("0");
+				stringBuilder.append("0");
 
-			sbuf.append(Integer.toHexString(intVal).toUpperCase());
+			stringBuilder.append(Integer.toHexString(intVal).toUpperCase());
 		}
-		return sbuf.toString();
+		return stringBuilder.toString();
 	}
 
-	public static byte[] getUTF8Bytes(String str)
+	public static byte[] getUTF8Bytes(String string)
 	{
 		try {
-			return str.getBytes("UTF-8");
+			return string.getBytes("UTF-8");
 		} catch (Exception ex) {
 			return null;
 		}
@@ -76,28 +77,28 @@ public class NetworkUtils
 		ArrayList<String> macAddressList = new ArrayList<>();
 
 		try {
-			List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+			List<NetworkInterface> interfaceList = Collections.list(NetworkInterface.getNetworkInterfaces());
 
-			for (NetworkInterface intf : interfaces) {
+			for (NetworkInterface networkInterface : interfaceList) {
 				if (interfaceName != null) {
-					if (!intf.getName().equalsIgnoreCase(interfaceName))
+					if (!networkInterface.getName().equalsIgnoreCase(interfaceName))
 						continue;
 				}
 
-				byte[] mac = intf.getHardwareAddress();
+				byte[] hardwareAddress = networkInterface.getHardwareAddress();
 
-				if (mac == null)
+				if (hardwareAddress == null)
 					continue;
 
-				StringBuilder buf = new StringBuilder();
+				StringBuilder stringBuilder = new StringBuilder();
 
-				for (byte aMac : mac)
-					buf.append(String.format("%02X:", aMac));
+				for (byte partedHardwareAddress : hardwareAddress)
+					stringBuilder.append(String.format("%02X:", partedHardwareAddress));
 
-				if (buf.length() > 0)
-					buf.deleteCharAt(buf.length() - 1);
+				if (stringBuilder.length() > 0)
+					stringBuilder.deleteCharAt(stringBuilder.length() - 1);
 
-				macAddressList.add(buf.toString());
+				macAddressList.add(stringBuilder.toString());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -116,10 +117,10 @@ public class NetworkUtils
 			for (NetworkInterface interfaceInstance : interfaceList) {
 				boolean avoidedInterface = false;
 
-				for (String match : avoidedInterfaces) {
-					if (interfaceInstance.getDisplayName().contains(match))
-						avoidedInterface = true;
-				}
+				if (avoidedInterfaces != null && avoidedInterfaces.length > 0)
+					for (String match : avoidedInterfaces)
+						if (interfaceInstance.getDisplayName().contains(match))
+							avoidedInterface = true;
 
 				if (avoidedInterface)
 					continue;
@@ -149,6 +150,17 @@ public class NetworkUtils
 	public static String getAddressPrefix(String ipv4Address)
 	{
 		return ipv4Address.substring(0, ipv4Address.lastIndexOf(".") + 1);
+	}
+
+	public static boolean ping(String ipAddress, int timeout)
+	{
+		try {
+			return InetAddress.getByName(ipAddress).isReachable(timeout);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
 	public static boolean testSocket(String ip, int port)

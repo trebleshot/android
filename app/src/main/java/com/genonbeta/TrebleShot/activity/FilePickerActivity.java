@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.view.View;
 
@@ -27,6 +28,7 @@ public class FilePickerActivity extends Activity
 	public static final String EXTRA_CHOSEN_PATH = "chosenPath";
 
 	private FileExplorerFragment mFileExplorerFragment;
+	private FloatingActionButton mFAB;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -35,6 +37,7 @@ public class FilePickerActivity extends Activity
 		setContentView(R.layout.activity_filepicker);
 
 		mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
+		mFAB = findViewById(R.id.content_fab);
 	}
 
 	@Override
@@ -56,8 +59,8 @@ public class FilePickerActivity extends Activity
 				mFileExplorerFragment.getFileListFragment().getListView().setPadding(0, 0, 0, 200);
 				mFileExplorerFragment.getFileListFragment().getListView().setClipToPadding(false);
 
-				mFileExplorerFragment.getButtonOfEverything().setVisibility(View.VISIBLE);
-				mFileExplorerFragment.getButtonOfEverything().setOnClickListener(new View.OnClickListener()
+				mFAB.setVisibility(View.VISIBLE);
+				mFAB.setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
@@ -67,7 +70,7 @@ public class FilePickerActivity extends Activity
 						if (selectedPath != null && selectedPath.canWrite())
 							finishWithResult(selectedPath);
 						else
-							Snackbar.make(findViewById(android.R.id.content), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
+							Snackbar.make(v, R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 					}
 				});
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {

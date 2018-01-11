@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
-import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
@@ -62,6 +62,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_BUILDNUMBER = "buildNumber";
 	public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
 	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
+	public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
 	public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
 
 	public static final String TABLE_DEVICECONNECTION = "deviceConnection";
@@ -70,11 +71,16 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICECONNECTION_ADAPTERNAME = "adapterName";
 	public static final String FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
 
+	public static final String TABLE_CLIPBOARD = "clipboard";
+	public static final String FIELD_CLIPBOARD_ID = "id";
+	public static final String FIELD_CLIPBOARD_TEXT = "text";
+	public static final String FIELD_CLIPBOARD_TIME = "time";
+
 	private Context mContext;
 
 	public AccessDatabase(Context context)
 	{
-		super(context, DATABASE_NAME, null, 4);
+		super(context, DATABASE_NAME, null, 5);
 		mContext = context;
 	}
 
@@ -112,6 +118,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false));
 
 		sqlValues.defineTable(TABLE_DEVICECONNECTION)
@@ -120,17 +127,25 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
 
+		sqlValues.defineTable(TABLE_CLIPBOARD)
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
+
 		SQLQuery.createTables(db, sqlValues);
 	}
 
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
-		if (old <= 3) {
+		if (old != current) {
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFERGROUP + "`");
 			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
 			db.execSQL("DROP TABLE `" + TABLE_DEVICECONNECTION + "`");
+
+			if (current > 5)
+				db.execSQL("DROP TABLE `" + TABLE_CLIPBOARD + "`");
 
 			onCreate(db);
 		}
@@ -160,8 +175,7 @@ public class AccessDatabase extends SQLiteDatabase
 			if (TransactionObject.Type.INCOMING.equals(transactionObject.type)) {
 				indexObject.incoming += transactionObject.fileSize;
 				indexObject.incomingCount++;
-			}
-			else {
+			} else {
 				indexObject.outgoing += transactionObject.fileSize;
 				indexObject.outgoingCount++;
 			}

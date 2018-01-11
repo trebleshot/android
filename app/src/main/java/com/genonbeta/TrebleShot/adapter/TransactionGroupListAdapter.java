@@ -11,10 +11,10 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -68,7 +68,7 @@ public class TransactionGroupListAdapter extends ShareableListAdapter<Transactio
 
 						try {
 							mDatabase.reconstruct(device);
-							item.put(FIELD_DEVICENAME, device.user);
+							item.put(FIELD_DEVICENAME, device.nickname);
 						} catch (Exception e) {
 							item.put(FIELD_DEVICENAME, "-");
 						}
@@ -129,7 +129,7 @@ public class TransactionGroupListAdapter extends ShareableListAdapter<Transactio
 
 		String firstLetters = TextUtils.getFirstLetters(group.deviceName, 1);
 
-		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.colorTextDrawable), 100);
+		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.networkDeviceRipple), 100);
 
 		titleText.setText(group.deviceName);
 		text1.setText(getContext().getResources().getQuantityString(R.plurals.text_files, group.transactionCount, group.transactionCount));
@@ -150,7 +150,6 @@ public class TransactionGroupListAdapter extends ShareableListAdapter<Transactio
 	public static class PreloadedGroup extends TransactionObject.Group
 	{
 		public int transactionCount;
-
 		public String deviceName;
 
 		@Override

@@ -147,7 +147,25 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		CursorItem item = getFirstFromTable(object.getWhere());
 
 		if (item == null)
-			throw new Exception("No data was returned from the query");
+		{
+			SQLQuery.Select select = object.getWhere();
+
+			StringBuilder whereArgs = new StringBuilder();
+
+			for (String arg : select.whereArgs)
+			{
+				if (whereArgs.length() > 0)
+					whereArgs.append(", ");
+
+				whereArgs.append("[] ");
+				whereArgs.append(arg);
+			}
+
+			throw new Exception("No data was returned from: query"
+					+ "; tableName: " + select.tableName
+					+ "; where: " + select.where
+					+ "; whereArgs: " + whereArgs.toString());
+		}
 
 		object.reconstruct(item);
 	}

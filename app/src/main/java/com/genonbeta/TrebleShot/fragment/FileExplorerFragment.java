@@ -1,12 +1,12 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,13 +15,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.PredetachListener;
+import com.genonbeta.TrebleShot.util.DetachListener;
+import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 import java.io.File;
@@ -31,14 +30,15 @@ import java.io.File;
  * Date: 5/30/17 10:47 AM
  */
 
-public class FileExplorerFragment extends Fragment implements TitleSupport, PredetachListener
+public class FileExplorerFragment
+		extends Fragment
+		implements TitleSupport, DetachListener
 {
 	private RecyclerView mRecyclerView;
-	private ImageView mHomeButton;
+	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
 	private LinearLayoutManager mLayoutManager;
 	private PathResolverRecyclerAdapter mAdapter;
-	private FloatingActionButton mButtonOfEverything;
 	private File mRequestedPath = null;
 
 	@Override
@@ -56,7 +56,6 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 
 		mRecyclerView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
 		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
-		mButtonOfEverything = view.findViewById(R.id.fragment_fileexplorer_boe);
 		mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		mAdapter = new PathResolverRecyclerAdapter();
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
@@ -107,7 +106,7 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		if(mRequestedPath != null)
+		if (mRequestedPath != null)
 			requestPath(mRequestedPath);
 	}
 
@@ -134,13 +133,11 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 					}
 				}).show();
 			else
-				Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
+				Snackbar.make(mFileListFragment.getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 
 			return true;
-		} else if (id == R.id.actions_file_explorer_open_file_manager) {
-			mFileListFragment.openFile(Uri.fromFile(FileUtils.getApplicationDirectory(getActivity())), "*/*", getString(R.string.text_chooseFileManager));
-			return true;
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
@@ -149,11 +146,6 @@ public class FileExplorerFragment extends Fragment implements TitleSupport, Pred
 	{
 		if (mFileListFragment != null)
 			mFileListFragment.onPrepareDetach();
-	}
-
-	public FloatingActionButton getButtonOfEverything()
-	{
-		return mButtonOfEverything;
 	}
 
 	public FileListFragment getFileListFragment()

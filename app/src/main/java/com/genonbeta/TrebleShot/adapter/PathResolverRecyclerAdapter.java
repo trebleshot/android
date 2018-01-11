@@ -31,7 +31,11 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 	public void onBindViewHolder(final Holder holder, int position)
 	{
 		holder.index = mList.get(position);
-		holder.text.setText(holder.index.name);
+
+		if (position == 0 && ".".equals(holder.index.name))
+			holder.text.setText(R.string.text_fileRoot);
+		else
+			holder.text.setText(holder.index.name);
 
 		if (mClickListener != null)
 			holder.text.setOnClickListener(new View.OnClickListener()

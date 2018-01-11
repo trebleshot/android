@@ -9,6 +9,7 @@ public enum SQLType
 {
 	INTEGER,
 	DOUBLE,
+	LONG,
 	TEXT,
 	DATE,
 	BLOB,

@@ -45,10 +45,9 @@ public class RationalePermissionRequest extends AlertDialog.Builder
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i)
 					{
-						Intent intent = new Intent();
-
-						intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-						intent.setData(Uri.fromParts("package", mActivity.getPackageName(), null));
+						Intent intent = new Intent()
+								.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+								.setData(Uri.fromParts("package", mActivity.getPackageName(), null));
 
 						mActivity.startActivity(intent);
 						mActivity.finish();

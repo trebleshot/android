@@ -1,26 +1,37 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.NetworkDevice;
-import com.genonbeta.TrebleShot.util.NotificationUtils;
-import com.genonbeta.TrebleShot.util.TransactionObject;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.SQLQuery;
 
+import org.json.JSONObject;
+
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
 /**
@@ -30,34 +41,120 @@ import java.util.ArrayList;
 
 public class DeviceInfoDialog extends AlertDialog.Builder
 {
-	public DeviceInfoDialog(@NonNull final Context context, final AccessDatabase database, final NetworkDevice device)
+	private AlertDialog mThisDialog;
+
+	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final NetworkDevice device)
 	{
-		super(context);
+		super(activity);
 
 		try {
 			database.reconstruct(device);
 
 			@SuppressLint("InflateParams")
-			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_device_info, null);
+			View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
 
+			TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
 			TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
 			TextView addressText = rootView.findViewById(R.id.device_info_ip_address);
 			TextView versionText = rootView.findViewById(R.id.device_info_version);
+			AppCompatButton getUpdateButton = rootView.findViewById(R.id.device_info_get_update_button);
 			SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
+			final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
+
+			if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+				notSupportedText.setVisibility(View.VISIBLE);
+
+			getUpdateButton.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					final ProgressDialog progressDialog = new ProgressDialog(getContext());
+					final Interrupter interrupter = new Interrupter();
+
+					progressDialog.setMessage(activity.getString(R.string.mesg_ongoingUpdateDownload));
+					progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							interrupter.interrupt();
+						}
+					});
+
+					interrupter.useCloser(new Interrupter.Closer()
+					{
+						@Override
+						public void onClose()
+						{
+							progressDialog.cancel();
+						}
+					});
+
+					new ConnectionChooserDialog(activity, database, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+					{
+						@Override
+						public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+						{
+							progressDialog.show();
+
+							CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+							{
+								@Override
+								public void onConnect(CoolSocket.Client client)
+								{
+									new Thread()
+									{
+										@Override
+										public void run()
+										{
+											super.run();
+
+											try {
+												UpdateUtils.receiveUpdate(activity, device, interrupter);
+
+												if (mThisDialog != null && !interrupter.interrupted())
+													mThisDialog.cancel();
+											} catch (Exception e) {
+												e.printStackTrace();
+											} finally {
+												progressDialog.cancel();
+											}
+										}
+									}.start();
+
+									try {
+										Thread.sleep(1500);
+
+										CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+										activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
+
+										CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+									} catch (Exception e) {
+										e.printStackTrace();
+										progressDialog.cancel();
+									}
+								}
+							});
+						}
+					}).show();
+				}
+			});
 
 			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
-			versionText.setText(device.buildName);
+			versionText.setText(device.versionName);
 
 			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", device.deviceId), NetworkDevice.Connection.class);
 
 			if (connections.size() > 0)
 				addressText.setText(connections.size() > 1 ?
-						context.getResources().getQuantityString(R.plurals.text_availableConnections,
+						activity.getResources().getQuantityString(R.plurals.text_availableConnections,
 								connections.size(),
 								connections.size()) : connections.get(0).ipAddress);
 
 			accessSwitch.setChecked(!device.isRestricted);
+			trustSwitch.setChecked(device.isTrusted);
 
 			accessSwitch.setOnCheckedChangeListener(
 					new CompoundButton.OnCheckedChangeListener()
@@ -67,11 +164,25 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 						{
 							device.isRestricted = !isChecked;
 							database.publish(device);
+
+							trustSwitch.setEnabled(isChecked);
 						}
 					}
 			);
 
-			setTitle(device.user);
+			trustSwitch.setOnCheckedChangeListener(
+					new CompoundButton.OnCheckedChangeListener()
+					{
+						@Override
+						public void onCheckedChanged(CompoundButton button, boolean isChecked)
+						{
+							device.isTrusted = isChecked;
+							database.publish(device);
+						}
+					}
+			);
+
+			setTitle(device.nickname);
 			setView(rootView);
 			setPositiveButton(R.string.butn_close, null);
 			setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
@@ -125,7 +236,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					AlertDialog.Builder askPermission = new AlertDialog.Builder(context);
+					AlertDialog.Builder askPermission = new AlertDialog.Builder(activity);
 
 					askPermission.setTitle(R.string.ques_removeDevice);
 					askPermission.setMessage(R.string.text_removeDeviceSummary);
@@ -145,5 +256,11 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public AlertDialog show()
+	{
+		return mThisDialog = super.show();
 	}
 }

@@ -8,8 +8,8 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
-import com.genonbeta.TrebleShot.util.PredetachListener;
 import com.genonbeta.TrebleShot.widget.ListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
@@ -20,10 +20,9 @@ import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		extends com.genonbeta.TrebleShot.app.ListFragment<T, E>
-		implements PowerfulActionMode.Callback, PredetachListener
+		implements PowerfulActionMode.Callback, DetachListener
 {
 	private MenuItem mMultiSelect;
-	private boolean mRefreshLocked = false;
 	private boolean mRefreshRequested = false;
 
 	@Override
@@ -77,8 +76,6 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		getListView().setPadding(0, 0, 0, 200);
 		getListView().setClipToPadding(false);
 
-		lockRefresh(true);
-
 		actionMode.setTitle(String.valueOf(0));
 
 		return false;
@@ -105,7 +102,7 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		getListView().setPadding(0, 0, 0, 0);
 		getListView().setClipToPadding(true);
 
-		lockRefresh(false);
+		loadIfRequested();
 	}
 
 	@Override
@@ -121,11 +118,22 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 				: null;
 	}
 
+	public boolean isRefreshLocked()
+	{
+		return getPowerfulActionMode() != null
+				&& getPowerfulActionMode().hasActive(this);
+	}
+
+	public boolean isRefreshRequested()
+	{
+		return mRefreshRequested;
+	}
+
 	protected boolean loadIfRequested()
 	{
-		boolean refreshed = mRefreshRequested;
+		boolean refreshed = isRefreshRequested();
 
-		mRefreshRequested = false;
+		setRefreshRequested(false);
 
 		if (refreshed)
 			refreshList();
@@ -133,21 +141,16 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		return refreshed;
 	}
 
-	public boolean lockRefresh(boolean lock)
+	public void setRefreshRequested(boolean requested)
 	{
-		mRefreshLocked = lock;
-
-		if (!lock)
-			loadIfRequested();
-
-		return !lock && loadIfRequested();
+		mRefreshRequested = requested;
 	}
 
 	@Override
 	public void refreshList()
 	{
-		if (mRefreshLocked)
-			mRefreshRequested = true;
+		if (isRefreshLocked())
+			setRefreshRequested(true);
 		else
 			super.refreshList();
 	}

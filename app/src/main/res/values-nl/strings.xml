@@ -116,7 +116,7 @@
     <string name="text_textEditor">Tekstbewerker</string>
     <string name="butn_done">Afgerond</string>
     <string name="text_empty">(leeg)</string>
-    <string name="text_shareText">Tekst delen</string>
+    <string name="text_textStream">Tekst delen</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Overdrachten in wachtrij</string>
     <string name="text_stopping">Bezig met stoppen!</string>

@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -11,16 +9,22 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 
-import com.genonbeta.TrebleShot.service.CommunicationService;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 public class AppUtils
 {
 	public static final String TAG = AppUtils.class.getSimpleName();
 
 	private static int mUniqueNumber = 0;
+
+	public static String getHotspotName(Context context)
+	{
+		String apName = AppUtils.getLocalDeviceName(context)
+				.replace(" ", "_");
+
+		return AppConfig.ACCESS_POINT_PREFIX + (apName.length() > 10 ? apName.substring(0, 9) : apName);
+	}
 
 	public static String getLocalDeviceName(Context context)
 	{
@@ -43,15 +47,15 @@ public class AppUtils
 
 		device.brand = Build.BRAND;
 		device.model = Build.MODEL;
-		device.user = AppUtils.getLocalDeviceName(context);
+		device.nickname = AppUtils.getLocalDeviceName(context);
 		device.isRestricted = false;
 		device.isLocalAddress = true;
 
 		try {
 			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
 
-			device.buildNumber = packageInfo.versionCode;
-			device.buildName = packageInfo.versionName;
+			device.versionNumber = packageInfo.versionCode;
+			device.versionName = packageInfo.versionName;
 		} catch (PackageManager.NameNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -19,8 +19,8 @@ import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
+import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.util.TransactionObject;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
