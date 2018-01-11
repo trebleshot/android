@@ -31,6 +31,11 @@
                     android:title="@string/text_application"/>
 
                 <item
+                    android:id="@+id/menu_activity_main_share_image"
+                    android:icon="@drawable/ic_video_library_white_24dp"
+                    android:title="@string/text_image"/>
+
+                <item
                     android:id="@+id/menu_activity_main_share_music"
                     android:icon="@drawable/ic_library_music_white_24dp"
                     android:title="@string/text_music"/>
