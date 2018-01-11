@@ -8,7 +8,7 @@
     <string name="text_unknownUser">Onbekende gebruiker</string>
     <string name="text_connected">Verbonden</string>
     <string name="text_invited">Uitgenodigd</string>
-    <string name="mesg_connectionFailure">Verbindingsfout</string>
+    <string name="mesg_connectionFailure">Verbinding mislukt</string>
     <string name="text_available">Beschikbaar</string>
     <string name="text_notAvailable">Niet-beschikbaar</string>
     <string name="text_deviceListEmpty">Geen apparaat</string>
@@ -31,7 +31,7 @@
     <string name="text_deviceName">Apparaatnaam</string>
     <string name="text_deviceNameSummary">Deze naam zal worden weergegeven op andere apparaten</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
-    <string name="mesg_formatNotSupported">Type wordt niet ondersteund</string>
+    <string name="mesg_formatNotSupported">Het formaat wordt niet ondersteund</string>
     <string name="mesg_fileSendError">Het bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
     <string name="mesg_fileSendCancelled">Het versturen van %s is geannuleerd</string>
