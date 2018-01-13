@@ -38,6 +38,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
+import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
@@ -78,6 +79,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentShareApplication;
 	private Fragment mFragmentShareMusic;
 	private Fragment mFragmentShareVideo;
+	private Fragment mFragmentShareImage;
 	private Fragment mFragmentShareText;
 
 	private long mExitPressTime;
@@ -117,6 +119,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
 		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
+		mFragmentShareImage = Fragment.instantiate(this, ImageListFragment.class.getName());
 		mFragmentShareText = Fragment.instantiate(this, TextStreamListFragment.class.getName());
 
 		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
@@ -210,6 +213,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			changeFragment(mFragmentShareMusic);
 		} else if (R.id.menu_activity_main_share_video == item.getItemId()) {
 			changeFragment(mFragmentShareVideo);
+		} else if (R.id.menu_activity_main_share_image == item.getItemId()) {
+			changeFragment(mFragmentShareImage);
 		} else if (R.id.menu_activity_main_share_text == item.getItemId()) {
 			changeFragment(mFragmentShareText);
 		} else if (R.id.menu_activity_main_about == item.getItemId()) {
