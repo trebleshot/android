@@ -223,4 +223,29 @@
     <string name="text_savePath">Lagringssti</string>
     <string name="text_transactionGroupDetails">Gruppedetaljer for overføring</string>
     <string name="text_usedConnection">Brukt tilkobling</string>
-</resources>
+<string name="text_flagRemoved">Fjernet</string>
+    <string name="butn_copyToClipboard">Kopier til utklippstavle</string>
+    <string name="text_communicationServiceRunning">TrebleShot kan dele filer nå</string>
+    <string name="text_communicationServiceStop">Trykk for å sluttføre økt</string>
+    <string name="butn_showFiles">Vis filer</string>
+    <string name="butn_trustZoneDevice">Sett som TrustZone-enhet</string>
+    <string name="butn_turnTrustZoneOn">Skru på TrustZone</string>
+    <string name="butn_turnTrustZoneOff">Skru av TrustZone</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="butn_download">Last ned</string>
+    <string name="mesg_clipboardUpdateNotice">Ønsker du å oppdatere teksten?
+\nTrykk igjen for å avslutte</string>
+    <string name="mesg_textSaveNotice">Ønsker du å lagre denne teksten?
+\nTrykk igjen for å avslutte</string>
+    <string name="butn_update">Oppdater</string>
+    <string name="butn_save">Lagre</string>
+    <string name="mesg_textShareLimit">Kun én tekst kan deles om gangen</string>
+    <string name="text_timeJustNow">Akkurat nå</string>
+    <string name="butn_connect">Koble til</string>
+    <string name="butn_disconnect">Koble fra</string>
+    <string name="butn_skip">Hopp over</string>
+    <string name="butn_enable">Skru på</string>
+    <string name="butn_locationSettings">Plassering</string>
+    <string name="butn_gotIt">Skjønner</string>
+    <string name="mesg_helpFolderSelection">For å velge en mappe, trykk på dens ikon</string>
+    </resources>
