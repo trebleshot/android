@@ -86,8 +86,7 @@ public class SelectedEditorDialog<T extends Selectable> extends AlertDialog.Buil
 		{
 			@Override
 			public void onClick(View v)
-			{
-				massCheck(false);
+			{massCheck(false);
 			}
 		});
 
