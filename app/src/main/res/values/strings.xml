@@ -71,7 +71,7 @@
     <string name="butn_showOnFileManager">Show in file manager</string>
     <string name="text_chooseFileManager">Choose file manager</string>
     <string name="text_ipAddress">IP address</string>
-    <string name="text_allowToAccess">Allow access to</string>
+    <string name="text_allowToAccess">Allow to connect</string>
     <string name="text_connectionPermission">Connection permission</string>
     <string name="ques_allowDeviceToConnect">Let this device connect?</string>
     <string name="mesg_stopping">Stopping</string>
@@ -145,7 +145,7 @@
     <string name="text_transactionViewer">View transaction</string>
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
-    <string name="text_notAllowedHelp">Check if you are allowed on %1$s. \n\nDevice list &gt; %2$s &gt; Allow access to &gt; (enable it)</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s. \n\nDevice list &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
     <string name="butn_saveTo">Save to</string>
     <string name="mesg_secureExit">Press again to exit</string>
     <string name="butn_create">Create</string>
@@ -192,7 +192,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfacUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">@string/text_unknown</string>
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Feeling lucky</string>
     <string name="butn_connectionList">Connections</string>
@@ -244,7 +244,7 @@
     <string name="mesg_scanningSelfHotspot">Searching for a TrebleShot hotspot</string>
     <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot hotspot?</string>
     <string name="butn_enable">Enable</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Granting permission to location is required to search for TrebleShot hotspots"</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Granting permission to location is required to search for TrebleShot hotspot</string>
     <string name="butn_locationSettings">Location</string>
     <string name="mesg_locationDisabledSelfHotspot">Grant permission to location to show search results</string>
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>

@@ -1,7 +1,5 @@
 package com.genonbeta.TrebleShot.util;
 
-import android.util.Log;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
@@ -23,7 +21,7 @@ public class TextUtils
 		associatedNames.put("p2p", R.string.text_interfaceWifiDirect);
 		associatedNames.put("bt-pan", R.string.text_interfaceBluetooth);
 		associatedNames.put("eth", R.string.text_interfaceEthernet);
-		associatedNames.put("unk", R.string.text_interfacUnknown);
+		associatedNames.put("unk", R.string.text_interfaceUnknown);
 
 		for (String displayName : associatedNames.keySet())
 			if (connection.adapterName.startsWith(displayName))
