@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.io.StreamInfo;
+import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -32,7 +33,6 @@ import java.util.ArrayList;
 public abstract class ShareableListFragment<T extends Shareable, E extends ShareableListAdapter<T>>
 		extends EditableListFragment<T, E>
 {
-	private ArrayList<T> mSelectionList = new ArrayList<>();
 	private ArrayList<T> mCachedList = new ArrayList<>();
 	private boolean mSearchSupport = true;
 	private boolean mSearchActive = false;
@@ -77,15 +77,16 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	{
 		super.onListItemClick(l, v, position, id);
 
-		Shareable shareable = (Shareable) getAdapter().getItem(position);
-		openFile(shareable.uri, getString(R.string.text_fileOpenAppChoose));
+		if (!setItemSelected(position)) {
+			Shareable shareable = (Shareable) getAdapter().getItem(position);
+			openFile(shareable.uri, getString(R.string.text_fileOpenAppChoose));
+		}
 	}
 
 	@Override
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
 	{
 		super.onPrepareActionMenu(context, actionMode);
-		getSelectionList().clear();
 		return true;
 	}
 
@@ -102,15 +103,19 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	{
 		int id = item.getItemId();
 
+		ArrayList<T> selectedItemList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
+
 		if (id == R.id.action_mode_share_trebleshot || id == R.id.action_mode_share_all_apps) {
 			Intent shareIntent = null;
-			String action = (item.getItemId() == R.id.action_mode_share_all_apps) ? (getSelectionList().size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND) : (getSelectionList().size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
+			String action = (item.getItemId() == R.id.action_mode_share_all_apps)
+					? (selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
+					: (selectedItemList.size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
 
-			if (getSelectionList().size() > 1) {
+			if (selectedItemList.size() > 1) {
 				ArrayList<Uri> uriList = new ArrayList<>();
 				ArrayList<CharSequence> nameList = new ArrayList<>();
 
-				for (T sharedItem : getSelectionList()) {
+				for (T sharedItem : selectedItemList) {
 					uriList.add(sharedItem.uri);
 					nameList.add(sharedItem.fileName);
 				}
@@ -119,8 +124,8 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 						.setType("*/*")
 						.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
 						.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameList);
-			} else if (getSelectionList().size() == 1) {
-				T sharedItem = getSelectionList().get(0);
+			} else if (selectedItemList.size() == 1) {
+				T sharedItem = selectedItemList.get(0);
 
 				shareIntent = new Intent(action)
 						.putExtra(Intent.EXTRA_STREAM, sharedItem.uri)
@@ -130,29 +135,10 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 			if (shareIntent != null)
 				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-		} else if (id == R.id.action_mode_abs_editable_multi_select) {
-			getSelectionList().clear();
-			setSelection(getListView().getCheckedItemCount() != getAdapter().getCount());
-			return false;
 		} else
-			return false;
+			return super.onActionMenuItemSelected(context, actionMode, item);
 
 		return true;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
-	{
-		super.onItemChecked(context, actionMode, position, isSelected);
-
-		T shareable = (T) getAdapter().getItem(position);
-
-		if (isSelected)
-			getSelectionList().add(shareable);
-		else
-			getSelectionList().remove(shareable);
-
-		actionMode.setTitle(String.valueOf(getSelectionList().size()));
 	}
 
 	public ArrayList<T> getCachedList()
@@ -163,11 +149,6 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	public boolean getSearchSupport()
 	{
 		return mSearchSupport;
-	}
-
-	public ArrayList<T> getSelectionList()
-	{
-		return mSelectionList;
 	}
 
 	@Override
@@ -198,9 +179,6 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 	public boolean search(String word)
 	{
-		if (getPowerfulActionMode() != null)
-			getPowerfulActionMode().finish(this);
-
 		mSearchActive = word != null && word.length() > 0;
 
 		if (mSearchActive) {

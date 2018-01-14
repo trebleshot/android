@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     android:padding="15dp">
 
-    <FrameLayout
-        android:id="@+id/layout_image"
+    <ImageView
+        android:id="@+id/image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -15,38 +15,29 @@
         android:layout_marginEnd="23dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
-        android:layout_marginStart="8dp">
-
-        <ImageView
-            android:id="@+id/list_process_type_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:contentDescription="@string/text_image"
-            android:tint="@color/colorAccent"
-            android:src="@drawable/ic_file_upload_black_24dp"/>
-
-        <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:background="@drawable/state_selected_image"
-            android:layout_gravity="center"/>
-
-    </FrameLayout>
+        android:layout_marginStart="8dp"
+        android:contentDescription="@string/text_image"
+        android:foreground="@drawable/state_selected_image"
+        android:foregroundGravity="center"
+        android:padding="15dp"
+        android:src="@drawable/ic_file_upload_black_24dp"
+        android:tint="@color/colorAccent"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
+        android:layout_toEndOf="@id/image"
+        android:layout_toRightOf="@id/image"
         android:orientation="vertical">
 
+
         <TextView
-            android:id="@+id/list_process_name_text"
+            android:id="@+id/text"
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
+            android:layout_height="wrap_content"
+            android:maxLines="3"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,18 +45,19 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/list_process_status_text"
+                android:id="@+id/text2"
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
 
             <TextView
-                android:id="@+id/list_process_size_text"
+                android:id="@+id/text3"
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
+
         </LinearLayout>
     </LinearLayout>
 

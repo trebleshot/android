@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,7 +30,6 @@ import java.util.ArrayList;
 
 public class PowerfulActionMode extends Toolbar
 {
-	private ArrayList<Shareable> mList = new ArrayList<>();
 	private View mContainerLayout;
 	private MenuInflater mMenuInflater;
 	private ArrayMap<Callback, Holder> mActiveActionModes = new ArrayMap<>();
@@ -52,32 +52,33 @@ public class PowerfulActionMode extends Toolbar
 		initialize();
 	}
 
-	protected void initialize()
+	public <T extends Selectable> boolean check(@NonNull Callback<T> callback, T selectable, boolean selected)
 	{
-		mMenuInflater = new MenuInflater(getContext());
-	}
-
-	public boolean check(@NonNull Callback callback, int position, boolean select)
-	{
-		if (!mActiveActionModes.containsKey(callback))
+		if (!hasActive(callback))
 			return false;
 
-		callback.getActionModeListView().setItemChecked(position, select);
-		callback.onItemChecked(getContext(), this, position, select);
+		selectable.setSelectableSelected(selected);
+
+		if (selected)
+			getHolder(callback).getSelectionList().add(selectable);
+		else
+			getHolder(callback).getSelectionList().remove(selectable);
+
+		callback.onItemChecked(getContext(), this, selectable);
 
 		return true;
 	}
 
-	public void enableFor(final Callback callback)
+	public <T extends Selectable> void enableFor(final SelectorConnection<T> selectorConnection)
 	{
-		callback.getActionModeListView()
+		selectorConnection.getCallback().getActionModeListView()
 				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
 				{
 					@Override
 					public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
 					{
-						if (PowerfulActionMode.this.start(callback)) {
-							PowerfulActionMode.this.check(callback, i, true);
+						if (PowerfulActionMode.this.start(selectorConnection.getCallback())) {
+							selectorConnection.setSelected(selectorConnection.getCallback().getSelectableList().get(i));
 							return true;
 						}
 
@@ -91,29 +92,11 @@ public class PowerfulActionMode extends Toolbar
 		final Holder holder = mActiveActionModes.get(callback);
 
 		if (holder != null) {
-			callback.getActionModeListView().setOnItemClickListener(holder.overriddenClickListener);
-
-			for (int position = 0; position < callback.getActionModeListView().getCount(); position++)
-				callback.getActionModeListView().setItemChecked(position, false);
-
 			callback.onFinish(getContext(), this);
-			mActiveActionModes.remove(callback);
-			reload(callback);
 
-			new Handler(Looper.getMainLooper()).post(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					try {
-						// IDK but this somehow or rather works, Thanks androod!
-						Thread.sleep(100);
-						callback.getActionModeListView().setChoiceMode(holder.previousChoiceMode);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			});
+			mActiveActionModes.remove(callback);
+
+			reload(callback);
 		}
 	}
 
@@ -127,31 +110,26 @@ public class PowerfulActionMode extends Toolbar
 		return mContainerLayout;
 	}
 
-	public ArrayList<Shareable> getList()
-	{
-		return mList;
-	}
-
 	public MenuInflater getMenuInflater()
 	{
 		return mMenuInflater;
 	}
 
-	public boolean isItemSelected(Shareable shareable)
+	public <T extends Selectable> Holder getHolder(Callback<T> callback)
 	{
-		return mList.contains(shareable);
+		return mActiveActionModes.get(callback);
 	}
 
-	public boolean setItemSelected(Shareable shareable, boolean selected)
+	protected void initialize()
 	{
-		return (selected) ?  mList.add(shareable) : mList.remove(shareable);
+		mMenuInflater = new MenuInflater(getContext());
 	}
 
 	public boolean reload(final Callback callback)
 	{
 		getMenu().clear();
 
-		if (!mActiveActionModes.containsKey(callback)) {
+		if (callback == null || !mActiveActionModes.containsKey(callback)) {
 			updateVisibility(GONE);
 			finish(callback);
 			return false;
@@ -202,31 +180,14 @@ public class PowerfulActionMode extends Toolbar
 		this.mContainerLayout = containerLayout;
 	}
 
-	public boolean start(@NonNull final Callback callback)
+	public <T extends Selectable> boolean start(@NonNull final Callback<T> callback)
 	{
 		if (!callback.onPrepareActionMenu(getContext(), this) || mActiveActionModes.containsKey(callback)) {
 			finish(callback);
 			return false;
 		}
 
-		Holder holder = new Holder();
-
-		holder.overriddenClickListener = callback.getActionModeListView().getOnItemClickListener();
-		holder.previousChoiceMode = callback.getActionModeListView().getChoiceMode();
-
-		callback.getActionModeListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
-
-		callback.getActionModeListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
-		{
-			@Override
-			public void onItemClick(AdapterView<?> adapterView, View view, int i, long l)
-			{
-				boolean check = callback.getActionModeListView().isItemChecked(i);
-				PowerfulActionMode.this.check(callback, i, check);
-			}
-		});
-
-		mActiveActionModes.put(callback, holder);
+		mActiveActionModes.put(callback, new Holder());
 
 		return reload(callback);
 	}
@@ -245,9 +206,11 @@ public class PowerfulActionMode extends Toolbar
 		}
 	}
 
-	public interface Callback
+	public interface Callback<T extends Selectable>
 	{
 		AbsListView getActionModeListView();
+
+		ArrayList<T> getSelectableList();
 
 		boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode);
 
@@ -255,14 +218,76 @@ public class PowerfulActionMode extends Toolbar
 
 		boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item);
 
-		void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected);
+		void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable);
 
 		void onFinish(Context context, PowerfulActionMode actionMode);
 	}
 
-	public static class Holder
+	public static class SelectorConnection<T extends Selectable>
 	{
-		public AdapterView.OnItemClickListener overriddenClickListener;
-		public int previousChoiceMode;
+		private PowerfulActionMode mMode;
+		private Callback<T> mCallback;
+
+		public SelectorConnection(PowerfulActionMode mode, Callback<T> callback)
+		{
+			mMode = mode;
+			mCallback = callback;
+		}
+
+		public Callback<T> getCallback()
+		{
+			return mCallback;
+		}
+
+		public PowerfulActionMode getMode()
+		{
+			return mMode;
+		}
+
+		public ArrayList<T> getSelectedItemList()
+		{
+			Holder<T> holder = getMode().getHolder(getCallback());
+
+			return holder == null ? new ArrayList<T>() : holder.getSelectionList();
+		}
+
+		public boolean isSelected(T selectable)
+		{
+			Holder<T> holder = getMode().getHolder(getCallback());
+
+			return holder != null && holder.getSelectionList().contains(selectable);
+		}
+
+		public boolean selectionActive()
+		{
+			return getMode().hasActive(getCallback());
+		}
+
+		public boolean setSelected(T selectable)
+		{
+			return setSelected(selectable, !isSelected(selectable));
+		}
+
+		public boolean setSelected(T selectable, boolean selected)
+		{
+			// if it is already the same
+			if (selected == isSelected(selectable))
+				return selected;
+
+			if (!getMode().hasActive(getCallback()))
+				getMode().start(getCallback());
+
+			return getMode().check(getCallback(), selectable, selected);
+		}
+	}
+
+	public static class Holder<T extends Selectable>
+	{
+		private ArrayList<T> mSelectionList = new ArrayList<>();
+
+		public ArrayList<T> getSelectionList()
+		{
+			return mSelectionList;
+		}
 	}
 }

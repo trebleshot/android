@@ -89,26 +89,30 @@ public class ApplicationListFragment
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		final ApplicationListAdapter.PackageHolder appInfo = (ApplicationListAdapter.PackageHolder) getAdapter().getItem(position);
-		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
+		if (isSelectionActivated())
+			super.onListItemClick(l, v, position, id);
+		else {
+			final ApplicationListAdapter.PackageHolder appInfo = (ApplicationListAdapter.PackageHolder) getAdapter().getItem(position);
+			final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 
-		if (launchIntent != null) {
-			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+			if (launchIntent != null) {
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-			dialogBuilder.setMessage(R.string.ques_launchApplication);
-			dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-			dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialog, int which)
+				dialogBuilder.setMessage(R.string.ques_launchApplication);
+				dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
+				dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
 				{
-					startActivity(launchIntent);
-				}
-			});
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						startActivity(launchIntent);
+					}
+				});
 
-			dialogBuilder.show();
-		} else
-			Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
+				dialogBuilder.show();
+			} else
+				Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override

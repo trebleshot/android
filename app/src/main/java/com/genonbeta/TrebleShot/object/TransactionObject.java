@@ -14,7 +14,8 @@ import com.genonbeta.android.database.SQLiteDatabase;
  * Date: 4/24/17 11:50 PM
  */
 
-public class TransactionObject implements FlexibleObject
+public class TransactionObject
+		implements FlexibleObject, Selectable
 {
 	public String friendlyName;
 	public String file;
@@ -28,6 +29,8 @@ public class TransactionObject implements FlexibleObject
 	public DynamicNotification notification;
 	public Type type = Type.INCOMING;
 	public Flag flag = Flag.PENDING;
+
+	private boolean mIsSelected = false;
 
 	public TransactionObject()
 	{
@@ -52,6 +55,12 @@ public class TransactionObject implements FlexibleObject
 	public TransactionObject(CursorItem item)
 	{
 		reconstruct(item);
+	}
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof TransactionObject && ((TransactionObject) obj).requestId == requestId;
 	}
 
 	@Override
@@ -115,13 +124,34 @@ public class TransactionObject implements FlexibleObject
 
 	}
 
-	public static class Group implements FlexibleObject
+	@Override
+	public boolean isSelectableSelected()
+	{
+		return mIsSelected;
+	}
+
+	@Override
+	public String getSelectableFriendlyName()
+	{
+		return friendlyName;
+	}
+
+	@Override
+	public void setSelectableSelected(boolean selected)
+	{
+		mIsSelected = selected;
+	}
+
+	public static class Group
+			implements FlexibleObject, Selectable
 	{
 		public int groupId;
 		public String deviceId;
 		public String connectionAdapter;
 		public String savePath;
 		public long dateCreated;
+
+		private boolean mIsSelected = false;
 
 		public Group()
 		{
@@ -142,6 +172,12 @@ public class TransactionObject implements FlexibleObject
 		public Group(CursorItem item)
 		{
 			reconstruct(item);
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			return obj instanceof TransactionObject && ((TransactionObject) obj).groupId == groupId;
 		}
 
 		@Override
@@ -174,10 +210,15 @@ public class TransactionObject implements FlexibleObject
 		}
 
 		@Override
-		public SQLQuery.Select getWhere()
+		public boolean isSelectableSelected()
 		{
-			return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-					.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
+			return mIsSelected;
+		}
+
+		@Override
+		public String getSelectableFriendlyName()
+		{
+			return String.valueOf(groupId);
 		}
 
 		@Override
@@ -192,6 +233,19 @@ public class TransactionObject implements FlexibleObject
 			values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
 
 			return values;
+		}
+
+		@Override
+		public SQLQuery.Select getWhere()
+		{
+			return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
+					.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
+		}
+
+		@Override
+		public void setSelectableSelected(boolean selected)
+		{
+			mIsSelected = selected;
 		}
 
 		public static class Index

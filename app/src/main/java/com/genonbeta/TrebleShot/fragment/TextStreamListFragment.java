@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.ArrayMap;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,7 +35,6 @@ public class TextStreamListFragment
 		extends EditableListFragment<TextStreamObject, TextStreamListAdapter>
 		implements TitleSupport
 {
-	private ArrayList<TextStreamObject> mSelectionList = new ArrayList<>();
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
@@ -71,12 +71,21 @@ public class TextStreamListFragment
 	{
 		super.onListItemClick(l, v, position, id);
 
-		TextStreamObject textStreamObject = (TextStreamObject) getAdapter().getItem(position);
+		if (!setItemSelected(position)) {
+			TextStreamObject textStreamObject = (TextStreamObject) getAdapter().getItem(position);
 
-		startActivity(new Intent(getContext(), TextEditorActivity.class)
-				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-				.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
-				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+			startActivity(new Intent(getContext(), TextEditorActivity.class)
+					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
+					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+		}
+	}
+
+	@Override
+	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+	{
+		super.onPrepareActionMenu(context, actionMode);
+		return true;
 	}
 
 	@Override
@@ -107,31 +116,18 @@ public class TextStreamListFragment
 	}
 
 	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-	{
-		super.onPrepareActionMenu(context, actionMode);
-		getSelectionList().clear();
-		return true;
-	}
-
-	@Override
 	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
 		int id = item.getItemId();
 
-		if (id == R.id.action_mode_abs_editable_multi_select) {
-			getSelectionList().clear();
-			setSelection(getListView().getCheckedItemCount() != getAdapter().getCount());
+		ArrayList<TextStreamObject> selectionList = getSelectionConnection().getSelectedItemList();
 
-			return false;
-		} else if (id == R.id.action_mode_text_stream_delete) {
-			for (TextStreamObject textStreamObject : mSelectionList)
+		if (id == R.id.action_mode_text_stream_delete) {
+			for (TextStreamObject textStreamObject : selectionList)
 				getAdapter().getDatabase().remove(textStreamObject);
-
-			return true;
 		} else if (id == R.id.action_mode_text_stream_share || id == R.id.action_mode_text_stream_share_ts) {
-			if (getSelectionList().size() == 1) {
-				TextStreamObject streamObject = getSelectionList().get(0);
+			if (selectionList.size() == 1) {
+				TextStreamObject streamObject = selectionList.get(0);
 
 				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_text_stream_share
 						? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
@@ -139,32 +135,12 @@ public class TextStreamListFragment
 						.setType("text/*");
 
 				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-				return true;
 			} else
 				Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
-		}
+		} else
+			return super.onActionMenuItemSelected(context, actionMode, item);
 
-		return false;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
-	{
-		super.onItemChecked(context, actionMode, position, isSelected);
-
-		TextStreamObject textStreamObject = (TextStreamObject) getAdapter().getItem(position);
-
-		if (isSelected)
-			getSelectionList().add(textStreamObject);
-		else
-			getSelectionList().remove(textStreamObject);
-
-		actionMode.setTitle(String.valueOf(getSelectionList().size()));
-	}
-
-	public ArrayList<TextStreamObject> getSelectionList()
-	{
-		return mSelectionList;
+		return true;
 	}
 
 	@Override

@@ -103,15 +103,30 @@ public class ApplicationListAdapter
 		if (view == null)
 			view = getInflater().inflate(R.layout.list_application, viewGroup, false);
 
-		PackageHolder info = (PackageHolder) getItem(position);
+		final PackageHolder holder = (PackageHolder) getItem(position);
+
+		final ImageView image = view.findViewById(R.id.image);
 		TextView text1 = view.findViewById(R.id.text);
 		TextView text2 = view.findViewById(R.id.text2);
-		ImageView image = view.findViewById(R.id.image);
 
-		text1.setText(info.friendlyName);
-		text2.setText(info.version);
+		text1.setText(holder.friendlyName);
+		text2.setText(holder.version);
 
-		SweetImageLoader.load(this, getContext(), image, info);
+		if (getSelectionConnection() != null) {
+			image.setSelected(getSelectionConnection().isSelected(holder));
+
+			image.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(holder);
+					image.setSelected(holder.isSelectableSelected());
+				}
+			});
+		}
+
+		SweetImageLoader.load(this, getContext(), image, holder);
 
 		return view;
 	}

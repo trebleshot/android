@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,6 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 	private Drawable mDefaultAlbumDrawable;
 	private ContentResolver mResolver;
 	private ArrayList<SongHolder> mList = new ArrayList<>();
-	private ArrayMap<Integer, AlbumHolder> mAlbumList = new ArrayMap<>();
-	private ArrayList<AlbumHolder> mTmpAlbumList = new ArrayList<>();
 	private Comparator<SongHolder> mComparator = new Comparator<SongHolder>()
 	{
 		@Override
@@ -50,13 +49,12 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 	public ArrayList<SongHolder> onLoad()
 	{
 		ArrayList<SongHolder> list = new ArrayList<>();
+		ArrayMap<Integer, AlbumHolder> albumList = new ArrayMap<>();
 		Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				null,
 				MediaStore.Audio.Media.IS_MUSIC + "=?",
 				new String[]{String.valueOf(1)},
 				null);
-
-		mTmpAlbumList.clear();
 
 		Cursor albumCursor = mResolver.query(MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI, null, null, null, null);
 
@@ -66,7 +64,7 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 			int titleIndex = albumCursor.getColumnIndex(MediaStore.Audio.Albums.ALBUM);
 
 			do {
-				mTmpAlbumList.add(new AlbumHolder(albumCursor.getInt(idIndex), albumCursor.getString(titleIndex), albumCursor.getString(artIndex)));
+				albumList.put(albumCursor.getInt(idIndex), new AlbumHolder(albumCursor.getInt(idIndex), albumCursor.getString(titleIndex), albumCursor.getString(artIndex)));
 			} while (albumCursor.moveToNext());
 		}
 
@@ -80,7 +78,11 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 			int nameIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
 
 			do {
-				list.add(new SongHolder(songCursor.getString(nameIndex), songCursor.getString(artistIndex), songCursor.getString(songIndex), songCursor.getInt(albumIndex),
+				list.add(new SongHolder(songCursor.getString(nameIndex),
+						songCursor.getString(artistIndex),
+						songCursor.getString(songIndex),
+						songCursor.getInt(albumIndex),
+						albumList.get(songCursor.getInt(albumIndex)),
 						Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + songCursor.getInt(idIndex))));
 			}
 			while (songCursor.moveToNext());
@@ -97,12 +99,7 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 	public void onUpdate(ArrayList<SongHolder> passedItem)
 	{
 		mList.clear();
-		mAlbumList.clear();
-
 		mList.addAll(passedItem);
-
-		for (AlbumHolder albumHolder : mTmpAlbumList)
-			mAlbumList.put(albumHolder.id, albumHolder);
 	}
 
 	@Override
@@ -134,21 +131,30 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_music, parent, false);
 
-		SongHolder songHolder = (SongHolder) getItem(position);
-		AlbumHolder albumHolder = mAlbumList.get(songHolder.albumId);
+		final SongHolder songHolder = (SongHolder) getItem(position);
 
+		final ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
 		TextView text3 = convertView.findViewById(R.id.text3);
-		ImageView image = convertView.findViewById(R.id.image);
+
+		image.setSelected(getSelectionConnection().isSelected(songHolder));
+
+		image.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				getSelectionConnection().setSelected(songHolder);
+				image.setSelected(songHolder.isSelectableSelected());
+			}
+		});
 
 		text1.setText(songHolder.song);
 		text2.setText(songHolder.artist);
-		text3.setText(albumHolder == null ? null : albumHolder.title);
+		text3.setText(songHolder.albumHolder.title);
 
-		text3.setVisibility(albumHolder == null ? View.GONE : View.VISIBLE);
-
-		SweetImageLoader.load(this, getContext(), image, albumHolder);
+		SweetImageLoader.load(this, getContext(), image, songHolder.albumHolder);
 
 		return convertView;
 	}
@@ -165,21 +171,24 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 		public String artist;
 		public String song;
 		public int albumId;
+		public AlbumHolder albumHolder;
 
-		public SongHolder(String displayName, String artist, String song, int albumId, Uri uri)
+		public SongHolder(String displayName, String artist, String song, int albumId, AlbumHolder albumHolder, Uri uri)
 		{
 			super(artist + " - " + song, displayName, uri);
 
 			this.artist = artist;
 			this.song = song;
 			this.albumId = albumId;
+			this.albumHolder = albumHolder == null ? new AlbumHolder(albumId, "-", null) : albumHolder;
 		}
 
 		@Override
 		public boolean searchMatches(String searchWord)
 		{
 			return TextUtils.searchWord(artist, searchWord)
-					|| TextUtils.searchWord(song, searchWord);
+					|| TextUtils.searchWord(song, searchWord)
+					|| TextUtils.searchWord(albumHolder.title, searchWord);
 		}
 	}
 

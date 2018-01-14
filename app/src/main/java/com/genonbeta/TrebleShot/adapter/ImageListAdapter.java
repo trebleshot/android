@@ -41,7 +41,7 @@ public class ImageListAdapter
         @Override
         public int compare(ImageHolder compareFrom, ImageHolder compareTo)
         {
-            return (int)(compareTo.mod_time - compareFrom.mod_time);
+            return (int)(compareTo.dateTaken - compareFrom.dateTaken);
         }
     };
 
@@ -69,7 +69,7 @@ public class ImageListAdapter
         if (cursor.moveToFirst()) {
             int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
             int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
-            int modTime = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+            int dateTaken = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
 
             do {
                 ImageHolder info = new ImageHolder(
@@ -78,7 +78,7 @@ public class ImageListAdapter
                         cursor.getString(displayIndex),
                         null,
                         Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)),
-                        Long.parseLong(cursor.getString(modTime)));
+                        Long.parseLong(cursor.getString(dateTaken)));
 
                 list.add(info);
             }
@@ -128,16 +128,28 @@ public class ImageListAdapter
         if (convertView == null)
             convertView = getInflater().inflate(R.layout.list_image, parent, false);
 
-        ImageHolder info = (ImageHolder) this.getItem(position);
+        final ImageHolder holder = (ImageHolder) this.getItem(position);
 
-        TextView titleView = convertView.findViewById(R.id.text);
-        TextView dateView = convertView.findViewById(R.id.text2);
-        ImageView imageView = convertView.findViewById(R.id.image);
+		final ImageView image = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
 
-        titleView.setText(info.friendlyName);
-        dateView.setText(info.mod_time_string);
+        text1.setText(holder.friendlyName);
+        text2.setText(holder.dateTakenString);
 
-        SweetImageLoader.load(this, getContext(), imageView, info);
+		image.setSelected(getSelectionConnection().isSelected(holder));
+
+		image.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				getSelectionConnection().setSelected(holder);
+				image.setSelected(holder.isSelectableSelected());
+			}
+		});
+
+        SweetImageLoader.load(this, getContext(), image, holder);
 
         return convertView;
     }
@@ -146,19 +158,21 @@ public class ImageListAdapter
     {
         public long id;
         public String thumbnail;
-        public long mod_time;
-        public String mod_time_string;
+        public long dateTaken;
+        public String dateTakenString;
 
         public ImageHolder(int id, String friendlyName, String filename, String thumbnail, Uri uri, long mod_time)
         {
             super(friendlyName, filename, uri);
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.getDefault());
+
+            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+
             this.id = id;
             this.thumbnail = thumbnail;
-            this.mod_time = mod_time/1000;
-            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.ENGLISH);
-            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            this.mod_time_string = sdf.format(new Date(mod_time));
+            this.dateTaken = mod_time/1000;
+            this.dateTakenString = dateFormat.format(new Date(mod_time));
         }
     }
 }

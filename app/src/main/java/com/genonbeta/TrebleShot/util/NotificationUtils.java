@@ -261,12 +261,14 @@ public class NotificationUtils
 		} catch (Exception e) {
 		}
 
-		notification.setChannelId(NOTIFICATION_CHANNEL_LOW)
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
 				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentTitle(transactionObject.friendlyName)
 				.setContentText(mContext.getString(R.string.text_fileReceived))
 				.setContentInfo(device.nickname)
 				.setAutoCancel(true)
+				.setDefaults(getNotificationSettings())
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.addAction(R.drawable.ic_folder_white_24dp, mContext.getString(R.string.butn_showFiles),
 						PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, HomeActivity.class)
 								.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)

@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.util.Log;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
@@ -32,11 +34,17 @@ public class TextUtils
 
 	public static String getFirstLetters(String text, int breakAfter)
 	{
+		if (text == null || text.length() == 0)
+			text = "?";
+
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (String letter : text.split(" ")) {
 			if (stringBuilder.length() > breakAfter)
 				break;
+
+			if (letter.length() == 0)
+				continue;
 
 			stringBuilder.append(letter.charAt(0));
 		}

@@ -15,7 +15,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * date: 9.11.2017 23:39
  */
 
-public class TransactionGroupListAdapter extends ShareableListAdapter<TransactionGroupListAdapter.PreloadedGroup>
+public class TransactionGroupListAdapter extends EditableListAdapter<TransactionGroupListAdapter.PreloadedGroup>
 {
 	public static final String FIELD_TRANSACTIONCOUNT = "transactionCount";
 	public static final String FIELD_DEVICENAME = "deviceName";
@@ -122,19 +122,33 @@ public class TransactionGroupListAdapter extends ShareableListAdapter<Transactio
 
 		final PreloadedGroup group = (PreloadedGroup) getItem(i);
 
-		ImageView userImage = view.findViewById(R.id.list_transaction_group_image_device);
-		TextView titleText = view.findViewById(R.id.list_transaction_group_text_title);
-		TextView text1 = view.findViewById(R.id.list_transaction_group_text_text1);
-		TextView text2 = view.findViewById(R.id.list_transaction_group_text_text2);
+		final ImageView image = view.findViewById(R.id.image);
+		TextView text1 = view.findViewById(R.id.text);
+		TextView text2 = view.findViewById(R.id.text2);
+		TextView text3 = view.findViewById(R.id.text3);
 
 		String firstLetters = TextUtils.getFirstLetters(group.deviceName, 1);
 
 		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.networkDeviceRipple), 100);
 
-		titleText.setText(group.deviceName);
-		text1.setText(getContext().getResources().getQuantityString(R.plurals.text_files, group.transactionCount, group.transactionCount));
-		text2.setText(TimeUtils.getTimeAgo(getContext(), group.dateCreated));
-		userImage.setImageDrawable(drawable);
+		if (getSelectionConnection() != null) {
+			image.setSelected(getSelectionConnection().isSelected(group));
+
+			image.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(group);
+					image.setSelected(group.isSelectableSelected());
+				}
+			});
+		}
+
+		text1.setText(group.deviceName);
+		text2.setText(getContext().getResources().getQuantityString(R.plurals.text_files, group.transactionCount, group.transactionCount));
+		text3.setText(TimeUtils.getTimeAgo(getContext(), group.dateCreated));
+		image.setImageDrawable(drawable);
 
 		return view;
 	}

@@ -31,7 +31,6 @@ public class TransactionGroupListFragment
 		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter>
 		implements TitleSupport
 {
-	private ArrayList<TransactionGroupListAdapter.PreloadedGroup> mSelectionList = new ArrayList<>();
 	public SQLQuery.Select mSelect;
 	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
@@ -89,9 +88,15 @@ public class TransactionGroupListFragment
 	{
 		super.onListItemClick(l, v, position, id);
 
-		final TransactionObject.Group thisGroup = (TransactionObject.Group) getAdapter().getItem(position);
+		if (!setItemSelected(position))
+			TransactionActivity.startInstance(getActivity(), ((TransactionObject.Group) getAdapter().getItem(position)).groupId);
+	}
 
-		TransactionActivity.startInstance(getActivity(), thisGroup.groupId);
+	@Override
+	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+	{
+		super.onPrepareActionMenu(context, actionMode);
+		return true;
 	}
 
 	@Override
@@ -103,51 +108,19 @@ public class TransactionGroupListFragment
 	}
 
 	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-	{
-		super.onPrepareActionMenu(context, actionMode);
-		getSelectionList().clear();
-		return true;
-	}
-
-	@Override
 	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
 		int id = item.getItemId();
 
-		if (id == R.id.action_mode_abs_editable_multi_select) {
-			getSelectionList().clear();
-			setSelection(getListView().getCheckedItemCount() != getAdapter().getCount());
+		ArrayList<TransactionGroupListAdapter.PreloadedGroup> selectionList = getSelectionConnection().getSelectedItemList();
 
-			return false;
-		} else if (id == R.id.action_mode_group_delete) {
-			for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : mSelectionList)
+		if (id == R.id.action_mode_group_delete) {
+			for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
 				mDatabase.remove(preloadedGroup);
+		} else
+			return super.onActionMenuItemSelected(context, actionMode, item);
 
-			return true;
-		}
-
-		return false;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
-	{
-		super.onItemChecked(context, actionMode, position, isSelected);
-
-		TransactionGroupListAdapter.PreloadedGroup preloadedGroup = (TransactionGroupListAdapter.PreloadedGroup) getAdapter().getItem(position);
-
-		if (isSelected)
-			getSelectionList().add(preloadedGroup);
-		else
-			getSelectionList().remove(preloadedGroup);
-
-		actionMode.setTitle(String.valueOf(getSelectionList().size()));
-	}
-
-	public ArrayList<TransactionGroupListAdapter.PreloadedGroup> getSelectionList()
-	{
-		return mSelectionList;
+		return true;
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 
@@ -72,6 +73,11 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 	}
 
 	public abstract E onAdapter();
+
+	protected Snackbar createSnackbar(int resId, Object... objects)
+	{
+		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+	}
 
 	public E getAdapter()
 	{

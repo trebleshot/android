@@ -30,9 +30,11 @@
         </LinearLayout>
 
         <View
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:id="@+id/selector"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_gravity="center"
-            android:background="@drawable/state_selected_image"/>
+            android:foregroundGravity="center"
+            android:foreground="@drawable/state_selected_image"/>
 
 </FrameLayout>

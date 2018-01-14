@@ -82,6 +82,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentShareImage;
 	private Fragment mFragmentShareText;
 
+	private Fragment mCommitFailedFragment;
+
 	private long mExitPressTime;
 
 	private boolean mIsStopped = false;
@@ -142,16 +144,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-		if (!mPreferences.contains("migrated_version")) {
-			if (localDevice.versionNumber == 49) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-				builder.setTitle(R.string.text_importantNotice);
-				builder.setMessage(R.string.text_migrateNotice49);
-				builder.setPositiveButton(R.string.butn_close, null);
-				builder.show();
-			}
-		} else if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
+		if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
 			// migrating to a new version
 		}
 
@@ -189,6 +182,23 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			deviceNameText.setText(localDevice.nickname);
 			versionText.setText(localDevice.versionName);
 		}
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		// check if no fragment is shown
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (mCommitFailedFragment != null)
+					changeFragment(mCommitFailedFragment);
+			}
+		}, 900);
 	}
 
 	@Override
@@ -289,8 +299,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 				ft.replace(R.id.content_frame, fragment);
 
-				if (!mIsStopped)
+				if (!mIsStopped) {
 					ft.commit();
+					mCommitFailedFragment = null;
+				}
+				else
+					mCommitFailedFragment = fragment;
 
 				setTitle(fragment instanceof TitleSupport
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)

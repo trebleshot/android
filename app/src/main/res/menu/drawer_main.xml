@@ -32,7 +32,7 @@
 
                 <item
                     android:id="@+id/menu_activity_main_share_image"
-                    android:icon="@drawable/ic_video_library_white_24dp"
+                    android:icon="@drawable/ic_photo_white_24dp"
                     android:title="@string/text_image"/>
 
                 <item
