@@ -119,7 +119,7 @@
     <string name="text_stopping">Stopping!</string>
     <string name="text_cancellingTransfer">Canceling job…</string>
     <string name="butn_killNow">Kill now</string>
-    <string name="mesg_groupOngoingNotice">File complete in %s</string>
+    <string name="mesg_groupOngoingNotice">Waiting for %s to finish before transferring this file</string>
     <string name="butn_proceed">Proceed</string>
     <string name="ques_removeQueue">Remove transfer queue?</string>
     <string name="butn_remove">Remove</string>
