@@ -30,7 +30,7 @@
     <string name="text_developerModeSummary">Dit schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
     <string name="text_deviceNameSummary">Deze naam zal worden weergegeven op andere apparaten</string>
-    <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
+    <string name="text_deviceNameTitle">Voer de apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Het formaat wordt niet ondersteund</string>
     <string name="mesg_fileSendError">Het bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
@@ -87,7 +87,7 @@
     <string name="text_useLightSummary">Lichten gebruiken</string>
     <string name="mesg_scanCompleted">Scannen voltooid</string>
     <string name="text_autoStart">Automatisch starten</string>
-    <string name="text_autoStartSummary">De dienst zal worden gestart zodra er een verbinding is gedetecteerd</string>
+    <string name="text_autoStartSummary">Dienst starten zodra er een verbinding is gedetecteerd</string>
     <string name="text_application">Applicatie</string>
     <string name="text_image">Afbeelding</string>
     <string name="text_music">Muziek</string>
@@ -274,4 +274,7 @@
     <string name="text_versionNotSupported">\@string/mesg_versionNotSupported</string>
     <string name="mesg_connectionUpdated">De communicatie zal lopen over de verbinding \"%s\"</string>
     <string name="mesg_ongoingUpdateDownload">Bezig met downloaden van update</string>
+<string name="butn_gotIt">Ik begrijp het</string>
+    <string name="mesg_helpFolderSelection">Druk op een map-pictogram om deze te selecteren</string>
+    <string name="mesg_hotspotCreatedInfo">Maak verbinding met \"%s\" in de WiFi-instellingen of verstuur bestanden via \"%s\" binnen TrebleShot</string>
 </resources>
