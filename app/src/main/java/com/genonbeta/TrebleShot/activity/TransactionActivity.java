@@ -61,10 +61,9 @@ import java.util.ArrayList;
  * Date: 5/23/17 1:43 PM
  */
 
-public class TransactionActivity extends Activity implements
-		NavigationView.OnNavigationItemSelectedListener,
-		TransactionListAdapter.PathChangedListener,
-		PowerfulActionModeSupported
+public class TransactionActivity
+		extends Activity
+		implements NavigationView.OnNavigationItemSelectedListener, TransactionListAdapter.PathChangedListener, PowerfulActionModeSupported
 {
 	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 

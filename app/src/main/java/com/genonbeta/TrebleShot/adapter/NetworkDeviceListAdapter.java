@@ -2,8 +2,10 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,6 +15,7 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -26,42 +29,55 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	private boolean mShowLocalAddresses = false;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 	private AccessDatabase mDatabase;
-	private WifiManager mWifiManager;
+	private NetworkDeviceListFragment mFragment;
 
-	public NetworkDeviceListAdapter(Context context, WifiManager wifiManager, boolean showLocalAddresses)
+	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, boolean showLocalAddresses)
 	{
-		super(context);
+		super(fragment.getActivity());
 
 		mShowLocalAddresses = showLocalAddresses;
 		mDatabase = new AccessDatabase(getContext());
-		mWifiManager = wifiManager;
+		mFragment = fragment;
 	}
 
 	@Override
 	public ArrayList<NetworkDevice> onLoad()
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
-		ArrayList<NetworkDevice> dbList = new ArrayList<>();
 
-		for (ScanResult resultIndex : mWifiManager.getScanResults()) {
+		for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
 			if (!resultIndex.SSID.startsWith(AppConfig.ACCESS_POINT_PREFIX))
 				continue;
 
 			HotspotNetwork hotspotNetwork = new HotspotNetwork();
 
 			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-			hotspotNetwork.scanResult = resultIndex;
-			hotspotNetwork.nickname = resultIndex.SSID
-					.substring(AppConfig.ACCESS_POINT_PREFIX.length())
-					.replace("_", " ");
+			hotspotNetwork.SSID = resultIndex.SSID;
+			hotspotNetwork.BSSID = resultIndex.BSSID;
+			hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
 
-			dbList.add(hotspotNetwork);
+			Log.d("Fuck", "name: " + resultIndex.SSID);
+
+			list.add(hotspotNetwork);
 		}
 
-		dbList.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class));
+		if (list.size() == 0 && mFragment.isConnectionSelfNetwork()) {
+			WifiInfo wifiInfo = mFragment.getWifiManager().getConnectionInfo();
 
-		for (NetworkDevice device : dbList)
+			HotspotNetwork hotspotNetwork = new HotspotNetwork();
+
+			Log.d("Fuck", "name: " + wifiInfo.getSSID());
+
+			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
+			hotspotNetwork.SSID = wifiInfo.getSSID();
+			hotspotNetwork.BSSID = wifiInfo.getBSSID();
+			hotspotNetwork.nickname = getFriendlySSID(wifiInfo.getSSID());
+
+			list.add(hotspotNetwork);
+		}
+
+		for (NetworkDevice device : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
+				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
 			if (device instanceof HotspotNetwork
 					|| (device.nickname != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress)))
 				list.add(device);
@@ -85,6 +101,14 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	public AccessDatabase getDatabase()
 	{
 		return mDatabase;
+	}
+
+	public String getFriendlySSID(String ssid)
+	{
+		return ssid
+				.replace("\"", "")
+				.substring(AppConfig.ACCESS_POINT_PREFIX.length())
+				.replace("_", " ");
 	}
 
 	@Override
@@ -131,7 +155,8 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 
 	public static class HotspotNetwork extends NetworkDevice
 	{
-		public ScanResult scanResult;
+		public String SSID;
+		public String BSSID;
 
 		public HotspotNetwork()
 		{

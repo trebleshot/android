@@ -1,6 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
-    <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Gezinti çekmecesini aç</string>
     <string name="text_navigationDrawerClose">Gezinti çekmecesini kapa</string>
     <string name="text_preferences">Ayarlar</string>
@@ -249,7 +248,7 @@
     <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor. 20 saniyeden fazla sürmemesi gerekir</string>
     <string name="mesg_warningHotspotMobileActive">Mobil veri etkin. Başkaları ağınıza bağlanalabilir</string>
-    <string name="butn_skip">Geç</string>
+    <string name="butn_skip">Atla</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
     <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuz\'u etkinleştirmek ister misiniz?</string>
     <string name="butn_enable">Etkinleştir</string>
@@ -269,4 +268,7 @@
     <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
     <string name="mesg_connectionUpdated">İletişim \"%s\" bağlantısı üzerinden gerçekleştirilecek</string>
     <string name="mesg_ongoingUpdateDownload">Güncelleme indiriliyor</string>
+    <string name="butn_gotIt">Anladım</string>
+    <string name="mesg_helpFolderSelection">Bir klasörü seçmek için simgesine dokunun</string>
+    <string name="mesg_hotspotCreatedInfo">\"%s\" ağına bağlanın veya TrebleShot ile \"%s\" adıyla dosya gönderin</string>
 </resources>

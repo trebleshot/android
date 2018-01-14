@@ -9,6 +9,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  * date: 30.12.2017 13:25
  */
 
-public class TextStreamListAdapter extends ShareableListAdapter<TextStreamObject>
+public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 {
 	private ArrayList<TextStreamObject> mList = new ArrayList<>();
 	private AccessDatabase mDatabase;
@@ -81,8 +82,12 @@ public class TextStreamListAdapter extends ShareableListAdapter<TextStreamObject
 			view = getInflater().inflate(R.layout.list_text_stream, viewGroup, false);
 
 		TextStreamObject info = (TextStreamObject) getItem(position);
+		View selector = view.findViewById(R.id.selector);
 		TextView text1 = view.findViewById(R.id.text);
 		TextView text2 = view.findViewById(R.id.text2);
+
+		if (getSelectionConnection() != null)
+			selector.setSelected(getSelectionConnection().isSelected(info));
 
 		text1.setText(info.text);
 		text2.setText(TimeUtils.getTimeAgo(getContext(), info.time));

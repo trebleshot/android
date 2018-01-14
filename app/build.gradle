@@ -9,7 +9,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 55
-        versionName "1.2.5.beta1"
+        versionName "1.2.5"
     }
 
     lintOptions {

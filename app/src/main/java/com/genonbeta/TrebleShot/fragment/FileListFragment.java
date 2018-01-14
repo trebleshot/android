@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,6 +18,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
@@ -44,8 +46,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 				if (extraPath.equals(getAdapter().getPath().getAbsolutePath()))
 					refreshList();
 				else
-					Snackbar
-							.make(getActivity().findViewById(android.R.id.content), R.string.mesg_newFilesReceived, Snackbar.LENGTH_LONG)
+					createSnackbar(R.string.mesg_newFilesReceived)
 							.setAction(R.string.butn_show, new View.OnClickListener()
 							{
 								@Override
@@ -105,11 +106,28 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	{
 		FileListAdapter.FileHolder fileInfo = (FileListAdapter.FileHolder) getAdapter().getItem(position);
 
-		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo))
+		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo)) {
 			if (!fileInfo.isFolder)
 				super.onListItemClick(l, v, position, id);
-			else
+			else {
 				goPath(fileInfo.file);
+
+				if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+					createSnackbar(R.string.mesg_helpFolderSelection)
+							.setAction(R.string.butn_gotIt, new View.OnClickListener()
+							{
+								@Override
+								public void onClick(View v)
+								{
+									PreferenceManager.getDefaultSharedPreferences(getActivity())
+											.edit()
+											.putBoolean("helpFolderSelection", true)
+											.apply();
+								}
+							})
+							.show();
+			}
+		}
 	}
 
 	@Override
@@ -130,7 +148,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
 		if (item.getItemId() == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
-			new FileDeleteDialog<>(getActivity(), getSelectionList(), new FileDeleteDialog.Listener()
+			new FileDeleteDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeleteDialog.Listener()
 			{
 				@Override
 				public void onFileDeletion(Context context, File file)
@@ -157,14 +175,6 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	{
 		if (mPathChangedListener != null)
 			mPathChangedListener.onPathChanged(file);
-
-		PowerfulActionMode powerfulActionMode = getPowerfulActionMode();
-
-		if (powerfulActionMode != null
-				&& ((file == null && getAdapter().getPath() != null)
-				|| (file != null && !file.equals(getAdapter().getPath()))
-		))
-			powerfulActionMode.finish(this);
 
 		getAdapter().goPath(file);
 		refreshList();

@@ -122,16 +122,19 @@ public class VideoListAdapter
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_video, parent, false);
 
-		VideoHolder info = (VideoHolder) this.getItem(position);
+		final VideoHolder holder = (VideoHolder) this.getItem(position);
 
-		TextView titleView = convertView.findViewById(R.id.text);
-		TextView durationView = convertView.findViewById(R.id.duration);
-		ImageView imageView = convertView.findViewById(R.id.image);
+		final ImageView image = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
 
-		titleView.setText(info.friendlyName);
-		durationView.setText(info.duration);
+		text1.setText(holder.friendlyName);
+		text2.setText(holder.duration);
 
-		SweetImageLoader.load(this, getContext(), imageView, info);
+		if (getSelectionConnection() != null)
+			image.setSelected(getSelectionConnection().isSelected(holder));
+
+		SweetImageLoader.load(this, getContext(), image, holder);
 
 		return convertView;
 	}

@@ -38,6 +38,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
+import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
@@ -78,7 +79,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentShareApplication;
 	private Fragment mFragmentShareMusic;
 	private Fragment mFragmentShareVideo;
+	private Fragment mFragmentShareImage;
 	private Fragment mFragmentShareText;
+
+	private Fragment mCommitFailedFragment;
 
 	private long mExitPressTime;
 
@@ -117,6 +121,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
 		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
+		mFragmentShareImage = Fragment.instantiate(this, ImageListFragment.class.getName());
 		mFragmentShareText = Fragment.instantiate(this, TextStreamListFragment.class.getName());
 
 		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
@@ -139,16 +144,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-		if (!mPreferences.contains("migrated_version")) {
-			if (localDevice.versionNumber == 49) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-				builder.setTitle(R.string.text_importantNotice);
-				builder.setMessage(R.string.text_migrateNotice49);
-				builder.setPositiveButton(R.string.butn_close, null);
-				builder.show();
-			}
-		} else if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
+		if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
 			// migrating to a new version
 		}
 
@@ -189,6 +185,23 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	}
 
 	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		// check if no fragment is shown
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				if (mCommitFailedFragment != null)
+					changeFragment(mCommitFailedFragment);
+			}
+		}, 900);
+	}
+
+	@Override
 	protected void onStop()
 	{
 		super.onStop();
@@ -210,6 +223,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			changeFragment(mFragmentShareMusic);
 		} else if (R.id.menu_activity_main_share_video == item.getItemId()) {
 			changeFragment(mFragmentShareVideo);
+		} else if (R.id.menu_activity_main_share_image == item.getItemId()) {
+			changeFragment(mFragmentShareImage);
 		} else if (R.id.menu_activity_main_share_text == item.getItemId()) {
 			changeFragment(mFragmentShareText);
 		} else if (R.id.menu_activity_main_about == item.getItemId()) {
@@ -284,8 +299,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 				ft.replace(R.id.content_frame, fragment);
 
-				if (!mIsStopped)
+				if (!mIsStopped) {
 					ft.commit();
+					mCommitFailedFragment = null;
+				}
+				else
+					mCommitFailedFragment = fragment;
 
 				setTitle(fragment instanceof TitleSupport
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)

@@ -2,27 +2,36 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.ListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+
+import java.util.ArrayList;
 
 /**
  * created by: Veli
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T, E extends ListAdapter<T>>
+abstract public class EditableListFragment<T extends Selectable, E extends EditableListAdapter<T>>
 		extends com.genonbeta.TrebleShot.app.ListFragment<T, E>
-		implements PowerfulActionMode.Callback, DetachListener
+		implements PowerfulActionMode.Callback<T>, DetachListener
 {
 	private MenuItem mMultiSelect;
+	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private boolean mRefreshRequested = false;
 
 	@Override
@@ -32,7 +41,11 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		getListView().setDividerHeight(0);
 
 		if (getPowerfulActionMode() != null) {
-			getPowerfulActionMode().enableFor(this);
+			mSelectionConnection = new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), this);
+
+			getAdapter().setSelectionConnection(getSelectionConnection());
+			getPowerfulActionMode().enableFor(getSelectionConnection());
+
 			setHasOptionsMenu(true);
 		}
 	}
@@ -77,7 +90,6 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		getListView().setClipToPadding(false);
 
 		actionMode.setTitle(String.valueOf(0));
-
 		return false;
 	}
 
@@ -90,10 +102,27 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 	}
 
 	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
+	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable)
 	{
+		int selectedSize = getSelectionConnection()
+				.getSelectedItemList()
+				.size();
+
+		actionMode.setTitle(String.valueOf(selectedSize));
+
 		if (mMultiSelect != null)
-			mMultiSelect.setIcon(getListView().getCheckedItemCount() != getAdapter().getCount() ? R.drawable.ic_select : R.drawable.ic_select_undo);
+			mMultiSelect.setIcon(selectedSize != getAdapter().getCount() ? R.drawable.ic_select : R.drawable.ic_select_undo);
+	}
+
+	@Override
+	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.action_mode_abs_editable_multi_select)
+			setSelection();
+
+		return false;
 	}
 
 	@Override
@@ -101,6 +130,8 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 	{
 		getListView().setPadding(0, 0, 0, 0);
 		getListView().setClipToPadding(true);
+
+		setSelection(false);
 
 		loadIfRequested();
 	}
@@ -111,6 +142,17 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 		return getListView();
 	}
 
+	@Override
+	public ArrayList<T> getSelectableList()
+	{
+		return getAdapter().getList();
+	}
+
+	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
+	{
+		return mSelectionConnection;
+	}
+
 	public PowerfulActionMode getPowerfulActionMode()
 	{
 		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupported
@@ -118,10 +160,16 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 				: null;
 	}
 
-	public boolean isRefreshLocked()
+	public boolean isSelectionActivated()
 	{
 		return getPowerfulActionMode() != null
-				&& getPowerfulActionMode().hasActive(this);
+				&& getPowerfulActionMode().hasActive(this)
+				&& getSelectionConnection() != null;
+	}
+
+	public boolean isRefreshLocked()
+	{
+		return false;
 	}
 
 	public boolean isRefreshRequested()
@@ -155,11 +203,32 @@ abstract public class EditableListFragment<T, E extends ListAdapter<T>>
 			super.refreshList();
 	}
 
+	public boolean setItemSelected(int position)
+	{
+		if (isSelectionActivated()) {
+			getSelectionConnection().setSelected(getSelectableList().get(position));
+			getAdapter().notifyDataSetChanged();
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean setSelection()
+	{
+		boolean allSelected = getSelectionConnection().getSelectedItemList().size() != getSelectableList().size();
+
+		setSelection(allSelected);
+
+		return allSelected;
+	}
+
 	public void setSelection(boolean selection)
 	{
-		PowerfulActionMode powerfulActionMode = getPowerfulActionMode();
+		for (T selectable : getSelectableList())
+			getSelectionConnection().setSelected(selectable, selection);
 
-		for (int position = 0; position < getAdapter().getCount(); position++)
-			powerfulActionMode.check(this, position, selection);
+		getAdapter().notifyDataSetChanged();
 	}
 }

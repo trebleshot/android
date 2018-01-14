@@ -179,14 +179,28 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_file, parent, false);
 
-		FileHolder holder = (FileHolder) getItem(position);
+		final FileHolder holder = (FileHolder) getItem(position);
 
-		ImageView typeImage = convertView.findViewById(R.id.image);
+		final ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
 		TextView text3 = convertView.findViewById(R.id.text3);
 
-		typeImage.setImageResource(holder.isFolder ? R.drawable.ic_folder_black_24dp : R.drawable.ic_whatshot_white_24dp);
+		if (getSelectionConnection() != null) {
+			image.setSelected(getSelectionConnection().isSelected(holder));
+
+			image.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(holder);
+					image.setSelected(holder.isSelectableSelected());
+				}
+			});
+		}
+
+		image.setImageResource(holder.isFolder ? R.drawable.ic_folder_white_24dp: R.drawable.ic_whatshot_white_24dp);
 		text1.setText(holder.friendlyName);
 		text2.setText(holder.fileInfo);
 		text3.setText(TimeUtils.getTimeAgo(getContext(), holder.file.lastModified()));

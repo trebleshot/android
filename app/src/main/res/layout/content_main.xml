@@ -15,24 +15,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/content_powerful_action_mode_layout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="15dp"
-        android:visibility="gone"
-        app:cardBackgroundColor="?attr/actionModeBackground"
-        app:cardElevation="5dp">
-
-        <com.genonbeta.TrebleShot.widget.PowerfulActionMode
-            android:id="@+id/content_powerful_action_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-    </android.support.v7.widget.CardView>
-
 </RelativeLayout>

@@ -8,7 +8,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,7 +35,6 @@ public class TransactionListFragment
 {
 	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
-	private ArrayList<TransactionObject> mSelectionList = new ArrayList<>();
 	public BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -86,7 +87,22 @@ public class TransactionListFragment
 		if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
 			getAdapter().setPath(transactionObject.directory);
 			refreshList();
-		} else
+
+			if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+				createSnackbar(R.string.mesg_helpFolderSelection)
+						.setAction(R.string.butn_gotIt, new View.OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								PreferenceManager.getDefaultSharedPreferences(getActivity())
+										.edit()
+										.putBoolean("helpFolderSelection", true)
+										.apply();
+							}
+						})
+						.show();
+		} else if (!setItemSelected(position))
 			new TransactionInfoDialog(getActivity(), mDatabase, transactionObject).show();
 	}
 
@@ -95,7 +111,6 @@ public class TransactionListFragment
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
 	{
 		super.onPrepareActionMenu(context, actionMode);
-		getSelectionList().clear();
 		return true;
 	}
 
@@ -112,11 +127,13 @@ public class TransactionListFragment
 	{
 		int id = item.getItemId();
 
+		final ArrayList<TransactionObject> selectionList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
+
 		if (id == R.id.action_mode_transaction_delete) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
 			builder.setTitle(R.string.ques_removeQueue);
-			builder.setMessage(getResources().getQuantityString(R.plurals.text_removeQueueSummary, getSelectionList().size(), getSelectionList().size()));
+			builder.setMessage(getResources().getQuantityString(R.plurals.text_removeQueueSummary, selectionList.size(), selectionList.size()));
 			builder.setNegativeButton(R.string.butn_close, null);
 			builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
 			{
@@ -128,9 +145,8 @@ public class TransactionListFragment
 						@Override
 						public void run()
 						{
-							for (TransactionObject transactionObject : getSelectionList())
+							for (TransactionObject transactionObject : selectionList)
 								if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
-
 									mDatabase.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 											.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
 															+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
@@ -138,42 +154,18 @@ public class TransactionListFragment
 													String.valueOf(getAdapter().getGroupId()),
 													transactionObject.directory + File.separator + "%",
 													transactionObject.directory));
-								} else {
+								} else
 									mDatabase.remove(transactionObject);
-								}
 						}
 					});
 				}
 			});
 
 			builder.show();
-		} else if (id == R.id.action_mode_abs_editable_multi_select) {
-			setSelection(getListView().getCheckedItemCount() != getAdapter().getCount());
-			return false;
 		} else
-			return false;
+			return super.onActionMenuItemSelected(context, actionMode, item);
 
 		return true;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, int position, boolean isSelected)
-	{
-		super.onItemChecked(context, actionMode, position, isSelected);
-
-		TransactionObject shareable = (TransactionObject) getAdapter().getItem(position);
-
-		if (isSelected)
-			getSelectionList().add(shareable);
-		else
-			getSelectionList().remove(shareable);
-
-		actionMode.setTitle(String.valueOf(getSelectionList().size()));
-	}
-
-	public ArrayList<TransactionObject> getSelectionList()
-	{
-		return mSelectionList;
 	}
 
 	@Override

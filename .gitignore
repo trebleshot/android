@@ -3,6 +3,6 @@
 /.gradle
 /.idea
 /projectFilesBackup
-TSMAT.iml
+*.iml
 local.properties
 *.apk

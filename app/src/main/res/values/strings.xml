@@ -7,12 +7,10 @@
     text_ : any kind of text that doesn't belong to the prefixes above
 -->
 <resources>
-    <string name="text_appName">TrebleShot</string>
+    <string translatable="false" name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
-    <string name="mesg_loading">Loading…</string>
-    <string name="text_unknownUser">Unknown User</string>
     <string name="text_connected">Connected</string>
     <string name="text_invited">Invited</string>
     <string name="mesg_connectionFailure">Connection failed</string>
@@ -24,29 +22,23 @@
     <string name="ques_receiveFile">Receive file?</string>
     <string name="butn_accept">Accept</string>
     <string name="butn_reject">Reject</string>
-    <string name="text_ongoing">Ongoing</string>
     <string name="butn_stopService">Stop</string>
     <string name="text_sending">Sending</string>
     <string name="butn_cancelSending">Cancel sending</string>
     <string name="text_receiving">Receiving</string>
     <string name="butn_cancelReceiving">Cancel receiving</string>
-    <string name="text_fileReceived">File has been received</string>
+    <string name="text_fileReceived">The file has been received</string>
     <string name="butn_scan">Scan</string>
     <string name="text_listEmpty">List is empty</string>
     <string name="text_developerMode">Developer mode</string>
     <string name="text_developerModeSummary">It disables user configuration</string>
     <string name="text_deviceName">Device name</string>
     <string name="text_deviceNameSummary">This name will be shown on other devices</string>
-    <string name="text_deviceNameTitle">Enter device name</string>
+    <string name="text_deviceNameTitle">Enter the device name</string>
     <string name="mesg_formatNotSupported">The format is not supported</string>
-    <string name="mesg_fileSendError">File cannot be sent. %s</string>
-    <string name="mesg_fileSent">%s has been sent</string>
-    <string name="mesg_fileSendCancelled">Sending %s has been cancelled</string>
-    <string name="mesg_fileNameChanged">Saving as %s</string>
-    <string name="mesg_fileReceived">File %s has been received</string>
+    <string name="mesg_fileSendError">The file cannot be sent. %s</string>
     <string name="mesg_fileReceiveError">While receiving %s, something went wrong</string>
-    <string name="mesg_fileReceiveCancelled">Cancelled receiving %s</string>
-    <string name="text_multipleFileReceiveCompleted">Files has been received</string>
+    <string name="text_multipleFileReceiveCompleted">The files has been received</string>
     <string name="text_deviceList">Device list</string>
     <string name="text_fileOpenAppChoose">Open with</string>
     <string name="text_fileShareAppChoose">Choose an application</string>
@@ -55,7 +47,6 @@
     <string name="butn_share">Share</string>
     <string name="butn_delete">Delete</string>
     <string name="text_deleteConfirm">Confirm Delete</string>
-    <string name="mesg_deleteFileStarted">Files will be deleted</string>
     <string name="butn_cancel">Cancel</string>
     <string name="text_refresh">Refresh</string>
     <string name="butn_shareTrebleshot">Share this app</string>
@@ -69,14 +60,13 @@
     <string name="butn_pendingTransfers">Queue</string>
     <string name="butn_shareWithTrebleshot">Share with TrebleShot</string>
     <string name="mesg_somethingWentWrong">Something went wrong</string>
-    <string name="text_findDevicesHint">To find nearby devices touch the search icon</string>
+    <string name="text_findDevicesHint">To find nearby devices tap the search icon</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
     <string name="text_autoScanDevicesSummary">Scans devices when it is necessary</string>
     <string name="mesg_stillScanning">Still scanning</string>
     <string name="text_advanced">Advanced</string>
     <string name="text_storagePath">Storage path</string>
     <string name="text_storagePathSummary">New files will be saved to this folder</string>
-    <string name="mesg_enteredPathNotRead">The path you entered cannot be used</string>
     <string name="mesg_pathUnavailable">%s currently unavailable</string>
     <string name="butn_showOnFileManager">Show on file manager</string>
     <string name="text_chooseFileManager">Choose file manager</string>
@@ -94,7 +84,7 @@
     <string name="text_useLightSummary">Use lights</string>
     <string name="mesg_scanCompleted">Scan completed</string>
     <string name="text_autoStart">Auto-start</string>
-    <string name="text_autoStartSummary">Service will be started when a connection is detected</string>
+    <string name="text_autoStartSummary">Enable communication when a connection is detected</string>
     <string name="text_application">Application</string>
     <string name="text_image">Image</string>
     <string name="text_music">Music</string>
@@ -166,10 +156,6 @@
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
     <string name="butn_newFile">New file</string>
-    <string name="butn_keepFile">Keep</string>
-    <string name="text_fixFileSaveLocation">Fix save location</string>
-    <string name="text_fileConflictNoChoice">The folder you chose for %s file is currently unavailable and current file name conflicts with a file in default folder. If it is a partially received version of the same file select \'Keep\' or select \'New file\' to generate new file</string>
-    <string name="text_fileConflictUseDefault">The folder you choose for %s file is currently unavailable. Proceed to use default folder</string>
     <string name="mesg_currentPathUnavailable">This folder cannot be used. Please, choose another folder.</string>
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
@@ -201,8 +187,6 @@
     <string name="text_flagInterrupted">Interrupted</string>
     <string name="text_flagResume">Resumed</string>
     <string name="text_unknown">Unknown</string>
-    <string name="text_importantNotice">Important notice</string>
-    <string name="text_migrateNotice49">Thanks for choosing open-source and making us stronger. Please read this if you are migrating from an old version. This version of TrebleShot cannot communicate with the devices running older versions. We have upgraded TrebleShot\'s communication mechanism to better one. Please update your devices running older versions to the latest version in order to keep using TrebleShot properly.</string>
     <string name="text_longAgo">Long ago</string>
     <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
     <string name="text_interfaceWireless">Wi-Fi</string>
@@ -260,7 +244,7 @@
     <string name="mesg_scanningSelfHotspot">Searching for a TrebleShot Hotspot</string>
     <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot Hotspot?</string>
     <string name="butn_enable">Enable</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">"Location Permission is needed to be able search for a TrebleShot Hotspot "</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Location Permission is needed to be able search for a TrebleShot Hotspot "</string>
     <string name="butn_locationSettings">Location</string>
     <string name="mesg_locationDisabledSelfHotspot">Location should be enabled to be able to show search results</string>
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot Hotspot</string>
@@ -276,4 +260,7 @@
     <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
     <string name="mesg_connectionUpdated">The communication will be over \"%s\" connection</string>
     <string name="mesg_ongoingUpdateDownload">Downloading the update</string>
+    <string name="butn_gotIt">Got it</string>
+    <string name="mesg_helpFolderSelection">To select a folder, tap its icon</string>
+    <string name="mesg_hotspotCreatedInfo">Connect to \"%s\" in WiFi settings or send files via \"%s\" inside TrebleShot</string>
 </resources>

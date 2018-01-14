@@ -11,6 +11,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -22,7 +23,7 @@ import java.util.ArrayList;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransactionListAdapter extends ShareableListAdapter<TransactionObject>
+public class TransactionListAdapter extends EditableListAdapter<TransactionObject>
 {
 	private AccessDatabase mDatabase;
 	private ArrayList<TransactionObject> mList = new ArrayList<>();
@@ -153,20 +154,34 @@ public class TransactionListAdapter extends ShareableListAdapter<TransactionObje
 
 		final TransactionObject transactionObject = (TransactionObject) getItem(i);
 
-		ImageView typeImage = view.findViewById(R.id.list_process_type_image);
-		TextView mainText = view.findViewById(R.id.list_process_name_text);
-		TextView statusText = view.findViewById(R.id.list_process_status_text);
-		TextView sizeText = view.findViewById(R.id.list_process_size_text);
+		final ImageView image = view.findViewById(R.id.image);
+		TextView mainText = view.findViewById(R.id.text);
+		TextView statusText = view.findViewById(R.id.text2);
+		TextView sizeText = view.findViewById(R.id.text3);
+
+		if (getSelectionConnection() != null) {
+			image.setSelected(getSelectionConnection().isSelected(transactionObject));
+
+			image.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(transactionObject);
+					image.setSelected(transactionObject.isSelectableSelected());
+				}
+			});
+		}
 
 		if (transactionObject instanceof TransactionFolder) {
-			typeImage.setImageResource(R.drawable.ic_folder_black_24dp);
+			image.setImageResource(R.drawable.ic_folder_black_24dp);
 			mainText.setText(transactionObject.friendlyName);
 			statusText.setText(R.string.text_folder);
 			sizeText.setText(null);
 		} else {
 			boolean isIncoming = transactionObject.type.equals(TransactionObject.Type.INCOMING);
 
-			typeImage.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
+			image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 			mainText.setText(transactionObject.friendlyName);
 			statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(transactionObject.flag)).toLowerCase());
 			sizeText.setText(FileUtils.sizeExpression(transactionObject.fileSize, false));

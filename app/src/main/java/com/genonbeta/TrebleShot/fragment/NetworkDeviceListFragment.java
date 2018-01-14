@@ -66,7 +66,7 @@ public class NetworkDeviceListFragment
 	private HotspotUtils mHotspotUtils;
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
-	private boolean mWifiRefreshRequested = false;
+	private boolean mShowHotspotInfo = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -81,6 +81,7 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		super.onCreate(savedInstanceState);
 	}
@@ -126,7 +127,6 @@ public class NetworkDeviceListFragment
 			@Override
 			public void onRefresh()
 			{
-				getWifiManager().startScan();
 				requestRefresh();
 			}
 		});
@@ -149,7 +149,7 @@ public class NetworkDeviceListFragment
 	@Override
 	public NetworkDeviceListAdapter onAdapter()
 	{
-		return new NetworkDeviceListAdapter(getActivity(), getWifiManager(), mPreferences.getBoolean("developer_mode", false));
+		return new NetworkDeviceListAdapter(this, mPreferences.getBoolean("developer_mode", false));
 	}
 
 	@Override
@@ -286,11 +286,6 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	private Snackbar createSnackbar(int resId, Object... objects)
-	{
-		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
-
 	@Override
 	public CharSequence getTitle(Context context)
 	{
@@ -305,7 +300,7 @@ public class NetworkDeviceListFragment
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
 		return getWifiManager().getConnectionInfo() != null
-				&& hotspotNetwork.scanResult.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
+				&& hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
 	}
 
 	public boolean isMobileDataActive()
@@ -325,6 +320,8 @@ public class NetworkDeviceListFragment
 
 	public void requestRefresh()
 	{
+		getWifiManager().startScan();
+
 		if (DeviceScannerService.getDeviceScanner().isScannerAvailable())
 			getContext().startService(new Intent(getContext(), DeviceScannerService.class)
 					.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
@@ -401,7 +398,7 @@ public class NetworkDeviceListFragment
 		if (!isConnectedToNetwork(hotspotNetwork)) {
 			WifiConfiguration wifiConfig = new WifiConfiguration();
 
-			wifiConfig.SSID = String.format("\"%s\"", hotspotNetwork.scanResult.SSID);
+			wifiConfig.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
 			wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
 
 			int netId = getWifiManager().addNetwork(wifiConfig);
@@ -428,6 +425,8 @@ public class NetworkDeviceListFragment
 
 		AppUtils.startForegroundService(mFAB.getContext(), new Intent(mFAB.getContext(), CommunicationService.class)
 				.setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
+
+		mShowHotspotInfo = true;
 	}
 
 	public void updateHotspotState()
@@ -438,6 +437,26 @@ public class NetworkDeviceListFragment
 		boolean isEnabled = mHotspotUtils.isEnabled();
 
 		mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), isEnabled ? R.color.fabHotspotEnabled : R.color.fabHotspotDisabled)));
+
+		if (mHotspotUtils.isEnabled()
+				&& mShowHotspotInfo
+				&& AppUtils.getHotspotName(getActivity()).equals(mHotspotUtils.getConfiguration().SSID)) {
+			final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, mHotspotUtils.getConfiguration().SSID, getAdapter().getFriendlySSID(mHotspotUtils.getConfiguration().SSID));
+
+			snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					snackbar.dismiss();
+				}
+			});
+
+			snackbar.setDuration(Snackbar.LENGTH_INDEFINITE)
+					.show();
+
+			mShowHotspotInfo = false;
+		}
 	}
 
 	public void setOnListClickListener(AbsListView.OnItemClickListener listener)
@@ -487,6 +506,9 @@ public class NetworkDeviceListFragment
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();
+			else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1))
+				requestRefresh();
 		}
 	}
 }
