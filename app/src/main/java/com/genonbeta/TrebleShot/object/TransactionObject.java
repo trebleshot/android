@@ -177,7 +177,7 @@ public class TransactionObject
 		@Override
 		public boolean equals(Object obj)
 		{
-			return obj instanceof TransactionObject && ((TransactionObject) obj).groupId == groupId;
+			return obj instanceof TransactionObject.Group && ((TransactionObject.Group) obj).groupId == groupId;
 		}
 
 		@Override

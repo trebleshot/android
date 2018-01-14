@@ -75,14 +75,13 @@ public class ShareActivity extends Activity
 
 		mToolbar = findViewById(R.id.toolbar);
 
+		setSupportActionBar(mToolbar);
+
 		mFAB = findViewById(R.id.content_fab);
 		mProgressDialog = new ProgressDialog(this);
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 
-		setSupportActionBar(mToolbar);
-
-		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
 		mDeviceListFragment.getListView().setClipToPadding(false);
 
@@ -451,17 +450,10 @@ public class ShareActivity extends Activity
 	protected void fabClicked()
 	{
 		if (mSharedText != null)
-			mFAB.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View view)
-				{
-					startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
-							.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-							.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
-							.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
-				}
-			});
+			startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
+					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+					.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
+					.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 		else
 			new SelectedEditorDialog<>(this, mFiles).show();
 	}

@@ -56,8 +56,6 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 			hotspotNetwork.BSSID = resultIndex.BSSID;
 			hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
 
-			Log.d("Fuck", "name: " + resultIndex.SSID);
-
 			list.add(hotspotNetwork);
 		}
 
@@ -65,8 +63,6 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 			WifiInfo wifiInfo = mFragment.getWifiManager().getConnectionInfo();
 
 			HotspotNetwork hotspotNetwork = new HotspotNetwork();
-
-			Log.d("Fuck", "name: " + wifiInfo.getSSID());
 
 			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
 			hotspotNetwork.SSID = wifiInfo.getSSID();

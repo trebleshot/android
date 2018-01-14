@@ -115,7 +115,7 @@ public class PowerfulActionMode extends Toolbar
 		return mMenuInflater;
 	}
 
-	public <T extends Selectable> Holder getHolder(Callback<T> callback)
+	public <T extends Selectable> Holder<T> getHolder(Callback<T> callback)
 	{
 		return mActiveActionModes.get(callback);
 	}

@@ -200,7 +200,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfacUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">@string/text_unknown</string>
     <string name="text_shareTextShort">Metin</string>
     <string name="butn_feelLucky">Yerime seç</string>
     <string name="butn_connectionList">Bağlantılar</string>
