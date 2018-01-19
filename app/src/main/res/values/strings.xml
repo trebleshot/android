@@ -284,4 +284,6 @@
     <string name="text_sortByName">Name</string>
     <string name="text_sortByDate">Date</string>
     <string name="text_sortBySize">Size</string>
+    <string name="text_trustZoneDeviceNotice">Checking this will enable this device to send you files without showing a prompt when TrustZone is turned on</string>
+    <string name="text_allowingToConnectNotice">When checked, this device can connect to you</string>
 </resources>
