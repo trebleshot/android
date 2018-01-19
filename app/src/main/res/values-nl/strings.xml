@@ -157,7 +157,7 @@
     <string name="text_createFolder">Map creëren</string>
     <string name="mesg_fileAlreadyExists">Bestand bestaat al</string>
     <string name="mesg_folderCreateError">De map kan niet worden gecreëerd</string>
-    <string name="text_requestPermissionStorageSummary">Deze machtiging geeft TrebleShot schrijfrechten. Dit is nodig voor het ontvangen delen van bestanden.</string>
+    <string name="text_requestPermissionStorageSummary">Deze machtiging geeft TrebleShot lees- en schrijfrechten voor uw opslagruimte. Dit is nodig voor het ontvangen en delen van bestanden.</string>
     <string name="butn_settings">Instellingen</string>
     <string name="butn_selectThis">Selecteer dit</string>
     <string name="butn_newFile">Nieuw bestand</string>
@@ -277,4 +277,25 @@
 <string name="butn_gotIt">Ik begrijp het</string>
     <string name="mesg_helpFolderSelection">Druk op een map-pictogram om deze te selecteren</string>
     <string name="mesg_hotspotCreatedInfo">Maak verbinding met \"%s\" in de \"WiFi-instellingen\" of verstuur bestanden via \"%s\" binnen TrebleShot</string>
+<string name="butn_selectAll">Alles selecteren</string>
+    <string name="butn_selectNone">Niks selecteren</string>
+    <string name="butn_previewSelections">Selectievoorbeeld</string>
+    <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
+    <string name="mesg_retryAllInfo">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Er is geen verbinding ingesteld. Stel een verbinding in om te communiceren</string>
+    <string name="butn_setUp">Instellen</string>
+    <string name="text_pseudoLocation">Neplocatie</string>
+    <string name="butn_saveAnyway">Tóch opslaan</string>
+    <string name="text_receivedSize">Grootte bij ontvangen</string>
+    <string name="mesg_notValidTransfer">De overdracht is ongeldig verklaard</string>
+    <string name="ques_saveAnyway">Tóch opslaan?</string>
+    <string name="text_saveAnywaySummary">De afzender heeft deze overdracht verwijderd uit de lijst, maar deze is nog niet afgerond. Als u doorgaat, dan zal het deels ontvangen bestand worden opgeslagen alsof het volledig ontvangen was.</string>
+    <string name="mesg_fileSaved">Het bestand is opgeslagen</string>
+    <string name="butn_sortBy">Sorteren op</string>
+    <string name="butn_sortOrder">Sorteervolgorde</string>
+    <string name="text_sortOrderAscending">Oplopend</string>
+    <string name="text_sortOrderDescending">Aflopend</string>
+    <string name="text_sortByName">Naam</string>
+    <string name="text_sortByDate">Datum</string>
+    <string name="text_sortBySize">Grootte</string>
 </resources>
