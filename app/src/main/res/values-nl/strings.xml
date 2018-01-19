@@ -298,4 +298,6 @@
     <string name="text_sortByName">Naam</string>
     <string name="text_sortByDate">Datum</string>
     <string name="text_sortBySize">Grootte</string>
+<string name="text_trustZoneDeviceNotice">Door dit aan te vinken wordt dit apparaat gemachtigd om u zonder bevestiging bestanden te sturen als TrustZone ingeschakeld is</string>
+    <string name="text_allowingToConnectNotice">Als u dit aanvinkt, dan kan dit apparaat met u verbinden</string>
 </resources>
