@@ -9,29 +9,51 @@ import com.genonbeta.TrebleShot.util.TextUtils;
  * date: 19.11.2017 16:50
  */
 
-public class Shareable implements Selectable
+public class Shareable implements Editable
 {
 	public String friendlyName;
 	public String fileName;
 	public Uri uri;
+	public long date;
+	public long size;
 
-	private boolean mIsSelected = false;
+	private boolean isSelected = false;
 
 	public Shareable()
 	{
 	}
 
-	public Shareable(String friendlyName, String fileName, Uri uri)
+	public Shareable(String friendlyName, String fileName, long date, long size, Uri uri)
 	{
 		this.friendlyName = friendlyName;
 		this.fileName = fileName;
+		this.date = date;
+		this.size = size;
 		this.uri = uri;
 	}
 
 	@Override
 	public boolean isSelectableSelected()
 	{
-		return mIsSelected;
+		return isSelected;
+	}
+
+	@Override
+	public String getComparableName()
+	{
+		return getSelectableFriendlyName();
+	}
+
+	@Override
+	public long getComparableDate()
+	{
+		return this.date;
+	}
+
+	@Override
+	public long getComparableSize()
+	{
+		return this.size;
 	}
 
 	@Override
@@ -54,6 +76,6 @@ public class Shareable implements Selectable
 	@Override
 	public void setSelectableSelected(boolean selected)
 	{
-		mIsSelected = selected;
+		isSelected = selected;
 	}
 }

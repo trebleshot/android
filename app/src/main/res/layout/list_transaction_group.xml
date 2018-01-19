@@ -6,17 +6,29 @@
               android:orientation="horizontal"
               android:padding="15dp">
 
-    <ImageView
-        android:id="@+id/image"
+    <FrameLayout
+        android:id="@+id/layout_image"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginEnd="23dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
-        android:layout_marginStart="8dp"
-        android:contentDescription="@string/text_image"
-        android:foreground="@drawable/state_selected_image"
-        android:foregroundGravity="center"/>
+        android:layout_marginStart="8dp">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/text_image"/>
+
+        <View
+            android:id="@+id/selector"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:background="@drawable/state_selected_image"/>
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

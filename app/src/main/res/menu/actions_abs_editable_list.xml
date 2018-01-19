@@ -1,10 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <item
         android:id="@+id/actions_abs_editable_multi_select"
         android:icon="@drawable/ic_select"
-        android:title="@string/butn_multiSelect"
-        app:showAsAction="ifRoom"
-        android:orderInCategory="99"/>
+        android:orderInCategory="10"
+        android:title="@string/butn_multiSelect"/>
+
+    <item
+        android:id="@+id/actions_abs_editable_sort_by"
+        android:orderInCategory="99"
+        android:title="@string/butn_sortBy">
+
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/actions_abs_editable_sort_by_name"
+                    android:title="@string/text_sortByName"/>
+
+                <item
+                    android:id="@+id/actions_abs_editable_sort_by_date"
+                    android:title="@string/text_sortByDate"/>
+
+                <item
+                    android:id="@+id/actions_abs_editable_sort_by_size"
+                    android:title="@string/text_sortBySize"/>
+            </group>
+
+            <item
+                android:orderInCategory="99"
+                android:title="@string/butn_sortOrder">
+
+                <menu>
+                    <group
+                        android:checkableBehavior="single">
+                        <item
+                            android:id="@+id/actions_abs_editable_sort_order_ascending"
+                            android:title="@string/text_sortOrderAscending"/>
+
+                        <item
+                            android:id="@+id/actions_abs_editable_sort_order_descending"
+                            android:title="@string/text_sortOrderDescending"/>
+                    </group>
+                </menu>
+            </item>
+
+        </menu>
+    </item>
+
 </menu>

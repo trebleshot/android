@@ -14,6 +14,8 @@ import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * created by: Veli
@@ -35,8 +37,11 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 	@Override
 	public ArrayList<TextStreamObject> onLoad()
 	{
-		return mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD)
-				.setOrderBy(AccessDatabase.FIELD_CLIPBOARD_TIME + " DESC"), TextStreamObject.class);
+		ArrayList<TextStreamObject> list = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD), TextStreamObject.class);
+
+		Collections.sort(list, getDefaultComparator());
+
+		return list;
 	}
 
 	@Override

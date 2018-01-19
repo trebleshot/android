@@ -31,14 +31,6 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 	private ArrayList<FileHolder> mList = new ArrayList<>();
 	private File mDefaultPath;
 	private File mPath;
-	private Comparator<FileHolder> mComparator = new Comparator<FileHolder>()
-	{
-		@Override
-		public int compare(FileListAdapter.FileHolder compareFrom, FileListAdapter.FileHolder compareTo)
-		{
-			return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
-		}
-	};
 
 	public FileListAdapter(Context context)
 	{
@@ -67,8 +59,8 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 						files.add(new FileHolder(file.getName(), FileUtils.sizeExpression(file.length(), false), file, false));
 				}
 
-				Collections.sort(folders, mComparator);
-				Collections.sort(files, mComparator);
+				Collections.sort(folders, getDefaultComparator());
+				Collections.sort(files, getDefaultComparator());
 			}
 		} else {
 			ArrayList<File> referencedDirectoryList = new ArrayList<>();
@@ -181,21 +173,23 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 
 		final FileHolder holder = (FileHolder) getItem(position);
 
-		final ImageView image = convertView.findViewById(R.id.image);
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
 		TextView text3 = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			image.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(getSelectionConnection().isSelected(holder));
 
-			image.setOnClickListener(new View.OnClickListener()
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
 					getSelectionConnection().setSelected(holder);
-					image.setSelected(holder.isSelectableSelected());
+					selector.setSelected(holder.isSelectableSelected());
 				}
 			});
 		}
@@ -226,11 +220,12 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		public File file;
 		public boolean isFolder;
 
-		public FileHolder(String friendlyName, String size, File file, boolean isFolder)
+		public FileHolder(String friendlyName, String fileInfo, File file, boolean isFolder)
 		{
-			super(friendlyName, friendlyName, Uri.fromFile(file));
+			// FIXME: 18.01.2018 Folder may not have
+			super(friendlyName, friendlyName, file.lastModified(), file.length(), Uri.fromFile(file));
 
-			this.fileInfo = size;
+			this.fileInfo = fileInfo;
 			this.file = file;
 			this.isFolder = isFolder;
 		}

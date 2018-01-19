@@ -24,19 +24,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.SongHolder> implements SweetImageLoader.Handler<MusicListAdapter.AlbumHolder, Drawable>
+public class MusicListAdapter
+		extends ShareableListAdapter<MusicListAdapter.SongHolder>
+		implements SweetImageLoader.Handler<MusicListAdapter.AlbumHolder, Drawable>
 {
 	private Drawable mDefaultAlbumDrawable;
 	private ContentResolver mResolver;
 	private ArrayList<SongHolder> mList = new ArrayList<>();
-	private Comparator<SongHolder> mComparator = new Comparator<SongHolder>()
-	{
-		@Override
-		public int compare(SongHolder compareFrom, SongHolder compareTo)
-		{
-			return compareFrom.song.toLowerCase().compareTo(compareTo.song.toLowerCase());
-		}
-	};
 
 	public MusicListAdapter(Context context)
 	{
@@ -76,6 +70,8 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 			int songIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
 			int albumIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 			int nameIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
+			int dateIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED);
+			int sizeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
 
 			do {
 				list.add(new SongHolder(songCursor.getString(nameIndex),
@@ -83,11 +79,13 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 						songCursor.getString(songIndex),
 						songCursor.getInt(albumIndex),
 						albumList.get(songCursor.getInt(albumIndex)),
+						songCursor.getLong(dateIndex),
+						songCursor.getLong(sizeIndex),
 						Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + songCursor.getInt(idIndex))));
 			}
 			while (songCursor.moveToNext());
 
-			Collections.sort(list, mComparator);
+			Collections.sort(list, getDefaultComparator());
 		}
 
 		songCursor.close();
@@ -131,30 +129,34 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 		if (convertView == null)
 			convertView = getInflater().inflate(R.layout.list_music, parent, false);
 
-		final SongHolder songHolder = (SongHolder) getItem(position);
+		final SongHolder holder = (SongHolder) getItem(position);
 
-		final ImageView image = convertView.findViewById(R.id.image);
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
 		TextView text3 = convertView.findViewById(R.id.text3);
 
-		image.setSelected(getSelectionConnection().isSelected(songHolder));
+		if (getSelectionConnection() != null) {
+			selector.setSelected(getSelectionConnection().isSelected(holder));
 
-		image.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
-				getSelectionConnection().setSelected(songHolder);
-				image.setSelected(songHolder.isSelectableSelected());
-			}
-		});
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(holder);
+					selector.setSelected(holder.isSelectableSelected());
+				}
+			});
+		}
 
-		text1.setText(songHolder.song);
-		text2.setText(songHolder.artist);
-		text3.setText(songHolder.albumHolder.title);
+		text1.setText(holder.song);
+		text2.setText(holder.artist);
+		text3.setText(holder.albumHolder.title);
 
-		SweetImageLoader.load(this, getContext(), image, songHolder.albumHolder);
+		SweetImageLoader.load(this, getContext(), image, holder.albumHolder);
 
 		return convertView;
 	}
@@ -173,14 +175,20 @@ public class MusicListAdapter extends ShareableListAdapter<MusicListAdapter.Song
 		public int albumId;
 		public AlbumHolder albumHolder;
 
-		public SongHolder(String displayName, String artist, String song, int albumId, AlbumHolder albumHolder, Uri uri)
+		public SongHolder(String displayName, String artist, String song, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
 		{
-			super(artist + " - " + song, displayName, uri);
+			super(artist + " - " + song, displayName, date, size, uri);
 
 			this.artist = artist;
 			this.song = song;
 			this.albumId = albumId;
 			this.albumHolder = albumHolder == null ? new AlbumHolder(albumId, "-", null) : albumHolder;
+		}
+
+		@Override
+		public String getComparableName()
+		{
+			return song;
 		}
 
 		@Override

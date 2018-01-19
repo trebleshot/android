@@ -1,22 +1,22 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.text.Editable;
-import android.util.Log;
+import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.AbsListView;
-import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Selectable;
+import com.genonbeta.TrebleShot.dialog.SelectedEditorDialog;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.ListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
@@ -26,13 +26,21 @@ import java.util.ArrayList;
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Selectable, E extends EditableListAdapter<T>>
+abstract public class EditableListFragment<T extends Editable, E extends EditableListAdapter<T>>
 		extends com.genonbeta.TrebleShot.app.ListFragment<T, E>
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
-	private MenuItem mMultiSelect;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
+	private SharedPreferences mPreferences;
 	private boolean mRefreshRequested = false;
+	private boolean mSortingSupported = true;
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		getAdapter().setFragment(this);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
@@ -48,6 +56,8 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 
 			setHasOptionsMenu(true);
 		}
+
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 	}
 
 	@Override
@@ -65,13 +75,50 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 	}
 
 	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
+
+		menu.findItem(R.id.actions_abs_editable_sort_by)
+				.setEnabled(isSortingSupported());
+
+		MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
+
+		if (getSelectionConnection() == null
+				&& multiSelect != null)
+			multiSelect.setVisible(false);
+
+		MenuItem sortingItem = menu.findItem(getSortingCriteria());
+
+		if (sortingItem == null)
+			sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by_name);
+
+		sortingItem.setChecked(true);
+
+		MenuItem orderingItem = menu.findItem(isSortingAscending()
+				? R.id.actions_abs_editable_sort_order_ascending
+				: R.id.actions_abs_editable_sort_order_descending);
+
+		if (orderingItem == null)
+			orderingItem = menu.findItem(R.id.actions_abs_editable_sort_order_ascending);
+
+		orderingItem.setChecked(true);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		int id = item.getItemId();
 
 		if (id == R.id.actions_abs_editable_multi_select) {
 			getPowerfulActionMode().start(this);
-		}
+		} else if (id == R.id.actions_abs_editable_sort_by_name
+				|| id == R.id.actions_abs_editable_sort_by_date
+				|| id == R.id.actions_abs_editable_sort_by_size)
+			changeSortingCriteria(id);
+		else if (id == R.id.actions_abs_editable_sort_order_ascending
+				|| id == R.id.actions_abs_editable_sort_order_descending)
+			changeOrderingCriteria(id);
 
 		return super.onOptionsItemSelected(item);
 	}
@@ -90,6 +137,8 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 		getListView().setClipToPadding(false);
 
 		actionMode.setTitle(String.valueOf(0));
+
+		getAdapter().notifyDataSetChanged();
 		return false;
 	}
 
@@ -97,7 +146,6 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
 	{
 		actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
-		mMultiSelect = menu.findItem(R.id.action_mode_abs_editable_multi_select);
 		return false;
 	}
 
@@ -109,18 +157,35 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 				.size();
 
 		actionMode.setTitle(String.valueOf(selectedSize));
-
-		if (mMultiSelect != null)
-			mMultiSelect.setIcon(selectedSize != getAdapter().getCount() ? R.drawable.ic_select : R.drawable.ic_select_undo);
 	}
 
 	@Override
-	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+	public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
 		int id = item.getItemId();
 
-		if (id == R.id.action_mode_abs_editable_multi_select)
-			setSelection();
+		if (id == R.id.action_mode_abs_editable_select_all)
+			setSelection(true);
+		else if (id == R.id.action_mode_abs_editable_select_none)
+			setSelection(false);
+		else if (id == R.id.action_mode_abs_editable_preview_selections)
+			new SelectedEditorDialog<>(getActivity(), getSelectionConnection().getSelectedItemList())
+					.setOnDismissListener(new DialogInterface.OnDismissListener()
+					{
+						@Override
+						public void onDismiss(DialogInterface dialog)
+						{
+							ArrayList<T> selectedItems = new ArrayList<>(getSelectionConnection().getSelectedItemList());
+
+							for (T selectable : selectedItems)
+								if (!selectable.isSelectableSelected())
+									getSelectionConnection().setSelected(selectable, false);
+
+							getAdapter().notifyDataSetChanged();
+						}
+
+					})
+					.show();
 
 		return false;
 	}
@@ -134,6 +199,18 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 		setSelection(false);
 
 		loadIfRequested();
+	}
+
+	public void changeSortingCriteria(int id)
+	{
+		mPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
+		refreshList();
+	}
+
+	public void changeOrderingCriteria(int id)
+	{
+		mPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
+		refreshList();
 	}
 
 	@Override
@@ -153,18 +230,16 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 		return mSelectionConnection;
 	}
 
+	public int getSortingCriteria()
+	{
+		return mPreferences.getInt(getClass().getSimpleName() + "SortBy", R.id.actions_abs_editable_sort_by_name);
+	}
+
 	public PowerfulActionMode getPowerfulActionMode()
 	{
 		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupported
 				? ((PowerfulActionModeSupported) getActivity()).getPowerfulActionMode()
 				: null;
-	}
-
-	public boolean isSelectionActivated()
-	{
-		return getPowerfulActionMode() != null
-				&& getPowerfulActionMode().hasActive(this)
-				&& getSelectionConnection() != null;
 	}
 
 	public boolean isRefreshLocked()
@@ -175,6 +250,23 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 	public boolean isRefreshRequested()
 	{
 		return mRefreshRequested;
+	}
+
+	public boolean isSelectionActivated()
+	{
+		return getPowerfulActionMode() != null
+				&& getPowerfulActionMode().hasActive(this)
+				&& getSelectionConnection() != null;
+	}
+
+	public boolean isSortingAscending()
+	{
+		return mPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", true);
+	}
+
+	public boolean isSortingSupported()
+	{
+		return mSortingSupported;
 	}
 
 	protected boolean loadIfRequested()
@@ -230,5 +322,10 @@ abstract public class EditableListFragment<T extends Selectable, E extends Edita
 			getSelectionConnection().setSelected(selectable, selection);
 
 		getAdapter().notifyDataSetChanged();
+	}
+
+	public void setSortingSupported(boolean sortingSupported)
+	{
+		mSortingSupported = sortingSupported;
 	}
 }

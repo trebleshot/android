@@ -30,149 +30,145 @@ import java.util.Locale;
  */
 
 public class ImageListAdapter
-        extends ShareableListAdapter<ImageListAdapter.ImageHolder>
-        implements SweetImageLoader.Handler<ImageListAdapter.ImageHolder, Bitmap>
+		extends ShareableListAdapter<ImageListAdapter.ImageHolder>
+		implements SweetImageLoader.Handler<ImageListAdapter.ImageHolder, Bitmap>
 {
-    private ContentResolver mResolver;
-    private Bitmap mDefaultImageBitmap;
-    private ArrayList<ImageHolder> mList = new ArrayList<>();
-    private Comparator<ImageHolder> mComparator = new Comparator<ImageHolder>()
-    {
-        @Override
-        public int compare(ImageHolder compareFrom, ImageHolder compareTo)
-        {
-            return (int)(compareTo.dateTaken - compareFrom.dateTaken);
-        }
-    };
+	private ContentResolver mResolver;
+	private Bitmap mDefaultImageBitmap;
+	private ArrayList<ImageHolder> mList = new ArrayList<>();
 
-    public ImageListAdapter(Context context)
-    {
-        super(context);
+	public ImageListAdapter(Context context)
+	{
+		super(context);
 
-        mResolver = context.getContentResolver();
-        mDefaultImageBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_refresh_white_24dp);
-    }
+		mResolver = context.getContentResolver();
+		mDefaultImageBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_refresh_white_24dp);
+	}
 
-    @Override
-    public Bitmap onLoadBitmap(ImageHolder object)
-    {
-        Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Images.Thumbnails.MINI_KIND, null);
-        return bitmap == null ? mDefaultImageBitmap : bitmap;
-    }
+	@Override
+	public Bitmap onLoadBitmap(ImageHolder object)
+	{
+		Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Images.Thumbnails.MINI_KIND, null);
+		return bitmap == null ? mDefaultImageBitmap : bitmap;
+	}
 
-    @Override
-    public ArrayList<ImageHolder> onLoad()
-    {
-        ArrayList<ImageHolder> list = new ArrayList<>();
-        Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+	@Override
+	public ArrayList<ImageHolder> onLoad()
+	{
+		ArrayList<ImageHolder> list = new ArrayList<>();
+		Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
-        if (cursor.moveToFirst()) {
-            int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-            int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
-            int dateTaken = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+		if (cursor.moveToFirst()) {
+			int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+			int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
+			int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
+			int dateTakenIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
+			int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
 
-            do {
-                ImageHolder info = new ImageHolder(
-                        cursor.getInt(idIndex),
-                        cursor.getString(displayIndex),
-                        cursor.getString(displayIndex),
-                        null,
-                        Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)),
-                        Long.parseLong(cursor.getString(dateTaken)));
+			do {
+				ImageHolder info = new ImageHolder(
+						cursor.getInt(idIndex),
+						cursor.getString(displayIndex),
+						cursor.getString(displayIndex),
+						cursor.getLong(dateTakenIndex),
+						cursor.getLong(dateAddedIndex),
+						cursor.getLong(sizeIndex),
 
-                list.add(info);
-            }
-            while (cursor.moveToNext());
+						Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-            Collections.sort(list, mComparator);
-        }
+				list.add(info);
+			}
+			while (cursor.moveToNext());
 
-        cursor.close();
+			Collections.sort(list, getDefaultComparator());
+		}
 
-        return list;
-    }
+		cursor.close();
 
-    @Override
-    public void onUpdate(ArrayList<ImageHolder> passedItem)
-    {
-        mList.clear();
-        mList.addAll(passedItem);
-    }
+		return list;
+	}
 
-    @Override
-    public int getCount()
-    {
-        return mList.size();
-    }
+	@Override
+	public void onUpdate(ArrayList<ImageHolder> passedItem)
+	{
+		mList.clear();
+		mList.addAll(passedItem);
+	}
 
-    @Override
-    public Object getItem(int position)
-    {
-        return mList.get(position);
-    }
+	@Override
+	public int getCount()
+	{
+		return mList.size();
+	}
 
-    @Override
-    public long getItemId(int p1)
-    {
-        return 0;
-    }
+	@Override
+	public Object getItem(int position)
+	{
+		return mList.get(position);
+	}
 
-    public ArrayList<ImageHolder> getList()
-    {
-        return mList;
-    }
+	@Override
+	public long getItemId(int p1)
+	{
+		return 0;
+	}
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent)
-    {
-        if (convertView == null)
-            convertView = getInflater().inflate(R.layout.list_image, parent, false);
+	public ArrayList<ImageHolder> getList()
+	{
+		return mList;
+	}
 
-        final ImageHolder holder = (ImageHolder) this.getItem(position);
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent)
+	{
+		if (convertView == null)
+			convertView = getInflater().inflate(R.layout.list_image, parent, false);
 
-		final ImageView image = convertView.findViewById(R.id.image);
+		final ImageHolder holder = (ImageHolder) this.getItem(position);
+
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
 
-        text1.setText(holder.friendlyName);
-        text2.setText(holder.dateTakenString);
+		text1.setText(holder.friendlyName);
+		text2.setText(holder.dateTakenString);
 
-		image.setSelected(getSelectionConnection().isSelected(holder));
+		if (getSelectionConnection() != null) {
+			selector.setSelected(getSelectionConnection().isSelected(holder));
 
-		image.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
-				getSelectionConnection().setSelected(holder);
-				image.setSelected(holder.isSelectableSelected());
-			}
-		});
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(holder);
+					selector.setSelected(holder.isSelectableSelected());
+				}
+			});
+		}
 
-        SweetImageLoader.load(this, getContext(), image, holder);
+		SweetImageLoader.load(this, getContext(), image, holder);
 
-        return convertView;
-    }
+		return convertView;
+	}
 
-    public static class ImageHolder extends Shareable
-    {
-        public long id;
-        public String thumbnail;
-        public long dateTaken;
-        public String dateTakenString;
+	public static class ImageHolder extends Shareable
+	{
+		public long id;
+		public String dateTakenString;
 
-        public ImageHolder(int id, String friendlyName, String filename, String thumbnail, Uri uri, long mod_time)
-        {
-            super(friendlyName, filename, uri);
+		public ImageHolder(int id, String friendlyName, String filename, long dateTaken, long date, long size, Uri uri)
+		{
+			super(friendlyName, filename, date, size, uri);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.getDefault());
+			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.getDefault());
 
-            //sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			//sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
 
-            this.id = id;
-            this.thumbnail = thumbnail;
-            this.dateTaken = mod_time/1000;
-            this.dateTakenString = dateFormat.format(new Date(mod_time));
-        }
-    }
+			this.id = id;
+			this.dateTakenString = dateFormat.format(new Date(dateTaken));
+		}
+	}
 }

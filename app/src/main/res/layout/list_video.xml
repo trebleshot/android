@@ -21,9 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_centerInParent="true"
-                android:contentDescription="@string/text_image"
-                android:foreground="@drawable/state_selected_image"
-                android:foregroundGravity="center"/>
+                android:contentDescription="@string/text_image"/>
 
             <TextView
                 android:id="@+id/text2"
@@ -52,6 +50,13 @@
                     android:maxLines="3"/>
 
             </LinearLayout>
+
+            <View
+                android:id="@+id/selector"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/state_selected_image"/>
 
         </RelativeLayout>
 

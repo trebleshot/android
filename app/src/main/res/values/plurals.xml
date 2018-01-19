@@ -5,8 +5,8 @@
         <item quantity="other">Do you want to delete %d files?</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-        <item quantity="one">A file is received</item>
-        <item quantity="other">%d files are received</item>
+        <item quantity="one">A file has been received</item>
+        <item quantity="other">%d files have been received</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">One file is selected</item>

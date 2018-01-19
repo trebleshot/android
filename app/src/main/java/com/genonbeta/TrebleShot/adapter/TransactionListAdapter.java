@@ -17,6 +17,7 @@ import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by: veli
@@ -79,11 +80,15 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 				mergedList.add(transactionFolder);
 		}
 
-		mergedList.addAll(mDatabase.castQuery((getPath() == null
+		ArrayList<TransactionObject> mainItems = mDatabase.castQuery((getPath() == null
 				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
 				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
 				String.valueOf(getGroupId()), getPath())
-		).setGroupBy(null), TransactionObject.class));
+		).setGroupBy(null), TransactionObject.class);
+
+		Collections.sort(mainItems, getDefaultComparator());
+
+		mergedList.addAll(mainItems);
 
 		return mergedList;
 	}
@@ -147,28 +152,30 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	}
 
 	@Override
-	public View getView(int i, View view, ViewGroup viewGroup)
+	public View getView(int i, View convertView, ViewGroup viewGroup)
 	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_transaction, viewGroup, false);
+		if (convertView == null)
+			convertView = getInflater().inflate(R.layout.list_transaction, viewGroup, false);
 
 		final TransactionObject transactionObject = (TransactionObject) getItem(i);
 
-		final ImageView image = view.findViewById(R.id.image);
-		TextView mainText = view.findViewById(R.id.text);
-		TextView statusText = view.findViewById(R.id.text2);
-		TextView sizeText = view.findViewById(R.id.text3);
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
+		TextView mainText = convertView.findViewById(R.id.text);
+		TextView statusText = convertView.findViewById(R.id.text2);
+		TextView sizeText = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			image.setSelected(getSelectionConnection().isSelected(transactionObject));
+			selector.setSelected(getSelectionConnection().isSelected(transactionObject));
 
-			image.setOnClickListener(new View.OnClickListener()
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
 					getSelectionConnection().setSelected(transactionObject);
-					image.setSelected(transactionObject.isSelectableSelected());
+					selector.setSelected(transactionObject.isSelectableSelected());
 				}
 			});
 		}
@@ -187,7 +194,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 			sizeText.setText(FileUtils.sizeExpression(transactionObject.fileSize, false));
 		}
 
-		return view;
+		return convertView;
 	}
 
 	public void setGroupId(int groupId)
@@ -217,6 +224,14 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	{
 		public TransactionFolder()
 		{
+		}
+
+		@Override
+		public boolean equals(Object obj)
+		{
+			return obj instanceof TransactionFolder
+					&& directory != null
+					&& directory.equals(((TransactionFolder) obj).directory);
 		}
 	}
 }

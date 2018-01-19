@@ -177,7 +177,7 @@ public class PowerfulActionMode extends Toolbar
 
 	public void setContainerLayout(View containerLayout)
 	{
-		this.mContainerLayout = containerLayout;
+		mContainerLayout = containerLayout;
 	}
 
 	public <T extends Selectable> boolean start(@NonNull final Callback<T> callback)
@@ -279,15 +279,27 @@ public class PowerfulActionMode extends Toolbar
 
 			return getMode().check(getCallback(), selectable, selected);
 		}
+
+		public boolean removeSelected(T selectable)
+		{
+			if (!getMode().hasActive(getCallback()))
+				return false;
+
+			return getMode().getHolder(getCallback())
+					.getSelectionList()
+					.remove(selectable);
+		}
 	}
 
 	public static class Holder<T extends Selectable>
 	{
-		private ArrayList<T> mSelectionList = new ArrayList<>();
+		private final ArrayList<T> mSelectionList = new ArrayList<>();
 
 		public ArrayList<T> getSelectionList()
 		{
-			return mSelectionList;
+			synchronized (mSelectionList) {
+				return mSelectionList;
+			}
 		}
 	}
 }
