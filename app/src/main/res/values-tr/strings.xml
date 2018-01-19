@@ -292,4 +292,6 @@
     <string name="text_sortByName">İsim</string>
     <string name="text_sortByDate">Tarih</string>
     <string name="text_sortBySize">Boyut</string>
+    <string name="text_trustZoneDeviceNotice">Bunu işaretlemek bu cihazın GüvenliBölge etkinken size izin istemeksizin dosyalar göndermesine olanak sağlar</string>
+    <string name="text_allowingToConnectNotice">İşaretlendiğinde, bu cihaz size bağlanabilir</string>
 </resources>
