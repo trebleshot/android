@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -22,6 +23,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * created by: Veli
@@ -49,8 +51,7 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 	@Override
 	public ArrayList<PreloadedGroup> onLoad()
 	{
-		return mDatabase.castQuery(getSelect()
-				.setOrderBy(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED + " DESC")
+		ArrayList<PreloadedGroup> list = mDatabase.castQuery(getSelect()
 				.setLoadListener(new SQLQuery.Select.LoadListener()
 				{
 					@Override
@@ -78,6 +79,10 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))).size());
 					}
 				}), PreloadedGroup.class);
+
+		Collections.sort(list, getDefaultComparator());
+
+		return list;
 	}
 
 	@Override
@@ -116,32 +121,33 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 	}
 
 	@Override
-	public View getView(int i, View view, ViewGroup viewGroup)
+	public View getView(int i, View convertView, ViewGroup viewGroup)
 	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_transaction_group, viewGroup, false);
+		if (convertView == null)
+			convertView = getInflater().inflate(R.layout.list_transaction_group, viewGroup, false);
 
 		final PreloadedGroup group = (PreloadedGroup) getItem(i);
 
-		final ImageView image = view.findViewById(R.id.image);
-		TextView text1 = view.findViewById(R.id.text);
-		TextView text2 = view.findViewById(R.id.text2);
-		TextView text3 = view.findViewById(R.id.text3);
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
+		TextView text3 = convertView.findViewById(R.id.text3);
 
 		String firstLetters = TextUtils.getFirstLetters(group.deviceName, 1);
-
 		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.networkDeviceRipple), 100);
 
 		if (getSelectionConnection() != null) {
-			image.setSelected(getSelectionConnection().isSelected(group));
+			selector.setSelected(getSelectionConnection().isSelected(group));
 
-			image.setOnClickListener(new View.OnClickListener()
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
 					getSelectionConnection().setSelected(group);
-					image.setSelected(group.isSelectableSelected());
+					selector.setSelected(group.isSelectableSelected());
 				}
 			});
 		}
@@ -151,7 +157,7 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		text3.setText(TimeUtils.getTimeAgo(getContext(), group.dateCreated));
 		image.setImageDrawable(drawable);
 
-		return view;
+		return convertView;
 	}
 
 	public TransactionGroupListAdapter setSelect(SQLQuery.Select select)
@@ -162,7 +168,9 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		return this;
 	}
 
-	public static class PreloadedGroup extends TransactionObject.Group
+	public static class PreloadedGroup
+			extends TransactionObject.Group
+		implements Editable
 	{
 		public int transactionCount;
 		public String deviceName;
@@ -174,6 +182,24 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 
 			transactionCount = item.getInt(FIELD_TRANSACTIONCOUNT);
 			deviceName = item.getString(FIELD_DEVICENAME);
+		}
+
+		@Override
+		public String getComparableName()
+		{
+			return getSelectableFriendlyName();
+		}
+
+		@Override
+		public long getComparableDate()
+		{
+			return dateCreated;
+		}
+
+		@Override
+		public long getComparableSize()
+		{
+			return transactionCount;
 		}
 	}
 }

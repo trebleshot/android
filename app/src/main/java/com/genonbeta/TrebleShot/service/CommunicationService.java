@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
+import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -144,15 +145,7 @@ public class CommunicationService extends Service
 
 				try {
 					final NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-
-					TransactionObject.Group transactionGroup = new TransactionObject.Group(groupId);
-					mDatabase.reconstruct(transactionGroup);
-
-					NetworkDevice networkDevice = new NetworkDevice(transactionGroup.deviceId);
-					mDatabase.reconstruct(networkDevice);
-
-					final NetworkDevice.Connection connection = new NetworkDevice.Connection(transactionGroup.deviceId, transactionGroup.connectionAdapter);
-					mDatabase.reconstruct(connection);
+					final TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId);
 
 					CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
 					{
@@ -167,7 +160,7 @@ public class CommunicationService extends Service
 								jsonObject.put(Keyword.GROUP_ID, groupId);
 								jsonObject.put(Keyword.IS_ACCEPTED, isAccepted);
 
-								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(transferInstance.getConnection().ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 								activeConnection.reply(jsonObject.toString());
 							} catch (JSONException e) {
 								e.printStackTrace();
@@ -182,7 +175,7 @@ public class CommunicationService extends Service
 					if (isAccepted)
 						startFileReceiving(groupId);
 					else
-						mDatabase.remove(transactionGroup);
+						mDatabase.remove(transferInstance.getGroup());
 
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -363,7 +356,12 @@ public class CommunicationService extends Service
 
 	public void startFileReceiving(int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
 	{
-		CoolSocket.connect(new SeamlessClientHandler(new TransferInstance(getDatabase(), groupId)));
+		startFileReceiving(new TransferInstance(getDatabase(), groupId));
+	}
+
+	public void startFileReceiving(TransferInstance transferInstance)
+	{
+		CoolSocket.connect(new SeamlessClientHandler(transferInstance));
 	}
 
 	public void updateServiceState(boolean seamlessMode)
@@ -442,8 +440,7 @@ public class CommunicationService extends Service
 							mNotificationUtils.notifyConnectionRequest(device);
 
 							shouldContinue = false;
-						}
-						else
+						} else
 							shouldContinue = true;
 
 						mDatabase.publish(device);
@@ -649,7 +646,11 @@ public class CommunicationService extends Service
 					JSONObject currentReply = new JSONObject();
 
 					currentReply.put(Keyword.RESULT, false);
-					currentReply.put(Keyword.ERROR, Keyword.NOT_FOUND);
+
+					if (e instanceof TransactionGroupNotFoundException)
+						currentReply.put(Keyword.ERROR, Keyword.NOT_FOUND);
+					else if (e instanceof DeviceNotFoundException)
+						currentReply.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
 
 					activeConnection.reply(currentReply.toString());
 				} catch (TimeoutException e1) {
@@ -699,48 +700,54 @@ public class CommunicationService extends Service
 				processHolder.activeConnection = activeConnection;
 				processHolder.group = mTransfer.getGroup();
 
-				if (!new JSONObject(mainRequest.response).getBoolean(Keyword.RESULT))
-					throw new IOException("Request was not accepted");
+				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 
-				while (true) {
-					CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-							.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
-									TransactionObject.Type.INCOMING.toString(),
-									String.valueOf(processHolder.group.groupId),
-									TransactionObject.Flag.INTERRUPTED.toString(),
-									TransactionObject.Flag.REMOVED.toString()));
+				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
+					getNotificationUtils().notifyConnectionError(mTransfer, mainRequestJSON.has(Keyword.ERROR)
+							? mainRequestJSON.getString(Keyword.ERROR)
+							: null);
+				} else {
+					while (true) {
+						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
+										TransactionObject.Type.INCOMING.toString(),
+										String.valueOf(processHolder.group.groupId),
+										TransactionObject.Flag.INTERRUPTED.toString(),
+										TransactionObject.Flag.REMOVED.toString()));
 
-					if (receiverInstance == null
-							&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-							.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId))) == null) {
-						getDatabase().remove(processHolder.group);
-						break;
+						if (receiverInstance == null
+								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId))) == null) {
+							getDatabase().remove(processHolder.group);
+							break;
+						}
+
+						processHolder.transactionObject = new TransactionObject(receiverInstance);
+						File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
+
+						processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
+
+						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
+							break;
 					}
 
-					processHolder.transactionObject = new TransactionObject(receiverInstance);
-					File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
+					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
+						if (processHolder.transferHandler.getGroupTransferredFileCount() == 1)
+							getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
+						else if (processHolder.transferHandler.getGroupTransferredFileCount() > 1) {
+							String parentDir = processHolder.transferHandler.getFile().getParent();
+							String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
+									&& processHolder.transferHandler.getExtra().transactionObject.directory.length() > 0
+									? parentDir.substring(0, parentDir.length() - processHolder.transferHandler.getExtra().transactionObject.directory.length())
+									: parentDir;
 
-					processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
-
-					if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
-						break;
-				}
-
-				if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
-					if (processHolder.transferHandler.getGroupTransferredFileCount() == 1)
-						getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
-					else if (processHolder.transferHandler.getGroupTransferredFileCount() > 1) {
-						String parentDir = processHolder.transferHandler.getFile().getParent();
-						String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
-								&& processHolder.transferHandler.getExtra().transactionObject.directory.length() > 0
-								? parentDir.substring(0, parentDir.length() - processHolder.transferHandler.getExtra().transactionObject.directory.length())
-								: parentDir;
-
-						getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getGroupTransferredFileCount());
+							getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getGroupTransferredFileCount());
+						}
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				getNotificationUtils().notifyConnectionError(mTransfer, null);
 			} finally {
 				try {
 					if (activeConnection != null)
@@ -779,10 +786,7 @@ public class CommunicationService extends Service
 		{
 			getDatabase().remove(handler.getExtra().transactionObject);
 
-			File finalFileLocation = FileUtils.getUniqueFile(new File(handler.getFile().getParent() + File.separator + handler.getExtra().transactionObject.friendlyName), true);
-
-			handler.getFile().renameTo(finalFileLocation);
-			handler.setFile(finalFileLocation);
+			handler.setFile(FileUtils.saveReceivedFile(handler.getFile(), handler.getExtra().transactionObject));
 		}
 
 		@Override
@@ -867,9 +871,7 @@ public class CommunicationService extends Service
 		}
 
 		@Override
-		public void onProcessListChanged
-				(ArrayList<TransferHandler<ProcessHolder>> processList, TransferHandler<ProcessHolder> handler,
-				 boolean isAdded)
+		public void onProcessListChanged(ArrayList<TransferHandler<ProcessHolder>> processList, TransferHandler<ProcessHolder> handler, boolean isAdded)
 		{
 			super.onProcessListChanged(processList, handler, isAdded);
 

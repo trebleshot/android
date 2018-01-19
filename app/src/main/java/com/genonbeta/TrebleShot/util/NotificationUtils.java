@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.widget.Toast;
@@ -16,10 +17,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 
@@ -309,6 +312,34 @@ public class NotificationUtils
 				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0));
+
+		return notification.show();
+	}
+
+	public DynamicNotification notifyConnectionError(TransferInstance transferInstance, @Nullable String errorKey)
+	{
+		DynamicNotification notification = new DynamicNotification(mContext, mManager, transferInstance.getGroup().groupId);
+		String errorMsg = mContext.getString(R.string.mesg_deviceConnectionError, transferInstance.getDevice().nickname, TextUtils.getAdapterName(mContext, transferInstance.getConnection()));
+
+		if (errorKey != null)
+			switch (errorKey) {
+				case Keyword.NOT_ALLOWED:
+					errorMsg = mContext.getString(R.string.mesg_notAllowed);
+					break;
+				case Keyword.NOT_FOUND:
+					errorMsg = mContext.getString(R.string.mesg_notValidTransfer);
+			}
+
+		notification.setChannelId(NOTIFICATION_CHANNEL_HIGH)
+				.setSmallIcon(android.R.drawable.stat_notify_error)
+				.setContentTitle(mContext.getString(R.string.text_error))
+				.setContentText(errorMsg)
+				.setAutoCancel(true)
+				.setDefaults(getNotificationSettings())
+				.setPriority(NotificationCompat.PRIORITY_HIGH)
+				.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, TransactionActivity.class)
+						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transferInstance.getGroup().groupId), 0));
 
 		return notification.show();
 	}

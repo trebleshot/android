@@ -14,13 +14,13 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TextStreamObject
-		implements FlexibleObject, Selectable
+		implements FlexibleObject, Editable
 {
 	public int id;
 	public long time;
 	public String text;
 
-	private boolean mIsSelected = false;
+	private boolean isSelected = false;
 
 	public TextStreamObject()
 	{
@@ -47,7 +47,25 @@ public class TextStreamObject
 	@Override
 	public boolean isSelectableSelected()
 	{
-		return mIsSelected;
+		return isSelected;
+	}
+
+	@Override
+	public String getComparableName()
+	{
+		return text;
+	}
+
+	@Override
+	public long getComparableDate()
+	{
+		return time;
+	}
+
+	@Override
+	public long getComparableSize()
+	{
+		return text.length();
 	}
 
 	@Override
@@ -86,7 +104,7 @@ public class TextStreamObject
 	@Override
 	public void setSelectableSelected(boolean selected)
 	{
-		mIsSelected = selected;
+		isSelected = selected;
 	}
 
 	@Override

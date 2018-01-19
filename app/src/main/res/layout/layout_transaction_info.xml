@@ -19,8 +19,8 @@
             android:id="@+id/transaction_info_file_name"
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
-            android:maxLines="4"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:maxLines="4"/>
 
         <View
             android:layout_width="wrap_content"
@@ -57,7 +57,6 @@
             android:layout_height="wrap_content"
             android:text="@string/text_empty"/>
 
-
         <View
             android:layout_width="wrap_content"
             android:layout_height="10dp"/>
@@ -75,5 +74,48 @@
             android:layout_height="wrap_content"
             android:text="@string/text_empty"/>
 
+        <LinearLayout
+            android:id="@+id/transaction_info_incoming_details_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"/>
+
+            <TextView
+                style="@style/marqueeText.primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_receivedSize"/>
+
+            <TextView
+                android:id="@+id/transaction_info_received_size"
+                style="@style/marqueeText.secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_empty"/>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="10dp"/>
+
+            <TextView
+                style="@style/marqueeText.primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_pseudoLocation"/>
+
+            <TextView
+                android:id="@+id/transaction_info_pseudo_location"
+                style="@style/marqueeText.secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="20"
+                android:text="@string/text_empty"/>
+
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

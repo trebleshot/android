@@ -28,14 +28,6 @@ public class ApplicationListAdapter
 	private boolean mShowSysApps = false;
 	private PackageManager mManager;
 	private ArrayList<PackageHolder> mList = new ArrayList<>();
-	private Comparator<PackageHolder> mComparator = new Comparator<PackageHolder>()
-	{
-		@Override
-		public int compare(PackageHolder compareFrom, PackageHolder compareTo)
-		{
-			return compareFrom.friendlyName.toLowerCase().compareTo(compareTo.friendlyName.toLowerCase());
-		}
-	};
 
 	public ApplicationListAdapter(Context context, boolean showSystemApps)
 	{
@@ -58,11 +50,15 @@ public class ApplicationListAdapter
 		for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-			if (((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1) || mShowSysApps)
-				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo, packageInfo.versionName, appInfo.sourceDir, packageInfo.packageName));
+			if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || mShowSysApps)
+				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
+						appInfo,
+						packageInfo.versionName,
+						packageInfo.packageName,
+						new File(appInfo.sourceDir)));
 		}
 
-		Collections.sort(list, mComparator);
+		Collections.sort(list, getDefaultComparator());
 
 		return list;
 	}
@@ -98,37 +94,39 @@ public class ApplicationListAdapter
 	}
 
 	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
+	public View getView(int position, View convertView, ViewGroup viewGroup)
 	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_application, viewGroup, false);
+		if (convertView == null)
+			convertView = getInflater().inflate(R.layout.list_application, viewGroup, false);
 
 		final PackageHolder holder = (PackageHolder) getItem(position);
 
-		final ImageView image = view.findViewById(R.id.image);
-		TextView text1 = view.findViewById(R.id.text);
-		TextView text2 = view.findViewById(R.id.text2);
+		final View selector = convertView.findViewById(R.id.selector);
+		final View layoutImage = convertView.findViewById(R.id.layout_image);
+		ImageView image = convertView.findViewById(R.id.image);
+		TextView text1 = convertView.findViewById(R.id.text);
+		TextView text2 = convertView.findViewById(R.id.text2);
 
 		text1.setText(holder.friendlyName);
 		text2.setText(holder.version);
 
 		if (getSelectionConnection() != null) {
-			image.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(getSelectionConnection().isSelected(holder));
 
-			image.setOnClickListener(new View.OnClickListener()
+			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
 					getSelectionConnection().setSelected(holder);
-					image.setSelected(holder.isSelectableSelected());
+					selector.setSelected(holder.isSelectableSelected());
 				}
 			});
 		}
 
 		SweetImageLoader.load(this, getContext(), image, holder);
 
-		return view;
+		return convertView;
 	}
 
 	public void showSystemApps(boolean show)
@@ -142,9 +140,9 @@ public class ApplicationListAdapter
 		public String version;
 		public String packageName;
 
-		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String codePath, String packageName)
+		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
 		{
-			super(friendlyName, friendlyName + "_" + version + ".apk", Uri.fromFile(new File(codePath)));
+			super(friendlyName, friendlyName + "_" + version + ".apk", executableFile.lastModified(), executableFile.length(), Uri.fromFile(executableFile));
 
 			this.appInfo = appInfo;
 			this.version = version;

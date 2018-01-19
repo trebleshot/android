@@ -67,8 +67,10 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 		if (getSearchSupport()) {
 			inflater.inflate(R.menu.actions_search, menu);
 
-			((SearchView) menu.findItem(R.id.search).getActionView())
-					.setOnQueryTextListener(mSearchComposer);
+			SearchView searchView = ((SearchView) menu.findItem(R.id.search).getActionView());
+
+			searchView.setOnQueryTextListener(mSearchComposer);
+			searchView.setMaxWidth(500);
 		}
 	}
 
@@ -105,7 +107,8 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 		ArrayList<T> selectedItemList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
 
-		if (id == R.id.action_mode_share_trebleshot || id == R.id.action_mode_share_all_apps) {
+		if (selectedItemList.size() > 0
+				&& (id == R.id.action_mode_share_trebleshot || id == R.id.action_mode_share_all_apps)) {
 			Intent shareIntent = null;
 			String action = (item.getItemId() == R.id.action_mode_share_all_apps)
 					? (selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)

@@ -41,8 +41,8 @@ public class TextStreamListFragment
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
-		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		super.onCreate(savedInstanceState);
+		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
 
 	@Override
@@ -135,8 +135,10 @@ public class TextStreamListFragment
 						.setType("text/*");
 
 				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-			} else
+			} else {
 				Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
+				return false;
+			}
 		} else
 			return super.onActionMenuItemSelected(context, actionMode, item);
 
@@ -156,9 +158,8 @@ public class TextStreamListFragment
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_CLIPBOARD)) {
+					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_CLIPBOARD))
 				refreshList();
-			}
 		}
 	}
 }

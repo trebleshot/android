@@ -58,20 +58,25 @@ public class FileUtils
 		return (fileType == null) ? "*/*" : fileType;
 	}
 
-	public static File getIncomingTransactionFile(Context context, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
+	public static File getIncomingPseudoFile(Context context, TransactionObject transactionObject, TransactionObject.Group group)
 	{
 		String transactionFile = (transactionObject.directory != null ? transactionObject.directory + File.separator : "") + transactionObject.file;
 
-		File file = new File(getSavePath(context, group) + File.separator + transactionFile);
-		File parentFile = file.getParentFile();
+		return new File(getSavePath(context, group) + File.separator + transactionFile);
+	}
+
+	public static File getIncomingTransactionFile(Context context, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
+	{
+		File transactionFile = getIncomingPseudoFile(context, transactionObject, group);
+		File parentFile = transactionFile.getParentFile();
 
 		if (parentFile != null)
 			if ((!parentFile.exists() && parentFile.mkdirs()) || parentFile.canWrite())
 
-				if (!file.createNewFile() && (!file.isFile() || !file.canWrite()))
+				if (!transactionFile.createNewFile() && (!transactionFile.isFile() || !transactionFile.canWrite()))
 					throw new IOException("File cannot be created or you don't have permission write on it");
 
-		return file;
+		return transactionFile;
 	}
 
 	public static File getSavePath(Context context, TransactionObject.Group group)
@@ -115,6 +120,15 @@ public class FileUtils
 		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
 				? FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".provider", file)
 				: Uri.fromFile(file);
+	}
+
+	public static File saveReceivedFile(File file, TransactionObject transactionObject)
+	{
+		File finalFileLocation = FileUtils.getUniqueFile(new File(file.getParent() + File.separator + transactionObject.friendlyName), true);
+
+		file.renameTo(finalFileLocation);
+
+		return finalFileLocation;
 	}
 
 	public static String sizeExpression(long bytes, boolean notUseByte)

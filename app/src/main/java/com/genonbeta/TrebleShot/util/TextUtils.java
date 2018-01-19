@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.content.Context;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
@@ -28,6 +30,16 @@ public class TextUtils
 				return associatedNames.get(displayName);
 
 		return -1;
+	}
+
+	public static String getAdapterName(Context context, NetworkDevice.Connection connection)
+	{
+		int adapterNameResource = getAdapterName(connection);
+
+		if (adapterNameResource == -1)
+			return connection.adapterName;
+
+		return context.getString(adapterNameResource);
 	}
 
 	public static String getFirstLetters(String text, int breakAfter)

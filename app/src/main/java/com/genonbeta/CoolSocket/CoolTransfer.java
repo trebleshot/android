@@ -1,7 +1,5 @@
 package com.genonbeta.CoolSocket;
 
-import com.genonbeta.TrebleShot.util.MathUtils;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -382,8 +380,8 @@ abstract public class CoolTransfer<T>
 									}
 
 									if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
-										int currentPercentage = MathUtils.calculatePercentage(getFileSize(), outputStream.getChannel().position());
-										int groupPercentage = getGroupTotalByte() > 0 ? MathUtils.calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
+										int currentPercentage = calculatePercentage(getFileSize(), outputStream.getChannel().position());
+										int groupPercentage = getGroupTotalByte() > 0 ? calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
 
 										setTimeElapsed(System.currentTimeMillis() - getStartTime());
 										setTimePassed(getGroupTotalByte() > 0
@@ -543,8 +541,8 @@ abstract public class CoolTransfer<T>
 								}
 
 								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
-									int currentPercentage = MathUtils.calculatePercentage(getFileSize(), countingStars);
-									int groupPercentage = getGroupTotalByte() > 0 ? MathUtils.calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
+									int currentPercentage = calculatePercentage(getFileSize(), countingStars);
+									int groupPercentage = getGroupTotalByte() > 0 ? calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
 
 									setTimeElapsed(System.currentTimeMillis() - getStartTime());
 									setTimePassed(getGroupTotalByte() > 0
@@ -608,5 +606,10 @@ abstract public class CoolTransfer<T>
 				return getInputStream().skip(bytes);
 			}
 		}
+	}
+
+	public static int calculatePercentage(long max, long current)
+	{
+		return (int) (((float) 100 / max) * current);
 	}
 }

@@ -152,7 +152,7 @@
     <string name="text_createFolder">Create folder</string>
     <string name="mesg_fileAlreadyExists">File already exists</string>
     <string name="mesg_folderCreateError">Folder could not be created</string>
-    <string name="text_requestPermissionStorageSummary">This permission allows TrebleShot to write your to your storage for receiving and sharing files.</string>
+    <string name="text_requestPermissionStorageSummary">This permission allows TrebleShot to read and write to your device\'s storage for receiving and sharing files.</string>
     <string name="butn_settings">Settings</string>
     <string name="butn_selectThis">Select this</string>
     <string name="butn_newFile">New file</string>
@@ -263,4 +263,25 @@
     <string name="butn_gotIt">Got it</string>
     <string name="mesg_helpFolderSelection">To select a folder, tap its icon</string>
     <string name="mesg_hotspotCreatedInfo">Connect to \"%s\" in \"Wi-Fi settings\" or send files via \"%s\" inside TrebleShot</string>
+    <string name="butn_selectAll">Select all</string>
+    <string name="butn_selectNone">Select none</string>
+    <string name="butn_previewSelections">Preview selections</string>
+    <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" has failed</string>
+    <string name="mesg_retryAllInfo">TrebleShot will retry receiving interrupted transfers</string>
+    <string name="mesg_transferConnectionNotSetUpFix">No connection is set up. Please set up one to communicate</string>
+    <string name="butn_setUp">Set up</string>
+    <string name="text_pseudoLocation">Pseudo location</string>
+    <string name="butn_saveAnyway">Save anyway</string>
+    <string name="text_receivedSize">Received size</string>
+    <string name="mesg_notValidTransfer">The transfer is not valid anymore</string>
+    <string name="ques_saveAnyway">Save anyway?</string>
+    <string name="text_saveAnywaySummary">The sender removed this transfer from the list, but it has not been completed. If you proceed the partly received file will be saved as if it were received.</string>
+    <string name="mesg_fileSaved">The file has been saved</string>
+    <string name="butn_sortBy">Sort by</string>
+    <string name="butn_sortOrder">Sort order</string>
+    <string name="text_sortOrderAscending">Ascending</string>
+    <string name="text_sortOrderDescending">Descending</string>
+    <string name="text_sortByName">Name</string>
+    <string name="text_sortByDate">Date</string>
+    <string name="text_sortBySize">Size</string>
 </resources>

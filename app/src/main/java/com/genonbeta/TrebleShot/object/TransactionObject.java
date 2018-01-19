@@ -15,7 +15,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TransactionObject
-		implements FlexibleObject, Selectable
+		implements FlexibleObject, Editable
 {
 	public String friendlyName;
 	public String file;
@@ -125,15 +125,33 @@ public class TransactionObject
 	}
 
 	@Override
-	public boolean isSelectableSelected()
+	public String getComparableName()
 	{
-		return mIsSelected;
+		return getSelectableFriendlyName();
+	}
+
+	@Override
+	public long getComparableDate()
+	{
+		return requestId;
+	}
+
+	@Override
+	public long getComparableSize()
+	{
+		return fileSize;
 	}
 
 	@Override
 	public String getSelectableFriendlyName()
 	{
 		return friendlyName;
+	}
+
+	@Override
+	public boolean isSelectableSelected()
+	{
+		return mIsSelected;
 	}
 
 	@Override

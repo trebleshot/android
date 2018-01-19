@@ -14,9 +14,9 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 
 public class TransferInstance
 {
-	public NetworkDevice.Connection mConnection;
-	public NetworkDevice mDevice;
-	public TransactionObject.Group mGroup;
+	private NetworkDevice.Connection mConnection;
+	private NetworkDevice mDevice;
+	private TransactionObject.Group mGroup;
 
 	public TransferInstance(AccessDatabase database, int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
 	{

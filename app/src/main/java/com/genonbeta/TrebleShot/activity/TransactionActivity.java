@@ -102,6 +102,7 @@ public class TransactionActivity
 	private NavigationView mNavigationView;
 	private MenuItem mInfoMenu;
 	private MenuItem mStartMenu;
+	private MenuItem mRetryMenu;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -335,6 +336,7 @@ public class TransactionActivity
 	{
 		mInfoMenu = menu.findItem(R.id.actions_transaction_show_info);
 		mStartMenu = menu.findItem(R.id.actions_transaction_resume_all);
+		mRetryMenu = menu.findItem(R.id.actions_transaction_retry_all);
 
 		updateCalculations();
 
@@ -347,9 +349,25 @@ public class TransactionActivity
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transaction_resume_all) {
-			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-					.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
-					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
+			try {
+				mDatabase.reconstruct(new NetworkDevice.Connection(mDevice.deviceId, mGroup.connectionAdapter));
+
+				AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+						.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
+						.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
+			} catch (Exception e) {
+				e.printStackTrace();
+
+				createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
+						.setAction(R.string.butn_setUp, new View.OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								changeConnection();
+							}
+						}).show();
+			}
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();
 
@@ -362,6 +380,9 @@ public class TransactionActivity
 							String.valueOf(mGroup.groupId),
 							TransactionObject.Flag.INTERRUPTED.toString(),
 							TransactionObject.Type.INCOMING.toString()), contentValues);
+
+			createSnackbar(R.string.mesg_retryAllInfo)
+					.show();
 		} else if (id == R.id.actions_transaction_show_info)
 			mInfoDialog.show();
 		else
@@ -402,18 +423,7 @@ public class TransactionActivity
 							.getSavePath(this, mGroup)
 							.getAbsolutePath()));
 		} else if (id == R.id.drawer_transaction_connection) {
-			new ConnectionChooserDialog(this, mDatabase, mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
-			{
-				@Override
-				public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
-				{
-					mGroup.connectionAdapter = connection.adapterName;
-					mDatabase.publish(mGroup);
-
-					createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
-							.show();
-				}
-			}).show();
+			changeConnection();
 		} else
 			return false;
 
@@ -437,6 +447,22 @@ public class TransactionActivity
 	{
 		mTransactionFragment.getAdapter().setGroupId(mGroup.groupId);
 		mTransactionFragment.getAdapter().setPath(path);
+	}
+
+	private void changeConnection()
+	{
+		new ConnectionChooserDialog(this, mDatabase, mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
+		{
+			@Override
+			public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
+			{
+				mGroup.connectionAdapter = connection.adapterName;
+				mDatabase.publish(mGroup);
+
+				createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
+						.show();
+			}
+		}).show();
 	}
 
 	private Snackbar createSnackbar(int resId, Object... objects)
@@ -494,11 +520,12 @@ public class TransactionActivity
 						MenuItemCompat.setIconTintList(mInfoMenu, ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.notEnoughSpaceMenuTint)));
 					}
 
-					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
-					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(mInfoDialog.getIndex().incomingCount > 0);
+					boolean hasIncoming = mInfoDialog.getIndex().incomingCount > 0;
 
-					if (mStartMenu != null)
-						mStartMenu.setVisible(mInfoDialog.getIndex().incomingCount > 0);
+					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(hasIncoming);
+					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(hasIncoming);
+					mStartMenu.setVisible(hasIncoming);
+					mRetryMenu.setVisible(hasIncoming);
 				}
 			});
 		}
