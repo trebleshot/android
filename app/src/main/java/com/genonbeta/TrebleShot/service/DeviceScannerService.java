@@ -6,7 +6,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
@@ -14,7 +13,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.android.database.SQLQuery;
 
 import java.net.InetAddress;
 import java.net.NetworkInterface;

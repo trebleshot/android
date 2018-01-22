@@ -45,10 +45,8 @@ import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -174,10 +172,8 @@ public class TransactionActivity
 				mDevice = networkDevice;
 				mInfoDialog = new TransactionGroupInfoDialog(this, mDatabase, mGroup);
 
-				if (getSupportActionBar() != null) {
+				if (getSupportActionBar() != null)
 					getSupportActionBar().setTitle(mDevice.nickname);
-					getSupportActionBar().setSubtitle(TimeUtils.getTimeAgo(getApplicationContext(), mGroup.dateCreated));
-				}
 
 				mTransactionFragment.getAdapter().setPathChangedListener(this);
 
@@ -462,7 +458,7 @@ public class TransactionActivity
 				createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
 						.show();
 			}
-		}).show();
+		}, false).show();
 	}
 
 	private Snackbar createSnackbar(int resId, Object... objects)

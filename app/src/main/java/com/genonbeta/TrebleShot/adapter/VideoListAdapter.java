@@ -20,7 +20,6 @@ import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * created by: Veli

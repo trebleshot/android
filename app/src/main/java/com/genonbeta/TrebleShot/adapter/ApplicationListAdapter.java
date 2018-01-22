@@ -19,7 +19,6 @@ import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class ApplicationListAdapter
 		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder>

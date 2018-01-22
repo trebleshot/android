@@ -8,6 +8,8 @@ package com.genonbeta.TrebleShot.object;
 public interface Comparable
 {
 	String getComparableName();
+
 	long getComparableDate();
+
 	long getComparableSize();
 }

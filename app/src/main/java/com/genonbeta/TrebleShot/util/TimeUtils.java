@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
 

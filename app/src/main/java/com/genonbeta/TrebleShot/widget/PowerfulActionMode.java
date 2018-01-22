@@ -1,14 +1,11 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,7 +16,6 @@ import android.widget.AdapterView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Selectable;
-import com.genonbeta.TrebleShot.object.Shareable;
 
 import java.util.ArrayList;
 

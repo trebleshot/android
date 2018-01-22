@@ -10,12 +10,10 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * created by: Veli

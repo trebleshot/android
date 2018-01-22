@@ -25,7 +25,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -49,6 +48,7 @@ import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
+import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 public class NetworkDeviceListFragment
@@ -57,6 +57,7 @@ public class NetworkDeviceListFragment
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
+	private NsdDiscovery mNsdDiscovery;
 	private SharedPreferences mPreferences;
 	private AbsListView.OnItemClickListener mClickListener;
 	private IntentFilter mIntentFilter = new IntentFilter();
@@ -84,6 +85,8 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		super.onCreate(savedInstanceState);
+
+		mNsdDiscovery = new NsdDiscovery(getContext(), getAdapter().getDatabase());
 	}
 
 	@Override
@@ -193,9 +196,11 @@ public class NetworkDeviceListFragment
 	{
 		super.onResume();
 		getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-		refreshList();
 
+		refreshList();
 		checkRefreshing();
+
+		mNsdDiscovery.startDiscovering();
 	}
 
 	@Override
@@ -203,6 +208,8 @@ public class NetworkDeviceListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
+
+		mNsdDiscovery.stopDiscovering();
 	}
 
 	@Override

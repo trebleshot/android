@@ -4,6 +4,7 @@
     <PreferenceCategory android:title="@string/text_application">
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="scan_devices_auto"
             android:title="@string/text_autoScanDevices"
             android:summary="@string/text_autoScanDevicesSummary"/>
@@ -15,6 +16,7 @@
             android:dialogTitle="@string/text_deviceNameTitle"/>
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="trust_always"
             android:title="@string/text_trustZoneEnabled"
             android:summary="@string/text_trustZoneEnabledSummary"/>
@@ -24,16 +26,19 @@
     <PreferenceCategory android:title="@string/text_notification">
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="notification_vibrate"
             android:title="@string/text_useVibration"
             android:summary="@string/text_useVibrationSummary"/>
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="notification_sound"
             android:title="@string/text_useSounds"
             android:summary="@string/text_useSoundsSummary"/>
 
         <CheckBoxPreference
+            android:defaultValue="true"
             android:key="notification_light"
             android:title="@string/text_useLights"
             android:summary="@string/text_useLightSummary"/>
@@ -43,16 +48,19 @@
     <PreferenceCategory android:title="@string/text_advanced">
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="developer_mode"
             android:title="@string/text_developerMode"
             android:summary="@string/text_developerModeSummary"/>
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="allow_autoconnect"
             android:title="@string/text_autoStart"
             android:summary="@string/text_autoStartSummary"/>
 
         <CheckBoxPreference
+            android:defaultValue="false"
             android:key="show_system_apps"
             android:title="@string/text_showSystemApps"
             android:summary="@string/text_showSystemAppsSummary"/>
