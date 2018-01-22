@@ -394,7 +394,7 @@ public class ShareActivity extends Activity
 									break;
 
 								mProgressDialog.setProgress(mProgressDialog.getProgress() + 1);
-								mDatabase.publish(transactionObject);
+								mDatabase.insert(transactionObject);
 							}
 
 							if (interrupter.interrupted())
@@ -546,7 +546,7 @@ public class ShareActivity extends Activity
 			{
 				doCommunicate(device, connection);
 			}
-		}).show();
+		}, true).show();
 	}
 
 	private class SelectableStream

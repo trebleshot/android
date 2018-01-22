@@ -3,15 +3,17 @@ package com.genonbeta.TrebleShot.service;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
-import android.net.wifi.WifiConfiguration;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
@@ -26,7 +28,6 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -40,6 +41,7 @@ import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.CursorItem;
@@ -86,6 +88,7 @@ public class CommunicationService extends Service
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
+	private NsdDiscovery mNsdDiscovery;
 	private NotificationUtils mNotificationUtils;
 	private AccessDatabase mDatabase;
 	private WifiManager.WifiLock mWifiLock;
@@ -108,11 +111,14 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
-		if (!mCommunicationServer.start() || !mSeamlessServer.start())
+		if (!mCommunicationServer.start() || !mSeamlessServer.start()) {
 			stopSelf();
+			return;
+		}
 
 		mNotificationUtils = new NotificationUtils(this);
 		mDatabase = new AccessDatabase(this);
+		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase());
 		mMediaScanner = new MediaScannerConnection(this, null);
 		mHotspotUtils = HotspotUtils.getInstance(this);
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
@@ -122,6 +128,8 @@ public class CommunicationService extends Service
 		mSend.setNotifyDelay(2000);
 
 		mMediaScanner.connect();
+		mNsdDiscovery.registerService();
+
 
 		getWifiLock().acquire();
 		updateServiceState(getNotificationUtils().getPreferences().getBoolean("trust_always", false));
@@ -295,11 +303,13 @@ public class CommunicationService extends Service
 		mCommunicationServer.stop();
 		mSeamlessServer.stop();
 		mMediaScanner.disconnect();
+		mNsdDiscovery.unregisterService();
 
 		if (getHotspotUtils().unloadPreviousConfig())
 			getHotspotUtils().disable();
 
 		getWifiLock().release();
+
 		stopForeground(true);
 	}
 
@@ -507,7 +517,7 @@ public class CommunicationService extends Service
 														if (requestIndex.has(Keyword.DIRECTORY))
 															transactionObject.directory = requestIndex.getString(Keyword.DIRECTORY);
 
-														mDatabase.publish(transactionObject);
+														mDatabase.insert(transactionObject);
 													}
 
 												} catch (JSONException e) {

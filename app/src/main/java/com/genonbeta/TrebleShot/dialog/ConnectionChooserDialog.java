@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -56,7 +57,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 	private OnDeviceSelectedListener mDeviceSelectedListener;
 	private Activity mActivity;
 
-	public ConnectionChooserDialog(Activity activity, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
+	public ConnectionChooserDialog(Activity activity, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener, boolean refreshProvided)
 	{
 		super(activity);
 
@@ -74,6 +75,12 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 				mDeviceSelectedListener.onDeviceSelected(mConnections.get(which), mConnections);
 			}
 		});
+
+		setTitle(R.string.text_availableNetworks);
+		setNegativeButton(R.string.butn_cancel, null);
+
+		if (!refreshProvided)
+			setPositiveButton(R.string.text_refresh, null);
 	}
 
 	@Override
@@ -87,23 +94,22 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 		} else
 			setMessage(R.string.text_noNetworkAvailable);
 
-		setTitle(R.string.text_availableNetworks);
-		setNegativeButton(R.string.butn_cancel, null);
-		setPositiveButton(R.string.text_refresh, null);
-
 		mDialog = super.show();
 
 		startRefreshing();
 
-		mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
+		Button buttonPositive = mDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+
+		if (buttonPositive != null)
+			buttonPositive.setOnClickListener(new View.OnClickListener()
 			{
-				getContext().startService(new Intent(getContext(), DeviceScannerService.class)
-						.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
-			}
-		});
+				@Override
+				public void onClick(View v)
+				{
+					getContext().startService(new Intent(getContext(), DeviceScannerService.class)
+							.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
+				}
+			});
 
 		mDialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener()
 		{
@@ -279,7 +285,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 	private class ConnectionListAdapter extends BaseAdapter
 	{
 		public ConnectionListAdapter()
-		{}
+		{
+		}
 
 		@Override
 		public int getCount()

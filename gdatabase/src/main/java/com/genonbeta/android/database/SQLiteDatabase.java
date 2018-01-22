@@ -65,13 +65,11 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 
 		Cursor cursor = getReadableDatabase().query(select.tableName, select.columns, select.where, select.whereArgs, select.groupBy, select.having, select.orderBy);
 
-		if (cursor.moveToFirst())
-		{
+		if (cursor.moveToFirst()) {
 			if (select.loadListener != null)
 				select.loadListener.onOpen(this, cursor);
 
-			do
-			{
+			do {
 				CursorItem item = new CursorItem();
 
 				for (int i = 0; i < cursor.getColumnCount(); i++)
@@ -94,8 +92,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		HashMap<Long, Long> identityList = new HashMap<>();
 		ArrayList<CursorItem> identities = getTable(new SQLQuery.Select(tableName, COLUMN_ID, COLUMN_UPDATETIME, COLUMN_ISSTATIC));
 
-		for (CursorItem item : identities)
-		{
+		for (CursorItem item : identities) {
 			if (item.isStatic())
 				continue;
 
@@ -103,6 +100,12 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		}
 
 		return identityList;
+	}
+
+	public long insert(FlexibleObject object)
+	{
+		object.onCreateObject(this);
+		return insert(object.getWhere().tableName, null, object.getValues());
 	}
 
 	public long insert(String tableName, String nullColumnHack, ContentValues contentValues)
@@ -114,8 +117,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	{
 		StringBuilder idsToValues = new StringBuilder();
 
-		for (Long id : ids.keySet())
-		{
+		for (Long id : ids.keySet()) {
 			if (idsToValues.length() > 0)
 				idsToValues.append(",");
 
@@ -127,13 +129,10 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 
 	public void publish(FlexibleObject object)
 	{
-		if (getFirstFromTable(object.getWhere()) != null) {
-			object.onUpdateObject(this);
-			update(object.getWhere(), object.getValues());
-		} else {
-			object.onCreateObject(this);
-			insert(object.getWhere().tableName, null, object.getValues());
-		}
+		if (getFirstFromTable(object.getWhere()) != null)
+			update(object);
+		else
+			insert(object);
 	}
 
 	public void remove(FlexibleObject object)
@@ -146,14 +145,12 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	{
 		CursorItem item = getFirstFromTable(object.getWhere());
 
-		if (item == null)
-		{
+		if (item == null) {
 			SQLQuery.Select select = object.getWhere();
 
 			StringBuilder whereArgs = new StringBuilder();
 
-			for (String arg : select.whereArgs)
-			{
+			for (String arg : select.whereArgs) {
 				if (whereArgs.length() > 0)
 					whereArgs.append(", ");
 
@@ -168,6 +165,12 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		}
 
 		object.reconstruct(item);
+	}
+
+	public int update(FlexibleObject object)
+	{
+		object.onUpdateObject(this);
+		return update(object.getWhere(), object.getValues());
 	}
 
 	public int update(SQLQuery.Select select, ContentValues values)

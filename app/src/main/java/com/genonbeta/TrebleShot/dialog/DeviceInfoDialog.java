@@ -137,7 +137,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 								}
 							});
 						}
-					}).show();
+					}, false).show();
 				}
 			});
 

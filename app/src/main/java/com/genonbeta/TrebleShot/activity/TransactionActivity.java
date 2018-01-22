@@ -174,10 +174,8 @@ public class TransactionActivity
 				mDevice = networkDevice;
 				mInfoDialog = new TransactionGroupInfoDialog(this, mDatabase, mGroup);
 
-				if (getSupportActionBar() != null) {
+				if (getSupportActionBar() != null)
 					getSupportActionBar().setTitle(mDevice.nickname);
-					getSupportActionBar().setSubtitle(TimeUtils.getTimeAgo(getApplicationContext(), mGroup.dateCreated));
-				}
 
 				mTransactionFragment.getAdapter().setPathChangedListener(this);
 
@@ -462,7 +460,7 @@ public class TransactionActivity
 				createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
 						.show();
 			}
-		}).show();
+		}, false).show();
 	}
 
 	private Snackbar createSnackbar(int resId, Object... objects)

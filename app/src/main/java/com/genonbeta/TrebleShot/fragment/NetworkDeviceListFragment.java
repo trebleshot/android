@@ -12,6 +12,8 @@ import android.content.res.ColorStateList;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.net.nsd.NsdManager;
+import android.net.nsd.NsdServiceInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -20,6 +22,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
@@ -49,6 +52,8 @@ import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 public class NetworkDeviceListFragment
@@ -57,6 +62,7 @@ public class NetworkDeviceListFragment
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
+	private NsdDiscovery mNsdDiscovery;
 	private SharedPreferences mPreferences;
 	private AbsListView.OnItemClickListener mClickListener;
 	private IntentFilter mIntentFilter = new IntentFilter();
@@ -84,6 +90,8 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		super.onCreate(savedInstanceState);
+
+		mNsdDiscovery = new NsdDiscovery(getContext(), getAdapter().getDatabase());
 	}
 
 	@Override
@@ -193,9 +201,11 @@ public class NetworkDeviceListFragment
 	{
 		super.onResume();
 		getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-		refreshList();
 
+		refreshList();
 		checkRefreshing();
+
+		mNsdDiscovery.startDiscovering();
 	}
 
 	@Override
@@ -203,6 +213,8 @@ public class NetworkDeviceListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
+
+		mNsdDiscovery.stopDiscovering();
 	}
 
 	@Override
