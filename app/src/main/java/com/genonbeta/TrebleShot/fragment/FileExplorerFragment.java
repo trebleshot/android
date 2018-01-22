@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageButton;
@@ -20,7 +19,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
 import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 import java.io.File;

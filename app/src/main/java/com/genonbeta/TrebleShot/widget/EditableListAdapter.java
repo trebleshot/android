@@ -7,7 +7,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 
 /**

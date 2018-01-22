@@ -3,12 +3,9 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,7 +16,6 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.io.StreamInfo;
-import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -27,7 +23,6 @@ import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public abstract class ShareableListFragment<T extends Shareable, E extends ShareableListAdapter<T>>

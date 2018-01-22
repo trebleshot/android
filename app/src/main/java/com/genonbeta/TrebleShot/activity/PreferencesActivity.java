@@ -1,10 +1,18 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.fragment.PreferencesFragment;
+import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class PreferencesActivity extends Activity
 {
@@ -23,11 +31,41 @@ public class PreferencesActivity extends Activity
 	{
 		int id = item.getItemId();
 
-		if (id == android.R.id.home) {
+		if (id == android.R.id.home)
 			finish();
-			return true;
-		}
+		else if (id == R.id.actions_preference_main_reset_to_defaults) {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-		return super.onOptionsItemSelected(item);
+			builder.setTitle(R.string.ques_resetToDefault);
+			builder.setMessage(R.string.text_resetPreferencesToDefaultSummary);
+			builder.setNegativeButton(R.string.butn_cancel, null);
+			builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+					sharedPreferences.edit()
+							.clear()
+							.apply();
+
+					PreferenceManager.setDefaultValues(PreferencesActivity.this, R.xml.preferences_main, true);
+					finish();
+				}
+			});
+
+			builder.show();
+		} else
+			return super.onOptionsItemSelected(item);
+
+		return true;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		getMenuInflater().inflate(R.menu.actions_preferences_main, menu);
+		return super.onCreateOptionsMenu(menu);
 	}
 }

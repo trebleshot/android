@@ -6,11 +6,9 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -23,6 +21,8 @@ public abstract class Activity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences_main, false);
 
 		if (Build.VERSION.SDK_INT >= 16) {
 			RationalePermissionRequest storagePermission = new RationalePermissionRequest(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);

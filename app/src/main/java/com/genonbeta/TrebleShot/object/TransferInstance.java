@@ -5,7 +5,6 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
-import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 
 /**
  * created by: Veli

@@ -12,18 +12,18 @@ import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 
 public class ImageListFragment
-        extends ShareableListFragment<ImageListAdapter.ImageHolder, ImageListAdapter>
-        implements TitleSupport
+		extends ShareableListFragment<ImageListAdapter.ImageHolder, ImageListAdapter>
+		implements TitleSupport
 {
-    @Override
-    public ImageListAdapter onAdapter()
-    {
-        return new ImageListAdapter(getActivity());
-    }
+	@Override
+	public ImageListAdapter onAdapter()
+	{
+		return new ImageListAdapter(getActivity());
+	}
 
-    @Override
-    public CharSequence getTitle(Context context)
-    {
-        return context.getString(R.string.text_image);
-    }
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.text_image);
+	}
 }

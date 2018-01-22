@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.preference.PreferenceManager;
 
@@ -23,8 +22,7 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 	{
 		SharedPreferences preferences = getSharedPreferences(context);
 
-		if (WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
-		{
+		if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())) {
 			HotspotUtils hotspotUtils = HotspotUtils.getInstance(context);
 
 			if (WifiManager.WIFI_STATE_DISABLED

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 
 public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHolder>
 {
@@ -84,8 +82,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 				if (splitPath.length >= 2
 						&& splitPath[1].equals("storage")
 						&& splitPath[splitPath.length - 1].equals(getContext().getPackageName())) {
-					if (splitPath.length >= 4 && splitPath[2].equals("emulated"))
-					{
+					if (splitPath.length >= 4 && splitPath[2].equals("emulated")) {
 						File file = new File(buildPath(splitPath, 4));
 
 						if (file.canWrite()) {
@@ -123,8 +120,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 	{
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (int i = 0; (i < count && i < splitPath.length); i ++)
-		{
+		for (int i = 0; (i < count && i < splitPath.length); i++) {
 			stringBuilder.append(File.separator);
 			stringBuilder.append(splitPath[i]);
 		}
@@ -194,7 +190,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 			});
 		}
 
-		image.setImageResource(holder.isFolder ? R.drawable.ic_folder_white_24dp: R.drawable.ic_whatshot_white_24dp);
+		image.setImageResource(holder.isFolder ? R.drawable.ic_folder_white_24dp : R.drawable.ic_whatshot_white_24dp);
 		text1.setText(holder.friendlyName);
 		text2.setText(holder.fileInfo);
 		text3.setText(TimeUtils.getTimeAgo(getContext(), holder.file.lastModified()));
