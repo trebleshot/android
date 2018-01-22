@@ -300,4 +300,7 @@
     <string name="text_sortBySize">Grootte</string>
 <string name="text_trustZoneDeviceNotice">Door dit aan te vinken wordt dit apparaat gemachtigd om u zonder bevestiging bestanden te sturen als TrustZone ingeschakeld is</string>
     <string name="text_allowingToConnectNotice">Als u dit aanvinkt, dan kan dit apparaat met u verbinden</string>
+<string name="butn_resetToDefault">Standaardwaarden herstellen</string>
+    <string name="ques_resetToDefault">Standaardwaarden herstellen?</string>
+    <string name="text_resetPreferencesToDefaultSummary">Dit herstelt de standaard instellingen</string>
 </resources>
