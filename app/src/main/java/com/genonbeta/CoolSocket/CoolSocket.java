@@ -128,7 +128,8 @@ abstract public class CoolSocket
 
 	public boolean isInterrupted()
 	{
-		return this.getServerThread().isInterrupted();
+		return this.getServerThread() == null ||
+				this.getServerThread().isInterrupted();
 	}
 
 	public boolean isServerAlive()

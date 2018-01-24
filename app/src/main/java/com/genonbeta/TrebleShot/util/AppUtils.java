@@ -10,13 +10,23 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+
+import java.util.ArrayList;
 
 public class AppUtils
 {
 	public static final String TAG = AppUtils.class.getSimpleName();
 
 	private static int mUniqueNumber = 0;
+
+	public static boolean checkRunningConditions(Context context)
+	{
+		return ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+				&& (Build.VERSION.SDK_INT < 26
+						|| ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED);
+	}
 
 	public static String getHotspotName(Context context)
 	{

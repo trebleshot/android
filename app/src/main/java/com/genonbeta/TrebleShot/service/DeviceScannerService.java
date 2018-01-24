@@ -45,7 +45,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 	{
 		super.onStartCommand(intent, flags, startId);
 
-		if (intent != null)
+		if (intent != null && AppUtils.checkRunningConditions(this))
 			if (ACTION_SCAN_DEVICES.equals(intent.getAction())) {
 				String result = SCANNER_NOT_AVAILABLE;
 

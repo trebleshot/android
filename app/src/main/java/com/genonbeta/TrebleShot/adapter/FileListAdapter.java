@@ -218,7 +218,6 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 
 		public FileHolder(String friendlyName, String fileInfo, File file, boolean isFolder)
 		{
-			// FIXME: 18.01.2018 Folder may not have
 			super(friendlyName, friendlyName, file.lastModified(), file.length(), Uri.fromFile(file));
 
 			this.fileInfo = fileInfo;
