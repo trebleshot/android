@@ -25,6 +25,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,6 +69,7 @@ public class NetworkDeviceListFragment
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
 	private boolean mShowHotspotInfo = false;
+	private boolean mWirelessEnableRequested = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -393,6 +395,7 @@ public class NetworkDeviceListFragment
 						@Override
 						public void onClick(View view)
 						{
+							mWirelessEnableRequested = true;
 							getWifiManager().setWifiEnabled(true);
 						}
 					})
@@ -513,9 +516,12 @@ public class NetworkDeviceListFragment
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();
-			else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1))
+			else if (mWirelessEnableRequested
+					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
+				mWirelessEnableRequested = false;
 				requestRefresh();
+			}
 		}
 	}
 }

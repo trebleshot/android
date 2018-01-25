@@ -62,13 +62,13 @@ public class NsdDiscovery
 				@Override
 				public void onDiscoveryStarted(String serviceType)
 				{
-					Log.e(TAG, "NSD discovery started");
+					Log.v(TAG, "NSD discovery started");
 				}
 
 				@Override
 				public void onDiscoveryStopped(String serviceType)
 				{
-					Log.e(TAG, "NSD discovery stopped");
+					Log.v(TAG, "NSD discovery stopped");
 				}
 
 				@RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
@@ -91,7 +91,8 @@ public class NsdDiscovery
 							@Override
 							public void onServiceResolved(NsdServiceInfo serviceInfo)
 							{
-								Log.w(TAG, "Resolved with success " + serviceInfo.getServiceName());
+								Log.v(TAG, "Resolved with success " + serviceInfo.getServiceName()
+										+ " with IP address of " + serviceInfo.getHost().getHostAddress());
 
 								NetworkDeviceInfoLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(), null);
 							}
@@ -178,12 +179,20 @@ public class NsdDiscovery
 	public void stopDiscovering()
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			getNsdManager().stopServiceDiscovery(getDiscoveryListener());
+			try {
+				getNsdManager().stopServiceDiscovery(getDiscoveryListener());
+			} catch (IllegalArgumentException e) {
+				// Listener may not have been initialized
+			}
 	}
 
 	public void unregisterService()
 	{
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			getNsdManager().unregisterService(getRegistrationListener());
+			try {
+				getNsdManager().unregisterService(getRegistrationListener());
+			} catch (IllegalArgumentException e) {
+				// Listener may not have been initialized
+			}
 	}
 }

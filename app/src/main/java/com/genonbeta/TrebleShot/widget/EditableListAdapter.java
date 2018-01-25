@@ -65,8 +65,6 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 						break;
 				}
 
-				Log.d("Result", "res " + sortingResult);
-
 				return sortingResult;
 			}
 

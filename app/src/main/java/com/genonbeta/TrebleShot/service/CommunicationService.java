@@ -107,11 +107,6 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
-		if (!mCommunicationServer.start() || !mSeamlessServer.start()) {
-			stopSelf();
-			return;
-		}
-
 		mNotificationUtils = new NotificationUtils(this);
 		mDatabase = new AccessDatabase(this);
 		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase());
@@ -126,9 +121,13 @@ public class CommunicationService extends Service
 		mMediaScanner.connect();
 		mNsdDiscovery.registerService();
 
-
 		getWifiLock().acquire();
 		updateServiceState(getNotificationUtils().getPreferences().getBoolean("trust_always", false));
+
+		if (!AppUtils.checkRunningConditions(this)
+				|| !mCommunicationServer.start()
+				|| !mSeamlessServer.start())
+			stopSelf();
 	}
 
 	@Override
@@ -139,7 +138,7 @@ public class CommunicationService extends Service
 		if (intent != null)
 			Log.d(TAG, "onStart() : action = " + intent.getAction());
 
-		if (intent != null) {
+		if (intent != null && AppUtils.checkRunningConditions(this)) {
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
@@ -205,8 +204,8 @@ public class CommunicationService extends Service
 					return START_NOT_STICKY;
 				}
 			} else if (ACTION_CANCEL_INDEXING.equals(intent.getAction())) {
-				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
+				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 
 				mNotificationUtils.cancel(notificationId);
 
@@ -304,7 +303,8 @@ public class CommunicationService extends Service
 		if (getHotspotUtils().unloadPreviousConfig())
 			getHotspotUtils().disable();
 
-		getWifiLock().release();
+		if (getWifiLock().isHeld())
+			getWifiLock().release();
 
 		stopForeground(true);
 	}

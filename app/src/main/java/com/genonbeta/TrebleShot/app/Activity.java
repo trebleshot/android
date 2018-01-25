@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import com.genonbeta.TrebleShot.R;
@@ -13,32 +15,18 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
+import java.util.ArrayList;
+
 public abstract class Activity extends AppCompatActivity
 {
 	private SharedPreferences mPreferences;
+	private AlertDialog mOngoingRequest;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
 		PreferenceManager.setDefaultValues(this, R.xml.preferences_main, false);
-
-		if (Build.VERSION.SDK_INT >= 16) {
-			RationalePermissionRequest storagePermission = new RationalePermissionRequest(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-			storagePermission.setTitle(R.string.text_requestPermissionStorage);
-			storagePermission.setMessage(R.string.text_requestPermissionStorageSummary);
-			storagePermission.show();
-		}
-
-		if (Build.VERSION.SDK_INT >= 26) {
-			RationalePermissionRequest readPhonePermission = new RationalePermissionRequest(this, Manifest.permission.READ_PHONE_STATE);
-
-			readPhonePermission.setTitle(R.string.text_requestPermissionReadPhoneState);
-			readPhonePermission.setMessage(R.string.text_requestPermissionReadPhoneStateSummary);
-			readPhonePermission.show();
-		}
 	}
 
 	@Override
@@ -48,11 +36,64 @@ public abstract class Activity extends AppCompatActivity
 		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
 	}
 
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+
+		if (!AppUtils.checkRunningConditions(this))
+			requestRequiredPermissions();
+	}
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+	{
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (AppUtils.checkRunningConditions(this))
+			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
+		else
+			requestRequiredPermissions();
+	}
+
 	protected SharedPreferences getDefaultPreferences()
 	{
 		if (mPreferences == null)
 			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
 		return mPreferences;
+	}
+
+	public ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions()
+	{
+		ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
+
+		if (Build.VERSION.SDK_INT >= 16) {
+			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(this,
+					Manifest.permission.WRITE_EXTERNAL_STORAGE,
+					R.string.text_requestPermissionStorage,
+					R.string.text_requestPermissionStorageSummary));
+		}
+
+		if (Build.VERSION.SDK_INT >= 26) {
+			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(this,
+					Manifest.permission.READ_PHONE_STATE,
+					R.string.text_requestPermissionReadPhoneState,
+					R.string.text_requestPermissionReadPhoneStateSummary));
+		}
+
+		return permissionRequests;
+	}
+
+	public boolean requestRequiredPermissions()
+	{
+		if (mOngoingRequest != null && mOngoingRequest.isShowing())
+			return false;
+
+		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions())
+			if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request)) != null)
+				return false;
+
+		return true;
 	}
 }
