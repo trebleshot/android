@@ -69,6 +69,7 @@ public class NetworkDeviceListFragment
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
 	private boolean mShowHotspotInfo = false;
+	private boolean mWirelessEnableRequested = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -394,6 +395,7 @@ public class NetworkDeviceListFragment
 						@Override
 						public void onClick(View view)
 						{
+							mWirelessEnableRequested = true;
 							getWifiManager().setWifiEnabled(true);
 						}
 					})
@@ -514,9 +516,10 @@ public class NetworkDeviceListFragment
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();
-			else if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+			else if (mWirelessEnableRequested
+					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
 					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
-				Log.d(TAG, "Fragment you bitvh");
+				mWirelessEnableRequested = false;
 				requestRefresh();
 			}
 		}
