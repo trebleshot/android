@@ -36,5 +36,8 @@
         <item quantity="one">A minute ago</item>
         <item quantity="other">%d minutes ago</item>
     </plurals>
-
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">A file has been deleted</item>
+        <item quantity="other">%d files have been deleted</item>
+    </plurals>
 </resources>

@@ -17,7 +17,7 @@
     <string name="ques_receiveFile">Wilt u het bestand ontvangen?</string>
     <string name="butn_accept">Accepteren</string>
     <string name="butn_reject">Afwijzen</string>
-    <string name="text_ongoing">Lopend</string>
+    <string name="text_taskOngoing">Lopend</string>
     <string name="butn_stopService">Stoppen</string>
     <string name="text_sending">Bezig met versturen</string>
     <string name="butn_cancelSending">Versturen annuleren</string>

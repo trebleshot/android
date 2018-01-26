@@ -16,7 +16,7 @@
     <string name="ques_receiveFile">Dosya alınsın mı?</string>
     <string name="butn_accept">Kabul et</string>
     <string name="butn_reject">Reddet</string>
-    <string name="text_ongoing">Devam ediyor</string>
+    <string name="text_taskOngoing">Devam ediyor</string>
     <string name="butn_stopService">Sonlandır</string>
     <string name="text_sending">Gönderiliyor</string>
     <string name="butn_cancelSending">Gönderimi iptal et</string>
@@ -297,4 +297,7 @@
     <string name="butn_resetToDefault">Varsayılana sıfırla</string>
     <string name="ques_resetToDefault">Varsayılana sıfırlansın mı?</string>
     <string name="text_resetPreferencesToDefaultSummary">Bu varsayılan ayarları uygulayacak</string>
+    <string name="text_workerService">Arkaplan işleyicisi</string>
+    <string name="text_taskCompleted">İşlem tamamlandı</string>
+    <string name="text_deletingFilesOngoing">Seçili dosyalar siliniyor</string>
 </resources>

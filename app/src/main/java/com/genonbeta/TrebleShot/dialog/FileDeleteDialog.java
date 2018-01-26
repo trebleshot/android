@@ -3,11 +3,12 @@ package com.genonbeta.TrebleShot.dialog;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Looper;
 import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 
 import java.io.File;
 import java.net.URI;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 
 public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 {
+	public static final long JOB_FILE_DELETION = 1;
+
 	public FileDeleteDialog(final Activity activity, final ArrayList<T> items, final Listener listener)
 	{
 		super(activity);
@@ -34,22 +37,41 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 					@Override
 					public void onClick(DialogInterface dailog, int p2)
 					{
-						new Thread(new Runnable()
+						WorkerService.run(activity, new WorkerService.NotifiableRunningTask()
 						{
 							int totalDeletion = 0;
 
 							@Override
-							public void run()
+							public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
 							{
-								Looper.prepare();
+								dynamicNotification.setSmallIcon(R.drawable.ic_delete_white_24dp);
 
+								switch (updateType) {
+									case Started:
+										dynamicNotification.setContentText(getContext().getString(R.string.text_deletingFilesOngoing));
+										break;
+									case Done:
+										dynamicNotification.setContentText(getContext()
+												.getResources()
+												.getQuantityString(R.plurals.text_fileDeletionCompleted, totalDeletion, totalDeletion));
+										break;
+								}
+							}
+
+							@Override
+							public long getJobId()
+							{
+								return JOB_FILE_DELETION;
+							}
+
+							@Override
+							public void onRun()
+							{
 								for (T shareable : itemClones)
 									delete(new File(URI.create(shareable.uri.toString())));
 
 								if (listener != null)
 									listener.onCompleted(activity, totalDeletion);
-
-								Looper.loop();
 							}
 
 							private void delete(File file)
@@ -68,7 +90,7 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 								for (File anotherFile : folder.listFiles())
 									delete(anotherFile);
 							}
-						}).start();
+						});
 					}
 				}
 		);

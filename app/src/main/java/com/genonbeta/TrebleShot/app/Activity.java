@@ -64,33 +64,12 @@ public abstract class Activity extends AppCompatActivity
 		return mPreferences;
 	}
 
-	public ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions()
-	{
-		ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
-
-		if (Build.VERSION.SDK_INT >= 16) {
-			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(this,
-					Manifest.permission.WRITE_EXTERNAL_STORAGE,
-					R.string.text_requestPermissionStorage,
-					R.string.text_requestPermissionStorageSummary));
-		}
-
-		if (Build.VERSION.SDK_INT >= 26) {
-			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(this,
-					Manifest.permission.READ_PHONE_STATE,
-					R.string.text_requestPermissionReadPhoneState,
-					R.string.text_requestPermissionReadPhoneStateSummary));
-		}
-
-		return permissionRequests;
-	}
-
 	public boolean requestRequiredPermissions()
 	{
 		if (mOngoingRequest != null && mOngoingRequest.isShowing())
 			return false;
 
-		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions())
+		for (RationalePermissionRequest.PermissionRequest request : AppUtils.getRequiredPermissions(this))
 			if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request)) != null)
 				return false;
 

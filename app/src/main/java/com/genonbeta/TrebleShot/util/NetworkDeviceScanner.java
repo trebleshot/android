@@ -119,10 +119,10 @@ public class NetworkDeviceScanner
 				}
 
 				try {
-					InetAddress ınetAddress = InetAddress.getByName(mAddressPrefix + mPosition);
+					InetAddress inetAddress = InetAddress.getByName(mAddressPrefix + mPosition);
 
-					if (ınetAddress.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
-						NetworkDeviceScanner.this.mHandler.onDeviceFound(ınetAddress, mInterfaces.get(0).getNetworkInterface());
+					if (inetAddress.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
+						NetworkDeviceScanner.this.mHandler.onDeviceFound(inetAddress, mInterfaces.get(0).getNetworkInterface());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

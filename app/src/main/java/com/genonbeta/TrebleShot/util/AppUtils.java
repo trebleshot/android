@@ -9,6 +9,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -23,9 +24,11 @@ public class AppUtils
 
 	public static boolean checkRunningConditions(Context context)
 	{
-		return ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
-				&& (Build.VERSION.SDK_INT < 26
-						|| ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED);
+		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
+			if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
+					return false;
+
+		return true;
 	}
 
 	public static String getHotspotName(Context context)
@@ -40,6 +43,27 @@ public class AppUtils
 	{
 		return PreferenceManager.getDefaultSharedPreferences(context)
 				.getString("device_name", Build.BOARD.toUpperCase());
+	}
+
+	public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
+	{
+		ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
+
+		if (Build.VERSION.SDK_INT >= 16) {
+			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
+					Manifest.permission.WRITE_EXTERNAL_STORAGE,
+					R.string.text_requestPermissionStorage,
+					R.string.text_requestPermissionStorageSummary));
+		}
+
+		if (Build.VERSION.SDK_INT >= 26) {
+			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
+					Manifest.permission.READ_PHONE_STATE,
+					R.string.text_requestPermissionReadPhoneState,
+					R.string.text_requestPermissionReadPhoneStateSummary));
+		}
+
+		return permissionRequests;
 	}
 
 	public static int getUniqueNumber()

@@ -107,6 +107,9 @@
             </intent-filter>
         </service>
 
+        <service android:name=".service.WorkerService"
+                 android:label="@string/text_workerService" />
+
         <receiver
             android:name=".receiver.NetworkStatusReceiver"
             android:process=":transfer">
@@ -117,6 +120,7 @@
                 <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE"/>
             </intent-filter>
         </receiver>
+
         <receiver
             android:name=".receiver.DialogEventReceiver"
             android:process=":transfer"/>

@@ -26,6 +26,7 @@ public class Interrupter
 	public void reset()
 	{
 		mInterrupted = false;
+		mCloser = null;
 	}
 
 	public void useCloser(Closer closer)

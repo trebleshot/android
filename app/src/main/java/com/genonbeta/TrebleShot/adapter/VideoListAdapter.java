@@ -143,9 +143,9 @@ public class VideoListAdapter
 		public long id;
 		public String duration;
 
-		public VideoHolder(int id, String friendlyName, String displayName, long duration, long date, long size, Uri uri)
+		public VideoHolder(int id, String friendlyName, String fileName, long duration, long date, long size, Uri uri)
 		{
-			super(friendlyName, displayName, date, size, uri);
+			super(friendlyName, fileName, date, size, uri);
 
 			this.id = id;
 			this.duration = TimeUtils.getDuration(duration);

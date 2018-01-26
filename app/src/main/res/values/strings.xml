@@ -289,4 +289,8 @@
     <string name="butn_resetToDefault">Reset to default</string>
     <string name="ques_resetToDefault">Reset to default?</string>
     <string name="text_resetPreferencesToDefaultSummary">This will apply default settings</string>
+    <string name="text_workerService">Worker service</string>
+    <string name="text_taskCompleted">Task completed</string>
+    <string name="text_deletingFilesOngoing">Deleting selected files</string>
+    <string name="text_taskOngoing">Ongoing task</string>
 </resources>

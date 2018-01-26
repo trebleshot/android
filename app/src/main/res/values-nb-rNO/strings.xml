@@ -16,7 +16,7 @@
     <string name="ques_receiveFile">Motta fil?</string>
     <string name="butn_accept">Godta</string>
     <string name="butn_reject">Avslå</string>
-    <string name="text_ongoing">Pågående</string>
+    <string name="text_taskOngoing">Pågående</string>
     <string name="butn_stopService">Stopp</string>
     <string name="text_sending">Sender</string>
     <string name="butn_cancelSending">Avbryt forsendelse</string>

@@ -17,7 +17,7 @@
     <string name="ques_receiveFile">ファイルを受信しますか?</string>
     <string name="butn_accept">同意</string>
     <string name="butn_reject">拒否</string>
-    <string name="text_ongoing">実行中</string>
+    <string name="text_taskOngoing">実行中</string>
     <string name="butn_stopService">停止</string>
     <string name="text_sending">送信中</string>
     <string name="butn_cancelSending">キャンセル送信中</string>

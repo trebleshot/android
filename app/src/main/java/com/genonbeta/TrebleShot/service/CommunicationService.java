@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
@@ -85,7 +86,7 @@ public class CommunicationService extends Service
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private NsdDiscovery mNsdDiscovery;
-	private NotificationUtils mNotificationUtils;
+	private CommunicationNotificationHelper mNotificationHelper;
 	private AccessDatabase mDatabase;
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
@@ -107,7 +108,7 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
-		mNotificationUtils = new NotificationUtils(this);
+		mNotificationHelper = new CommunicationNotificationHelper(this);
 		mDatabase = new AccessDatabase(this);
 		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase());
 		mMediaScanner = new MediaScannerConnection(this, null);
@@ -122,7 +123,7 @@ public class CommunicationService extends Service
 		mNsdDiscovery.registerService();
 
 		getWifiLock().acquire();
-		updateServiceState(getNotificationUtils().getPreferences().getBoolean("trust_always", false));
+		updateServiceState(getNotificationHelper().getUtils().getPreferences().getBoolean("trust_always", false));
 
 		if (!AppUtils.checkRunningConditions(this)
 				|| !mCommunicationServer.start()
@@ -144,7 +145,7 @@ public class CommunicationService extends Service
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 
-				mNotificationUtils.cancel(notificationId);
+				getNotificationHelper().getUtils().cancel(notificationId);
 
 				try {
 					final NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
@@ -179,19 +180,18 @@ public class CommunicationService extends Service
 						startFileReceiving(groupId);
 					else
 						mDatabase.remove(transferInstance.getGroup());
-
 				} catch (Exception e) {
 					e.printStackTrace();
 
 					if (isAccepted)
-						mNotificationUtils.showToast(R.string.mesg_somethingWentWrong);
+						getNotificationHelper().showToast(R.string.mesg_somethingWentWrong);
 				}
 			} else if (ACTION_IP.equals(intent.getAction())) {
 				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 
-				mNotificationUtils.cancel(notificationId);
+				getNotificationHelper().getUtils().cancel(notificationId);
 
 				NetworkDevice device = new NetworkDevice(deviceId);
 
@@ -207,7 +207,7 @@ public class CommunicationService extends Service
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 
-				mNotificationUtils.cancel(notificationId);
+				getNotificationHelper().getUtils().cancel(notificationId);
 
 				Interrupter interrupter = getOngoingIndexList().get(groupId);
 
@@ -220,7 +220,7 @@ public class CommunicationService extends Service
 
 				TextStreamObject textStreamObject = new TextStreamObject(clipboardId);
 
-				mNotificationUtils.cancel(notificationId);
+				getNotificationHelper().getUtils().cancel(notificationId);
 
 				try {
 					getDatabase().reconstruct(textStreamObject);
@@ -274,11 +274,11 @@ public class CommunicationService extends Service
 							e.printStackTrace();
 						}
 					} else {
-						handler.getExtra().transactionObject.notification = getNotificationUtils().notifyStuckThread(handler.getExtra().transactionObject);
+						handler.getExtra().transactionObject.notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transactionObject);
 						handler.interrupt();
 					}
 				} else
-					getNotificationUtils().cancel(notificationId);
+					getNotificationHelper().getUtils().cancel(notificationId);
 			} else if (ACTION_TOGGLE_SEAMLESS_MODE.equals(intent.getAction())) {
 				updateServiceState(!mSeamlessMode);
 			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
@@ -332,9 +332,9 @@ public class CommunicationService extends Service
 		return mHotspotUtils;
 	}
 
-	public NotificationUtils getNotificationUtils()
+	public CommunicationNotificationHelper getNotificationHelper()
 	{
-		return mNotificationUtils;
+		return mNotificationHelper;
 	}
 
 	public synchronized ArrayMap<Integer, Interrupter> getOngoingIndexList()
@@ -374,9 +374,8 @@ public class CommunicationService extends Service
 	{
 		mSeamlessMode = seamlessMode;
 
-		startForeground(NotificationUtils.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, mNotificationUtils
-				.getCommunicationServiceNotification(mSeamlessMode)
-				.build());
+		startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
+				getNotificationHelper().getCommunicationServiceNotification(mSeamlessMode).build());
 	}
 
 	public class CommunicationServer extends CoolSocket
@@ -443,7 +442,7 @@ public class CommunicationService extends Service
 
 						if (getHotspotUtils().getPreviousConfig() == null) {
 							device.isRestricted = true;
-							mNotificationUtils.notifyConnectionRequest(device);
+							getNotificationHelper().notifyConnectionRequest(device);
 
 							shouldContinue = false;
 						} else
@@ -482,13 +481,13 @@ public class CommunicationService extends Service
 
 											getOngoingIndexList().put(group.groupId, interrupter);
 
-											DynamicNotification notification = mNotificationUtils.notifyPrepareFiles(group);
+											DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group);
 
 											int count = 0;
 											int total = jsonArray.length();
 											long lastNotified = System.currentTimeMillis();
 
-											for (int i = 0; i < jsonArray.length(); i++) {
+											for (int i = 0; i < total; i++) {
 												if (interrupter.interrupted())
 													break;
 
@@ -539,7 +538,7 @@ public class CommunicationService extends Service
 														e.printStackTrace();
 													}
 												else
-													mNotificationUtils.notifyTransferRequest(transactionObject, finalDevice, count);
+													getNotificationHelper().notifyTransferRequest(transactionObject, finalDevice, count);
 
 											}
 										}
@@ -562,7 +561,7 @@ public class CommunicationService extends Service
 									TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(), responseJSON.getString(Keyword.CLIPBOARD_TEXT));
 
 									mDatabase.publish(textStreamObject);
-									mNotificationUtils.notifyClipboardRequest(device, textStreamObject);
+									getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
 
 									result = true;
 								}
@@ -709,7 +708,7 @@ public class CommunicationService extends Service
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
-					getNotificationUtils().notifyConnectionError(mTransfer, mainRequestJSON.has(Keyword.ERROR)
+					getNotificationHelper().notifyConnectionError(mTransfer, mainRequestJSON.has(Keyword.ERROR)
 							? mainRequestJSON.getString(Keyword.ERROR)
 							: null);
 				} else {
@@ -739,7 +738,7 @@ public class CommunicationService extends Service
 
 					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
 						if (processHolder.transferHandler.getGroupTransferredFileCount() == 1)
-							getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
+							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
 						else if (processHolder.transferHandler.getGroupTransferredFileCount() > 1) {
 							String parentDir = processHolder.transferHandler.getFile().getParent();
 							String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
@@ -747,13 +746,13 @@ public class CommunicationService extends Service
 									? parentDir.substring(0, parentDir.length() - processHolder.transferHandler.getExtra().transactionObject.directory.length())
 									: parentDir;
 
-							getNotificationUtils().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getGroupTransferredFileCount());
+							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getGroupTransferredFileCount());
 						}
 					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				getNotificationUtils().notifyConnectionError(mTransfer, null);
+				getNotificationHelper().notifyConnectionError(mTransfer, null);
 			} finally {
 				try {
 					if (activeConnection != null)
@@ -775,7 +774,7 @@ public class CommunicationService extends Service
 			handler.getExtra().transactionObject.flag = TransactionObject.Flag.INTERRUPTED;
 
 			getDatabase().publish(handler.getExtra().transactionObject);
-			getNotificationUtils().notifyReceiveError(handler.getExtra().transactionObject);
+			getNotificationHelper().notifyReceiveError(handler.getExtra().transactionObject);
 
 			return Flag.CANCEL_ALL;
 		}
@@ -858,7 +857,7 @@ public class CommunicationService extends Service
 			}
 
 			try {
-				handler.getExtra().transactionObject.notification = getNotificationUtils().notifyFileTransaction(handler.getExtra().transactionObject);
+				handler.getExtra().transactionObject.notification = getNotificationHelper().notifyFileTransaction(handler.getExtra().transactionObject);
 				handler.getExtra().transactionObject.flag = TransactionObject.Flag.RUNNING;
 
 				if (handler.getGroupTotalByte() > 0)
@@ -956,7 +955,7 @@ public class CommunicationService extends Service
 			try {
 				handler.getExtra()
 						.transactionObject
-						.notification = getNotificationUtils().notifyFileTransaction(handler.getExtra().transactionObject);
+						.notification = getNotificationHelper().notifyFileTransaction(handler.getExtra().transactionObject);
 
 				handler.getExtra()
 						.transactionObject

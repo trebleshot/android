@@ -36,4 +36,8 @@
         <item quantity="one">Bir dakika önce</item>
         <item quantity="other">%d dakika önce</item>
     </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">Bir dosya silindi</item>
+        <item quantity="other">%d dosya silindi</item>
+    </plurals>
 </resources>
