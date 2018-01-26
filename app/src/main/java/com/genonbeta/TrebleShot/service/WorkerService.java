@@ -105,14 +105,21 @@ public class WorkerService extends Service
 						: null;
 
 				if (notifiableRunningWork != null) {
-					DynamicNotification dynamicNotification = notifiableRunningWork.getNotification(getNotificationUtils());
+					DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
 					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Started);
+
+					Intent cancelIntent = new Intent(WorkerService.this, WorkerService.class);
+
+					cancelIntent.setAction(ACTION_KILL_SIGNAL);
+					cancelIntent.putExtra(EXTRA_TASK_ID, runningTask.getTaskId());
 
 					dynamicNotification
 							.setOngoing(true)
 							.setContentTitle(getString(R.string.text_taskOngoing))
-							.setProgress(0, 0, true);
+							.setProgress(0, 0, true)
+							.addAction(R.drawable.ic_clear_white_24dp, getString(R.string.butn_cancel),
+							PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
 					dynamicNotification.show();
 				}
@@ -122,9 +129,7 @@ public class WorkerService extends Service
 				unregisterWork(runningTask);
 
 				if (notifiableRunningWork != null && !runningTask.getInterrupter().interrupted()) {
-					notifiableRunningWork.clearNotification();
-
-					DynamicNotification dynamicNotification = notifiableRunningWork.getNotification(getNotificationUtils());
+					DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
 					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
 					dynamicNotification.setContentTitle(getString(R.string.text_taskCompleted));
@@ -202,31 +207,7 @@ public class WorkerService extends Service
 
 	public abstract static class NotifiableRunningTask extends RunningTask
 	{
-		private DynamicNotification mNotification;
-
 		public abstract void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
-
-		public void clearNotification()
-		{
-			mNotification = null;
-		}
-
-		public DynamicNotification getNotification(NotificationUtils notificationUtils)
-		{
-			if (mNotification == null) {
-				mNotification = notificationUtils.buildDynamicNotification(getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-				Intent cancelIntent = new Intent(notificationUtils.getContext(), WorkerService.class);
-
-				cancelIntent.setAction(ACTION_KILL_SIGNAL);
-				cancelIntent.putExtra(EXTRA_TASK_ID, getTaskId());
-
-				mNotification.addAction(R.drawable.ic_clear_white_24dp, notificationUtils.getContext().getString(R.string.butn_cancel),
-						PendingIntent.getService(notificationUtils.getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
-			}
-
-			return mNotification;
-		}
 
 		public enum UpdateType
 		{
