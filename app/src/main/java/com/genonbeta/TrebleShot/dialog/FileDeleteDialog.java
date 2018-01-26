@@ -71,24 +71,30 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 									delete(new File(URI.create(shareable.uri.toString())));
 
 								if (listener != null)
-									listener.onCompleted(activity, totalDeletion);
+									listener.onCompleted(this, activity, totalDeletion);
 							}
 
 							private void delete(File file)
 							{
+								if (getInterrupter().interrupted())
+									return;
+
 								if (file.isDirectory())
 									deleteDirectory(file);
 
-								if (file.delete())
+								if (file.delete()) {
 									totalDeletion++;
-
-								listener.onFileDeletion(activity, file);
+									listener.onFileDeletion(this, activity, file);
+								}
 							}
 
 							private void deleteDirectory(File folder)
 							{
-								for (File anotherFile : folder.listFiles())
-									delete(anotherFile);
+								File[] files = folder.listFiles();
+
+								if (files != null)
+									for (File anotherFile : files)
+										delete(anotherFile);
 							}
 						});
 					}
@@ -98,8 +104,8 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 
 	public interface Listener
 	{
-		void onFileDeletion(Context context, File file);
+		void onFileDeletion(WorkerService.RunningTask runningTask, Context context, File file);
 
-		void onCompleted(Context context, int fileSize);
+		void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize);
 	}
 }

@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
@@ -149,14 +150,14 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 			new FileDeleteDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeleteDialog.Listener()
 			{
 				@Override
-				public void onFileDeletion(Context context, File file)
+				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, File file)
 				{
 					if (mMediaScanner.isConnected())
 						mMediaScanner.scanFile(file.getAbsolutePath(), "*/*");
 				}
 
 				@Override
-				public void onCompleted(Context context, int fileSize)
+				public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
 				{
 					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
 							.putExtra(EXTRA_PATH, getAdapter().getPath().getAbsolutePath()));
