@@ -36,4 +36,8 @@
 	<item quantity="one">Eén minuut geleden</item>
 	<item quantity="other">%d minuten geleden</item>
 </plurals>
+<plurals name="text_fileDeletionCompleted">
+	<item quantity="one">Er is één bestand verwijderd</item>
+	<item quantity="other">Er zijn %d bestanden verwijderd</item>
+</plurals>
 </resources>
