@@ -12,7 +12,7 @@
     <string name="text_notAvailable">Utilgjengelig</string>
     <string name="text_deviceListEmpty">Ingen enhet</string>
     <string name="mesg_noNetwork">Jeg trenger en tilkobling, som Wi-Fi, for å finne enheter i nærheten</string>
-    <string name="mesg_scanningDevices">Finner enheter i nærheten…</string>
+    <string name="mesg_scanningDevices">Finner enheter i nærheten</string>
     <string name="ques_receiveFile">Motta fil?</string>
     <string name="butn_accept">Godta</string>
     <string name="butn_reject">Avslå</string>
@@ -29,8 +29,8 @@
     <string name="text_developerModeSummary">Skrur av brukeroppsettet</string>
     <string name="text_deviceName">Enhetsnavn</string>
     <string name="text_deviceNameSummary">Navnet vil bli vist på andre enheter</string>
-    <string name="text_deviceNameTitle">Skriv inn enhetsnavn</string>
-    <string name="mesg_formatNotSupported">Typen støttes ikke</string>
+    <string name="text_deviceNameTitle">Skriv inn enhetsnavnet</string>
+    <string name="mesg_formatNotSupported">Formatet støttes ikke</string>
     <string name="mesg_fileSendError">Filen kan ikke sendes. %s</string>
     <string name="mesg_fileSent">%s har blitt sendt</string>
     <string name="mesg_fileSendCancelled">Forsendelse av %s har blitt avbrutt</string>
@@ -38,7 +38,7 @@
     <string name="mesg_fileReceived">Filen %s har blitt mottatt</string>
     <string name="mesg_fileReceiveError">Under mottak av %s, gikk noe galt</string>
     <string name="mesg_fileReceiveCancelled">Avbrøt mottak av %s</string>
-    <string name="text_multipleFileReceiveCompleted">Filer har blitt mottatt</string>
+    <string name="text_multipleFileReceiveCompleted">Filene har blitt mottatt</string>
     <string name="text_deviceList">Enhetsliste</string>
     <string name="text_fileOpenAppChoose">Åpne med</string>
     <string name="text_fileShareAppChoose">Velg et program</string>
@@ -49,7 +49,7 @@
     <string name="text_deleteConfirm">Bekreft sletting</string>
     <string name="mesg_deleteFileStarted">Filer vil bli slettet</string>
     <string name="butn_cancel">Avbryt</string>
-    <string name="text_refresh">Oppdater</string>
+    <string name="text_refresh">Gjenoppfrisk</string>
     <string name="butn_shareTrebleshot">Del dette programmet</string>
     <string name="text_about">Om</string>
     <string name="text_clearList">Tøm listen</string>
@@ -61,10 +61,10 @@
     <string name="butn_pendingTransfers">Kø</string>
     <string name="butn_shareWithTrebleshot">Del med TrebleShot</string>
     <string name="mesg_somethingWentWrong">Noe gikk galt</string>
-    <string name="text_findDevicesHint">For å finne enheter i nærheten, trykk søkeikonet</string>
+    <string name="text_findDevicesHint">For å finne enheter i nærheten, trykk på søkeikonet</string>
     <string name="text_autoScanDevices">Skann enheter automatisk</string>
-    <string name="text_autoScanDevicesSummary">Skann enheter når det er nødvendig</string>
-    <string name="mesg_stillScanning">Skanner fremdeles…</string>
+    <string name="text_autoScanDevicesSummary">Skanner enheter når det er nødvendig</string>
+    <string name="mesg_stillScanning">Skanner fremdeles</string>
     <string name="text_advanced">Avansert</string>
     <string name="text_storagePath">Lagringsti</string>
     <string name="text_storagePathSummary">Nye filer vil bli lagret i denne mappen</string>
@@ -76,7 +76,7 @@
     <string name="text_allowToAccess">Tillat tilgang til</string>
     <string name="text_connectionPermission">Tilkoblingsproblem</string>
     <string name="ques_allowDeviceToConnect">Tillat denne enheten å koble til?</string>
-    <string name="mesg_stopping">Stopper…</string>
+    <string name="mesg_stopping">Stopper</string>
     <string name="text_notification">Merknad</string>
     <string name="text_useSounds">Lyder</string>
     <string name="text_useSoundsSummary">Bruk lyder</string>
@@ -86,7 +86,7 @@
     <string name="text_useLightSummary">Bruk lys</string>
     <string name="mesg_scanCompleted">Skanning fullført</string>
     <string name="text_autoStart">Automatisk start</string>
-    <string name="text_autoStartSummary">Tjenesten vil bli startet når en tilkobling oppdages</string>
+    <string name="text_autoStartSummary">Skru på kommunikasjon når en tilkobling oppdages</string>
     <string name="text_application">Program</string>
     <string name="text_image">Bilde</string>
     <string name="text_music">Musikk</string>
@@ -100,7 +100,7 @@
     <string name="butn_multiSelect">Flervalg</string>
     <string name="butn_receive">Motta</string>
     <string name="butn_block">Blokker</string>
-    <string name="text_aboutSummary">Denne programvaren utvikles av Genonbeta friprog-organisasjon</string>
+    <string name="text_aboutSummary">Denne programvaren utvikles av Genonbeta friprog-organisasjonen</string>
     <string name="butn_appLaunch">Kjør</string>
     <string name="ques_launchApplication">Ønsker du å kjøre dette programmet?</string>
     <string name="mesg_launchApplicationError">Programmet kan ikke kjøres</string>
@@ -119,7 +119,7 @@
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Ventende overføringer</string>
     <string name="text_stopping">Stopper!</string>
-    <string name="text_cancellingTransfer">Jobben har blitt avbrutt</string>
+    <string name="text_cancellingTransfer">Avbryter jobb…</string>
     <string name="butn_killNow">Drep nå</string>
     <string name="mesg_groupOngoingNotice">Filen vil bli mottatt etter %s</string>
     <string name="butn_proceed">Fortsett</string>
@@ -130,7 +130,7 @@
     <string name="text_removeDeviceSummary">Når du fjerner en enhet, vil dens overføringer også bli fjernet</string>
     <string name="text_removePendingTransferSummary">Dette vil fjerne %s fra køen</string>
     <string name="ques_removeAll">Fjern alle?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Dette vil fjerne alle ventende overføringer du ser i denne listen</string>
+    <string name="text_removeCertainPendingTransfersSummary">Dette vil fjerne alle ventende overføringer i denne listen</string>
     <string name="text_availableNetworks">Registrerte tilkoblinger</string>
     <string name="text_noNetworkAvailable">Inget nettverk tilgjengelig</string>
     <string name="mesg_deviceNotExits">Senderen finnes ikke lenger i din enhetsliste</string>
@@ -147,16 +147,16 @@
     <string name="text_transactionViewer">Vis overføring</string>
     <string name="text_error">Feil</string>
     <string name="ques_why">Hvorfor?</string>
-    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s.
-\n
-\nEnhetsliste &gt; %2$s &gt; Tillat tilgang til (skru det på)</string>
+    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s. 
+\n 
+\nEnhetsliste &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)</string>
     <string name="butn_saveTo">Lagre til</string>
     <string name="mesg_secureExit">Trykk igjen for å avslutte</string>
     <string name="butn_create">Opprett</string>
     <string name="text_createFolder">Opprett mappe</string>
     <string name="mesg_fileAlreadyExists">Filen finnes allerede</string>
     <string name="mesg_folderCreateError">Mappen kunne ikke opprettes</string>
-    <string name="text_requestPermissionStorageSummary">Denne tilgangen tillater TrebleShot å skrive til lagring og mottak av, samt deling av, filer. Å skru det av vil medføre at grunnleggende funksjoner slutter å virke.</string>
+    <string name="text_requestPermissionStorageSummary">Denne tilgangen tillater TrebleShot å skrive til skrive og lese til og fra din enhets lagring for å motta og dele filer.</string>
     <string name="butn_settings">Innstillinger</string>
     <string name="butn_selectThis">Velg dette</string>
     <string name="butn_newFile">Ny fil</string>
@@ -182,7 +182,7 @@
     <string name="butn_createFolder">Opprett mappe</string>
     <string name="text_chooseFolder">Velg mappe</string>
     <string name="text_chooseFile">Velg fil</string>
-    <string name="mesg_pathSameError">Mappen du velger skal ikke samsvare med den gamle</string>
+    <string name="mesg_pathSameError">Du kan ikke velge den gamle mappen</string>
     <string name="ques_checkOldFiles">Sjekk ødelagte filer?</string>
     <string name="text_checkOldFiles">TrebleShot vil flytte delvis mottatte filer til mappen du har valgt, som kan ta litt tid. Du kan hoppe over dette ved å trykke \"Avslå\".</string>
     <string name="mesg_newFilesReceived">Nye filer mottatt</string>
@@ -248,4 +248,34 @@
     <string name="butn_locationSettings">Plassering</string>
     <string name="butn_gotIt">Skjønner</string>
     <string name="mesg_helpFolderSelection">For å velge en mappe, trykk på dens ikon</string>
+    <string name="butn_typeNewEntry">Skriv inn ny oppføring</string>
+    <string name="mesg_providerNotAllowedError">Den forvalgte mappen er ikke tilgjengelig for andre programmer</string>
+    <string name="text_previewAndEditList">Forhåndsvis og rediger liste</string>
+    <string name="text_selectableNotCheckedNotice">Umarkerte elementer vil bli hoppet over</string>
+    <string name="mesg_ongoingUpdateDownload">Laster ned den nye versjonen</string>
+    <string name="mesg_hotspotCreatedInfo">Koble til \"%s\" i \"Wi-Fi -innstillinger\" eller send filer via \"%s\" inne i TrebleShot</string>
+    <string name="butn_selectAll">Velg alt</string>
+    <string name="butn_selectNone">Ikke velg noe</string>
+    <string name="butn_previewSelections">Forhåndsvis utvalg</string>
+    <string name="mesg_deviceConnectionError">Tilkobling med \"%s\" over \"%s\" har mislyktes</string>
+    <string name="mesg_retryAllInfo">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Ingen tilkobling har blitt satt opp. Sett opp en for å kommunisere</string>
+    <string name="butn_setUp">Sett opp</string>
+    <string name="text_pseudoLocation">Tenkt plassering</string>
+    <string name="butn_saveAnyway">Lagre uansett</string>
+    <string name="text_receivedSize">Mottatt størrelse</string>
+    <string name="mesg_notValidTransfer">Overføringen er ikke lenger gyldig</string>
+    <string name="ques_saveAnyway">Lagre uansett?</string>
+    <string name="text_saveAnywaySummary">"Senderen fjernet  denne overføringen fra listen, men den har ikke blitt fullført. Hvis du fortsetter vil den delvis mottatte fila ble lagret som om den ble mottatt."</string>
+    <string name="mesg_fileSaved">Fila har blitt lagret</string>
+    <string name="butn_sortBy">Sorter etter</string>
+    <string name="butn_sortOrder">Sorteringsforordning</string>
+    <string name="text_sortByName">Navn</string>
+    <string name="text_sortByDate">Dato</string>
+    <string name="text_sortBySize">Størrelse</string>
+    <string name="butn_resetToDefault">Tilbakestill til forvalg</string>
+    <string name="ques_resetToDefault">Tilbakestill til forvalg?</string>
+    <string name="text_resetPreferencesToDefaultSummary">Dette vil gjenopprette forvalgte innstillinger</string>
+    <string name="text_taskCompleted">Oppgave fullført</string>
+    <string name="text_deletingFilesOngoing">Sletter valgte filer</string>
     </resources>
