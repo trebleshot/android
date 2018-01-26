@@ -21,12 +21,13 @@ Send and receive files over available connections without making any effort. Ple
 `1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`
 
 ## Screenshots
-[<img src="screenshots/screenshot_1.png" width=160>](screenshots/screenshot_1.png)
-[<img src="screenshots/screenshot_2.png" width=160>](screenshots/screenshot_2.png)
-[<img src="screenshots/screenshot_3.png" width=160>](screenshots/screenshot_3.png)
-[<img src="screenshots/screenshot_4.png" width=160>](screenshots/screenshot_4.png)
-[<img src="screenshots/screenshot_5.png" width=160>](screenshots/screenshot_5.png)
-[<img src="screenshots/screenshot_6.png" width=160>](screenshots/screenshot_6.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_2.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_2.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_3.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_3.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_4.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_4.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_5.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_5.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_6.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_6.png)
+[<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png)
 
 ## Supported languages
 * Dutch
