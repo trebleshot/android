@@ -1,5 +1,7 @@
 package com.genonbeta.CoolSocket;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -361,13 +363,12 @@ abstract public class CoolTransfer<T>
 								InputStream inputStream = getSocket().getInputStream();
 								FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
 
+								incrementGroupTransferredByte(getFile().length());
 								onOrientatingStreams(this, inputStream, outputStream);
 
 								int len = 0;
 								long lastRead = System.currentTimeMillis();
 								long lastNotified = 0;
-
-								incrementGroupTransferredByte(outputStream.getChannel().position());
 
 								while (len != -1) {
 									if ((len = inputStream.read(getBufferSize())) > 0) {
