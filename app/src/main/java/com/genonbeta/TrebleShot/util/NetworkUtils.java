@@ -30,45 +30,9 @@ public class NetworkUtils
 		return stringBuilder.toString();
 	}
 
-	public static byte[] getUTF8Bytes(String string)
+	public static String getAddressPrefix(String ipv4Address)
 	{
-		try {
-			return string.getBytes("UTF-8");
-		} catch (Exception ex) {
-			return null;
-		}
-	}
-
-	public static String loadFileAsString(String filename) throws IOException
-	{
-		final int BUFLEN = 1024;
-
-		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
-
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
-			byte[] bytes = new byte[BUFLEN];
-			boolean isUTF8 = false;
-			int read, count = 0;
-
-			while ((read = is.read(bytes)) != -1) {
-				if (count == 0 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
-					isUTF8 = true;
-					baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
-				} else {
-					baos.write(bytes, 0, read);
-				}
-
-				count += read;
-			}
-			return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
-		} finally {
-			try {
-				is.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+		return ipv4Address.substring(0, ipv4Address.lastIndexOf(".") + 1);
 	}
 
 	public static ArrayList<String> getMACAddressList(String interfaceName)
@@ -146,9 +110,45 @@ public class NetworkUtils
 		return filteredInterfaceList;
 	}
 
-	public static String getAddressPrefix(String ipv4Address)
+	public static byte[] getUTF8Bytes(String string)
 	{
-		return ipv4Address.substring(0, ipv4Address.lastIndexOf(".") + 1);
+		try {
+			return string.getBytes("UTF-8");
+		} catch (Exception ex) {
+			return null;
+		}
+	}
+
+	public static String loadFileAsString(String filename) throws IOException
+	{
+		final int BUFLEN = 1024;
+
+		BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
+
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
+			byte[] bytes = new byte[BUFLEN];
+			boolean isUTF8 = false;
+			int read, count = 0;
+
+			while ((read = is.read(bytes)) != -1) {
+				if (count == 0 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
+					isUTF8 = true;
+					baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
+				} else {
+					baos.write(bytes, 0, read);
+				}
+
+				count += read;
+			}
+			return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
+		} finally {
+			try {
+				is.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static boolean ping(String ipAddress, int timeout)

@@ -263,7 +263,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 							if (previousState != (mConnections.size() > 0)) {
 								if (mDialog != null && mDialog.isShowing())
 									mDialog.cancel();
- 			show();
+								show();
 							}
 						}
 					});

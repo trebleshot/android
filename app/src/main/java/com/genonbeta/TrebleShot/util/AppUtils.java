@@ -8,9 +8,11 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
@@ -21,6 +23,29 @@ public class AppUtils
 	public static final String TAG = AppUtils.class.getSimpleName();
 
 	private static int mUniqueNumber = 0;
+
+	public static void applyAdapterName(NetworkDevice.Connection connection)
+	{
+		if (connection.ipAddress == null)
+		{
+			Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");
+			return;
+		}
+
+		ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+
+		for (AddressedInterface addressedInterface : interfaceList)
+		{
+			if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
+					.equals(NetworkUtils.getAddressPrefix(connection.ipAddress)))
+			{
+				connection.adapterName = addressedInterface.getNetworkInterface().getDisplayName();
+				return;
+			}
+		}
+
+		connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+	}
 
 	public static boolean checkRunningConditions(Context context)
 	{

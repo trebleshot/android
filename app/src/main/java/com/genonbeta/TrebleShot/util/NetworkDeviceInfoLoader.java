@@ -28,7 +28,7 @@ public class NetworkDeviceInfoLoader
 		try {
 			database.reconstruct(connection);
 		} catch (Exception e) {
-			connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+			AppUtils.applyAdapterName(connection);
 		}
 
 		connection.lastCheckedDate = System.currentTimeMillis();
