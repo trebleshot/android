@@ -303,4 +303,7 @@
 <string name="butn_resetToDefault">Standaardwaarden herstellen</string>
     <string name="ques_resetToDefault">Standaardwaarden herstellen?</string>
     <string name="text_resetPreferencesToDefaultSummary">Dit herstelt de standaard instellingen</string>
-</resources>
+<string name="text_workerService">Werkdienst</string>
+    <string name="text_taskCompleted">Taak afgerond</string>
+    <string name="text_deletingFilesOngoing">Bezig met verwijderen van geselecteerde bestanden</string>
+    </resources>
