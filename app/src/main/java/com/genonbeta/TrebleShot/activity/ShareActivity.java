@@ -322,7 +322,7 @@ public class ShareActivity extends Activity
 
 							JSONObject clientResponse;
 							JSONObject jsonRequest = new JSONObject()
-									.put(Keyword.SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
+									.put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
 
 							if (mSharedText == null) {
 								JSONArray filesArray = new JSONArray();
@@ -330,7 +330,7 @@ public class ShareActivity extends Activity
 								TransactionObject.Group groupInstance = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
 
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-								jsonRequest.put(Keyword.GROUP_ID, groupId);
+								jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupId);
 
 								ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
@@ -356,13 +356,13 @@ public class ShareActivity extends Activity
 									pendingRegistry.add(transactionObject);
 
 									try {
-										thisJson.put(Keyword.FILE_NAME, selectableStream.friendlyName);
-										thisJson.put(Keyword.FILE_SIZE, selectableStream.size);
-										thisJson.put(Keyword.REQUEST_ID, requestId);
-										thisJson.put(Keyword.FILE_MIME, selectableStream.mimeType);
+										thisJson.put(Keyword.INDEX_FILE_NAME, selectableStream.friendlyName);
+										thisJson.put(Keyword.INDEX_FILE_SIZE, selectableStream.size);
+										thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
+										thisJson.put(Keyword.INDEX_FILE_MIME, selectableStream.mimeType);
 
 										if (selectableStream.directory != null)
-											thisJson.put(Keyword.DIRECTORY, selectableStream.directory);
+											thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.directory);
 
 										filesArray.put(thisJson);
 									} catch (Exception e) {
@@ -395,7 +395,7 @@ public class ShareActivity extends Activity
 								}
 							} else {
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-								jsonRequest.put(Keyword.CLIPBOARD_TEXT, mSharedText);
+								jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mSharedText);
 
 								activeConnection.reply(jsonRequest.toString());
 								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
@@ -404,7 +404,7 @@ public class ShareActivity extends Activity
 							}
 
 							if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
-								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.NOT_ALLOWED))
+								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
 									createSnackbar(R.string.mesg_notAllowed)
 											.setAction(R.string.ques_why, new View.OnClickListener()
 											{

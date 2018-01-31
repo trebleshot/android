@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,6 +48,15 @@ public class TransactionGroupListFragment
 				refreshList();
 		}
 	};
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		setDefaultOrderingAscending(false);
+		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)

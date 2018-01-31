@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.SelectedEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.DetachListener;
@@ -34,6 +35,8 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	private SharedPreferences mPreferences;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
+	private boolean mDefaultOrderingAscending = true;
+	private int mDefaultSortingCriteria = R.id.actions_abs_editable_sort_by_name;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -57,7 +60,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 			setHasOptionsMenu(true);
 		}
 
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+		mPreferences = getActivity().getSharedPreferences(Keyword.Local.SETTINGS_SORTING, Context.MODE_PRIVATE);
 	}
 
 	@Override
@@ -232,7 +235,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public int getSortingCriteria()
 	{
-		return mPreferences.getInt(getClass().getSimpleName() + "SortBy", R.id.actions_abs_editable_sort_by_name);
+		return mPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
 	}
 
 	public PowerfulActionMode getPowerfulActionMode()
@@ -261,7 +264,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public boolean isSortingAscending()
 	{
-		return mPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", true);
+		return mPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -327,5 +330,15 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	public void setSortingSupported(boolean sortingSupported)
 	{
 		mSortingSupported = sortingSupported;
+	}
+
+	public void setDefaultSortingCriteria(int criteria)
+	{
+		mDefaultSortingCriteria = criteria;
+	}
+
+	public void setDefaultOrderingAscending(boolean ascending)
+	{
+		mDefaultOrderingAscending = ascending;
 	}
 }

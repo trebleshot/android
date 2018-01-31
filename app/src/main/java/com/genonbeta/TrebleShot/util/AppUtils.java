@@ -44,7 +44,7 @@ public class AppUtils
 			}
 		}
 
-		connection.adapterName = Keyword.UNKNOWN_INTERFACE;
+		connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
 	}
 
 	public static boolean checkRunningConditions(Context context)

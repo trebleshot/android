@@ -1,14 +1,17 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
+import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.fragment.PreferencesFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 /**
@@ -25,11 +28,13 @@ public class NsdDiscovery
 	private NsdManager.RegistrationListener mNsdRegistrationListener;
 	private Context mContext;
 	private AccessDatabase mDatabase;
+	private SharedPreferences mPreferences;
 
 	public NsdDiscovery(Context context, AccessDatabase database)
 	{
 		mContext = context;
 		mDatabase = database;
+		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 	}
 
 	public Context getContext()
@@ -124,7 +129,8 @@ public class NsdDiscovery
 
 	public NsdManager.RegistrationListener getRegistrationListener()
 	{
-		if (mNsdRegistrationListener == null
+		if (isServiceEnabled()
+				&& mNsdRegistrationListener == null
 				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			mNsdRegistrationListener = new NsdManager.RegistrationListener()
 			{
@@ -158,9 +164,15 @@ public class NsdDiscovery
 		return mNsdRegistrationListener;
 	}
 
+	public boolean isServiceEnabled()
+	{
+		return mPreferences.getBoolean("nsd_enabled", false);
+	}
+
 	public void registerService()
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		if (isServiceEnabled()
+				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			final NsdServiceInfo localServiceInfo = new NsdServiceInfo();
 
 			localServiceInfo.setServiceName(AppConfig.NDS_COMM_SERVICE_NAME + "_" + AppUtils.getUniqueNumber());
@@ -173,13 +185,15 @@ public class NsdDiscovery
 
 	public void startDiscovering()
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+		if (isServiceEnabled()
+				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, getDiscoveryListener());
 	}
 
 	public void stopDiscovering()
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+		if (isServiceEnabled()
+				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			try {
 				getNsdManager().stopServiceDiscovery(getDiscoveryListener());
 			} catch (IllegalArgumentException e) {
@@ -189,7 +203,8 @@ public class NsdDiscovery
 
 	public void unregisterService()
 	{
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+		if (isServiceEnabled()
+				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			try {
 				getNsdManager().unregisterService(getRegistrationListener());
 			} catch (IllegalArgumentException e) {

@@ -293,4 +293,6 @@
     <string name="text_taskCompleted">Task completed</string>
     <string name="text_deletingFilesOngoing">Deleting selected files</string>
     <string name="text_taskOngoing">Ongoing task</string>
+    <string name="text_networkServiceDiscovery">Enable NSD</string>
+    <string name="text_networkServiceDiscoverySummary">Network Service Discovery improves discoverability</string>
 </resources>

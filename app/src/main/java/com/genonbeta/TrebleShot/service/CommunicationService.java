@@ -159,10 +159,10 @@ public class CommunicationService extends Service
 							try {
 								JSONObject jsonObject = new JSONObject();
 
-								jsonObject.put(Keyword.SERIAL, localDevice.deviceId);
+								jsonObject.put(Keyword.DEVICE_INFO_SERIAL, localDevice.deviceId);
 								jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-								jsonObject.put(Keyword.GROUP_ID, groupId);
-								jsonObject.put(Keyword.IS_ACCEPTED, isAccepted);
+								jsonObject.put(Keyword.TRANSFER_GROUP_ID, groupId);
+								jsonObject.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted);
 
 								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(transferInstance.getConnection().ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 								activeConnection.reply(jsonObject.toString());
@@ -412,19 +412,19 @@ public class CommunicationService extends Service
 
 				NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-				deviceInformation.put(Keyword.SERIAL, localDevice.deviceId);
-				deviceInformation.put(Keyword.BRAND, localDevice.brand);
-				deviceInformation.put(Keyword.MODEL, localDevice.model);
-				deviceInformation.put(Keyword.USER, localDevice.nickname);
+				deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, localDevice.deviceId);
+				deviceInformation.put(Keyword.DEVICE_INFO_BRAND, localDevice.brand);
+				deviceInformation.put(Keyword.DEVICE_INFO_MODEL, localDevice.model);
+				deviceInformation.put(Keyword.DEVICE_INFO_USER, localDevice.nickname);
 
-				appInfo.put(Keyword.VERSION_CODE, localDevice.versionNumber);
-				appInfo.put(Keyword.VERSION_NAME, localDevice.versionName);
+				appInfo.put(Keyword.APP_INFO_VERSION_CODE, localDevice.versionNumber);
+				appInfo.put(Keyword.APP_INFO_VERSION_NAME, localDevice.versionName);
 
 				replyJSON.put(Keyword.APP_INFO, appInfo);
 				replyJSON.put(Keyword.DEVICE_INFO, deviceInformation);
 
-				if (responseJSON.has(Keyword.SERIAL)) {
-					String serialNumber = responseJSON.getString(Keyword.SERIAL);
+				if (responseJSON.has(Keyword.DEVICE_INFO_SERIAL)) {
+					String serialNumber = responseJSON.getString(Keyword.DEVICE_INFO_SERIAL);
 					NetworkDevice device = new NetworkDevice(serialNumber);
 
 					try {
@@ -454,14 +454,14 @@ public class CommunicationService extends Service
 					final NetworkDevice.Connection connection = NetworkDeviceInfoLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
 
 					if (!shouldContinue)
-						replyJSON.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
+						replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 					else if (responseJSON.has(Keyword.REQUEST)) {
 						switch (responseJSON.getString(Keyword.REQUEST)) {
 							case (Keyword.REQUEST_TRANSFER):
-								if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.GROUP_ID) && getOngoingIndexList().size() < 1) {
+								if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID) && getOngoingIndexList().size() < 1) {
 									String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
 									final JSONArray jsonArray = new JSONArray(jsonIndex);
-									final int groupId = responseJSON.getInt(Keyword.GROUP_ID);
+									final int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
 									final NetworkDevice finalDevice = device;
 
 									result = true;
@@ -497,20 +497,20 @@ public class CommunicationService extends Service
 
 													JSONObject requestIndex = jsonArray.getJSONObject(i);
 
-													if (requestIndex != null && requestIndex.has(Keyword.FILE_NAME) && requestIndex.has(Keyword.FILE_SIZE) && requestIndex.has(Keyword.FILE_MIME) && requestIndex.has(Keyword.REQUEST_ID)) {
+													if (requestIndex != null && requestIndex.has(Keyword.INDEX_FILE_NAME) && requestIndex.has(Keyword.INDEX_FILE_SIZE) && requestIndex.has(Keyword.INDEX_FILE_MIME) && requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
 														count++;
 
 														transactionObject = new TransactionObject(
-																requestIndex.getInt(Keyword.REQUEST_ID),
+																requestIndex.getInt(Keyword.TRANSFER_REQUEST_ID),
 																groupId,
-																requestIndex.getString(Keyword.FILE_NAME),
+																requestIndex.getString(Keyword.INDEX_FILE_NAME),
 																"." + UUID.randomUUID() + ".tshare",
-																requestIndex.getString(Keyword.FILE_MIME),
-																requestIndex.getLong(Keyword.FILE_SIZE),
+																requestIndex.getString(Keyword.INDEX_FILE_MIME),
+																requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
 																TransactionObject.Type.INCOMING);
 
-														if (requestIndex.has(Keyword.DIRECTORY))
-															transactionObject.directory = requestIndex.getString(Keyword.DIRECTORY);
+														if (requestIndex.has(Keyword.INDEX_DIRECTORY))
+															transactionObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
 
 														mDatabase.insert(transactionObject);
 													}
@@ -546,9 +546,9 @@ public class CommunicationService extends Service
 								}
 								break;
 							case (Keyword.REQUEST_RESPONSE):
-								if (responseJSON.has(Keyword.GROUP_ID)) {
-									int groupId = responseJSON.getInt(Keyword.GROUP_ID);
-									boolean isAccepted = responseJSON.getBoolean(Keyword.IS_ACCEPTED);
+								if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
+									int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
+									boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
 
 									if (!isAccepted)
 										mDatabase.remove(new TransactionObject.Group(groupId));
@@ -557,8 +557,8 @@ public class CommunicationService extends Service
 								}
 								break;
 							case (Keyword.REQUEST_CLIPBOARD):
-								if (responseJSON.has(Keyword.CLIPBOARD_TEXT)) {
-									TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(), responseJSON.getString(Keyword.CLIPBOARD_TEXT));
+								if (responseJSON.has(Keyword.TRANSFER_CLIPBOARD_TEXT)) {
+									TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(), responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
 
 									mDatabase.publish(textStreamObject);
 									getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
@@ -595,7 +595,7 @@ public class CommunicationService extends Service
 				ActiveConnection.Response mainRequest = activeConnection.receive();
 
 				int groupId = new JSONObject(mainRequest.response)
-						.getInt(Keyword.GROUP_ID);
+						.getInt(Keyword.TRANSFER_GROUP_ID);
 
 				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress());
 
@@ -614,11 +614,11 @@ public class CommunicationService extends Service
 					JSONObject currentReply = new JSONObject();
 
 					try {
-						processHolder.transactionObject = new TransactionObject(currentRequest.getInt(Keyword.REQUEST_ID));
+						processHolder.transactionObject = new TransactionObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
 
 						getDatabase().reconstruct(processHolder.transactionObject);
 
-						processHolder.transactionObject.accessPort = currentRequest.getInt(Keyword.SOCKET_PORT);
+						processHolder.transactionObject.accessPort = currentRequest.getInt(Keyword.TRANSFER_SOCKET_PORT);
 
 						if (currentRequest.has(Keyword.SKIPPED_BYTES))
 							processHolder.transactionObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
@@ -628,7 +628,7 @@ public class CommunicationService extends Service
 						currentReply.put(Keyword.RESULT, true);
 					} catch (Exception e) {
 						currentReply.put(Keyword.RESULT, false);
-						currentReply.put(Keyword.ERROR, Keyword.NOT_FOUND);
+						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
 						currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 					} finally {
 						activeConnection.reply(currentReply.toString());
@@ -653,9 +653,9 @@ public class CommunicationService extends Service
 					currentReply.put(Keyword.RESULT, false);
 
 					if (e instanceof TransactionGroupNotFoundException)
-						currentReply.put(Keyword.ERROR, Keyword.NOT_FOUND);
+						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
 					else if (e instanceof DeviceNotFoundException)
-						currentReply.put(Keyword.ERROR, Keyword.NOT_ALLOWED);
+						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 
 					activeConnection.reply(currentReply.toString());
 				} catch (TimeoutException e1) {
@@ -697,7 +697,7 @@ public class CommunicationService extends Service
 				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SEAMLESS_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 				activeConnection.reply(new JSONObject()
-						.put(Keyword.GROUP_ID, mTransfer.getGroup().groupId)
+						.put(Keyword.TRANSFER_GROUP_ID, mTransfer.getGroup().groupId)
 						.toString());
 
 				CoolSocket.ActiveConnection.Response mainRequest = activeConnection.receive();
@@ -815,9 +815,9 @@ public class CommunicationService extends Service
 			try {
 				JSONObject jsonObject = new JSONObject();
 
-				jsonObject.put(Keyword.REQUEST_ID, handler.getExtra().transactionObject.requestId);
-				jsonObject.put(Keyword.GROUP_ID, handler.getExtra().transactionObject.groupId);
-				jsonObject.put(Keyword.SOCKET_PORT, serverSocket.getLocalPort());
+				jsonObject.put(Keyword.TRANSFER_REQUEST_ID, handler.getExtra().transactionObject.requestId);
+				jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transactionObject.groupId);
+				jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, serverSocket.getLocalPort());
 
 				if (handler.getFile().length() > 0)
 					jsonObject.put(Keyword.SKIPPED_BYTES, handler.getFile().length());
@@ -829,7 +829,7 @@ public class CommunicationService extends Service
 				if (response.getBoolean(Keyword.RESULT))
 					return Flag.CONTINUE;
 				else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
-					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.NOT_FOUND)) {
+					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
 						handler.getExtra().transactionObject.flag = TransactionObject.Flag.REMOVED;
 						getDatabase().publish(handler.getExtra().transactionObject);
 					}
@@ -994,17 +994,6 @@ public class CommunicationService extends Service
 					e.printStackTrace();
 				}
 		}
-	}
-
-	public enum TransferStatus
-	{
-		Started,
-		ErrorDeviceNotFound,
-		ErrorTransactionNotFound,
-		ErrorTransactionGroupNotFound,
-		ErrorConnectionNotFound,
-		ErrorConnectionFailed,
-		Completed
 	}
 
 	private class ProcessHolder

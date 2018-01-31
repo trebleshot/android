@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,15 @@ public class TransactionListFragment
 				refreshList();
 		}
 	};
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		setDefaultOrderingAscending(true);
+		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+	}
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)

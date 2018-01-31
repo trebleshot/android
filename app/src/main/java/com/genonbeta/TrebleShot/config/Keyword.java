@@ -7,39 +7,42 @@ package com.genonbeta.TrebleShot.config;
 
 public class Keyword
 {
-	public static final String REQUEST = "request";
-	public static final String RESULT = "result";
-	public static final String REQUEST_TRANSFER = "requestTransfer";
-	public static final String REQUEST_RESPONSE = "requestResponse";
-	public static final String REQUEST_SERVER_READY = "requestServerReady";
-	public static final String REQUEST_CLIPBOARD = "requestClipboard";
-	public static final String CLIPBOARD_TEXT = "clipboardText";
-	public static final String REQUEST_ID = "requestId";
-	public static final String GROUP_ID = "groupId";
-	public static final String IS_ACCEPTED = "isAccepted";
-	public static final String SOCKET_PORT = "socketPort";
-	public static final String FLAG = "flag";
-	public static final String FLAG_GROUP_EXISTS = "flagGroupExists";
-	public static final String FILE_NAME = "file";
-	public static final String FILE_SIZE = "fileSize";
-	public static final String FILE_MIME = "fileMime";
-	public static final String DIRECTORY = "directory";
-	public static final String DEVICE_INFO = "deviceInfo";
-	public static final String BRAND = "brand";
-	public static final String MODEL = "model";
-	public static final String USER = "user";
-	public static final String SERIAL = "deviceId";
-	public static final String FILES_INDEX = "filesIndex";
-	public static final String VERSION_NAME = "versionName";
-	public static final String VERSION_CODE = "versionCode";
-	public static final String APP_INFO = "appInfo";
-	public static final String UNKNOWN_INTERFACE = "unk0";
-	public static final String SKIPPED_BYTES = "skippedBytes";
-	public static final String MODE = "mode";
-	public static final String MODE_RECEIVE = "modeReceive";
-	public static final String MODE_SEND = "modeSend";
-	public static final String ERROR = "error";
-	public static final String NOT_ALLOWED = "notAllowed";
-	public static final String NOT_FOUND = "notFound";
-	public static final String BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate";
+	public static final String
+			REQUEST = "request",
+			RESULT = "result",
+			REQUEST_TRANSFER = "requestTransfer",
+			REQUEST_RESPONSE = "requestResponse",
+			REQUEST_CLIPBOARD = "requestClipboard",
+			BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate",
+			TRANSFER_REQUEST_ID = "requestId",
+			TRANSFER_GROUP_ID = "groupId",
+			TRANSFER_SOCKET_PORT = "socketPort",
+			TRANSFER_IS_ACCEPTED = "isAccepted",
+			TRANSFER_CLIPBOARD_TEXT = "clipboardText",
+			FLAG = "flag",
+			FLAG_GROUP_EXISTS = "flagGroupExists",
+			FILES_INDEX = "filesIndex",
+			INDEX_FILE_NAME = "file",
+			INDEX_FILE_SIZE = "fileSize",
+			INDEX_FILE_MIME = "fileMime",
+			INDEX_DIRECTORY = "directory",
+			DEVICE_INFO = "deviceInfo",
+			DEVICE_INFO_BRAND = "brand",
+			DEVICE_INFO_MODEL = "model",
+			DEVICE_INFO_USER = "user",
+			DEVICE_INFO_SERIAL = "deviceId",
+			APP_INFO = "appInfo",
+			APP_INFO_VERSION_NAME = "versionName",
+			APP_INFO_VERSION_CODE = "versionCode",
+			SKIPPED_BYTES = "skippedBytes",
+			ERROR = "error",
+			ERROR_NOT_ALLOWED = "notAllowed",
+			ERROR_NOT_FOUND = "notFound";
+
+	public static class Local
+	{
+		public static final String
+				NETWORK_INTERFACE_UNKNOWN = "unk0",
+				SETTINGS_SORTING = "sorting_settings";
+	}
 }

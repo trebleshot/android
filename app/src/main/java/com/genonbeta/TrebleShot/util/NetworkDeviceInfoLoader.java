@@ -69,19 +69,19 @@ public class NetworkDeviceInfoLoader
 					JSONObject deviceInfo = jsonResponse.getJSONObject(Keyword.DEVICE_INFO);
 					JSONObject appInfo = jsonResponse.getJSONObject(Keyword.APP_INFO);
 
-					NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.SERIAL));
+					NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
 
 					try {
 						database.reconstruct(device);
 					} catch (Exception e) {
 					}
 
-					device.brand = deviceInfo.getString(Keyword.BRAND);
-					device.model = deviceInfo.getString(Keyword.MODEL);
-					device.nickname = deviceInfo.getString(Keyword.USER);
+					device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);
+					device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
+					device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
 					device.lastUsageTime = System.currentTimeMillis();
-					device.versionNumber = appInfo.getInt(Keyword.VERSION_CODE);
-					device.versionName = appInfo.getString(Keyword.VERSION_NAME);
+					device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
+					device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
 
 					if (device.deviceId != null) {
 						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());

@@ -5,6 +5,8 @@ package com.genonbeta.TrebleShot.fragment;
  */
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
@@ -15,6 +17,15 @@ public class ImageListFragment
 		extends ShareableListFragment<ImageListAdapter.ImageHolder, ImageListAdapter>
 		implements TitleSupport
 {
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		setDefaultOrderingAscending(false);
+		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+	}
+
 	@Override
 	public ImageListAdapter onAdapter()
 	{

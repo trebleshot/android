@@ -48,6 +48,12 @@
     <PreferenceCategory android:title="@string/text_advanced">
 
         <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="nsd_enabled"
+            android:title="@string/text_networkServiceDiscovery"
+            android:summary="@string/text_networkServiceDiscoverySummary"/>
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="developer_mode"
             android:title="@string/text_developerMode"
