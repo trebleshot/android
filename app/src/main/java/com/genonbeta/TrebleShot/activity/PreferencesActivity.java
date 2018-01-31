@@ -50,7 +50,6 @@ public class PreferencesActivity extends Activity
 							.clear()
 							.apply();
 
-					PreferenceManager.setDefaultValues(PreferencesActivity.this, R.xml.preferences_main, true);
 					finish();
 				}
 			});

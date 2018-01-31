@@ -26,7 +26,17 @@ public abstract class Activity extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		SharedPreferences defaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+
+		boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
+
 		PreferenceManager.setDefaultValues(this, R.xml.preferences_main, false);
+
+		if (!nsdDefined)
+			defaultPreferences.edit()
+					.putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+					.apply();
 	}
 
 	@Override

@@ -300,6 +300,6 @@
     <string name="text_workerService">Arkaplan işleyicisi</string>
     <string name="text_taskCompleted">İşlem tamamlandı</string>
     <string name="text_deletingFilesOngoing">Seçili dosyalar siliniyor</string>
-    <string name="text_networkServiceDiscovery">"ASB etkinleştir "</string>
+    <string name="text_networkServiceDiscovery">ASB\'yi etkinleştir</string>
     <string name="text_networkServiceDiscoverySummary">Ağ Service Bulma bulunabilirliği güçlendirir</string>
 </resources>
