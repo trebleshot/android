@@ -73,7 +73,7 @@ public class HotspotUtils
 		try {
 			return method.invoke(receiver, args);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			Log.e(TAG, "exception in invoking methods: " + e.getMessage());
+			Log.e(TAG, "exception in invoking methods: " + method.getName() + "(): " + e.getMessage());
 		}
 
 		return null;
@@ -120,60 +120,6 @@ public class HotspotUtils
 		return setHotspotEnabled(wifiConfiguration, true);
 	}
 
-	public List<HotspotClient> getClientList(final int timeout,
-											 final WifiClientConnectionListener listener)
-	{
-		List<HotspotClient> resultList = getWifiClients();
-
-		if (resultList == null) {
-			listener.onWifiClientsScanComplete();
-			return null;
-		}
-
-		final CountDownLatch latch = new CountDownLatch(resultList.size());
-		ExecutorService executorService = Executors.newCachedThreadPool();
-
-		for (final HotspotClient c : resultList) {
-			executorService.submit(new Runnable()
-			{
-				public void run()
-				{
-					try {
-						InetAddress inetAddress = InetAddress.getByName(c.ipAddress);
-
-						if (inetAddress.isReachable(timeout)) {
-							listener.onClientConnectionAlive(c);
-							Thread.sleep(1000);
-						} else listener.onClientConnectionDead(c);
-					} catch (IOException e) {
-						Log.e(TAG, "io exception while trying to reach client, ipAddress: " + (c.ipAddress));
-					} catch (InterruptedException ire) {
-						Log.e(TAG, "InterruptedException: " + ire.getMessage());
-					}
-
-					latch.countDown();
-				}
-			});
-		}
-
-		new Thread()
-		{
-			public void run()
-			{
-				try {
-					latch.await();
-				} catch (InterruptedException e) {
-					Log.e(TAG, "listing clients countdown interrupted", e);
-				}
-
-				listener.onWifiClientsScanComplete();
-			}
-		}.start();
-
-		return resultList;
-
-	}
-
 	public WifiConfiguration getConfiguration()
 	{
 		return (WifiConfiguration) invokeSilently(getWifiApConfiguration, mWifiManager);
@@ -187,41 +133,6 @@ public class HotspotUtils
 			return false;
 
 		return (Boolean) result;
-	}
-
-	public List<HotspotClient> getWifiClients()
-	{
-		if (!isEnabled())
-			return null;
-
-		List<HotspotClient> result = new ArrayList<>();
-		Pattern macPattern = Pattern.compile("..:..:..:..:..:..");
-		BufferedReader bufferedReader = null;
-
-		try {
-			bufferedReader = new BufferedReader(new FileReader("/proc/net/arp"));
-			String line;
-
-			while ((line = bufferedReader.readLine()) != null) {
-				String[] parts = line.split(" +");
-				if (parts.length < 4 || !macPattern.matcher(parts[3]).find())
-					continue;
-
-				result.add(new HotspotClient(parts[0]));
-			}
-		} catch (IOException e) {
-			Log.e(TAG, "exception in getting clients", e);
-		} finally {
-			try {
-				if (bufferedReader != null) {
-					bufferedReader.close();
-				}
-			} catch (IOException e) {
-				Log.e(TAG, "", e);
-			}
-		}
-
-		return result;
 	}
 
 	public WifiConfiguration getPreviousConfig()
@@ -264,31 +175,5 @@ public class HotspotUtils
 		mPreviousConfig = null;
 
 		return true;
-	}
-
-	public static class HotspotClient
-	{
-		public String ipAddress;
-
-		public HotspotClient(String ipAddress)
-		{
-			this.ipAddress = ipAddress;
-		}
-
-		@Override
-		public boolean equals(Object object)
-		{
-			return object == this
-					|| (object instanceof HotspotClient && ((HotspotClient) object).ipAddress.equals(this.ipAddress));
-		}
-	}
-
-	public interface WifiClientConnectionListener
-	{
-		void onClientConnectionAlive(HotspotClient c);
-
-		void onClientConnectionDead(HotspotClient c);
-
-		void onWifiClientsScanComplete();
 	}
 }

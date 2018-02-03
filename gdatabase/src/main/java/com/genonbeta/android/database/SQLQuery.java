@@ -52,6 +52,7 @@ public class SQLQuery
 		public String groupBy;
 		public String having;
 		public String orderBy;
+		public String limit;
 		public LoadListener loadListener;
 
 		public Select(String tableName, String... columns)
@@ -80,6 +81,17 @@ public class SQLQuery
 		public Select setGroupBy(String groupBy)
 		{
 			this.groupBy = groupBy;
+			return this;
+		}
+
+		public Select setLimit(int limit)
+		{
+			return setLimit(String.valueOf(limit));
+		}
+
+		public Select setLimit(String limit)
+		{
+			this.limit = String.valueOf(limit);
 			return this;
 		}
 

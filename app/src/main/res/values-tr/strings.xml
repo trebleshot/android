@@ -302,4 +302,6 @@
     <string name="text_deletingFilesOngoing">Seçili dosyalar siliniyor</string>
     <string name="text_networkServiceDiscovery">ASB\'yi etkinleştir</string>
     <string name="text_networkServiceDiscoverySummary">Ağ Service Bulma bulunabilirliği güçlendirir</string>
+    <string name="text_notificationChannelHigh">Önemli bildirimler</string>
+    <string name="text_notificationChannelLow">Düşük öncelikli bildirimler</string>
 </resources>

@@ -57,11 +57,6 @@ public class CursorItem
 		return mList.size();
 	}
 
-	public boolean isStatic()
-	{
-		return exists(SQLiteDatabase.COLUMN_ISSTATIC) && getInt(SQLiteDatabase.COLUMN_ISSTATIC) == 1;
-	}
-
 	public HashMap<String, Object> list()
 	{
 		return mList;

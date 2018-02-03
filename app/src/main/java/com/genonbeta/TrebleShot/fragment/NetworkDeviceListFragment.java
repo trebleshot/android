@@ -426,8 +426,12 @@ public class NetworkDeviceListFragment
 
 	public void toggleHotspot()
 	{
-		if (!mHotspotUtils.isEnabled()
-				|| AppUtils.getHotspotName(getActivity()).equals(mHotspotUtils.getConfiguration().SSID))
+		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
+
+		if (wifiConfiguration != null
+				&& (!mHotspotUtils.isEnabled()
+				|| AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)
+		))
 			createSnackbar(mHotspotUtils.isEnabled()
 					? R.string.mesg_stoppingSelfHotspot
 					: R.string.mesg_startingSelfHotspot)
@@ -448,9 +452,12 @@ public class NetworkDeviceListFragment
 
 		mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), isEnabled ? R.color.fabHotspotEnabled : R.color.fabHotspotDisabled)));
 
-		if (mHotspotUtils.isEnabled()
+		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
+
+		if (wifiConfiguration != null
+				&& mHotspotUtils.isEnabled()
 				&& mShowHotspotInfo
-				&& AppUtils.getHotspotName(getActivity()).equals(mHotspotUtils.getConfiguration().SSID)) {
+				&& AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
 			final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, mHotspotUtils.getConfiguration().SSID, getAdapter().getFriendlySSID(mHotspotUtils.getConfiguration().SSID));
 
 			snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()

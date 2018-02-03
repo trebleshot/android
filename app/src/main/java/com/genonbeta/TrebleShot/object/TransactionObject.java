@@ -26,7 +26,6 @@ public class TransactionObject
 	public int accessPort;
 	public int skippedBytes;
 	public long fileSize = 0;
-	public DynamicNotification notification;
 	public Type type = Type.INCOMING;
 	public Flag flag = Flag.PENDING;
 
@@ -293,8 +292,6 @@ public class TransactionObject
 	{
 		INTERRUPTED,
 		PENDING,
-		RESUME,
-		RUNNING,
 		REMOVED
 	}
 }

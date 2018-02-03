@@ -83,6 +83,9 @@ public class NetworkDeviceInfoLoader
 					device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
 					device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
 
+					if (device.nickname.length() > AppConfig.NICKNAME_MAX_LENGHT)
+						device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT -1);
+
 					if (device.deviceId != null) {
 						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
 						NetworkDevice.Connection connection = processConnection(database, device, ipAddress);

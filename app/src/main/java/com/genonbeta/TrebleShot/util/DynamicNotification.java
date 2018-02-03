@@ -16,15 +16,10 @@ public class DynamicNotification extends NotificationCompat.Builder
 	private NotificationManagerCompat mManager;
 	private int mNotificationId;
 
-	public DynamicNotification(Context context, NotificationManagerCompat manager)
+	public DynamicNotification(Context context, NotificationManagerCompat manager, String notificationChannel, int notificationId)
 	{
-		super(context, AppConfig.DEFAULT_NOTIFICATION_CHANNEL);
+		super(context, notificationChannel);
 		mManager = manager;
-	}
-
-	public DynamicNotification(Context context, NotificationManagerCompat manager, int notificationId)
-	{
-		this(context, manager);
 		mNotificationId = notificationId;
 	}
 

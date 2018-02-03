@@ -2,31 +2,17 @@ package com.genonbeta.TrebleShot.util;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
-import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.HomeActivity;
-import com.genonbeta.TrebleShot.activity.TextEditorActivity;
-import com.genonbeta.TrebleShot.activity.TransactionActivity;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.object.TransactionObject;
-import com.genonbeta.TrebleShot.object.TransferInstance;
-import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
-import com.genonbeta.TrebleShot.service.CommunicationService;
 
-import java.io.File;
+import java.nio.channels.Channel;
 
 /**
  * Created by: veli
@@ -56,28 +42,20 @@ public class NotificationUtils
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-			NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_appName), NotificationManager.IMPORTANCE_HIGH);
+			NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
+
 			channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
 			channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
 			notificationManager.createNotificationChannel(channelHigh);
 
-			NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_appName), NotificationManager.IMPORTANCE_NONE);
+			NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
 			notificationManager.createNotificationChannel(channelLow);
 		}
 	}
 
-	public DynamicNotification buildDynamicNotification(int notificationId)
-	{
-		return new DynamicNotification(getContext(), getManager(), notificationId);
-	}
-
 	public DynamicNotification buildDynamicNotification(int notificationId, String channelId)
 	{
-		DynamicNotification dynamicNotification = buildDynamicNotification(notificationId);
-
-		dynamicNotification.setChannelId(channelId);
-
-		return dynamicNotification;
+		return new DynamicNotification(getContext(), getManager(), channelId, notificationId);
 	}
 
 	public NotificationUtils cancel(int notificationId)

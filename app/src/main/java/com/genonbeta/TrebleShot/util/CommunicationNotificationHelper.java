@@ -132,35 +132,35 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileTransaction(TransactionObject transaction) throws Exception
+	public DynamicNotification notifyFileTransaction(CommunicationService.ProcessHolder processHolder) throws Exception
 	{
-		TransactionObject.Group group = new TransactionObject.Group(transaction.groupId);
-		getUtils().getDatabase().reconstruct(group);
+		if (processHolder.notification == null) {
+			NetworkDevice device = new NetworkDevice(processHolder.group.deviceId);
+			getUtils().getDatabase().reconstruct(device);
 
-		NetworkDevice device = new NetworkDevice(group.deviceId);
-		getUtils().getDatabase().reconstruct(device);
+			boolean isIncoming = TransactionObject.Type.INCOMING.equals(processHolder.transactionObject.type);
 
-		boolean isIncoming = TransactionObject.Type.INCOMING.equals(transaction.type);
+			processHolder.notification = getUtils().buildDynamicNotification(processHolder.transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+			Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
 
-		DynamicNotification notification = getUtils().buildDynamicNotification(transaction.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-		Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
+			cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
+			cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.transactionObject.requestId);
+			cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.transactionObject.groupId);
+			cancelIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, processHolder.notification.getNotificationId());
 
-		cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
-		cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId);
-		cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId);
-		cancelIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
+			processHolder.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
+					.setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
+					.setContentInfo(device.nickname)
+					.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
+							.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
+							.putExtra(TransactionActivity.EXTRA_GROUP_ID, processHolder.transactionObject.groupId), 0))
+					.setOngoing(true)
+					.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
+		}
 
-		notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
-				.setContentTitle(transaction.friendlyName)
-				.setContentText(getContext().getString(isIncoming ? R.string.text_receiving : R.string.text_sending))
-				.setContentInfo(device.nickname)
-				.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
-						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transaction.groupId), 0))
-				.setOngoing(true)
-				.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
+		processHolder.notification.setContentTitle(processHolder.transactionObject.friendlyName);
 
-		return notification;
+		return processHolder.notification;
 	}
 
 	public DynamicNotification notifyClipboardRequest(NetworkDevice device, TextStreamObject object)

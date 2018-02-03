@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.service;
 import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -79,7 +80,7 @@ public class CommunicationService extends Service
 	public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
-	public static final String EXTRA_TRANSFER_STATE = "extraTraansferState";
+	public static final String EXTRA_TRANSFER_STATE = "extraTransferState";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
@@ -198,7 +199,7 @@ public class CommunicationService extends Service
 				try {
 					mDatabase.reconstruct(device);
 					device.isRestricted = !isAccepted;
-					mDatabase.publish(device);
+					mDatabase.update(device);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return START_NOT_STICKY;
@@ -255,6 +256,9 @@ public class CommunicationService extends Service
 
 				CoolTransfer.TransferHandler<ProcessHolder> handler = findProcessById(groupId);
 
+				if (handler == null || ACTION_CANCEL_KILL.equals(intent.getAction()))
+					getNotificationHelper().getUtils().cancel(notificationId);
+
 				if (handler != null) {
 					if (ACTION_CANCEL_KILL.equals(intent.getAction())) {
 						try {
@@ -274,11 +278,10 @@ public class CommunicationService extends Service
 							e.printStackTrace();
 						}
 					} else {
-						handler.getExtra().transactionObject.notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transactionObject);
+						handler.getExtra().notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transactionObject);
 						handler.interrupt();
 					}
-				} else
-					getNotificationHelper().getUtils().cancel(notificationId);
+				}
 			} else if (ACTION_TOGGLE_SEAMLESS_MODE.equals(intent.getAction())) {
 				updateServiceState(!mSeamlessMode);
 			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
@@ -354,9 +357,9 @@ public class CommunicationService extends Service
 
 	public void setupHotspot()
 	{
-		if (!getHotspotUtils().isEnabled())
+		if (!getHotspotUtils().isEnabled()) {
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
-		else
+		} else
 			mHotspotUtils.disable();
 	}
 
@@ -445,10 +448,10 @@ public class CommunicationService extends Service
 							getNotificationHelper().notifyConnectionRequest(device);
 
 							shouldContinue = false;
+
+							mDatabase.publish(device);
 						} else
 							shouldContinue = true;
-
-						mDatabase.publish(device);
 					}
 
 					final NetworkDevice.Connection connection = NetworkDeviceInfoLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
@@ -623,7 +626,7 @@ public class CommunicationService extends Service
 						if (currentRequest.has(Keyword.SKIPPED_BYTES))
 							processHolder.transactionObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
 
-						getDatabase().publish(processHolder.transactionObject);
+						getDatabase().update(processHolder.transactionObject);
 
 						currentReply.put(Keyword.RESULT, true);
 					} catch (Exception e) {
@@ -635,6 +638,8 @@ public class CommunicationService extends Service
 
 						if (currentReply.getBoolean(Keyword.RESULT)) {
 							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transactionObject.file), true);
+
+							getNotificationHelper().notifyFileTransaction(processHolder);
 
 							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transactionObject.accessPort, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, processHolder, true);
 						}
@@ -673,7 +678,7 @@ public class CommunicationService extends Service
 				}
 
 				if (processHolder.transferHandler != null)
-					processHolder.transferHandler.getExtra().transactionObject.notification.cancel();
+					processHolder.transferHandler.getExtra().notification.cancel();
 			}
 		}
 	}
@@ -708,9 +713,21 @@ public class CommunicationService extends Service
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
-					getNotificationHelper().notifyConnectionError(mTransfer, mainRequestJSON.has(Keyword.ERROR)
+					String errorCode = mainRequestJSON.has(Keyword.ERROR)
 							? mainRequestJSON.getString(Keyword.ERROR)
-							: null);
+							: null;
+
+					if (Keyword.ERROR_NOT_FOUND.equals(errorCode)) {
+						ContentValues contentValues = new ContentValues();
+
+						contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.REMOVED.toString());
+
+						getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+										.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId)),
+								contentValues);
+					}
+
+					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
 				} else {
 					while (true) {
 						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
@@ -730,6 +747,8 @@ public class CommunicationService extends Service
 						processHolder.transactionObject = new TransactionObject(receiverInstance);
 						File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
 
+						getNotificationHelper().notifyFileTransaction(processHolder);
+
 						processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
 						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
@@ -737,16 +756,16 @@ public class CommunicationService extends Service
 					}
 
 					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
-						if (processHolder.transferHandler.getGroupTransferredFileCount() == 1)
+						if (processHolder.transferHandler.getTransferProgress().getTransferredFileCount() == 1)
 							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
-						else if (processHolder.transferHandler.getGroupTransferredFileCount() > 1) {
+						else if (processHolder.transferHandler.getTransferProgress().getTransferredFileCount() > 1) {
 							String parentDir = processHolder.transferHandler.getFile().getParent();
 							String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
 									&& processHolder.transferHandler.getExtra().transactionObject.directory.length() > 0
 									? parentDir.substring(0, parentDir.length() - processHolder.transferHandler.getExtra().transactionObject.directory.length())
 									: parentDir;
 
-							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getGroupTransferredFileCount());
+							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getTransferProgress().getTransferredFileCount());
 						}
 					}
 				}
@@ -773,17 +792,17 @@ public class CommunicationService extends Service
 
 			handler.getExtra().transactionObject.flag = TransactionObject.Flag.INTERRUPTED;
 
-			getDatabase().publish(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transactionObject);
 			getNotificationHelper().notifyReceiveError(handler.getExtra().transactionObject);
 
 			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public void onNotify(TransferHandler<ProcessHolder> handler, int percentage, int groupPercentage, long eta)
+		public void onNotify(TransferHandler<ProcessHolder> handler, int percentage)
 		{
-			handler.getExtra().transactionObject.notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(eta)));
-			handler.getExtra().transactionObject.notification.updateProgress(100, groupPercentage == -1 ? percentage : groupPercentage, false);
+			handler.getExtra().notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(handler.getTransferProgress().getTimeRemaining())));
+			handler.getExtra().notification.updateProgress(100, percentage, false);
 		}
 
 		@Override
@@ -797,10 +816,10 @@ public class CommunicationService extends Service
 		@Override
 		public void onInterrupted(TransferHandler<ProcessHolder> handler)
 		{
-			handler.getExtra().transactionObject.notification.cancel();
+			handler.getExtra().notification.cancel();
 			handler.getExtra().transactionObject.flag = TransactionObject.Flag.INTERRUPTED;
 
-			getDatabase().publish(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transactionObject);
 		}
 
 		@Override
@@ -831,7 +850,7 @@ public class CommunicationService extends Service
 				else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
 					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
 						handler.getExtra().transactionObject.flag = TransactionObject.Flag.REMOVED;
-						getDatabase().publish(handler.getExtra().transactionObject);
+						getDatabase().update(handler.getExtra().transactionObject);
 					}
 
 					return Flag.CANCEL_CURRENT;
@@ -848,31 +867,15 @@ public class CommunicationService extends Service
 		{
 			handler.linkTo(handler.getExtra().transferHandler);
 
-			if (handler.getGroupTransferredFileCount() == 0) {
+			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransactionObject.Group.Index indexInstance = new TransactionObject.Group.Index();
 
 				getDatabase().calculateTransactionSize(handler.getExtra().transactionObject.groupId, indexInstance);
 
-				handler.setGroupTotalByte(indexInstance.incoming);
+				handler.getTransferProgress().setTotalByte(indexInstance.incoming);
 			}
 
-			try {
-				handler.getExtra().transactionObject.notification = getNotificationHelper().notifyFileTransaction(handler.getExtra().transactionObject);
-				handler.getExtra().transactionObject.flag = TransactionObject.Flag.RUNNING;
-
-				if (handler.getGroupTotalByte() > 0)
-					onNotify(handler, 0, MathUtils.calculatePercentage(handler.getGroupTotalByte(), handler.getGroupTransferredByte()), handler.getTimeRemaining());
-				else
-					handler.getExtra().transactionObject.notification.show();
-
-				getDatabase().publish(handler.getExtra().transactionObject);
-
-				return Flag.CONTINUE;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return Flag.CANCEL_ALL;
+			return Flag.CONTINUE;
 		}
 
 		@Override
@@ -901,21 +904,16 @@ public class CommunicationService extends Service
 					.transactionObject
 					.flag = TransactionObject.Flag.INTERRUPTED;
 
-			getDatabase().publish(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transactionObject);
 
 			return Flag.CANCEL_ALL;
 		}
 
 		@Override
-		public void onNotify(TransferHandler<ProcessHolder> handler, int percentage, int groupPercentage, long eta)
+		public void onNotify(TransferHandler<ProcessHolder> handler, int percentage)
 		{
-			handler.getExtra()
-					.transactionObject
-					.notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(eta)));
-
-			handler.getExtra()
-					.transactionObject
-					.notification.updateProgress(100, groupPercentage == -1 ? percentage : groupPercentage, false);
+			handler.getExtra().notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(handler.getTransferProgress().getTimeRemaining())));
+			handler.getExtra().notification.updateProgress(100, percentage, false);
 		}
 
 		@Override
@@ -944,40 +942,15 @@ public class CommunicationService extends Service
 		{
 			handler.linkTo(handler.getExtra().transferHandler);
 
-			if (handler.getGroupTransferredFileCount() == 0) {
+			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransactionObject.Group.Index indexInstance = new TransactionObject.Group.Index();
 
 				getDatabase().calculateTransactionSize(handler.getExtra().transactionObject.groupId, indexInstance);
 
-				handler.setGroupTotalByte(indexInstance.outgoing);
+				handler.getTransferProgress().setTotalByte(indexInstance.outgoing);
 			}
 
-			try {
-				handler.getExtra()
-						.transactionObject
-						.notification = getNotificationHelper().notifyFileTransaction(handler.getExtra().transactionObject);
-
-				handler.getExtra()
-						.transactionObject
-						.flag = TransactionObject.Flag.RUNNING;
-
-				getWifiLock().acquire();
-				getDatabase().publish(handler.getExtra().transactionObject);
-
-				if (handler.getGroupTotalByte() > 0)
-					onNotify(handler, 0, MathUtils.calculatePercentage(handler.getGroupTotalByte(), handler.getGroupTransferredByte()), handler.getTimeRemaining());
-				else
-					handler.getExtra()
-							.transactionObject
-							.notification
-							.show();
-
-				return Flag.CONTINUE;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return Flag.CANCEL_ALL;
+			return Flag.CONTINUE;
 		}
 
 
@@ -996,11 +969,12 @@ public class CommunicationService extends Service
 		}
 	}
 
-	private class ProcessHolder
+	public class ProcessHolder
 	{
 		public CoolTransfer.TransferHandler<ProcessHolder> transferHandler;
 		public CoolSocket.ActiveConnection activeConnection;
 		public TransactionObject transactionObject;
+		public DynamicNotification notification;
 		public TransactionObject.Group group;
 	}
 }

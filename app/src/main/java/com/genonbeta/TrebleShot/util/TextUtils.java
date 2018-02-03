@@ -67,12 +67,13 @@ public class TextUtils
 		switch (flag) {
 			case PENDING:
 				return R.string.text_flagPending;
-			case RUNNING:
-				return R.string.text_flagRunning;
 			case INTERRUPTED:
 				return R.string.text_flagInterrupted;
+				/*
+			case RUNNING:
+				return R.string.text_flagRunning;
 			case RESUME:
-				return R.string.text_flagResume;
+				return R.string.text_flagResume; */
 			case REMOVED:
 				return R.string.text_flagRemoved;
 			default:

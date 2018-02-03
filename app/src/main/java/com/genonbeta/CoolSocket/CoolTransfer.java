@@ -24,7 +24,7 @@ abstract public class CoolTransfer<T>
 
 	public abstract Flag onError(TransferHandler<T> handler, Exception error);
 
-	public abstract void onNotify(TransferHandler<T> handler, int percentage, int groupPercentage, long eta);
+	public abstract void onNotify(TransferHandler<T> handler, int percentage);
 
 	public abstract void onTransferCompleted(TransferHandler<T> handler);
 
@@ -92,18 +92,12 @@ abstract public class CoolTransfer<T>
 	public abstract static class TransferHandler<T> implements Runnable
 	{
 		private Socket mSocket;
+		private TransferProgress<T> mTransferProgress;
 		private Status mStatus = Status.PENDING;
 		private Flag mFlag = Flag.CANCEL_ALL;
 		private T mExtra;
 		private int mPort;
-		private int mGroupTransferredFileCount;
-		private long mStartTime = System.currentTimeMillis();
-		private long mGroupTransferredByte;
-		private long mGroupTotalByte;
 		private long mFileSize;
-		private long mTimeElapsed;
-		private long mTimePassed;
-		private long mTimeRemaining;
 		private byte[] mBufferSize;
 		private boolean mInterrupted = false;
 
@@ -116,18 +110,6 @@ abstract public class CoolTransfer<T>
 		}
 
 		protected abstract void onRun();
-
-		public long incrementGroupTransferredByte(long size)
-		{
-			mGroupTransferredByte += size;
-			return mGroupTransferredByte;
-		}
-
-		public int incrementGroupTransferredFileCount()
-		{
-			mGroupTransferredFileCount++;
-			return mGroupTransferredFileCount;
-		}
 
 		public void interrupt()
 		{
@@ -164,26 +146,6 @@ abstract public class CoolTransfer<T>
 			return mExtra;
 		}
 
-		public long getGroupTotalByte()
-		{
-			return mGroupTotalByte;
-		}
-
-		public int getGroupTransferredFileCount()
-		{
-			return mGroupTransferredFileCount;
-		}
-
-		public long getGroupTransferredByte()
-		{
-			return mGroupTransferredByte;
-		}
-
-		public InputStream getInputStream()
-		{
-			return null;
-		}
-
 		public int getPort()
 		{
 			return mPort;
@@ -194,43 +156,25 @@ abstract public class CoolTransfer<T>
 			return mSocket;
 		}
 
-		public long getStartTime()
-		{
-			return mStartTime;
-		}
-
 		public Status getStatus()
 		{
 			return mStatus;
 		}
 
-		public long getTimeElapsed()
+		public TransferProgress<T> getTransferProgress()
 		{
-			return mTimeElapsed;
+			if (mTransferProgress == null)
+				mTransferProgress = new TransferProgress<>();
+
+			return mTransferProgress;
 		}
 
-		public long getTimePassed()
+		public TransferHandler<T> linkTo(TransferHandler<T> transferHandler)
 		{
-			return mTimePassed;
-		}
+			if (transferHandler != null)
+				setTransferProgress(transferHandler.getTransferProgress());
 
-		public long getTimeRemaining()
-		{
-			return mTimeRemaining;
-		}
-
-		public void linkTo(TransferHandler transferHandler)
-		{
-			if (transferHandler == null)
-				return;
-
-			setStartTime(transferHandler.getStartTime());
-			setGroupTotalByte(transferHandler.getGroupTotalByte());
-			setGroupTransferredFileCount(transferHandler.getGroupTransferredFileCount());
-			setGroupTransferredByte(transferHandler.getGroupTransferredByte());
-			setTimeElapsed(transferHandler.getTimeElapsed());
-			setTimePassed(transferHandler.getTimePassed());
-			setTimeRemaining(transferHandler.getTimeRemaining());
+			return this;
 		}
 
 		public void setFile(File file)
@@ -240,21 +184,6 @@ abstract public class CoolTransfer<T>
 		public void setFlag(Flag flag)
 		{
 			mFlag = flag;
-		}
-
-		public void setGroupTotalByte(long totalByte)
-		{
-			mGroupTotalByte = totalByte;
-		}
-
-		public void setGroupTransferredByte(long groupTransferredByte)
-		{
-			mGroupTransferredByte = groupTransferredByte;
-		}
-
-		public void setGroupTransferredFileCount(int groupTransferredFileCount)
-		{
-			mGroupTransferredFileCount = groupTransferredFileCount;
 		}
 
 		protected void setSocket(Socket socket)
@@ -267,24 +196,9 @@ abstract public class CoolTransfer<T>
 			mStatus = status;
 		}
 
-		public void setStartTime(long startTime)
+		public void setTransferProgress(TransferProgress transferProgress)
 		{
-			mStartTime = startTime;
-		}
-
-		public void setTimeElapsed(long timeElapsed)
-		{
-			mTimeElapsed = timeElapsed;
-		}
-
-		public void setTimePassed(long timePassed)
-		{
-			mTimePassed = timePassed;
-		}
-
-		public void setTimeRemaining(long timeRemaining)
-		{
-			mTimeRemaining = timeRemaining;
+			mTransferProgress = transferProgress;
 		}
 
 		@Override
@@ -363,12 +277,11 @@ abstract public class CoolTransfer<T>
 								InputStream inputStream = getSocket().getInputStream();
 								FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
 
-								incrementGroupTransferredByte(getFile().length());
+								getTransferProgress().incrementTransferredByte(getFile().length());
 								onOrientatingStreams(this, inputStream, outputStream);
 
 								int len = 0;
 								long lastRead = System.currentTimeMillis();
-								long lastNotified = 0;
 
 								while (len != -1) {
 									if ((len = inputStream.read(getBufferSize())) > 0) {
@@ -377,23 +290,10 @@ abstract public class CoolTransfer<T>
 
 										lastRead = System.currentTimeMillis();
 
-										incrementGroupTransferredByte(len);
+										getTransferProgress().incrementTransferredByte(len);
 									}
 
-									if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
-										int currentPercentage = calculatePercentage(getFileSize(), outputStream.getChannel().position());
-										int groupPercentage = getGroupTotalByte() > 0 ? calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
-
-										setTimeElapsed(System.currentTimeMillis() - getStartTime());
-										setTimePassed(getGroupTotalByte() > 0
-												? (getTimeElapsed() * getGroupTotalByte() / getGroupTransferredByte())
-												: (getTimeElapsed() * getFileSize() / outputStream.getChannel().position()));
-										setTimeRemaining(getTimePassed() - getTimeElapsed());
-
-										onNotify(this, currentPercentage, groupPercentage, (int) getTimeRemaining());
-
-										lastNotified = System.currentTimeMillis();
-									}
+									getTransferProgress().doNotify(Receive.this, this);
 
 									if ((mTimeout > 0 && (System.currentTimeMillis() - lastRead) > mTimeout) || isInterrupted()) {
 										System.out.println("CoolTransfer: Timed out... Exiting.");
@@ -406,7 +306,6 @@ abstract public class CoolTransfer<T>
 							}
 
 							getSocket().close();
-
 						}
 
 						getServerSocket().close();
@@ -419,7 +318,7 @@ abstract public class CoolTransfer<T>
 								if (getFile().length() != getFileSize())
 									throw new NotYetBoundException();
 								else {
-									incrementGroupTransferredFileCount();
+									getTransferProgress().incrementTransferredFileCount();
 									onTransferCompleted(this);
 								}
 							}
@@ -527,34 +426,18 @@ abstract public class CoolTransfer<T>
 							onOrientatingStreams(this, getInputStream(), outputStream);
 
 							int len = 0;
-							long lastNotified = 0;
-							long countingStars = getSkippedBytes();
 
-							incrementGroupTransferredByte(countingStars);
+							getTransferProgress().incrementTransferredByte(getSkippedBytes());
 
 							while (len != -1) {
 								if ((len = getInputStream().read(getBufferSize())) > 0) {
 									outputStream.write(getBufferSize(), 0, len);
 									outputStream.flush();
 
-									incrementGroupTransferredByte(len);
-									countingStars += len;
+									getTransferProgress().incrementTransferredByte(len);
 								}
 
-								if (getNotifyDelay() == -1 || (System.currentTimeMillis() - lastNotified) > getNotifyDelay()) {
-									int currentPercentage = calculatePercentage(getFileSize(), countingStars);
-									int groupPercentage = getGroupTotalByte() > 0 ? calculatePercentage(getGroupTotalByte(), getGroupTransferredByte()) : -1;
-
-									setTimeElapsed(System.currentTimeMillis() - getStartTime());
-									setTimePassed(getGroupTotalByte() > 0
-											? (getTimeElapsed() * getGroupTotalByte() / getGroupTransferredByte())
-											: (getTimeElapsed() * getFileSize() / countingStars));
-									setTimeRemaining(getTimePassed() - getTimeElapsed());
-
-									onNotify(this, currentPercentage, groupPercentage, (int) getTimeRemaining());
-
-									lastNotified = System.currentTimeMillis();
-								}
+								getTransferProgress().doNotify(Send.this, this);
 
 								if (isInterrupted())
 									break;
@@ -570,7 +453,7 @@ abstract public class CoolTransfer<T>
 							setFlag(Flag.CANCEL_ALL);
 							onInterrupted(this);
 						} else {
-							incrementGroupTransferredFileCount();
+							getTransferProgress().incrementTransferredFileCount();
 							onTransferCompleted(this);
 						}
 					}
@@ -609,8 +492,128 @@ abstract public class CoolTransfer<T>
 		}
 	}
 
-	public static int calculatePercentage(long max, long current)
+	public static class TransferProgress<T>
 	{
-		return (int) (((float) 100 / max) * current);
+		private long mStartTime = System.currentTimeMillis();
+		private long mTransferredByte;
+		private long mTotalByte;
+		private long mTimeElapsed;
+		private long mTimePassed;
+		private long mTimeRemaining;
+		private long mLastNotified;
+		private int mTransferredFileCount;
+
+		public int calculatePercentage(long max, long current)
+		{
+			return (int) (((float) 100 / max) * current);
+		}
+
+		public boolean doNotify(CoolTransfer<T> transfer, TransferHandler<T> handler)
+		{
+			if (transfer.getNotifyDelay() != -1 && (System.currentTimeMillis() - getLastNotified()) < transfer.getNotifyDelay())
+				return false;
+
+			int percentage = calculatePercentage(getTotalByte(), getTransferredByte());
+
+			setTimeElapsed(System.currentTimeMillis() - getStartTime());
+
+			if (getTotalByte() > 0 && getTransferredByte() > 0) {
+				setTimePassed(getTimeElapsed() * getTotalByte() / getTransferredByte());
+				setTimeRemaining(getTimePassed() - getTimeElapsed());
+			}
+
+			transfer.onNotify(handler, percentage);
+
+			mLastNotified = System.currentTimeMillis();
+
+			return true;
+		}
+
+		public long getLastNotified()
+		{
+			return mLastNotified;
+		}
+
+		public long getStartTime()
+		{
+			return mStartTime;
+		}
+
+		public long getTimeElapsed()
+		{
+			return mTimeElapsed;
+		}
+
+		public long getTimePassed()
+		{
+			return mTimePassed;
+		}
+
+		public long getTimeRemaining()
+		{
+			return mTimeRemaining;
+		}
+
+		public long getTotalByte()
+		{
+			return mTotalByte;
+		}
+
+		public int getTransferredFileCount()
+		{
+			return mTransferredFileCount;
+		}
+
+		public long getTransferredByte()
+		{
+			return mTransferredByte;
+		}
+
+		public long incrementTransferredByte(long size)
+		{
+			mTransferredByte += size;
+			return mTransferredByte;
+		}
+
+		public int incrementTransferredFileCount()
+		{
+			mTransferredFileCount++;
+			return mTransferredFileCount;
+		}
+
+		public void setTotalByte(long totalByte)
+		{
+			mTotalByte = totalByte;
+		}
+
+		public void setTransferredByte(long transferredByte)
+		{
+			mTransferredByte = transferredByte;
+		}
+
+		public void setTransferredFileCount(int transferredFileCount)
+		{
+			mTransferredFileCount = transferredFileCount;
+		}
+
+		public void setStartTime(long startTime)
+		{
+			mStartTime = startTime;
+		}
+
+		public void setTimeElapsed(long timeElapsed)
+		{
+			mTimeElapsed = timeElapsed;
+		}
+
+		public void setTimePassed(long timePassed)
+		{
+			mTimePassed = timePassed;
+		}
+
+		public void setTimeRemaining(long timeRemaining)
+		{
+			mTimeRemaining = timeRemaining;
+		}
 	}
 }

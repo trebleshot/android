@@ -165,10 +165,8 @@ public class AccessDatabase extends SQLiteDatabase
 
 		ArrayList<TransactionObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ? AND "
 								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(groupId),
-						TransactionObject.Flag.INTERRUPTED.toString(),
 						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
 
 		for (TransactionObject transactionObject : transactionList) {

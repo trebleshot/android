@@ -302,7 +302,6 @@ public class TransactionActivity
 				}
 			}
 		}
-
 	}
 
 	@Override
@@ -367,7 +366,7 @@ public class TransactionActivity
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();
 
-			contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.RESUME.toString());
+			contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.PENDING.toString());
 
 			mDatabase.update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "

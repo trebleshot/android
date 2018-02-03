@@ -122,7 +122,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 						@Override
 						public void onClick(DialogInterface dialogInterface, int i)
 						{
-							transactionObject.flag = TransactionObject.Flag.RESUME;
+							transactionObject.flag = TransactionObject.Flag.PENDING;
 
 							database.publish(transactionObject);
 

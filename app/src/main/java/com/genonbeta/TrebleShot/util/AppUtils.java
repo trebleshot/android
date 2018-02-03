@@ -26,19 +26,16 @@ public class AppUtils
 
 	public static void applyAdapterName(NetworkDevice.Connection connection)
 	{
-		if (connection.ipAddress == null)
-		{
+		if (connection.ipAddress == null) {
 			Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");
 			return;
 		}
 
 		ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-		for (AddressedInterface addressedInterface : interfaceList)
-		{
+		for (AddressedInterface addressedInterface : interfaceList) {
 			if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
-					.equals(NetworkUtils.getAddressPrefix(connection.ipAddress)))
-			{
+					.equals(NetworkUtils.getAddressPrefix(connection.ipAddress))) {
 				connection.adapterName = addressedInterface.getNetworkInterface().getDisplayName();
 				return;
 			}
@@ -51,23 +48,25 @@ public class AppUtils
 	{
 		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
 			if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
-					return false;
+				return false;
 
 		return true;
 	}
 
 	public static String getHotspotName(Context context)
 	{
-		String apName = AppUtils.getLocalDeviceName(context)
+		return AppConfig.ACCESS_POINT_PREFIX + AppUtils.getLocalDeviceName(context)
 				.replace(" ", "_");
-
-		return AppConfig.ACCESS_POINT_PREFIX + (apName.length() > 10 ? apName.substring(0, 9) : apName);
 	}
 
 	public static String getLocalDeviceName(Context context)
 	{
-		return PreferenceManager.getDefaultSharedPreferences(context)
-				.getString("device_name", Build.BOARD.toUpperCase());
+		String deviceName = PreferenceManager.getDefaultSharedPreferences(context)
+				.getString("device_name", null);
+
+		return deviceName == null || deviceName.length() == 0
+				? Build.MODEL.toUpperCase()
+				: deviceName;
 	}
 
 	public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
