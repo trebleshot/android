@@ -84,7 +84,7 @@ public class NetworkDeviceInfoLoader
 					device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
 
 					if (device.nickname.length() > AppConfig.NICKNAME_MAX_LENGHT)
-						device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT -1);
+						device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT - 1);
 
 					if (device.deviceId != null) {
 						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());

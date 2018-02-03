@@ -1,7 +1,5 @@
 package com.genonbeta.CoolSocket;
 
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

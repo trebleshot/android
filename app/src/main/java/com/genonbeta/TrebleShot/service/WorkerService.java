@@ -119,7 +119,7 @@ public class WorkerService extends Service
 							.setContentTitle(getString(R.string.text_taskOngoing))
 							.setProgress(0, 0, true)
 							.addAction(R.drawable.ic_clear_white_24dp, getString(R.string.butn_cancel),
-							PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
+									PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
 					dynamicNotification.show();
 				}

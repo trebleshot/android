@@ -11,8 +11,6 @@ import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.fragment.PreferencesFragment;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 /**
  * created by: Veli

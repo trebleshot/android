@@ -4,8 +4,6 @@ import android.content.Context;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.genonbeta.TrebleShot.config.AppConfig;
-
 /**
  * Created by: veli
  * Date: 4/28/17 2:22 AM

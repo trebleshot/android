@@ -12,8 +12,6 @@ import android.support.v4.app.NotificationManagerCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 
-import java.nio.channels.Channel;
-
 /**
  * Created by: veli
  * Date: 4/28/17 2:00 AM

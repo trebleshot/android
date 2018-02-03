@@ -136,7 +136,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 							})
 							.show();
 			}
- 		}
+		}
 	}
 
 	@Override
