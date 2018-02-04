@@ -27,4 +27,7 @@
     <plurals name="text_minutesAgo">
 	<item quantity="other">%d 分前</item>
 </plurals>
+<plurals name="text_fileDeletionCompleted">
+	<item quantity="other">%d ファイルを削除しました</item>
+</plurals>
 </resources>
