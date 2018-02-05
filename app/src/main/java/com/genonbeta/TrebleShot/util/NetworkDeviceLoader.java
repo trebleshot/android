@@ -7,12 +7,13 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.database.SQLQuery;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 
-public class NetworkDeviceInfoLoader
+public class NetworkDeviceLoader
 {
 	public static NetworkDevice.Connection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
 	{
@@ -66,25 +67,7 @@ public class NetworkDeviceInfoLoader
 					CoolSocket.ActiveConnection.Response clientResponse = activeConnection.receive();
 
 					JSONObject jsonResponse = new JSONObject(clientResponse.response);
-					JSONObject deviceInfo = jsonResponse.getJSONObject(Keyword.DEVICE_INFO);
-					JSONObject appInfo = jsonResponse.getJSONObject(Keyword.APP_INFO);
-
-					NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
-
-					try {
-						database.reconstruct(device);
-					} catch (Exception e) {
-					}
-
-					device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);
-					device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
-					device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
-					device.lastUsageTime = System.currentTimeMillis();
-					device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
-					device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
-
-					if (device.nickname.length() > AppConfig.NICKNAME_MAX_LENGHT)
-						device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT - 1);
+					NetworkDevice device = loadFrom(database, jsonResponse);
 
 					if (device.deviceId != null) {
 						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
@@ -114,6 +97,31 @@ public class NetworkDeviceInfoLoader
 			CoolSocket.connect(connectionHandler);
 
 		return null;
+	}
+
+	public static NetworkDevice loadFrom(AccessDatabase database, JSONObject object) throws JSONException
+	{
+		JSONObject deviceInfo = object.getJSONObject(Keyword.DEVICE_INFO);
+		JSONObject appInfo = object.getJSONObject(Keyword.APP_INFO);
+
+		NetworkDevice device = new NetworkDevice(deviceInfo.getString(Keyword.DEVICE_INFO_SERIAL));
+
+		try {
+			database.reconstruct(device);
+		} catch (Exception e) {
+		}
+
+		device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);
+		device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
+		device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
+		device.lastUsageTime = System.currentTimeMillis();
+		device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
+		device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
+
+		if (device.nickname.length() > AppConfig.NICKNAME_MAX_LENGHT)
+			device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT - 1);
+
+		return device;
 	}
 
 	public interface OnDeviceRegisteredListener

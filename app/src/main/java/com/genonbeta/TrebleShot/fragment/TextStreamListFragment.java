@@ -41,6 +41,10 @@ public class TextStreamListFragment
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		setDefaultOrderingAscending(false);
+		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
 

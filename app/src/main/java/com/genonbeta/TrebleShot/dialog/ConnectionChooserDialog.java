@@ -74,7 +74,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 			}
 		});
 
-		setTitle(R.string.text_availableNetworks);
+		setTitle(getContext().getString(R.string.text_availableNetworks, networkDevice.nickname));
 		setNegativeButton(R.string.butn_cancel, null);
 
 		if (!refreshProvided)

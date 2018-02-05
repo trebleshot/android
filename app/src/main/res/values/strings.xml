@@ -129,7 +129,7 @@
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
     <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers in this list</string>
-    <string name="text_availableNetworks">Registered connections</string>
+    <string name="text_availableNetworks">Choose network - %s</string>
     <string name="text_noNetworkAvailable">No network available</string>
     <string name="mesg_deviceNotExits">Sender no longer exists in your list of devices</string>
     <string name="text_savedConnections">Saved connections</string>

@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -61,21 +64,19 @@ public class ImageListAdapter
 			int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
 			int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
 			int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
-			int dateTakenIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN);
 			int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
 
 			do {
-				ImageHolder info = new ImageHolder(
+				ImageHolder holder = new ImageHolder(
 						cursor.getInt(idIndex),
 						cursor.getString(displayIndex),
-						cursor.getString(displayIndex),
-						cursor.getLong(dateTakenIndex),
-						cursor.getLong(dateAddedIndex),
+						cursor.getLong(dateAddedIndex) * 1000,
 						cursor.getLong(sizeIndex),
-
 						Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-				list.add(info);
+				holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date));
+
+				list.add(holder);
 			}
 			while (cursor.moveToNext());
 
@@ -158,16 +159,11 @@ public class ImageListAdapter
 		public long id;
 		public String dateTakenString;
 
-		public ImageHolder(int id, String friendlyName, String filename, long dateTaken, long date, long size, Uri uri)
+		public ImageHolder(int id, String filename, long date, long size, Uri uri)
 		{
-			super(friendlyName, filename, date, size, uri);
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss", Locale.getDefault());
-
-			//sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			super(filename, filename, date, size, uri);
 
 			this.id = id;
-			this.dateTakenString = dateFormat.format(new Date(dateTaken));
 		}
 	}
 }

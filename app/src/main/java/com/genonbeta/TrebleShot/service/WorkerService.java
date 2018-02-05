@@ -17,6 +17,8 @@ import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * created by: Veli
@@ -30,6 +32,7 @@ public class WorkerService extends Service
 	public static final String EXTRA_TASK_ID = "extraTaskId";
 
 	private final ArrayList<RunningTask> mTaskList = new ArrayList<>();
+	private ExecutorService mExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private LocalBinder mBinder = new LocalBinder();
 	private NotificationUtils mNotificationUtils;
 
@@ -81,25 +84,23 @@ public class WorkerService extends Service
 
 	public ArrayList<RunningTask> getTaskList()
 	{
-		synchronized (mTaskList) {
-			return mTaskList;
-		}
+		return mTaskList;
 	}
 
 	protected synchronized void registerWork(RunningTask runningTask)
 	{
-		getTaskList().add(runningTask);
+		synchronized (getTaskList()) {
+			getTaskList().add(runningTask);
+		}
 	}
 
 	public void run(final RunningTask runningTask)
 	{
-		new Thread()
+		mExecutor.submit(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				super.run();
-
 				NotifiableRunningTask notifiableRunningWork = runningTask instanceof NotifiableRunningTask
 						? (NotifiableRunningTask) runningTask
 						: null;
@@ -136,12 +137,14 @@ public class WorkerService extends Service
 					dynamicNotification.show();
 				}
 			}
-		}.start();
+		});
 	}
 
 	protected synchronized void unregisterWork(RunningTask runningTask)
 	{
-		getTaskList().remove(runningTask);
+		synchronized (getTaskList()) {
+			getTaskList().remove(runningTask);
+		}
 	}
 
 	public static boolean run(final Context context, final RunningTask runningTask)

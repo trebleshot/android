@@ -12,13 +12,18 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 abstract public class CoolTransfer<T>
 {
 	public final static int DELAY_DISABLED = -1;
 
 	private final ArrayList<TransferHandler<T>> mProcess = new ArrayList<>();
+	private ExecutorService mExecutor;
 	private int mNotifyDelay = CoolTransfer.DELAY_DISABLED;
+	private Object mBlockingObject = new Object();
 
 	public abstract Flag onError(TransferHandler<T> handler, Exception error);
 
@@ -46,20 +51,43 @@ abstract public class CoolTransfer<T>
 
 	protected void addProcess(TransferHandler<T> processHandler)
 	{
-		getProcessList().add(processHandler);
-		onProcessListChanged(getProcessList(), processHandler, true);
+		synchronized (getProcessList()) {
+			getProcessList().add(processHandler);
+			onProcessListChanged(getProcessList(), processHandler, true);
+		}
 	}
 
-	public ArrayList<TransferHandler<T>> getProcessList()
+	public Object getBlockingObject()
 	{
-		synchronized (mProcess) {
-			return mProcess;
-		}
+		return mBlockingObject;
+	}
+
+	public ExecutorService getExecutor()
+	{
+		if (mExecutor == null)
+			mExecutor = Executors.newFixedThreadPool(10);
+
+		return mExecutor;
 	}
 
 	public int getNotifyDelay()
 	{
 		return mNotifyDelay;
+	}
+
+	public ArrayList<TransferHandler<T>> getProcessList()
+	{
+		return mProcess;
+	}
+
+	public void setBlockingObject(Object blockingObject)
+	{
+		mBlockingObject = blockingObject;
+	}
+
+	public void setExecutor(ExecutorService executor)
+	{
+		mExecutor = executor;
 	}
 
 	public void setNotifyDelay(int delay)
@@ -69,8 +97,10 @@ abstract public class CoolTransfer<T>
 
 	protected void removeProcess(TransferHandler<T> processHandler)
 	{
-		getProcessList().remove(processHandler);
-		onProcessListChanged(getProcessList(), processHandler, false);
+		synchronized (getProcessList()) {
+			getProcessList().remove(processHandler);
+			onProcessListChanged(getProcessList(), processHandler, false);
+		}
 	}
 
 	public enum Flag
@@ -225,10 +255,8 @@ abstract public class CoolTransfer<T>
 
 			if (currentThread)
 				handler.run();
-			else {
-				Thread thread = new Thread(handler);
-				thread.start();
-			}
+			else
+				getExecutor().submit(handler);
 
 			return handler;
 		}
@@ -282,13 +310,15 @@ abstract public class CoolTransfer<T>
 								long lastRead = System.currentTimeMillis();
 
 								while (len != -1) {
-									if ((len = inputStream.read(getBufferSize())) > 0) {
-										outputStream.write(getBufferSize(), 0, len);
-										outputStream.flush();
+									synchronized (getBlockingObject()) {
+										if ((len = inputStream.read(getBufferSize())) > 0) {
+											outputStream.write(getBufferSize(), 0, len);
+											outputStream.flush();
 
-										lastRead = System.currentTimeMillis();
+											lastRead = System.currentTimeMillis();
 
-										getTransferProgress().incrementTransferredByte(len);
+											getTransferProgress().incrementTransferredByte(len);
+										}
 									}
 
 									getTransferProgress().doNotify(Receive.this, this);
@@ -378,7 +408,7 @@ abstract public class CoolTransfer<T>
 			if (currentThread)
 				handler.run();
 			else
-				new Thread(handler).start();
+				getExecutor().submit(handler);
 
 			return handler;
 		}
@@ -428,11 +458,13 @@ abstract public class CoolTransfer<T>
 							getTransferProgress().incrementTransferredByte(getSkippedBytes());
 
 							while (len != -1) {
-								if ((len = getInputStream().read(getBufferSize())) > 0) {
-									outputStream.write(getBufferSize(), 0, len);
-									outputStream.flush();
+								synchronized (getBlockingObject()) {
+									if ((len = getInputStream().read(getBufferSize())) > 0) {
+										outputStream.write(getBufferSize(), 0, len);
+										outputStream.flush();
 
-									getTransferProgress().incrementTransferredByte(len);
+										getTransferProgress().incrementTransferredByte(len);
+									}
 								}
 
 								getTransferProgress().doNotify(Send.this, this);

@@ -1,25 +1,20 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
-import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -50,36 +45,29 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 	@Override
 	public ArrayList<PreloadedGroup> onLoad()
 	{
-		ArrayList<PreloadedGroup> list = mDatabase.castQuery(getSelect()
-				.setLoadListener(new SQLQuery.Select.LoadListener()
-				{
-					@Override
-					public void onOpen(SQLiteDatabase db, Cursor cursor)
-					{
-
-					}
-
-					@Override
-					public void onLoad(SQLiteDatabase db, Cursor cursor, CursorItem item)
-					{
-						int groupId = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-						String deviceId = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID);
-
-						NetworkDevice device = new NetworkDevice(deviceId);
-
-						try {
-							mDatabase.reconstruct(device);
-							item.put(FIELD_DEVICENAME, device.nickname);
-						} catch (Exception e) {
-							item.put(FIELD_DEVICENAME, "-");
-						}
-
-						item.put(FIELD_TRANSACTIONCOUNT, db.getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER, AccessDatabase.FIELD_TRANSFER_TYPE)
-								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId))).size());
-					}
-				}), PreloadedGroup.class);
+		ArrayList<PreloadedGroup> list = mDatabase.castQuery(getSelect(), PreloadedGroup.class);
 
 		Collections.sort(list, getDefaultComparator());
+
+		for (PreloadedGroup group : list) {
+			try {
+				NetworkDevice device = new NetworkDevice(group.deviceId);
+
+				mDatabase.reconstruct(device);
+
+				group.deviceName = device.nickname;
+			} catch (Exception e) {
+				group.deviceName = "-";
+			}
+
+			mDatabase.calculateTransactionSize(group.groupId, group.index);
+
+			group.totalCount = group.index.incomingCount + group.index.outgoingCount;
+			group.totalBytes = group.index.incoming + group.index.outgoing;
+
+			group.totalFiles = getContext().getResources().getQuantityString(R.plurals.text_files, group.totalCount, group.totalCount);
+			group.totalSize = FileUtils.sizeExpression(group.totalBytes, false);
+		}
 
 		return list;
 	}
@@ -134,9 +122,6 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		TextView text2 = convertView.findViewById(R.id.text2);
 		TextView text3 = convertView.findViewById(R.id.text3);
 
-		String firstLetters = TextUtils.getFirstLetters(group.deviceName, 1);
-		TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(mContext, R.color.networkDeviceRipple), 100);
-
 		if (getSelectionConnection() != null) {
 			selector.setSelected(getSelectionConnection().isSelected(group));
 
@@ -151,10 +136,19 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 			});
 		}
 
+		if ((group.index.outgoingCount == 0 && group.index.incomingCount == 0)
+				|| (group.index.outgoingCount > 0 && group.index.incomingCount > 0))
+			image.setImageResource(group.index.outgoingCount > 0
+					? R.drawable.ic_compare_arrows_white_24dp
+					: R.drawable.ic_error_white_24dp);
+		else
+			image.setImageResource(group.index.outgoingCount > 0
+					? R.drawable.ic_file_upload_black_24dp
+					: R.drawable.ic_file_download_black_24dp);
+
 		text1.setText(group.deviceName);
-		text2.setText(getContext().getResources().getQuantityString(R.plurals.text_files, group.transactionCount, group.transactionCount));
-		text3.setText(TimeUtils.getTimeAgo(getContext(), group.dateCreated));
-		image.setImageDrawable(drawable);
+		text2.setText(group.totalFiles);
+		text3.setText(group.totalSize);
 
 		return convertView;
 	}
@@ -171,17 +165,13 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 			extends TransactionObject.Group
 			implements Editable
 	{
-		public int transactionCount;
+		public Index index = new Index();
 		public String deviceName;
+		public String totalFiles;
+		public String totalSize;
 
-		@Override
-		public void reconstruct(CursorItem item)
-		{
-			super.reconstruct(item);
-
-			transactionCount = item.getInt(FIELD_TRANSACTIONCOUNT);
-			deviceName = item.getString(FIELD_DEVICENAME);
-		}
+		public int totalCount;
+		public long totalBytes;
 
 		@Override
 		public String getComparableName()
@@ -198,7 +188,7 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		@Override
 		public long getComparableSize()
 		{
-			return transactionCount;
+			return totalCount;
 		}
 	}
 }

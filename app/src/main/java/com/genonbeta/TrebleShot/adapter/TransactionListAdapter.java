@@ -44,13 +44,14 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	public ArrayList<TransactionObject> onLoad()
 	{
 		ArrayList<TransactionObject> mergedList = new ArrayList<>();
+		String currentPath = getPath();
 
 		for (TransactionObject transactionObject : mDatabase.castQuery(getSelect()
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?",
 						String.valueOf(getGroupId()),
-						getPath() != null ? getPath() + File.separator + "%" : "%")
+						currentPath != null ? currentPath + File.separator + "%" : "%")
 				.setGroupBy(AccessDatabase.FIELD_TRANSFER_DIRECTORY), TransactionObject.class)) {
-			String cleanedName = getPath() != null ? transactionObject.directory.substring(getPath().length() + File.separator.length()) : transactionObject.directory;
+			String cleanedName = currentPath != null ? transactionObject.directory.substring(currentPath.length() + File.separator.length()) : transactionObject.directory;
 			int obtainSlash = cleanedName.indexOf(File.separator);
 
 			if (obtainSlash != -1)
@@ -59,7 +60,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 			TransactionFolder transactionFolder = new TransactionFolder();
 
 			transactionFolder.friendlyName = cleanedName;
-			transactionFolder.directory = getPath() != null ? getPath() + File.separator + cleanedName : cleanedName;
+			transactionFolder.directory = currentPath != null ? currentPath + File.separator + cleanedName : cleanedName;
 
 			boolean addThis = true;
 
@@ -79,10 +80,10 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 				mergedList.add(transactionFolder);
 		}
 
-		ArrayList<TransactionObject> mainItems = mDatabase.castQuery((getPath() == null
+		ArrayList<TransactionObject> mainItems = mDatabase.castQuery((currentPath == null
 				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
 				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
-				String.valueOf(getGroupId()), getPath())
+				String.valueOf(getGroupId()), currentPath)
 		).setGroupBy(null), TransactionObject.class);
 
 		Collections.sort(mainItems, getDefaultComparator());
@@ -203,10 +204,10 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 
 	public void setPath(String path)
 	{
-		this.mPath = path;
+		mPath = path;
 
 		if (mListener != null)
-			mListener.onPathChange(getPath());
+			mListener.onPathChange(path);
 	}
 
 	public void setPathChangedListener(PathChangedListener listener)

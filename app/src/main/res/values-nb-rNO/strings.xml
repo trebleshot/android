@@ -131,7 +131,7 @@
     <string name="text_removePendingTransferSummary">Dette vil fjerne %s fra køen</string>
     <string name="ques_removeAll">Fjern alle?</string>
     <string name="text_removeCertainPendingTransfersSummary">Dette vil fjerne alle ventende overføringer i denne listen</string>
-    <string name="text_availableNetworks">Registrerte tilkoblinger</string>
+    <string name="text_availableNetworks">Registrerte tilkoblinger - %s</string>
     <string name="text_noNetworkAvailable">Inget nettverk tilgjengelig</string>
     <string name="mesg_deviceNotExits">Senderen finnes ikke lenger i din enhetsliste</string>
     <string name="text_savedConnections">Lagrede tilkoblinger</string>

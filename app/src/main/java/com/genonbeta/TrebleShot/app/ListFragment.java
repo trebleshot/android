@@ -20,15 +20,65 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 {
 	public static final String TAG = "Fragment";
 
-	public final static int TASK_ID_LOAD = 0;
+	public static final int TASK_ID_REFRESH = 0;
 
 	private E mAdapter;
+	private LoaderCallbackRefresh mLoaderCallbackRefresh = new LoaderCallbackRefresh();
 
-	LoaderManager.LoaderCallbacks<ArrayList<T>> mLoaderCallbackLoad = new LoaderManager.LoaderCallbacks<ArrayList<T>>()
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
+		super.onCreate(savedInstanceState);
+		mAdapter = onAdapter();
+	}
+
+	@Override
+	public void onActivityCreated(@Nullable Bundle savedInstanceState)
+	{
+		super.onActivityCreated(savedInstanceState);
+
+		setListAdapter(mAdapter);
+		getLoaderManager().initLoader(TASK_ID_REFRESH, null, mLoaderCallbackRefresh);
+		setEmptyText(getString(R.string.text_listEmpty));
+	}
+
+	public abstract E onAdapter();
+
+	protected void onListRefreshed()
+	{
+	}
+
+	protected Snackbar createSnackbar(int resId, Object... objects)
+	{
+		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+	}
+
+	public E getAdapter()
+	{
+		return mAdapter;
+	}
+
+	public LoaderCallbackRefresh getLoaderCallbackRefresh()
+	{
+		return mLoaderCallbackRefresh;
+	}
+
+	public void refreshList()
+	{
+		getLoaderCallbackRefresh().requestRefresh();
+	}
+
+	private class LoaderCallbackRefresh implements LoaderManager.LoaderCallbacks<ArrayList<T>>
+	{
+		private boolean mRunning = false;
+		private boolean mReloadRequested = false;
+
 		@Override
 		public Loader<ArrayList<T>> onCreateLoader(int id, Bundle args)
 		{
+			mReloadRequested = false;
+			mRunning = true;
+
 			if (mAdapter.getCount() == 0)
 				setListShown(false);
 
@@ -46,6 +96,11 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 
 				onListRefreshed();
 			}
+
+			if (isReloadRequested())
+				refresh();
+
+			mRunning = false;
 		}
 
 		@Override
@@ -53,44 +108,33 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends android.
 		{
 
 		}
-	};
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		mAdapter = onAdapter();
-	}
+		public boolean isRunning()
+		{
+			return mRunning;
+		}
 
-	@Override
-	public void onActivityCreated(@Nullable Bundle savedInstanceState)
-	{
-		super.onActivityCreated(savedInstanceState);
+		public boolean isReloadRequested()
+		{
+			return mReloadRequested;
+		}
 
-		setListAdapter(mAdapter);
-		getLoaderManager().initLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
-		setEmptyText(getString(R.string.text_listEmpty));
-	}
+		public void refresh()
+		{
+			getLoaderManager().restartLoader(TASK_ID_REFRESH, null, mLoaderCallbackRefresh);
+		}
 
-	public abstract E onAdapter();
+		public boolean requestRefresh()
+		{
+			if (isRunning() && isReloadRequested())
+				return false;
 
-	protected Snackbar createSnackbar(int resId, Object... objects)
-	{
-		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
+			if (!isRunning())
+				refresh();
+			else
+				mReloadRequested = true;
 
-	public E getAdapter()
-	{
-		return mAdapter;
-	}
-
-	public void refreshList()
-	{
-		if (!getLoaderManager().hasRunningLoaders())
-			getLoaderManager().restartLoader(TASK_ID_LOAD, null, mLoaderCallbackLoad);
-	}
-
-	protected void onListRefreshed()
-	{
+			return true;
+		}
 	}
 }

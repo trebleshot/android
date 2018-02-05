@@ -72,7 +72,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentDeviceList;
 	private Fragment mFragmentFileExplorer;
 	private Fragment mFragmentTransactions;
-	private Fragment mFragmentShareApplication;
+	private Fragment mFragmentShareApp;
 	private Fragment mFragmentShareMusic;
 	private Fragment mFragmentShareVideo;
 	private Fragment mFragmentShareImage;
@@ -114,10 +114,10 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
 		mFragmentFileExplorer = Fragment.instantiate(this, FileExplorerFragment.class.getName());
 		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
-		mFragmentShareApplication = Fragment.instantiate(this, ApplicationListFragment.class.getName());
+		mFragmentShareApp = Fragment.instantiate(this, ApplicationListFragment.class.getName());
+		mFragmentShareImage = Fragment.instantiate(this, ImageListFragment.class.getName());
 		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
 		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
-		mFragmentShareImage = Fragment.instantiate(this, ImageListFragment.class.getName());
 		mFragmentShareText = Fragment.instantiate(this, TextStreamListFragment.class.getName());
 
 		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
@@ -213,7 +213,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId()) {
 			changeFragment(mFragmentTransactions);
 		} else if (R.id.menu_activity_main_share_app == item.getItemId()) {
-			changeFragment(mFragmentShareApplication);
+			changeFragment(mFragmentShareApp);
 		} else if (R.id.menu_activity_main_share_music == item.getItemId()) {
 			changeFragment(mFragmentShareMusic);
 		} else if (R.id.menu_activity_main_share_video == item.getItemId()) {

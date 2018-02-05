@@ -10,7 +10,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 
@@ -77,7 +77,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 		NetworkDevice.Connection connection = new NetworkDevice.Connection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
 		mDatabase.publish(connection);
 
-		NetworkDeviceInfoLoader.load(mDatabase, address.getHostAddress(), null);
+		NetworkDeviceLoader.load(mDatabase, address.getHostAddress(), null);
 	}
 
 	@Override

@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 
 import org.json.JSONArray;
@@ -167,7 +167,7 @@ public class ShareActivity extends Activity
 
 							if (mRemoteAddress != null) {
 								try {
-									NetworkDeviceInfoLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceInfoLoader.OnDeviceRegisteredErrorListener()
+									NetworkDeviceLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
 									{
 										@Override
 										public void onError(Exception error)

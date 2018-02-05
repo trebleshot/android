@@ -16,6 +16,8 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 abstract public class CoolSocket
@@ -27,13 +29,14 @@ abstract public class CoolSocket
 	public static final String HEADER_SEPARATOR = "\nHEADER_END\n";
 	public static final String HEADER_ITEM_LENGTH = "length";
 
+	private final ArrayList<CoolSocket.ActiveConnection> mConnections = new ArrayList<>();
+	private ExecutorService mExecutor;
 	private Thread mServerThread;
 	private ServerSocket mServerSocket;
 	private SocketAddress mSocketAddress = null;
 	private int mSocketTimeout = NO_TIMEOUT; // no timeout
-	private int mMaxConnections = 0; // no limit
+	private int mMaxConnections = 10;
 	private ServerRunnable mSocketRunnable = new ServerRunnable();
-	private ArrayList<CoolSocket.ActiveConnection> mConnections = new ArrayList<>();
 
 	public CoolSocket()
 	{
@@ -91,6 +94,14 @@ abstract public class CoolSocket
 		return this.mConnections;
 	}
 
+	public ExecutorService getExecutor()
+	{
+		if (mExecutor == null)
+			mExecutor = Executors.newFixedThreadPool(mMaxConnections);
+
+		return mExecutor;
+	}
+
 	public int getLocalPort()
 	{
 		return this.getServerSocket().getLocalPort();
@@ -142,9 +153,11 @@ abstract public class CoolSocket
 		if (this.getConnections().size() <= this.mMaxConnections || this.mMaxConnections == 0) {
 			final ActiveConnection connectionHandler = new ActiveConnection(socket);
 
-			CoolSocket.this.getConnections().add(connectionHandler);
+			synchronized (getConnections()) {
+				getConnections().add(connectionHandler);
+			}
 
-			new Thread()
+			getExecutor().submit(new Runnable()
 			{
 				@Override
 				public void run()
@@ -169,14 +182,21 @@ abstract public class CoolSocket
 					} catch (IOException e) {
 						e.printStackTrace();
 					} finally {
-						CoolSocket.this.getConnections().remove(connectionHandler);
+						synchronized (getConnections()) {
+							getConnections().remove(connectionHandler);
+						}
 					}
 				}
-			}.start();
+			});
 		} else
 			return false;
 
 		return true;
+	}
+
+	public void setExecutor(ExecutorService executor)
+	{
+		mExecutor = executor;
 	}
 
 	public void setMaxConnections(int value)

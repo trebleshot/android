@@ -98,7 +98,7 @@ public class NsdDiscovery
 								Log.v(TAG, "Resolved with success " + serviceInfo.getServiceName()
 										+ " with IP address of " + serviceInfo.getHost().getHostAddress());
 
-								NetworkDeviceInfoLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(), null);
+								NetworkDeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(), null);
 							}
 						});
 					}

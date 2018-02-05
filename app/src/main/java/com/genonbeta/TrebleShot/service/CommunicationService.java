@@ -36,7 +36,7 @@ import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
@@ -91,6 +91,7 @@ public class CommunicationService extends Service
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
+	private Object mBlockingObject = new Object();
 
 	private Receive mReceive = new Receive();
 	private Send mSend = new Send();
@@ -117,7 +118,10 @@ public class CommunicationService extends Service
 				.createWifiLock(TAG);
 
 		mReceive.setNotifyDelay(2000);
+		mReceive.setBlockingObject(mBlockingObject);
+
 		mSend.setNotifyDelay(2000);
+		mSend.setBlockingObject(mBlockingObject);
 
 		mMediaScanner.connect();
 		mNsdDiscovery.registerService();
@@ -437,23 +441,21 @@ public class CommunicationService extends Service
 					} catch (Exception e1) {
 						e1.printStackTrace();
 
-						device = NetworkDeviceInfoLoader.load(true, mDatabase, activeConnection.getClientAddress(), null);
+						device = NetworkDeviceLoader.load(true, mDatabase, activeConnection.getClientAddress(), null);
 
 						if (device == null)
 							throw new Exception("Could not reach to the opposite server");
 
-						if (getHotspotUtils().getPreviousConfig() == null) {
-							device.isRestricted = true;
-							getNotificationHelper().notifyConnectionRequest(device);
+						device.isRestricted = true;
 
-							shouldContinue = false;
+						mDatabase.publish(device);
 
-							mDatabase.publish(device);
-						} else
-							shouldContinue = true;
+						shouldContinue = true;
+
+						getNotificationHelper().notifyConnectionRequest(device);
 					}
 
-					final NetworkDevice.Connection connection = NetworkDeviceInfoLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
+					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
 
 					if (!shouldContinue)
 						replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
@@ -481,7 +483,9 @@ public class CommunicationService extends Service
 
 											mDatabase.publish(group);
 
-											getOngoingIndexList().put(group.groupId, interrupter);
+											synchronized (getOngoingIndexList()) {
+												getOngoingIndexList().put(group.groupId, interrupter);
+											}
 
 											DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group);
 
@@ -528,7 +532,10 @@ public class CommunicationService extends Service
 											}
 
 											notification.cancel();
-											getOngoingIndexList().remove(group.groupId);
+
+											synchronized (getOngoingIndexList()) {
+												getOngoingIndexList().remove(group.groupId);
+											}
 
 											if (interrupter.interrupted())
 												mDatabase.remove(group);

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -174,7 +175,6 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		ImageView image = convertView.findViewById(R.id.image);
 		TextView text1 = convertView.findViewById(R.id.text);
 		TextView text2 = convertView.findViewById(R.id.text2);
-		TextView text3 = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
 			selector.setSelected(getSelectionConnection().isSelected(holder));
@@ -193,7 +193,6 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 		image.setImageResource(holder.isFolder ? R.drawable.ic_folder_white_24dp : R.drawable.ic_whatshot_white_24dp);
 		text1.setText(holder.friendlyName);
 		text2.setText(holder.fileInfo);
-		text3.setText(TimeUtils.getTimeAgo(getContext(), holder.file.lastModified()));
 
 		return convertView;
 	}

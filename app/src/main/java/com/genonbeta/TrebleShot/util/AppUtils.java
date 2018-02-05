@@ -7,7 +7,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.text.format.DateFormat;
+import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
@@ -16,7 +19,9 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class AppUtils
 {
@@ -53,6 +58,12 @@ public class AppUtils
 		return true;
 	}
 
+	public static CharSequence formatDateTime(Context context, long millis)
+	{
+		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME|DateUtils.FORMAT_SHOW_DATE);
+	}
+
+	@NonNull
 	public static String getHotspotName(Context context)
 	{
 		return AppConfig.ACCESS_POINT_PREFIX + AppUtils.getLocalDeviceName(context)

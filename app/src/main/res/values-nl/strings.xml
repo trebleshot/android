@@ -132,7 +132,7 @@
     <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
     <string name="ques_removeAll">Alles verwijderen?</string>
     <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten in de wachtrij op deze lijst</string>
-    <string name="text_availableNetworks">Geregistreerde netwerken</string>
+    <string name="text_availableNetworks">Geregistreerde netwerken - %s</string>
     <string name="text_noNetworkAvailable">Geen netwerk beschikbaar</string>
     <string name="mesg_deviceNotExits">De verstuurder bestaat niet meer in uw apparaatlijst</string>
     <string name="text_savedConnections">Opgeslagen verbindingen</string>

@@ -4,7 +4,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
-import com.genonbeta.TrebleShot.util.NetworkDeviceInfoLoader;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 /**
  * created by: Veli
@@ -34,7 +34,7 @@ public class TransferInstance
 	{
 		initialize(database, groupId);
 
-		mConnection = NetworkDeviceInfoLoader.processConnection(database, mDevice, currentConnection);
+		mConnection = NetworkDeviceLoader.processConnection(database, mDevice, currentConnection);
 
 		if (!mConnection.adapterName.equals(mGroup.connectionAdapter)) {
 			mGroup.connectionAdapter = mConnection.adapterName;
