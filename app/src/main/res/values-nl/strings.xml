@@ -25,7 +25,7 @@
     <string name="butn_cancelReceiving">Ontvangen annuleren</string>
     <string name="text_fileReceived">Het bestand is ontvangen</string>
     <string name="butn_scan">Scannen</string>
-    <string name="text_listEmpty">De lijst is leeg</string>
+    <string name="text_listEmpty">Er valt niks te weergeven!</string>
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Dit schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
@@ -62,7 +62,7 @@
     <string name="butn_pendingTransfers">Wachtrij</string>
     <string name="butn_shareWithTrebleshot">Delen met TrebleShot</string>
     <string name="mesg_somethingWentWrong">Er is iets misgegaan</string>
-    <string name="text_findDevicesHint">Druk op het zoekpictogram om nabije apparaten te vinden</string>
+    <string name="text_findDevicesHint">Nog geen bekende apparaten!</string>
     <string name="text_autoScanDevices">Automatisch zoeken naar apparaten</string>
     <string name="text_autoScanDevicesSummary">Zoekt, wanneer nodig, naar apparaten</string>
     <string name="mesg_stillScanning">Nog steeds bezig met scannen</string>
@@ -124,7 +124,7 @@
     <string name="butn_killNow">Nu vernietigen</string>
     <string name="mesg_groupOngoingNotice">Bezig met wachten totdat %s is afgerond alvorens het bestand over te dragen</string>
     <string name="butn_proceed">Doorgaan</string>
-    <string name="ques_removeQueue">Overdrachtwachtrij legen?</string>
+    <string name="ques_removeQueue">Overdracht verwijderen?</string>
     <string name="butn_remove">Verwijderen</string>
     <string name="butn_removeAll">Alles verwijderen</string>
     <string name="ques_removeDevice">Dit apparaat verwijderen?</string>
@@ -310,4 +310,24 @@
     <string name="text_networkServiceDiscoverySummary">Network Service Discovery verbetert de herkenbaarheid</string>
 <string name="text_notificationChannelHigh">Belangrijke meldingen</string>
     <string name="text_notificationChannelLow">Meldingen met lage prioriteit</string>
+<string name="text_receivedTransfer">%s ontvangen in %s</string>
+    <string name="text_yearCountShort">%d jaar</string>
+    <string name="text_monthCountShort">%d maand</string>
+    <string name="text_dayCountShort">%d dag</string>
+    <string name="text_hourCountShort">%d uur</string>
+    <string name="text_minuteCountShort">%d minuten</string>
+    <string name="text_secondCountShort">%d seconden</string>
+    <string name="butn_exit">Afsluiten</string>
+    <string name="butn_queueCounted">Wachtrij (%d)</string>
+    <string name="text_previewThenProceedNotice">Controleer uw selecties door te drukken op de \"Wachtrij\"-knop en ga daarna door.</string>
+    <string name="mesg_updateDownloadComplete">Raak aan om de update te installeren</string>
+    <string name="text_listEmptyFiles">Er zijn hier geen bestanden!</string>
+    <string name="text_listEmptyImage">Misschien wat pittoreske foto\'s?</string>
+    <string name="text_listEmptyApp">Er zijn hier geen apps!</string>
+    <string name="text_listEmptyVideo">Er zijn hier geen video\'s!</string>
+    <string name="text_listEmptyPendingTransfer">Overdrachten in de wachtrij zullen hier verschijnen!</string>
+    <string name="text_listEmptyTextStream">Schrijf eerst iets!</string>
+    <string name="text_listEmptyMusic">Er zijn hier geen nummers!</string>
+    <string name="text_internalStorage">Interne opslag</string>
+    <string name="text_restrictedAccessStorage">%s (beperkte toegang)</string>
 </resources>
