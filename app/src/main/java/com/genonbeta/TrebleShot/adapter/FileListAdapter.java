@@ -51,7 +51,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.FileHo
 					if (file.isDirectory() && mShowDirectories)
 						folders.add(new FileHolder(file.getName(), mContext.getString(R.string.text_folder), file, true, R.drawable.ic_folder_white_24dp));
 					else if (file.isFile() && mShowFiles)
-						files.add(new FileHolder(file.getName(), FileUtils.sizeExpression(file.length(), false), file, false, R.drawable.ic_insert_drive_file_black_36dp));
+						files.add(new FileHolder(file.getName(), FileUtils.sizeExpression(file.length(), false), file, false, R.drawable.ic_insert_drive_file_white_24dp));
 				}
 
 				Collections.sort(folders, getDefaultComparator());
