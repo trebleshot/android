@@ -308,4 +308,6 @@
     <string name="text_deletingFilesOngoing">Bezig met verwijderen van geselecteerde bestanden</string>
     <string name="text_networkServiceDiscovery">NSD inschakelen</string>
     <string name="text_networkServiceDiscoverySummary">Network Service Discovery verbetert de herkenbaarheid</string>
+<string name="text_notificationChannelHigh">Belangrijke meldingen</string>
+    <string name="text_notificationChannelLow">Meldingen met lage prioriteit</string>
 </resources>
