@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,11 +18,8 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
-import java.util.Locale;
 
 /**
  * created by: Veli
@@ -37,7 +32,6 @@ public class ImageListAdapter
 {
 	private ContentResolver mResolver;
 	private Bitmap mDefaultImageBitmap;
-	private ArrayList<ImageHolder> mList = new ArrayList<>();
 
 	public ImageListAdapter(Context context)
 	{
@@ -89,22 +83,15 @@ public class ImageListAdapter
 	}
 
 	@Override
-	public void onUpdate(ArrayList<ImageHolder> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
-	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return mList.get(position);
+		return getItemList().get(position);
 	}
 
 	@Override
@@ -115,7 +102,7 @@ public class ImageListAdapter
 
 	public ArrayList<ImageHolder> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	@Override

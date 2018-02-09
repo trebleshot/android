@@ -20,14 +20,14 @@ import java.util.ArrayList;
  * date: 5.01.2018 10:38
  */
 
-public class SelectedEditorDialog<T extends Selectable> extends AlertDialog.Builder
+public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Builder
 {
 	private ArrayList<T> mList;
 	private LayoutInflater mLayoutInflater;
 	private SelfAdapter mAdapter;
 	private ListView mListView;
 
-	public SelectedEditorDialog(Context context, ArrayList<T> list)
+	public SelectionEditorDialog(Context context, ArrayList<T> list)
 	{
 		super(context);
 

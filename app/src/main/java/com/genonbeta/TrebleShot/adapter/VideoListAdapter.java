@@ -32,7 +32,6 @@ public class VideoListAdapter
 {
 	private ContentResolver mResolver;
 	private Bitmap mDefaultImageBitmap;
-	private ArrayList<VideoHolder> mList = new ArrayList<>();
 
 	public VideoListAdapter(Context context)
 	{
@@ -85,22 +84,15 @@ public class VideoListAdapter
 	}
 
 	@Override
-	public void onUpdate(ArrayList<VideoHolder> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
-	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return mList.get(position);
+		return getItemList().get(position);
 	}
 
 	@Override
@@ -111,7 +103,7 @@ public class VideoListAdapter
 
 	public ArrayList<VideoHolder> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	@Override

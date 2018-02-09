@@ -32,16 +32,17 @@ public class SweetImageLoader<Object, ImageType> extends AsyncTask<Object, Void,
 	@Override
 	protected void onPostExecute(ImageType image)
 	{
-		if (isCancelled())
-			image = null;
-
 		ImageView imageView = getImageViewReference().get();
+
+		if (isCancelled() || imageView == null)
+			return;
+
 		Holder holder = (Holder) imageView.getTag();
 
 		if (getObject().equals(holder.getObject())) {
 			imageView.setAnimation(AnimationUtils.loadAnimation(getContext(), android.R.anim.fade_in));
 
-			if (image != null) {
+			if (!isCancelled() && image != null) {
 				if (image instanceof Bitmap)
 					imageView.setImageBitmap((Bitmap) image);
 				else if (image instanceof Drawable)

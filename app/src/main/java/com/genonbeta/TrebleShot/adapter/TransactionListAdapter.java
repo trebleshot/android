@@ -26,7 +26,6 @@ import java.util.Collections;
 public class TransactionListAdapter extends EditableListAdapter<TransactionObject>
 {
 	private AccessDatabase mDatabase;
-	private ArrayList<TransactionObject> mList = new ArrayList<>();
 	private SQLQuery.Select mSelect;
 
 	private String mPath;
@@ -93,13 +92,6 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 		return mergedList;
 	}
 
-	@Override
-	public void onUpdate(ArrayList<TransactionObject> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
 	private void initialize(Context context)
 	{
 		mDatabase = new AccessDatabase(context);
@@ -108,7 +100,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	public int getGroupId()
@@ -119,7 +111,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	@Override
 	public Object getItem(int i)
 	{
-		return mList.get(i);
+		return getItemList().get(i);
 	}
 
 	@Override
@@ -130,7 +122,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 
 	public ArrayList<TransactionObject> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	public SQLQuery.Select getSelect()

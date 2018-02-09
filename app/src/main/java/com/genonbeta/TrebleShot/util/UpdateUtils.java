@@ -1,10 +1,8 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
@@ -58,49 +56,76 @@ public class UpdateUtils
 		socket.close();
 	}
 
-	public static void receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter) throws IOException, PackageManager.NameNotFoundException
+	public static File receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
 	{
-		File defaultDirectory = FileUtils.getApplicationDirectory(context);
-		File filePath = new File(defaultDirectory.getAbsolutePath() + File.separator + device.versionName + "_" + System.currentTimeMillis() + ".apk");
+		ServerSocket serverSocket = null;
+		Socket socket = null;
+		File filePath;
 
-		ServerSocket serverSocket = new ServerSocket(AppConfig.COMPATIBLE_UPDATE_CHANNEL_PORT);
+		try {
+			serverSocket = new ServerSocket(AppConfig.COMPATIBLE_UPDATE_CHANNEL_PORT);
+			filePath = new File(FileUtils.getApplicationDirectory(context).getAbsolutePath() + File.separator + device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
-		serverSocket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+			final ServerSocket finalServer = serverSocket;
 
-		Socket socket = serverSocket.accept();
+			interrupter.addCloser(new Interrupter.Closer()
+			{
+				@Override
+				public void onClose()
+				{
+					try {
+						if (!finalServer.isClosed())
+							finalServer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			});
 
-		socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+			if (readyListener != null)
+				readyListener.onConnectionReady(serverSocket);
 
-		InputStream inputStream = socket.getInputStream();
-		FileOutputStream outputStream = new FileOutputStream(filePath);
+			serverSocket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
-		int len = 0;
-		long lastRead = System.currentTimeMillis();
+			socket = serverSocket.accept();
 
-		while (len != -1) {
-			if ((len = inputStream.read(AppConfig.DEFAULT_BUFFER_SIZE)) > 0) {
-				outputStream.write(AppConfig.DEFAULT_BUFFER_SIZE, 0, len);
-				outputStream.flush();
+			socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
-				lastRead = System.currentTimeMillis();
+			InputStream inputStream = socket.getInputStream();
+			FileOutputStream outputStream = new FileOutputStream(filePath);
+
+			int len = 0;
+			long lastRead = System.currentTimeMillis();
+
+			while (len != -1) {
+				if ((len = inputStream.read(AppConfig.DEFAULT_BUFFER_SIZE)) > 0) {
+					outputStream.write(AppConfig.DEFAULT_BUFFER_SIZE, 0, len);
+					outputStream.flush();
+
+					lastRead = System.currentTimeMillis();
+				}
+
+				if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT || interrupter.interrupted())
+					throw new Exception("Timed out or interrupted. Exiting!");
 			}
 
-			if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT) {
-				System.out.println("CoolTransfer: Timed out... Exiting.");
-				break;
-			}
+			outputStream.close();
+			inputStream.close();
+		} catch (Exception e) {
+			return null;
+		} finally {
+			if (socket != null && !socket.isClosed())
+				socket.close();
+
+			if (serverSocket != null && !serverSocket.isClosed())
+				serverSocket.close();
 		}
 
-		if (interrupter == null || !interrupter.interrupted())
-			context.startActivity(new Intent(context, HomeActivity.class)
-					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-					.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-					.putExtra(HomeActivity.EXTRA_FILE_PATH, filePath.getParent()));
+		return filePath;
+	}
 
-		outputStream.close();
-		inputStream.close();
-
-		socket.close();
-		serverSocket.close();
+	public interface OnConnectionReadyListener
+	{
+		void onConnectionReady(ServerSocket socket);
 	}
 }

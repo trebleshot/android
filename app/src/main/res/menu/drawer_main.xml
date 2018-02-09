@@ -72,5 +72,11 @@
             android:icon="@drawable/ic_system_update_white_24dp"
             android:orderInCategory="13"
             android:title="@string/butn_checkForUpdates"/>
+
+        <item
+            android:id="@+id/menu_activity_main_exit"
+            android:icon="@drawable/ic_clear_white_24dp"
+            android:orderInCategory="14"
+            android:title="@string/butn_exit"/>
     </group>
 </menu>

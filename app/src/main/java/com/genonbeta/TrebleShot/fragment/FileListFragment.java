@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,7 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
-import com.genonbeta.TrebleShot.dialog.FileDeleteDialog;
+import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -29,7 +30,8 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
 	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
-	public final static String EXTRA_PATH = "path";
+	public final static String EXTRA_FILE_PARENT = "extraPath";
+	public final static String EXTRA_FILE_NAME = "extraFile";
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
@@ -37,16 +39,23 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	private OnPathChangedListener mPathChangedListener;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
+		private Snackbar mUpdateSnackbar;
+
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_PATH)) {
-				final String extraPath = intent.getStringExtra(EXTRA_PATH);
+			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_FILE_PARENT)) {
+				final String extraPath = intent.getStringExtra(EXTRA_FILE_PARENT);
 
-				if (extraPath.equals(getAdapter().getPath().getAbsolutePath()))
+				if (getAdapter().getPath() != null
+						&& extraPath.equals(getAdapter().getPath().getAbsolutePath()))
 					refreshList();
-				else
-					createSnackbar(R.string.mesg_newFilesReceived)
+				else if (intent.hasExtra(EXTRA_FILE_NAME)) {
+					if (mUpdateSnackbar == null)
+						mUpdateSnackbar = createSnackbar(R.string.mesg_newFilesReceived);
+
+					mUpdateSnackbar
+							.setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
 							.setAction(R.string.butn_show, new View.OnClickListener()
 							{
 								@Override
@@ -56,6 +65,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 								}
 							})
 							.show();
+				}
 			}
 		}
 	};
@@ -67,6 +77,15 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 
 		setDefaultOrderingAscending(false);
 		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		setEmptyImage(R.drawable.ic_folder_white_24dp);
+		setEmptyText(getString(R.string.text_listEmptyFiles));
 	}
 
 	@Override
@@ -157,7 +176,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
 		if (item.getItemId() == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
-			new FileDeleteDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeleteDialog.Listener()
+			new FileDeletionDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeletionDialog.Listener()
 			{
 				@Override
 				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, File file)
@@ -170,7 +189,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 				public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
 				{
 					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-							.putExtra(EXTRA_PATH, getAdapter().getPath().getAbsolutePath()));
+							.putExtra(EXTRA_FILE_PARENT, getAdapter().getPath().getAbsolutePath()));
 				}
 			}).show();
 

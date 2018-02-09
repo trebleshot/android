@@ -5,10 +5,12 @@
     <color name="windowBackground">#ffffff</color>
     <color name="navigationColor">#000000</color>
     <color name="colorAccent">#18b65f</color>
+    <color name="whiteAccent">#fff</color>
     <color name="actionModeBackground">#077155</color>
     <color name="actionModeColorPrimary">#175040</color>
     <color name="videoBackground">#000000</color>
     <color name="imageBackground">@color/videoBackground</color>
+    <color name="songBackground">@color/videoBackground</color>
     <color name="videoDescriptionBackground">#a04e4e4e</color>
     <color name="videoTextColor">@android:color/white</color>
     <color name="networkDeviceRipple">@color/colorAccent</color>
@@ -17,5 +19,5 @@
     <color name="fabHotspotDisabled">@color/colorAccent</color>
     <color name="fabHotspotEnabled">#d2442e</color>
     <color name="hotspotNetworkRipple">@color/fabHotspotEnabled</color>
-    <color name="selectorSolid">#5000</color>
+    <color name="selectorSolid">#9000</color>
 </resources>

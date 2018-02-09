@@ -12,7 +12,6 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -26,11 +25,7 @@ import java.util.Collections;
 
 public class TransactionGroupListAdapter extends EditableListAdapter<TransactionGroupListAdapter.PreloadedGroup>
 {
-	public static final String FIELD_TRANSACTIONCOUNT = "transactionCount";
-	public static final String FIELD_DEVICENAME = "deviceName";
-
 	private AccessDatabase mDatabase;
-	private ArrayList<TransactionGroupListAdapter.PreloadedGroup> mList = new ArrayList<>();
 	private SQLQuery.Select mSelect;
 
 	public TransactionGroupListAdapter(Context context)
@@ -73,22 +68,15 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 	}
 
 	@Override
-	public void onUpdate(ArrayList<PreloadedGroup> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
-	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int i)
 	{
-		return mList.get(i);
+		return getItemList().get(i);
 	}
 
 	@Override
@@ -99,7 +87,7 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 
 	public ArrayList<PreloadedGroup> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	public SQLQuery.Select getSelect()
@@ -189,6 +177,12 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		public long getComparableSize()
 		{
 			return totalCount;
+		}
+
+		@Override
+		public String getSelectableFriendlyName()
+		{
+			return deviceName + " (" + totalSize + ")";
 		}
 	}
 }

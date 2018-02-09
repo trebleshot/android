@@ -201,6 +201,6 @@ public class GitHubUpdater
 
 	public interface OnInfoAvailableListener
 	{
-		public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate);
+		void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate);
 	}
 }

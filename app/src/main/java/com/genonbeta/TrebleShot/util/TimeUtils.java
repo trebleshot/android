@@ -3,6 +3,9 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.util.date.ElapsedTime;
+
+import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -11,14 +14,15 @@ import com.genonbeta.TrebleShot.R;
 
 public class TimeUtils
 {
-
 	public static String getDuration(long milliseconds)
 	{
 		StringBuilder string = new StringBuilder();
 
-		long hours = (milliseconds / 3600000);
-		long minutes = (milliseconds - (hours * 3600000)) / 60000;
-		long seconds = (milliseconds - (hours * 3600000) - (minutes * 60000)) / 1000;
+		ElapsedTime.ElapsedTimeCalculator calculator = new ElapsedTime.ElapsedTimeCalculator(milliseconds / 1000);
+
+		long hours = calculator.crop(3600);
+		long minutes = calculator.crop(60);
+		long seconds = calculator.getLeftTime();
 
 		if (hours > 0) {
 			if (hours < 10)
@@ -42,6 +46,48 @@ public class TimeUtils
 		return string.toString();
 	}
 
+	public static String getFriendlyElapsedTime(Context context, long estimatedTime)
+	{
+		ElapsedTime elapsedTime = new ElapsedTime(estimatedTime);
+		ArrayList<String> appendList = new ArrayList<>();
+
+		if (elapsedTime.getYears() > 0)
+			appendList.add(context.getString(R.string.text_yearCountShort, elapsedTime.getYears()));
+
+		if (elapsedTime.getMonths() > 0)
+			appendList.add(context.getString(R.string.text_monthCountShort, elapsedTime.getMonths()));
+
+		if (elapsedTime.getYears() == 0) {
+			if (elapsedTime.getDays() > 0)
+				appendList.add(context.getString(R.string.text_dayCountShort, elapsedTime.getDays()));
+
+			if (elapsedTime.getMonths() == 0) {
+				if (elapsedTime.getHours() > 0)
+					appendList.add(context.getString(R.string.text_hourCountShort, elapsedTime.getHours()));
+
+				if (elapsedTime.getDays() == 0) {
+					if (elapsedTime.getMinutes() > 0)
+						appendList.add(context.getString(R.string.text_minuteCountShort, elapsedTime.getMinutes()));
+
+					if (elapsedTime.getHours() == 0)
+						// always applied
+						appendList.add(context.getString(R.string.text_secondCountShort, elapsedTime.getSeconds()));
+				}
+			}
+		}
+
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (String appendItem : appendList) {
+			if (stringBuilder.length() > 0)
+				stringBuilder.append(" ");
+
+			stringBuilder.append(appendItem);
+		}
+
+		return stringBuilder.toString();
+	}
+
 	public static String getTimeAgo(Context context, long time)
 	{
 		int differ = (int) ((System.currentTimeMillis() - time) / 1000);
@@ -55,4 +101,5 @@ public class TimeUtils
 
 		return context.getString(R.string.text_longAgo);
 	}
+
 }

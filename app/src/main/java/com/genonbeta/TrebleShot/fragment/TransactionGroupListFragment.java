@@ -59,6 +59,15 @@ public class TransactionGroupListFragment
 	}
 
 	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
+		setEmptyText(getString(R.string.text_listEmptyPendingTransfer));
+	}
+
+	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);

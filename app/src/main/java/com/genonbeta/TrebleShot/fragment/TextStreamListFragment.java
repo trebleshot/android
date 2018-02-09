@@ -49,6 +49,15 @@ public class TextStreamListFragment
 	}
 
 	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		setEmptyImage(R.drawable.ic_textsms_white_24dp);
+		setEmptyText(getString(R.string.text_listEmptyTextStream));
+	}
+
+	@Override
 	public TextStreamListAdapter onAdapter()
 	{
 		return new TextStreamListAdapter(getActivity());

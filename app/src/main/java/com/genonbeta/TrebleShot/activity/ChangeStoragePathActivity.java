@@ -9,7 +9,7 @@ import com.genonbeta.TrebleShot.app.Activity;
  * Date: 5/30/17 6:57 PM
  */
 
-public class StoragePathChangeActivity extends Activity
+public class ChangeStoragePathActivity extends Activity
 {
 	public final static int REQUEST_CHOOSE_FOLDER = 1;
 

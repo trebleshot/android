@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
+import android.view.View;
+import android.widget.Button;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -19,25 +21,29 @@ import java.util.ArrayList;
  * Date: 5/21/17 2:21 AM
  */
 
-public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
+public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
 {
-	public static final long JOB_FILE_DELETION = 1;
+	public static final String TAG = FileDeletionDialog.class.getSimpleName();
+	public static final int JOB_FILE_DELETION = 1;
 
-	public FileDeleteDialog(final Activity activity, final ArrayList<T> items, final Listener listener)
+	public ArrayList<T> mItemList = new ArrayList<>();
+
+	public FileDeletionDialog(final Activity activity, final ArrayList<T> items, final Listener listener)
 	{
 		super(activity);
 
-		final ArrayList<T> itemClones = new ArrayList<>(items);
+		getItemList().addAll(items);
 
 		setTitle(R.string.text_deleteConfirm);
-		setMessage(activity.getResources().getQuantityString(R.plurals.ques_deleteFile, itemClones.size(), itemClones.size()));
+		setMessage(R.string.text_previewThenProceedNotice);
 		setNegativeButton(R.string.butn_cancel, null);
+		setNeutralButton(getContext().getString(R.string.butn_queueCounted, 0), null);
 		setPositiveButton(R.string.butn_delete, new DialogInterface.OnClickListener()
 				{
 					@Override
 					public void onClick(DialogInterface dailog, int p2)
 					{
-						WorkerService.run(activity, new WorkerService.NotifiableRunningTask()
+						WorkerService.run(activity, new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_DELETION)
 						{
 							int totalDeletion = 0;
 
@@ -59,16 +65,11 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 							}
 
 							@Override
-							public long getJobId()
-							{
-								return JOB_FILE_DELETION;
-							}
-
-							@Override
 							public void onRun()
 							{
-								for (T shareable : itemClones)
-									delete(new File(URI.create(shareable.uri.toString())));
+								for (T shareable : getItemList())
+									if (shareable.isSelectableSelected())
+										delete(new File(URI.create(shareable.uri.toString())));
 
 								if (listener != null)
 									listener.onCompleted(this, activity, totalDeletion);
@@ -79,11 +80,15 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 								if (getInterrupter().interrupted())
 									return;
 
-								if (file.isDirectory())
+								boolean isDirectory = file.isDirectory();
+
+								if (isDirectory)
 									deleteDirectory(file);
 
 								if (file.delete()) {
-									totalDeletion++;
+									if (!isDirectory)
+										totalDeletion++;
+
 									listener.onFileDeletion(this, activity, file);
 								}
 							}
@@ -100,6 +105,59 @@ public class FileDeleteDialog<T extends Shareable> extends AlertDialog.Builder
 					}
 				}
 		);
+	}
+
+	public int countSelections()
+	{
+		int selectedCount = 0;
+
+		synchronized (getItemList()) {
+			for (T shareable : getItemList())
+				if (shareable.isSelectableSelected())
+					selectedCount++;
+		}
+
+		return selectedCount;
+	}
+
+	public ArrayList<T> getItemList()
+	{
+		return mItemList;
+	}
+
+	@Override
+	public AlertDialog show()
+	{
+		final AlertDialog alertDialog = super.show();
+		final Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
+		final Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+
+		positiveButton.setVisibility(View.GONE);
+
+		neutralButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				new SelectionEditorDialog<>(getContext(), getItemList()).show().setOnDismissListener(new DialogInterface.OnDismissListener()
+				{
+					@Override
+					public void onDismiss(DialogInterface dialog)
+					{
+						int totalSelected = countSelections();
+
+						neutralButton.setText(getContext().getString(R.string.butn_queueCounted, totalSelected));
+						alertDialog.setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, totalSelected, totalSelected));
+
+						positiveButton.setVisibility(countSelections() > 0
+								? View.VISIBLE
+								: View.GONE);
+					}
+				});
+			}
+		});
+
+		return alertDialog;
 	}
 
 	public interface Listener

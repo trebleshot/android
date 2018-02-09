@@ -12,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -127,7 +126,6 @@ abstract public class CoolTransfer<T>
 		private int mPort;
 		private long mFileSize;
 		private byte[] mBufferSize;
-		private boolean mInterrupted = false;
 
 		public TransferHandler(int port, long fileSize, byte[] bufferSize, T extra)
 		{
@@ -141,12 +139,12 @@ abstract public class CoolTransfer<T>
 
 		public void interrupt()
 		{
-			mInterrupted = true;
+			getTransferProgress().interrupt();
 		}
 
 		public boolean isInterrupted()
 		{
-			return mInterrupted;
+			return getTransferProgress().isInterrupted();
 		}
 
 		public byte[] getBufferSize()
@@ -224,7 +222,7 @@ abstract public class CoolTransfer<T>
 			mStatus = status;
 		}
 
-		public void setTransferProgress(TransferProgress transferProgress)
+		public void setTransferProgress(TransferProgress<T> transferProgress)
 		{
 			mTransferProgress = transferProgress;
 		}
@@ -232,8 +230,6 @@ abstract public class CoolTransfer<T>
 		@Override
 		public void run()
 		{
-			mInterrupted = false;
-
 			setStatus(Status.RUNNING);
 			onRun();
 			setStatus(Status.INTERRUPTED);
@@ -532,6 +528,7 @@ abstract public class CoolTransfer<T>
 		private long mTimeRemaining;
 		private long mLastNotified;
 		private int mTransferredFileCount;
+		private boolean mInterrupted = false;
 
 		public int calculatePercentage(long max, long current)
 		{
@@ -609,6 +606,16 @@ abstract public class CoolTransfer<T>
 		{
 			mTransferredFileCount++;
 			return mTransferredFileCount;
+		}
+
+		public void interrupt()
+		{
+			mInterrupted = true;
+		}
+
+		public boolean isInterrupted()
+		{
+			return mInterrupted;
 		}
 
 		public void setTotalByte(long totalByte)

@@ -2,8 +2,11 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
 import android.view.Menu;
@@ -31,6 +34,22 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	private ArrayList<T> mCachedList = new ArrayList<>();
 	private boolean mSearchSupport = true;
 	private boolean mSearchActive = false;
+	private Handler mHandler = new Handler(Looper.myLooper());
+
+	private ContentObserver mObserver = new ContentObserver(mHandler)
+	{
+		@Override
+		public boolean deliverSelfNotifications()
+		{
+			return true;
+		}
+
+		@Override
+		public void onChange(boolean selfChange)
+		{
+			refreshList();
+		}
+	};
 
 	private SearchView.OnQueryTextListener mSearchComposer = new SearchView.OnQueryTextListener()
 	{
@@ -142,6 +161,11 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	public ArrayList<T> getCachedList()
 	{
 		return mCachedList;
+	}
+
+	public ContentObserver getDefaultContentObserver()
+	{
+		return mObserver;
 	}
 
 	public boolean getSearchSupport()

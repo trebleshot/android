@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
+import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -206,46 +207,42 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileReceived(TransactionObject transactionObject, NetworkDevice device, File file)
+	public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, File savePath)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
+		CoolTransfer.TransferProgress progress = transferHandler.getTransferProgress();
 
-		try {
-			Intent openIntent = new Intent(Intent.ACTION_VIEW);
-
-			openIntent.setDataAndType(FileUtils.getUriForFile(getContext(), file, openIntent), transactionObject.fileMimeType);
-			notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0));
-		} catch (Exception e) {
-		}
-
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(transactionObject.friendlyName)
-				.setContentText(getContext().getString(R.string.text_fileReceived))
+		notification
+				.setSmallIcon(android.R.drawable.stat_sys_download_done)
 				.setContentInfo(device.nickname)
 				.setAutoCancel(true)
 				.setDefaults(getUtils().getNotificationSettings())
 				.setPriority(NotificationCompat.PRIORITY_HIGH)
-				.addAction(R.drawable.ic_folder_white_24dp, getContext().getString(R.string.butn_showFiles),
-						PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
-								.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-								.putExtra(HomeActivity.EXTRA_FILE_PATH, file.getParent()), 0));
+				.setContentText(getContext().getString(R.string.text_receivedTransfer, FileUtils.sizeExpression(progress.getTransferredByte(), false), TimeUtils.getFriendlyElapsedTime(getContext(), progress.getTimeElapsed())));
 
-		return notification.show();
-	}
+		if (progress.getTransferredFileCount() != 1) {
+			notification
+					.setContentTitle(getContext().getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, progress.getTransferredFileCount(), progress.getTransferredFileCount()))
+					.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
+							.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+							.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getAbsolutePath()), 0));
+		} else {
+			try {
+				Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-	public DynamicNotification notifyFileReceived(TransactionObject transactionObject, String parentDir, int numberOfFiles)
-	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+				openIntent.setDataAndType(FileUtils.getUriForFile(getContext(), transferHandler.getFile(), openIntent), processHolder.transactionObject.fileMimeType);
+				notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0));
+			} catch (Exception e) {
+			}
 
-		notification.setSmallIcon(android.R.drawable.stat_sys_download_done)
-				.setContentTitle(getContext().getString(R.string.text_multipleFileReceiveCompleted))
-				.setContentText(getContext().getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, numberOfFiles, numberOfFiles))
-				.setAutoCancel(true)
-				.setDefaults(getUtils().getNotificationSettings())
-				.setPriority(NotificationCompat.PRIORITY_HIGH)
-				.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
-						.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-						.putExtra(HomeActivity.EXTRA_FILE_PATH, parentDir), 0));
+			notification
+					.setContentTitle(processHolder.transactionObject.friendlyName)
+					.addAction(R.drawable.ic_folder_white_24dp, getContext().getString(R.string.butn_showFiles),
+							PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
+									.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+									.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getAbsolutePath()), 0));
+		}
 
 		return notification.show();
 	}
@@ -321,7 +318,10 @@ public class CommunicationNotificationHelper
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(transaction.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 		Intent killIntent = new Intent(getContext(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_CANCEL_KILL);
+				.setAction(CommunicationService.ACTION_CANCEL_KILL)
+				.putExtra(CommunicationService.EXTRA_REQUEST_ID, transaction.requestId)
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, transaction.groupId)
+				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
 				.setOngoing(true)

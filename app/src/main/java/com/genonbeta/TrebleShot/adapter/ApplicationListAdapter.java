@@ -26,7 +26,6 @@ public class ApplicationListAdapter
 {
 	private boolean mShowSysApps = false;
 	private PackageManager mManager;
-	private ArrayList<PackageHolder> mList = new ArrayList<>();
 
 	public ApplicationListAdapter(Context context, boolean showSystemApps)
 	{
@@ -63,22 +62,15 @@ public class ApplicationListAdapter
 	}
 
 	@Override
-	public void onUpdate(ArrayList<PackageHolder> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
-	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return mList.get(position);
+		return getItemList().get(position);
 	}
 
 	@Override
@@ -89,7 +81,7 @@ public class ApplicationListAdapter
 
 	public ArrayList<PackageHolder> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	@Override

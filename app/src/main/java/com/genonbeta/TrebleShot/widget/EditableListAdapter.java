@@ -1,12 +1,12 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
@@ -18,6 +18,7 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 {
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection mSelectionConnection;
+	private ArrayList<T> mItemList = new ArrayList<>();
 
 	public EditableListAdapter(Context context)
 	{
@@ -79,9 +80,23 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 		};
 	}
 
+	@Override
+	public void onUpdate(ArrayList<T> passedItem)
+	{
+		synchronized (getItemList()) {
+			getItemList().clear();
+			getItemList().addAll(passedItem);
+		}
+	}
+
 	public EditableListFragment getFragment()
 	{
 		return mFragment;
+	}
+
+	public ArrayList<T> getItemList()
+	{
+		return mItemList;
 	}
 
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()

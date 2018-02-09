@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.io;
 
+import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -36,6 +37,17 @@ public class StreamInfo
 
 	public StreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
 	{
+		if (!loadStream(context, uri, openStreams))
+			throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
+	}
+
+	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	{
+		return new StreamInfo(context, uri, openStreams);
+	}
+
+	private boolean loadStream(Context context, Uri uri, boolean openStreams) throws FolderStateException, FileNotFoundException
+	{
 		String uriType = uri.toString();
 
 		this.uri = uri;
@@ -55,8 +67,12 @@ public class StreamInfo
 						this.mimeType = contentResolver.getType(uri);
 						this.type = Type.STREAM;
 
+						ContentProviderClient client = contentResolver.acquireContentProviderClient(uri);
+
 						if (openStreams)
 							this.inputStream = contentResolver.openInputStream(uri);
+
+						return true;
 					}
 				}
 
@@ -76,14 +92,12 @@ public class StreamInfo
 
 				if (openStreams)
 					this.inputStream = new FileInputStream(file);
-			}
-		} else
-			throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
-	}
 
-	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
-	{
-		return new StreamInfo(context, uri, openStreams);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public enum Type

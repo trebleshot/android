@@ -72,14 +72,12 @@ public class CommunicationService extends Service
 	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
 	public final static String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
 	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
-	public final static String ACTION_TRANSFER_STATE_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TRANSFER_STATE_CHANGE";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
-	public static final String EXTRA_TRANSFER_STATE = "extraTransferState";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
@@ -313,6 +311,21 @@ public class CommunicationService extends Service
 			getWifiLock().release();
 
 		stopForeground(true);
+
+		synchronized (getOngoingIndexList()) {
+			for (Interrupter interrupter : getOngoingIndexList().values())
+				interrupter.interrupt(false);
+		}
+
+		synchronized (mReceive.getProcessList()) {
+			for (CoolTransfer.TransferHandler<ProcessHolder> transferHandler : mReceive.getProcessList())
+				transferHandler.interrupt();
+		}
+
+		synchronized (mSend.getProcessList()) {
+			for (CoolTransfer.TransferHandler<ProcessHolder> transferHandler : mSend.getProcessList())
+				transferHandler.interrupt();
+		}
 	}
 
 	public CoolTransfer.TransferHandler<ProcessHolder> findProcessById(int groupId)
@@ -717,6 +730,7 @@ public class CommunicationService extends Service
 				processHolder.group = mTransfer.getGroup();
 
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
+				File savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
 					String errorCode = mainRequestJSON.has(Keyword.ERROR)
@@ -761,19 +775,8 @@ public class CommunicationService extends Service
 							break;
 					}
 
-					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
-						if (processHolder.transferHandler.getTransferProgress().getTransferredFileCount() == 1)
-							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, mTransfer.getDevice(), processHolder.transferHandler.getFile());
-						else if (processHolder.transferHandler.getTransferProgress().getTransferredFileCount() > 1) {
-							String parentDir = processHolder.transferHandler.getFile().getParent();
-							String savePath = processHolder.transferHandler.getExtra().transactionObject.directory != null
-									&& processHolder.transferHandler.getExtra().transactionObject.directory.length() > 0
-									? parentDir.substring(0, parentDir.length() - processHolder.transferHandler.getExtra().transactionObject.directory.length())
-									: parentDir;
-
-							getNotificationHelper().notifyFileReceived(processHolder.transferHandler.getExtra().transactionObject, savePath, processHolder.transferHandler.getTransferProgress().getTransferredFileCount());
-						}
-					}
+					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag()))
+						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -894,7 +897,8 @@ public class CommunicationService extends Service
 					mMediaScanner.scanFile(handler.getFile().getAbsolutePath(), handler.getExtra().transactionObject.fileMimeType);
 
 				sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-						.putExtra(FileListFragment.EXTRA_PATH, handler.getFile().getParent()));
+						.putExtra(FileListFragment.EXTRA_FILE_PARENT, handler.getFile().getParent())
+						.putExtra(FileListFragment.EXTRA_FILE_NAME, handler.getFile().getName()));
 			}
 		}
 	}

@@ -134,6 +134,18 @@ public class NetworkDeviceListFragment
 				requestRefresh();
 			}
 		});
+
+		setEmptyImage(R.drawable.ic_devices_white_24dp);
+		setEmptyText(getString(R.string.text_findDevicesHint));
+
+		useEmptyActionButton(getString(R.string.butn_refresh), new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				requestRefresh();
+			}
+		});
 	}
 
 	@Override
@@ -142,8 +154,6 @@ public class NetworkDeviceListFragment
 		super.onActivityCreated(savedInstanceState);
 
 		setHasOptionsMenu(true);
-		setEmptyText(getString(R.string.text_findDevicesHint));
-
 		getListView().setDividerHeight(0);
 
 		if (mPreferences.getBoolean("scan_devices_auto", false))

@@ -71,6 +71,13 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 		return START_NOT_STICKY;
 	}
 
+	@Nullable
+	@Override
+	public IBinder onBind(Intent intent)
+	{
+		return null;
+	}
+
 	@Override
 	public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
 	{
@@ -86,15 +93,15 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 		getApplicationContext().sendBroadcast(new Intent(ACTION_DEVICE_SCAN_COMPLETED));
 	}
 
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+		getDeviceScanner().interrupt();
+	}
+
 	public static NetworkDeviceScanner getDeviceScanner()
 	{
 		return mDeviceScanner;
-	}
-
-	@Nullable
-	@Override
-	public IBinder onBind(Intent intent)
-	{
-		return null;
 	}
 }

@@ -3,7 +3,6 @@
     <item
         android:id="@+id/action_mode_file_delete"
         android:icon="@drawable/ic_delete_white_24dp"
-        android:showAsAction="ifRoom"
         android:title="@string/butn_delete"/>
 
 </menu>

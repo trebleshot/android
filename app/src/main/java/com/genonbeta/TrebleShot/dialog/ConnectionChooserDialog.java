@@ -165,7 +165,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 										long startTime = System.currentTimeMillis();
 										final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
 
-										interrupter.useCloser(new Interrupter.Closer()
+										interrupter.addCloser(new Interrupter.Closer()
 										{
 											@Override
 											public void onClose()

@@ -57,24 +57,54 @@ public class WorkerService extends Service
 			if (ACTION_KILL_SIGNAL.equals(intent.getAction()) && intent.hasExtra(EXTRA_TASK_ID)) {
 				int taskId = intent.getIntExtra(EXTRA_TASK_ID, -1);
 
-				getNotificationUtils().cancel(taskId);
-
 				RunningTask runningTask = findTaskById(taskId);
 
-				if (runningTask != null)
+				if (runningTask == null
+						|| runningTask.getInterrupter().interrupted())
+					getNotificationUtils().cancel(taskId);
+
+				if (runningTask != null) {
 					runningTask.getInterrupter().interrupt();
+					runningTask.onInterrupted(taskId);
+				}
 			}
 
 		return START_NOT_STICKY;
 	}
 
+	@Override
+	public void onDestroy()
+	{
+		super.onDestroy();
+
+		synchronized (getTaskList()) {
+			for (RunningTask runningTask : getTaskList())
+				runningTask.getInterrupter().interrupt(false);
+		}
+	}
+
 	public synchronized RunningTask findTaskById(int taskId)
 	{
-		for (RunningTask runningTask : getTaskList())
-			if (runningTask.getTaskId() == taskId)
-				return runningTask;
+		synchronized (getTaskList()) {
+			for (RunningTask runningTask : getTaskList())
+				if (runningTask.getTaskId() == taskId)
+					return runningTask;
+		}
 
 		return null;
+	}
+
+	public ArrayList<RunningTask> findTasksFor(String tag)
+	{
+		ArrayList<RunningTask> taskList = new ArrayList<>();
+
+		synchronized (getTaskList()) {
+			for (RunningTask runningTask : getTaskList())
+				if (tag.equals(runningTask.getClientTag()))
+					taskList.add(runningTask);
+		}
+
+		return taskList;
 	}
 
 	public NotificationUtils getNotificationUtils()
@@ -129,12 +159,18 @@ public class WorkerService extends Service
 				runningTask.onRun();
 				unregisterWork(runningTask);
 
-				if (notifiableRunningWork != null && !runningTask.getInterrupter().interrupted()) {
-					DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+				if (notifiableRunningWork != null) {
+					getNotificationUtils().getManager().cancel(runningTask.getTaskId());
 
-					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
-					dynamicNotification.setContentTitle(getString(R.string.text_taskCompleted));
-					dynamicNotification.show();
+					if (!runningTask.getInterrupter().interrupted()
+							|| !runningTask.getInterrupter().interruptedByUser()) {
+						DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+
+						notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
+
+						dynamicNotification.setContentTitle(getString(R.string.text_taskCompleted));
+						dynamicNotification.show();
+					}
 				}
 			}
 		});
@@ -182,11 +218,27 @@ public class WorkerService extends Service
 	public abstract static class RunningTask
 	{
 		private Interrupter mInterrupter;
+		private String mTag;
+		private int mJobId;
 		private int mTaskId = AppUtils.getUniqueNumber();
 
-		abstract public long getJobId();
+		public RunningTask(String clientTag, int jobId)
+		{
+			mTag = clientTag;
+			mJobId = jobId;
+		}
 
 		abstract public void onRun();
+
+		public void onInterrupted(int taskId)
+		{
+
+		}
+
+		public String getClientTag()
+		{
+			return mTag;
+		}
 
 		public Interrupter getInterrupter()
 		{
@@ -194,6 +246,11 @@ public class WorkerService extends Service
 				mInterrupter = new Interrupter();
 
 			return mInterrupter;
+		}
+
+		public int getJobId()
+		{
+			return mJobId;
 		}
 
 		public int getTaskId()
@@ -210,6 +267,11 @@ public class WorkerService extends Service
 
 	public abstract static class NotifiableRunningTask extends RunningTask
 	{
+		public NotifiableRunningTask(String clientTag, int jobId)
+		{
+			super(clientTag, jobId);
+		}
+
 		public abstract void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
 
 		public enum UpdateType
@@ -218,5 +280,11 @@ public class WorkerService extends Service
 			Ongoing,
 			Done
 		}
+	}
+
+	public static class TaskInfo
+	{
+		private String mTag;
+		private int mJobId;
 	}
 }

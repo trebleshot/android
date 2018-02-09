@@ -41,6 +41,9 @@ import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.FABSupport;
@@ -244,6 +247,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			startActivity(new Intent(this, PreferencesActivity.class));
 		} else if (R.id.menu_activity_main_check_for_updates == item.getItemId()) {
 			mUpdater.checkForUpdates(true, null);
+		} else if (R.id.menu_activity_main_exit == item.getItemId()) {
+			stopService(new Intent(this, CommunicationService.class));
+			stopService(new Intent(this, DeviceScannerService.class));
+			stopService(new Intent(this, WorkerService.class));
+
+			finish();
 		} else
 			return false;
 

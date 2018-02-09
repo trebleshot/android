@@ -74,7 +74,7 @@
             android:label="@string/text_textEditor"/>
 
         <activity
-            android:name=".activity.StoragePathChangeActivity"
+            android:name=".activity.ChangeStoragePathActivity"
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>

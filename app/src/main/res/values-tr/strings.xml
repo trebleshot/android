@@ -304,4 +304,24 @@
     <string name="text_networkServiceDiscoverySummary">Ağ Service Bulma bulunabilirliği güçlendirir</string>
     <string name="text_notificationChannelHigh">Önemli bildirimler</string>
     <string name="text_notificationChannelLow">Düşük öncelikli bildirimler</string>
+    <string name="text_receivedTransfer">%s, %s içerisinde alındı</string>
+    <string name="text_yearCountShort">%d yıl</string>
+    <string name="text_monthCountShort">%d ay</string>
+    <string name="text_dayCountShort">%d gün</string>
+    <string name="text_hourCountShort">%d st</string>
+    <string name="text_minuteCountShort">%d dk</string>
+    <string name="text_secondCountShort">%d sn</string>
+    <string name="butn_exit">Çıkış</string>
+    <string name="butn_queueCounted">Kuyruk (%d)</string>
+    <string name="text_previewThenProceedNotice">Devam edebilmek için seçtiklerinizi \"Kuyruk\" tuşuna dokunurak kontrol edin</string>
+    <string name="mesg_updateDownloadComplete">Güncellemeyi yüklemek için dokunun</string>
+    <string name="text_listEmptyFiles">Burada dosya yok!</string>
+    <string name="text_listEmptyImage">Belki de birkaç manzaralı fotoğraf?</string>
+    <string name="text_listEmptyApp">Burada uygulama yok!</string>
+    <string name="text_listEmptyVideo">Burada video yok!</string>
+    <string name="text_listEmptyPendingTransfer">Bekleyen aktarımlarınız burada görünecek!</string>
+    <string name="text_listEmptyTextStream">Yazdığınız ve aldıığınız şeyler burada görünecek!</string>
+    <string name="text_listEmptyMusic">Burada hiç  şarkı yok!</string>
+    <string name="text_internalStorage">Dahili depolama</string>
+    <string name="text_restrictedAccessStorage">%s (sınırlı erişim)</string>
 </resources>

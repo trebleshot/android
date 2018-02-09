@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -10,13 +9,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 
 /**
  * created by: Veli
@@ -25,7 +22,6 @@ import java.util.Date;
 
 public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 {
-	private ArrayList<TextStreamObject> mList = new ArrayList<>();
 	private AccessDatabase mDatabase;
 
 	public TextStreamListAdapter(Context context)
@@ -45,13 +41,6 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 		return list;
 	}
 
-	@Override
-	public void onUpdate(ArrayList<TextStreamObject> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
 	public AccessDatabase getDatabase()
 	{
 		return mDatabase;
@@ -60,13 +49,13 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return mList.get(position);
+		return getItemList().get(position);
 	}
 
 	@Override
@@ -78,7 +67,7 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 	@Override
 	public ArrayList<TextStreamObject> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	@Override

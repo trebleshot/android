@@ -28,7 +28,6 @@ public class MusicListAdapter
 {
 	private Drawable mDefaultAlbumDrawable;
 	private ContentResolver mResolver;
-	private ArrayList<SongHolder> mList = new ArrayList<>();
 
 	public MusicListAdapter(Context context)
 	{
@@ -92,22 +91,15 @@ public class MusicListAdapter
 	}
 
 	@Override
-	public void onUpdate(ArrayList<SongHolder> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
-
-	@Override
 	public int getCount()
 	{
-		return mList.size();
+		return getItemList().size();
 	}
 
 	@Override
 	public Object getItem(int position)
 	{
-		return mList.get(position);
+		return getItemList().get(position);
 	}
 
 	@Override
@@ -118,7 +110,7 @@ public class MusicListAdapter
 
 	public ArrayList<SongHolder> getList()
 	{
-		return mList;
+		return getItemList();
 	}
 
 	@Override

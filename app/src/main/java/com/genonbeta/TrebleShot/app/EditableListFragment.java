@@ -12,7 +12,7 @@ import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.dialog.SelectedEditorDialog;
+import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
@@ -171,7 +171,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		else if (id == R.id.action_mode_abs_editable_select_none)
 			setSelection(false);
 		else if (id == R.id.action_mode_abs_editable_preview_selections)
-			new SelectedEditorDialog<>(getActivity(), getSelectionConnection().getSelectedItemList())
+			new SelectionEditorDialog<>(getActivity(), getSelectionConnection().getSelectedItemList())
 					.setOnDismissListener(new DialogInterface.OnDismissListener()
 					{
 						@Override

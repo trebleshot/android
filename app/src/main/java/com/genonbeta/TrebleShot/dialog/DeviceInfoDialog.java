@@ -2,8 +2,10 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -23,13 +26,18 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
-import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 
 /**
@@ -39,6 +47,9 @@ import java.util.ArrayList;
 
 public class DeviceInfoDialog extends AlertDialog.Builder
 {
+	public static final String TAG = DeviceInfoDialog.class.getSimpleName();
+	public static final int JOB_RECEIVE_UPDATE = 1;
+
 	private AlertDialog mThisDialog;
 
 	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final NetworkDevice device)
@@ -67,70 +78,83 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(View v)
 				{
-					final ProgressDialog progressDialog = new ProgressDialog(getContext());
-					final Interrupter interrupter = new Interrupter();
-
-					progressDialog.setMessage(activity.getString(R.string.mesg_ongoingUpdateDownload));
-					progressDialog.setButton(DialogInterface.BUTTON_NEGATIVE, "Cancel", new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialog, int which)
-						{
-							interrupter.interrupt();
-						}
-					});
-
-					interrupter.useCloser(new Interrupter.Closer()
-					{
-						@Override
-						public void onClose()
-						{
-							progressDialog.cancel();
-						}
-					});
-
 					new ConnectionChooserDialog(activity, database, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
 						public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 						{
-							progressDialog.show();
-
-							CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+							WorkerService.run(activity, new WorkerService.NotifiableRunningTask(TAG, JOB_RECEIVE_UPDATE)
 							{
+								private File mReceivedFile = null;
+
 								@Override
-								public void onConnect(CoolSocket.Client client)
+								public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
 								{
-									new Thread()
-									{
-										@Override
-										public void run()
-										{
-											super.run();
+									switch (updateType) {
+										case Started:
+											dynamicNotification.setContentText(getContext().getString(R.string.mesg_ongoingUpdateDownload))
+													.setSmallIcon(android.R.drawable.stat_sys_download);
+											break;
+										case Done:
+											dynamicNotification.setContentText(getContext().getString(mReceivedFile != null
+													? R.string.mesg_updateDownloadComplete
+													: R.string.mesg_somethingWentWrong))
+													.setSmallIcon(android.R.drawable.stat_sys_download_done);
 
-											try {
-												UpdateUtils.receiveUpdate(activity, device, interrupter);
+											if (mReceivedFile != null) {
+												Intent openIntent = new Intent();
 
-												if (mThisDialog != null && !interrupter.interrupted())
-													mThisDialog.cancel();
-											} catch (Exception e) {
-												e.printStackTrace();
-											} finally {
-												progressDialog.cancel();
+												try {
+													openIntent.setAction(Intent.ACTION_VIEW)
+															.setDataAndType(FileUtils.getUriForFile(getContext(), mReceivedFile, openIntent), FileUtils.getFileContentType(mReceivedFile.getName()));
+												} catch (Exception e) {
+													openIntent.setComponent(new ComponentName(getContext(), HomeActivity.class))
+															.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
+															.putExtra(HomeActivity.EXTRA_FILE_PATH, mReceivedFile.getParent());
+												}
+
+												dynamicNotification
+														.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0))
+														.setAutoCancel(true);
 											}
-										}
-									}.start();
+											break;
+									}
+								}
 
+								@Override
+								public void onRun()
+								{
 									try {
-										Thread.sleep(1500);
+										mReceivedFile = UpdateUtils.receiveUpdate(activity, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+										{
+											@Override
+											public void onConnectionReady(ServerSocket socket)
+											{
+												CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+												{
+													@Override
+													public void onConnect(CoolSocket.Client client)
+													{
+														try {
+															CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+															activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
 
-										CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
-										activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
+															CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+															JSONObject responseJSON = new JSONObject(response.response);
 
-										CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+															if (!responseJSON.has(Keyword.RESULT) || !responseJSON.getBoolean(Keyword.RESULT))
+																throw new Exception("Not the answer we were looking for.");
+														} catch (Exception e) {
+															e.printStackTrace();
+															getInterrupter().interrupt(false);
+														}
+													}
+												});
+											}
+										});
 									} catch (Exception e) {
 										e.printStackTrace();
-										progressDialog.cancel();
+									} finally {
 									}
 								}
 							});

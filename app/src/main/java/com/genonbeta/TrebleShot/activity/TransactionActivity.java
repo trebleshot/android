@@ -91,10 +91,10 @@ public class TransactionActivity
 		}
 	};
 
-	private RecyclerView mRecyclerView;
+	private RecyclerView mPathView;
 	private AppCompatImageButton mHomeButton;
 	private LinearLayoutManager mLayoutManager;
-	private PathResolverRecyclerAdapter mAdapter;
+	private PathResolverRecyclerAdapter mPathAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
 	private PowerfulActionMode mPowafulActionMode;
 	private NavigationView mNavigationView;
@@ -111,7 +111,7 @@ public class TransactionActivity
 
 		mDatabase = new AccessDatabase(this);
 		mTransactionFragment = (TransactionListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_transaction_listfragment_transaction);
-		mRecyclerView = findViewById(R.id.activity_transaction_explorer_recycler);
+		mPathView = findViewById(R.id.activity_transaction_explorer_recycler);
 		mHomeButton = findViewById(R.id.activity_transaction_explorer_image_home);
 		mPowafulActionMode = findViewById(R.id.activity_transaction_action_mode);
 
@@ -131,17 +131,17 @@ public class TransactionActivity
 		mNavigationView = findViewById(R.id.nav_view);
 		mNavigationView.setNavigationItemSelectedListener(this);
 
-		mRecyclerView.setHasFixedSize(true);
+		mPathView.setHasFixedSize(true);
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 
 		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		mAdapter = new PathResolverRecyclerAdapter();
+		mPathAdapter = new PathResolverRecyclerAdapter();
 
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		mPathView.setLayoutManager(mLayoutManager);
 		mLayoutManager.setStackFromEnd(true);
-		mRecyclerView.setAdapter(mAdapter);
+		mPathView.setAdapter(mPathAdapter);
 
-		mAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener()
+		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener()
 		{
 			@Override
 			public void onClick(PathResolverRecyclerAdapter.Holder holder)
@@ -431,11 +431,11 @@ public class TransactionActivity
 	@Override
 	public void onPathChange(String path)
 	{
-		mAdapter.goTo(path == null ? null : path.split(File.separator));
-		mAdapter.notifyDataSetChanged();
+		mPathAdapter.goTo(path == null ? null : path.split(File.separator));
+		mPathAdapter.notifyDataSetChanged();
 
-		if (mAdapter.getItemCount() > 0)
-			mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+		if (mPathAdapter.getItemCount() > 0)
+			mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
 	}
 
 	public void applyPath(String path)

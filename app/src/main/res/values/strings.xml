@@ -28,8 +28,9 @@
     <string name="text_receiving">Receiving</string>
     <string name="butn_cancelReceiving">Cancel receiving</string>
     <string name="text_fileReceived">The file has been received</string>
+    <string name="mesg_fileReceived">%s has been received</string>
     <string name="butn_scan">Scan</string>
-    <string name="text_listEmpty">List is empty</string>
+    <string name="text_listEmpty">Nothing to show!</string>
     <string name="text_developerMode">Developer mode</string>
     <string name="text_developerModeSummary">It disables user configuration</string>
     <string name="text_deviceName">Device name</string>
@@ -60,7 +61,7 @@
     <string name="butn_pendingTransfers">Queue</string>
     <string name="butn_shareWithTrebleshot">Share with TrebleShot</string>
     <string name="mesg_somethingWentWrong">Something went wrong</string>
-    <string name="text_findDevicesHint">To find nearby devices tap the search icon</string>
+    <string name="text_findDevicesHint">No familiar devices yet!</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
     <string name="text_autoScanDevicesSummary">Scans devices when necessary</string>
     <string name="mesg_stillScanning">Still scanning</string>
@@ -121,7 +122,7 @@
     <string name="butn_killNow">Kill now</string>
     <string name="mesg_groupOngoingNotice">Waiting for %s to finish before transferring this file</string>
     <string name="butn_proceed">Proceed</string>
-    <string name="ques_removeQueue">Remove transfer queue?</string>
+    <string name="ques_removeQueue">Remove transfer?</string>
     <string name="butn_remove">Remove</string>
     <string name="butn_removeAll">Remove all</string>
     <string name="ques_removeDevice">Remove this device?</string>
@@ -287,7 +288,6 @@
     <string name="text_trustZoneDeviceNotice">Checking this will enable this device to send you files without showing a prompt when TrustZone is turned on</string>
     <string name="text_allowingToConnectNotice">When checked, this device can connect to you</string>
     <string name="butn_resetToDefault">Reset to default</string>
-    <string name="ques_resetToDefault">Reset to default?</string>
     <string name="text_resetPreferencesToDefaultSummary">This will apply default settings</string>
     <string name="text_workerService">Worker service</string>
     <string name="text_taskCompleted">Task completed</string>
@@ -297,4 +297,24 @@
     <string name="text_networkServiceDiscoverySummary">Network Service Discovery improves discoverability</string>
     <string name="text_notificationChannelHigh">Important notifications</string>
     <string name="text_notificationChannelLow">Low priority notifications</string>
+    <string name="text_receivedTransfer">Received %s in %s</string>
+    <string name="text_yearCountShort">%d yr</string>
+    <string name="text_monthCountShort">%d mth</string>
+    <string name="text_dayCountShort">%d dy</string>
+    <string name="text_hourCountShort">%d hr</string>
+    <string name="text_minuteCountShort">%d min</string>
+    <string name="text_secondCountShort">%d sec</string>
+    <string name="butn_exit">Exit</string>
+    <string name="butn_queueCounted">Queue (%d)</string>
+    <string name="text_previewThenProceedNotice">To be able to continue, please check your selections by tapping \"Queue\" button</string>
+    <string name="mesg_updateDownloadComplete">Tap to install the update</string>
+    <string name="text_listEmptyFiles">No files in here!</string>
+    <string name="text_listEmptyImage">Some scenic photos maybe?</string>
+    <string name="text_listEmptyApp">No apps in here!</string>
+    <string name="text_listEmptyVideo">No videos in here!</string>
+    <string name="text_listEmptyPendingTransfer">Pending transfers will appear in here!</string>
+    <string name="text_listEmptyTextStream">Write something first you should!</string>
+    <string name="text_listEmptyMusic">No songs in here!</string>
+    <string name="text_internalStorage">Internal storage</string>
+    <string name="text_restrictedAccessStorage">%s (restricted access)</string>
 </resources>

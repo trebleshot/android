@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.dialog.SelectedEditorDialog;
+import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -122,17 +122,11 @@ public class ShareActivity extends Activity
 
 					getProgressDialog().show();
 
-					runOnWorkerService(new WorkerService.RunningTask()
+					runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
 					{
 						private boolean mConnected = false;
 						private long mStartTime = System.currentTimeMillis();
 						private String mRemoteAddress;
-
-						@Override
-						public long getJobId()
-						{
-							return WORKER_TASK_CONNECT_TS_NETWORK;
-						}
 
 						@Override
 						public void onRun()
@@ -172,7 +166,7 @@ public class ShareActivity extends Activity
 										@Override
 										public void onError(Exception error)
 										{
-											getProgressDialog().cancel();
+											getProgressDialog().dismiss();
 										}
 
 										@Override
@@ -186,7 +180,7 @@ public class ShareActivity extends Activity
 													@Override
 													public void run()
 													{
-														getProgressDialog().cancel();
+														getProgressDialog().dismiss();
 														doCommunicate(device, connection);
 													}
 												});
@@ -198,7 +192,7 @@ public class ShareActivity extends Activity
 							}
 
 							if (!mConnected) {
-								getProgressDialog().cancel();
+								getProgressDialog().dismiss();
 								createSnackbar(R.string.mesg_connectionFailure)
 										.show();
 							}
@@ -219,7 +213,7 @@ public class ShareActivity extends Activity
 	{
 		super.onDestroy();
 
-		getDefaultInterrupter().interrupt();
+		getDefaultInterrupter().interrupt(false);
 		unbindService(mWorkerConnection);
 	}
 
@@ -288,14 +282,8 @@ public class ShareActivity extends Activity
 		getProgressDialog().setMessage(getString(R.string.mesg_communicating));
 		getProgressDialog().show();
 
-		runOnWorkerService(new WorkerService.RunningTask()
+		runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_SERVER)
 		{
-			@Override
-			public long getJobId()
-			{
-				return WORKER_TASK_CONNECT_SERVER;
-			}
-
 			@Override
 			public void onRun()
 			{
@@ -304,10 +292,12 @@ public class ShareActivity extends Activity
 					@Override
 					public void onConnect(CoolSocket.Client client)
 					{
+						TransactionObject.Group groupInstance = null;
+
 						try {
 							final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(deviceIp, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
 
-							getDefaultInterrupter().useCloser(new Interrupter.Closer()
+							getDefaultInterrupter().addCloser(new Interrupter.Closer()
 							{
 								@Override
 								public void onClose()
@@ -325,20 +315,19 @@ public class ShareActivity extends Activity
 									.put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
 
 							if (mSharedText == null) {
-								JSONArray filesArray = new JSONArray();
-								int groupId = AppUtils.getUniqueNumber();
-								TransactionObject.Group groupInstance = new TransactionObject.Group(groupId, device.deviceId, connection.adapterName);
+								groupInstance = new TransactionObject.Group(AppUtils.getUniqueNumber(), device.deviceId, connection.adapterName);
 
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-								jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupId);
+								jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupInstance.groupId);
 
+								JSONArray filesArray = new JSONArray();
 								ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
 								getProgressDialog().setMax(mFiles.size());
 
 								for (SelectableStream selectableStream : mFiles) {
 									if (getDefaultInterrupter().interrupted())
-										break;
+										throw new InterruptedException("Interrupted by user");
 
 									if (!selectableStream.isSelectableSelected())
 										continue;
@@ -382,16 +371,13 @@ public class ShareActivity extends Activity
 
 									for (TransactionObject transactionObject : pendingRegistry) {
 										if (getDefaultInterrupter().interrupted())
-											break;
+											throw new InterruptedException("Interrupted by user");
 
 										getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
 										mDatabase.insert(transactionObject);
 									}
 
-									if (getDefaultInterrupter().interrupted())
-										mDatabase.remove(groupInstance);
-									else
-										TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
+									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 								}
 							} else {
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
@@ -428,12 +414,16 @@ public class ShareActivity extends Activity
 							device.lastUsageTime = System.currentTimeMillis();
 							mDatabase.publish(device);
 						} catch (Exception e) {
-							e.printStackTrace();
-							createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
-									.show();
-						}
+							mDatabase.remove(groupInstance);
 
-						getProgressDialog().cancel();
+							if (!(e instanceof InterruptedException)) {
+								e.printStackTrace();
+								createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
+										.show();
+							}
+						} finally {
+							getProgressDialog().dismiss();
+						}
 					}
 				}, Object.class);
 			}
@@ -448,7 +438,7 @@ public class ShareActivity extends Activity
 					.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
 					.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 		else
-			new SelectedEditorDialog<>(this, mFiles).show();
+			new SelectionEditorDialog<>(this, mFiles).show();
 	}
 
 	public Interrupter getDefaultInterrupter()
@@ -516,14 +506,8 @@ public class ShareActivity extends Activity
 		getProgressDialog().setMessage(getString(R.string.mesg_organizingFiles));
 		getProgressDialog().show();
 
-		runOnWorkerService(new WorkerService.RunningTask()
+		runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_LOAD_ITEMS)
 		{
-			@Override
-			public long getJobId()
-			{
-				return WORKER_TASK_LOAD_ITEMS;
-			}
-
 			@Override
 			public void onRun()
 			{
@@ -555,14 +539,16 @@ public class ShareActivity extends Activity
 
 				if (getDefaultInterrupter().interrupted()) {
 					mFiles.clear();
-					finish();
+
+					if (getDefaultInterrupter().interruptedByUser())
+						finish();
 				} else
 					runOnUiThread(new Runnable()
 					{
 						@Override
 						public void run()
 						{
-							getProgressDialog().cancel();
+							getProgressDialog().dismiss();
 
 							if (mFiles.size() == 1)
 								mToolbar.setTitle(mFiles.get(0).friendlyName);
@@ -579,6 +565,9 @@ public class ShareActivity extends Activity
 	protected ProgressDialog resetProgressItems()
 	{
 		getDefaultInterrupter().reset();
+		getProgressDialog().dismiss();
+
+		mProgressDialog = new ProgressDialog(this);
 
 		getProgressDialog().setCancelable(false);
 		getProgressDialog().setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);

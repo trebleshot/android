@@ -13,7 +13,8 @@
         android:layout_marginEnd="23dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ripple_background_accent">
 
         <ImageView
             android:id="@+id/image"
@@ -22,7 +23,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
             android:src="@drawable/ic_file_upload_black_24dp"
-            android:tint="@color/colorAccent"/>
+            android:tint="@color/whiteAccent"/>
 
         <View
             android:id="@+id/selector"
@@ -46,6 +47,10 @@
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="4dp" />
 
         <LinearLayout
             android:layout_width="match_parent"

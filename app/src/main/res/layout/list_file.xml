@@ -13,7 +13,8 @@
         android:layout_marginEnd="23dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
-        android:layout_marginStart="8dp">
+        android:layout_marginStart="8dp"
+        android:background="@drawable/ripple_background_accent">
 
         <ImageView
             android:id="@+id/image"
@@ -22,7 +23,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
             android:src="@drawable/ic_folder_white_24dp"
-            android:tint="@color/colorAccent"/>
+            android:tint="@color/whiteAccent"/>
 
         <View
             android:id="@+id/selector"
@@ -47,6 +48,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3"/>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="4dp" />
 
         <TextView
             android:id="@+id/text2"

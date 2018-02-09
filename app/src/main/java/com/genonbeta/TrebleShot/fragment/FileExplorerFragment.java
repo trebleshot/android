@@ -32,11 +32,11 @@ public class FileExplorerFragment
 		extends Fragment
 		implements TitleSupport, DetachListener
 {
-	private RecyclerView mRecyclerView;
+	private RecyclerView mPathView;
 	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
 	private LinearLayoutManager mLayoutManager;
-	private PathResolverRecyclerAdapter mAdapter;
+	private PathResolverRecyclerAdapter mPathAdapter;
 	private File mRequestedPath = null;
 
 	@Override
@@ -52,14 +52,14 @@ public class FileExplorerFragment
 	{
 		View view = inflater.inflate(R.layout.fragment_fileexplorer, container, false);
 
-		mRecyclerView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
+		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
 		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
 		mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-		mAdapter = new PathResolverRecyclerAdapter();
+		mPathAdapter = new PathResolverRecyclerAdapter();
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
 				.findFragmentById(R.id.fragment_fileexplorer_fragment_files);
 
-		mAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener()
+		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener()
 		{
 			@Override
 			public void onClick(PathResolverRecyclerAdapter.Holder holder)
@@ -82,19 +82,19 @@ public class FileExplorerFragment
 			@Override
 			public void onPathChanged(File file)
 			{
-				mAdapter.goTo(file == null ? null : file.getAbsolutePath().split(File.separator));
-				mAdapter.notifyDataSetChanged();
+				mPathAdapter.goTo(file == null ? null : file.getAbsolutePath().split(File.separator));
+				mPathAdapter.notifyDataSetChanged();
 
-				if (mAdapter.getItemCount() > 0)
-					mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+				if (mPathAdapter.getItemCount() > 0)
+					mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
 			}
 		});
 
-		mRecyclerView.setHasFixedSize(true);
+		mPathView.setHasFixedSize(true);
 
-		mRecyclerView.setLayoutManager(mLayoutManager);
+		mPathView.setLayoutManager(mLayoutManager);
 		mLayoutManager.setStackFromEnd(true);
-		mRecyclerView.setAdapter(mAdapter);
+		mPathView.setAdapter(mPathAdapter);
 
 		return view;
 	}
@@ -151,20 +151,20 @@ public class FileExplorerFragment
 		return mFileListFragment;
 	}
 
+	public PathResolverRecyclerAdapter getPathAdapter()
+	{
+		return mPathAdapter;
+	}
+
+	public RecyclerView getPathView()
+	{
+		return mPathView;
+	}
+
 	@Override
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_fileExplorer);
-	}
-
-	public PathResolverRecyclerAdapter getRecyclerAdapter()
-	{
-		return mAdapter;
-	}
-
-	public RecyclerView getRecyclerView()
-	{
-		return mRecyclerView;
 	}
 
 	public void requestPath(File file)

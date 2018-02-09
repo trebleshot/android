@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -27,7 +28,6 @@ public class ApplicationListFragment
 {
 	private SharedPreferences mPreferences;
 
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
@@ -35,6 +35,15 @@ public class ApplicationListFragment
 
 		setHasOptionsMenu(true);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+	}
+
+	@Override
+	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		setEmptyImage(R.drawable.ic_apps_white_24dp);
+		setEmptyText(getString(R.string.text_listEmptyApp));
 	}
 
 	@Override

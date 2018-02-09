@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import java.util.ArrayList;
+
 /**
  * created by: Veli
  * date: 20.11.2017 00:15
@@ -8,30 +10,85 @@ package com.genonbeta.TrebleShot.util;
 public class Interrupter
 {
 	private boolean mInterrupted = false;
-	private Closer mCloser;
+	private boolean mInterruptedByUser = false;
+	private ArrayList<Closer> mClosers = new ArrayList<>();
+
+	public boolean addCloser(Closer closer)
+	{
+		synchronized (getClosers()) {
+			return getClosers().add(closer);
+		}
+	}
+
+	public boolean hasCloser(Closer closer)
+	{
+		synchronized (getClosers()) {
+			return getClosers().contains(closer);
+		}
+	}
+
+	public ArrayList<Closer> getClosers()
+	{
+		return mClosers;
+	}
 
 	public boolean interrupted()
 	{
 		return mInterrupted;
 	}
 
-	public void interrupt()
+	public boolean interruptedByUser()
 	{
+		return mInterruptedByUser;
+	}
+
+	public boolean interrupt()
+	{
+		return interrupt(true);
+	}
+
+	public boolean interrupt(boolean userAction)
+	{
+		if (interrupted())
+			return false;
+
+		mInterruptedByUser = userAction;
 		mInterrupted = true;
 
-		if (mCloser != null)
-			mCloser.onClose();
+		synchronized (getClosers()) {
+			for (Closer closer : getClosers())
+				closer.onClose();
+		}
+
+		return true;
+	}
+
+	public boolean removeCloser(Closer closer)
+	{
+		synchronized (getClosers()) {
+			return getClosers().remove(closer);
+		}
 	}
 
 	public void reset()
 	{
-		mInterrupted = false;
-		mCloser = null;
+		reset(true);
 	}
 
-	public void useCloser(Closer closer)
+	public void reset(boolean resetClosers)
 	{
-		mCloser = closer;
+		mInterrupted = false;
+		mInterruptedByUser = false;
+
+		if (resetClosers)
+			resetClosers();
+	}
+
+	public void resetClosers()
+	{
+		synchronized (getClosers()) {
+			getClosers().clear();
+		}
 	}
 
 	public interface Closer
