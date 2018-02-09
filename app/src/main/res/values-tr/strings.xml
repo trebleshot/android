@@ -24,7 +24,7 @@
     <string name="butn_cancelReceiving">Alımı iptal et</string>
     <string name="text_fileReceived">Dosya alındı</string>
     <string name="butn_scan">Tara</string>
-    <string name="text_listEmpty">Liste boş</string>
+    <string name="text_listEmpty">Liste boş!</string>
     <string name="text_developerMode">Geliştirici modu</string>
     <string name="text_developerModeSummary">Kullanıcı yapılandırmasını devre dışı bırakır</string>
     <string name="text_deviceName">Cihaz adı</string>
@@ -61,7 +61,7 @@
     <string name="butn_pendingTransfers">İş. Kuyruğu</string>
     <string name="butn_shareWithTrebleshot">TrebleShot ile paylaş</string>
     <string name="mesg_somethingWentWrong">Birşeyler ters gitti</string>
-    <string name="text_findDevicesHint">Cihazları bulmak için arama simgesine dokunun</string>
+    <string name="text_findDevicesHint">Cihazları bulmak için arama simgesine dokunun!</string>
     <string name="text_autoScanDevices">Cihazları otomatik tara</string>
     <string name="text_autoScanDevicesSummary">Gerekli durumlarda tarama başlatılır</string>
     <string name="mesg_stillScanning">Halen arıyor</string>
