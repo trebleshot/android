@@ -53,7 +53,7 @@ public class TextStreamListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_textsms_white_24dp);
+		setEmptyImage(R.drawable.ic_forum_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTextStream));
 	}
 

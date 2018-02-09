@@ -13,7 +13,7 @@
 
         <item
             android:id="@+id/menu_activity_main_share_text"
-            android:icon="@drawable/ic_textsms_white_24dp"
+            android:icon="@drawable/ic_forum_white_24dp"
             android:title="@string/text_textStream"/>
 
         <item
@@ -75,7 +75,7 @@
 
         <item
             android:id="@+id/menu_activity_main_exit"
-            android:icon="@drawable/ic_clear_white_24dp"
+            android:icon="@drawable/ic_exit_to_app_white_24dp"
             android:orderInCategory="14"
             android:title="@string/butn_exit"/>
     </group>
