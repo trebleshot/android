@@ -6,8 +6,8 @@
     <string name="text_available">可用</string>
     <string name="text_notAvailable">不可用</string>
     <string name="text_deviceListEmpty">没有设备</string>
-    <string name="mesg_noNetwork">我需要一个连接如Wi-Fi来查找附近设备</string>
-    <string name="mesg_scanningDevices">正在寻找附近设备</string>
+    <string name="mesg_noNetwork">我需要一个连接如Wi-Fi来查找附近的设备</string>
+    <string name="mesg_scanningDevices">正在寻找附近的设备</string>
     <string name="ques_receiveFile">是否接收文件？</string>
     <string name="butn_accept">接受</string>
     <string name="butn_reject">拒绝</string>
@@ -18,7 +18,7 @@
     <string name="butn_cancelReceiving">取消接收</string>
     <string name="text_fileReceived">文件已接收</string>
     <string name="butn_scan">扫描</string>
-    <string name="text_listEmpty">列表空</string>
+    <string name="text_listEmpty">列表为空！</string>
     <string name="text_developerMode">开发者模式</string>
     <string name="text_developerModeSummary">这会禁用用户设置</string>
     <string name="text_deviceName">设备名</string>
@@ -48,7 +48,7 @@
     <string name="butn_pendingTransfers">队列</string>
     <string name="butn_shareWithTrebleshot">用TrebleShow分享</string>
     <string name="mesg_somethingWentWrong">出错了</string>
-    <string name="text_findDevicesHint">触碰搜索图标以寻找附近设备</string>
+    <string name="text_findDevicesHint">轻触搜索图标以寻找附近的设备！</string>
     <string name="text_autoScanDevices">自动扫描设备</string>
     <string name="text_autoScanDevicesSummary">需要时扫描设备</string>
     <string name="mesg_stillScanning">仍在扫描</string>
@@ -126,4 +126,40 @@
     <string name="text_storage">存储</string>
     <string name="text_shareFiles">分享文件</string>
     <string name="text_fileStatus">文件状态</string>
+    <string name="text_navigationDrawerOpen">打开导航面板</string>
+    <string name="text_navigationDrawerClose">关闭导航面板</string>
+    <string name="mesg_fileReceived">%s 已接收</string>
+    <string name="text_pendingTransfersOfDevice">等候队列 - %s</string>
+    <string name="text_useVibration">震动与通知卡片</string>
+    <string name="text_useVibrationSummary">震动并显示通知卡片</string>
+    <string name="text_autoStart">自启动</string>
+    <string name="text_aboutSummary">这个软件由Genonbeta Libre Software Org开发</string>
+    <string name="text_typeText">写下您想发送的文字…</string>
+    <string name="text_textEditor">文本编辑器</string>
+    <string name="text_empty">(空)</string>
+    <string name="butn_wifiSettings">Wi-Fi</string>
+    <string name="text_pendingTransfers">正在等待的传输</string>
+    <string name="butn_proceed">已完成</string>
+    <string name="text_removeCertainPendingTransfersSummary">这将会移除列表中所有正在等待的传输</string>
+    <string name="text_availableNetworks">选择网络 - %s</string>
+    <string name="text_noNetworkAvailable">无可用的网络</string>
+    <string name="mesg_organizingFiles">整理您的文件</string>
+    <string name="text_communicationService">通信服务</string>
+    <string name="text_notAllowedHelp">检查您是否在 %1$s 上被允许。
+\n
+\n设备列表 &gt; %2$s &gt; 允许连接 &gt; （打勾）</string>
+    <string name="mesg_pathSaved">该文件夹已保存</string>
+    <string name="butn_search">搜索</string>
+    <string name="butn_changeConnection">更改连接</string>
+    <string name="text_fileName">文件名</string>
+    <string name="text_fileSize">文件大小</string>
+    <string name="text_fileMime">文件类型</string>
+    <string name="butn_resume">继续</string>
+    <string name="text_fileExplorer">文件管理器</string>
+    <string name="butn_createFolder">创建文件夹</string>
+    <string name="text_chooseFolder">选择文件夹</string>
+    <string name="text_chooseFile">选择文件</string>
+    <string name="mesg_pathSameError">您不能选择旧文件夹</string>
+    <string name="ques_checkOldFiles">检查破损的文件？</string>
+    <string name="mesg_newFilesReceived">新的文件已被接收</string>
     </resources>
