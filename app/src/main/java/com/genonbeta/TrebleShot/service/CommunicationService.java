@@ -25,12 +25,15 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
+import com.genonbeta.TrebleShot.io.DocumentFile;
+import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -48,7 +51,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,6 +58,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
 public class CommunicationService extends Service
@@ -88,6 +92,7 @@ public class CommunicationService extends Service
 	private AccessDatabase mDatabase;
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
+	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
 	private HotspotUtils mHotspotUtils;
 	private Object mBlockingObject = new Object();
 
@@ -124,7 +129,9 @@ public class CommunicationService extends Service
 		mMediaScanner.connect();
 		mNsdDiscovery.registerService();
 
-		getWifiLock().acquire();
+		if (getWifiLock() != null)
+			getWifiLock().acquire();
+
 		updateServiceState(getNotificationHelper().getUtils().getPreferences().getBoolean("trust_always", false));
 
 		if (!AppUtils.checkRunningConditions(this)
@@ -150,29 +157,30 @@ public class CommunicationService extends Service
 				getNotificationHelper().getUtils().cancel(notificationId);
 
 				try {
-					final NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 					final TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId);
 
-					CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+					CommunicationBridge.connect(getDatabase(), new CommunicationBridge.Client.ConnectionHandler()
 					{
 						@Override
-						public void onConnect(CoolSocket.Client connect)
+						public void onConnect(CommunicationBridge.Client client)
 						{
 							try {
-								JSONObject jsonObject = new JSONObject();
+								CoolSocket.ActiveConnection activeConnection = client.communicate(transferInstance.getDevice(), transferInstance.getConnection());
 
-								jsonObject.put(Keyword.DEVICE_INFO_SERIAL, localDevice.deviceId);
-								jsonObject.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE);
-								jsonObject.put(Keyword.TRANSFER_GROUP_ID, groupId);
-								jsonObject.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted);
-
-								CoolSocket.ActiveConnection activeConnection = connect.connect(new InetSocketAddress(transferInstance.getConnection().ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
-								activeConnection.reply(jsonObject.toString());
+								activeConnection.reply(new JSONObject()
+										.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
+										.put(Keyword.TRANSFER_GROUP_ID, groupId)
+										.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
+										.toString());
 							} catch (JSONException e) {
 								e.printStackTrace();
 							} catch (TimeoutException e) {
 								e.printStackTrace();
 							} catch (IOException e) {
+								e.printStackTrace();
+							} catch (CommunicationBridge.DifferentClientException e) {
+								e.printStackTrace();
+							} catch (CommunicationBridge.CommunicationException e) {
 								e.printStackTrace();
 							}
 						}
@@ -307,7 +315,7 @@ public class CommunicationService extends Service
 		if (getHotspotUtils().unloadPreviousConfig())
 			getHotspotUtils().disable();
 
-		if (getWifiLock().isHeld())
+		if (getWifiLock() != null && getWifiLock().isHeld())
 			getWifiLock().release();
 
 		stopForeground(true);
@@ -361,6 +369,11 @@ public class CommunicationService extends Service
 		return mOngoingIndexList;
 	}
 
+	public ExecutorService getSelfExecutor()
+	{
+		return mSelfExecutor;
+	}
+
 	public WifiManager.WifiLock getWifiLock()
 	{
 		return mWifiLock;
@@ -376,7 +389,7 @@ public class CommunicationService extends Service
 		if (!getHotspotUtils().isEnabled()) {
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
 		} else
-			mHotspotUtils.disable();
+			getHotspotUtils().disable();
 	}
 
 	public void startFileReceiving(int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
@@ -401,50 +414,64 @@ public class CommunicationService extends Service
 	{
 		public CommunicationServer()
 		{
-			super(AppConfig.COMMUNICATION_SERVER_PORT);
-			setSocketTimeout(AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
+			super(AppConfig.SERVER_PORT_COMMUNICATION);
+			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT_LARGE);
 		}
 
 		@Override
-		protected void onConnected(ActiveConnection activeConnection)
+		protected void onConnected(final ActiveConnection activeConnection)
 		{
 			if (getConnectionCountByAddress(activeConnection.getAddress()) > 3)
 				return;
 
 			try {
 				ActiveConnection.Response clientRequest = activeConnection.receive();
-				JSONObject responseJSON = clientRequest.totalLength > 0 ? new JSONObject(clientRequest.response) : new JSONObject();
+				JSONObject responseJSON = analyzeResponse(clientRequest);
 				JSONObject replyJSON = new JSONObject();
 
 				if (responseJSON.has(Keyword.REQUEST)
 						&& Keyword.BACK_COMP_REQUEST_SEND_UPDATE.equals(responseJSON.getString(Keyword.REQUEST))) {
 					activeConnection.reply(replyJSON.put(Keyword.RESULT, true).toString());
-					UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getClientAddress());
+
+					getSelfExecutor().submit(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							try {
+								UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getClientAddress());
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					});
+
 					return;
 				}
-
-				JSONObject deviceInformation = new JSONObject();
-				JSONObject appInfo = new JSONObject();
 
 				boolean result = false;
 				boolean shouldContinue = false;
 
-				NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+				String deviceSerial = null;
 
-				deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, localDevice.deviceId);
-				deviceInformation.put(Keyword.DEVICE_INFO_BRAND, localDevice.brand);
-				deviceInformation.put(Keyword.DEVICE_INFO_MODEL, localDevice.model);
-				deviceInformation.put(Keyword.DEVICE_INFO_USER, localDevice.nickname);
+				AppUtils.applyDeviceToJSON(AppUtils.getLocalDevice(getApplicationContext()), replyJSON);
 
-				appInfo.put(Keyword.APP_INFO_VERSION_CODE, localDevice.versionNumber);
-				appInfo.put(Keyword.APP_INFO_VERSION_NAME, localDevice.versionName);
+				if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED) && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
+					pushReply(activeConnection, replyJSON, true);
 
-				replyJSON.put(Keyword.APP_INFO, appInfo);
-				replyJSON.put(Keyword.DEVICE_INFO, deviceInformation);
+					if (!responseJSON.has(Keyword.HANDSHAKE_ONLY) || !responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY)) {
+						if (responseJSON.has(Keyword.DEVICE_INFO_SERIAL))
+							deviceSerial = responseJSON.getString(Keyword.DEVICE_INFO_SERIAL);
 
-				if (responseJSON.has(Keyword.DEVICE_INFO_SERIAL)) {
-					String serialNumber = responseJSON.getString(Keyword.DEVICE_INFO_SERIAL);
-					NetworkDevice device = new NetworkDevice(serialNumber);
+						clientRequest = activeConnection.receive();
+						responseJSON = analyzeResponse(clientRequest);
+					} else {
+						return;
+					}
+				}
+
+				if (deviceSerial != null) {
+					NetworkDevice device = new NetworkDevice(deviceSerial);
 
 					try {
 						mDatabase.reconstruct(device);
@@ -483,13 +510,11 @@ public class CommunicationService extends Service
 
 									result = true;
 
-									new Thread()
+									getSelfExecutor().submit(new Runnable()
 									{
 										@Override
 										public void run()
 										{
-											super.run();
-
 											Interrupter interrupter = new Interrupter();
 											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
 											TransactionObject transactionObject = null;
@@ -564,7 +589,7 @@ public class CommunicationService extends Service
 
 											}
 										}
-									}.start();
+									});
 								}
 								break;
 							case (Keyword.REQUEST_RESPONSE):
@@ -592,12 +617,22 @@ public class CommunicationService extends Service
 					}
 				}
 
-				replyJSON.put(Keyword.RESULT, result);
-
-				activeConnection.reply(replyJSON.toString());
+				pushReply(activeConnection, replyJSON, result);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		public JSONObject analyzeResponse(ActiveConnection.Response response) throws JSONException
+		{
+			return response.totalLength > 0 ? new JSONObject(response.response) : new JSONObject();
+		}
+
+		public void pushReply(ActiveConnection activeConnection, JSONObject reply, boolean result) throws JSONException, TimeoutException, IOException
+		{
+			activeConnection.reply(reply
+					.put(Keyword.RESULT, result)
+					.toString());
 		}
 	}
 
@@ -605,7 +640,7 @@ public class CommunicationService extends Service
 	{
 		public SeamlessServer()
 		{
-			super(AppConfig.SEAMLESS_SERVER_PORT);
+			super(AppConfig.SERVER_PORT_SEAMLESS);
 		}
 
 		@Override
@@ -656,11 +691,11 @@ public class CommunicationService extends Service
 						activeConnection.reply(currentReply.toString());
 
 						if (currentReply.getBoolean(Keyword.RESULT)) {
-							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transactionObject.file), true);
+							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transactionObject.file));
 
 							getNotificationHelper().notifyFileTransaction(processHolder);
 
-							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transactionObject.accessPort, streamInfo.inputStream, streamInfo.size, AppConfig.DEFAULT_BUFFER_SIZE, processHolder, true);
+							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transactionObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
 						}
 					}
 
@@ -718,7 +753,7 @@ public class CommunicationService extends Service
 			CoolSocket.ActiveConnection activeConnection = null;
 
 			try {
-				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SEAMLESS_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 				activeConnection.reply(new JSONObject()
 						.put(Keyword.TRANSFER_GROUP_ID, mTransfer.getGroup().groupId)
@@ -730,7 +765,7 @@ public class CommunicationService extends Service
 				processHolder.group = mTransfer.getGroup();
 
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
-				File savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
+				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
 					String errorCode = mainRequestJSON.has(Keyword.ERROR)
@@ -765,11 +800,13 @@ public class CommunicationService extends Service
 						}
 
 						processHolder.transactionObject = new TransactionObject(receiverInstance);
-						File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
+						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
 
 						getNotificationHelper().notifyFileTransaction(processHolder);
 
-						processHolder.transferHandler = mReceive.receive(0, file, processHolder.transactionObject.fileSize, AppConfig.DEFAULT_BUFFER_SIZE, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
+						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
+
+						processHolder.transferHandler = mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transactionObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
 						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
 							break;
@@ -819,7 +856,14 @@ public class CommunicationService extends Service
 		{
 			getDatabase().remove(handler.getExtra().transactionObject);
 
-			handler.setFile(FileUtils.saveReceivedFile(handler.getFile(), handler.getExtra().transactionObject));
+			DocumentFile currentFile = handler.getExtra().currentFile;
+
+			if (currentFile.getParentFile() != null)
+				try {
+					handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transactionObject);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 		}
 
 		@Override
@@ -847,8 +891,12 @@ public class CommunicationService extends Service
 				jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transactionObject.groupId);
 				jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, serverSocket.getLocalPort());
 
-				if (handler.getFile().length() > 0)
-					jsonObject.put(Keyword.SKIPPED_BYTES, handler.getFile().length());
+				long currentSize = handler.getExtra().currentFile.length();
+
+				if (currentSize > 0) {
+					jsonObject.put(Keyword.SKIPPED_BYTES, currentSize);
+					handler.skipBytes(currentSize);
+				}
 
 				handler.getExtra().activeConnection.reply(jsonObject.toString());
 
@@ -893,12 +941,15 @@ public class CommunicationService extends Service
 			super.onProcessListChanged(processList, handler, isAdded);
 
 			if (!isAdded) {
-				if (mMediaScanner.isConnected())
-					mMediaScanner.scanFile(handler.getFile().getAbsolutePath(), handler.getExtra().transactionObject.fileMimeType);
+				DocumentFile currentFile = handler.getExtra().currentFile;
 
-				sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
-						.putExtra(FileListFragment.EXTRA_FILE_PARENT, handler.getFile().getParent())
-						.putExtra(FileListFragment.EXTRA_FILE_NAME, handler.getFile().getName()));
+				if (currentFile instanceof LocalDocumentFile && mMediaScanner.isConnected())
+					mMediaScanner.scanFile(((LocalDocumentFile) currentFile).getFile().getAbsolutePath(), handler.getExtra().transactionObject.fileMimeType);
+
+				if (currentFile.getParentFile() != null)
+					sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+							.putExtra(FileListFragment.EXTRA_FILE_PARENT, currentFile.getParentFile().getUri())
+							.putExtra(FileListFragment.EXTRA_FILE_NAME, currentFile.getName()));
 			}
 		}
 	}
@@ -965,7 +1016,7 @@ public class CommunicationService extends Service
 
 
 		@Override
-		public void onOrientatingStreams(Handler handler, InputStream inputStream, OutputStream outputStream)
+		public void onOrientatingStreams(TransferHandler<ProcessHolder> handler, InputStream inputStream, OutputStream outputStream)
 		{
 			super.onOrientatingStreams(handler, inputStream, outputStream);
 
@@ -986,5 +1037,6 @@ public class CommunicationService extends Service
 		public TransactionObject transactionObject;
 		public DynamicNotification notification;
 		public TransactionObject.Group group;
+		public DocumentFile currentFile;
 	}
 }

@@ -12,8 +12,7 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-
-import java.io.File;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 
 /**
  * Created by: veli
@@ -65,7 +64,7 @@ public class FilePickerActivity extends Activity
 					@Override
 					public void onClick(View v)
 					{
-						File selectedPath = mFileExplorerFragment.getFileListFragment().getAdapter().getPath();
+						DocumentFile selectedPath = mFileExplorerFragment.getFileListFragment().getAdapter().getPath();
 
 						if (selectedPath != null && selectedPath.canWrite())
 							finishWithResult(selectedPath);
@@ -79,12 +78,12 @@ public class FilePickerActivity extends Activity
 				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
 				{
 					@Override
-					public boolean onFileClicked(FileListAdapter.FileHolder fileInfo)
+					public boolean onFileClicked(FileListAdapter.GenericFileHolder fileInfo)
 					{
-						if (!fileInfo.file.isFile())
+						if (!(fileInfo instanceof FileListAdapter.FileHolder))
 							return false;
 
-						finishWithResult(fileInfo.file);
+						finishWithResult(((FileListAdapter.FileHolder) fileInfo).file);
 
 						return true;
 					}
@@ -95,10 +94,10 @@ public class FilePickerActivity extends Activity
 			finish();
 	}
 
-	private void finishWithResult(File file)
+	private void finishWithResult(DocumentFile file)
 	{
 		setResult(Activity.RESULT_OK, new Intent(ACTION_CHOOSE_DIRECTORY)
-				.putExtra(EXTRA_CHOSEN_PATH, file.getAbsolutePath()));
+				.putExtra(EXTRA_CHOSEN_PATH, file.getUri()));
 
 		finish();
 	}

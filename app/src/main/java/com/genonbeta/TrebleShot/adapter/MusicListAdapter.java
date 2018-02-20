@@ -33,7 +33,7 @@ public class MusicListAdapter
 	{
 		super(context);
 		mResolver = context.getContentResolver();
-		mDefaultAlbumDrawable = ContextCompat.getDrawable(getContext(), R.drawable.default_album_art);
+		mDefaultAlbumDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_music_note_white_24dp);
 	}
 
 	@Override
@@ -69,11 +69,13 @@ public class MusicListAdapter
 			int nameIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
 			int dateIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED);
 			int sizeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.SIZE);
+			int typeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
 			do {
 				list.add(new SongHolder(songCursor.getString(nameIndex),
 						songCursor.getString(artistIndex),
 						songCursor.getString(songIndex),
+						songCursor.getString(typeIndex),
 						songCursor.getInt(albumIndex),
 						albumList.get(songCursor.getInt(albumIndex)),
 						songCursor.getLong(dateIndex),
@@ -129,7 +131,7 @@ public class MusicListAdapter
 		TextView text3 = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(holder.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
@@ -165,9 +167,9 @@ public class MusicListAdapter
 		public int albumId;
 		public AlbumHolder albumHolder;
 
-		public SongHolder(String displayName, String artist, String song, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
+		public SongHolder(String displayName, String artist, String song, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
 		{
-			super(artist + " - " + song, displayName, date, size, uri);
+			super(artist + " - " + song, displayName, mimeType, date, size, uri);
 
 			this.artist = artist;
 			this.song = song;

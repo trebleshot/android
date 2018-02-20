@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.channels.NotYetBoundException;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,6 +40,10 @@ abstract public class CoolTransfer<T>
 	}
 
 	public void onStop(TransferHandler<T> handler)
+	{
+	}
+
+	public void onOrientatingStreams(TransferHandler<T> handler, InputStream inputStream, OutputStream outputStream)
 	{
 	}
 
@@ -125,14 +128,15 @@ abstract public class CoolTransfer<T>
 		private T mExtra;
 		private int mPort;
 		private long mFileSize;
-		private byte[] mBufferSize;
+		private byte[] mBuffer;
+		private long mSkippedBytes = 0;
 
 		public TransferHandler(int port, long fileSize, byte[] bufferSize, T extra)
 		{
 			mExtra = extra;
 			mPort = port;
 			mFileSize = fileSize;
-			mBufferSize = bufferSize;
+			mBuffer = bufferSize;
 		}
 
 		protected abstract void onRun();
@@ -147,14 +151,9 @@ abstract public class CoolTransfer<T>
 			return getTransferProgress().isInterrupted();
 		}
 
-		public byte[] getBufferSize()
+		public byte[] getBuffer()
 		{
-			return mBufferSize;
-		}
-
-		public File getFile()
-		{
-			return null;
+			return mBuffer;
 		}
 
 		public Flag getFlag()
@@ -175,6 +174,11 @@ abstract public class CoolTransfer<T>
 		public int getPort()
 		{
 			return mPort;
+		}
+
+		public long getSkippedBytes()
+		{
+			return mSkippedBytes;
 		}
 
 		public Socket getSocket()
@@ -203,10 +207,6 @@ abstract public class CoolTransfer<T>
 			return this;
 		}
 
-		public void setFile(File file)
-		{
-		}
-
 		public void setFlag(Flag flag)
 		{
 			mFlag = flag;
@@ -227,6 +227,14 @@ abstract public class CoolTransfer<T>
 			mTransferProgress = transferProgress;
 		}
 
+		public void skipBytes(long bytes) throws IOException
+		{
+			if (mSkippedBytes > 0)
+				getTransferProgress().decrementTransferredByte(mSkippedBytes);
+
+			getTransferProgress().incrementTransferredByte(mSkippedBytes = bytes);
+		}
+
 		@Override
 		public void run()
 		{
@@ -240,14 +248,14 @@ abstract public class CoolTransfer<T>
 	{
 		public abstract Flag onSocketReady(TransferHandler<T> handler, ServerSocket serverSocket);
 
-		public void onOrientatingStreams(Handler handler, InputStream inputStream, FileOutputStream fileOutputStream)
+		public Handler receive(int port, File file, long fileSize, int bufferSize, int timeOut, T extra, boolean currentThread) throws FileNotFoundException
 		{
-
+			return receive(port, new FileOutputStream(file, true), fileSize, bufferSize, timeOut, extra, currentThread);
 		}
 
-		public Handler receive(int port, File file, long fileSize, byte[] bufferSize, int timeOut, T extra, boolean currentThread)
+		public Handler receive(int port, OutputStream outputStream, long fileSize, int bufferSize, int timeOut, T extra, boolean currentThread)
 		{
-			Handler handler = new Handler(extra, port, file, fileSize, bufferSize, timeOut);
+			Handler handler = new Handler(extra, port, outputStream, fileSize, new byte[bufferSize], timeOut);
 
 			if (currentThread)
 				handler.run();
@@ -260,14 +268,15 @@ abstract public class CoolTransfer<T>
 		public class Handler extends CoolTransfer.TransferHandler<T>
 		{
 			private int mTimeout;
-			private File mFile;
+			private OutputStream mStream;
 			private ServerSocket mServerSocket;
 
-			public Handler(T extra, int port, File file, long fileSize, byte[] bufferSize, int timeout)
+
+			public Handler(T extra, int port, OutputStream stream, long fileSize, byte[] bufferSize, int timeout)
 			{
 				super(port, fileSize, bufferSize, extra);
 
-				mFile = file;
+				mStream = stream;
 				mTimeout = timeout;
 			}
 
@@ -297,19 +306,16 @@ abstract public class CoolTransfer<T>
 
 							if (Flag.CONTINUE.equals(getFlag())) {
 								InputStream inputStream = getSocket().getInputStream();
-								FileOutputStream outputStream = new FileOutputStream(getFile(), getFile().length() > 0);
-
-								getTransferProgress().incrementTransferredByte(getFile().length());
-								onOrientatingStreams(this, inputStream, outputStream);
+								onOrientatingStreams(this, inputStream, getOutputStream());
 
 								int len = 0;
 								long lastRead = System.currentTimeMillis();
 
 								while (len != -1) {
 									synchronized (getBlockingObject()) {
-										if ((len = inputStream.read(getBufferSize())) > 0) {
-											outputStream.write(getBufferSize(), 0, len);
-											outputStream.flush();
+										if ((len = inputStream.read(getBuffer())) > 0) {
+											getOutputStream().write(getBuffer(), 0, len);
+											getOutputStream().flush();
 
 											lastRead = System.currentTimeMillis();
 
@@ -325,31 +331,37 @@ abstract public class CoolTransfer<T>
 									}
 								}
 
-								outputStream.close();
+								getOutputStream().close();
 								inputStream.close();
 							}
-
-							getSocket().close();
 						}
-
-						getServerSocket().close();
 
 						if (!Flag.CANCEL_CURRENT.equals(getFlag()))
 							if (isInterrupted()) {
 								setFlag(Flag.CANCEL_ALL);
 								onInterrupted(this);
 							} else {
-								if (getFile().length() != getFileSize())
-									throw new NotYetBoundException();
-								else {
-									getTransferProgress().incrementTransferredFileCount();
-									onTransferCompleted(this);
-								}
+								getTransferProgress().incrementTransferredFileCount();
+								onTransferCompleted(this);
 							}
 					}
 				} catch (Exception e) {
 					setFlag(onError(this, e));
 				} finally {
+					try {
+						if (getSocket() != null && !getSocket().isClosed())
+							getSocket().close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+					try {
+						if (getServerSocket() != null && !getServerSocket().isClosed())
+							getServerSocket().close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 					onStop(this);
 
 					if (!Flag.CANCEL_ALL.equals(getFlag()))
@@ -359,9 +371,9 @@ abstract public class CoolTransfer<T>
 				}
 			}
 
-			public File getFile()
+			public OutputStream getOutputStream()
 			{
-				return mFile;
+				return mStream;
 			}
 
 			public ServerSocket getServerSocket()
@@ -374,32 +386,24 @@ abstract public class CoolTransfer<T>
 				return mTimeout;
 			}
 
-			public void setFile(File file)
-			{
-				mFile = file;
-			}
-
 			public void setServerSocket(ServerSocket serverSocket)
 			{
 				mServerSocket = serverSocket;
 			}
 
-			public void updateFile(File newAddress)
+			@Override
+			public void skipBytes(long bytes) throws IOException
 			{
-				mFile = newAddress;
+				super.skipBytes(bytes);
 			}
 		}
 	}
 
 	public static abstract class Send<T> extends CoolTransfer<T>
 	{
-		public void onOrientatingStreams(Handler handler, InputStream inputStream, OutputStream outputStream)
+		public Handler send(String serverIp, int port, InputStream stream, long totalByte, int bufferSize, T extra, boolean currentThread)
 		{
-		}
-
-		public Handler send(String serverIp, int port, InputStream stream, long totalByte, byte[] bufferSize, T extra, boolean currentThread)
-		{
-			Handler handler = new Handler(serverIp, port, stream, totalByte, bufferSize, extra);
+			Handler handler = new Handler(serverIp, port, stream, totalByte, new byte[bufferSize], extra);
 
 			if (currentThread)
 				handler.run();
@@ -409,7 +413,7 @@ abstract public class CoolTransfer<T>
 			return handler;
 		}
 
-		public Handler send(String serverIp, int port, File file, long totalByte, byte[] bufferSize, T extra, boolean currentThread) throws FileNotFoundException
+		public Handler send(String serverIp, int port, File file, long totalByte, int bufferSize, T extra, boolean currentThread) throws FileNotFoundException
 		{
 			return send(serverIp, port, new FileInputStream(file), totalByte, bufferSize, extra, currentThread);
 		}
@@ -418,7 +422,6 @@ abstract public class CoolTransfer<T>
 		{
 			private String mServerIp;
 			private InputStream mStream;
-			private long mSkippedBytes = 0;
 
 			public Handler(String serverIp, int port, InputStream stream, long fileSize, byte[] bufferSize, T extra)
 			{
@@ -455,8 +458,8 @@ abstract public class CoolTransfer<T>
 
 							while (len != -1) {
 								synchronized (getBlockingObject()) {
-									if ((len = getInputStream().read(getBufferSize())) > 0) {
-										outputStream.write(getBufferSize(), 0, len);
+									if ((len = getInputStream().read(getBuffer())) > 0) {
+										outputStream.write(getBuffer(), 0, len);
 										outputStream.flush();
 
 										getTransferProgress().incrementTransferredByte(len);
@@ -473,8 +476,6 @@ abstract public class CoolTransfer<T>
 							getInputStream().close();
 						}
 
-						getSocket().close();
-
 						if (isInterrupted()) {
 							setFlag(Flag.CANCEL_ALL);
 							onInterrupted(this);
@@ -486,6 +487,13 @@ abstract public class CoolTransfer<T>
 				} catch (Exception e) {
 					setFlag(onError(this, e));
 				} finally {
+					try {
+						if (getSocket() != null && !getSocket().isClosed())
+							getSocket().close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
 					onStop(this);
 
 					if (!Flag.CANCEL_ALL.equals(getFlag()))
@@ -505,15 +513,11 @@ abstract public class CoolTransfer<T>
 				return mServerIp;
 			}
 
-			public long getSkippedBytes()
+			@Override
+			public void skipBytes(long bytes) throws IOException
 			{
-				return mSkippedBytes;
-			}
-
-			public long skipBytes(long bytes) throws IOException
-			{
-				mSkippedBytes = bytes;
-				return getInputStream().skip(bytes);
+				super.skipBytes(bytes);
+				getInputStream().skip(bytes);
 			}
 		}
 	}
@@ -533,6 +537,18 @@ abstract public class CoolTransfer<T>
 		public int calculatePercentage(long max, long current)
 		{
 			return (int) (((float) 100 / max) * current);
+		}
+
+		public long decrementTransferredByte(long size)
+		{
+			mTransferredByte -= size;
+			return mTransferredByte;
+		}
+
+		public int decrementTransferredFileCount()
+		{
+			mTransferredFileCount--;
+			return mTransferredFileCount;
 		}
 
 		public boolean doNotify(CoolTransfer<T> transfer, TransferHandler<T> handler)

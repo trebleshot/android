@@ -57,7 +57,7 @@ public class Interrupter
 
 		synchronized (getClosers()) {
 			for (Closer closer : getClosers())
-				closer.onClose();
+				closer.onClose(userAction);
 		}
 
 		return true;
@@ -81,10 +81,10 @@ public class Interrupter
 		mInterruptedByUser = false;
 
 		if (resetClosers)
-			resetClosers();
+			removeClosers();
 	}
 
-	public void resetClosers()
+	public void removeClosers()
 	{
 		synchronized (getClosers()) {
 			getClosers().clear();
@@ -93,6 +93,6 @@ public class Interrupter
 
 	public interface Closer
 	{
-		void onClose();
+		void onClose(boolean userAction);
 	}
 }

@@ -5,6 +5,7 @@
     ques_ : in that kind of text a question mark should exist
     mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes above
+    mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
 -->
 <resources>
     <string translatable="false" name="text_appName">TrebleShot</string>
@@ -245,9 +246,9 @@
     <string name="mesg_scanningSelfHotspot">Searching for a TrebleShot hotspot</string>
     <string name="mesg_suggestSelfHotspot">Would you like to enable Wi-Fi to search for a TrebleShot hotspot?</string>
     <string name="butn_enable">Enable</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Granting permission to location is required to search for TrebleShot hotspot</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Allow TrebleShot to search and create hotspot</string>
     <string name="butn_locationSettings">Location</string>
-    <string name="mesg_locationDisabledSelfHotspot">Grant permission to location to show search results</string>
+    <string name="mesg_locationDisabledSelfHotspot">Location service is disabled. Enable to see scan results and create hotspot</string>
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot hotspot</string>
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
@@ -317,4 +318,13 @@
     <string name="text_listEmptyMusic">No songs in here!</string>
     <string name="text_internalStorage">Internal storage</string>
     <string name="text_restrictedAccessStorage">%s (restricted access)</string>
+    <string name="text_emptySearchResult">No result for \"%s\"</string>
+    <string name="mesg_listRefreshSnoozed">The list will be refreshed whenever available</string>
+    <string name="mesg_errorReadFolder">\"%s\" folder cannot be read</string>
+    <string name="butn_mountDirectory">Mount directory</string>
+    <string name="mesg_mountDirectoryHelp">Select the directory you would like to access to</string>
+    <string name="butn_ejectDirectory">Eject directory</string>
+    <string name="text_movedCacheFiles">Cache files has been moved successfully</string>
+    <string name="mode_itemCounted" translatable="false">%s (%d)</string>
+    <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
 </resources>

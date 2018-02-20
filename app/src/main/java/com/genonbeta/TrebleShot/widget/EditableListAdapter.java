@@ -31,7 +31,6 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 		setSelectionConnection(selectorConnection);
 	}
 
-
 	public Comparator<T> getDefaultComparator()
 	{
 		return new Comparator<T>()
@@ -86,6 +85,8 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 		synchronized (getItemList()) {
 			getItemList().clear();
 			getItemList().addAll(passedItem);
+
+			updateSelectionStatus(getItemList());
 		}
 	}
 
@@ -104,11 +105,14 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 		return mSelectionConnection;
 	}
 
-	@Override
-	public void notifyDataSetChanged()
+	public void notifySelectionChanges()
 	{
+		synchronized (getItemList())
+		{
+			updateSelectionStatus(getItemList());
+		}
 
-		super.notifyDataSetChanged();
+		notifyDataSetChanged();
 	}
 
 	public void setSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
@@ -119,5 +123,12 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 	public void setFragment(EditableListFragment fragment)
 	{
 		mFragment = fragment;
+	}
+
+	public synchronized void updateSelectionStatus(ArrayList<T> itemList)
+	{
+		if (getSelectionConnection() != null)
+			for (T item : itemList)
+				item.setSelectableSelected(getSelectionConnection().isSelected(item));
 	}
 }

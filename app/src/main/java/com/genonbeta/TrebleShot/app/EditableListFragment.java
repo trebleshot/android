@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,7 +32,8 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
-	private SharedPreferences mPreferences;
+	private SharedPreferences mSortingPreferences;
+	private Snackbar mRefreshDelayedSnackbar;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
 	private boolean mDefaultOrderingAscending = true;
@@ -59,7 +61,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 			setHasOptionsMenu(true);
 		}
 
-		mPreferences = getActivity().getSharedPreferences(Keyword.Local.SETTINGS_SORTING, Context.MODE_PRIVATE);
+		mSortingPreferences = getActivity().getSharedPreferences(Keyword.Local.SETTINGS_SORTING, Context.MODE_PRIVATE);
 	}
 
 	@Override
@@ -140,7 +142,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 		actionMode.setTitle(String.valueOf(0));
 
-		getAdapter().notifyDataSetChanged();
+		getAdapter().notifySelectionChanges();
 		return false;
 	}
 
@@ -183,7 +185,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 								if (!selectable.isSelectableSelected())
 									getSelectionConnection().setSelected(selectable, false);
 
-							getAdapter().notifyDataSetChanged();
+							getAdapter().notifySelectionChanges();
 						}
 
 					})
@@ -205,13 +207,13 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public void changeSortingCriteria(int id)
 	{
-		mPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
+		mSortingPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
 		refreshList();
 	}
 
 	public void changeOrderingCriteria(int id)
 	{
-		mPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
+		mSortingPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
 		refreshList();
 	}
 
@@ -234,7 +236,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public int getSortingCriteria()
 	{
-		return mPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
+		return mSortingPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
 	}
 
 	public PowerfulActionMode getPowerfulActionMode()
@@ -263,7 +265,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public boolean isSortingAscending()
 	{
-		return mPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
+		return mSortingPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -291,17 +293,30 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	@Override
 	public void refreshList()
 	{
-		if (isRefreshLocked())
+		if (isRefreshLocked()) {
 			setRefreshRequested(true);
-		else
+
+			if (mRefreshDelayedSnackbar == null) {
+				mRefreshDelayedSnackbar = createSnackbar(R.string.mesg_listRefreshSnoozed);
+				mRefreshDelayedSnackbar.setDuration(Snackbar.LENGTH_LONG);
+			}
+
+			mRefreshDelayedSnackbar.show();
+		} else {
 			super.refreshList();
+
+			if (mRefreshDelayedSnackbar != null) {
+				mRefreshDelayedSnackbar.dismiss();
+				mRefreshDelayedSnackbar = null;
+			}
+		}
 	}
 
 	public boolean setItemSelected(int position)
 	{
 		if (isSelectionActivated()) {
 			getSelectionConnection().setSelected(getSelectableList().get(position));
-			getAdapter().notifyDataSetChanged();
+			getAdapter().notifySelectionChanges();
 
 			return true;
 		}

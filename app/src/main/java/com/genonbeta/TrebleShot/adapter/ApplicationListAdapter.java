@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -102,7 +103,7 @@ public class ApplicationListAdapter
 		text2.setText(holder.version);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(holder.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
@@ -127,13 +128,21 @@ public class ApplicationListAdapter
 
 	public static class PackageHolder extends Shareable
 	{
+		public static final String FORMAT = ".apk";
+		public static final String MIME_TYPE = FileUtils.getFileContentType(FORMAT);
+
 		public ApplicationInfo appInfo;
 		public String version;
 		public String packageName;
 
 		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
 		{
-			super(friendlyName, friendlyName + "_" + version + ".apk", executableFile.lastModified(), executableFile.length(), Uri.fromFile(executableFile));
+			super(friendlyName,
+					friendlyName + "_" + version + ".apk",
+					MIME_TYPE,
+					executableFile.lastModified(),
+					executableFile.length(),
+					Uri.fromFile(executableFile));
 
 			this.appInfo = appInfo;
 			this.version = version;

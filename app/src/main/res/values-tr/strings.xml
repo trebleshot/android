@@ -324,4 +324,11 @@
     <string name="text_listEmptyMusic">Burada hiç  şarkı yok!</string>
     <string name="text_internalStorage">Dahili depolama</string>
     <string name="text_restrictedAccessStorage">%s (sınırlı erişim)</string>
+    <string name="text_emptySearchResult">\"%s\" için sonuç yok</string>
+    <string name="mesg_listRefreshSnoozed">Liste mümkün olduğunda yenilenecek</string>
+    <string name="mesg_errorReadFolder">\"%s\" klasörü okunamıyor</string>
+    <string name="butn_mountDirectory">Klasör bağla</string>
+    <string name="mesg_mountDirectoryHelp">Erişmek istediğiniz klasörü veya aygıtı seçin</string>
+    <string name="butn_ejectDirectory">Klasörü çıkart</string>
+    <string name="text_movedCacheFiles">Önbellek dosyaları başarıyla taşındı</string>
 </resources>

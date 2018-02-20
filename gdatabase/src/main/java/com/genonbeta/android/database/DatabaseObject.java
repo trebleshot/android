@@ -10,7 +10,7 @@ import com.genonbeta.android.database.SQLQuery;
  * date: 2.11.2017 21:31
  */
 
-public interface FlexibleObject
+public interface DatabaseObject
 {
 	SQLQuery.Select getWhere();
 

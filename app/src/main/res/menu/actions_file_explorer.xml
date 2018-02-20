@@ -8,4 +8,9 @@
         android:title="@string/butn_createFolder"
         app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/actions_file_explorer_mount_directory"
+        android:title="@string/butn_mountDirectory"
+        android:visible="false"/>
+
 </menu>

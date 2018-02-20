@@ -8,12 +8,11 @@ import android.view.View;
 import android.widget.Button;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 
-import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 
 /**
@@ -21,7 +20,7 @@ import java.util.ArrayList;
  * Date: 5/21/17 2:21 AM
  */
 
-public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
+public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> extends AlertDialog.Builder
 {
 	public static final String TAG = FileDeletionDialog.class.getSimpleName();
 	public static final int JOB_FILE_DELETION = 1;
@@ -50,11 +49,10 @@ public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
 							@Override
 							public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
 							{
-								dynamicNotification.setSmallIcon(R.drawable.ic_delete_white_24dp);
-
 								switch (updateType) {
 									case Started:
-										dynamicNotification.setContentText(getContext().getString(R.string.text_deletingFilesOngoing));
+										dynamicNotification.setSmallIcon(R.drawable.ic_delete_white_24dp)
+												.setContentText(getContext().getString(R.string.text_deletingFilesOngoing));
 										break;
 									case Done:
 										dynamicNotification.setContentText(getContext()
@@ -67,15 +65,15 @@ public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
 							@Override
 							public void onRun()
 							{
-								for (T shareable : getItemList())
-									if (shareable.isSelectableSelected())
-										delete(new File(URI.create(shareable.uri.toString())));
+								for (T fileItem : getItemList())
+									if (fileItem.isSelectableSelected())
+										delete(fileItem.file);
 
 								if (listener != null)
 									listener.onCompleted(this, activity, totalDeletion);
 							}
 
-							private void delete(File file)
+							private void delete(DocumentFile file)
 							{
 								if (getInterrupter().interrupted())
 									return;
@@ -93,12 +91,12 @@ public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
 								}
 							}
 
-							private void deleteDirectory(File folder)
+							private void deleteDirectory(DocumentFile folder)
 							{
-								File[] files = folder.listFiles();
+								DocumentFile[] files = folder.listFiles();
 
 								if (files != null)
-									for (File anotherFile : files)
+									for (DocumentFile anotherFile : files)
 										delete(anotherFile);
 							}
 						});
@@ -162,7 +160,7 @@ public class FileDeletionDialog<T extends Shareable> extends AlertDialog.Builder
 
 	public interface Listener
 	{
-		void onFileDeletion(WorkerService.RunningTask runningTask, Context context, File file);
+		void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file);
 
 		void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize);
 	}

@@ -20,7 +20,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
-        app:headerLayout="@layout/header_transaction"
+        app:headerLayout="@layout/header_default_device"
         app:menu="@menu/drawer_transaction"/>
 
 </android.support.v4.widget.DrawerLayout>

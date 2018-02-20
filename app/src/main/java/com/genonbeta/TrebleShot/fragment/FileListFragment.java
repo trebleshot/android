@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,14 +19,17 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
+import com.genonbeta.TrebleShot.io.DocumentFile;
+import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
-import java.io.File;
+import java.util.ArrayList;
 
-public class FileListFragment extends ShareableListFragment<FileListAdapter.FileHolder, FileListAdapter>
+public class FileListFragment extends ShareableListFragment<FileListAdapter.GenericFileHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
@@ -44,29 +48,36 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_FILE_PARENT)) {
-				final String extraPath = intent.getStringExtra(EXTRA_FILE_PARENT);
+			if ((ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_FILE_PARENT))) {
+				try {
+					final DocumentFile parentFile = FileUtils.fromUri(getContext(), (Uri) intent.getParcelableExtra(EXTRA_FILE_PARENT));
 
-				if (getAdapter().getPath() != null
-						&& extraPath.equals(getAdapter().getPath().getAbsolutePath()))
-					refreshList();
-				else if (intent.hasExtra(EXTRA_FILE_NAME)) {
-					if (mUpdateSnackbar == null)
-						mUpdateSnackbar = createSnackbar(R.string.mesg_newFilesReceived);
+					if (getAdapter().getPath() != null && parentFile.getUri().equals(getAdapter().getPath().getUri()))
+						refreshList();
+					else if (intent.hasExtra(EXTRA_FILE_NAME)) {
+						if (mUpdateSnackbar == null)
+							mUpdateSnackbar = createSnackbar(R.string.mesg_newFilesReceived);
 
-					mUpdateSnackbar
-							.setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
-							.setAction(R.string.butn_show, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View v)
+						mUpdateSnackbar
+								.setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
+								.setAction(R.string.butn_show, new View.OnClickListener()
 								{
-									goPath(new File(extraPath));
-								}
-							})
-							.show();
+									@Override
+									public void onClick(View v)
+									{
+										goPath(parentFile);
+									}
+								})
+								.show();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-			}
+			} else if (getAdapter().getPath() == null
+					&& AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
+					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
+					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_WRITABLEPATH))
+				refreshList();
 		}
 	};
 
@@ -97,15 +108,13 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 
 		mMediaScanner.connect();
 		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
-
-		if (getAdapter().getPath() == null)
-			goPath(FileUtils.getApplicationDirectory(getActivity()));
+		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
 
 	@Override
 	public FileListAdapter onAdapter()
 	{
-		return new FileListAdapter(getActivity());
+		return new FileListAdapter(getActivity(), new AccessDatabase(getActivity()));
 	}
 
 	@Override
@@ -132,12 +141,13 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id)
 	{
-		FileListAdapter.FileHolder fileInfo = (FileListAdapter.FileHolder) getAdapter().getItem(position);
+		FileListAdapter.GenericFileHolder fileInfo = (FileListAdapter.GenericFileHolder) getAdapter().getItem(position);
 
 		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo)) {
-			if (!fileInfo.isFolder)
+			if (fileInfo instanceof FileListAdapter.FileHolder)
 				super.onListItemClick(l, v, position, id);
-			else {
+			else if (fileInfo instanceof FileListAdapter.DirectoryHolder
+					|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
 				goPath(fileInfo.file);
 
 				if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
@@ -169,38 +179,57 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 		if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
 			shareOthers.setVisible(false);
 
+		MenuItem ejectDirectory = menu.findItem(R.id.action_mode_file_eject_directory);
+
+		if (ejectDirectory != null && Build.VERSION.SDK_INT >= 21)
+			ejectDirectory.setVisible(true);
+
 		return true;
 	}
 
 	@Override
 	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
 	{
-		if (item.getItemId() == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
+		int id = item.getItemId();
+
+		if (id == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
 			new FileDeletionDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeletionDialog.Listener()
 			{
 				@Override
-				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, File file)
+				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
 				{
-					if (mMediaScanner.isConnected())
-						mMediaScanner.scanFile(file.getAbsolutePath(), "*/*");
+					if (file instanceof LocalDocumentFile && mMediaScanner.isConnected())
+						mMediaScanner.scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(), "*/*");
 				}
 
 				@Override
 				public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
 				{
 					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-							.putExtra(EXTRA_FILE_PARENT, getAdapter().getPath().getAbsolutePath()));
+							.putExtra(EXTRA_FILE_PARENT, getAdapter().getPath().getUri()));
 				}
 			}).show();
+		} else if (id == R.id.action_mode_file_eject_directory) {
+			ArrayList<FileListAdapter.GenericFileHolder> selectionList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
 
-			return true;
-		}
+			for (FileListAdapter.GenericFileHolder holder : selectionList)
+				if (holder instanceof FileListAdapter.WritablePathHolder)
+					getAdapter().getDatabase().remove(((FileListAdapter.WritablePathHolder) holder).pathObject);
+		} else
+			return super.onActionMenuItemSelected(context, actionMode, item);
 
-		return super.onActionMenuItemSelected(context, actionMode, item);
+		return true;
 	}
 
-	public void goPath(File file)
+	public void goPath(DocumentFile file)
 	{
+		if (file != null && !file.canRead()) {
+			createSnackbar(R.string.mesg_errorReadFolder, file.getName())
+					.show();
+
+			return;
+		}
+
 		if (mPathChangedListener != null)
 			mPathChangedListener.onPathChanged(file);
 
@@ -220,11 +249,11 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.File
 
 	public interface OnFileClickedListener
 	{
-		boolean onFileClicked(FileListAdapter.FileHolder fileInfo);
+		boolean onFileClicked(FileListAdapter.GenericFileHolder fileInfo);
 	}
 
 	public interface OnPathChangedListener
 	{
-		void onPathChanged(File file);
+		void onPathChanged(DocumentFile file);
 	}
 }

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -59,16 +60,18 @@ public class ImageListAdapter
 			int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
 			int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
 			int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+			int typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE);
 
 			do {
 				ImageHolder holder = new ImageHolder(
 						cursor.getInt(idIndex),
 						cursor.getString(displayIndex),
-						cursor.getLong(dateAddedIndex) * 1000,
+						cursor.getString(typeIndex),
+						cursor.getLong(dateAddedIndex),
 						cursor.getLong(sizeIndex),
 						Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-				holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date));
+				holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date * 1000));
 
 				list.add(holder);
 			}
@@ -123,7 +126,7 @@ public class ImageListAdapter
 		text2.setText(holder.dateTakenString);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(holder.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
@@ -146,9 +149,9 @@ public class ImageListAdapter
 		public long id;
 		public String dateTakenString;
 
-		public ImageHolder(int id, String filename, long date, long size, Uri uri)
+		public ImageHolder(int id, String filename, String mimeType, long date, long size, Uri uri)
 		{
-			super(filename, filename, date, size, uri);
+			super(filename, filename, mimeType, date, size, uri);
 
 			this.id = id;
 		}

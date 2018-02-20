@@ -13,14 +13,13 @@ import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-
-import java.io.File;
 
 /**
  * created by: Veli
@@ -207,7 +206,7 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, File savePath)
+	public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, DocumentFile savePath)
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 		CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
@@ -226,12 +225,12 @@ public class CommunicationNotificationHelper
 					.setContentTitle(getContext().getResources().getQuantityString(R.plurals.text_fileReceiveCompletedSummary, progress.getTransferredFileCount(), progress.getTransferredFileCount()))
 					.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
 							.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-							.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getAbsolutePath()), 0));
+							.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
 		} else {
 			try {
 				Intent openIntent = new Intent(Intent.ACTION_VIEW);
 
-				openIntent.setDataAndType(FileUtils.getUriForFile(getContext(), transferHandler.getFile(), openIntent), processHolder.transactionObject.fileMimeType);
+				openIntent.setDataAndType(processHolder.currentFile.getUri(), processHolder.transactionObject.fileMimeType);
 				notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0));
 			} catch (Exception e) {
 			}
@@ -241,7 +240,7 @@ public class CommunicationNotificationHelper
 					.addAction(R.drawable.ic_folder_white_24dp, getContext().getString(R.string.butn_showFiles),
 							PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
 									.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-									.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getAbsolutePath()), 0));
+									.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
 		}
 
 		return notification.show();

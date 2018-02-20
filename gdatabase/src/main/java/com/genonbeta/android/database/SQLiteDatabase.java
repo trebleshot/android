@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by: veli
@@ -20,7 +19,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		super(context, name, factory, version);
 	}
 
-	public <T extends FlexibleObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
+	public <T extends DatabaseObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
 	{
 		ArrayList<T> returnedList = new ArrayList<>();
 		ArrayList<CursorItem> itemList = getTable(select);
@@ -88,7 +87,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	}
 
 
-	public long insert(FlexibleObject object)
+	public long insert(DatabaseObject object)
 	{
 		object.onCreateObject(this);
 		return insert(object.getWhere().tableName, null, object.getValues());
@@ -99,7 +98,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		return getWritableDatabase().insert(tableName, nullColumnHack, contentValues);
 	}
 
-	public void publish(FlexibleObject object)
+	public void publish(DatabaseObject object)
 	{
 		if (getFirstFromTable(object.getWhere()) != null)
 			update(object);
@@ -107,13 +106,13 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 			insert(object);
 	}
 
-	public void remove(FlexibleObject object)
+	public void remove(DatabaseObject object)
 	{
 		object.onRemoveObject(this);
 		delete(object.getWhere());
 	}
 
-	public void reconstruct(FlexibleObject object) throws Exception
+	public void reconstruct(DatabaseObject object) throws Exception
 	{
 		CursorItem item = getFirstFromTable(object.getWhere());
 
@@ -139,7 +138,7 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 		object.reconstruct(item);
 	}
 
-	public int update(FlexibleObject object)
+	public int update(DatabaseObject object)
 	{
 		object.onUpdateObject(this);
 		return update(object.getWhere(), object.getValues());

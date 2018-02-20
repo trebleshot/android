@@ -1,18 +1,20 @@
 package com.genonbeta.TrebleShot.io;
 
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.OpenableColumns;
+import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.util.FileUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.net.URI;
 
@@ -25,36 +27,40 @@ public class StreamInfo
 {
 	public String friendlyName;
 	public String mimeType;
-	public InputStream inputStream;
 	public Uri uri;
 	public Type type;
 	public long size;
+
+	@Nullable
+	public File file;
+
+	private ContentResolver mResolver;
 
 	public StreamInfo()
 	{
 
 	}
 
-	public StreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	public StreamInfo(Context context, Uri uri) throws FileNotFoundException, StreamCorruptedException, FolderStateException
 	{
-		if (!loadStream(context, uri, openStreams))
+		if (!loadStream(context, uri))
 			throw new StreamCorruptedException("Content was not able to route a stream. Empty result is returned");
 	}
 
-	public static StreamInfo getStreamInfo(Context context, Uri uri, boolean openStreams) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+	public static StreamInfo getStreamInfo(Context context, Uri uri) throws FileNotFoundException, StreamCorruptedException, FolderStateException
 	{
-		return new StreamInfo(context, uri, openStreams);
+		return new StreamInfo(context, uri);
 	}
 
-	private boolean loadStream(Context context, Uri uri, boolean openStreams) throws FolderStateException, FileNotFoundException
+	private boolean loadStream(Context context, Uri uri) throws FolderStateException, FileNotFoundException
 	{
 		String uriType = uri.toString();
 
 		this.uri = uri;
 
 		if (uriType.startsWith("content")) {
-			ContentResolver contentResolver = context.getContentResolver();
-			Cursor cursor = contentResolver.query(uri, null, null, null, null);
+			mResolver = context.getContentResolver();
+			Cursor cursor = mResolver.query(uri, null, null, null, null);
 
 			if (cursor != null) {
 				if (cursor.moveToFirst()) {
@@ -64,13 +70,8 @@ public class StreamInfo
 					if (nameIndex != -1 && sizeIndex != -1) {
 						this.friendlyName = cursor.getString(nameIndex);
 						this.size = cursor.getLong(sizeIndex);
-						this.mimeType = contentResolver.getType(uri);
-						this.type = Type.STREAM;
-
-						ContentProviderClient client = contentResolver.acquireContentProviderClient(uri);
-
-						if (openStreams)
-							this.inputStream = contentResolver.openInputStream(uri);
+						this.mimeType = mResolver.getType(uri);
+						this.type = Type.Stream;
 
 						return true;
 					}
@@ -88,10 +89,8 @@ public class StreamInfo
 				this.friendlyName = file.getName();
 				this.size = file.length();
 				this.mimeType = FileUtils.getFileContentType(file.getName());
-				this.type = Type.FILE;
-
-				if (openStreams)
-					this.inputStream = new FileInputStream(file);
+				this.type = Type.File;
+				this.file = file;
 
 				return true;
 			}
@@ -100,10 +99,29 @@ public class StreamInfo
 		return false;
 	}
 
+	public ContentResolver getContentResolver()
+	{
+		return mResolver;
+	}
+
+	public OutputStream openOutputStream() throws FileNotFoundException
+	{
+		return file == null
+				? getContentResolver().openOutputStream(uri, "wa")
+				: new FileOutputStream(file, true);
+	}
+
+	public InputStream openInputStream() throws FileNotFoundException
+	{
+		return file == null
+				? getContentResolver().openInputStream(uri)
+				: new FileInputStream(file);
+	}
+
 	public enum Type
 	{
-		STREAM,
-		FILE
+		Stream,
+		File
 	}
 
 	public static class FolderStateException extends Exception

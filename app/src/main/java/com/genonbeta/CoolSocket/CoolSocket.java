@@ -60,7 +60,9 @@ abstract public class CoolSocket
 
 		handler.onConnect(clientInstance);
 
-		return clientInstance.getReturn() != null ? clazz.cast(clientInstance.getReturn()) : null;
+		return clientInstance.getReturn() != null && clazz != null
+				? clazz.cast(clientInstance.getReturn())
+				: null;
 	}
 
 	public static void connect(final Client.ConnectionHandler handler)
@@ -174,9 +176,6 @@ abstract public class CoolSocket
 					try {
 						if (!socket.isClosed()) {
 							System.out.println(TAG + ": You should close connections in the end of onConnected(ActiveConnection) method");
-
-							socket.getInputStream().close();
-							socket.getOutputStream().close();
 							socket.close();
 						}
 					} catch (IOException e) {
@@ -300,8 +299,10 @@ abstract public class CoolSocket
 		{
 			super.finalize();
 
-			if (getSocket() != null && !getSocket().isClosed())
+			if (getSocket() != null && !getSocket().isClosed()) {
 				System.out.println(TAG + ": Connections should be closed before their references are being destroyed");
+				getSocket().close();
+			}
 		}
 
 		public InetAddress getAddress()
@@ -327,7 +328,7 @@ abstract public class CoolSocket
 		@Override
 		public boolean equals(Object obj)
 		{
-			return obj instanceof ActiveConnection ? ((ActiveConnection) obj).toString().equals(toString()) : super.equals(obj);
+			return obj instanceof ActiveConnection ? obj.toString().equals(toString()) : super.equals(obj);
 		}
 
 		public Response receive() throws IOException, TimeoutException, JSONException
@@ -469,11 +470,6 @@ abstract public class CoolSocket
 			return new ActiveConnection(socket, operationTimeout);
 		}
 
-		public interface ConnectionHandler
-		{
-			void onConnect(Client client);
-		}
-
 		public Object getReturn()
 		{
 			return mReturn;
@@ -482,6 +478,11 @@ abstract public class CoolSocket
 		public void setReturn(Object returnedObject)
 		{
 			this.mReturn = returnedObject;
+		}
+
+		public interface ConnectionHandler
+		{
+			void onConnect(Client client);
 		}
 	}
 }

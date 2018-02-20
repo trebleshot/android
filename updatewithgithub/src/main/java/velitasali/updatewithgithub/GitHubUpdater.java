@@ -136,7 +136,7 @@ public class GitHubUpdater
 											.setTitle(R.string.uwg_update_available);
 
 									if (updateFile.isFile()) {
-										Log.d(TAG, "File is already exists: " + updateFile.getName());
+										Log.d(TAG, "File already exists: " + updateFile.getName());
 
 										dialog.setMessage(R.string.uwg_update_exists)
 												.setNeutralButton(R.string.uwg_download, downloadStart)

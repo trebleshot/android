@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,17 +27,18 @@ public class UpdateUtils
 		Socket socket = new Socket();
 
 		socket.bind(null);
-		socket.connect(new InetSocketAddress(toIp, AppConfig.COMPATIBLE_UPDATE_CHANNEL_PORT));
+		socket.connect(new InetSocketAddress(toIp, AppConfig.SERVER_PORT_UPDATE_CHANNEL));
 
 		FileInputStream fileInputStream = new FileInputStream(context.getApplicationInfo().sourceDir);
 		OutputStream outputStream = socket.getOutputStream();
 
+		byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
 		int len;
 		long lastRead = System.currentTimeMillis();
 
-		while ((len = fileInputStream.read(AppConfig.DEFAULT_BUFFER_SIZE)) != -1) {
+		while ((len = fileInputStream.read(buffer)) != -1) {
 			if (len > 0) {
-				outputStream.write(AppConfig.DEFAULT_BUFFER_SIZE, 0, len);
+				outputStream.write(buffer, 0, len);
 				outputStream.flush();
 
 				lastRead = System.currentTimeMillis();
@@ -56,22 +56,23 @@ public class UpdateUtils
 		socket.close();
 	}
 
-	public static File receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
+	public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
 	{
 		ServerSocket serverSocket = null;
 		Socket socket = null;
-		File filePath;
+		DocumentFile updateFile = null;
 
 		try {
-			serverSocket = new ServerSocket(AppConfig.COMPATIBLE_UPDATE_CHANNEL_PORT);
-			filePath = new File(FileUtils.getApplicationDirectory(context).getAbsolutePath() + File.separator + device.versionName + "_" + System.currentTimeMillis() + ".apk");
+			serverSocket = new ServerSocket(AppConfig.SERVER_PORT_UPDATE_CHANNEL);
+			updateFile = FileUtils.getApplicationDirectory(context)
+					.createFile(null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
 			final ServerSocket finalServer = serverSocket;
 
 			interrupter.addCloser(new Interrupter.Closer()
 			{
 				@Override
-				public void onClose()
+				public void onClose(boolean userAction)
 				{
 					try {
 						if (!finalServer.isClosed())
@@ -92,14 +93,15 @@ public class UpdateUtils
 			socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 			InputStream inputStream = socket.getInputStream();
-			FileOutputStream outputStream = new FileOutputStream(filePath);
+			OutputStream outputStream = context.getContentResolver().openOutputStream(updateFile.getUri());
 
+			byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
 			int len = 0;
 			long lastRead = System.currentTimeMillis();
 
 			while (len != -1) {
-				if ((len = inputStream.read(AppConfig.DEFAULT_BUFFER_SIZE)) > 0) {
-					outputStream.write(AppConfig.DEFAULT_BUFFER_SIZE, 0, len);
+				if ((len = inputStream.read(buffer)) > 0) {
+					outputStream.write(buffer, 0, len);
 					outputStream.flush();
 
 					lastRead = System.currentTimeMillis();
@@ -111,7 +113,13 @@ public class UpdateUtils
 
 			outputStream.close();
 			inputStream.close();
+
 		} catch (Exception e) {
+			e.printStackTrace();
+
+			if (updateFile != null && updateFile.isFile())
+				updateFile.delete();
+
 			return null;
 		} finally {
 			if (socket != null && !socket.isClosed())
@@ -121,7 +129,7 @@ public class UpdateUtils
 				serverSocket.close();
 		}
 
-		return filePath;
+		return updateFile;
 	}
 
 	public interface OnConnectionReadyListener

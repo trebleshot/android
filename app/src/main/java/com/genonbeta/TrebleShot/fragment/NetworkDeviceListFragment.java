@@ -256,32 +256,7 @@ public class NetworkDeviceListFragment
 			@Override
 			public void onClick(View v)
 			{
-				if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(mFAB.getContext())) {
-					Snackbar.make(v, R.string.mesg_errorHotspotPermission, Snackbar.LENGTH_LONG)
-							.setAction(R.string.butn_settings, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View v)
-								{
-									startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-											.setData(Uri.parse("package:" + mFAB.getContext().getPackageName()))
-											.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-								}
-							})
-							.show();
-				} else if (!mHotspotUtils.isEnabled() && isMobileDataActive()) {
-					Snackbar.make(v, R.string.mesg_warningHotspotMobileActive, Snackbar.LENGTH_LONG)
-							.setAction(R.string.butn_skip, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View v)
-								{
-									toggleHotspot();
-								}
-							})
-							.show();
-				} else
-					toggleHotspot();
+				toggleHotspot(true);
 			}
 		});
 
@@ -302,6 +277,49 @@ public class NetworkDeviceListFragment
 		mSwipeRefreshLayout.setRefreshing(!DeviceScannerService
 				.getDeviceScanner()
 				.isScannerAvailable());
+	}
+
+	public boolean checkLocationPermission()
+	{
+		if (Build.VERSION.SDK_INT < 23)
+			return false;
+
+		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
+					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+								getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+										Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+							}
+						}
+					})
+					.show();
+
+			return false;
+		}
+
+		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+		if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
+					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+						}
+					})
+					.show();
+
+			return false;
+		}
+
+		return true;
 	}
 
 	@Override
@@ -333,7 +351,7 @@ public class NetworkDeviceListFragment
 
 		return wifiInfo != null
 				&& wifiInfo.getSSID() != null
-				&& wifiInfo.getSSID().replace("\"", "").startsWith(AppConfig.ACCESS_POINT_PREFIX);
+				&& wifiInfo.getSSID().replace("\"", "").startsWith(AppConfig.PREFIX_ACCESS_POINT);
 	}
 
 	public void requestRefresh()
@@ -354,50 +372,7 @@ public class NetworkDeviceListFragment
 
 	public void showConnectionOptions()
 	{
-		if (getWifiManager().isWifiEnabled()) {
-			if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
-						.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View view)
-							{
-								if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-									getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-											Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-								}
-							}
-						})
-						.show();
-			} else {
-				LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-						&& !locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-						&& !locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER))
-					createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
-							.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View view)
-								{
-									startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-								}
-							})
-							.show();
-				else
-					createSnackbar(R.string.mesg_scanningSelfHotspot)
-							.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View view)
-								{
-									startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-								}
-							})
-							.show();
-			}
-		} else {
+		if (!getWifiManager().isWifiEnabled())
 			createSnackbar(R.string.mesg_suggestSelfHotspot)
 					.setAction(R.string.butn_enable, new View.OnClickListener()
 					{
@@ -409,7 +384,17 @@ public class NetworkDeviceListFragment
 						}
 					})
 					.show();
-		}
+		else if (checkLocationPermission())
+			createSnackbar(R.string.mesg_scanningSelfHotspot)
+					.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+						}
+					})
+					.show();
 	}
 
 	public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
@@ -433,14 +418,53 @@ public class NetworkDeviceListFragment
 		return false;
 	}
 
-	public void toggleHotspot()
+	public boolean toggleHotspot(boolean conditional)
 	{
+		if (!HotspotUtils.isSupported())
+			return false;
+
+		if (conditional) {
+			if (Build.VERSION.SDK_INT >= 26 && !checkLocationPermission())
+				return false;
+
+			if (Build.VERSION.SDK_INT >= 23
+					&& !Settings.System.canWrite(mFAB.getContext())) {
+				createSnackbar(R.string.mesg_errorHotspotPermission)
+						.setDuration(Snackbar.LENGTH_LONG)
+						.setAction(R.string.butn_settings, new View.OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+										.setData(Uri.parse("package:" + mFAB.getContext().getPackageName()))
+										.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+							}
+						})
+						.show();
+
+				return false;
+			} else if (!mHotspotUtils.isEnabled() && isMobileDataActive()) {
+				createSnackbar(R.string.mesg_warningHotspotMobileActive)
+						.setDuration(Snackbar.LENGTH_LONG)
+						.setAction(R.string.butn_skip, new View.OnClickListener()
+						{
+							@Override
+							public void onClick(View v)
+							{
+								toggleHotspot(false);
+							}
+						})
+						.show();
+
+				return false;
+			}
+		}
+
 		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
 
-		if (wifiConfiguration != null
-				&& (!mHotspotUtils.isEnabled()
-				|| AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)
-		))
+		if (!mHotspotUtils.isEnabled()
+				|| (wifiConfiguration != null && AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)))
 			createSnackbar(mHotspotUtils.isEnabled()
 					? R.string.mesg_stoppingSelfHotspot
 					: R.string.mesg_startingSelfHotspot)
@@ -450,6 +474,8 @@ public class NetworkDeviceListFragment
 				.setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
 
 		mShowHotspotInfo = true;
+
+		return true;
 	}
 
 	public void updateHotspotState()
