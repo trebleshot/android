@@ -252,9 +252,9 @@
     <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
     <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuz\'u etkinleştirmek ister misiniz?</string>
     <string name="butn_enable">Etkinleştir</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot Hotspot\'u bulabilmek için Konum İzni gereklidir</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Hotspot bulmak ve başlatmak için konum izni gerekli</string>
     <string name="butn_locationSettings">Konum</string>
-    <string name="mesg_locationDisabledSelfHotspot">Arama sonuçlarını gösterebilmek için Konum etkin olmalıdır</string>
+    <string name="mesg_locationDisabledSelfHotspot">Konum servisi kapalı. Hotspot bulmak ve başlatmak için etkinleştirin</string>
     <string name="mesg_scanningDevicesSelfHotspot">TrebleShot Hotspot\'u üzerinde cihazlar aranıyor</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot Hotspot\'unuz devre dışı bırakılıyor</string>
     <string name="mesg_startingSelfHotspot">TrebleShot Hotspot\'unuz başlatılıyor</string>
