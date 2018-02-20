@@ -13,13 +13,14 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 
-import java.io.File;
+import java.io.IOException;
 
 /**
  * created by: Veli
@@ -38,8 +39,15 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			database.reconstruct(group);
 			database.reconstruct(transactionObject);
 
-			final File pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), transactionObject, group);
-			boolean fileExists = pseudoFile.isFile() && pseudoFile.canRead();
+			DocumentFile attemptedFile = null;
+
+			try {
+				attemptedFile = FileUtils.getIncomingPseudoFile(getContext(), transactionObject, group, false);
+			} catch (Exception e) {
+			}
+
+			final DocumentFile pseudoFile = attemptedFile;
+			boolean fileExists = pseudoFile != null && pseudoFile.canRead();
 
 			@SuppressLint("InflateParams")
 			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_transaction_info, null);
@@ -60,8 +68,14 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			sizeText.setText(FileUtils.sizeExpression(transactionObject.fileSize, false));
 			typeText.setText(transactionObject.fileMimeType);
 			flagText.setText(TextUtils.getTransactionFlagString(transactionObject.flag));
-			receivedSizeText.setText(fileExists ? FileUtils.sizeExpression(pseudoFile.length(), false) : "-");
-			locationText.setText(pseudoFile.getAbsolutePath());
+
+			receivedSizeText.setText(fileExists
+					? FileUtils.sizeExpression(pseudoFile.length(), false)
+					: getContext().getString(R.string.text_unknown));
+
+			locationText.setText(fileExists
+					? pseudoFile.getUri().toString()
+					: getContext().getString(R.string.text_unknown));
 
 			setPositiveButton(R.string.butn_close, null);
 			setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
@@ -90,6 +104,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 				incomingDetailsLayout.setVisibility(View.VISIBLE);
 
 				if (fileExists
+						&& pseudoFile.getParentFile() != null
 						&& TransactionObject.Flag.REMOVED.equals(transactionObject.flag))
 					setNeutralButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
 					{
@@ -106,10 +121,15 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 								@Override
 								public void onClick(DialogInterface dialog, int which)
 								{
-									FileUtils.saveReceivedFile(pseudoFile, transactionObject);
-									database.remove(transactionObject);
+									try {
+										FileUtils.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, transactionObject);
 
-									Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
+										database.remove(transactionObject);
+
+										Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
 								}
 							});
 
@@ -132,7 +152,6 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 						}
 					});
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

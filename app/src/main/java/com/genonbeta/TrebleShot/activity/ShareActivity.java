@@ -28,13 +28,15 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
-import com.genonbeta.TrebleShot.io.StreamInfo;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -45,10 +47,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StreamCorruptedException;
 import java.net.ConnectException;
-import java.net.InetSocketAddress;
-import java.net.URI;
 import java.util.ArrayList;
 
 public class ShareActivity extends Activity
@@ -242,12 +241,12 @@ public class ShareActivity extends Activity
 		}
 	}
 
-	protected void createFolderStructure(File file, String folderName)
+	protected void createFolderStructure(DocumentFile file, String folderName)
 	{
-		File[] files = file.listFiles();
+		DocumentFile[] files = file.listFiles();
 
 		if (files != null) {
-			for (File thisFile : files) {
+			for (DocumentFile thisFile : files) {
 				if (getDefaultInterrupter().interrupted())
 					break;
 
@@ -260,7 +259,7 @@ public class ShareActivity extends Activity
 				}
 
 				try {
-					mFiles.add(new SelectableStream(getApplicationContext(), Uri.fromFile(thisFile), false, folderName));
+					mFiles.add(new SelectableStream(thisFile, folderName));
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -275,8 +274,6 @@ public class ShareActivity extends Activity
 
 	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
 	{
-		final String deviceIp = connection.ipAddress;
-
 		resetProgressItems();
 
 		getProgressDialog().setMessage(getString(R.string.mesg_communicating));
@@ -287,41 +284,21 @@ public class ShareActivity extends Activity
 			@Override
 			public void onRun()
 			{
-				CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+				CommunicationBridge.connect(mDatabase, true, new CommunicationBridge.Client.ConnectionHandler()
 				{
 					@Override
-					public void onConnect(CoolSocket.Client client)
+					public void onConnect(CommunicationBridge.Client client)
 					{
-						TransactionObject.Group groupInstance = null;
-
 						try {
-							final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(deviceIp, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_LARGE_TIMEOUT);
-
-							getDefaultInterrupter().addCloser(new Interrupter.Closer()
-							{
-								@Override
-								public void onClose()
-								{
-									try {
-										activeConnection.getSocket().close();
-									} catch (IOException e) {
-										e.printStackTrace();
-									}
-								}
-							});
-
-							JSONObject clientResponse;
-							JSONObject jsonRequest = new JSONObject()
-									.put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getLocalDevice(getApplicationContext()).deviceId);
+							final JSONObject jsonRequest = new JSONObject();
+							final TransactionObject.Group groupInstance = new TransactionObject.Group(AppUtils.getUniqueNumber(), device.deviceId, connection.adapterName);
+							final ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
 							if (mSharedText == null) {
-								groupInstance = new TransactionObject.Group(AppUtils.getUniqueNumber(), device.deviceId, connection.adapterName);
-
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 								jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupInstance.groupId);
 
 								JSONArray filesArray = new JSONArray();
-								ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
 								getProgressDialog().setMax(mFiles.size());
 
@@ -337,37 +314,71 @@ public class ShareActivity extends Activity
 									int requestId = AppUtils.getUniqueNumber();
 									JSONObject thisJson = new JSONObject();
 
-									TransactionObject transactionObject = new TransactionObject(requestId, groupInstance.groupId, selectableStream.friendlyName, selectableStream.uri.toString(), selectableStream.mimeType, selectableStream.size, TransactionObject.Type.OUTGOING);
+									TransactionObject transactionObject = new TransactionObject(requestId,
+											groupInstance.groupId,
+											selectableStream.getSelectableFriendlyName(),
+											selectableStream.getDocumentFile().getUri().toString(),
+											selectableStream.getDocumentFile().getType(),
+											selectableStream.getDocumentFile().length(), TransactionObject.Type.OUTGOING);
 
-									if (selectableStream.directory != null)
-										transactionObject.directory = selectableStream.directory;
+									if (selectableStream.mDirectory != null)
+										transactionObject.directory = selectableStream.mDirectory;
 
 									pendingRegistry.add(transactionObject);
 
 									try {
-										thisJson.put(Keyword.INDEX_FILE_NAME, selectableStream.friendlyName);
-										thisJson.put(Keyword.INDEX_FILE_SIZE, selectableStream.size);
+										thisJson.put(Keyword.INDEX_FILE_NAME, transactionObject.friendlyName);
+										thisJson.put(Keyword.INDEX_FILE_SIZE, transactionObject.fileSize);
 										thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
-										thisJson.put(Keyword.INDEX_FILE_MIME, selectableStream.mimeType);
+										thisJson.put(Keyword.INDEX_FILE_MIME, transactionObject.fileMimeType);
 
-										if (selectableStream.directory != null)
-											thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.directory);
+										if (selectableStream.mDirectory != null)
+											thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.mDirectory);
 
 										filesArray.put(thisJson);
 									} catch (Exception e) {
-										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + selectableStream.friendlyName);
+										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transactionObject.friendlyName);
 									}
 								}
 
 								jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+							} else {
+								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+								jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mSharedText);
+							}
 
-								activeConnection.reply(jsonRequest.toString());
-								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+							final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
-								clientResponse = new JSONObject(response.response);
+							getDefaultInterrupter().addCloser(new Interrupter.Closer()
+							{
+								@Override
+								public void onClose(boolean userAction)
+								{
+									try {
+										activeConnection.getSocket().close();
+									} catch (IOException e) {
+										e.printStackTrace();
+									}
+								}
+							});
 
-								if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-									mDatabase.publish(groupInstance);
+							activeConnection.reply(jsonRequest.toString());
+
+							CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+							JSONObject clientResponse = new JSONObject(response.response);
+
+							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+								if (pendingRegistry.size() > 0) {
+									mDatabase.insert(groupInstance);
+
+									getDefaultInterrupter().addCloser(new Interrupter.Closer()
+									{
+										@Override
+										public void onClose(boolean userAction)
+										{
+											mDatabase.remove(groupInstance);
+										}
+									});
 
 									for (TransactionObject transactionObject : pendingRegistry) {
 										if (getDefaultInterrupter().interrupted())
@@ -380,16 +391,6 @@ public class ShareActivity extends Activity
 									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 								}
 							} else {
-								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-								jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mSharedText);
-
-								activeConnection.reply(jsonRequest.toString());
-								CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-
-								clientResponse = new JSONObject(response.response);
-							}
-
-							if (clientResponse.has(Keyword.RESULT) && !clientResponse.getBoolean(Keyword.RESULT)) {
 								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
 									createSnackbar(R.string.mesg_notAllowed)
 											.setAction(R.string.ques_why, new View.OnClickListener()
@@ -410,12 +411,7 @@ public class ShareActivity extends Activity
 								else
 									createSnackbar(R.string.mesg_somethingWentWrong).show();
 							}
-
-							device.lastUsageTime = System.currentTimeMillis();
-							mDatabase.publish(device);
 						} catch (Exception e) {
-							mDatabase.remove(groupInstance);
-
 							if (!(e instanceof InterruptedException)) {
 								e.printStackTrace();
 								createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
@@ -425,7 +421,7 @@ public class ShareActivity extends Activity
 							getProgressDialog().dismiss();
 						}
 					}
-				}, Object.class);
+				});
 			}
 		});
 	}
@@ -521,19 +517,18 @@ public class ShareActivity extends Activity
 					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
 
 					try {
-						SelectableStream selectableStream = new SelectableStream(getApplicationContext(), fileUri, false, null);
+						SelectableStream selectableStream = new SelectableStream(ShareActivity.this, fileUri, null);
 
-						if (fileName != null)
-							selectableStream.friendlyName = fileName;
+						if (selectableStream.getDocumentFile().isDirectory())
+							createFolderStructure(selectableStream.getDocumentFile(), selectableStream.getDocumentFile().getName());
+						else {
+							if (fileName != null)
+								selectableStream.setFriendlyName(fileName);
 
-						mFiles.add(selectableStream);
+							mFiles.add(selectableStream);
+						}
 					} catch (FileNotFoundException e) {
 						e.printStackTrace();
-					} catch (StreamCorruptedException e) {
-						e.printStackTrace();
-					} catch (StreamInfo.FolderStateException e) {
-						File parentFolder = new File(URI.create(fileUri.toString()));
-						createFolderStructure(parentFolder, parentFolder.getName());
 					}
 				}
 
@@ -551,7 +546,7 @@ public class ShareActivity extends Activity
 							getProgressDialog().dismiss();
 
 							if (mFiles.size() == 1)
-								mToolbar.setTitle(mFiles.get(0).friendlyName);
+								mToolbar.setTitle(mFiles.get(0).getSelectableFriendlyName());
 							else if (mFiles.size() > 1)
 								mToolbar.setTitle((getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size())));
 
@@ -627,36 +622,56 @@ public class ShareActivity extends Activity
 		}
 	}
 
-	private class SelectableStream
-			extends StreamInfo
-			implements Selectable
+	private class SelectableStream implements Selectable
 	{
-		private boolean isSelected = true;
+		private String mDirectory;
+		private String mFriendlyName;
+		private DocumentFile mFile;
+		private boolean mSelected = true;
 
-		public String directory;
-
-		public SelectableStream(Context context, Uri uri, boolean openStreams, String directory) throws FileNotFoundException, StreamCorruptedException, FolderStateException
+		public SelectableStream(DocumentFile documentFile, String directory)
 		{
-			super(context, uri, openStreams);
-			this.directory = directory;
+			mFile = documentFile;
+			mDirectory = directory;
+			mFriendlyName = mFile.getName();
+		}
+
+		public SelectableStream(Context context, Uri uri, String directory) throws FileNotFoundException
+		{
+			this(FileUtils.fromUri(context, uri), directory);
+		}
+
+		public String getDirectory()
+		{
+			return mDirectory;
+		}
+
+		public DocumentFile getDocumentFile()
+		{
+			return mFile;
 		}
 
 		@Override
 		public String getSelectableFriendlyName()
 		{
-			return this.friendlyName;
+			return mFriendlyName;
 		}
 
 		@Override
 		public boolean isSelectableSelected()
 		{
-			return this.isSelected;
+			return mSelected;
+		}
+
+		public void setFriendlyName(String friendlyName)
+		{
+			mFriendlyName = friendlyName;
 		}
 
 		@Override
 		public void setSelectableSelected(boolean selected)
 		{
-			this.isSelected = selected;
+			mSelected = selected;
 		}
 	}
 }

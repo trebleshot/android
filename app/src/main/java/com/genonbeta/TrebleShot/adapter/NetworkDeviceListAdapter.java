@@ -42,7 +42,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 		ArrayList<NetworkDevice> list = new ArrayList<>();
 
 		for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
-			if (!resultIndex.SSID.startsWith(AppConfig.ACCESS_POINT_PREFIX))
+			if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
 				continue;
 
 			HotspotNetwork hotspotNetwork = new HotspotNetwork();
@@ -99,7 +99,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	{
 		return ssid
 				.replace("\"", "")
-				.substring(AppConfig.ACCESS_POINT_PREFIX.length())
+				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
 				.replace("_", " ");
 	}
 

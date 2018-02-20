@@ -24,18 +24,19 @@ import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONObject;
 
-import java.io.File;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -85,7 +86,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 						{
 							WorkerService.run(activity, new WorkerService.NotifiableRunningTask(TAG, JOB_RECEIVE_UPDATE)
 							{
-								private File mReceivedFile = null;
+								private DocumentFile mReceivedFile = null;
 
 								@Override
 								public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
@@ -96,26 +97,30 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 													.setSmallIcon(android.R.drawable.stat_sys_download);
 											break;
 										case Done:
-											dynamicNotification.setContentText(getContext().getString(mReceivedFile != null
-													? R.string.mesg_updateDownloadComplete
-													: R.string.mesg_somethingWentWrong))
-													.setSmallIcon(android.R.drawable.stat_sys_download_done);
+											dynamicNotification.setChannelId(NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
 											if (mReceivedFile != null) {
 												Intent openIntent = new Intent();
 
 												try {
-													openIntent.setAction(Intent.ACTION_VIEW)
-															.setDataAndType(FileUtils.getUriForFile(getContext(), mReceivedFile, openIntent), FileUtils.getFileContentType(mReceivedFile.getName()));
+													openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+															.setAction(Intent.ACTION_VIEW);
+
+													FileUtils.applySecureOpenIntent(getContext(), mReceivedFile, openIntent);
 												} catch (Exception e) {
+													e.printStackTrace();
+
 													openIntent.setComponent(new ComponentName(getContext(), HomeActivity.class))
 															.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-															.putExtra(HomeActivity.EXTRA_FILE_PATH, mReceivedFile.getParent());
+															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext()).getUri());
 												}
 
-												dynamicNotification
+												dynamicNotification.setContentText(getContext().getString(R.string.mesg_updateDownloadComplete))
 														.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0))
 														.setAutoCancel(true);
+											} else {
+												dynamicNotification.setContentText(getContext().getString(R.string.mesg_somethingWentWrong))
+														.setSmallIcon(R.drawable.ic_error_white_24dp);
 											}
 											break;
 									}
@@ -136,7 +141,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 													public void onConnect(CoolSocket.Client client)
 													{
 														try {
-															CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+															CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 															activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
 
 															CoolSocket.ActiveConnection.Response response = activeConnection.receive();

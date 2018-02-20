@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -8,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -40,10 +40,13 @@ import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -63,8 +66,11 @@ public class TransactionActivity
 		extends Activity
 		implements NavigationView.OnNavigationItemSelectedListener, TransactionListAdapter.PathChangedListener, PowerfulActionModeSupported
 {
-	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
+	public static final String TAG = TransactionActivity.class.getSimpleName();
+	public static final int JOB_FILE_FIXICATION = 1;
 
+
+	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
@@ -94,7 +100,7 @@ public class TransactionActivity
 	private RecyclerView mPathView;
 	private AppCompatImageButton mHomeButton;
 	private LinearLayoutManager mLayoutManager;
-	private PathResolverRecyclerAdapter mPathAdapter;
+	private TransactionPathResolverRecyclerAdapter mPathAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
 	private PowerfulActionMode mPowafulActionMode;
 	private NavigationView mNavigationView;
@@ -135,18 +141,18 @@ public class TransactionActivity
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 
 		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		mPathAdapter = new PathResolverRecyclerAdapter();
+		mPathAdapter = new TransactionPathResolverRecyclerAdapter();
 
 		mPathView.setLayoutManager(mLayoutManager);
 		mLayoutManager.setStackFromEnd(true);
 		mPathView.setAdapter(mPathAdapter);
 
-		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener()
+		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<String>()
 		{
 			@Override
-			public void onClick(PathResolverRecyclerAdapter.Holder holder)
+			public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
 			{
-				goPath(holder.index.path);
+				goPath(holder.index.object);
 			}
 		});
 
@@ -179,11 +185,11 @@ public class TransactionActivity
 
 				applyPath(null);
 
-				View view = mNavigationView.getHeaderView(0);
-				View layoutView = view.findViewById(R.id.header_transaction_layout);
-				ImageView imageView = view.findViewById(R.id.header_transaction_image);
-				TextView deviceNameText = view.findViewById(R.id.header_transaction_text1);
-				TextView versionText = view.findViewById(R.id.header_transaction_text2);
+				View headerView = mNavigationView.getHeaderView(0);
+				View layoutView = headerView.findViewById(R.id.header_default_device_container);
+				ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
+				TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
+				TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
 				String firstLetters = TextUtils.getFirstLetters(mDevice.nickname, 1);
 				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
@@ -223,12 +229,11 @@ public class TransactionActivity
 				switch (requestCode) {
 					case REQUEST_CHOOSE_FOLDER:
 						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
-							final String selectedPath = data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
+							final Uri selectedPath = data.getParcelableExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
 
-							if (selectedPath.equals(mGroup.savePath) || ((mGroup.savePath == null || mGroup.savePath.length() == 0 || new File(mGroup.savePath).canWrite()) && selectedPath.equals(FileUtils.getApplicationDirectory(getApplicationContext()).getAbsolutePath()))) {
+							if (selectedPath.toString().equals(mGroup.savePath)) {
 								createSnackbar(R.string.mesg_pathSameError).show();
 							} else {
-
 								AlertDialog.Builder builder = new AlertDialog.Builder(TransactionActivity.this);
 
 								builder.setTitle(R.string.ques_checkOldFiles);
@@ -240,7 +245,7 @@ public class TransactionActivity
 									@Override
 									public void onClick(DialogInterface dialogInterface, int i)
 									{
-										updateSavePath(selectedPath);
+										updateSavePath(selectedPath.toString());
 									}
 								});
 
@@ -249,21 +254,25 @@ public class TransactionActivity
 									@Override
 									public void onClick(DialogInterface dialogInterface, int i)
 									{
-										final ProgressDialog progressDialog = new ProgressDialog(TransactionActivity.this);
-
-										progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-										progressDialog.setCancelable(false);
-										progressDialog.setMessage(getString(R.string.mesg_organizingFiles));
-
-										progressDialog.show();
-
-										new Thread()
+										WorkerService.run(TransactionActivity.this, new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_FIXICATION)
 										{
 											@Override
-											public void run()
+											public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
 											{
-												super.run();
+												switch (updateType) {
+													case Started:
+														dynamicNotification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp)
+																.setContentText(getString(R.string.mesg_organizingFiles));
+														break;
+													case Done:
+														dynamicNotification.setContentText(getString(R.string.text_movedCacheFiles));
+														break;
+												}
+											}
 
+											@Override
+											public void onRun()
+											{
 												ArrayList<TransactionObject> checkList = mDatabase.
 														castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 																.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
@@ -271,26 +280,36 @@ public class TransactionActivity
 																				+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 																		String.valueOf(mGroup.groupId), TransactionObject.Type.INCOMING.toString(), TransactionObject.Flag.PENDING.toString()), TransactionObject.class);
 
-												progressDialog.setMax(checkList.size());
+												TransactionObject.Group pseudoGroup = new TransactionObject.Group(mGroup.groupId);
 
-												for (TransactionObject transactionObject : checkList) {
-													progressDialog.setProgress(progressDialog.getProgress() + 1);
+												try {
+													// Illustrate new change to build the structure accordingly
+													mDatabase.reconstruct(pseudoGroup);
+													pseudoGroup.savePath = selectedPath.toString();
 
-													try {
-														File file = FileUtils.getIncomingTransactionFile(getApplicationContext(), transactionObject, mGroup);
+													for (TransactionObject transactionObject : checkList) {
+														if (getInterrupter().interrupted())
+															break;
 
-														if (file.exists() && file.canWrite())
-															file.renameTo(new File(selectedPath + File.separator + transactionObject.file));
-													} catch (IOException e) {
-														e.printStackTrace();
+														try {
+															DocumentFile file = FileUtils.getIncomingPseudoFile(getApplicationContext(), transactionObject, mGroup, false);
+															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), transactionObject, pseudoGroup, true);
+
+															if (file.canRead())
+																FileUtils.copy(TransactionActivity.this, file, pseudoFile, getInterrupter());
+
+															file.delete();
+														} catch (IOException e) {
+															e.printStackTrace();
+														}
 													}
+
+													updateSavePath(selectedPath.toString());
+												} catch (Exception e) {
+													e.printStackTrace();
 												}
-
-												progressDialog.cancel();
-
-												updateSavePath(selectedPath);
 											}
-										}.start();
+										});
 									}
 								});
 
@@ -298,6 +317,7 @@ public class TransactionActivity
 
 							}
 						}
+
 						break;
 				}
 			}
@@ -414,9 +434,7 @@ public class TransactionActivity
 		} else if (id == R.id.drawer_transaction_show_files) {
 			startActivity(new Intent(this, HomeActivity.class)
 					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils
-							.getSavePath(this, mGroup)
-							.getAbsolutePath()));
+					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
 		} else if (id == R.id.drawer_transaction_connection) {
 			changeConnection();
 		} else
@@ -524,6 +542,30 @@ public class TransactionActivity
 				}
 			});
 		}
+	}
+
+	private class TransactionPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
+	{
+		public void goTo(String[] paths)
+		{
+			getList().clear();
+
+			StringBuilder mergedPath = new StringBuilder();
+
+			if (paths != null)
+				for (String path : paths) {
+					if (path.length() == 0)
+						continue;
+
+					if (mergedPath.length() > 0)
+						mergedPath.append(File.separator);
+
+					mergedPath.append(path);
+
+					getList().add(new Holder.Index<>(path, mergedPath.toString()));
+				}
+		}
+
 	}
 
 	public static void startInstance(Context context, int groupId)

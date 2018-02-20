@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -48,13 +49,14 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileNotFoundException;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
@@ -72,6 +74,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
 	private GitHubUpdater mUpdater;
+	private Fragment mCurrentFragment;
 	private Fragment mFragmentDeviceList;
 	private Fragment mFragmentFileExplorer;
 	private Fragment mFragmentTransactions;
@@ -81,7 +84,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentShareImage;
 	private Fragment mFragmentShareText;
 
-	private Fragment mCommitFailedFragment;
+	private Fragment mDelayedCommitFragment;
 
 	private long mExitPressTime;
 
@@ -104,14 +107,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			toggle.syncState();
 		}
 
-		mUpdater = new GitHubUpdater(this, AppConfig.APP_UPDATE_REPO, R.style.AppTheme);
+		mUpdater = new GitHubUpdater(this, AppConfig.REPO_APP_UPDATE, R.style.AppTheme);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
 
 		mNavigationView.setNavigationItemSelectedListener(this);
-
 		mActionMode.setContainerLayout(findViewById(R.id.content_powerful_action_mode_layout));
 
 		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
@@ -131,8 +133,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				@Override
 				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
 				{
-					mPreferences
-							.edit()
+					mPreferences.edit()
 							.putString("availableVersion", versionName)
 							.apply();
 
@@ -151,7 +152,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				.putInt("migrated_version", localDevice.versionNumber)
 				.apply();
 
-		if (!checkCurrentRequestedFragment(getIntent())) {
+		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
 			changeFragment(mFragmentDeviceList);
 			mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
 		}
@@ -169,9 +170,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (headerView != null) {
 			NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-			ImageView imageView = headerView.findViewById(R.id.header_main_image);
-			TextView deviceNameText = headerView.findViewById(R.id.header_main_text1);
-			TextView versionText = headerView.findViewById(R.id.header_main_text2);
+			ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
+			TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
+			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
 			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 1);
 			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
@@ -188,15 +189,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		super.onResume();
 
 		// check if no fragment is shown
-		new Handler().postDelayed(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				if (mCommitFailedFragment != null)
-					changeFragment(mCommitFailedFragment);
-			}
-		}, 900);
+		if (mDelayedCommitFragment != null)
+			changeFragment(mDelayedCommitFragment);
 	}
 
 	@Override
@@ -236,7 +230,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.APPLICATION_REPO)));
+					startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.REPO_APP)));
 				}
 			});
 
@@ -266,7 +260,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	protected void onNewIntent(Intent intent)
 	{
 		super.onNewIntent(intent);
-		checkCurrentRequestedFragment(intent);
+		checkRequestedFragment(intent);
 	}
 
 	@Override
@@ -274,7 +268,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
 			mDrawerLayout.closeDrawer(GravityCompat.START);
-		else {
+		else if (mCurrentFragment == null
+				|| !(mCurrentFragment instanceof OnBackPressedListener)
+				|| !((OnBackPressedListener) mCurrentFragment).onBackPressed()) {
 			if ((System.currentTimeMillis() - mExitPressTime) < 2000)
 				finish();
 			else {
@@ -291,6 +287,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (fragment == removedFragment)
 			return false;
 
+		// to prevent possibly removed fragment from being called
+		mCurrentFragment = null;
+
 		if (removedFragment != null && removedFragment instanceof DetachListener)
 			((DetachListener) removedFragment).onPrepareDetach();
 
@@ -305,9 +304,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 				if (!mIsStopped) {
 					ft.commit();
-					mCommitFailedFragment = null;
+
+					mDelayedCommitFragment = null;
+					mCurrentFragment = fragment;
 				} else
-					mCommitFailedFragment = fragment;
+					mDelayedCommitFragment = fragment;
 
 				setTitle(fragment instanceof TitleSupport
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
@@ -326,19 +327,23 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return true;
 	}
 
-	public boolean checkCurrentRequestedFragment(Intent intent)
+	public boolean checkRequestedFragment(Intent intent)
 	{
 		if (intent == null)
 			return false;
 
 		if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
-			File requestedDirectory = intent.hasExtra(EXTRA_FILE_PATH)
-					? new File(intent.getStringExtra(EXTRA_FILE_PATH))
-					: null;
 
-			openFolder(requestedDirectory != null && requestedDirectory.isDirectory() && requestedDirectory.canRead()
-					? requestedDirectory
-					: null);
+			if (intent.hasExtra(EXTRA_FILE_PATH)) {
+				Uri directoryUri = intent.getParcelableExtra(EXTRA_FILE_PATH);
+
+				try {
+					openFolder(FileUtils.fromUri(getApplicationContext(), directoryUri));
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				}
+			} else
+				openFolder(null);
 		} else if (ACTION_OPEN_ONGOING_LIST.equals(intent.getAction())) {
 			changeFragment(mFragmentTransactions);
 			mNavigationView.setCheckedItem(R.id.menu_activity_main_ongoing_process);
@@ -346,6 +351,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			return false;
 
 		return true;
+	}
+
+	private boolean restorePreviousFragment()
+	{
+		return (mCurrentFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame)) != null;
 	}
 
 	private void highlightUpdater(String availableVersion)
@@ -361,7 +371,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return mActionMode;
 	}
 
-	private void openFolder(@Nullable File requestedFolder)
+	private void openFolder(@Nullable DocumentFile requestedFolder)
 	{
 		changeFragment(mFragmentFileExplorer);
 		mNavigationView.setCheckedItem(R.id.menu_activity_main_file_explorer);
@@ -379,33 +389,34 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			public void run()
 			{
 				try {
+					Interrupter interrupter = new Interrupter();
+
 					PackageManager pm = getPackageManager();
 					Intent sendIntent = new Intent(Intent.ACTION_SEND);
 					PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
 
 					String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-					File codeFile = new File(FileUtils.
-							getApplicationDirectory(getApplicationContext()).getAbsolutePath() + File.separator + fileName);
+					DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext());
+					DocumentFile codeFile = DocumentFile.fromFile(new File(getApplicationInfo().sourceDir));
+					DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
 
-					codeFile = FileUtils.getUniqueFile(codeFile, true);
-
-					FileUtils.copyFile(new File(getApplicationInfo().sourceDir), codeFile);
+					FileUtils.copy(HomeActivity.this, codeFile, cloneFile, interrupter);
 
 					try {
 						sendIntent
 								.putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
-								.putExtra(Intent.EXTRA_STREAM, FileUtils.getUriForFile(HomeActivity.this, codeFile, sendIntent))
-								.setType(FileUtils.getFileContentType(codeFile.getAbsolutePath()));
+								.putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(HomeActivity.this, cloneFile))
+								.setType(cloneFile.getType());
 
 						startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
 					} catch (IllegalArgumentException e) {
 						Toast.makeText(HomeActivity.this, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
-						openFolder(FileUtils.getApplicationDirectory(HomeActivity.this));
+						openFolder(storageDirectory);
+
+						e.printStackTrace();
 					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (PackageManager.NameNotFoundException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

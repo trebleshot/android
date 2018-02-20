@@ -33,7 +33,7 @@ public class ChangeStoragePathActivity extends Activity
 						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
 							getDefaultPreferences()
 									.edit()
-									.putString("storage_path", data.getStringExtra(FilePickerActivity.EXTRA_CHOSEN_PATH))
+									.putString("storage_path", data.getParcelableExtra(FilePickerActivity.EXTRA_CHOSEN_PATH).toString())
 									.apply();
 						}
 						break;

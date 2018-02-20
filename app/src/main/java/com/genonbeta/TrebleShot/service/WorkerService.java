@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.InterruptAwareJob;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 
@@ -138,25 +139,25 @@ public class WorkerService extends Service
 				if (notifiableRunningWork != null) {
 					DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Started);
-
-					Intent cancelIntent = new Intent(WorkerService.this, WorkerService.class);
-
-					cancelIntent.setAction(ACTION_KILL_SIGNAL);
-					cancelIntent.putExtra(EXTRA_TASK_ID, runningTask.getTaskId());
+					Intent cancelIntent = new Intent(WorkerService.this, WorkerService.class)
+							.setAction(ACTION_KILL_SIGNAL)
+							.putExtra(EXTRA_TASK_ID, runningTask.getTaskId());
 
 					dynamicNotification
+							.setSmallIcon(R.drawable.ic_whatshot_white_24dp)
 							.setOngoing(true)
 							.setContentTitle(getString(R.string.text_taskOngoing))
 							.setProgress(0, 0, true)
 							.addAction(R.drawable.ic_clear_white_24dp, getString(R.string.butn_cancel),
 									PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
+					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Started);
+
 					dynamicNotification.show();
 				}
 
 				registerWork(runningTask);
-				runningTask.onRun();
+				runningTask.run();
 				unregisterWork(runningTask);
 
 				if (notifiableRunningWork != null) {
@@ -164,11 +165,13 @@ public class WorkerService extends Service
 
 					if (!runningTask.getInterrupter().interrupted()
 							|| !runningTask.getInterrupter().interruptedByUser()) {
-						DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+						DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
+						dynamicNotification.setSmallIcon(R.drawable.ic_check_white_24dp)
+								.setContentTitle(getString(R.string.text_taskCompleted));
 
 						notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
 
-						dynamicNotification.setContentTitle(getString(R.string.text_taskCompleted));
 						dynamicNotification.show();
 					}
 				}
@@ -215,7 +218,7 @@ public class WorkerService extends Service
 		}
 	}
 
-	public abstract static class RunningTask
+	public abstract static class RunningTask extends InterruptAwareJob
 	{
 		private Interrupter mInterrupter;
 		private String mTag;
@@ -228,7 +231,7 @@ public class WorkerService extends Service
 			mJobId = jobId;
 		}
 
-		abstract public void onRun();
+		abstract protected void onRun();
 
 		public void onInterrupted(int taskId)
 		{
@@ -258,6 +261,11 @@ public class WorkerService extends Service
 			return mTaskId;
 		}
 
+		public void run()
+		{
+			run(getInterrupter());
+		}
+
 		public RunningTask setInterrupter(Interrupter interrupter)
 		{
 			mInterrupter = interrupter;
@@ -272,7 +280,9 @@ public class WorkerService extends Service
 			super(clientTag, jobId);
 		}
 
-		public abstract void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
+		abstract protected void onRun();
+
+		abstract public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
 
 		public enum UpdateType
 		{

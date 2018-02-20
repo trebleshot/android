@@ -37,7 +37,9 @@ public class Keyword
 			SKIPPED_BYTES = "skippedBytes",
 			ERROR = "error",
 			ERROR_NOT_ALLOWED = "notAllowed",
-			ERROR_NOT_FOUND = "notFound";
+			ERROR_NOT_FOUND = "notFound",
+			HANDSHAKE_REQUIRED = "handshakeRequired",
+			HANDSHAKE_ONLY = "handshakeOnly";
 
 	public static class Local
 	{

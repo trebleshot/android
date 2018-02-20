@@ -10,8 +10,9 @@
             android:summary="@string/text_autoScanDevicesSummary"/>
 
         <EditTextPreference
-            android:maxLength="14"
+            android:maxLength="32"
             android:key="device_name"
+            android:inputType="textShortMessage"
             android:title="@string/text_deviceName"
             android:summary="@string/text_deviceNameSummary"
             android:dialogTitle="@string/text_deviceNameTitle"/>

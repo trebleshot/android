@@ -175,7 +175,7 @@ public class NsdDiscovery
 
 			localServiceInfo.setServiceName(AppConfig.NDS_COMM_SERVICE_NAME + "_" + AppUtils.getUniqueNumber());
 			localServiceInfo.setServiceType(AppConfig.NDS_COMM_SERVICE_TYPE);
-			localServiceInfo.setPort(AppConfig.COMMUNICATION_SERVER_PORT);
+			localServiceInfo.setPort(AppConfig.SERVER_PORT_COMMUNICATION);
 
 			getNsdManager().registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, getRegistrationListener());
 		}

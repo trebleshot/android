@@ -159,7 +159,7 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 		TextView sizeText = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(getSelectionConnection().isSelected(transactionObject));
+			selector.setSelected(transactionObject.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{

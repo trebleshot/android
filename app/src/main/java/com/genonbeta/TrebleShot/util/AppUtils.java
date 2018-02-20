@@ -18,6 +18,9 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class AppUtils
@@ -46,6 +49,23 @@ public class AppUtils
 		connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
 	}
 
+	public static void applyDeviceToJSON(NetworkDevice device, JSONObject object) throws JSONException
+	{
+		JSONObject deviceInformation = new JSONObject();
+		JSONObject appInfo = new JSONObject();
+
+		deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, device.deviceId);
+		deviceInformation.put(Keyword.DEVICE_INFO_BRAND, device.brand);
+		deviceInformation.put(Keyword.DEVICE_INFO_MODEL, device.model);
+		deviceInformation.put(Keyword.DEVICE_INFO_USER, device.nickname);
+
+		appInfo.put(Keyword.APP_INFO_VERSION_CODE, device.versionNumber);
+		appInfo.put(Keyword.APP_INFO_VERSION_NAME, device.versionName);
+
+		object.put(Keyword.APP_INFO, appInfo);
+		object.put(Keyword.DEVICE_INFO, deviceInformation);
+	}
+
 	public static boolean checkRunningConditions(Context context)
 	{
 		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
@@ -60,10 +80,17 @@ public class AppUtils
 		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
 	}
 
+	public static String getDeviceSerial(Context context)
+	{
+		return Build.VERSION.SDK_INT < 26
+				? Build.SERIAL
+				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
+	}
+
 	@NonNull
 	public static String getHotspotName(Context context)
 	{
-		return AppConfig.ACCESS_POINT_PREFIX + AppUtils.getLocalDeviceName(context)
+		return AppConfig.PREFIX_ACCESS_POINT + AppUtils.getLocalDeviceName(context)
 				.replace(" ", "_");
 	}
 
@@ -105,11 +132,7 @@ public class AppUtils
 
 	public static NetworkDevice getLocalDevice(Context context)
 	{
-		String serial = Build.VERSION.SDK_INT < 26
-				? Build.SERIAL
-				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
-
-		NetworkDevice device = new NetworkDevice(serial);
+		NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
 
 		device.brand = Build.BRAND;
 		device.model = Build.MODEL;

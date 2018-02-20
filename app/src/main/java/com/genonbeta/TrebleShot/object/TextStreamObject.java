@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.FlexibleObject;
+import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
@@ -14,7 +14,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TextStreamObject
-		implements FlexibleObject, Editable
+		implements DatabaseObject, Editable
 {
 	public int id;
 	public long time;

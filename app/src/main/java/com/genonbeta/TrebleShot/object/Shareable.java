@@ -13,6 +13,7 @@ public class Shareable implements Editable
 {
 	public String friendlyName;
 	public String fileName;
+	public String mimeType;
 	public Uri uri;
 	public long date;
 	public long size;
@@ -23,10 +24,11 @@ public class Shareable implements Editable
 	{
 	}
 
-	public Shareable(String friendlyName, String fileName, long date, long size, Uri uri)
+	public Shareable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 	{
 		this.friendlyName = friendlyName;
 		this.fileName = fileName;
+		this.mimeType = mimeType;
 		this.date = date;
 		this.size = size;
 		this.uri = uri;

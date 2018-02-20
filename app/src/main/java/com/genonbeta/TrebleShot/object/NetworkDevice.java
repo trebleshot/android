@@ -4,14 +4,14 @@ import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.FlexibleObject;
+import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
 public class NetworkDevice
-		implements FlexibleObject
+		implements DatabaseObject
 {
 	public String brand;
 	public String model;
@@ -103,7 +103,7 @@ public class NetworkDevice
 			database.remove(group);
 	}
 
-	public static class Connection implements FlexibleObject
+	public static class Connection implements DatabaseObject
 	{
 		public String adapterName;
 		public String ipAddress;

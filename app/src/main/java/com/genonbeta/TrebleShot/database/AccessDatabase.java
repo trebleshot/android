@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class AccessDatabase extends SQLiteDatabase
 {
-	public static final String TAG = AccessDatabase.class.getSimpleName();
+	public static final int DATABASE_VERSION = 6;
 
 	public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -76,11 +76,15 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_CLIPBOARD_TEXT = "text";
 	public static final String FIELD_CLIPBOARD_TIME = "time";
 
+	public static final String TABLE_WRITABLEPATH = "writablePath";
+	public static final String FIELD_WRITABLEPATH_TITLE = "title";
+	public static final String FIELD_WRITABLEPATH_PATH = "path";
+
 	private Context mContext;
 
 	public AccessDatabase(Context context)
 	{
-		super(context, DATABASE_NAME, null, 5);
+		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		mContext = context;
 	}
 
@@ -132,6 +136,10 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
 
+		sqlValues.defineTable(TABLE_WRITABLEPATH)
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
+
 		SQLQuery.createTables(db, sqlValues);
 	}
 
@@ -146,6 +154,9 @@ public class AccessDatabase extends SQLiteDatabase
 
 			if (current > 5)
 				db.execSQL("DROP TABLE `" + TABLE_CLIPBOARD + "`");
+
+			if (current > 6)
+				db.execSQL("DROP TABLE `" + TABLE_WRITABLEPATH + "`");
 
 			onCreate(db);
 		}

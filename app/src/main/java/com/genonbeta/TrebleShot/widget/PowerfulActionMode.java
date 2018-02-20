@@ -118,6 +118,7 @@ public class PowerfulActionMode extends Toolbar
 
 	protected void initialize()
 	{
+		mContainerLayout = this;
 		mMenuInflater = new MenuInflater(getContext());
 	}
 

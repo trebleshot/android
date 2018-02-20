@@ -8,7 +8,6 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -16,10 +15,10 @@ import java.util.ArrayList;
  * Date: 5/29/17 4:29 PM
  */
 
-public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
+abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
 {
-	private ArrayList<Holder.Index> mList = new ArrayList<>();
-	private OnClickListener mClickListener;
+	private ArrayList<Holder.Index<T>> mList = new ArrayList<>();
+	private OnClickListener<T> mClickListener;
 
 	@Override
 	public Holder onCreateViewHolder(ViewGroup parent, int viewType)
@@ -31,11 +30,7 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 	public void onBindViewHolder(final Holder holder, int position)
 	{
 		holder.index = mList.get(position);
-
-		if (position == 0 && ".".equals(holder.index.name))
-			holder.text.setText(R.string.text_fileRoot);
-		else
-			holder.text.setText(holder.index.name);
+		holder.text.setText(holder.index.title);
 
 		if (mClickListener != null)
 			holder.text.setOnClickListener(new View.OnClickListener()
@@ -54,35 +49,20 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 		return mList.size();
 	}
 
-	public void goTo(String[] paths)
+	public ArrayList<Holder.Index<T>> getList()
 	{
-		mList.clear();
-
-		StringBuilder mergedPath = new StringBuilder();
-
-		if (paths != null)
-			for (String path : paths) {
-				if (path.length() == 0)
-					continue;
-
-				if (mergedPath.length() > 0)
-					mergedPath.append(File.separator);
-
-				mergedPath.append(path);
-
-				mList.add(new Holder.Index(path, mergedPath.toString()));
-			}
+		return mList;
 	}
 
-	public void setOnClickListener(OnClickListener clickListener)
+	public void setOnClickListener(OnClickListener<T> clickListener)
 	{
 		mClickListener = clickListener;
 	}
 
-	public static class Holder extends RecyclerView.ViewHolder
+	public static class Holder<E> extends RecyclerView.ViewHolder
 	{
 		public TextView text;
-		public Index index;
+		public Index<E> index;
 
 		private Holder(View view)
 		{
@@ -90,21 +70,21 @@ public class PathResolverRecyclerAdapter extends RecyclerView.Adapter<PathResolv
 			this.text = view.findViewById(R.id.list_pathresolver_text);
 		}
 
-		public static class Index
+		public static class Index<D>
 		{
-			public String name;
-			public String path;
+			public String title;
+			public D object;
 
-			public Index(String name, String path)
+			public Index(String title, D object)
 			{
-				this.name = name;
-				this.path = path;
+				this.title = title;
+				this.object = object;
 			}
 		}
 	}
 
-	public interface OnClickListener
+	public interface OnClickListener<E>
 	{
-		void onClick(Holder holder);
+		void onClick(Holder<E> holder);
 	}
 }

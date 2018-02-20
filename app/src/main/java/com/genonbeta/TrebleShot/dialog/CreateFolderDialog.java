@@ -8,8 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-
-import java.io.File;
+import com.genonbeta.TrebleShot.io.DocumentFile;
 
 /**
  * Created by: veli
@@ -18,11 +17,11 @@ import java.io.File;
 
 public class CreateFolderDialog extends AlertDialog.Builder
 {
-	private File mCurrentFolder;
+	private DocumentFile mCurrentFolder;
 	private OnCreatedListener mOnCreatedListener;
 	private EditText mFileNameEditText;
 
-	public CreateFolderDialog(final Context context, File currentFolder, OnCreatedListener createdListener)
+	public CreateFolderDialog(final Context context, DocumentFile currentFolder, OnCreatedListener createdListener)
 	{
 		super(context);
 
@@ -50,15 +49,14 @@ public class CreateFolderDialog extends AlertDialog.Builder
 			public void onClick(View v)
 			{
 				String fileName = mFileNameEditText.getText().toString();
-				File file = new File(mCurrentFolder.getAbsoluteFile() + File.separator + fileName);
+				DocumentFile createdFile = mCurrentFolder.createDirectory(fileName);
 
-				if (file.exists())
-					Toast.makeText(getContext(), R.string.mesg_fileAlreadyExists, Toast.LENGTH_SHORT).show();
-				else if (file.mkdir()) {
+				if (createdFile == null)
+					Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show();
+				else {
 					mOnCreatedListener.onCreated();
 					dialog.dismiss();
-				} else
-					Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show();
+				}
 			}
 		});
 

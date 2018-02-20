@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.SearchView;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,7 +26,6 @@ import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 
 public abstract class ShareableListFragment<T extends Shareable, E extends ShareableListAdapter<T>>
@@ -35,6 +35,8 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	private boolean mSearchSupport = true;
 	private boolean mSearchActive = false;
 	private Handler mHandler = new Handler(Looper.myLooper());
+	private String mDefaultEmptyText = null;
+	private Toast mToastNoResult = null;
 
 	private ContentObserver mObserver = new ContentObserver(mHandler)
 	{
@@ -81,7 +83,8 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 		if (getSearchSupport()) {
 			inflater.inflate(R.menu.actions_search, menu);
 
-			SearchView searchView = ((SearchView) menu.findItem(R.id.search).getActionView());
+			SearchView searchView = ((SearchView) menu.findItem(R.id.search)
+					.getActionView());
 
 			searchView.setOnQueryTextListener(mSearchComposer);
 			searchView.setMaxWidth(500);
@@ -123,35 +126,44 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 		if (selectedItemList.size() > 0
 				&& (id == R.id.action_mode_share_trebleshot || id == R.id.action_mode_share_all_apps)) {
-			Intent shareIntent = null;
-			String action = (item.getItemId() == R.id.action_mode_share_all_apps)
-					? (selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
-					: (selectedItemList.size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND);
+			Intent shareIntent = new Intent()
+					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+					.setAction((item.getItemId() == R.id.action_mode_share_all_apps)
+							? (selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
+							: (selectedItemList.size() > 1 ? ShareActivity.ACTION_SEND_MULTIPLE : ShareActivity.ACTION_SEND));
 
 			if (selectedItemList.size() > 1) {
+				MIMEGrouper mimeGrouper = new MIMEGrouper();
 				ArrayList<Uri> uriList = new ArrayList<>();
 				ArrayList<CharSequence> nameList = new ArrayList<>();
 
 				for (T sharedItem : selectedItemList) {
 					uriList.add(sharedItem.uri);
 					nameList.add(sharedItem.fileName);
+
+					if (!mimeGrouper.isLocked())
+						mimeGrouper.process(sharedItem.mimeType);
 				}
 
-				shareIntent = new Intent(action)
-						.setType("*/*")
+				shareIntent.setType(mimeGrouper.toString())
 						.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uriList)
 						.putCharSequenceArrayListExtra(ShareActivity.EXTRA_FILENAME_LIST, nameList);
 			} else if (selectedItemList.size() == 1) {
 				T sharedItem = selectedItemList.get(0);
 
-				shareIntent = new Intent(action)
+				shareIntent.setType(sharedItem.mimeType)
 						.putExtra(Intent.EXTRA_STREAM, sharedItem.uri)
-						.putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName)
-						.setType("*/*");
+						.putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName);
 			}
 
-			if (shareIntent != null)
-				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
+			try {
+				startActivity(item.getItemId() == R.id.action_mode_share_all_apps
+						? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose))
+						: shareIntent);
+			} catch (Throwable e) {
+				e.printStackTrace();
+				Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+			}
 		} else
 			return super.onActionMenuItemSelected(context, actionMode, item);
 
@@ -182,20 +194,13 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 	public void openFile(Uri uri, String chooserText)
 	{
 		try {
-			Intent openIntent = new Intent(Intent.ACTION_VIEW);
-			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri, false);
-
-			openIntent.setDataAndType(StreamInfo.Type.FILE.equals(streamInfo.type)
-					? FileUtils.getUriForFile(getActivity(), new File(URI.create(streamInfo.uri.toString())), openIntent)
-					: streamInfo.uri, streamInfo.mimeType);
+			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri);
+			Intent openIntent = FileUtils.applySecureOpenIntent(getActivity(), streamInfo, new Intent(Intent.ACTION_VIEW));
 
 			startActivity(Intent.createChooser(openIntent, chooserText));
-		} catch (RuntimeException e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
-			Toast.makeText(getActivity(), R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
-		} catch (Exception e) {
-			e.printStackTrace();
-			Toast.makeText(getActivity(), R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -213,8 +218,23 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 				if (shareable.searchMatches(word))
 					searchableList.add(shareable);
 
-			getAdapter().onUpdate(searchableList);
-			getAdapter().notifyDataSetChanged();
+			if (searchableList.size() > 0) {
+				getAdapter().onUpdate(searchableList);
+				getAdapter().notifyDataSetChanged();
+
+				if (mToastNoResult != null)
+					mToastNoResult.cancel();
+			} else {
+				String text = getString(R.string.text_emptySearchResult, word);
+
+				if (mToastNoResult == null) {
+					mToastNoResult = Toast.makeText(getContext(), text, Toast.LENGTH_SHORT);
+					mToastNoResult.setGravity(Gravity.TOP, mToastNoResult.getXOffset(), mToastNoResult.getYOffset());
+				} else
+					mToastNoResult.setText(text);
+
+				mToastNoResult.show();
+			}
 		} else if (!loadIfRequested() && mCachedList.size() != 0) {
 			getAdapter().onUpdate(mCachedList);
 			getAdapter().notifyDataSetChanged();
@@ -222,11 +242,80 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 			mCachedList.clear();
 		}
 
+		if (mDefaultEmptyText == null)
+			mDefaultEmptyText = String.valueOf(getEmptyText().getText());
+
+		setEmptyText(mSearchActive
+				? getString(R.string.text_emptySearchResult, word)
+				: mDefaultEmptyText);
+
 		return getAdapter().getCount() > 0;
 	}
 
 	public void setSearchSupport(boolean searchSupport)
 	{
 		mSearchSupport = searchSupport;
+	}
+
+	public static class MIMEGrouper
+	{
+		public static final String TYPE_GENERIC = "*";
+
+		private String mMajor;
+		private String mMinor;
+		private boolean mLocked;
+
+		public MIMEGrouper()
+		{
+
+		}
+
+		public boolean isLocked()
+		{
+			return mLocked;
+		}
+
+		public String getMajor()
+		{
+			return mMajor == null ? TYPE_GENERIC : mMajor;
+		}
+
+		public String getMinor()
+		{
+			return mMinor == null ? TYPE_GENERIC : mMinor;
+		}
+
+		public void process(String mimeType)
+		{
+			if (mimeType == null || mimeType.length() < 3 || !mimeType.contains(File.separator))
+				return;
+
+			String[] splitMIME = mimeType.split(File.separator);
+
+			process(splitMIME[0], splitMIME[1]);
+		}
+
+		public void process(String major, String minor)
+		{
+			if (mMajor == null || mMinor == null) {
+				mMajor = major;
+				mMinor = minor;
+			} else if (getMajor().equals(TYPE_GENERIC))
+				mLocked = true;
+			else if (!getMajor().equals(major)) {
+				mMajor = TYPE_GENERIC;
+				mMinor = TYPE_GENERIC;
+
+				mLocked = true;
+			} else if (!getMinor().equals(minor)) {
+				mMinor = TYPE_GENERIC;
+			}
+		}
+
+		@Override
+		public String toString()
+		{
+			return getMajor() + File.separator + getMinor();
+		}
 	}
 }

@@ -82,7 +82,7 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 		TextView text2 = view.findViewById(R.id.text2);
 
 		if (getSelectionConnection() != null)
-			selector.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(holder.isSelectableSelected());
 
 		text1.setText(holder.text);
 		text2.setText(AppUtils.formatDateTime(getContext(), holder.time));

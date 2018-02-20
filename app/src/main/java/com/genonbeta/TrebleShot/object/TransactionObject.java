@@ -4,7 +4,7 @@ import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.FlexibleObject;
+import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
@@ -14,7 +14,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TransactionObject
-		implements FlexibleObject, Editable
+		implements DatabaseObject, Editable
 {
 	public String friendlyName;
 	public String file;
@@ -159,7 +159,7 @@ public class TransactionObject
 	}
 
 	public static class Group
-			implements FlexibleObject, Selectable
+			implements DatabaseObject, Selectable
 	{
 		public int groupId;
 		public String deviceId;

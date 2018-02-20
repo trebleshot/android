@@ -3,22 +3,20 @@ package com.genonbeta.TrebleShot.config;
 public class AppConfig
 {
 	public final static int
-			COMMUNICATION_SERVER_PORT = 1128,
-			SEAMLESS_SERVER_PORT = 58762,
-			COMPATIBLE_UPDATE_CHANNEL_PORT = 58765,
+			SERVER_PORT_COMMUNICATION = 1128,
+			SERVER_PORT_SEAMLESS = 58762,
+			SERVER_PORT_UPDATE_CHANNEL = 58765,
 			DEFAULT_SOCKET_TIMEOUT = 5000,
-			DEFAULT_SOCKET_LARGE_TIMEOUT = 40000,
-			SUPPORTED_MIN_VERSION = 55,
-			NICKNAME_MAX_LENGHT = 14;
-
-	public final static byte[]
-			DEFAULT_BUFFER_SIZE = new byte[8096],
-			SMALL_BUFFER_SIZE = new byte[1024];
+			DEFAULT_SOCKET_TIMEOUT_LARGE = 40000,
+			SUPPORTED_MIN_VERSION = 62,
+			NICKNAME_LENGTH_MAX = 32,
+			BUFFER_LENGTH_DEFAULT = 8096,
+			BUFFER_LENGTH_SMALL = 1024;
 
 	public final static String
-			APP_UPDATE_REPO = "https://api.github.com/repos/genonbeta/TrebleShot/releases",
-			APPLICATION_REPO = "http://github.com/genonbeta/TrebleShot",
-			ACCESS_POINT_PREFIX = "TS_",
+			REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases",
+			REPO_APP = "http://github.com/genonbeta/TrebleShot",
+			PREFIX_ACCESS_POINT = "TS_",
 			NETWORK_INTERFACE_WIFI = "wlan0",
 			NDS_COMM_SERVICE_NAME = "TSComm",
 			NDS_COMM_SERVICE_TYPE = "_tscomm._tcp.";

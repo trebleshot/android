@@ -3,47 +3,22 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class HotspotUtils
+abstract public class HotspotUtils
 {
 	private static final String TAG = "HotspotUtils";
 
-	private static Method getWifiApConfiguration;
-
-	private static Method getWifiApState;
-	private static Method isWifiApEnabled;
-	private static Method setWifiApEnabled;
-	private static Method setWifiApConfiguration;
 	private static HotspotUtils mInstance = null;
 
-	private WifiConfiguration mPreviousConfig;
 	private WifiManager mWifiManager;
-
-	static {
-		for (Method method : WifiManager.class.getDeclaredMethods()) {
-			switch (method.getName()) {
-				case "getWifiApConfiguration":
-					getWifiApConfiguration = method;
-					break;
-				case "getWifiApState":
-					getWifiApState = method;
-					break;
-				case "isWifiApEnabled":
-					isWifiApEnabled = method;
-					break;
-				case "setWifiApEnabled":
-					setWifiApEnabled = method;
-					break;
-				case "setWifiApConfiguration":
-					setWifiApConfiguration = method;
-					break;
-			}
-		}
-	}
 
 	private HotspotUtils(Context context)
 	{
@@ -53,7 +28,9 @@ public class HotspotUtils
 	public static HotspotUtils getInstance(Context context)
 	{
 		if (mInstance == null)
-			mInstance = new HotspotUtils(context);
+			mInstance = Build.VERSION.SDK_INT >= 26
+					? new OreoAPI(context)
+					: new HackAPI(context);
 
 		return mInstance;
 	}
@@ -71,63 +48,7 @@ public class HotspotUtils
 
 	public static boolean isSupported()
 	{
-		return getWifiApState != null
-				&& isWifiApEnabled != null
-				&& setWifiApEnabled != null
-				&& getWifiApConfiguration != null;
-	}
-
-	public boolean disable()
-	{
-		unloadPreviousConfig();
-		return setHotspotEnabled(mPreviousConfig, false);
-	}
-
-	public boolean enable()
-	{
-		mWifiManager.setWifiEnabled(false);
-		return setHotspotEnabled(getConfiguration(), true);
-	}
-
-	public boolean enableConfigured(String apName, String passKeyWPA2)
-	{
-		mWifiManager.setWifiEnabled(false);
-
-		if (mPreviousConfig == null)
-			mPreviousConfig = getConfiguration();
-
-		WifiConfiguration wifiConfiguration = new WifiConfiguration();
-
-		wifiConfiguration.SSID = apName;
-
-		if (passKeyWPA2 != null && passKeyWPA2.length() >= 8) {
-			wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-			wifiConfiguration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-			wifiConfiguration.preSharedKey = passKeyWPA2;
-		} else
-			wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-
-		return setHotspotEnabled(wifiConfiguration, true);
-	}
-
-	public WifiConfiguration getConfiguration()
-	{
-		return (WifiConfiguration) invokeSilently(getWifiApConfiguration, mWifiManager);
-	}
-
-	public boolean isEnabled()
-	{
-		Object result = invokeSilently(isWifiApEnabled, mWifiManager);
-
-		if (result == null)
-			return false;
-
-		return (Boolean) result;
-	}
-
-	public WifiConfiguration getPreviousConfig()
-	{
-		return mPreviousConfig;
+		return Build.VERSION.SDK_INT >= 26 || HackAPI.supported();
 	}
 
 	public WifiManager getWifiManager()
@@ -135,35 +56,245 @@ public class HotspotUtils
 		return mWifiManager;
 	}
 
-	private boolean setHotspotConfig(WifiConfiguration config)
+	abstract public boolean disable();
+
+	abstract public boolean enable();
+
+	abstract public WifiConfiguration getConfiguration();
+
+	abstract public WifiConfiguration getPreviousConfig();
+
+	abstract public boolean enableConfigured(String apName, String passKeyWPA2);
+
+	abstract public boolean isEnabled();
+
+	abstract public boolean unloadPreviousConfig();
+
+	@RequiresApi(26)
+	public static class OreoAPI extends HotspotUtils
 	{
-		Object result = invokeSilently(setWifiApConfiguration, mWifiManager, config);
+		private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
 
-		if (result == null)
+		private OreoAPI(Context context)
+		{
+			super(context);
+		}
+
+		@Override
+		public boolean disable()
+		{
+			if (mHotspotReservation == null)
+				return false;
+
+			mHotspotReservation.close();
+
+			return true;
+		}
+
+		@Override
+		public boolean enable()
+		{
+			try {
+				getWifiManager().startLocalOnlyHotspot(new WifiManager.LocalOnlyHotspotCallback()
+				{
+					@Override
+					public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
+					{
+						super.onStarted(reservation);
+						mHotspotReservation = reservation;
+					}
+
+					@Override
+					public void onStopped()
+					{
+						super.onStopped();
+						mHotspotReservation = null;
+					}
+
+					@Override
+					public void onFailed(int reason)
+					{
+						super.onFailed(reason);
+						mHotspotReservation = null;
+					}
+				}, new Handler(Looper.myLooper()));
+
+				return true;
+			} catch (Throwable e) {
+			}
+
 			return false;
+		}
 
-		return (Boolean) result;
+		@Override
+		public WifiConfiguration getConfiguration()
+		{
+			if (mHotspotReservation == null)
+				return null;
+
+			return mHotspotReservation.getWifiConfiguration();
+		}
+
+		@Override
+		public WifiConfiguration getPreviousConfig()
+		{
+			return getConfiguration();
+		}
+
+		@Override
+		public boolean enableConfigured(String apName, String passKeyWPA2)
+		{
+			return enable();
+		}
+
+		@Override
+		public boolean isEnabled()
+		{
+			return HackAPI.enabled(getWifiManager());
+		}
+
+		@Override
+		public boolean unloadPreviousConfig()
+		{
+			return mHotspotReservation != null;
+		}
 	}
 
-	private boolean setHotspotEnabled(WifiConfiguration config, boolean enabled)
+	public static class HackAPI extends HotspotUtils
 	{
-		Object result = invokeSilently(setWifiApEnabled, mWifiManager, config, enabled);
+		private static Method getWifiApConfiguration;
+		private static Method getWifiApState;
+		private static Method isWifiApEnabled;
+		private static Method setWifiApEnabled;
+		private static Method setWifiApConfiguration;
 
-		if (result == null)
-			return false;
+		private WifiConfiguration mPreviousConfig;
 
-		return (Boolean) result;
-	}
+		private HackAPI(Context context)
+		{
+			super(context);
+		}
 
-	public boolean unloadPreviousConfig()
-	{
-		if (mPreviousConfig == null)
-			return false;
+		static {
+			for (Method method : WifiManager.class.getDeclaredMethods()) {
+				switch (method.getName()) {
+					case "getWifiApConfiguration":
+						getWifiApConfiguration = method;
+						break;
+					case "getWifiApState":
+						getWifiApState = method;
+						break;
+					case "isWifiApEnabled":
+						isWifiApEnabled = method;
+						break;
+					case "setWifiApEnabled":
+						setWifiApEnabled = method;
+						break;
+					case "setWifiApConfiguration":
+						setWifiApConfiguration = method;
+						break;
+				}
+			}
+		}
 
-		setHotspotConfig(mPreviousConfig);
+		public static boolean enabled(WifiManager wifiManager)
+		{
+			Object result = invokeSilently(isWifiApEnabled, wifiManager);
 
-		mPreviousConfig = null;
+			if (result == null)
+				return false;
 
-		return true;
+			return (Boolean) result;
+		}
+
+		public static boolean supported()
+		{
+			return getWifiApState != null
+					&& isWifiApEnabled != null
+					&& setWifiApEnabled != null
+					&& getWifiApConfiguration != null;
+		}
+
+		public boolean disable()
+		{
+			unloadPreviousConfig();
+			return setHotspotEnabled(mPreviousConfig, false);
+		}
+
+		public boolean enable()
+		{
+			getWifiManager().setWifiEnabled(false);
+			return setHotspotEnabled(getConfiguration(), true);
+		}
+
+		public boolean enableConfigured(String apName, String passKeyWPA2)
+		{
+			getWifiManager().setWifiEnabled(false);
+
+			if (mPreviousConfig == null)
+				mPreviousConfig = getConfiguration();
+
+			WifiConfiguration wifiConfiguration = new WifiConfiguration();
+
+			wifiConfiguration.SSID = apName;
+
+			if (passKeyWPA2 != null && passKeyWPA2.length() >= 8) {
+				wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+				wifiConfiguration.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+				wifiConfiguration.preSharedKey = passKeyWPA2;
+			} else
+				wifiConfiguration.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+
+			return setHotspotEnabled(wifiConfiguration, true);
+		}
+
+		@Override
+		public boolean isEnabled()
+		{
+			return enabled(getWifiManager());
+		}
+
+		public WifiConfiguration getConfiguration()
+		{
+			return (WifiConfiguration) invokeSilently(getWifiApConfiguration, getWifiManager());
+		}
+
+
+		public WifiConfiguration getPreviousConfig()
+		{
+			return mPreviousConfig;
+		}
+
+		private boolean setHotspotConfig(WifiConfiguration config)
+		{
+			Object result = invokeSilently(setWifiApConfiguration, getWifiManager(), config);
+
+			if (result == null)
+				return false;
+
+			return (Boolean) result;
+		}
+
+		private boolean setHotspotEnabled(WifiConfiguration config, boolean enabled)
+		{
+			Object result = invokeSilently(setWifiApEnabled, getWifiManager(), config, enabled);
+
+			if (result == null)
+				return false;
+
+			return (Boolean) result;
+		}
+
+		public boolean unloadPreviousConfig()
+		{
+			if (mPreviousConfig == null)
+				return false;
+
+			setHotspotConfig(mPreviousConfig);
+
+			mPreviousConfig = null;
+
+			return true;
+		}
 	}
 }

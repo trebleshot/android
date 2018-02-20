@@ -23,21 +23,18 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.android.database.SQLQuery;
 
-import org.json.JSONException;
-
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Created by: veli
@@ -143,32 +140,29 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 						@SuppressLint("UseSparseArrays") final HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
 
-						for (NetworkDevice.Connection connection : mConnections) {
+						for (final NetworkDevice.Connection connection : mConnections) {
 							if (interrupter.interrupted())
 								break;
 
 							feelLucky.setProgress(feelLucky.getProgress() + 1);
 
-							final NetworkDevice.Connection finalConnection = connection;
-
 							if (!NetworkUtils.ping(connection.ipAddress, 500))
 								continue;
 
-							Integer calculatedTime = CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+							Integer calculatedTime = CommunicationBridge.connect(mDatabase, Integer.class, new CommunicationBridge.Client.ConnectionHandler()
 							{
 								@Override
-								public void onConnect(CoolSocket.Client client)
+								public void onConnect(CommunicationBridge.Client client)
 								{
 									int outTime = -1;
 
 									try {
-										long startTime = System.currentTimeMillis();
-										final CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(finalConnection.ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), 2000);
-
-										interrupter.addCloser(new Interrupter.Closer()
+										final long startTime = System.currentTimeMillis();
+										final CoolSocket.ActiveConnection activeConnection = client.connect(connection);
+										final Interrupter.Closer selfCloser = new Interrupter.Closer()
 										{
 											@Override
-											public void onClose()
+											public void onClose(boolean userAction)
 											{
 												try {
 													activeConnection.getSocket().close();
@@ -176,23 +170,23 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 													e.printStackTrace();
 												}
 											}
-										});
+										};
 
-										activeConnection.reply(null);
-										activeConnection.receive();
+										interrupter.addCloser(selfCloser);
+
+										client.handshake(activeConnection, true);
+										client.updateDeviceIfOkay(activeConnection, mNetworkDevice);
+
+										interrupter.removeCloser(selfCloser);
 
 										outTime = (int) (System.currentTimeMillis() - startTime);
-									} catch (IOException e) {
-										e.printStackTrace();
-									} catch (JSONException e) {
-										e.printStackTrace();
-									} catch (TimeoutException e) {
+									} catch (Exception e) {
 										e.printStackTrace();
 									} finally {
 										client.setReturn(outTime);
 									}
 								}
-							}, Integer.class);
+							});
 
 							if (calculatedTime != null && calculatedTime > -1)
 								calculatedConnections.put(calculatedTime, connection);

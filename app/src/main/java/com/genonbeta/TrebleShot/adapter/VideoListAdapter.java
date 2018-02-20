@@ -61,11 +61,13 @@ public class VideoListAdapter
 			int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 			int dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
 			int sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
+			int typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE);
 
 			do {
 				VideoHolder info = new VideoHolder(cursor.getInt(idIndex),
 						cursor.getString(titleIndex),
 						cursor.getString(displayIndex),
+						cursor.getString(typeIndex),
 						cursor.getLong(lengthIndex),
 						cursor.getLong(dateIndex),
 						cursor.getLong(sizeIndex),
@@ -123,7 +125,7 @@ public class VideoListAdapter
 		text2.setText(holder.duration);
 
 		if (getSelectionConnection() != null)
-			selector.setSelected(getSelectionConnection().isSelected(holder));
+			selector.setSelected(holder.isSelectableSelected());
 
 		SweetImageLoader.load(this, getContext(), image, holder);
 
@@ -135,9 +137,9 @@ public class VideoListAdapter
 		public long id;
 		public String duration;
 
-		public VideoHolder(int id, String friendlyName, String fileName, long duration, long date, long size, Uri uri)
+		public VideoHolder(int id, String friendlyName, String fileName, String mimeType, long duration, long date, long size, Uri uri)
 		{
-			super(friendlyName, fileName, date, size, uri);
+			super(friendlyName, fileName, mimeType, date, size, uri);
 
 			this.id = id;
 			this.duration = TimeUtils.getDuration(duration);

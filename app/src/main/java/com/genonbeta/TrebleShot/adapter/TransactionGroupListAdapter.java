@@ -111,7 +111,7 @@ public class TransactionGroupListAdapter extends EditableListAdapter<Transaction
 		TextView text3 = convertView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(getSelectionConnection().isSelected(group));
+			selector.setSelected(group.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{

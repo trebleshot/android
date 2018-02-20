@@ -28,10 +28,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_margin="15dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:visibility="gone"
         app:cardBackgroundColor="?attr/actionModeBackground"
-        app:cardElevation="5dp">
+        app:cardCornerRadius="20dp"
+        app:cardElevation="5dp"
+        app:cardPreventCornerOverlap="false">
 
         <com.genonbeta.TrebleShot.widget.PowerfulActionMode
             android:id="@+id/content_powerful_action_mode"
@@ -48,7 +52,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_whatshot_white_24dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:tint="@color/whiteAccent"
+        app:srcCompat="@drawable/ic_whatshot_white_24dp"/>
 
 </android.support.design.widget.CoordinatorLayout>

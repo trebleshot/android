@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.util;
 
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -11,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.ConnectException;
-import java.net.InetSocketAddress;
 
 public class NetworkDeviceLoader
 {
@@ -55,19 +53,13 @@ public class NetworkDeviceLoader
 
 	public static NetworkDevice load(boolean currentThread, final AccessDatabase database, final String ipAddress, final OnDeviceRegisteredListener listener) throws ConnectException
 	{
-		CoolSocket.Client.ConnectionHandler connectionHandler = new CoolSocket.Client.ConnectionHandler()
+		CommunicationBridge.Client.ConnectionHandler connectionHandler = new CommunicationBridge.Client.ConnectionHandler()
 		{
 			@Override
-			public void onConnect(CoolSocket.Client client)
+			public void onConnect(CommunicationBridge.Client client)
 			{
 				try {
-					CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(ipAddress, AppConfig.COMMUNICATION_SERVER_PORT), AppConfig.DEFAULT_SOCKET_TIMEOUT);
-
-					activeConnection.reply(null);
-					CoolSocket.ActiveConnection.Response clientResponse = activeConnection.receive();
-
-					JSONObject jsonResponse = new JSONObject(clientResponse.response);
-					NetworkDevice device = loadFrom(database, jsonResponse);
+					NetworkDevice device = client.loadDevice(ipAddress);
 
 					if (device.deviceId != null) {
 						NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
@@ -92,9 +84,9 @@ public class NetworkDeviceLoader
 		};
 
 		if (currentThread)
-			return CoolSocket.connect(connectionHandler, NetworkDevice.class);
+			return CommunicationBridge.connect(database, NetworkDevice.class, connectionHandler);
 		else
-			CoolSocket.connect(connectionHandler);
+			CommunicationBridge.connect(database, connectionHandler);
 
 		return null;
 	}
@@ -118,8 +110,8 @@ public class NetworkDeviceLoader
 		device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
 		device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
 
-		if (device.nickname.length() > AppConfig.NICKNAME_MAX_LENGHT)
-			device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_MAX_LENGHT - 1);
+		if (device.nickname.length() > AppConfig.NICKNAME_LENGTH_MAX)
+			device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_LENGTH_MAX - 1);
 
 		return device;
 	}

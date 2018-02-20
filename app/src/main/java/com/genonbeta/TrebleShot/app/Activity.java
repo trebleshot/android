@@ -82,4 +82,9 @@ public abstract class Activity extends AppCompatActivity
 
 		return true;
 	}
+
+	public interface OnBackPressedListener
+	{
+		boolean onBackPressed();
+	}
 }
