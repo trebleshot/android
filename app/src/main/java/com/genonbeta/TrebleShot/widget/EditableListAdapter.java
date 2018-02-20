@@ -107,8 +107,7 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 
 	public void notifySelectionChanges()
 	{
-		synchronized (getItemList())
-		{
+		synchronized (getItemList()) {
 			updateSelectionStatus(getItemList());
 		}
 

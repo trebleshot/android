@@ -228,9 +228,7 @@ public class CommunicationNotificationHelper
 							.putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
 		} else {
 			try {
-				Intent openIntent = new Intent(Intent.ACTION_VIEW);
-
-				openIntent.setDataAndType(processHolder.currentFile.getUri(), processHolder.transactionObject.fileMimeType);
+				Intent openIntent = FileUtils.applySecureOpenIntent(getContext(), processHolder.currentFile, new Intent(Intent.ACTION_VIEW));
 				notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0));
 			} catch (Exception e) {
 			}

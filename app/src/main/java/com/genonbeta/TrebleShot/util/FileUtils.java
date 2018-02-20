@@ -149,16 +149,23 @@ public class FileUtils
 		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		try {
-			DocumentFile savePath = fromUri(context, Uri.parse(sharedPreferences.getString("storage_path", defaultPath)));
+		if (sharedPreferences.contains("storage_path")) {
+			try {
+				DocumentFile savePath = fromUri(context, Uri.parse(sharedPreferences.getString("storage_path", null)));
 
-			if (savePath != null && savePath.isDirectory() && savePath.canWrite())
-				return savePath;
-		} catch (Exception e) {
-			e.printStackTrace();
+				if (savePath != null && savePath.isDirectory() && savePath.canWrite())
+					return savePath;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
-		return DocumentFile.fromFile(new File(defaultPath));
+		File defaultFolder = new File(defaultPath);
+
+		if (!defaultFolder.isDirectory())
+			defaultFolder.mkdirs();
+
+		return DocumentFile.fromFile(defaultFolder);
 	}
 
 	public static String getFileContentType(String fileUrl)

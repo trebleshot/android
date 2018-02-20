@@ -347,6 +347,7 @@ abstract public class CoolTransfer<T>
 					}
 				} catch (Exception e) {
 					setFlag(onError(this, e));
+
 				} finally {
 					try {
 						if (getSocket() != null && !getSocket().isClosed())
