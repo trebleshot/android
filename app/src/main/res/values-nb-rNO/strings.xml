@@ -326,4 +326,11 @@
     <string name="text_listEmptyMusic">Ingen sanger her!</string>
     <string name="text_internalStorage">Internt lagringsmedium</string>
     <string name="text_restrictedAccessStorage">%s (begrenset tilgang)</string>
-</resources>
+<string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
+    <string name="mesg_listRefreshSnoozed">Listen vil bli gjenoppfrisket når tilgjengelig</string>
+    <string name="mesg_errorReadFolder">\"%s\"-mappen kan ikke leses</string>
+    <string name="butn_mountDirectory">Monteringsmappe</string>
+    <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker tilgang til</string>
+    <string name="butn_ejectDirectory">Utløs mappe</string>
+    <string name="text_movedCacheFiles">Hurtiglagrede filer har blitt flyttet</string>
+    </resources>
