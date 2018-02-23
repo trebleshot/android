@@ -25,7 +25,6 @@
         <item quantity="other">Receive %d files?</item>
     </plurals>
     <plurals name="text_files">
-        <item quantity="zero">No file</item>
         <item quantity="one">One file</item>
         <item quantity="other">%d files</item>
     </plurals>

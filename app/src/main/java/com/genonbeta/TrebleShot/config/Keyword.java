@@ -39,7 +39,10 @@ public class Keyword
 			ERROR_NOT_ALLOWED = "notAllowed",
 			ERROR_NOT_FOUND = "notFound",
 			HANDSHAKE_REQUIRED = "handshakeRequired",
-			HANDSHAKE_ONLY = "handshakeOnly";
+			HANDSHAKE_ONLY = "handshakeOnly",
+			NETWORK_NAME = "nwName",
+			NETWORK_PASSWORD = "nwPwd",
+			NETWORK_KEYMGMT = "ntKeyMgmt";
 
 	public static class Local
 	{

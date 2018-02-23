@@ -7,10 +7,12 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.RequiresApi;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
@@ -40,6 +42,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
@@ -76,6 +79,8 @@ public class CommunicationService extends Service
 	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
 	public final static String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
 	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
+	public final static String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
+	public final static String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
@@ -83,6 +88,9 @@ public class CommunicationService extends Service
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
+	public static final String EXTRA_HOTSPOT_NAME = "extraHotspotName";
+	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
+	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
 
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
@@ -138,6 +146,18 @@ public class CommunicationService extends Service
 				|| !mCommunicationServer.start()
 				|| !mSeamlessServer.start())
 			stopSelf();
+
+		if (getHotspotUtils() instanceof HotspotUtils.OreoAPI && Build.VERSION.SDK_INT >= 26)
+			((HotspotUtils.OreoAPI) getHotspotUtils()).setSecondaryCallback(new WifiManager.LocalOnlyHotspotCallback()
+			{
+				@RequiresApi(api = Build.VERSION_CODES.O)
+				@Override
+				public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
+				{
+					super.onStarted(reservation);
+					sendHotspotStatus(reservation.getWifiConfiguration());
+				}
+			});
 	}
 
 	@Override
@@ -296,7 +316,8 @@ public class CommunicationService extends Service
 			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
 					&& (Build.VERSION.SDK_INT < 23 || Settings.System.canWrite(this))) {
 				setupHotspot();
-			}
+			} else if (ACTION_REQUEST_HOTSPOT_STATUS.equals(intent.getAction()))
+				sendHotspotStatus(getHotspotUtils().getConfiguration());
 		}
 
 		return START_STICKY;
@@ -384,12 +405,40 @@ public class CommunicationService extends Service
 		return findProcessById(groupId) != null;
 	}
 
+	public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
+	{
+		Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS);
+
+		if (wifiConfiguration == null) {
+			statusIntent.putExtra(EXTRA_HOTSPOT_NAME, (String) null)
+					.putExtra(EXTRA_HOTSPOT_PASSWORD, (String) null)
+					.putExtra(EXTRA_HOTSPOT_KEY_MGMT, -1);
+		} else {
+			statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
+					.putExtra(EXTRA_HOTSPOT_PASSWORD, wifiConfiguration.preSharedKey)
+					.putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
+		}
+
+		sendBroadcast(statusIntent);
+	}
+
 	public void setupHotspot()
 	{
-		if (!getHotspotUtils().isEnabled()) {
+		boolean isEnabled = !getHotspotUtils().isEnabled();
+
+		if (getNotificationHelper().getUtils()
+				.getPreferences()
+				.getBoolean("hotspot_trust", false))
+			updateServiceState(isEnabled);
+
+		if (isEnabled)
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
-		} else
+		else {
 			getHotspotUtils().disable();
+
+			if (Build.VERSION.SDK_INT >= 26)
+				sendHotspotStatus(null);
+		}
 	}
 
 	public void startFileReceiving(int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException

@@ -60,13 +60,15 @@ abstract public class HotspotUtils
 
 	abstract public boolean enable();
 
+	abstract public boolean enableConfigured(String apName, String passKeyWPA2);
+
 	abstract public WifiConfiguration getConfiguration();
 
 	abstract public WifiConfiguration getPreviousConfig();
 
-	abstract public boolean enableConfigured(String apName, String passKeyWPA2);
-
 	abstract public boolean isEnabled();
+
+	abstract public boolean isStarted();
 
 	abstract public boolean unloadPreviousConfig();
 
@@ -74,6 +76,7 @@ abstract public class HotspotUtils
 	public static class OreoAPI extends HotspotUtils
 	{
 		private WifiManager.LocalOnlyHotspotReservation mHotspotReservation;
+		private WifiManager.LocalOnlyHotspotCallback mCallback;
 
 		private OreoAPI(Context context)
 		{
@@ -102,6 +105,9 @@ abstract public class HotspotUtils
 					{
 						super.onStarted(reservation);
 						mHotspotReservation = reservation;
+
+						if (mCallback != null)
+							mCallback.onStarted(reservation);
 					}
 
 					@Override
@@ -109,6 +115,9 @@ abstract public class HotspotUtils
 					{
 						super.onStopped();
 						mHotspotReservation = null;
+
+						if (mCallback != null)
+							mCallback.onStopped();
 					}
 
 					@Override
@@ -116,6 +125,9 @@ abstract public class HotspotUtils
 					{
 						super.onFailed(reason);
 						mHotspotReservation = null;
+
+						if (mCallback != null)
+							mCallback.onFailed(reason);
 					}
 				}, new Handler(Looper.myLooper()));
 
@@ -151,6 +163,17 @@ abstract public class HotspotUtils
 		public boolean isEnabled()
 		{
 			return HackAPI.enabled(getWifiManager());
+		}
+
+		@Override
+		public boolean isStarted()
+		{
+			return mHotspotReservation != null;
+		}
+
+		public void setSecondaryCallback(WifiManager.LocalOnlyHotspotCallback callback)
+		{
+			mCallback = callback;
 		}
 
 		@Override
@@ -254,11 +277,16 @@ abstract public class HotspotUtils
 			return enabled(getWifiManager());
 		}
 
+		@Override
+		public boolean isStarted()
+		{
+			return getPreviousConfig() != null;
+		}
+
 		public WifiConfiguration getConfiguration()
 		{
 			return (WifiConfiguration) invokeSilently(getWifiApConfiguration, getWifiManager());
 		}
-
 
 		public WifiConfiguration getPreviousConfig()
 		{

@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.net.wifi.WifiConfiguration;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
@@ -108,6 +110,17 @@ public class NetworkUtils
 		}
 
 		return filteredInterfaceList;
+	}
+
+	public static int getAllowedKeyManagement(WifiConfiguration wifiConfiguration)
+	{
+		String keyManagement = wifiConfiguration.allowedKeyManagement.toString();
+
+		try {
+			return Integer.valueOf(keyManagement.substring(1, keyManagement.length() - 1));
+		} catch (Exception e) {}
+
+		return -1;
 	}
 
 	public static byte[] getUTF8Bytes(String string)

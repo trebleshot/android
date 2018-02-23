@@ -23,6 +23,12 @@
             android:title="@string/text_trustZoneEnabled"
             android:summary="@string/text_trustZoneEnabledSummary"/>
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="hotspot_trust"
+            android:title="@string/text_hotspotStartsTrustZone"
+            android:summary="@string/text_hotspotStartsTrustZoneSummary"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/text_notification">

@@ -149,6 +149,8 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	{
 		public String SSID;
 		public String BSSID;
+		public String password;
+		public int keyManagement;
 
 		public HotspotNetwork()
 		{

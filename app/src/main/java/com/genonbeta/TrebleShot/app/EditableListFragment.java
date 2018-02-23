@@ -113,15 +113,13 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		int id = item.getItemId();
+		int groupId = item.getGroupId();
 
 		if (id == R.id.actions_abs_editable_multi_select) {
 			getPowerfulActionMode().start(this);
-		} else if (id == R.id.actions_abs_editable_sort_by_name
-				|| id == R.id.actions_abs_editable_sort_by_date
-				|| id == R.id.actions_abs_editable_sort_by_size)
+		} else if (groupId == R.id.actions_abs_editable_group_sorting)
 			changeSortingCriteria(id);
-		else if (id == R.id.actions_abs_editable_sort_order_ascending
-				|| id == R.id.actions_abs_editable_sort_order_descending)
+		else if (groupId == R.id.actions_abs_editable_group_sort_order)
 			changeOrderingCriteria(id);
 
 		return super.onOptionsItemSelected(item);

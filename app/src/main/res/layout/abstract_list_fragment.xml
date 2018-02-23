@@ -4,67 +4,78 @@
              android:layout_height="match_parent"
              android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/customListFragment_progressView"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="210dip"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:indeterminate="true"
-        android:visibility="gone"/>
+    <FrameLayout
+        android:id="@+id/customListFragment_customViewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 
     <FrameLayout
-        android:id="@+id/customListFragment_container"
+        android:id="@+id/customListFragment_defaultViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <RelativeLayout
-            android:id="@+id/customListFragment_emptyView"
+        <ProgressBar
+            android:id="@+id/customListFragment_progressView"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="210dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:visibility="gone"/>
+
+        <FrameLayout
+            android:id="@+id/customListFragment_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:visibility="gone">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/customListFragment_emptyImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ripple_background_accent"
-                android:cropToPadding="true"
-                android:padding="15dp"
-                android:src="@drawable/ic_search_white_24dp"/>
-
-            <TextView
-                android:id="@+id/customListFragment_emptyTextView"
-                style="@style/marqueeText.primary.big"
+            <RelativeLayout
+                android:id="@+id/customListFragment_emptyView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/customListFragment_emptyImageView"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="8dp"
-                android:gravity="center_horizontal"
-                android:maxLines="5"
-                android:text="@string/text_listEmpty"/>
+                android:layout_height="match_parent"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:visibility="gone">
 
-            <Button
-                android:id="@+id/customListFragment_emptyActionButton"
-                style="?attr/buttonBarButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/customListFragment_emptyTextView"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="16dp"
-                android:visibility="gone"/>
+                <ImageView
+                    android:id="@+id/customListFragment_emptyImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ripple_background_accent"
+                    android:cropToPadding="true"
+                    android:padding="15dp"
+                    android:src="@drawable/ic_whatshot_white_24dp"/>
 
-        </RelativeLayout>
+                <TextView
+                    android:id="@+id/customListFragment_emptyTextView"
+                    style="@style/marqueeText.primary.big"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/customListFragment_emptyImageView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center_horizontal"
+                    android:maxLines="5"
+                    android:text="@string/text_listEmpty"/>
 
-        <ListView
-            android:id="@+id/customListFragment_listView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+                <Button
+                    android:id="@+id/customListFragment_emptyActionButton"
+                    style="?attr/buttonBarButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/customListFragment_emptyTextView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:visibility="gone"/>
 
+            </RelativeLayout>
+
+            <ListView
+                android:id="@+id/customListFragment_listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+        </FrameLayout>
     </FrameLayout>
-
 </FrameLayout>

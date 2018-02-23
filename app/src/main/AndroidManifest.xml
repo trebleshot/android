@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
           package="com.genonbeta.TrebleShot">
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -55,6 +56,11 @@
                 android:name="android.service.chooser.chooser_target_service"
                 android:value=".service.DeviceChooserService"/>
         </activity>
+
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
 
         <activity
             android:name=".activity.FilePickerActivity"

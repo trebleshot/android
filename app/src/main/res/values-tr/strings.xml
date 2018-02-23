@@ -331,4 +331,9 @@
     <string name="mesg_mountDirectoryHelp">Erişmek istediğiniz klasörü veya aygıtı seçin</string>
     <string name="butn_ejectDirectory">Klasörü çıkart</string>
     <string name="text_movedCacheFiles">Önbellek dosyaları başarıyla taşındı</string>
+    <string name="mesg_wifiEnableRequired">Kablosuz devre dışı. Lütfen bağlanmak için etkinleştirin</string>
+    <string name="text_hotspotStartsTrustZone">Hotspot, GüvenliBölge\'yi de başlatır</string>
+    <string name="text_hotspotStartsTrustZoneSummary">GüvenliBölge duruma göre başlatılacak</string>
+    <string name="text_qrCodeAvailableHelp">Göndericiye bu QR kodunu TrebleShot üzerinde taramasını söyleyin</string>
+    <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın</string>
 </resources>

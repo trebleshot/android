@@ -1,12 +1,15 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +17,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Toast;
@@ -40,8 +45,11 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -66,16 +74,30 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 
+	private boolean mQRScanRequested = false;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private AccessDatabase mDatabase;
 	private ProgressDialog mProgressDialog;
 	private Interrupter mInterrupter = new Interrupter();
+	private IntentFilter mFilter = new IntentFilter();
 	private NetworkDeviceListFragment mDeviceListFragment;
 	private Toolbar mToolbar;
 	private FloatingActionButton mFAB;
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
+	private BroadcastReceiver mWifiStatusReceiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (mQRScanRequested
+					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
+					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
+				requestQRScan();
+			}
+		}
+	};
 
 	@Override
 
@@ -91,6 +113,8 @@ public class ShareActivity extends Activity
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 
 		setSupportActionBar(mToolbar);
+
+		mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
 		mDeviceListFragment.getListView().setClipToPadding(false);
@@ -111,100 +135,77 @@ public class ShareActivity extends Activity
 			{
 				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
 
-				if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
-
-					resetProgressItems();
-
-					getProgressDialog().setMessage(getString(R.string.mesg_connectingToSelfHotspot));
-					getProgressDialog().setMax(20);
-
-					getProgressDialog().show();
-
-					runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
-					{
-						private boolean mConnected = false;
-						private long mStartTime = System.currentTimeMillis();
-						private String mRemoteAddress;
-
-						@Override
-						public void onRun()
-						{
-							if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork))
-								mDeviceListFragment.toggleConnection(hotspotNetwork);
-
-							while (mRemoteAddress == null) {
-								int passedTime = (int) (System.currentTimeMillis() - mStartTime);
-
-								for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
-									if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
-										String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
-
-										if (NetworkUtils.ping(remoteAddress, 1000)) {
-											mRemoteAddress = remoteAddress;
-											break;
-										}
-									}
-								}
-
-								try {
-									Thread.sleep(1000);
-									getProgressDialog().setProgress(passedTime / 1000);
-								} catch (InterruptedException e) {
-									e.printStackTrace();
-								} finally {
-									if (passedTime > 20000 || getDefaultInterrupter().interrupted())
-										break;
-								}
-							}
-
-							if (mRemoteAddress != null) {
-								try {
-									NetworkDeviceLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
-									{
-										@Override
-										public void onError(Exception error)
-										{
-											getProgressDialog().dismiss();
-										}
-
-										@Override
-										public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
-										{
-											mConnected = true;
-
-											if (!getDefaultInterrupter().interrupted())
-												runOnUiThread(new Runnable()
-												{
-													@Override
-													public void run()
-													{
-														getProgressDialog().dismiss();
-														doCommunicate(device, connection);
-													}
-												});
-										}
-									});
-								} catch (ConnectException e) {
-									e.printStackTrace();
-								}
-							}
-
-							if (!mConnected) {
-								getProgressDialog().dismiss();
-								createSnackbar(R.string.mesg_connectionFailure)
-										.show();
-							}
-
-							// We can't add dialog outside of the else statement as it may close other dialogs as well
-						}
-					});
-				} else
+				if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
+					doCommunicate((NetworkDeviceListAdapter.HotspotNetwork) device);
+				else
 					showChooserDialog(device);
 			}
 		});
 
 		bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
+		getMenuInflater().inflate(R.menu.actions_activity_share, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		registerReceiver(mWifiStatusReceiver, mFilter);
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		unregisterReceiver(mWifiStatusReceiver);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.actions_activity_share_scan_barcode) {
+			if (!mDeviceListFragment.getWifiManager().isWifiEnabled())
+			{
+				createSnackbar(R.string.mesg_wifiEnableRequired)
+						.setAction(R.string.butn_enable, new View.OnClickListener()
+						{
+							@Override
+							public void onClick(View view)
+							{
+								mQRScanRequested = true;
+
+								mDeviceListFragment.getWifiManager()
+										.setWifiEnabled(true);
+							}
+						})
+						.show();
+			} else
+				requestQRScan();
+		} else
+			return super.onOptionsItemSelected(item);
+
+		return true;
+	}
+
+	private void requestQRScan()
+	{
+		mQRScanRequested = false;
+
+		IntentIntegrator integrator = new IntentIntegrator(this);
+		integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+		integrator.setPrompt("Scan the QR code on TrebleShot");
+		integrator.setBeepEnabled(true);
+		integrator.setOrientationLocked(false);
+		integrator.setBarcodeImageEnabled(true);
+		integrator.initiateScan();
 	}
 
 	@Override
@@ -221,9 +222,35 @@ public class ShareActivity extends Activity
 	{
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if (resultCode == RESULT_OK)
+		if (resultCode == RESULT_OK) {
 			if (requestCode == REQUEST_CODE_EDIT_BOX && data != null && data.hasExtra(TextEditorActivity.EXTRA_TEXT_INDEX))
 				mSharedText = data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX);
+			else {
+				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+
+				if (result.getContents() != null) {
+					Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+
+					try {
+						JSONObject jsonObject = new JSONObject(result.getContents());
+						NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
+
+						hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
+
+						boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
+
+						if (passProtected) {
+							hotspotNetwork.password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
+							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
+						}
+
+						doCommunicate(hotspotNetwork);
+					} catch (JSONException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
 	}
 
 	protected void onRequestReady()
@@ -270,6 +297,95 @@ public class ShareActivity extends Activity
 	protected Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(mDeviceListFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+	}
+
+	protected void doCommunicate(final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
+	{
+		resetProgressItems();
+
+		getProgressDialog().setMessage(getString(R.string.mesg_connectingToSelfHotspot));
+		getProgressDialog().setMax(20);
+
+		getProgressDialog().show();
+
+		runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
+		{
+			private boolean mConnected = false;
+			private long mStartTime = System.currentTimeMillis();
+			private String mRemoteAddress;
+
+			@Override
+			public void onRun()
+			{
+				if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork))
+					mDeviceListFragment.toggleConnection(hotspotNetwork);
+
+				while (mRemoteAddress == null) {
+					int passedTime = (int) (System.currentTimeMillis() - mStartTime);
+
+					for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
+						if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
+							String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
+
+							if (NetworkUtils.ping(remoteAddress, 1000)) {
+								mRemoteAddress = remoteAddress;
+								break;
+							}
+						}
+					}
+
+					try {
+						Thread.sleep(1000);
+						getProgressDialog().setProgress(passedTime / 1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} finally {
+						if (passedTime > 20000 || getDefaultInterrupter().interrupted())
+							break;
+					}
+				}
+
+				if (mRemoteAddress != null) {
+					try {
+						NetworkDeviceLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
+						{
+							@Override
+							public void onError(Exception error)
+							{
+								getProgressDialog().dismiss();
+							}
+
+							@Override
+							public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+							{
+								mConnected = true;
+
+								if (!getDefaultInterrupter().interrupted())
+									runOnUiThread(new Runnable()
+									{
+										@Override
+										public void run()
+										{
+											getProgressDialog().dismiss();
+											doCommunicate(device, connection);
+										}
+									});
+							}
+						});
+					} catch (ConnectException e) {
+						e.printStackTrace();
+					}
+				}
+
+				if (!mConnected) {
+					getProgressDialog().dismiss();
+					createSnackbar(R.string.mesg_connectionFailure)
+							.show();
+				}
+
+				// We can't add dialog outside of the else statement as it may close other dialogs as well
+			}
+		});
 	}
 
 	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
