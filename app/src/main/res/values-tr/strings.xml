@@ -337,4 +337,6 @@
     <string name="text_qrCodeAvailableHelp">Göndericiye bu QR kodunu TrebleShot üzerinde taramasını söyleyin</string>
     <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın</string>
     <string name="text_scanQRCodeHelp">Alıcının ekranı üzerindeki QR kodunu tarayın</string>
+    <string name="butn_qrScanToSend">Göndermek için QR tara</string>
+    <string name="butn_qrToggle">QR Kod gösterimi</string>
 </resources>

@@ -118,7 +118,8 @@ public class NetworkUtils
 
 		try {
 			return Integer.valueOf(keyManagement.substring(1, keyManagement.length() - 1));
-		} catch (Exception e) {}
+		} catch (Exception e) {
+		}
 
 		return -1;
 	}

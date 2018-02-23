@@ -5,7 +5,7 @@
         android:id="@+id/actions_activity_share_scan_barcode"
         android:icon="@drawable/ic_qrcode_scan_white_24dp"
         android:orderInCategory="0"
-        android:title="Scan QR to send"
+        android:title="@string/butn_qrScanToSend"
         app:showAsAction="always"/>
 
 </menu>
