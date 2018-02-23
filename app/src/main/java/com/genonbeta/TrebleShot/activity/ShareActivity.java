@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -172,8 +173,7 @@ public class ShareActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == R.id.actions_activity_share_scan_barcode) {
-			if (!mDeviceListFragment.getWifiManager().isWifiEnabled())
-			{
+			if (!mDeviceListFragment.getWifiManager().isWifiEnabled()) {
 				createSnackbar(R.string.mesg_wifiEnableRequired)
 						.setAction(R.string.butn_enable, new View.OnClickListener()
 						{
@@ -193,19 +193,6 @@ public class ShareActivity extends Activity
 			return super.onOptionsItemSelected(item);
 
 		return true;
-	}
-
-	private void requestQRScan()
-	{
-		mQRScanRequested = false;
-
-		IntentIntegrator integrator = new IntentIntegrator(this);
-		integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-		integrator.setPrompt("Scan the QR code on TrebleShot");
-		integrator.setBeepEnabled(true);
-		integrator.setOrientationLocked(false);
-		integrator.setBarcodeImageEnabled(true);
-		integrator.initiateScan();
 	}
 
 	@Override
@@ -229,13 +216,12 @@ public class ShareActivity extends Activity
 				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
 
 				if (result.getContents() != null) {
-					Toast.makeText(this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
-
 					try {
 						JSONObject jsonObject = new JSONObject(result.getContents());
 						NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
 
 						hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
+						hotspotNetwork.qrConnection = true;
 
 						boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
 
@@ -247,6 +233,9 @@ public class ShareActivity extends Activity
 						doCommunicate(hotspotNetwork);
 					} catch (JSONException e) {
 						e.printStackTrace();
+
+						createSnackbar(R.string.mesg_somethingWentWrong)
+								.show();
 					}
 				}
 			}
@@ -317,32 +306,30 @@ public class ShareActivity extends Activity
 			@Override
 			public void onRun()
 			{
-				if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork))
-					mDeviceListFragment.toggleConnection(hotspotNetwork);
 
 				while (mRemoteAddress == null) {
 					int passedTime = (int) (System.currentTimeMillis() - mStartTime);
 
-					for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
-						if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
-							String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
+					if (!mDeviceListFragment.getWifiManager().isWifiEnabled()) {
+						if (!mDeviceListFragment.getWifiManager().setWifiEnabled(true))
+							break; // failed to start Wireless
+					} else if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork)) {
+						mDeviceListFragment.toggleConnection(hotspotNetwork);
+					} else {
+						for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
+							if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
+								String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
 
-							if (NetworkUtils.ping(remoteAddress, 1000)) {
-								mRemoteAddress = remoteAddress;
-								break;
+								if (NetworkUtils.ping(remoteAddress, 1000)) {
+									mRemoteAddress = remoteAddress;
+									break;
+								}
 							}
 						}
 					}
 
-					try {
-						Thread.sleep(1000);
-						getProgressDialog().setProgress(passedTime / 1000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} finally {
-						if (passedTime > 20000 || getDefaultInterrupter().interrupted())
-							break;
-					}
+					if (breakerCheck(passedTime))
+						break;
 				}
 
 				if (mRemoteAddress != null) {
@@ -384,6 +371,22 @@ public class ShareActivity extends Activity
 				}
 
 				// We can't add dialog outside of the else statement as it may close other dialogs as well
+			}
+
+			private boolean breakerCheck(int passedTime)
+			{
+				try {
+					Thread.sleep(1000);
+					getProgressDialog().setProgress(passedTime / 1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+					return true;
+				} finally {
+					if (passedTime > 20000 || getDefaultInterrupter().interrupted())
+						return true;
+				}
+
+				return false;
 			}
 		});
 	}
@@ -671,6 +674,18 @@ public class ShareActivity extends Activity
 					});
 			}
 		});
+	}
+
+	private void requestQRScan()
+	{
+		mQRScanRequested = false;
+
+		IntentIntegrator integrator = new IntentIntegrator(this);
+		integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
+		integrator.setPrompt(getString(R.string.text_scanQRCodeHelp));
+		integrator.setOrientationLocked(false);
+		integrator.setBarcodeImageEnabled(true);
+		integrator.initiateScan();
 	}
 
 	protected ProgressDialog resetProgressItems()
