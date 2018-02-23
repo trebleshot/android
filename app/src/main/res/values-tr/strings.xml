@@ -336,4 +336,5 @@
     <string name="text_hotspotStartsTrustZoneSummary">GüvenliBölge duruma göre başlatılacak</string>
     <string name="text_qrCodeAvailableHelp">Göndericiye bu QR kodunu TrebleShot üzerinde taramasını söyleyin</string>
     <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın</string>
+    <string name="text_scanQRCodeHelp">Alıcının ekranı üzerindeki QR kodunu tarayın</string>
 </resources>
