@@ -25,8 +25,8 @@
         <item quantity="other">Wilt u %d bestanden ontvangen?</item>
     </plurals>
 <plurals name="text_files">
-	<item quantity="one">Geen bestand</item>
-	<item quantity="other">Eén bestand</item>
+	<item quantity="one">Eén bestand</item>
+	<item quantity="other">%d bestanden</item>
 </plurals>
     <plurals name="text_secondsAgo">
 	<item quantity="one">Eén seconde geleden</item>
