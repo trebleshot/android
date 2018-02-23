@@ -258,9 +258,9 @@
     <string name="mesg_scanningSelfHotspot">Bezig met zoeken naar een TrebleShot-hotspot</string>
     <string name="mesg_suggestSelfHotspot">Wilt u Wi-Fi inschakelen om te zoeken naar een TrebleShot-hotspot?</string>
     <string name="butn_enable">Inschakelen</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Locatie-machtiging is nodig om te kunnen zoeken naar een TrebleShot-hotspot</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot machtigen om hotspots te creëren en te zoeken</string>
     <string name="butn_locationSettings">Locatie</string>
-    <string name="mesg_locationDisabledSelfHotspot">Geef toestemming om uw locatie op te vragen voor het weergeven van zoekresultaten</string>
+    <string name="mesg_locationDisabledSelfHotspot">Locatiedienst is uitgeschakeld. Schakel deze in om scanresultaten te zien en een hotspot te creëren</string>
     <string name="mesg_scanningDevicesSelfHotspot">Bezig met zoeken naar apparaten via TrebleShot-hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Bezig met uitschakelen van TrebleShot-hotspot</string>
     <string name="mesg_startingSelfHotspot">Bezig met inschakelen van TrebleShot-hotspot</string>
@@ -330,4 +330,11 @@
     <string name="text_listEmptyMusic">Er zijn hier geen nummers!</string>
     <string name="text_internalStorage">Interne opslag</string>
     <string name="text_restrictedAccessStorage">%s (beperkte toegang)</string>
-</resources>
+<string name="text_emptySearchResult">Geen resultaat gevonden voor \"%s\"</string>
+    <string name="mesg_listRefreshSnoozed">De lijst zal worden ververst wanneer deze beschikbaar is</string>
+    <string name="mesg_errorReadFolder">De map \"%s\" kan niet worden gelezen</string>
+    <string name="butn_mountDirectory">Map aankoppelen</string>
+    <string name="mesg_mountDirectoryHelp">Selecteer de map die u wilt verkennen</string>
+    <string name="butn_ejectDirectory">Map uitwerpen</string>
+    <string name="text_movedCacheFiles">De cachebestanden zijn succesvol verplaatst</string>
+    </resources>
