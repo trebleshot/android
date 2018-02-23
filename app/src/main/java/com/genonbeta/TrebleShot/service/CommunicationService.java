@@ -426,10 +426,10 @@ public class CommunicationService extends Service
 	{
 		boolean isEnabled = !getHotspotUtils().isEnabled();
 
-		if (mHotspotUtils.isStarted()
-				&& getNotificationHelper().getUtils()
+		if (getNotificationHelper().getUtils()
 				.getPreferences()
-				.getBoolean("hotspot_trust", false))
+				.getBoolean("hotspot_trust", false)
+				&& (mHotspotUtils.isStarted() || isEnabled))
 			updateServiceState(isEnabled);
 
 		if (isEnabled)

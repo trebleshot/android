@@ -58,9 +58,11 @@
         </activity>
 
         <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
+            android:name=".activity.QRScannerActivity"
+            android:clearTaskOnLaunch="true"
+            android:stateNotNeeded="true"
+            android:theme="@style/AppTheme.QRScannerTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
 
         <activity
             android:name=".activity.FilePickerActivity"

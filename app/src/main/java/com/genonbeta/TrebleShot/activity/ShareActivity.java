@@ -21,7 +21,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -680,11 +679,14 @@ public class ShareActivity extends Activity
 	{
 		mQRScanRequested = false;
 
-		IntentIntegrator integrator = new IntentIntegrator(this);
-		integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-		integrator.setPrompt(getString(R.string.text_scanQRCodeHelp));
-		integrator.setOrientationLocked(false);
-		integrator.setBarcodeImageEnabled(true);
+		IntentIntegrator integrator = new IntentIntegrator(this)
+				.setCaptureActivity(QRScannerActivity.class)
+				.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+				.setPrompt(getString(R.string.text_scanQRCodeHelp))
+				.setOrientationLocked(false)
+				.setBarcodeImageEnabled(true)
+				.setBeepEnabled(false);
+
 		integrator.initiateScan();
 	}
 
