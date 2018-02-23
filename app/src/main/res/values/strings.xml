@@ -327,4 +327,9 @@
     <string name="text_movedCacheFiles">Cache files has been moved successfully</string>
     <string name="mode_itemCounted" translatable="false">%s (%d)</string>
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
+    <string name="mesg_wifiEnableRequired">Wi-Fi is disabled. Please, enable to connect</string>
+    <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
+    <string name="text_qrCodeAvailableHelp">Tell sender to scan this QR code using TrebleShot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot first</string>
 </resources>

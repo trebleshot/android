@@ -9,6 +9,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
@@ -25,6 +26,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,13 +34,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.ListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -48,8 +53,19 @@ import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
+
+import org.json.JSONObject;
+
+import java.util.BitSet;
+
+import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
 		extends ListFragment<NetworkDevice, NetworkDeviceListAdapter>
@@ -70,6 +86,11 @@ public class NetworkDeviceListFragment
 	private boolean mShowHotspotInfo = false;
 	private boolean mWirelessEnableRequested = false;
 
+	private ImageView mCodeImageView;
+	private TextView mNetworkInfoTextView;
+	private TextView mNetworkNameTextView;
+	private TextView mNetworkPassTextView;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
@@ -79,10 +100,12 @@ public class NetworkDeviceListFragment
 		mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
 
 		mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
+		mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
 		mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
 		mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
+
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		super.onCreate(savedInstanceState);
@@ -94,7 +117,12 @@ public class NetworkDeviceListFragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		final View listFragmentView = super.onCreateView(inflater, container, savedInstanceState);
+		final View qrLayout = getLayoutInflater().inflate(R.layout.layout_illustrate_qr_code, getCustomViewContainer());
 
+		mCodeImageView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_qr_image);
+		mNetworkInfoTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_info_text);
+		mNetworkNameTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_network_text);
+		mNetworkPassTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_password_text);
 		mSwipeRefreshLayout = new SwipeRefreshLayout(getContext());
 
 		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary),
@@ -135,17 +163,7 @@ public class NetworkDeviceListFragment
 			}
 		});
 
-		setEmptyImage(R.drawable.ic_devices_white_24dp);
-		setEmptyText(getString(R.string.text_findDevicesHint));
-
-		useEmptyActionButton(getString(R.string.butn_scan), new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				requestRefresh();
-			}
-		});
+		applyDefaultEmptyText();
 	}
 
 	@Override
@@ -212,6 +230,11 @@ public class NetworkDeviceListFragment
 		checkRefreshing();
 
 		mNsdDiscovery.startDiscovering();
+
+		if (Build.VERSION.SDK_INT >= 26)
+			AppUtils.startForegroundService(getActivity(),
+					new Intent(getActivity(), CommunicationService.class)
+							.setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
 	}
 
 	@Override
@@ -228,6 +251,11 @@ public class NetworkDeviceListFragment
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_network_device, menu);
+
+		MenuItem generateQR = menu.findItem(R.id.network_devices_barcode_generate);
+
+		if (generateQR != null)
+			generateQR.setVisible(mFAB != null);
 	}
 
 	@Override
@@ -236,6 +264,9 @@ public class NetworkDeviceListFragment
 		switch (item.getItemId()) {
 			case R.id.network_devices_scan:
 				requestRefresh();
+				return true;
+			case R.id.network_devices_barcode_generate:
+				toggleCustomView();
 				return true;
 		}
 
@@ -262,7 +293,6 @@ public class NetworkDeviceListFragment
 
 		return true;
 	}
-
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
 	{
@@ -270,6 +300,21 @@ public class NetworkDeviceListFragment
 
 		if (REQUEST_LOCATION_PERMISSION == requestCode)
 			showConnectionOptions();
+	}
+
+	public void applyDefaultEmptyText()
+	{
+		setEmptyImage(R.drawable.ic_devices_white_24dp);
+		setEmptyText(getString(R.string.text_findDevicesHint));
+
+		useEmptyActionButton(getString(R.string.butn_scan), new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				requestRefresh();
+			}
+		});
 	}
 
 	public void checkRefreshing()
@@ -335,7 +380,8 @@ public class NetworkDeviceListFragment
 
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
-		return getWifiManager().getConnectionInfo() != null
+		return hotspotNetwork.BSSID != null
+				&& getWifiManager().getConnectionInfo() != null
 				&& hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
 	}
 
@@ -400,12 +446,72 @@ public class NetworkDeviceListFragment
 	public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
 		if (!isConnectedToNetwork(hotspotNetwork)) {
-			WifiConfiguration wifiConfig = new WifiConfiguration();
+			WifiConfiguration config = new WifiConfiguration();
 
-			wifiConfig.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
-			wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+			config.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
 
-			int netId = getWifiManager().addNetwork(wifiConfig);
+			switch (hotspotNetwork.keyManagement) {
+				case 0: // OPEN
+					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+					break;
+				case 1: // WEP64
+					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+
+					if (hotspotNetwork.password != null
+							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
+						config.wepKeys[0] = hotspotNetwork.password;
+					} else {
+						fail("Please type hex pair for the password");
+					}
+					break;
+				case 2: // WEP128
+					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
+					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+
+					if (hotspotNetwork.password != null
+							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
+						config.wepKeys[0] = hotspotNetwork.password;
+					} else {
+						fail("Please type hex pair for the password");
+					}
+					break;
+				case 3: // WPA_TKIP
+					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+					config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+					config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+
+					if (hotspotNetwork.password != null
+							&& hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
+						config.preSharedKey = hotspotNetwork.password;
+					} else {
+						config.preSharedKey = '"' + hotspotNetwork.password + '"';
+					}
+					break;
+				case 4: // WPA2_AES
+					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+					config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+					config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+					config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+
+					if (hotspotNetwork.password != null
+							&& hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
+						config.preSharedKey = hotspotNetwork.password;
+					} else {
+						config.preSharedKey = '"' + hotspotNetwork.password + '"';
+					}
+					break;
+			}
+
+			int netId = getWifiManager().addNetwork(config);
 
 			getWifiManager().disconnect();
 			getWifiManager().enableNetwork(netId, true);
@@ -415,6 +521,7 @@ public class NetworkDeviceListFragment
 		}
 
 		getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+
 		return false;
 	}
 
@@ -478,6 +585,47 @@ public class NetworkDeviceListFragment
 		return true;
 	}
 
+	public void updateQRViews(String networkName, String password, int keyManagement)
+	{
+		try {
+			MultiFormatWriter formatWriter = new MultiFormatWriter();
+
+			String text = new JSONObject()
+					.put(Keyword.NETWORK_NAME, networkName)
+					.put(Keyword.NETWORK_PASSWORD, password)
+					.put(Keyword.NETWORK_KEYMGMT, keyManagement)
+					.toString();
+
+			showCustomView(networkName != null && mFAB != null);
+
+			if (networkName != null) {
+				mNetworkInfoTextView.setText(R.string.text_qrCodeAvailableHelp);
+
+				int scaleUsing = getDefaultViewContainer().getWidth() > getDefaultViewContainer().getHeight()
+						? getDefaultViewContainer().getHeight()
+						: getDefaultViewContainer().getWidth();
+
+				int scaledSize = (int) (scaleUsing / 1.5);
+
+				BitMatrix bitMatrix = formatWriter.encode(text, BarcodeFormat.QR_CODE, scaledSize, scaledSize);
+				BarcodeEncoder encoder = new BarcodeEncoder();
+				Bitmap bitmap = encoder.createBitmap(bitMatrix);
+
+				mCodeImageView.setImageBitmap(bitmap);
+
+				mNetworkNameTextView.setText(networkName);
+				mNetworkPassTextView.setText(password == null ? "-" : password);
+			} else {
+				mCodeImageView.setImageResource(R.drawable.ic_qrcode_grey600_48dp);
+				mNetworkInfoTextView.setText(R.string.text_qrCodeHotspotDisabledHelp);
+				mNetworkNameTextView.setText(R.string.text_unknown);
+				mNetworkPassTextView.setText(R.string.text_unknown);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void updateHotspotState()
 	{
 		if (mFAB == null)
@@ -489,25 +637,33 @@ public class NetworkDeviceListFragment
 
 		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
 
+		if (mHotspotUtils instanceof HotspotUtils.HackAPI) {
+			if (wifiConfiguration != null && isEnabled)
+				updateQRViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
+			else
+				updateQRViews(null, null, 0);
+		}
+
 		if (wifiConfiguration != null
-				&& mHotspotUtils.isEnabled()
-				&& mShowHotspotInfo
-				&& AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
-			final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, mHotspotUtils.getConfiguration().SSID, getAdapter().getFriendlySSID(mHotspotUtils.getConfiguration().SSID));
+				&& mHotspotUtils.isEnabled()) {
+			if (mShowHotspotInfo
+					&& AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
+				final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, mHotspotUtils.getConfiguration().SSID, getAdapter().getFriendlySSID(mHotspotUtils.getConfiguration().SSID));
 
-			snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
+				snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()
 				{
-					snackbar.dismiss();
-				}
-			});
+					@Override
+					public void onClick(View v)
+					{
+						snackbar.dismiss();
+					}
+				});
 
-			snackbar.setDuration(Snackbar.LENGTH_INDEFINITE)
-					.show();
+				snackbar.setDuration(Snackbar.LENGTH_INDEFINITE)
+						.show();
 
-			mShowHotspotInfo = false;
+				mShowHotspotInfo = false;
+			}
 		}
 	}
 
@@ -558,7 +714,11 @@ public class NetworkDeviceListFragment
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();
-			else if (mWirelessEnableRequested
+			else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
+				updateQRViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
+						intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
+						intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
+			} else if (mWirelessEnableRequested
 					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
 					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
 				mWirelessEnableRequested = false;

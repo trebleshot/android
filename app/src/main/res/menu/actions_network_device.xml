@@ -2,6 +2,13 @@
       xmlns:app="http://schemas.android.com/apk/res/com.genonbeta.TrebleShot">
 
     <item
+        android:id="@+id/network_devices_barcode_generate"
+        android:icon="@drawable/ic_qrcode_white_24dp"
+        android:orderInCategory="0"
+        android:title="Receive using QR Code"
+        app:showAsAction="always"/>
+
+    <item
         android:id="@+id/network_devices_scan"
         android:icon="@drawable/ic_refresh_white_24dp"
         android:orderInCategory="0"

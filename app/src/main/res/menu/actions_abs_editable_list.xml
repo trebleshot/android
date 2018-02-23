@@ -14,7 +14,8 @@
         android:title="@string/butn_sortBy">
 
         <menu>
-            <group android:checkableBehavior="single">
+            <group android:checkableBehavior="single"
+                android:id="@+id/actions_abs_editable_group_sorting">
                 <item
                     android:id="@+id/actions_abs_editable_sort_by_name"
                     android:title="@string/text_sortByName"/>
@@ -34,6 +35,7 @@
 
                 <menu>
                     <group
+                        android:id="@+id/actions_abs_editable_group_sort_order"
                         android:checkableBehavior="single">
                         <item
                             android:id="@+id/actions_abs_editable_sort_order_ascending"
