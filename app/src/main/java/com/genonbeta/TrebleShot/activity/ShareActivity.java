@@ -680,11 +680,13 @@ public class ShareActivity extends Activity
 	{
 		mQRScanRequested = false;
 
-		IntentIntegrator integrator = new IntentIntegrator(this);
-		integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
-		integrator.setPrompt(getString(R.string.text_scanQRCodeHelp));
-		integrator.setOrientationLocked(false);
-		integrator.setBarcodeImageEnabled(true);
+		IntentIntegrator integrator = new IntentIntegrator(this)
+				.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
+				.setPrompt(getString(R.string.text_scanQRCodeHelp))
+				.setOrientationLocked(false)
+				.setBarcodeImageEnabled(true)
+				.setBeepEnabled(false);
+
 		integrator.initiateScan();
 	}
 
