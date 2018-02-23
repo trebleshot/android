@@ -1,6 +1,7 @@
 ### Version: 1.2.5.7 Tag: 1.2.5.7 (2018-02-20) ###
 * This version won't with older versions due to changes to improve security
 * NEW: Now you can save your files to SD card (Android M+)
+* NEW: Now you can connect devices using QR code scanner
 * IMPROVED: Less lagging on certain areas
 * IMPROVED: Security check before beginning to talk with opposite device
 * FIXED: Section restore issue on home screen
