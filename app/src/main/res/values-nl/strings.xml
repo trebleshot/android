@@ -337,4 +337,10 @@
     <string name="mesg_mountDirectoryHelp">Selecteer de map die u wilt verkennen</string>
     <string name="butn_ejectDirectory">Map uitwerpen</string>
     <string name="text_movedCacheFiles">De cachebestanden zijn succesvol verplaatst</string>
-    </resources>
+    <string name="mesg_wifiEnableRequired">Wi-Fi is uitgeschakeld. Schakel Wi-Fi in om te kunnen verbinden.</string>
+    <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
+    <string name="text_qrCodeAvailableHelp">Zeg tegen de afzender dat hij/zij deze QR-code moet scannen met TrebleShot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in</string>
+    <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de ontvanger</string>
+</resources>
