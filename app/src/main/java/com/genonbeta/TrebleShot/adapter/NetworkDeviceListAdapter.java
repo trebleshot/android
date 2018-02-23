@@ -151,6 +151,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 		public String BSSID;
 		public String password;
 		public int keyManagement;
+		public boolean qrConnection;
 
 		public HotspotNetwork()
 		{

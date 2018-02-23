@@ -332,4 +332,5 @@
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
     <string name="text_qrCodeAvailableHelp">Tell sender to scan this QR code using TrebleShot</string>
     <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot first</string>
+    <string name="text_scanQRCodeHelp">Scan the QR code on the receiver\'s screen</string>
 </resources>

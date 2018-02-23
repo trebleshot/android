@@ -51,6 +51,7 @@ import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
@@ -63,13 +64,11 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
-import java.util.BitSet;
-
 import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
 		extends ListFragment<NetworkDevice, NetworkDeviceListAdapter>
-		implements TitleSupport, FABSupport
+		implements TitleSupport, FABSupport, DetachListener
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -293,6 +292,7 @@ public class NetworkDeviceListFragment
 
 		return true;
 	}
+
 	@Override
 	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
 	{
@@ -300,6 +300,12 @@ public class NetworkDeviceListFragment
 
 		if (REQUEST_LOCATION_PERMISSION == requestCode)
 			showConnectionOptions();
+	}
+
+	@Override
+	public void onPrepareDetach()
+	{
+		showCustomView(false);
 	}
 
 	public void applyDefaultEmptyText()
@@ -367,6 +373,14 @@ public class NetworkDeviceListFragment
 		return true;
 	}
 
+	public String getCleanNetworkName(String networkName)
+	{
+		if (networkName == null)
+			return "";
+
+		return networkName.replace("\"", "");
+	}
+
 	@Override
 	public CharSequence getTitle(Context context)
 	{
@@ -378,26 +392,29 @@ public class NetworkDeviceListFragment
 		return mWifiManager;
 	}
 
+	public boolean isConnectionSelfNetwork()
+	{
+		WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
+
+		return wifiInfo != null
+				&& getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
+	}
+
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
-		return hotspotNetwork.BSSID != null
-				&& getWifiManager().getConnectionInfo() != null
-				&& hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
+		if (getWifiManager().getConnectionInfo() == null)
+			return false;
+
+		if (hotspotNetwork.BSSID != null)
+			return hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
+
+		return hotspotNetwork.SSID.equals(getCleanNetworkName(getWifiManager().getConnectionInfo().getSSID()));
 	}
 
 	public boolean isMobileDataActive()
 	{
 		return mConnectivityManager.getActiveNetworkInfo() != null
 				&& mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
-	}
-
-	public boolean isConnectionSelfNetwork()
-	{
-		WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
-
-		return wifiInfo != null
-				&& wifiInfo.getSSID() != null
-				&& wifiInfo.getSSID().replace("\"", "").startsWith(AppConfig.PREFIX_ACCESS_POINT);
 	}
 
 	public void requestRefresh()
@@ -551,7 +568,9 @@ public class NetworkDeviceListFragment
 						.show();
 
 				return false;
-			} else if (!mHotspotUtils.isEnabled() && isMobileDataActive()) {
+			} else if (Build.VERSION.SDK_INT < 26
+					&& !mHotspotUtils.isEnabled()
+					&& isMobileDataActive()) {
 				createSnackbar(R.string.mesg_warningHotspotMobileActive)
 						.setDuration(Snackbar.LENGTH_LONG)
 						.setAction(R.string.butn_skip, new View.OnClickListener()

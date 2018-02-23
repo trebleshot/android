@@ -90,6 +90,7 @@ abstract public class HotspotUtils
 				return false;
 
 			mHotspotReservation.close();
+			mHotspotReservation = null;
 
 			return true;
 		}
