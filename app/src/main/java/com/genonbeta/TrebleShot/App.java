@@ -2,13 +2,8 @@ package com.genonbeta.TrebleShot;
 
 import android.app.Application;
 import android.content.Intent;
+import android.content.UriPermission;
 import android.os.Build;
-
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.WritablePathObject;
-import com.genonbeta.android.database.SQLQuery;
-
-import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -22,14 +17,10 @@ public class App extends Application
 	{
 		super.onCreate();
 
+		// assures that permissions are accessible after reboot or in any normal state
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-			AccessDatabase accessDatabase = new AccessDatabase(getApplicationContext());
-
-			ArrayList<WritablePathObject> permittedUriList = accessDatabase
-					.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
-
-			for (WritablePathObject pathObject : permittedUriList)
-				getContentResolver().takePersistableUriPermission(pathObject.path,
+			for (UriPermission uriPermission : getContentResolver().getPersistedUriPermissions())
+				getContentResolver().takePersistableUriPermission(uriPermission.getUri(),
 						Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 		}
 	}

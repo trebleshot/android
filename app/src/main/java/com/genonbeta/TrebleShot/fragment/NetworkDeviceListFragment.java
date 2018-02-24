@@ -434,7 +434,7 @@ public class NetworkDeviceListFragment
 		}
 	}
 
-	private  void tryShowingRevealButtonQR()
+	private void tryShowingRevealButtonQR()
 	{
 		if (mMenuItemShowQR != null)
 			mMenuItemShowQR.setVisible(mFAB != null);
