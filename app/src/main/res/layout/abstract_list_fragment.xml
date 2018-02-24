@@ -8,7 +8,7 @@
         android:id="@+id/customListFragment_customViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="gone"/>
 
     <FrameLayout
         android:id="@+id/customListFragment_defaultViewContainer"
@@ -71,8 +71,8 @@
 
             </RelativeLayout>
 
-            <ListView
-                android:id="@+id/customListFragment_listView"
+            <FrameLayout
+                android:id="@+id/customListFragment_listViewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 

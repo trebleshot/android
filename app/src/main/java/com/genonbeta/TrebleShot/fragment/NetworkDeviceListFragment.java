@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,6 +27,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -81,6 +83,7 @@ public class NetworkDeviceListFragment
 	private HotspotUtils mHotspotUtils;
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
+	private MenuItem mMenuItemShowQR;
 	private boolean mShowHotspotInfo = false;
 	private boolean mWirelessEnableRequested = false;
 
@@ -92,7 +95,8 @@ public class NetworkDeviceListFragment
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		super.onCreate(savedInstanceState);
+
 		mHotspotUtils = HotspotUtils.getInstance(getContext());
 		mWifiManager = mHotspotUtils.getWifiManager();
 		mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -103,10 +107,7 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
-
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
-		super.onCreate(savedInstanceState);
 
 		mNsdDiscovery = new NsdDiscovery(getContext(), getAdapter().getDatabase());
 	}
@@ -114,22 +115,30 @@ public class NetworkDeviceListFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		final View listFragmentView = super.onCreateView(inflater, container, savedInstanceState);
+		final View view = super.onCreateView(inflater, container, savedInstanceState);
 		final View qrLayout = getLayoutInflater().inflate(R.layout.layout_illustrate_qr_code, getCustomViewContainer());
 
 		mCodeImageView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_qr_image);
 		mNetworkInfoTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_info_text);
 		mNetworkNameTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_network_text);
 		mNetworkPassTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_password_text);
+
+		return view;
+	}
+
+	@Override
+	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
+	{
 		mSwipeRefreshLayout = new SwipeRefreshLayout(getContext());
 
 		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary),
 				ContextCompat.getColor(getActivity(), R.color.colorAccent));
 
-		mSwipeRefreshLayout.addView(listFragmentView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
 		mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-		return mSwipeRefreshLayout;
+		listViewContainer.addView(mSwipeRefreshLayout);
+
+		return super.onListView(mainContainer, mSwipeRefreshLayout);
 	}
 
 	@Override
@@ -137,18 +146,15 @@ public class NetworkDeviceListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		getListView().setOnScrollListener(new AbsListView.OnScrollListener()
+		setEmptyImage(R.drawable.ic_devices_white_24dp);
+		setEmptyText(getString(R.string.text_findDevicesHint));
+
+		useEmptyActionButton(getString(R.string.butn_scan), new View.OnClickListener()
 		{
 			@Override
-			public void onScrollStateChanged(AbsListView view, int scrollState)
+			public void onClick(View v)
 			{
-				if (scrollState == SCROLL_STATE_IDLE)
-					mSwipeRefreshLayout.setEnabled(view.getFirstVisiblePosition() == 0);
-			}
-
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount)
-			{
+				requestRefresh();
 			}
 		});
 
@@ -161,7 +167,8 @@ public class NetworkDeviceListFragment
 			}
 		});
 
-		applyDefaultEmptyText();
+		if (mMenuItemShowQR != null)
+			mMenuItemShowQR.setVisible(mFAB != null);
 	}
 
 	@Override
@@ -172,14 +179,14 @@ public class NetworkDeviceListFragment
 		setHasOptionsMenu(true);
 		getListView().setDividerHeight(0);
 
-		if (mPreferences.getBoolean("scan_devices_auto", false))
+		if (getPreferences().getBoolean("scan_devices_auto", false))
 			requestRefresh();
 	}
 
 	@Override
 	public NetworkDeviceListAdapter onAdapter()
 	{
-		return new NetworkDeviceListAdapter(this, mPreferences.getBoolean("developer_mode", false));
+		return new NetworkDeviceListAdapter(this, getPreferences().getBoolean("developer_mode", false));
 	}
 
 	@Override
@@ -250,10 +257,7 @@ public class NetworkDeviceListFragment
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_network_device, menu);
 
-		MenuItem generateQR = menu.findItem(R.id.network_devices_barcode_generate);
-
-		if (generateQR != null)
-			generateQR.setVisible(mFAB != null);
+		mMenuItemShowQR = menu.findItem(R.id.network_devices_barcode_generate);
 	}
 
 	@Override
@@ -305,21 +309,6 @@ public class NetworkDeviceListFragment
 	public void onPrepareDetach()
 	{
 		showCustomView(false);
-	}
-
-	public void applyDefaultEmptyText()
-	{
-		setEmptyImage(R.drawable.ic_devices_white_24dp);
-		setEmptyText(getString(R.string.text_findDevicesHint));
-
-		useEmptyActionButton(getString(R.string.butn_scan), new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				requestRefresh();
-			}
-		});
 	}
 
 	public void checkRefreshing()
@@ -378,6 +367,14 @@ public class NetworkDeviceListFragment
 			return "";
 
 		return networkName.replace("\"", "");
+	}
+
+	public SharedPreferences getPreferences()
+	{
+		if (mPreferences == null)
+			mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
+
+		return mPreferences;
 	}
 
 	@Override

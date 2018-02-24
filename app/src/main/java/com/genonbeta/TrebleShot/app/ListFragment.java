@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -39,6 +40,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 	private E mAdapter;
 	private ListView mListView;
+	private FrameLayout mListViewContainer;
 	private FrameLayout mCustomViewContainer;
 	private FrameLayout mDefaultViewContainer;
 	private FrameLayout mContainer;
@@ -86,18 +88,37 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 		mCustomViewContainer = view.findViewById(R.id.customListFragment_customViewContainer);
 		mDefaultViewContainer = view.findViewById(R.id.customListFragment_defaultViewContainer);
+		mListViewContainer = view.findViewById(R.id.customListFragment_listViewContainer);
 		mContainer = view.findViewById(R.id.customListFragment_container);
-		mListView = view.findViewById(R.id.customListFragment_listView);
 		mEmptyView = view.findViewById(R.id.customListFragment_emptyView);
 		mEmptyText = view.findViewById(R.id.customListFragment_emptyTextView);
 		mEmptyImage = view.findViewById(R.id.customListFragment_emptyImageView);
 		mProgressView = view.findViewById(R.id.customListFragment_progressView);
 		mEmptyActionButton = view.findViewById(R.id.customListFragment_emptyActionButton);
 
+		mListView = view.findViewById(R.id.customListFragment_listView);
+
+		if (mListView == null)
+			mListView = onListView(mContainer, mListViewContainer);
+
 		mListView.setOnItemClickListener(mOnClickListener);
 		mListView.setEmptyView(mEmptyView);
 
 		return view;
+	}
+
+	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
+	{
+		ListView listView = new ListView(getContext());
+
+		listView.setId(R.id.customListFragment_listView);
+
+		listView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT));
+
+		listViewContainer.addView(listView);
+
+		return listView;
 	}
 
 	public void onListItemClick(ListView l, View v, int position, long id)

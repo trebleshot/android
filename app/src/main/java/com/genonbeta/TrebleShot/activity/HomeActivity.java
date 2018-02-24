@@ -293,36 +293,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (removedFragment != null && removedFragment instanceof DetachListener)
 			((DetachListener) removedFragment).onPrepareDetach();
 
-		new Handler().postDelayed(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-				ft.replace(R.id.content_frame, fragment);
-
-				if (!mIsStopped) {
-					ft.commit();
-
-					mDelayedCommitFragment = null;
-					mCurrentFragment = fragment;
-				} else
-					mDelayedCommitFragment = fragment;
-
-				setTitle(fragment instanceof TitleSupport
-						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
-						: getString(R.string.text_appName));
-
-				boolean fabSupported = fragment instanceof FABSupport;
-
-				if (fabSupported)
-					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
-
-				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
-					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
-			}
-		}, 200);
+		loadFragment(fragment);
 
 		return true;
 	}
@@ -353,11 +324,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return true;
 	}
 
-	private boolean restorePreviousFragment()
-	{
-		return (mCurrentFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame)) != null;
-	}
-
 	private void highlightUpdater(String availableVersion)
 	{
 		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_check_for_updates);
@@ -371,6 +337,40 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return mActionMode;
 	}
 
+	public void loadFragment(final Fragment fragment)
+	{
+		new Handler().postDelayed(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+				ft.replace(R.id.content_frame, fragment);
+
+				if (!mIsStopped) {
+					ft.commit();
+
+					mDelayedCommitFragment = null;
+					mCurrentFragment = fragment;
+				} else
+					mDelayedCommitFragment = fragment;
+
+				setTitle(fragment instanceof TitleSupport
+						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
+						: getString(R.string.text_appName));
+
+				boolean fabSupported = fragment instanceof FABSupport;
+
+				if (fabSupported)
+					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+
+				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
+					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
+			}
+		}, 200);
+	}
+
 	private void openFolder(@Nullable DocumentFile requestedFolder)
 	{
 		changeFragment(mFragmentFileExplorer);
@@ -379,6 +379,18 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (requestedFolder != null)
 			((FileExplorerFragment) mFragmentFileExplorer)
 					.requestPath(requestedFolder);
+	}
+
+	private boolean restorePreviousFragment()
+	{
+		mCurrentFragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+
+		if (mCurrentFragment == null)
+			return false;
+
+		loadFragment(mCurrentFragment);
+
+		return true;
 	}
 
 	private void sendThisApplication()
