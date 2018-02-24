@@ -343,4 +343,6 @@
     <string name="text_qrCodeAvailableHelp">Zeg tegen de afzender dat hij/zij deze QR-code moet scannen met TrebleShot</string>
     <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in</string>
     <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de ontvanger</string>
+<string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
+    <string name="butn_qrToggle">QR-code weergeven/verbergen</string>
 </resources>
