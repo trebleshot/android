@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,7 +26,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -166,9 +164,6 @@ public class NetworkDeviceListFragment
 				requestRefresh();
 			}
 		});
-
-		if (mMenuItemShowQR != null)
-			mMenuItemShowQR.setVisible(mFAB != null);
 	}
 
 	@Override
@@ -256,8 +251,16 @@ public class NetworkDeviceListFragment
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_network_device, menu);
+	}
+
+	@Override
+	public void onPrepareOptionsMenu(Menu menu)
+	{
+		super.onPrepareOptionsMenu(menu);
 
 		mMenuItemShowQR = menu.findItem(R.id.network_devices_barcode_generate);
+
+		tryShowingRevealButtonQR();
 	}
 
 	@Override
@@ -292,6 +295,8 @@ public class NetworkDeviceListFragment
 				toggleHotspot(true);
 			}
 		});
+
+		tryShowingRevealButtonQR();
 
 		return true;
 	}
@@ -427,6 +432,12 @@ public class NetworkDeviceListFragment
 					.getDeviceScanner()
 					.interrupt();
 		}
+	}
+
+	private  void tryShowingRevealButtonQR()
+	{
+		if (mMenuItemShowQR != null)
+			mMenuItemShowQR.setVisible(mFAB != null);
 	}
 
 	public void showConnectionOptions()

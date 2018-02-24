@@ -6,7 +6,8 @@
         android:icon="@drawable/ic_qrcode_white_24dp"
         android:orderInCategory="0"
         android:title="@string/butn_qrToggle"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
         android:id="@+id/network_devices_scan"

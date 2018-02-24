@@ -293,7 +293,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (removedFragment != null && removedFragment instanceof DetachListener)
 			((DetachListener) removedFragment).onPrepareDetach();
 
-		loadFragment(fragment);
+		loadFragment(fragment, true);
 
 		return true;
 	}
@@ -337,24 +337,26 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return mActionMode;
 	}
 
-	public void loadFragment(final Fragment fragment)
+	public void loadFragment(final Fragment fragment, final boolean commit)
 	{
 		new Handler().postDelayed(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+				if (commit) {
+					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
-				ft.replace(R.id.content_frame, fragment);
+					ft.replace(R.id.content_frame, fragment);
 
-				if (!mIsStopped) {
-					ft.commit();
+					if (!mIsStopped) {
+						ft.commit();
 
-					mDelayedCommitFragment = null;
-					mCurrentFragment = fragment;
-				} else
-					mDelayedCommitFragment = fragment;
+						mDelayedCommitFragment = null;
+						mCurrentFragment = fragment;
+					} else
+						mDelayedCommitFragment = fragment;
+				}
 
 				setTitle(fragment instanceof TitleSupport
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
@@ -388,7 +390,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (mCurrentFragment == null)
 			return false;
 
-		loadFragment(mCurrentFragment);
+		loadFragment(mCurrentFragment, false);
 
 		return true;
 	}
