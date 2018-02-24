@@ -29,6 +29,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <FrameLayout
+                android:id="@+id/customListFragment_listViewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
             <RelativeLayout
                 android:id="@+id/customListFragment_emptyView"
                 android:layout_width="match_parent"
@@ -70,12 +75,6 @@
                     android:visibility="gone"/>
 
             </RelativeLayout>
-
-            <FrameLayout
-                android:id="@+id/customListFragment_listViewContainer"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
-
         </FrameLayout>
     </FrameLayout>
 </FrameLayout>
