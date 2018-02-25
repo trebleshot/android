@@ -12,7 +12,7 @@
     <string name="text_available">Beschikbaar</string>
     <string name="text_notAvailable">Niet-beschikbaar</string>
     <string name="text_deviceListEmpty">Geen apparaat</string>
-    <string name="mesg_noNetwork">Ik heb een verbinding, zoals bijv. Wi-Fi, nodig om apparaten te vinden</string>
+    <string name="mesg_noNetwork">Een verbinding, zoals bijv. Wi-Fi, is benodigd om apparaten te kunnen vinden</string>
     <string name="mesg_scanningDevices">Bezig met zoeken naar apparaten</string>
     <string name="ques_receiveFile">Wilt u het bestand ontvangen?</string>
     <string name="butn_accept">Accepteren</string>
@@ -25,12 +25,12 @@
     <string name="butn_cancelReceiving">Ontvangen annuleren</string>
     <string name="text_fileReceived">Het bestand is ontvangen</string>
     <string name="butn_scan">Scannen</string>
-    <string name="text_listEmpty">Er valt niks te weergeven!</string>
+    <string name="text_listEmpty">Geen items</string>
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Dit schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
     <string name="text_deviceNameSummary">Deze naam zal worden weergegeven op andere apparaten</string>
-    <string name="text_deviceNameTitle">Voer de apparaatnaam in</string>
+    <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Het formaat wordt niet ondersteund</string>
     <string name="mesg_fileSendError">Het bestand kan niet worden verstuurd. %s</string>
     <string name="mesg_fileSent">%s is verstuurd</string>
@@ -42,7 +42,7 @@
     <string name="text_multipleFileReceiveCompleted">De bestanden zijn ontvangen</string>
     <string name="text_deviceList">Apparaatlijst</string>
     <string name="text_fileOpenAppChoose">Openen met</string>
-    <string name="text_fileShareAppChoose">Kies een app</string>
+    <string name="text_fileShareAppChoose">Kies een app om mee te delen</string>
     <string name="text_receivedFiles">Ontvangen bestanden</string>
     <string name="butn_edit">Bewerken</string>
     <string name="butn_share">Delen</string>
@@ -62,7 +62,7 @@
     <string name="butn_pendingTransfers">Wachtrij</string>
     <string name="butn_shareWithTrebleshot">Delen met TrebleShot</string>
     <string name="mesg_somethingWentWrong">Er is iets misgegaan</string>
-    <string name="text_findDevicesHint">Nog geen bekende apparaten!</string>
+    <string name="text_findDevicesHint">Geen bekende apparaten</string>
     <string name="text_autoScanDevices">Automatisch zoeken naar apparaten</string>
     <string name="text_autoScanDevicesSummary">Zoekt, wanneer nodig, naar apparaten</string>
     <string name="mesg_stillScanning">Nog steeds bezig met scannen</string>
@@ -148,7 +148,7 @@
     <string name="text_transactionViewer">Overdrachten in wachtrij</string>
     <string name="text_error">Fout</string>
     <string name="ques_why">Waarom?</string>
-    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s. 
+    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s
 \n 
 \nApparaatlijst &gt; %2$s &gt; Verbinden toestaan &gt; (vink het aan)</string>
     <string name="butn_saveTo">Opslaan naar</string>
@@ -165,7 +165,7 @@
     <string name="text_fixFileSaveLocation">Opslaglocatie repareren</string>
     <string name="text_fileConflictNoChoice">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar en de huidige bestandsnaam conflicteert met een bestand in de standaard map. Als het een gedeeltelijk ontvangen bestand betreft van hetzelfde bestand, selecteer dan \'Behouden\' of selecteer \'Nieuw bestand\' om een nieuw bestand te genereren</string>
     <string name="text_fileConflictUseDefault">De map die u gekozen heeft voor het bestand %s is momenteel niet beschikbaar. Ga door met de standaard map</string>
-<string name="mesg_currentPathUnavailable">Deze map kan niet worden gebruikt. Kies een andere map.</string>
+<string name="mesg_currentPathUnavailable">Deze map kan niet worden gebruikt</string>
     <string name="text_defaultFolder">Standaard map</string>
     <string name="text_storage">Opslag</string>
     <string name="text_shareFiles">Bestanden ontvangen</string>
@@ -185,7 +185,7 @@
     <string name="text_chooseFile">Bestand kiezen</string>
     <string name="mesg_pathSameError">U kunt niet de oude map selecteren</string>
     <string name="ques_checkOldFiles">Controleren op beschadigde bestanden?</string>
-    <string name="text_checkOldFiles">Even geduld; de deels ontvangen bestanden worden verplaatst naar de gekozen map. Sla dit over door te drukken op \"afwijzen\"</string>
+    <string name="text_checkOldFiles">Even geduld; de deels ontvangen bestanden worden verplaatst naar de gekozen map; sla dit over door te drukken op \"afwijzen\"</string>
     <string name="mesg_newFilesReceived">Nieuwe bestanden ontvangen</string>
     <string name="butn_show">Weergeven</string>
     <string name="text_preparingFiles">Bezig met voorbereiden van bestanden</string>
@@ -238,10 +238,8 @@
     <string name="text_trustZoneEnabledSummary">TrustZone standaard inschakelen bij opstarten van app</string>
     <string name="butn_typeNewEntry">Nieuwe invoer</string>
     <string name="butn_download">Downloaden</string>
-    <string name="mesg_clipboardUpdateNotice">Wilt u de tekst bijwerken?
-\nDruk opnieuw om af te sluiten</string>
-    <string name="mesg_textSaveNotice">Wilt u deze tekst opslaan?
-\nDruk opnieuw om af te sluiten</string>
+    <string name="mesg_clipboardUpdateNotice">Werk de tekst bij of druk opnieuw om af te sluiten</string>
+    <string name="mesg_textSaveNotice">Sla de tekst op of druk opnieuw om af te sluiten</string>
     <string name="butn_update">Bijwerken</string>
     <string name="butn_save">Opslaan</string>
     <string name="mesg_textShareLimit">Er kan slechts één tekst per keer worden gedeeld</string>
@@ -252,15 +250,15 @@
     <string name="butn_connect">Verbinden</string>
     <string name="butn_disconnect">Verbinding verbreken</string>
     <string name="text_trebleshotHotspotDescription">U kunt direct bestanden versturen via dit openbare netwerk dat is gecreëerd door een TrebleShot-apparaat in de omgeving.</string>
-    <string name="mesg_connectingToSelfHotspot">Bezig met verbinden met de TrebleShot-hotspot. Dit zou max. 20 seconden moeten duren</string>
-    <string name="mesg_warningHotspotMobileActive">Mobiele gegevens zijn ingeschakeld. Anderen kunnen verbinden met uw netwerk</string>
+    <string name="mesg_connectingToSelfHotspot">Bezig met verbinden met de TrebleShot-hotspot</string>
+    <string name="mesg_warningHotspotMobileActive">Zolang mobiele gegevens zijn ingeschakeld, kunnen anderen kunnen verbinden met uw netwerk</string>
     <string name="butn_skip">Overslaan</string>
     <string name="mesg_scanningSelfHotspot">Bezig met zoeken naar een TrebleShot-hotspot</string>
-    <string name="mesg_suggestSelfHotspot">Wilt u Wi-Fi inschakelen om te zoeken naar een TrebleShot-hotspot?</string>
+    <string name="mesg_suggestSelfHotspot">U kunt Wi-Fi inschakelen om te zoeken naar een TrebleShot-hotspot</string>
     <string name="butn_enable">Inschakelen</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">TrebleShot machtigen om hotspots te creëren en te zoeken</string>
     <string name="butn_locationSettings">Locatie</string>
-    <string name="mesg_locationDisabledSelfHotspot">Locatiedienst is uitgeschakeld. Schakel deze in om scanresultaten te zien en een hotspot te creëren</string>
+    <string name="mesg_locationDisabledSelfHotspot">Schakel de locatiedienst in om scanresultaten te zien en een hotspot te creëren</string>
     <string name="mesg_scanningDevicesSelfHotspot">Bezig met zoeken naar apparaten via TrebleShot-hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Bezig met uitschakelen van TrebleShot-hotspot</string>
     <string name="mesg_startingSelfHotspot">Bezig met inschakelen van TrebleShot-hotspot</string>
@@ -282,7 +280,7 @@
     <string name="butn_previewSelections">Selectievoorbeeld</string>
     <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
     <string name="mesg_retryAllInfo">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Er is geen verbinding ingesteld. Stel een verbinding in om te communiceren</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Werk eerst de verbindingsmethode bij via \"Verbinding wijzigen\"</string>
     <string name="butn_setUp">Instellen</string>
     <string name="text_pseudoLocation">Neplocatie</string>
     <string name="butn_saveAnyway">Tóch opslaan</string>
@@ -319,15 +317,15 @@
     <string name="text_secondCountShort">%d seconden</string>
     <string name="butn_exit">Afsluiten</string>
     <string name="butn_queueCounted">Wachtrij (%d)</string>
-    <string name="text_previewThenProceedNotice">Controleer uw selecties door te drukken op de \"Wachtrij\"-knop en ga daarna door.</string>
+    <string name="text_previewThenProceedNotice">Controleer uw selecties door te drukken op de \"Wachtrij\"-knop en ga daarna door</string>
     <string name="mesg_updateDownloadComplete">Raak aan om de update te installeren</string>
-    <string name="text_listEmptyFiles">Er zijn hier geen bestanden!</string>
-    <string name="text_listEmptyImage">Misschien wat pittoreske foto\'s?</string>
-    <string name="text_listEmptyApp">Er zijn hier geen apps!</string>
-    <string name="text_listEmptyVideo">Er zijn hier geen video\'s!</string>
-    <string name="text_listEmptyPendingTransfer">Overdrachten in de wachtrij zullen hier verschijnen!</string>
-    <string name="text_listEmptyTextStream">Schrijf eerst iets!</string>
-    <string name="text_listEmptyMusic">Er zijn hier geen nummers!</string>
+    <string name="text_listEmptyFiles">Er zijn hier geen bestanden</string>
+    <string name="text_listEmptyImage">Er zijn hier geen foto\'s</string>
+    <string name="text_listEmptyApp">Er zijn hier geen apps</string>
+    <string name="text_listEmptyVideo">Er zijn hier geen video\'s</string>
+    <string name="text_listEmptyPendingTransfer">Overdrachten in de wachtrij zullen hier verschijnen</string>
+    <string name="text_listEmptyTextStream">Dingen die u geschreven en ontvangen hebt zullen hier verschijnen</string>
+    <string name="text_listEmptyMusic">Er zijn hier geen nummers</string>
     <string name="text_internalStorage">Interne opslag</string>
     <string name="text_restrictedAccessStorage">%s (beperkte toegang)</string>
 <string name="text_emptySearchResult">Geen resultaat gevonden voor \"%s\"</string>
@@ -337,7 +335,7 @@
     <string name="mesg_mountDirectoryHelp">Selecteer de map die u wilt verkennen</string>
     <string name="butn_ejectDirectory">Map uitwerpen</string>
     <string name="text_movedCacheFiles">De cachebestanden zijn succesvol verplaatst</string>
-    <string name="mesg_wifiEnableRequired">Wi-Fi is uitgeschakeld. Schakel Wi-Fi in om te kunnen verbinden.</string>
+    <string name="mesg_wifiEnableRequired">Schakel Wi-Fi in om te kunnen verbinden</string>
     <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
     <string name="text_qrCodeAvailableHelp">Zeg tegen de afzender dat hij/zij deze QR-code moet scannen met TrebleShot</string>
