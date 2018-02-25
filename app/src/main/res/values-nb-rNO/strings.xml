@@ -184,7 +184,7 @@
     <string name="text_chooseFile">Velg fil</string>
     <string name="mesg_pathSameError">Du kan ikke velge den gamle mappen</string>
     <string name="ques_checkOldFiles">Sjekk ødelagte filer?</string>
-    <string name="text_checkOldFiles">Vent mens delvis mottatte filer flyttes til valgt mappe, hopp over ved å trykke \"Avslå\".</string>
+    <string name="text_checkOldFiles">Vent mens delvis mottatte filer flyttes til valgt mappe, hopp over ved å trykke \"Avslå\"</string>
     <string name="mesg_newFilesReceived">Nye filer mottatt</string>
     <string name="butn_show">Vis</string>
     <string name="text_preparingFiles">Forbereder filer</string>
@@ -283,7 +283,7 @@
     <string name="mesg_errorHotspotPermission">TrebleShot trenger tilgang for å sette opp et lokalt nett</string>
     <string name="text_trebleshotHotspot">Trebleshot-trådløsnett</string>
     <string name="text_trebleshotHotspotDescription">Du kan sende filer direkte via dette åpne nettverket som har blitt opprettet av en TrebleShot-enhet i nærheten.</string>
-    <string name="mesg_connectingToSelfHotspot">Kobler til et lokalt TrebleShot-trådløsnett. Det burde ikke ta mer enn 20 sekunder.</string>
+    <string name="mesg_connectingToSelfHotspot">Kobler til et lokalt TrebleShot-trådløsnett</string>
     <string name="mesg_warningHotspotMobileActive">Mobildata påskrudd. Andre kan koble til nettverket ditt.</string>
     <string name="mesg_scanningSelfHotspot">Søker etter et lokalt TrebleShot-trådløsnett</string>
     <string name="mesg_suggestSelfHotspot">Ønsker du å skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett?</string>
