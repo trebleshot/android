@@ -400,6 +400,12 @@ public class CommunicationService extends Service
 		return mWifiLock;
 	}
 
+	public boolean isQRFastMode()
+	{
+		return getNotificationHelper().getUtils().getPreferences().getBoolean("hotspot_trust", false)
+				&& (mHotspotUtils.isStarted());
+	}
+
 	public boolean isProcessRunning(int groupId)
 	{
 		return findProcessById(groupId) != null;
@@ -425,12 +431,6 @@ public class CommunicationService extends Service
 	public void setupHotspot()
 	{
 		boolean isEnabled = !getHotspotUtils().isEnabled();
-
-		if (getNotificationHelper().getUtils()
-				.getPreferences()
-				.getBoolean("hotspot_trust", false)
-				&& (mHotspotUtils.isStarted() || isEnabled))
-			updateServiceState(isEnabled);
 
 		if (isEnabled)
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
@@ -519,6 +519,12 @@ public class CommunicationService extends Service
 						return;
 					}
 				}
+
+				final boolean qrConnection = responseJSON.has(Keyword.FLAG_TRANSFER_QR_CONNECTION)
+						&& responseJSON.getBoolean(Keyword.FLAG_TRANSFER_QR_CONNECTION);
+
+				final boolean seamlessActive = mSeamlessMode
+						|| (isQRFastMode() && qrConnection);
 
 				if (deviceSerial != null) {
 					NetworkDevice device = new NetworkDevice(deviceSerial);
@@ -628,7 +634,7 @@ public class CommunicationService extends Service
 											if (interrupter.interrupted())
 												mDatabase.remove(group);
 											else if (transactionObject != null && count > 0) {
-												if (mSeamlessMode && finalDevice.isTrusted)
+												if (seamlessActive && finalDevice.isTrusted)
 													try {
 														startFileReceiving(group.groupId);
 													} catch (Exception e) {
