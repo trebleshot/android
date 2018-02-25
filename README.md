@@ -1,6 +1,9 @@
 # TrebleShot open-source file and text sharing application
 Send and receive files over available connections without making any effort. Please read "Wiki" to learn more.
 
+[Join the discussion on Google+](https://trello.com/b/YmbwDHHo)
+ 
+
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
@@ -37,7 +40,5 @@ Send and receive files over available connections without making any effort. Ple
 * Turkish
 
 (Huge thanks to all language contributors)
-
-See the development process: https://trello.com/b/YmbwDHHo
 
 This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
