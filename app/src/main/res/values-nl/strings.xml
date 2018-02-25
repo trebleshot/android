@@ -343,4 +343,6 @@
     <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de ontvanger</string>
 <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
     <string name="butn_qrToggle">QR-code weergeven/verbergen</string>
+<string name="text_notificationSettingsSummary">Meldingsinstellingen openen</string>
+    <string name="text_notificationSettings">Meldingsinstellingen</string>
 </resources>
