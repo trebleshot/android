@@ -28,7 +28,7 @@ public abstract class Activity extends AppCompatActivity
 
 		boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
 
-		PreferenceManager.setDefaultValues(this, R.xml.preferences_main, false);
+		PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
 
 		if (!nsdDefined)
 			defaultPreferences.edit()

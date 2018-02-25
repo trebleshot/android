@@ -342,9 +342,20 @@ public class ShareActivity extends Activity
 							}
 
 							@Override
-							public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+							public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
 							{
 								mConnected = true;
+
+								try {
+									hotspotNetwork.deviceId = device.deviceId;
+									mDatabase.reconstruct(hotspotNetwork);
+
+									device = hotspotNetwork;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+
+								final NetworkDevice finalDevice = device;
 
 								if (!getDefaultInterrupter().interrupted())
 									runOnUiThread(new Runnable()
@@ -353,7 +364,7 @@ public class ShareActivity extends Activity
 										public void run()
 										{
 											getProgressDialog().dismiss();
-											doCommunicate(device, connection);
+											doCommunicate(finalDevice, connection);
 										}
 									});
 							}
@@ -411,6 +422,12 @@ public class ShareActivity extends Activity
 							final JSONObject jsonRequest = new JSONObject();
 							final TransactionObject.Group groupInstance = new TransactionObject.Group(AppUtils.getUniqueNumber(), device.deviceId, connection.adapterName);
 							final ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
+
+							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork
+									&& ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection) {
+								jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
+								Log.d(TAG, "Request the truth");
+							}
 
 							if (mSharedText == null) {
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);

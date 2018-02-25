@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/text_application">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="scan_devices_auto"
+            android:summary="@string/text_autoScanDevicesSummary"
+            android:title="@string/text_autoScanDevices"/>
+
+        <EditTextPreference
+            android:dialogTitle="@string/text_deviceNameTitle"
+            android:inputType="textShortMessage"
+            android:key="device_name"
+            android:maxLength="32"
+            android:summary="@string/text_deviceNameSummary"
+            android:title="@string/text_deviceName"/>
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="trust_always"
+            android:summary="@string/text_trustZoneEnabledSummary"
+            android:title="@string/text_trustZoneEnabled"/>
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="hotspot_trust"
+            android:summary="@string/text_hotspotStartsTrustZoneSummary"
+            android:title="@string/text_hotspotStartsTrustZone"/>
+
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

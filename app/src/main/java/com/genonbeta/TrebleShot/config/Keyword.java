@@ -42,7 +42,8 @@ public class Keyword
 			HANDSHAKE_ONLY = "handshakeOnly",
 			NETWORK_NAME = "nwName",
 			NETWORK_PASSWORD = "nwPwd",
-			NETWORK_KEYMGMT = "ntKeyMgmt";
+			NETWORK_KEYMGMT = "ntKeyMgmt",
+			FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection";
 
 	public static class Local
 	{
