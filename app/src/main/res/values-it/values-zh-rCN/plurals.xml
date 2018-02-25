@@ -1,8 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><plurals name="ques_deleteFile">
-	<item quantity="other"></item>
-</plurals>
-    <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="other"></item>
-</plurals>
-    </resources>
