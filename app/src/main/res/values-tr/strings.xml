@@ -11,7 +11,7 @@
     <string name="text_available">Kullanılabilir</string>
     <string name="text_notAvailable">Kullanılamaz</string>
     <string name="text_deviceListEmpty">Cihaz listesi boş</string>
-    <string name="mesg_noNetwork">Yakın cihazları bulmam için kablosuz benzeri bir ağa bağlanmam gerek</string>
+    <string name="mesg_noNetwork">Yakın cihazları bulmam için kablosuz gibi bir ağ mevcut değil</string>
     <string name="mesg_scanningDevices">Cihazlar bulunuyor</string>
     <string name="ques_receiveFile">Dosya alınsın mı?</string>
     <string name="butn_accept">Kabul et</string>
@@ -24,7 +24,7 @@
     <string name="butn_cancelReceiving">Alımı iptal et</string>
     <string name="text_fileReceived">Dosya alındı</string>
     <string name="butn_scan">Tara</string>
-    <string name="text_listEmpty">Liste boş!</string>
+    <string name="text_listEmpty">Liste boş</string>
     <string name="text_developerMode">Geliştirici modu</string>
     <string name="text_developerModeSummary">Kullanıcı yapılandırmasını devre dışı bırakır</string>
     <string name="text_deviceName">Cihaz adı</string>
@@ -61,7 +61,7 @@
     <string name="butn_pendingTransfers">İş. Kuyruğu</string>
     <string name="butn_shareWithTrebleshot">TrebleShot ile paylaş</string>
     <string name="mesg_somethingWentWrong">Birşeyler ters gitti</string>
-    <string name="text_findDevicesHint">Cihazları bulmak için arama simgesine dokunun!</string>
+    <string name="text_findDevicesHint">Henüz bir cihaz bulunmuyor</string>
     <string name="text_autoScanDevices">Cihazları otomatik tara</string>
     <string name="text_autoScanDevicesSummary">Gerekli durumlarda tarama başlatılır</string>
     <string name="mesg_stillScanning">Halen arıyor</string>
@@ -146,7 +146,9 @@
     <string name="text_communicationService">Haberleşme servisi</string>
     <string name="text_serverService">Sunucu servis</string>
     <string name="text_transactionViewer">Bekleyen aktarımlar</string>
-    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin. \n\nAygıt listesi &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
+    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin
+\n
+\nAygıt listesi &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
     <string name="ques_why">Neden?</string>
     <string name="butn_saveTo">Kaydetme yeri</string>
     <string name="mesg_secureExit">Çıkmak için tekrar basın</string>
@@ -164,7 +166,7 @@
     <string name="text_fileConflictNoChoice">%s dosyası için seçtiğiniz klasör şu anda kullanılamaz ve şu anki dosya adı varsayılan klasördeki bir dosyayla çakışmakta. Aynı dosyanın kısmen alınmış bir haliyse \'Sakla\'yı seçin veya yeni dosya yaratmak için \'Yeni dosya\'yı seçin</string>
     <string name="text_defaultFolder">Varsayılan</string>
     <string name="text_storage">Depolama</string>
-    <string name="mesg_currentPathUnavailable">Bu klasör kullanılamaz. Lütfen başka klasör seçin.</string>
+    <string name="mesg_currentPathUnavailable">Bu klasör kullanılamıyor</string>
     <string name="text_shareFiles">Dosya paylaş</string>
     <string name="text_transactionDetails">Aktarım detayı</string>
     <string name="text_fileExplorer">Dosya gezgini</string>
@@ -173,7 +175,7 @@
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
     <string name="ques_checkOldFiles">Geçici dosyaları kontrol et?</string>
-    <string name="text_checkOldFiles">TrebleShot yarım kalmış aktarımların dosyalarını seçtiğiniz klasöre aktaracak ve bu biraz zaman alabilir. Reddet\'e basarak bu işlemi atlayabilirsiniz</string>
+    <string name="text_checkOldFiles">TrebleShot yarım kalmış aktarımların dosyalarını seçtiğiniz klasöre aktaracak ve bu biraz zaman alabilir yada \"reddet\" e basarak bu işlemi atlayabilirsiniz</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -234,8 +236,8 @@
     <string name="text_trustZoneEnabledSummary">Hep kullanabilir olarak başlat (önerilmez)</string>
     <string name="butn_typeNewEntry">Yeni girdi girin</string>
     <string name="butn_download">İndir</string>
-    <string name="mesg_clipboardUpdateNotice">Metni güncellemek ister misiniz?\nÇıkmak için tekrar basın</string>
-    <string name="mesg_textSaveNotice">Metni kaydetmek ister misiniz?\nÇıkmak için tekrar basın</string>
+    <string name="mesg_clipboardUpdateNotice">Metni güncelleyin yada çıkmak için tekrar basın</string>
+    <string name="mesg_textSaveNotice">Metni kaydedin yada çıkmak için tekrar basın</string>
     <string name="butn_update">Güncelle</string>
     <string name="butn_save">Kaydet</string>
     <string name="mesg_textShareLimit">Aynı anda sadece bir metin içeriği paylaşılabilir</string>
@@ -246,15 +248,15 @@
     <string name="butn_connect">Bağlan</string>
     <string name="butn_disconnect">Bağlantıyı kes</string>
     <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.</string>
-    <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor. 20 saniyeden fazla sürmemesi gerekir</string>
-    <string name="mesg_warningHotspotMobileActive">Mobil veri etkin. Başkaları ağınıza bağlanalabilir</string>
+    <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor</string>
+    <string name="mesg_warningHotspotMobileActive">Mobil veri etkinken başkaları ağınıza bağlanabilir</string>
     <string name="butn_skip">Atla</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
-    <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuz\'u etkinleştirmek ister misiniz?</string>
+    <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuzu etkinleştirebilirsiniz</string>
     <string name="butn_enable">Etkinleştir</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Hotspot bulmak ve başlatmak için konum izni gerekli</string>
     <string name="butn_locationSettings">Konum</string>
-    <string name="mesg_locationDisabledSelfHotspot">Konum servisi kapalı. Hotspot bulmak ve başlatmak için etkinleştirin</string>
+    <string name="mesg_locationDisabledSelfHotspot">Hotspot bulmak ve başlatmak için konum servisini etkinleştirin</string>
     <string name="mesg_scanningDevicesSelfHotspot">TrebleShot Hotspot\'u üzerinde cihazlar aranıyor</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot Hotspot\'unuz devre dışı bırakılıyor</string>
     <string name="mesg_startingSelfHotspot">TrebleShot Hotspot\'unuz başlatılıyor</string>
@@ -276,7 +278,7 @@
     <string name="butn_previewSelections">Seçimleri önizle</string>
     <string name="mesg_deviceConnectionError">\"%s\" ile \"%s\" üzerinden bağlantı başarısız oldu</string>
     <string name="mesg_retryAllInfo">TrebleShot yarıda kesilmiş aktarımları yeniden almayı deneyecek</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Hiçbir bağlantı ayarlanmadı. Lütfen haberleşme için bir tane ayarlayın</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Lütfen ilk önce \"Bağlantıyı değiştir\" i kullanarak bağlantı yöntemini güncelleyin</string>
     <string name="butn_setUp">Ayarla</string>
     <string name="text_pseudoLocation">Sahte konum</string>
     <string name="butn_saveAnyway">Yinede kaydet</string>
@@ -315,13 +317,13 @@
     <string name="butn_queueCounted">Kuyruk (%d)</string>
     <string name="text_previewThenProceedNotice">Devam edebilmek için seçtiklerinizi \"Kuyruk\" tuşuna dokunurak kontrol edin</string>
     <string name="mesg_updateDownloadComplete">Güncellemeyi yüklemek için dokunun</string>
-    <string name="text_listEmptyFiles">Burada dosya yok!</string>
-    <string name="text_listEmptyImage">Belki de birkaç manzaralı fotoğraf?</string>
-    <string name="text_listEmptyApp">Burada uygulama yok!</string>
-    <string name="text_listEmptyVideo">Burada video yok!</string>
-    <string name="text_listEmptyPendingTransfer">Bekleyen aktarımlarınız burada görünecek!</string>
-    <string name="text_listEmptyTextStream">Yazdığınız ve aldıığınız şeyler burada görünecek!</string>
-    <string name="text_listEmptyMusic">Burada hiç  şarkı yok!</string>
+    <string name="text_listEmptyFiles">Burada dosya yok</string>
+    <string name="text_listEmptyImage">Burada fotoğraf yok</string>
+    <string name="text_listEmptyApp">Burada uygulama yok</string>
+    <string name="text_listEmptyVideo">Burada video yok</string>
+    <string name="text_listEmptyPendingTransfer">Bekleyen aktarımlarınız burada görünecek</string>
+    <string name="text_listEmptyTextStream">Yazdığınız ve aldıığınız şeyler burada görünecek</string>
+    <string name="text_listEmptyMusic">Burada hiç şarkı yok</string>
     <string name="text_internalStorage">Dahili depolama</string>
     <string name="text_restrictedAccessStorage">%s (sınırlı erişim)</string>
     <string name="text_emptySearchResult">\"%s\" için sonuç yok</string>
@@ -331,7 +333,7 @@
     <string name="mesg_mountDirectoryHelp">Erişmek istediğiniz klasörü veya aygıtı seçin</string>
     <string name="butn_ejectDirectory">Klasörü çıkart</string>
     <string name="text_movedCacheFiles">Önbellek dosyaları başarıyla taşındı</string>
-    <string name="mesg_wifiEnableRequired">Kablosuz devre dışı. Lütfen bağlanmak için etkinleştirin</string>
+    <string name="mesg_wifiEnableRequired">Lütfen bağlanmak için Kablosuzu etkinleştirin</string>
     <string name="text_hotspotStartsTrustZone">Hotspot, GüvenliBölge\'yi de başlatır</string>
     <string name="text_hotspotStartsTrustZoneSummary">GüvenliBölge duruma göre başlatılacak</string>
     <string name="text_qrCodeAvailableHelp">Göndericiye bu QR kodunu TrebleShot üzerinde taramasını söyleyin</string>
