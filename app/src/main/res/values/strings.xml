@@ -40,7 +40,7 @@
     <string name="text_multipleFileReceiveCompleted">The files have been received</string>
     <string name="text_deviceList">Device list</string>
     <string name="text_fileOpenAppChoose">Open with</string>
-    <string name="text_fileShareAppChoose">Choose an app to share</string>
+    <string name="text_fileShareAppChoose">Choose an app to share with</string>
     <string name="text_receivedFiles">Received files</string>
     <string name="butn_edit">Edit</string>
     <string name="butn_share">Share</string>
