@@ -1,7 +1,7 @@
 # TrebleShot open-source file and text sharing application
 Send and receive files over available connections without making any effort. Please read "Wiki" to learn more.
 
-[Join the discussion on Google+](https://trello.com/b/YmbwDHHo)
+[Join the discussion on Google+](https://plus.google.com/communities/102916752990309950243)
  
 
 ## Get it on
