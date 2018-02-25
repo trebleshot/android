@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="scan_devices_auto"/>
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="trust_always"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="hotspot_trust"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_vibrate"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_sound"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_light"/>
+    
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_vibrate"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_sound"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="notification_light"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="nsd_enabled"/>
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="developer_mode"/>
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="allow_autoconnect"/>
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="show_system_apps"/>
+    r
+</PreferenceScreen>
