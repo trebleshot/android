@@ -341,4 +341,6 @@
     <string name="text_scanQRCodeHelp">Alıcının ekranı üzerindeki QR kodunu tarayın</string>
     <string name="butn_qrScanToSend">Göndermek için QR tara</string>
     <string name="butn_qrToggle">QR Kod gösterimi</string>
+    <string name="text_notificationSettingsSummary">Bildirim ayarlarını aç</string>
+    <string name="text_notificationSettings">Bildirim ayarları</string>
 </resources>
