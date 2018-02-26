@@ -221,7 +221,7 @@
     <string name="text_trustZoneEnabledSummary">Set TrustZone default enabled when the app starts</string>
     <string name="butn_typeNewEntry">Type new entry</string>
     <string name="butn_download">Download</string>
-    <string name="mesg_clipboardUpdateNotice">Update the text or press again the exit</string>
+    <string name="mesg_clipboardUpdateNotice">Update the text or press again to exit</string>
     <string name="mesg_textSaveNotice">Save the text or press again to exit</string>
     <string name="butn_update">Update</string>
     <string name="butn_save">Save</string>
