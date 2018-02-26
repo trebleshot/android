@@ -11,9 +11,9 @@
     <string name="text_available">Tilgjengelig</string>
     <string name="text_notAvailable">Utilgjengelig</string>
     <string name="text_deviceListEmpty">Ingen enhet</string>
-    <string name="mesg_noNetwork">Jeg trenger en tilkobling, som Wi-Fi, for å finne enheter i nærheten</string>
+    <string name="mesg_noNetwork">Mangler tilkobling, som Wi-Fi, for å finne enheter i nærheten</string>
     <string name="mesg_scanningDevices">Finner enheter i nærheten</string>
-    <string name="ques_receiveFile">Motta fil?</string>
+    <string name="ques_receiveFile">Motta filen?</string>
     <string name="butn_accept">Godta</string>
     <string name="butn_reject">Avslå</string>
     <string name="text_taskOngoing">Pågående</string>
@@ -24,7 +24,7 @@
     <string name="butn_cancelReceiving">Avbryt mottak</string>
     <string name="text_fileReceived">Filen har blitt mottatt</string>
     <string name="butn_scan">Skann</string>
-    <string name="text_listEmpty">Ingenting å vise!</string>
+    <string name="text_listEmpty">Ingen elementer</string>
     <string name="text_developerMode">Utviklermodus</string>
     <string name="text_developerModeSummary">Det skrur av brukeroppsettet</string>
     <string name="text_deviceName">Enhetsnavn</string>
@@ -61,7 +61,7 @@
     <string name="butn_pendingTransfers">Kø</string>
     <string name="butn_shareWithTrebleshot">Del med TrebleShot</string>
     <string name="mesg_somethingWentWrong">Noe gikk galt</string>
-    <string name="text_findDevicesHint">Ingen gjenkjente enheter enda!</string>
+    <string name="text_findDevicesHint">Ingen gjenkjente enheter</string>
     <string name="text_autoScanDevices">Skann enheter automatisk</string>
     <string name="text_autoScanDevicesSummary">Skanner enheter når det er nødvendig</string>
     <string name="mesg_stillScanning">Skanner fremdeles</string>
@@ -164,7 +164,7 @@
     <string name="text_fixFileSaveLocation">Fiks lagringsplassering</string>
     <string name="text_fileConflictNoChoice">Mappen du valgte for %s-filen er ikke tilgjengelig for øyeblikket, og gjeldende filnavn har problemer med en fil i forvalgt mappe. Hvis det er en delvis mottatt versjon av samme fil, velg \"Behold\", eller velg \"Ny fil\", for å generere ny fil.</string>
     <string name="text_fileConflictUseDefault"/>
-    <string name="mesg_currentPathUnavailable">Mappen kan ikke brukes. Velg en annen mappe.</string>
+    <string name="mesg_currentPathUnavailable">Mappen kan ikke brukes.</string>
     <string name="text_defaultFolder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>
     <string name="text_shareFiles">Motta filer</string>
@@ -212,7 +212,7 @@
     <string name="butn_ask">Spør</string>
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
     <string name="text_requestPermissionStorage">Lagringstilgang</string>
-    <string name="text_requestPermissionReadPhoneState">Les telefontilstand</string>
+    <string name="text_requestPermissionReadPhoneState">Tilgang til lesing av telefontilstand</string>
     <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot bruker din telefons serienummer til å opprette et identitetsnummer på lang sikt for deg, noe som hjelper andre enehter som kjører TrebleShot å gjenkjenne enheten din. Din enhet kjører Oreo eller høyere og TrebleShot krever tilgang til innhenting av serienummeret. Å avslå vil føre til at TrebleShot stopper.</string>
     <string name="text_mediaDirectory">Mediamappe</string>
     <string name="text_emulatedMediaDirectory">Emulert (%s)</string>
@@ -233,10 +233,8 @@
     <string name="butn_turnTrustZoneOff">Skru av TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
     <string name="butn_download">Last ned</string>
-    <string name="mesg_clipboardUpdateNotice">Ønsker du å oppdatere teksten?
-\nTrykk igjen for å avslutte</string>
-    <string name="mesg_textSaveNotice">Ønsker du å lagre denne teksten?
-\nTrykk igjen for å avslutte</string>
+    <string name="mesg_clipboardUpdateNotice">Oppdater teksten eller trykk igjen for å avslutte</string>
+    <string name="mesg_textSaveNotice">Lagre teksten eller trykk igjen for å avslutte</string>
     <string name="butn_update">Oppdater</string>
     <string name="butn_save">Lagre</string>
     <string name="mesg_textShareLimit">Kun én tekst kan deles om gangen</string>
@@ -259,7 +257,7 @@
     <string name="butn_previewSelections">Forhåndsvis utvalg</string>
     <string name="mesg_deviceConnectionError">Tilkobling med \"%s\" over \"%s\" har mislyktes</string>
     <string name="mesg_retryAllInfo">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Ingen tilkobling har blitt satt opp. Sett opp en for å kommunisere</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Oppdater tilkoblingsmetode ved å bruke \"Endre tilkobling\"</string>
     <string name="butn_setUp">Sett opp</string>
     <string name="text_pseudoLocation">Tenkt plassering</string>
     <string name="butn_saveAnyway">Lagre uansett</string>
@@ -280,15 +278,15 @@
     <string name="text_deletingFilesOngoing">Sletter valgte filer</string>
     <string name="text_remainingTime">%s gjenstår</string>
     <string name="text_trustZoneEnabledSummary">Sett TrustZone-forvalg på når programmet starter</string>
-    <string name="mesg_errorHotspotPermission">TrebleShot trenger tilgang for å sette opp et lokalt nett</string>
+    <string name="mesg_errorHotspotPermission">TrebleShot trenger tilgang for å sette opp et lokalt trådløsnett</string>
     <string name="text_trebleshotHotspot">Trebleshot-trådløsnett</string>
     <string name="text_trebleshotHotspotDescription">Du kan sende filer direkte via dette åpne nettverket som har blitt opprettet av en TrebleShot-enhet i nærheten.</string>
     <string name="mesg_connectingToSelfHotspot">Kobler til et lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_warningHotspotMobileActive">Mobildata påskrudd. Andre kan koble til nettverket ditt.</string>
+    <string name="mesg_warningHotspotMobileActive">Andre kan koble til nettverket ditt mens mobildata er påslått</string>
     <string name="mesg_scanningSelfHotspot">Søker etter et lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_suggestSelfHotspot">Ønsker du å skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett?</string>
-    <string name="mesg_locationPermissionRequiredSelfHotspot">Innvilging av plasseringstilgang kreves for å søke etter et lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_locationDisabledSelfHotspot">Innvilg tilgang til plassering for å vise søkeresultater</string>
+    <string name="mesg_suggestSelfHotspot">Duk kan skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Tillat TrebleShot å søke etter og opprette lokale trådløsnett</string>
+    <string name="mesg_locationDisabledSelfHotspot">Innvilg tilgang til plassering for å vise søkeresultater og opprette lokalt trådløsnett</string>
     <string name="mesg_scanningDevicesSelfHotspot">Ser etter enheter på et lokalt TrebleShot-nettverk</string>
     <string name="mesg_stoppingSelfHotspot">Stopper det lokale TrebleShot-trådløsnettet</string>
     <string name="mesg_startingSelfHotspot">Starter det lokale TrebleShot-trådløsnettet</string>
@@ -318,12 +316,12 @@
     <string name="text_previewThenProceedNotice">For å kunne fortsette, velg utvalgene dine ved å trykke på \"Kø\"-knappen</string>
     <string name="mesg_updateDownloadComplete">Trykk for å installere oppgraderingen</string>
     <string name="text_listEmptyFiles">Ingen filer her!</string>
-    <string name="text_listEmptyImage">Noen naturbilder kanskje?</string>
-    <string name="text_listEmptyApp">Ingen programmer her!</string>
-    <string name="text_listEmptyVideo">Ingen videoer her!</string>
-    <string name="text_listEmptyPendingTransfer">Ventende overføringer vil vises her!</string>
-    <string name="text_listEmptyTextStream">Du bør skrive noe først!</string>
-    <string name="text_listEmptyMusic">Ingen sanger her!</string>
+    <string name="text_listEmptyImage">Ingen bilder her</string>
+    <string name="text_listEmptyApp">Ingen programmer her</string>
+    <string name="text_listEmptyVideo">Ingen videoer her</string>
+    <string name="text_listEmptyPendingTransfer">Ventende overføringer vil vises her</string>
+    <string name="text_listEmptyTextStream">Ting du har skrevet og mottatt vil vises her</string>
+    <string name="text_listEmptyMusic">Ingen sanger her</string>
     <string name="text_internalStorage">Internt lagringsmedium</string>
     <string name="text_restrictedAccessStorage">%s (begrenset tilgang)</string>
 <string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
@@ -333,4 +331,14 @@
     <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker tilgang til</string>
     <string name="butn_ejectDirectory">Utløs mappe</string>
     <string name="text_movedCacheFiles">Hurtiglagrede filer har blitt flyttet</string>
-    </resources>
+    <string name="mesg_wifiEnableRequired">Skru på Wi-Fi for å koble til</string>
+    <string name="text_hotspotStartsTrustZone">Lokalt trådløsnett slår på TrustZone</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone vil også bli startet opp behovsvis</string>
+    <string name="text_qrCodeAvailableHelp">Gi avsenderen beskjed om å skanne denne QR-koden ved bruk av TrebleShot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot-trådløsnettet først</string>
+    <string name="text_scanQRCodeHelp">Skann QR-koden på mottakerens skjerm</string>
+    <string name="butn_qrScanToSend">Skann QR-koden for å sende</string>
+    <string name="butn_qrToggle">Veksle visning av QR-kode</string>
+    <string name="text_notificationSettingsSummary">Åpne merknadsinnstillinger</string>
+    <string name="text_notificationSettings">Merknadsinnstillinger</string>
+</resources>
