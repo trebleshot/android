@@ -345,4 +345,10 @@
     <string name="butn_qrToggle">QR-code weergeven/verbergen</string>
 <string name="text_notificationSettingsSummary">Meldingsinstellingen openen</string>
     <string name="text_notificationSettings">Meldingsinstellingen</string>
+<string name="text_renameMultipleItems">Meerdere itemnamen wijzigen</string>
+    <string name="text_rename">Naam wijzigen</string>
+    <string name="butn_rename">\@string/text_rename</string>
+    <string name="butn_copyHere">Hierheen kopiëren</string>
+    <string name="text_qrAllowTrustZone">TrustZone voor QR-code</string>
+    <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
 </resources>
