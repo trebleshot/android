@@ -147,7 +147,7 @@
     <string name="text_transactionViewer">Vis overføring</string>
     <string name="text_error">Feil</string>
     <string name="ques_why">Hvorfor?</string>
-    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s. 
+    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s
 \n 
 \nEnhetsliste &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)</string>
     <string name="butn_saveTo">Lagre til</string>
