@@ -41,8 +41,7 @@ public class TransactionListFragment
 		public void onReceive(Context context, Intent intent)
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFER))
+					&& AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
 				refreshList();
 		}
 	};

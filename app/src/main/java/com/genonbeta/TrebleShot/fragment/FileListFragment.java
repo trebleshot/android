@@ -21,9 +21,11 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
+import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
@@ -32,6 +34,8 @@ import java.util.ArrayList;
 public class FileListFragment extends ShareableListFragment<FileListAdapter.GenericFileHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
+
+	public static final int JOB_COPY_FILES = 0;
 
 	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
 	public final static String EXTRA_FILE_PARENT = "extraPath";
@@ -75,8 +79,7 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 				}
 			} else if (getAdapter().getPath() == null
 					&& AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_WRITABLEPATH))
+					&& AccessDatabase.TABLE_WRITABLEPATH.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
 				refreshList();
 		}
 	};
@@ -192,14 +195,16 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 	{
 		int id = item.getItemId();
 
+		if (getSelectionConnection().getSelectedItemList().size() == 0)
+			return super.onActionMenuItemSelected(context, actionMode, item);
+
 		if (id == R.id.action_mode_file_delete && getAdapter().getPath() != null) {
 			new FileDeletionDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileDeletionDialog.Listener()
 			{
 				@Override
 				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
 				{
-					if (file instanceof LocalDocumentFile && mMediaScanner.isConnected())
-						mMediaScanner.scanFile(((LocalDocumentFile) file).getFile().getAbsolutePath(), "*/*");
+					scanFile(file);
 				}
 
 				@Override
@@ -215,6 +220,36 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 			for (FileListAdapter.GenericFileHolder holder : selectionList)
 				if (holder instanceof FileListAdapter.WritablePathHolder)
 					getAdapter().getDatabase().remove(((FileListAdapter.WritablePathHolder) holder).pathObject);
+		} else if (id == R.id.action_mode_file_rename) {
+			new FileRenameDialog<>(getActivity(), getSelectionConnection().getSelectedItemList(), new FileRenameDialog.OnFileRenameListener()
+			{
+				@Override
+				public void onFileRename(DocumentFile file, String displayName)
+				{
+					scanFile(file);
+				}
+
+				@Override
+				public void onFileRenameCompleted()
+				{
+					refreshList();
+				}
+			}).show();
+		} else if (id == R.id.action_mode_file_copy_here) {
+			WorkerService.run(getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_COPY_FILES)
+			{
+				@Override
+				protected void onRun()
+				{
+
+				}
+
+				@Override
+				public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
+				{
+
+				}
+			});
 		} else
 			return super.onActionMenuItemSelected(context, actionMode, item);
 
@@ -235,6 +270,18 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 
 		getAdapter().goPath(file);
 		refreshList();
+	}
+
+	public boolean scanFile(DocumentFile file)
+	{
+		if (!(file instanceof LocalDocumentFile) || !mMediaScanner.isConnected())
+			return false;
+
+		String filePath = ((LocalDocumentFile) file).getFile().getAbsolutePath();
+
+		mMediaScanner.scanFile(filePath, file.isDirectory() ? file.getType() : null);
+
+		return true;
 	}
 
 	public void setOnPathChangedListener(OnPathChangedListener pathChangedListener)

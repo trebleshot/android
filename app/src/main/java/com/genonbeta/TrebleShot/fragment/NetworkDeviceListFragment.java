@@ -663,12 +663,11 @@ public class NetworkDeviceListFragment
 
 		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
 
-		if (mHotspotUtils instanceof HotspotUtils.HackAPI) {
-			if (wifiConfiguration != null && isEnabled)
-				updateQRViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
-			else
-				updateQRViews(null, null, 0);
-		}
+		if (!isEnabled)
+			updateQRViews(null, null, 0);
+		else if (mHotspotUtils instanceof HotspotUtils.HackAPI
+				&& wifiConfiguration != null)
+			updateQRViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
 
 		if (wifiConfiguration != null
 				&& mHotspotUtils.isEnabled()) {
@@ -734,13 +733,13 @@ public class NetworkDeviceListFragment
 						.show();
 			} else if (WifiManager.SCAN_RESULTS_AVAILABLE_ACTION.equals(intent.getAction())
 					|| (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_DEVICES)
+					&& AccessDatabase.TABLE_DEVICES.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
 			))
 				refreshList();
 			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
 				updateHotspotState();
-			else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
+			else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
+					&& intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false)) {
 				updateQRViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
 						intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
 						intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));

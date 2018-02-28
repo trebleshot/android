@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.content.FileProvider;
+import android.webkit.MimeTypeMap;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -176,6 +177,21 @@ public class FileUtils
 		return (fileType == null) ? "*/*" : fileType;
 	}
 
+	public static String getFileExtension(String fileName)
+	{
+		final int lastDot = fileName.lastIndexOf('.');
+
+		if (lastDot >= 0) {
+			final String extension = fileName.substring(lastDot + 1).toLowerCase();
+			final String mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+
+			if (mime != null)
+				return "." + extension;
+		}
+
+		return "";
+	}
+
 	public static DocumentFile getIncomingPseudoFile(Context context, TransactionObject transactionObject, TransactionObject.Group group, boolean createIfNotExists) throws IOException
 	{
 		return fetchFile(getSavePath(context, group), transactionObject.directory, transactionObject.file, createIfNotExists);
@@ -268,6 +284,24 @@ public class FileUtils
 		}
 
 		return fileName;
+	}
+
+	public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile, Interrupter interrupter) throws Exception
+	{
+		if (!(targetFile instanceof LocalDocumentFile)
+				|| !(destinationFile instanceof LocalDocumentFile)
+				|| !((LocalDocumentFile) targetFile).getFile().renameTo(((LocalDocumentFile) destinationFile).getFile()))
+			copy(context, targetFile, destinationFile, interrupter);
+
+		// syncs the file with latest data if it is database based
+		destinationFile.sync();
+
+		if (targetFile.length() == destinationFile.length()) {
+			targetFile.delete();
+			return true;
+		}
+
+		return false;
 	}
 
 	public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransactionObject transactionObject) throws IOException

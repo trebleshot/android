@@ -50,7 +50,8 @@ public class ApplicationListAdapter
 			ApplicationInfo appInfo = packageInfo.applicationInfo;
 
 			if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || mShowSysApps)
-				list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
+				list.add(new PackageHolder(getContext(),
+						String.valueOf(appInfo.loadLabel(mManager)),
 						appInfo,
 						packageInfo.versionName,
 						packageInfo.packageName,
@@ -135,7 +136,7 @@ public class ApplicationListAdapter
 		public String version;
 		public String packageName;
 
-		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
+		public PackageHolder(Context context, String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
 		{
 			super(friendlyName,
 					friendlyName + "_" + version + ".apk",

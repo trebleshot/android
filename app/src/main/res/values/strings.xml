@@ -330,4 +330,10 @@
     <string name="butn_qrToggle">Toggle QR Code showing</string>
     <string name="text_notificationSettingsSummary">Open notification settings</string>
     <string name="text_notificationSettings">Notification settings</string>
+    <string name="text_renameMultipleItems">Rename multiple items</string>
+    <string name="text_rename">Rename</string>
+    <string name="butn_rename">@string/text_rename</string>
+    <string name="butn_copyHere">Copy here</string>
+    <string name="text_qrAllowTrustZone">TrustZone for QR Code</string>
+    <string name="text_qrAllowTrustZoneSummary">Allow TrustZone for QR Code connections</string>
 </resources>

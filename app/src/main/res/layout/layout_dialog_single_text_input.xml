@@ -7,7 +7,7 @@
     android:padding="24dp">
 
     <EditText
-        android:id="@+id/layout_createfolder_edittext"
+        android:id="@+id/layout_dialog_single_text_input_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

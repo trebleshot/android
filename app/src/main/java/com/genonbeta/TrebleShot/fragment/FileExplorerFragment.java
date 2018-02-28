@@ -23,7 +23,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.CreateFolderDialog;
+import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.DetachListener;
@@ -183,10 +183,10 @@ public class FileExplorerFragment
 
 		if (id == R.id.actions_file_explorer_create_folder) {
 			if (mFileListFragment.getAdapter().getPath() != null && mFileListFragment.getAdapter().getPath().canWrite())
-				new CreateFolderDialog(getContext(), mFileListFragment.getAdapter().getPath(), new CreateFolderDialog.OnCreatedListener()
+				new FolderCreationDialog(getContext(), mFileListFragment.getAdapter().getPath(), new FolderCreationDialog.OnFolderCreatedListener()
 				{
 					@Override
-					public void onCreated()
+					public void onFolderCreated(DocumentFile directoryFile)
 					{
 						mFileListFragment.refreshList();
 					}

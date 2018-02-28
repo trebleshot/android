@@ -296,7 +296,7 @@ public class TransactionActivity
 															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), transactionObject, pseudoGroup, true);
 
 															if (file.canRead())
-																FileUtils.copy(TransactionActivity.this, file, pseudoFile, getInterrupter());
+																FileUtils.move(TransactionActivity.this, file, pseudoFile, getInterrupter());
 
 															file.delete();
 														} catch (IOException e) {

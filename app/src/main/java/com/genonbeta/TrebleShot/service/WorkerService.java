@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.InterruptAwareJob;
@@ -152,6 +153,7 @@ public class WorkerService extends Service
 									PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
 
 					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Started);
+					notifiableRunningWork.getHandle().insertNotification(dynamicNotification);
 
 					dynamicNotification.show();
 				}
@@ -171,9 +173,12 @@ public class WorkerService extends Service
 								.setContentTitle(getString(R.string.text_taskCompleted));
 
 						notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
+						notifiableRunningWork.getHandle().insertNotification(dynamicNotification);
 
 						dynamicNotification.show();
 					}
+
+					notifiableRunningWork.getHandle().exit();
 				}
 			}
 		});
@@ -275,6 +280,8 @@ public class WorkerService extends Service
 
 	public abstract static class NotifiableRunningTask extends RunningTask
 	{
+		private AliveHandle mHandle = new AliveHandle();
+
 		public NotifiableRunningTask(String clientTag, int jobId)
 		{
 			super(clientTag, jobId);
@@ -284,17 +291,66 @@ public class WorkerService extends Service
 
 		abstract public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
 
+		public AliveHandle getHandle()
+		{
+			return mHandle;
+		}
+
+		public void yell() throws ExitedException
+		{
+			mHandle.yell();
+		}
+
 		public enum UpdateType
 		{
 			Started,
 			Ongoing,
 			Done
 		}
-	}
 
-	public static class TaskInfo
-	{
-		private String mTag;
-		private int mJobId;
+		public class AliveHandle
+		{
+			private long mLastNotified = 0;
+			private boolean mExited = false;
+			private DynamicNotification mNotification;
+
+			public AliveHandle()
+			{
+			}
+
+			public void exit()
+			{
+				mExited = true;
+			}
+
+			public void insertNotification(DynamicNotification notification)
+			{
+				mNotification = notification;
+			}
+
+			public DynamicNotification getNotification()
+			{
+				return mNotification;
+			}
+
+			public void yell() throws ExitedException
+			{
+				if (mExited)
+					throw new ExitedException();
+
+				if ((System.currentTimeMillis() - mLastNotified) > AppConfig.DEFAULT_NOTIFICATION_DELAY)
+					onUpdateNotification(mNotification, UpdateType.Ongoing);
+			}
+
+			public void yell(int jobPosition, int jobFinal) throws ExitedException
+			{
+				yell();
+				getNotification().updateProgress(jobFinal, jobPosition, false);
+			}
+		}
+
+		public class ExitedException extends Exception
+		{
+		}
 	}
 }

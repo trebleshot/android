@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -88,6 +89,7 @@ public class CommunicationService extends Service
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 	public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
 	public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
+	public static final String EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled";
 	public static final String EXTRA_HOTSPOT_NAME = "extraHotspotName";
 	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
 	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
@@ -128,10 +130,10 @@ public class CommunicationService extends Service
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
 				.createWifiLock(TAG);
 
-		mReceive.setNotifyDelay(2000);
+		mReceive.setNotifyDelay(AppConfig.DEFAULT_NOTIFICATION_DELAY);
 		mReceive.setBlockingObject(mBlockingObject);
 
-		mSend.setNotifyDelay(2000);
+		mSend.setNotifyDelay(AppConfig.DEFAULT_NOTIFICATION_DELAY);
 		mSend.setBlockingObject(mBlockingObject);
 
 		mMediaScanner.connect();
@@ -140,7 +142,7 @@ public class CommunicationService extends Service
 		if (getWifiLock() != null)
 			getWifiLock().acquire();
 
-		updateServiceState(getNotificationHelper().getUtils().getPreferences().getBoolean("trust_always", false));
+		updateServiceState(getPreferences().getBoolean("trust_always", false));
 
 		if (!AppUtils.checkRunningConditions(this)
 				|| !mCommunicationServer.start()
@@ -155,7 +157,11 @@ public class CommunicationService extends Service
 				public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
 				{
 					super.onStarted(reservation);
+
 					sendHotspotStatus(reservation.getWifiConfiguration());
+
+					if (getPreferences().getBoolean("hotspot_trust", false))
+						updateServiceState(true);
 				}
 			});
 	}
@@ -192,15 +198,7 @@ public class CommunicationService extends Service
 										.put(Keyword.TRANSFER_GROUP_ID, groupId)
 										.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
 										.toString());
-							} catch (JSONException e) {
-								e.printStackTrace();
-							} catch (TimeoutException e) {
-								e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
-							} catch (CommunicationBridge.DifferentClientException e) {
-								e.printStackTrace();
-							} catch (CommunicationBridge.CommunicationException e) {
+							} catch (Exception e) {
 								e.printStackTrace();
 							}
 						}
@@ -390,6 +388,11 @@ public class CommunicationService extends Service
 		return mOngoingIndexList;
 	}
 
+	public SharedPreferences getPreferences()
+	{
+		return getNotificationHelper().getUtils().getPreferences();
+	}
+
 	public ExecutorService getSelfExecutor()
 	{
 		return mSelfExecutor;
@@ -402,7 +405,7 @@ public class CommunicationService extends Service
 
 	public boolean isQRFastMode()
 	{
-		return getNotificationHelper().getUtils().getPreferences().getBoolean("hotspot_trust", false)
+		return getPreferences().getBoolean("qr_trust", false)
 				&& (mHotspotUtils.isStarted());
 	}
 
@@ -413,13 +416,10 @@ public class CommunicationService extends Service
 
 	public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
 	{
-		Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS);
+		Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS)
+				.putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null);
 
-		if (wifiConfiguration == null) {
-			statusIntent.putExtra(EXTRA_HOTSPOT_NAME, (String) null)
-					.putExtra(EXTRA_HOTSPOT_PASSWORD, (String) null)
-					.putExtra(EXTRA_HOTSPOT_KEY_MGMT, -1);
-		} else {
+		if (wifiConfiguration != null) {
 			statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
 					.putExtra(EXTRA_HOTSPOT_PASSWORD, wifiConfiguration.preSharedKey)
 					.putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
@@ -431,6 +431,11 @@ public class CommunicationService extends Service
 	public void setupHotspot()
 	{
 		boolean isEnabled = !getHotspotUtils().isEnabled();
+		boolean overrideTrustZone = getPreferences().getBoolean("hotspot_trust", false);
+
+		// On Oreo devices, we will use platform specific code. Eat this old versions.
+		if (overrideTrustZone && (!isEnabled || Build.VERSION.SDK_INT < 26))
+			updateServiceState(isEnabled);
 
 		if (isEnabled)
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);

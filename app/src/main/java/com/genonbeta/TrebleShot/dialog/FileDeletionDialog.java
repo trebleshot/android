@@ -75,19 +75,25 @@ public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> ext
 
 							private void delete(DocumentFile file)
 							{
-								if (getInterrupter().interrupted())
-									return;
+								try {
+									yell();
 
-								boolean isDirectory = file.isDirectory();
+									if (getInterrupter().interrupted())
+										return;
 
-								if (isDirectory)
-									deleteDirectory(file);
+									boolean isDirectory = file.isDirectory();
 
-								if (file.delete()) {
-									if (!isDirectory)
-										totalDeletion++;
+									if (isDirectory)
+										deleteDirectory(file);
 
-									listener.onFileDeletion(this, activity, file);
+									if (file.delete()) {
+										if (!isDirectory)
+											totalDeletion++;
+
+										listener.onFileDeletion(this, activity, file);
+									}
+								} catch (ExitedException e) {
+									e.printStackTrace();
 								}
 							}
 

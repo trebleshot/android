@@ -424,10 +424,8 @@ public class ShareActivity extends Activity
 							final ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
 
 							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork
-									&& ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection) {
+									&& ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection)
 								jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
-								Log.d(TAG, "Request the truth");
-							}
 
 							if (mSharedText == null) {
 								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);

@@ -343,4 +343,10 @@
     <string name="butn_qrToggle">QR Kod gösterimi</string>
     <string name="text_notificationSettingsSummary">Bildirim ayarlarını aç</string>
     <string name="text_notificationSettings">Bildirim ayarları</string>
+    <string name="text_renameMultipleItems">Çoklu dosya yeniden adlandır</string>
+    <string name="text_rename">Yeniden adlandır</string>
+    <string name="butn_rename">@string/text_rename</string>
+    <string name="butn_copyHere">Buraya kopyala</string>
+    <string name="text_qrAllowTrustZone">QR kodu için GüvenliBölge</string>
+    <string name="text_qrAllowTrustZoneSummary">QR kod bağlantıları için GüvenliBölge\'ye izin ver</string>
 </resources>

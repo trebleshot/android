@@ -24,12 +24,17 @@
             android:title="@string/text_trustZoneEnabled"/>
 
         <CheckBoxPreference
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:key="hotspot_trust"
             android:summary="@string/text_hotspotStartsTrustZoneSummary"
             android:title="@string/text_hotspotStartsTrustZone"/>
 
-    </PreferenceCategory>
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="qr_trust"
+            android:summary="@string/text_qrAllowTrustZoneSummary"
+            android:title="@string/text_qrAllowTrustZone"/>
 
+    </PreferenceCategory>
 
 </PreferenceScreen>

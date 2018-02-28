@@ -83,9 +83,7 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 		if (getSearchSupport()) {
 			inflater.inflate(R.menu.actions_search, menu);
 
-			SearchView searchView = ((SearchView) menu.findItem(R.id.search)
-					.getActionView()
-			);
+			SearchView searchView = ((SearchView) menu.findItem(R.id.search).getActionView());
 
 			searchView.setOnQueryTextListener(mSearchComposer);
 			searchView.setMaxWidth(500);
