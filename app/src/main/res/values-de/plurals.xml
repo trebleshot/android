@@ -1,2 +1,42 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">Diese Datei löschen?</item>
+	<item quantity="other">Diese %d Dateien löschen?</item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">Eine Datei wurde empfangen</item>
+	<item quantity="other">$d Dateien wurden empfangen</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">Eine Datei ausgewählt</item>
+	<item quantity="other">%d Dateien ausgewählt</item>
+</plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="one">Eine wartende Übertragung wird entfernt</item>
+	<item quantity="other">%d wartende Übertragungen werden entfernt</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="one">Eine Verbindung</item>
+	<item quantity="other">%d Verbindungen</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">Datei empfangen?</item>
+	<item quantity="other">%d Dateien empfangen?</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="one">Eine Datei</item>
+	<item quantity="other">$d Dateien</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">Vor einer Sekunde</item>
+	<item quantity="other">Vor %d Sekunden</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="one">Vor einer Minute</item>
+	<item quantity="other">Vor %d Minuten</item>
+</plurals>
+    <plurals name="text_fileDeletionCompleted">
+	<item quantity="one">Eine Datei gelöscht</item>
+	<item quantity="other">%d Dateien gelöscht</item>
+</plurals>
+</resources>
