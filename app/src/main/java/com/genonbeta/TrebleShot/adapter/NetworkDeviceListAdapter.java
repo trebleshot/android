@@ -41,18 +41,20 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
 
-		for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
-			if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
-				continue;
+		if (mFragment.getWifiManager().isWifiEnabled()) {
+			for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
+				if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
+					continue;
 
-			HotspotNetwork hotspotNetwork = new HotspotNetwork();
+				HotspotNetwork hotspotNetwork = new HotspotNetwork();
 
-			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-			hotspotNetwork.SSID = resultIndex.SSID;
-			hotspotNetwork.BSSID = resultIndex.BSSID;
-			hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
+				hotspotNetwork.lastUsageTime = System.currentTimeMillis();
+				hotspotNetwork.SSID = resultIndex.SSID;
+				hotspotNetwork.BSSID = resultIndex.BSSID;
+				hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
 
-			list.add(hotspotNetwork);
+				list.add(hotspotNetwork);
+			}
 		}
 
 		if (list.size() == 0 && mFragment.isConnectionSelfNetwork()) {
