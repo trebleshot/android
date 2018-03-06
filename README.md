@@ -33,12 +33,16 @@ Send and receive files over available connections without making any effort. Ple
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png)
 
 ## Supported languages
+* Chinese (Simplified)
 * Dutch
 * English
+* German
+* Italian
 * Japanese
 * Norwegian Bokmål
+* Russian
 * Turkish
 
-(Huge thanks to all language contributors)
+Huge thanks to all language contributors. If you want to contribute on any language, follow this [link](https://hosted.weblate.org/engage/TrebleShot/), create account, select your preferred languages and that's all.
 
 This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
