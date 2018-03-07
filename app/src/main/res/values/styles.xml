@@ -29,9 +29,10 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.GreyStatusBar" parent="@style/AppTheme.NoActionBar">
+    <style name="AppTheme.NoActionBar.GreyStatusBar" parent="@style/AppTheme">
         <item name="colorPrimaryDark">#bbb</item>
         <item name="colorPrimary">#bbb</item>
+        <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
@@ -40,6 +41,10 @@
 
     <style name="MyApp.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
         <item name="colorControlNormal">#FFF</item>
+    </style>
+
+    <style name="MyActionBar.ShareScreen" parent="@style/MyActionBar">
+        <item name="elevation">0dp</item>
     </style>
 
     <style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">

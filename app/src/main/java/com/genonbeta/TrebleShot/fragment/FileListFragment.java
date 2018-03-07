@@ -179,8 +179,8 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 
 		MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
 
-		if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-			shareOthers.setVisible(false);
+		//if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			//shareOthers.setVisible(false);
 
 		MenuItem ejectDirectory = menu.findItem(R.id.action_mode_file_eject_directory);
 

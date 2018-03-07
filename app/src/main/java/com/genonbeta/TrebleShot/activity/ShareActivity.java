@@ -82,7 +82,6 @@ public class ShareActivity extends Activity
 	private Interrupter mInterrupter = new Interrupter();
 	private IntentFilter mFilter = new IntentFilter();
 	private NetworkDeviceListFragment mDeviceListFragment;
-	private Toolbar mToolbar;
 	private FloatingActionButton mFAB;
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
@@ -107,12 +106,12 @@ public class ShareActivity extends Activity
 
 		setContentView(R.layout.activity_share);
 
-		mToolbar = findViewById(R.id.toolbar);
+		if (getSupportActionBar() != null)
+			getSupportActionBar().setTitle(R.string.text_shareWithTrebleshot);
+
 		mFAB = findViewById(R.id.content_fab);
 		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-
-		setSupportActionBar(mToolbar);
 
 		mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
@@ -678,10 +677,10 @@ public class ShareActivity extends Activity
 						{
 							getProgressDialog().dismiss();
 
-							if (mFiles.size() == 1)
-								mToolbar.setTitle(mFiles.get(0).getSelectableFriendlyName());
-							else if (mFiles.size() > 1)
-								mToolbar.setTitle((getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size())));
+							if (getSupportActionBar() != null && mFiles.size() > 0)
+								getSupportActionBar().setTitle(mFiles.size() == 1
+										? mFiles.get(0).getSelectableFriendlyName()
+										: getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
 
 							onRequestReady();
 						}

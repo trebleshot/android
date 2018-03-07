@@ -162,6 +162,8 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 			} catch (Throwable e) {
 				e.printStackTrace();
 				Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+
+				return false;
 			}
 		} else
 			return super.onActionMenuItemSelected(context, actionMode, item);
