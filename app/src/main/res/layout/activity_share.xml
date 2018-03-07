@@ -7,29 +7,12 @@
                                                  android:fitsSystemWindows="true"
                                                  tools:context=".activity.ShareActivity">
 
-    <RelativeLayout
-        android:id="@+id/content_main"
+    <fragment
+        android:id="@+id/activity_share_fragment"
+        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="@string/text_shareWithTrebleshot"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
-
-        <fragment
-            android:id="@+id/activity_share_fragment"
-            android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/toolbar"
-            android:tag="mainFragment"/>
-
-    </RelativeLayout>
+        android:layout_height="match_parent"
+        android:tag="mainFragment"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/content_fab"

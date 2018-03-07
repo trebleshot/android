@@ -57,7 +57,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.Generi
 					if (file.isDirectory() && mShowDirectories)
 						folders.add(new DirectoryHolder(file, mContext.getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
 					else if (file.isFile() && mShowFiles)
-						files.add(new FileHolder(file));
+						files.add(new FileHolder(getContext(), file));
 				}
 
 				Collections.sort(folders, getDefaultComparator());
@@ -246,7 +246,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.Generi
 
 	public static class FileHolder extends GenericFileHolder
 	{
-		public FileHolder(DocumentFile file)
+		public FileHolder(Context context, DocumentFile file)
 		{
 			super(file,
 					file.getName(),
@@ -254,7 +254,7 @@ public class FileListAdapter extends ShareableListAdapter<FileListAdapter.Generi
 					R.drawable.ic_insert_drive_file_white_24dp,
 					file.lastModified(),
 					file.length(),
-					file.getUri());
+					FileUtils.getSecureUriSilently(context, file));
 		}
 	}
 
