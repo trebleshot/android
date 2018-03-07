@@ -341,4 +341,9 @@
     <string name="butn_qrToggle">Veksle visning av QR-kode</string>
     <string name="text_notificationSettingsSummary">Åpne merknadsinnstillinger</string>
     <string name="text_notificationSettings">Merknadsinnstillinger</string>
+<string name="text_renameMultipleItems">Gi nytt navn til flere elementer</string>
+    <string name="text_rename">Gi nytt navn</string>
+    <string name="butn_copyHere">Kopier her</string>
+    <string name="text_qrAllowTrustZone">TrustZone for QR-kode</string>
+    <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
 </resources>

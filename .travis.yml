@@ -4,10 +4,10 @@ jdk:
 android:
   components:
     - tools
-    - build-tools-26.0.2
+    - build-tools-27.0.3
     - platform-tools
-    - android-26
-    - mExtra-android-m2repository
+    - android-27
+    - extra-android-m2repository
 
 script: ./gradlew -Dorg.gradle.jvmargs=-Xmx1536m assembleDebug lintDebug testDebugUnitTest
 
