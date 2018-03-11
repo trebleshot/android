@@ -14,4 +14,7 @@ script: ./gradlew -Dorg.gradle.jvmargs=-Xmx1536m assembleDebug lintDebug testDeb
 licenses:
   - '.+'
 
+before_install:
+  - yes | sdkmanager "platforms;android-27"
+
 
