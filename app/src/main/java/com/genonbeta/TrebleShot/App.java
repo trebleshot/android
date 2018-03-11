@@ -15,7 +15,7 @@ public class App extends Application
 	@Override
 	public void onCreate()
 	{
-			super.onCreate();
+		super.onCreate();
 
 		// assures that permissions are accessible after reboot or in any normal state
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {

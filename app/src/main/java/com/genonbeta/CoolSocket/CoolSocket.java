@@ -346,7 +346,7 @@ abstract public class CoolSocket
 
 			do {
 				if ((len = inputStream.read(buffer)) > 0) {
-					if (response.totalLength > 0) {
+					if (response.totalLength != -1) {
 						receivedMessage.write(buffer, 0, len);
 						receivedMessage.flush();
 					} else {
@@ -420,7 +420,7 @@ abstract public class CoolSocket
 			public SocketAddress remoteAddress;
 			public JSONObject headerIndex;
 			public String response;
-			public long totalLength;
+			public long totalLength = -1;
 
 			public Response()
 			{
