@@ -81,6 +81,7 @@ public class NetworkDeviceListFragment
 	private HotspotUtils mHotspotUtils;
 	private WifiManager mWifiManager;
 	private ConnectivityManager mConnectivityManager;
+	private LocationManager mLocationManager;
 	private MenuItem mMenuItemShowQR;
 	private boolean mShowHotspotInfo = false;
 	private boolean mWirelessEnableRequested = false;
@@ -98,6 +99,7 @@ public class NetworkDeviceListFragment
 		mHotspotUtils = HotspotUtils.getInstance(getContext());
 		mWifiManager = mHotspotUtils.getWifiManager();
 		mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
 		mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
 		mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
@@ -323,49 +325,6 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	public boolean checkLocationPermission()
-	{
-		if (Build.VERSION.SDK_INT < 23)
-			return false;
-
-		if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-								getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-										Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-							}
-						}
-					})
-					.show();
-
-			return false;
-		}
-
-		LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-
-		if (!locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-			createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-						}
-					})
-					.show();
-
-			return false;
-		}
-
-		return true;
-	}
-
 	public String getCleanNetworkName(String networkName)
 	{
 		if (networkName == null)
@@ -393,6 +352,11 @@ public class NetworkDeviceListFragment
 		return mWifiManager;
 	}
 
+	public boolean hasLocationPermission()
+	{
+		return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+	}
+
 	public boolean isConnectionSelfNetwork()
 	{
 		WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
@@ -410,6 +374,11 @@ public class NetworkDeviceListFragment
 			return hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
 
 		return hotspotNetwork.SSID.equals(getCleanNetworkName(getWifiManager().getConnectionInfo().getSSID()));
+	}
+
+	public boolean isLocationServiceEnabled()
+	{
+		return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 
 	public boolean isMobileDataActive()
@@ -454,7 +423,7 @@ public class NetworkDeviceListFragment
 						}
 					})
 					.show();
-		else if (checkLocationPermission())
+		else if (validateLocationPermission())
 			createSnackbar(R.string.mesg_scanningSelfHotspot)
 					.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
 					{
@@ -555,7 +524,7 @@ public class NetworkDeviceListFragment
 			return false;
 
 		if (conditional) {
-			if (Build.VERSION.SDK_INT >= 26 && !checkLocationPermission())
+			if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission())
 				return false;
 
 			if (Build.VERSION.SDK_INT >= 23
@@ -695,6 +664,47 @@ public class NetworkDeviceListFragment
 	public void setOnListClickListener(AbsListView.OnItemClickListener listener)
 	{
 		mClickListener = listener;
+	}
+
+	public boolean validateLocationPermission()
+	{
+		if (Build.VERSION.SDK_INT < 23)
+			return false;
+
+		if (!hasLocationPermission()) {
+			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
+					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+								getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+										Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+							}
+						}
+					})
+					.show();
+
+			return false;
+		}
+
+		if (!isLocationServiceEnabled()) {
+			createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
+					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View view)
+						{
+							startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+						}
+					})
+					.show();
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private class StatusReceiver extends BroadcastReceiver
