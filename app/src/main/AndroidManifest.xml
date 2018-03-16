@@ -23,7 +23,6 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/text_appName"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/text_appName"
@@ -31,10 +30,12 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
+
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -50,33 +51,30 @@
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
+
                 <data android:mimeType="*/*"/>
             </intent-filter>
+
             <meta-data
                 android:name="android.service.chooser.chooser_target_service"
                 android:value=".service.DeviceChooserService"/>
         </activity>
-
         <activity
             android:name=".activity.QRScannerActivity"
             android:clearTaskOnLaunch="true"
             android:stateNotNeeded="true"
             android:theme="@style/AppTheme.QRScannerTheme"
             android:windowSoftInputMode="stateAlwaysHidden"/>
-
         <activity
             android:name=".activity.FilePickerActivity"
             android:label="@string/text_fileExplorer"/>
-
         <activity
             android:name=".activity.TransactionActivity"
             android:label="@string/text_transactionViewer"
             android:theme="@style/AppTheme.NoActionBar"/>
-
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences"/>
-
         <activity
             android:name=".activity.TextEditorActivity"
             android:label="@string/text_textEditor"/>
@@ -86,16 +84,21 @@
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
+
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activity.AboutActivity"
+            android:label="@string/text_about"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"
             android:label="@string/text_communicationService"
             android:process=":transfer"/>
-
         <service
             android:name=".service.DeviceChooserService"
             android:label="@string/text_chooserTargetService"
@@ -104,9 +107,7 @@
                 <action android:name="android.service.chooser.ChooserTargetService"/>
             </intent-filter>
         </service>
-
-        <service
-            android:name=".service.DeviceScannerService">
+        <service android:name=".service.DeviceScannerService">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
                 <action android:name="genonbeta.intent.action.ADD_IP"/>
@@ -114,9 +115,9 @@
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </service>
-
-        <service android:name=".service.WorkerService"
-                 android:label="@string/text_workerService" />
+        <service
+            android:name=".service.WorkerService"
+            android:label="@string/text_workerService"/>
 
         <receiver
             android:name=".receiver.NetworkStatusReceiver"
@@ -128,7 +129,6 @@
                 <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE"/>
             </intent-filter>
         </receiver>
-
         <receiver
             android:name=".receiver.DialogEventReceiver"
             android:process=":transfer"/>
@@ -154,4 +154,5 @@
                 android:resource="@xml/provider_paths"/>
         </provider>
     </application>
+
 </manifest>

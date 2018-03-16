@@ -318,6 +318,12 @@ public class NetworkDeviceListFragment
 		showCustomView(false);
 	}
 
+	public boolean canReadScanResults()
+	{
+		return getWifiManager().isWifiEnabled()
+				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission() && isLocationServiceEnabled()));
+	}
+
 	public void checkRefreshing()
 	{
 		mSwipeRefreshLayout.setRefreshing(!DeviceScannerService
@@ -669,7 +675,7 @@ public class NetworkDeviceListFragment
 	public boolean validateLocationPermission()
 	{
 		if (Build.VERSION.SDK_INT < 23)
-			return false;
+			return true;
 
 		if (!hasLocationPermission()) {
 			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)

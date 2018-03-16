@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -20,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -68,12 +66,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
+	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
 	private SharedPreferences mPreferences;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
-	private GitHubUpdater mUpdater;
 	private Fragment mCurrentFragment;
 	private Fragment mFragmentDeviceList;
 	private Fragment mFragmentFileExplorer;
@@ -107,7 +105,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			toggle.syncState();
 		}
 
-		mUpdater = new GitHubUpdater(this, AppConfig.REPO_APP_UPDATE, R.style.AppTheme);
+		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
@@ -220,27 +218,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		} else if (R.id.menu_activity_main_share_text == item.getItemId()) {
 			changeFragment(mFragmentShareText);
 		} else if (R.id.menu_activity_main_about == item.getItemId()) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-			builder.setTitle(R.string.text_about);
-			builder.setMessage(R.string.text_aboutSummary);
-			builder.setNegativeButton(R.string.butn_close, null);
-			builder.setPositiveButton(R.string.butn_seeSourceCode, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.REPO_APP)));
-				}
-			});
-
-			builder.show();
+			startActivity(new Intent(this, AboutActivity.class));
 		} else if (R.id.menu_activity_main_send_application == item.getItemId()) {
 			sendThisApplication();
 		} else if (R.id.menu_activity_main_preferences == item.getItemId()) {
 			startActivity(new Intent(this, PreferencesActivity.class));
-		} else if (R.id.menu_activity_main_check_for_updates == item.getItemId()) {
-			mUpdater.checkForUpdates(true, null);
 		} else if (R.id.menu_activity_main_exit == item.getItemId()) {
 			stopService(new Intent(this, CommunicationService.class));
 			stopService(new Intent(this, DeviceScannerService.class));
@@ -326,7 +308,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private void highlightUpdater(String availableVersion)
 	{
-		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_check_for_updates);
+		MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_about);
 
 		item.setChecked(true);
 		item.setTitle(R.string.text_newVersionAvailable);

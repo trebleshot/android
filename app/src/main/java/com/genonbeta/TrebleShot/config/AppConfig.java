@@ -15,8 +15,12 @@ public class AppConfig
 			BUFFER_LENGTH_SMALL = 1024;
 
 	public final static String
-			REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases",
-			REPO_APP = "http://github.com/genonbeta/TrebleShot",
+			EMAIL_DEVELOPER = "genonbeta@gmail.com",
+			URI_REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases",
+			URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/genonbeta/TrebleShot/contributors",
+			URI_REPO_APP = "http://github.com/genonbeta/TrebleShot",
+			URI_GITHUB_PROFILE = "https://github.com/%s",
+			URI_TRANSLATE = "https://hosted.weblate.org/engage/TrebleShot/",
 			PREFIX_ACCESS_POINT = "TS_",
 			NETWORK_INTERFACE_WIFI = "wlan0",
 			NDS_COMM_SERVICE_NAME = "TSComm",

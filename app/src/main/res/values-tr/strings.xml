@@ -349,4 +349,6 @@
     <string name="butn_copyHere">Buraya kopyala</string>
     <string name="text_qrAllowTrustZone">QR kodu için GüvenliBölge</string>
     <string name="text_qrAllowTrustZoneSummary">QR kod bağlantıları için GüvenliBölge\'ye izin ver</string>
+    <string name="text_translateTrebleshot">Yerelleştirilmesine yardımcı olun</string>
+    <string name="text_contributors">Bu insanlar sayesinde mümkün oldu</string>
 </resources>

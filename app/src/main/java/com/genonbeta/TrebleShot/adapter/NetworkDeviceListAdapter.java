@@ -41,9 +41,7 @@ public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
 
-		if (mFragment.getWifiManager().isWifiEnabled()
-				&& mFragment.hasLocationPermission()
-				&& mFragment.isLocationServiceEnabled()) {
+		if (mFragment.canReadScanResults()) {
 			for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
 				if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
 					continue;
