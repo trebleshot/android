@@ -322,7 +322,7 @@
     <string name="text_listEmptyApp">Burada uygulama yok</string>
     <string name="text_listEmptyVideo">Burada video yok</string>
     <string name="text_listEmptyPendingTransfer">Bekleyen aktarımlarınız burada görünecek</string>
-    <string name="text_listEmptyTextStream">Yazdığınız ve aldıığınız şeyler burada görünecek</string>
+    <string name="text_listEmptyTextStream">Yazdığınız ve aldığınız metinler burada görünecek</string>
     <string name="text_listEmptyMusic">Burada hiç şarkı yok</string>
     <string name="text_internalStorage">Dahili depolama</string>
     <string name="text_restrictedAccessStorage">%s (sınırlı erişim)</string>
