@@ -434,7 +434,7 @@ public class CommunicationService extends Service
 		boolean isEnabled = !getHotspotUtils().isEnabled();
 		boolean overrideTrustZone = getPreferences().getBoolean("hotspot_trust", false);
 
-		// On Oreo devices, we will use platform specific code. Eat this old versions.
+		// On Oreo devices, we will use platform specific code.
 		if (overrideTrustZone && (!isEnabled || Build.VERSION.SDK_INT < 26))
 			updateServiceState(isEnabled);
 
@@ -732,8 +732,6 @@ public class CommunicationService extends Service
 
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
 					JSONObject currentReply = new JSONObject();
-
-
 
 					if (currentReply.has(Keyword.RESULT) && !currentReply.getBoolean(Keyword.RESULT))
 						break;
