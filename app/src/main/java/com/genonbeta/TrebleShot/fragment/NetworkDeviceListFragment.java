@@ -318,10 +318,10 @@ public class NetworkDeviceListFragment
 		showCustomView(false);
 	}
 
-	public boolean canReadScanResults()
+	public boolean canReadScanResults(Context context)
 	{
 		return getWifiManager().isWifiEnabled()
-				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission() && isLocationServiceEnabled()));
+				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission(context) && isLocationServiceEnabled()));
 	}
 
 	public void checkRefreshing()
@@ -358,9 +358,9 @@ public class NetworkDeviceListFragment
 		return mWifiManager;
 	}
 
-	public boolean hasLocationPermission()
+	public boolean hasLocationPermission(Context context)
 	{
-		return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+		return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	public boolean isConnectionSelfNetwork()
@@ -677,7 +677,7 @@ public class NetworkDeviceListFragment
 		if (Build.VERSION.SDK_INT < 23)
 			return true;
 
-		if (!hasLocationPermission()) {
+		if (!hasLocationPermission(getContext())) {
 			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
 					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
 					{

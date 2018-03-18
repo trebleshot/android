@@ -60,6 +60,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -702,6 +703,7 @@ public class CommunicationService extends Service
 		public SeamlessServer()
 		{
 			super(AppConfig.SERVER_PORT_SEAMLESS);
+			setSocketTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 		}
 
 		@Override
@@ -730,6 +732,11 @@ public class CommunicationService extends Service
 
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
 					JSONObject currentReply = new JSONObject();
+
+
+
+					if (currentReply.has(Keyword.RESULT) && !currentReply.getBoolean(Keyword.RESULT))
+						break;
 
 					try {
 						processHolder.transactionObject = new TransactionObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
@@ -778,22 +785,22 @@ public class CommunicationService extends Service
 						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 
 					activeConnection.reply(currentReply.toString());
-				} catch (TimeoutException e1) {
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					e1.printStackTrace();
-				} catch (JSONException e1) {
+				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
 			} finally {
 				try {
-					activeConnection.getSocket().close();
+					if (!activeConnection.getSocket().isClosed()) {
+						activeConnection.getSocket().getOutputStream().close();
+						activeConnection.getSocket().getInputStream().close();
+						activeConnection.getSocket().close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
-				if (processHolder.transferHandler != null)
-					processHolder.transferHandler.getExtra().notification.cancel();
+				if (processHolder.notification != null)
+					processHolder.notification.cancel();
 			}
 		}
 	}
@@ -876,17 +883,24 @@ public class CommunicationService extends Service
 					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag()))
 						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
 				}
+
+				activeConnection.reply(new JSONObject().put(Keyword.RESULT, false).toString());
 			} catch (Exception e) {
 				e.printStackTrace();
 				getNotificationHelper().notifyConnectionError(mTransfer, null);
 			} finally {
 				try {
-					if (activeConnection != null)
+					if (activeConnection != null && !activeConnection.getSocket().isClosed()) {
+						activeConnection.getSocket().getOutputStream().close();
+						activeConnection.getSocket().getInputStream().close();
 						activeConnection.getSocket().close();
+					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
+
+			Log.d(TAG, "We have exited");
 		}
 	}
 
@@ -951,6 +965,7 @@ public class CommunicationService extends Service
 				jsonObject.put(Keyword.TRANSFER_REQUEST_ID, handler.getExtra().transactionObject.requestId);
 				jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transactionObject.groupId);
 				jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, serverSocket.getLocalPort());
+				jsonObject.put(Keyword.RESULT, true);
 
 				long currentSize = handler.getExtra().currentFile.length();
 

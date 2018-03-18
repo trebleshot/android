@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ListFragment;
@@ -32,7 +34,6 @@ import velitasali.updatewithgithub.RemoteServer;
 
 public class GitHubContributorsListFragment extends ListFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.ContributorListAdapter>
 {
-
 	@Override
 	public ContributorListAdapter onAdapter()
 	{
@@ -62,6 +63,19 @@ public class GitHubContributorsListFragment extends ListFragment<GitHubContribut
 
 		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
 		setEmptyText(getString(R.string.mesg_somethingWentWrong));
+
+		getEmptyImage().setOnLongClickListener(new View.OnLongClickListener()
+		{
+			@Override
+			public boolean onLongClick(View v)
+			{
+				// Here we leave a message to those who are concerned
+				String ultimateMessage = new String(Base64.decode("Ik5lYnVsYSDwn4yMIiBtdXN0IHJlYWNoIEB2ZWxpdGFzYWxp", Base64.DEFAULT));
+				Toast.makeText(getContext(), ultimateMessage, Toast.LENGTH_SHORT).show();
+
+				return true;
+			}
+		});
 	}
 
 	@Override
