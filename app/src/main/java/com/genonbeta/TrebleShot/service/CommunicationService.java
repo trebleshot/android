@@ -10,6 +10,7 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -733,7 +734,7 @@ public class CommunicationService extends Service
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
 					JSONObject currentReply = new JSONObject();
 
-					if (currentReply.has(Keyword.RESULT) && !currentReply.getBoolean(Keyword.RESULT))
+					if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT))
 						break;
 
 					try {
@@ -880,9 +881,9 @@ public class CommunicationService extends Service
 
 					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag()))
 						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
-				}
 
-				activeConnection.reply(new JSONObject().put(Keyword.RESULT, false).toString());
+					activeConnection.reply(new JSONObject().put(Keyword.RESULT, false).toString());
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 				getNotificationHelper().notifyConnectionError(mTransfer, null);
