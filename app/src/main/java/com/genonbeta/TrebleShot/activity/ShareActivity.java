@@ -15,7 +15,6 @@ import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -298,21 +297,21 @@ public class ShareActivity extends Activity
 		runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
 		{
 			private boolean mConnected = false;
+			private boolean mConnectionToggled = false;
 			private long mStartTime = System.currentTimeMillis();
 			private String mRemoteAddress;
 
 			@Override
 			public void onRun()
 			{
-
 				while (mRemoteAddress == null) {
 					int passedTime = (int) (System.currentTimeMillis() - mStartTime);
 
 					if (!mDeviceListFragment.getWifiManager().isWifiEnabled()) {
 						if (!mDeviceListFragment.getWifiManager().setWifiEnabled(true))
 							break; // failed to start Wireless
-					} else if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork)) {
-						mDeviceListFragment.toggleConnection(hotspotNetwork);
+					} else if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork) && !mConnectionToggled) {
+						mConnectionToggled = mDeviceListFragment.toggleConnection(hotspotNetwork);
 					} else {
 						for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
 							if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
@@ -326,7 +325,7 @@ public class ShareActivity extends Activity
 						}
 					}
 
-					if (breakerCheck(passedTime))
+					if (interruptionCheck(passedTime))
 						break;
 				}
 
@@ -382,7 +381,7 @@ public class ShareActivity extends Activity
 				// We can't add dialog outside of the else statement as it may close other dialogs as well
 			}
 
-			private boolean breakerCheck(int passedTime)
+			private boolean interruptionCheck(int passedTime)
 			{
 				try {
 					Thread.sleep(1000);

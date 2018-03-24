@@ -12,6 +12,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
@@ -26,6 +28,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -331,6 +334,14 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
+	public boolean disableCurrentNetwork()
+	{
+		if (!isConnectedToAnyNetwork())
+			return false;
+
+		return getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+	}
+
 	public String getCleanNetworkName(String networkName)
 	{
 		if (networkName == null)
@@ -371,9 +382,14 @@ public class NetworkDeviceListFragment
 				&& getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
 	}
 
+	public boolean isConnectedToAnyNetwork()
+	{
+		return getWifiManager().getConnectionInfo() != null;
+	}
+
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
-		if (getWifiManager().getConnectionInfo() == null)
+		if (isConnectedToAnyNetwork())
 			return false;
 
 		if (hotspotNetwork.BSSID != null)
@@ -445,6 +461,9 @@ public class NetworkDeviceListFragment
 	public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
 		if (!isConnectedToNetwork(hotspotNetwork)) {
+			if (isConnectedToAnyNetwork())
+				disableCurrentNetwork();
+
 			WifiConfiguration config = new WifiConfiguration();
 
 			config.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
@@ -514,12 +533,11 @@ public class NetworkDeviceListFragment
 
 			getWifiManager().disconnect();
 			getWifiManager().enableNetwork(netId, true);
-			getWifiManager().reconnect();
 
-			return true;
+			return getWifiManager().reconnect();
 		}
 
-		getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+		disableCurrentNetwork();
 
 		return false;
 	}
