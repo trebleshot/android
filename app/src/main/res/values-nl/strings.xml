@@ -203,7 +203,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">Onbekend</string>
+    <string name="text_interfaceUnknown">Onbekende verbinding</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Een gokje wagen</string>
     <string name="butn_connectionList">Verbindingen</string>
