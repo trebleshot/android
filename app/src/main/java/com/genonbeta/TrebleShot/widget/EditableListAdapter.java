@@ -5,6 +5,7 @@ import android.content.Context;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.util.MathUtils;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,7 +18,7 @@ import java.util.Comparator;
 abstract public class EditableListAdapter<T extends Editable> extends ListAdapter<T>
 {
 	private EditableListFragment mFragment;
-	private PowerfulActionMode.SelectorConnection mSelectionConnection;
+	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private ArrayList<T> mItemList = new ArrayList<>();
 
 	public EditableListAdapter(Context context)
@@ -52,16 +53,14 @@ abstract public class EditableListAdapter<T extends Editable> extends ListAdapte
 								: compareTo.getComparableName().compareToIgnoreCase(toCompare.getComparableName());
 						break;
 					case R.id.actions_abs_editable_sort_by_date:
-						sortingResult = (int) (sortingAscending
-								? toCompare.getComparableDate() - compareTo.getComparableDate()
-								: compareTo.getComparableDate() - toCompare.getComparableDate()
-						);
+						sortingResult = sortingAscending
+								? MathUtils.compare(toCompare.getComparableDate(), compareTo.getComparableDate())
+								: MathUtils.compare(compareTo.getComparableDate(), toCompare.getComparableDate());
 						break;
 					case R.id.actions_abs_editable_sort_by_size:
-						sortingResult = (int) (sortingAscending
-								? toCompare.getComparableSize() - compareTo.getComparableSize()
-								: compareTo.getComparableSize() - toCompare.getComparableSize()
-						);
+						sortingResult = sortingAscending
+								? MathUtils.compare(toCompare.getComparableSize(), compareTo.getComparableSize())
+								: MathUtils.compare(compareTo.getComparableSize(), toCompare.getComparableSize());
 						break;
 				}
 

@@ -153,7 +153,7 @@ abstract public class CoolSocket
 	protected boolean respondRequest(final Socket socket)
 	{
 		if (this.getConnections().size() <= this.mMaxConnections || this.mMaxConnections == 0) {
-			final ActiveConnection connectionHandler = new ActiveConnection(socket);
+			final ActiveConnection connectionHandler = new ActiveConnection(socket, CoolSocket.this.mSocketTimeout);
 
 			synchronized (getConnections()) {
 				getConnections().add(connectionHandler);

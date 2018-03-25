@@ -318,10 +318,10 @@ public class NetworkDeviceListFragment
 		showCustomView(false);
 	}
 
-	public boolean canReadScanResults()
+	public boolean canReadScanResults(Context context)
 	{
 		return getWifiManager().isWifiEnabled()
-				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission() && isLocationServiceEnabled()));
+				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission(context) && isLocationServiceEnabled()));
 	}
 
 	public void checkRefreshing()
@@ -329,6 +329,14 @@ public class NetworkDeviceListFragment
 		mSwipeRefreshLayout.setRefreshing(!DeviceScannerService
 				.getDeviceScanner()
 				.isScannerAvailable());
+	}
+
+	public boolean disableCurrentNetwork()
+	{
+		if (!isConnectedToAnyNetwork())
+			return false;
+
+		return getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
 	}
 
 	public String getCleanNetworkName(String networkName)
@@ -358,9 +366,9 @@ public class NetworkDeviceListFragment
 		return mWifiManager;
 	}
 
-	public boolean hasLocationPermission()
+	public boolean hasLocationPermission(Context context)
 	{
-		return ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+		return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
 	}
 
 	public boolean isConnectionSelfNetwork()
@@ -371,9 +379,14 @@ public class NetworkDeviceListFragment
 				&& getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
 	}
 
+	public boolean isConnectedToAnyNetwork()
+	{
+		return getWifiManager().getConnectionInfo() != null;
+	}
+
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
-		if (getWifiManager().getConnectionInfo() == null)
+		if (isConnectedToAnyNetwork())
 			return false;
 
 		if (hotspotNetwork.BSSID != null)
@@ -445,6 +458,9 @@ public class NetworkDeviceListFragment
 	public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
 		if (!isConnectedToNetwork(hotspotNetwork)) {
+			if (isConnectedToAnyNetwork())
+				disableCurrentNetwork();
+
 			WifiConfiguration config = new WifiConfiguration();
 
 			config.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
@@ -514,12 +530,11 @@ public class NetworkDeviceListFragment
 
 			getWifiManager().disconnect();
 			getWifiManager().enableNetwork(netId, true);
-			getWifiManager().reconnect();
 
-			return true;
+			return getWifiManager().reconnect();
 		}
 
-		getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+		disableCurrentNetwork();
 
 		return false;
 	}
@@ -677,7 +692,7 @@ public class NetworkDeviceListFragment
 		if (Build.VERSION.SDK_INT < 23)
 			return true;
 
-		if (!hasLocationPermission()) {
+		if (!hasLocationPermission(getContext())) {
 			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
 					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
 					{

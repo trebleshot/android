@@ -43,8 +43,9 @@ import java.util.HashMap;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-	private ArrayList<NetworkDevice.Connection> mConnections = new ArrayList<>();
-	private ArrayList<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
+	final private ArrayList<NetworkDevice.Connection> mConnections = new ArrayList<>();
+	final private ArrayList<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
+
 	private AlertDialog mDialog;
 	private AccessDatabase mDatabase;
 	private NetworkDevice mNetworkDevice;
@@ -67,7 +68,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 			@Override
 			public void onClick(DialogInterface dialog, int which)
 			{
-				mDeviceSelectedListener.onDeviceSelected(mConnections.get(which), mConnections);
+				ArrayList<NetworkDevice.Connection> connections = getConnections();
+				mDeviceSelectedListener.onDeviceSelected(connections.get(which), connections);
 			}
 		});
 
@@ -78,12 +80,19 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 			setPositiveButton(R.string.text_refresh, null);
 	}
 
+	public synchronized ArrayList<NetworkDevice.Connection> getConnections()
+	{
+		return new ArrayList<>(mConnections);
+	}
+
 	@Override
 	public AlertDialog show()
 	{
 		mAdapter.notifyDataSetChanged();
 
-		if (mConnections.size() > 0) {
+		final ArrayList<NetworkDevice.Connection> tmpList = getConnections();
+
+		if (tmpList.size() > 0) {
 			setMessage(null);
 			setNeutralButton(R.string.butn_feelLucky, null);
 		} else
@@ -115,7 +124,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 				final Interrupter interrupter = new Interrupter();
 
 				feelLucky.setTitle(R.string.text_feelLuckyOngoing);
-				feelLucky.setMax(mConnections.size());
+				feelLucky.setMax(tmpList.size());
 				feelLucky.setCancelable(false);
 				feelLucky.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 				feelLucky.setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
@@ -140,7 +149,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 						@SuppressLint("UseSparseArrays") final HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
 
-						for (final NetworkDevice.Connection connection : mConnections) {
+						for (final NetworkDevice.Connection connection : tmpList) {
 							if (interrupter.interrupted())
 								break;
 
@@ -221,7 +230,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 										@Override
 										public void run()
 										{
-											mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), mConnections);
+											mDeviceSelectedListener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), tmpList);
 										}
 									});
 
@@ -333,16 +342,20 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 		}
 
 		@Override
-		public void notifyDataSetChanged()
+		public synchronized void notifyDataSetChanged()
 		{
-			mConnections.clear();
-			mNetworkInterfaces.clear();
+			notifyDataSetChanged(mConnections, mNetworkInterfaces);
+		}
 
-			mConnections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+		public void notifyDataSetChanged(ArrayList<NetworkDevice.Connection> connections, ArrayList<AddressedInterface> addressedInterfaces)
+		{
+			connections.clear();
+			connections.addAll(mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.deviceId)
 					.setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class));
 
-			mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
+			addressedInterfaces.clear();
+			addressedInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
 
 			super.notifyDataSetChanged();
 		}

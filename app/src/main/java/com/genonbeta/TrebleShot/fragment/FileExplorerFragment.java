@@ -135,12 +135,19 @@ public class FileExplorerFragment
 			switch (requestCode) {
 				case REQUEST_WRITE_ACCESS:
 					Uri pathUri = data.getData();
-					String pathString = pathUri.toString();
-					String title = pathString.substring(pathString.lastIndexOf(File.separator));
 
-					getDatabase().publish(new WritablePathObject(title, pathUri));
+					if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
+						String pathString = pathUri.toString();
+						String title = pathString.substring(pathString.lastIndexOf(File.separator));
 
-					requestPath(null);
+						getDatabase().publish(new WritablePathObject(title, pathUri));
+
+						if (getContext() != null)
+							getContext().getContentResolver().takePersistableUriPermission(pathUri,
+									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+						requestPath(null);
+					}
 					break;
 			}
 	}
