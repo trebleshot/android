@@ -821,3 +821,4 @@ public class ShareActivity extends Activity
 		}
 	}
 }
+
