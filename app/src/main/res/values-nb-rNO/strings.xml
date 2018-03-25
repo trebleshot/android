@@ -315,7 +315,7 @@
     <string name="butn_queueCounted">Kø (%d)</string>
     <string name="text_previewThenProceedNotice">For å kunne fortsette, velg utvalgene dine ved å trykke på \"Kø\"-knappen</string>
     <string name="mesg_updateDownloadComplete">Trykk for å installere oppgraderingen</string>
-    <string name="text_listEmptyFiles">Ingen filer her!</string>
+    <string name="text_listEmptyFiles">Ingen filer her</string>
     <string name="text_listEmptyImage">Ingen bilder her</string>
     <string name="text_listEmptyApp">Ingen programmer her</string>
     <string name="text_listEmptyVideo">Ingen videoer her</string>
