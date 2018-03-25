@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_navigationDrawerOpen">Seitennavigation öffnen</string>
+<resources>
+    <string name="text_navigationDrawerOpen">Seitennavigation öffnen</string>
     <string name="text_navigationDrawerClose">Seitennavigation schließen</string>
     <string name="text_preferences">Einstellungen</string>
     <string name="mesg_connectionFailure">Verbindung fehlgeschlagen</string>
@@ -324,6 +325,6 @@
     <string name="butn_copyHere">Hierher kopieren</string>
     <string name="text_qrAllowTrustZone">TrustZone für QR Code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone für QR Code Verbindungen erlauben</string>
-<string name="text_translateTrebleshot">Helfen Sie uns übersetzen</string>
+    <string name="text_translateTrebleshot">Helfen Sie uns übersetzen</string>
     <string name="text_contributors">Ermöglicht durch diese Menschen</string>
 </resources>

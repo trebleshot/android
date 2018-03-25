@@ -51,6 +51,7 @@
     <string name="mesg_deleteFileStarted">ファイルが削除されます</string>
     <string name="butn_cancel">キャンセル</string>
     <string name="text_refresh">更新</string>
+    <string name="butn_refresh">更新</string>
     <string name="butn_shareTrebleshot">このアプリを共有</string>
     <string name="text_about">アプリについて</string>
     <string name="text_clearList">リストをクリア</string>
@@ -93,8 +94,8 @@
     <string name="text_music">音楽</string>
     <string name="text_video">ビデオ</string>
     <string name="text_showSystemApps">システムアプリを表示</string>
+    <string name="butn_showSystemApps">システムアプリを表示</string>
     <string name="text_showSystemAppsSummary">共有画面にシステムアプリを表示します</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">許可されていません</string>
     <string name="text_connectionProblem">接続の問題が発生しました</string>
     <string name="text_communicationProblem">通信の問題が発生しました</string>
@@ -165,11 +166,10 @@
     <string name="text_fixFileSaveLocation">保存場所を修正</string>
     <string name="text_fileConflictNoChoice">%s ファイル用に選択したフォルダーは現在利用できません。現在のファイル名がデフォルトフォルダー内のファイルと競合します。同じファイルの部分的に受信したバージョンの場合は \'残す\' を選択するか、\'新しいファイル\' を選択して新しいファイルを生成します</string>
     <string name="text_fileConflictUseDefault">%s ファイル用に選択したフォルダーは現在利用できません。デフォルトフォルダーを使用します</string>
-<string name="mesg_currentPathUnavailable">このフォルダーは使用できません。別のフォルダーを選択してください。</string>
+    <string name="mesg_currentPathUnavailable">このフォルダーは使用できません。別のフォルダーを選択してください。</string>
     <string name="text_defaultFolder">デフォルトのフォルダー</string>
     <string name="text_storage">ストレージ</string>
     <string name="text_shareFiles">ファイルを受信</string>
-<string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">ディレクトリが正常に保存されました</string>
     <string name="butn_search">検索</string>
     <string name="butn_changeConnection">接続の変更</string>
@@ -197,4 +197,4 @@
     <string name="text_flagResume">再開</string>
     <string name="text_unknown">不明</string>
     <string name="text_importantNotice">重要なお知らせ</string>
-    </resources>
+</resources>

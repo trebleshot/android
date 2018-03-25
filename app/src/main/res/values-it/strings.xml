@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_navigationDrawerOpen">Apri barra laterale</string>
+<resources>
+    <string name="text_navigationDrawerOpen">Apri barra laterale</string>
     <string name="text_navigationDrawerClose">Chiudi barra laterale</string>
     <string name="text_preferences">Preferenze</string>
     <string name="text_connected">Connesso</string>
@@ -41,6 +42,7 @@
     <string name="text_deleteConfirm">Conferma eliminazione</string>
     <string name="butn_cancel">Annulla</string>
     <string name="text_refresh">Ricarica</string>
+    <string name="butn_refresh">Ricarica</string>
     <string name="butn_shareTrebleshot">Condividi questa app</string>
     <string name="text_about">Informazioni</string>
     <string name="text_clearList">Cancella la lista</string>
@@ -82,7 +84,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Mostra applicazioni di sistema</string>
     <string name="text_showSystemAppsSummary">Mostra applicazioni di sistema nella sezione \"Condividi\"</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">Mostra applicazioni di sistema</string>
     <string name="mesg_notAllowed">Non sei autorizzato</string>
     <string name="text_connectionProblem">Problemi di connessione</string>
     <string name="text_communicationProblem">problemi di comunicazione</string>
@@ -148,7 +150,6 @@
     <string name="text_defaultFolder">Cartella principale</string>
     <string name="text_storage">Memoria</string>
     <string name="text_shareFiles">Condividi files</string>
-    <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">La cartella è stata salvata</string>
     <string name="butn_search">Cerca</string>
     <string name="butn_changeConnection">Cambia connessione</string>
@@ -179,7 +180,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">Sconosciuti</string>
     <string name="text_shareTextShort">Testo</string>
     <string name="butn_feelLucky">Mi sento fortunato</string>
     <string name="butn_connectionList">Connessioni</string>
@@ -274,4 +275,4 @@
     <string name="text_listEmptyApp">Nessuna applicazione</string>
     <string name="text_listEmptyVideo">Nessun video</string>
     <string name="text_listEmptyPendingTransfer">I trasferimenti in attesa appariranno qui</string>
-    </resources>
+</resources>

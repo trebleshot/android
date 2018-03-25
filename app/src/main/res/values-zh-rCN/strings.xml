@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_preferences">设置</string>
+<resources>
+    <string name="text_preferences">设置</string>
     <string name="text_connected">已连接</string>
     <string name="text_invited">已邀请</string>
     <string name="mesg_connectionFailure">连接失败</string>
@@ -162,4 +163,4 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">检查破损的文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-    </resources>
+</resources>

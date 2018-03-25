@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_appName">TrebleShot</string>
+<resources>
+    <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Åpne navigasjonsskuff</string>
     <string name="text_navigationDrawerClose">Lukk navigasjonsskuff</string>
     <string name="text_preferences">Innstillinger</string>
@@ -50,6 +51,7 @@
     <string name="mesg_deleteFileStarted">Filer vil bli slettet</string>
     <string name="butn_cancel">Avbryt</string>
     <string name="text_refresh">Gjenoppfrisk</string>
+    <string name="butn_refresh">Gjenoppfrisk</string>
     <string name="butn_shareTrebleshot">Del dette programmet</string>
     <string name="text_about">Om</string>
     <string name="text_clearList">Tøm listen</string>
@@ -93,7 +95,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Vis systemprogrammer</string>
     <string name="text_showSystemAppsSummary">Vis systemprogrammer i seksjonen for deling</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">Vis systemprogrammer</string>
     <string name="mesg_notAllowed">Du har ikke tilgang til</string>
     <string name="text_connectionProblem">Tilkoblingsproblem</string>
     <string name="text_communicationProblem">Kommunikasjonsproblem</string>
@@ -168,7 +170,6 @@
     <string name="text_defaultFolder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>
     <string name="text_shareFiles">Motta filer</string>
-    <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">Mappen har blitt lagret</string>
     <string name="butn_search">Søk</string>
     <string name="butn_changeConnection">Endre tilkobling</string>
@@ -202,7 +203,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Blåtann</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">Ukjent</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Jeg prøver lykken</string>
     <string name="butn_connectionList">Tilkoblinger</string>
@@ -223,7 +224,7 @@
     <string name="text_savePath">Lagringssti</string>
     <string name="text_transactionGroupDetails">Gruppedetaljer for overføring</string>
     <string name="text_usedConnection">Brukt tilkobling</string>
-<string name="text_flagRemoved">Fjernet</string>
+    <string name="text_flagRemoved">Fjernet</string>
     <string name="butn_copyToClipboard">Kopier til utklippstavle</string>
     <string name="text_communicationServiceRunning">TrebleShot kan dele filer nå</string>
     <string name="text_communicationServiceStop">Trykk for å sluttføre økt</string>
@@ -324,7 +325,7 @@
     <string name="text_listEmptyMusic">Ingen sanger her</string>
     <string name="text_internalStorage">Internt lagringsmedium</string>
     <string name="text_restrictedAccessStorage">%s (begrenset tilgang)</string>
-<string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
+    <string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">Listen vil bli gjenoppfrisket når tilgjengelig</string>
     <string name="mesg_errorReadFolder">\"%s\"-mappen kan ikke leses</string>
     <string name="butn_mountDirectory">Monteringsmappe</string>
@@ -341,12 +342,12 @@
     <string name="butn_qrToggle">Veksle visning av QR-kode</string>
     <string name="text_notificationSettingsSummary">Åpne merknadsinnstillinger</string>
     <string name="text_notificationSettings">Merknadsinnstillinger</string>
-<string name="text_renameMultipleItems">Gi nytt navn til flere elementer</string>
+    <string name="text_renameMultipleItems">Gi nytt navn til flere elementer</string>
     <string name="text_rename">Gi nytt navn</string>
+    <string name="butn_rename">Gi nytt navn</string>
     <string name="butn_copyHere">Kopier her</string>
     <string name="text_qrAllowTrustZone">TrustZone for QR-kode</string>
     <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
-<string name="butn_rename">@string/text_rename</string>
     <string name="text_translateTrebleshot">Hjelp til i oversettelsen</string>
     <string name="text_contributors">Muliggjort av disse menneskene</string>
 </resources>
