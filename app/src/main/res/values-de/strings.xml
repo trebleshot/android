@@ -324,4 +324,6 @@
     <string name="butn_copyHere">Hierher kopieren</string>
     <string name="text_qrAllowTrustZone">TrustZone für QR Code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone für QR Code Verbindungen erlauben</string>
+<string name="text_translateTrebleshot">Helfen Sie uns übersetzen</string>
+    <string name="text_contributors">Ermöglicht durch diese Menschen</string>
 </resources>
