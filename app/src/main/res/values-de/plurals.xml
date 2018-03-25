@@ -5,7 +5,7 @@
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
 	<item quantity="one">Eine Datei wurde empfangen</item>
-	<item quantity="other">$d Dateien wurden empfangen</item>
+	<item quantity="other">%d Dateien wurden empfangen</item>
 </plurals>
     <plurals name="text_itemSelected">
 	<item quantity="one">Eine Datei ausgewählt</item>
@@ -25,7 +25,7 @@
 </plurals>
     <plurals name="text_files">
 	<item quantity="one">Eine Datei</item>
-	<item quantity="other">$d Dateien</item>
+	<item quantity="other">%d Dateien</item>
 </plurals>
     <plurals name="text_secondsAgo">
 	<item quantity="one">Vor einer Sekunde</item>
