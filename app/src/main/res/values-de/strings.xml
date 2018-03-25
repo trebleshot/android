@@ -79,7 +79,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">System Apps zeigen</string>
     <string name="text_showSystemAppsSummary">System Apps in \"Teilen\" Sektion zeigen</string>
-    <string name="butn_showSystemApps">\@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">Nicht erlaubt</string>
     <string name="text_connectionProblem">Verbindungsproblem</string>
     <string name="text_communicationProblem">Übertragungsproblem</string>
@@ -147,7 +147,7 @@
     <string name="text_defaultFolder">Standard Ordner</string>
     <string name="text_storage">Speicher</string>
     <string name="text_shareFiles">Dateien teilen</string>
-    <string name="butn_refresh">\@string/text_refresh</string>
+    <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">Verzeichnis wurde gespeichert</string>
     <string name="butn_search">Suchen</string>
     <string name="butn_changeConnection">Verbindung ändern</string>
@@ -179,7 +179,7 @@
     <string name="text_interfaceWireless">WLAN</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">\@string/text_unknown</string>
+    <string name="text_interfaceUnknown">@string/text_unknown</string>
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Auf gut Glück</string>
     <string name="butn_connectionList">Verbindungen</string>
@@ -320,7 +320,7 @@
     <string name="text_notificationSettings">Benachrichtigungseinstellungen</string>
     <string name="text_renameMultipleItems">Mehrfachumbenennung</string>
     <string name="text_rename">Umbenennen</string>
-    <string name="butn_rename">\@string/text_rename</string>
+    <string name="butn_rename">@string/text_rename</string>
     <string name="butn_copyHere">Hierher kopieren</string>
     <string name="text_qrAllowTrustZone">TrustZone für QR Code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone für QR Code Verbindungen erlauben</string>

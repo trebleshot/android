@@ -169,7 +169,7 @@
     <string name="text_defaultFolder">デフォルトのフォルダー</string>
     <string name="text_storage">ストレージ</string>
     <string name="text_shareFiles">ファイルを受信</string>
-<string name="butn_refresh">\@string/text_refresh</string>
+<string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">ディレクトリが正常に保存されました</string>
     <string name="butn_search">検索</string>
     <string name="butn_changeConnection">接続の変更</string>

@@ -93,7 +93,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Vis systemprogrammer</string>
     <string name="text_showSystemAppsSummary">Vis systemprogrammer i seksjonen for deling</string>
-    <string name="butn_showSystemApps">\@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
     <string name="mesg_notAllowed">Du har ikke tilgang til</string>
     <string name="text_connectionProblem">Tilkoblingsproblem</string>
     <string name="text_communicationProblem">Kommunikasjonsproblem</string>
@@ -168,7 +168,7 @@
     <string name="text_defaultFolder">Forvalgt mappe</string>
     <string name="text_storage">Lagring</string>
     <string name="text_shareFiles">Motta filer</string>
-    <string name="butn_refresh">\@string/text_refresh</string>
+    <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">Mappen har blitt lagret</string>
     <string name="butn_search">Søk</string>
     <string name="butn_changeConnection">Endre tilkobling</string>
@@ -202,7 +202,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Blåtann</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">\@string/text_unknown</string>
+    <string name="text_interfaceUnknown">@string/text_unknown</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Jeg prøver lykken</string>
     <string name="butn_connectionList">Tilkoblinger</string>
@@ -346,7 +346,7 @@
     <string name="butn_copyHere">Kopier her</string>
     <string name="text_qrAllowTrustZone">TrustZone for QR-kode</string>
     <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
-<string name="butn_rename">\@string/text_rename</string>
+<string name="butn_rename">@string/text_rename</string>
     <string name="text_translateTrebleshot">Hjelp til i oversettelsen</string>
     <string name="text_contributors">Muliggjort av disse menneskene</string>
 </resources>
