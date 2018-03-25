@@ -93,7 +93,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Sistem uygulamalarını göster</string>
     <string name="text_showSystemAppsSummary">İşaretlenirse paylaş ekranında gösterilir</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">Vars. uyglm. göster</string>
     <string name="mesg_notAllowed">İzniniz yok</string>
     <string name="text_connectionProblem">Bağlantı sorunu</string>
     <string name="text_communicationProblem">Haberleşme sorunu</string>
@@ -202,7 +202,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">Bilinmeyen bağlantı</string>
     <string name="text_shareTextShort">Metin</string>
     <string name="butn_feelLucky">Yerime seç</string>
     <string name="butn_connectionList">Bağlantılar</string>
@@ -345,7 +345,7 @@
     <string name="text_notificationSettings">Bildirim ayarları</string>
     <string name="text_renameMultipleItems">Çoklu dosya yeniden adlandır</string>
     <string name="text_rename">Yeniden adlandır</string>
-    <string name="butn_rename">@string/text_rename</string>
+    <string name="butn_rename">Yeniden adlandır</string>
     <string name="butn_copyHere">Buraya kopyala</string>
     <string name="text_qrAllowTrustZone">QR kodu için GüvenliBölge</string>
     <string name="text_qrAllowTrustZoneSummary">QR kod bağlantıları için GüvenliBölge\'ye izin ver</string>
