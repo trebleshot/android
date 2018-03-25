@@ -49,6 +49,7 @@
     <string name="text_deleteConfirm">Confirm deletion</string>
     <string name="butn_cancel">Cancel</string>
     <string name="text_refresh">Refresh</string>
+    <string name="butn_refresh">Refresh</string>
     <string name="butn_shareTrebleshot">Share this app</string>
     <string name="text_about">About</string>
     <string name="text_clearList">Clear the list</string>
@@ -59,6 +60,7 @@
     <string name="text_pendingTransfersOfDevice">Pending queue - %s</string>
     <string name="butn_pendingTransfers">Queue</string>
     <string name="butn_shareWithTrebleshot">Share with TrebleShot</string>
+    <string name="text_shareWithTrebleshot" translatable="false">@string/butn_shareWithTrebleshot</string>
     <string name="mesg_somethingWentWrong">Something went wrong</string>
     <string name="text_findDevicesHint">No familiar devices</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
@@ -89,7 +91,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Show system apps</string>
     <string name="text_showSystemAppsSummary">Show system apps in \"Share\" section</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">Show system apps</string>
     <string name="mesg_notAllowed">You are not allowed</string>
     <string name="text_connectionProblem">Connection problem</string>
     <string name="text_communicationProblem">Communication problem</string>
@@ -155,7 +157,6 @@
     <string name="text_defaultFolder">Default Folder</string>
     <string name="text_storage">Storage</string>
     <string name="text_shareFiles">Share files</string>
-    <string name="butn_refresh">@string/text_refresh</string>
     <string name="mesg_pathSaved">The directory has been saved</string>
     <string name="butn_search">Search</string>
     <string name="butn_changeConnection">Change connection</string>
@@ -187,7 +188,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">Unknown connection</string>
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Feeling lucky</string>
     <string name="butn_connectionList">Connections</string>
@@ -245,7 +246,6 @@
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot hotspot</string>
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
-    <string name="text_shareWithTrebleshot" translatable="false">@string/butn_shareWithTrebleshot</string>
     <string name="butn_checkAll">Check all</string>
     <string name="butn_undoAll">Undo all</string>
     <string name="text_previewAndEditList"><![CDATA[Preview & edit list]]></string>
@@ -332,7 +332,7 @@
     <string name="text_notificationSettings">Notification settings</string>
     <string name="text_renameMultipleItems">Rename multiple items</string>
     <string name="text_rename">Rename</string>
-    <string name="butn_rename">@string/text_rename</string>
+    <string name="butn_rename">Rename</string>
     <string name="butn_copyHere">Copy here</string>
     <string name="text_qrAllowTrustZone">TrustZone for QR Code</string>
     <string name="text_qrAllowTrustZoneSummary">Allow TrustZone for QR Code connections</string>
