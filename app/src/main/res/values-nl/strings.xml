@@ -94,7 +94,7 @@
     <string name="text_video">Video</string>
     <string name="text_showSystemApps">Systeemapps weergeven</string>
     <string name="text_showSystemAppsSummary">Systeemapps weergeven in deel-sectie</string>
-    <string name="butn_showSystemApps">@string/text_showSystemApps</string>
+    <string name="butn_showSystemApps">Systeemapps weergeven</string>
     <string name="mesg_notAllowed">U heeft geen toestemming</string>
     <string name="text_connectionProblem">Verbindingsprobleem</string>
     <string name="text_communicationProblem">Communicatieprobleem</string>
@@ -169,7 +169,7 @@
     <string name="text_defaultFolder">Standaard map</string>
     <string name="text_storage">Opslag</string>
     <string name="text_shareFiles">Bestanden ontvangen</string>
-<string name="butn_refresh">@string/text_refresh</string>
+<string name="butn_refresh">Verversen</string>
     <string name="mesg_pathSaved">De map is opgeslagen</string>
     <string name="butn_search">Zoeken</string>
     <string name="butn_changeConnection">Verbinding wijzigen</string>
@@ -203,7 +203,7 @@
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
-    <string name="text_interfaceUnknown">@string/text_unknown</string>
+    <string name="text_interfaceUnknown">Onbekend</string>
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Een gokje wagen</string>
     <string name="butn_connectionList">Verbindingen</string>
@@ -347,7 +347,7 @@
     <string name="text_notificationSettings">Meldingsinstellingen</string>
 <string name="text_renameMultipleItems">Meerdere itemnamen wijzigen</string>
     <string name="text_rename">Naam wijzigen</string>
-    <string name="butn_rename">@string/text_rename</string>
+    <string name="butn_rename">Naam wijzigen</string>
     <string name="butn_copyHere">Hierheen kopiëren</string>
     <string name="text_qrAllowTrustZone">TrustZone voor QR-code</string>
     <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
