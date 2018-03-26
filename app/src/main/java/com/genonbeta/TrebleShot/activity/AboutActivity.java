@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
@@ -98,6 +99,11 @@ public class AboutActivity extends AppCompatActivity
 						highlightUpdater(versionName);
 				}
 			});
+
+		GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
+
+		if (contributorsListFragment != null)
+				contributorsListFragment.getListView().setNestedScrollingEnabled(false);
 	}
 
 	private void highlightUpdater(String availableVersion)

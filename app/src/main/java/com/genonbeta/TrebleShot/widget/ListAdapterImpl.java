@@ -19,8 +19,6 @@ public interface ListAdapterImpl<T>
 
 	void onUpdate(ArrayList<T> passedItem);
 
-	AsyncTaskLoader<ArrayList<T>> createLoader();
-
 	Context getContext();
 
 	int getCount();

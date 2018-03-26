@@ -1,10 +1,12 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,6 +76,16 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 	}
 
 	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+
+		if (getListView() != null
+				&& getListView().getId() != R.id.customListFragment_listView)
+			getListView().setId(R.id.customListFragment_listView);
+	}
+
+	@Override
 	public void onActivityCreated(@Nullable Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
@@ -86,12 +98,19 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 
 	protected abstract void onEnsureList();
 
+	protected abstract Z onListView(View mainContainer, ViewGroup listViewContainer);
+
 	public abstract boolean onSetListAdapter(E adapter);
 
 	public abstract Z getListView();
 
 	protected void onListRefreshed()
 	{
+	}
+
+	public AsyncTaskLoader<ArrayList<T>> createLoader()
+	{
+		return new ListLoader<>(mAdapter);
 	}
 
 	protected Snackbar createSnackbar(int resId, Object... objects)
@@ -259,7 +278,7 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 			if (mAdapter.getCount() == 0)
 				setListShown(false);
 
-			return mAdapter.createLoader();
+			return createLoader();
 		}
 
 		@Override
@@ -311,6 +330,30 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 				mReloadRequested = true;
 
 			return true;
+		}
+	}
+
+	public static class ListLoader<G> extends AsyncTaskLoader<ArrayList<G>>
+	{
+		private ListAdapterImpl<G> mAdapter;
+
+		public ListLoader(ListAdapterImpl<G> adapter)
+		{
+			super(adapter.getContext());
+			mAdapter = adapter;
+		}
+
+		@Override
+		protected void onStartLoading()
+		{
+			super.onStartLoading();
+			forceLoad();
+		}
+
+		@Override
+		public ArrayList<G> loadInBackground()
+		{
+			return mAdapter.onLoad();
 		}
 	}
 }

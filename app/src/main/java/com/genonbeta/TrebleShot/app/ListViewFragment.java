@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.AsyncTaskLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.widget.ListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.ListViewAdapter;
+
+import java.util.ArrayList;
 
 /**
  * created by: veli
@@ -58,11 +62,10 @@ abstract public class ListViewFragment<T, E extends ListViewAdapter<T>> extends 
 		return view;
 	}
 
+	@Override
 	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
 		ListView listView = new ListView(getContext());
-
-		listView.setId(R.id.customListFragment_listView);
 
 		listView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));

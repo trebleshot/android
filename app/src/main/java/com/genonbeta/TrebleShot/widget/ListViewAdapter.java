@@ -31,12 +31,6 @@ abstract public class ListViewAdapter<T>
 		notifyDataSetChanged();
 	}
 
-	@Override
-	public AsyncTaskLoader<ArrayList<T>> createLoader()
-	{
-		return new Loader<>(this);
-	}
-
 	public Context getContext()
 	{
 		return mContext;
@@ -45,29 +39,5 @@ abstract public class ListViewAdapter<T>
 	public LayoutInflater getInflater()
 	{
 		return mInflater;
-	}
-
-	public static class Loader<E> extends AsyncTaskLoader<ArrayList<E>>
-	{
-		private ListViewAdapter<E> mAdapter;
-
-		public Loader(ListViewAdapter<E> adapter)
-		{
-			super(adapter.getContext());
-			mAdapter = adapter;
-		}
-
-		@Override
-		protected void onStartLoading()
-		{
-			super.onStartLoading();
-			forceLoad();
-		}
-
-		@Override
-		public ArrayList<E> loadInBackground()
-		{
-			return mAdapter.onLoad();
-		}
 	}
 }

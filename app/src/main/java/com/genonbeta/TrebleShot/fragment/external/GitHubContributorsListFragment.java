@@ -1,24 +1,21 @@
 package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.ListViewFragment;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.widget.ListViewAdapter;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,28 +29,12 @@ import velitasali.updatewithgithub.RemoteServer;
  * date: 16.03.2018 15:46
  */
 
-public class GitHubContributorsListFragment extends ListViewFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.ContributorListAdapter>
+public class GitHubContributorsListFragment extends RecyclerViewFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.TestViewHolder, GitHubContributorsListFragment.ContributorListAdapter>
 {
 	@Override
 	public ContributorListAdapter onAdapter()
 	{
 		return new ContributorListAdapter(getContext());
-	}
-
-	@Override
-	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
-	{
-		NonScrollListView listView = new NonScrollListView(getContext());
-
-		listView.setId(R.id.customListFragment_listView);
-		listView.setDividerHeight(0);
-
-		listView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-
-		listViewContainer.addView(listView);
-
-		return listView;
 	}
 
 	@Override
@@ -78,17 +59,6 @@ public class GitHubContributorsListFragment extends ListViewFragment<GitHubContr
 		});
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		ContributorObject contributorObject = (ContributorObject) getAdapter().getItem(position);
-
-		startActivity(new Intent(Intent.ACTION_VIEW)
-				.setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
-	}
-
 	public static class ContributorObject
 	{
 		public String name;
@@ -103,13 +73,30 @@ public class GitHubContributorsListFragment extends ListViewFragment<GitHubContr
 		}
 	}
 
-	public static class ContributorListAdapter extends ListViewAdapter<ContributorObject>
+	public static class ContributorListAdapter extends RecyclerViewAdapter<ContributorObject, TestViewHolder>
 	{
 		private ArrayList<ContributorObject> mList = new ArrayList<>();
 
 		public ContributorListAdapter(Context context)
 		{
 			super(context);
+		}
+
+		@NonNull
+		@Override
+		public TestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+		{
+			return new TestViewHolder(getInflater().inflate(R.layout.list_contributors, parent, false));
+		}
+
+		@Override
+		public void onBindViewHolder(@NonNull TestViewHolder holder, int position)
+		{
+			ContributorObject contributorObject = getList().get(position);
+
+			TextView textView = holder.getView().findViewById(R.id.text);
+
+			textView.setText(contributorObject.name);
 		}
 
 		@Override
@@ -149,58 +136,53 @@ public class GitHubContributorsListFragment extends ListViewFragment<GitHubContr
 		}
 
 		@Override
-		public ArrayList<ContributorObject> getList()
-		{
-			return mList;
-		}
-
-		@Override
-		public int getCount()
-		{
-			return getList().size();
-		}
-
-		@Override
-		public Object getItem(int i)
-		{
-			return getList().get(i);
-		}
-
-		@Override
 		public long getItemId(int i)
 		{
 			return 0;
 		}
 
 		@Override
-		public View getView(int i, View view, ViewGroup viewGroup)
+		public int getItemCount()
 		{
-			if (view == null)
-				view = getInflater().inflate(R.layout.list_contributors, viewGroup, false);
+			return getList().size();
+		}
 
-			ContributorObject contributorObject = (ContributorObject) getItem(i);
-
-			TextView textView = view.findViewById(R.id.text);
-
-			textView.setText(contributorObject.name);
-
-			return view;
+		@Override
+		public ArrayList<ContributorObject> getList()
+		{
+			return mList;
 		}
 	}
 
-	public class NonScrollListView extends ListView
+	public static class TestViewHolder extends RecyclerView.ViewHolder
 	{
-		public NonScrollListView(Context context)
+		private View mView;
+
+		public TestViewHolder(View itemView)
+		{
+			super(itemView);
+			mView = itemView;
+		}
+
+		public View getView()
+		{
+			return mView;
+		}
+	}
+
+	public class NonScrollRecyclerView extends RecyclerView
+	{
+		public NonScrollRecyclerView(Context context)
 		{
 			super(context);
 		}
 
-		public NonScrollListView(Context context, AttributeSet attrs)
+		public NonScrollRecyclerView(Context context, AttributeSet attrs)
 		{
 			super(context, attrs);
 		}
 
-		public NonScrollListView(Context context, AttributeSet attrs, int defStyle)
+		public NonScrollRecyclerView(Context context, AttributeSet attrs, int defStyle)
 		{
 			super(context, attrs, defStyle);
 		}

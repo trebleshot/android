@@ -130,10 +130,12 @@ public class NetworkDeviceListFragment
 	@Override
 	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
-		mSwipeRefreshLayout = new SwipeRefreshLayout(getContext());
+		Context context = mainContainer.getContext();
 
-		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getActivity(), R.color.colorPrimary),
-				ContextCompat.getColor(getActivity(), R.color.colorAccent));
+		mSwipeRefreshLayout = new SwipeRefreshLayout(context);
+
+		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorPrimary),
+				ContextCompat.getColor(context, R.color.colorAccent));
 
 		mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
