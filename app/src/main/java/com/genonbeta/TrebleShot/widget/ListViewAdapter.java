@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.view.LayoutInflater;
+import android.widget.ListAdapter;
 
 import java.util.ArrayList;
 
@@ -11,22 +12,30 @@ import java.util.ArrayList;
  * Date: 12/4/16 11:54 PM
  */
 
-abstract public class ListAdapter<T> extends android.widget.BaseAdapter
+abstract public class ListViewAdapter<T>
+		extends android.widget.BaseAdapter
+		implements ListAdapterImpl<T>
 {
 	public Context mContext;
 	private LayoutInflater mInflater;
 
-	public ListAdapter(Context context)
+	public ListViewAdapter(Context context)
 	{
 		mContext = context;
 		mInflater = LayoutInflater.from(context);
 	}
 
-	public abstract ArrayList<T> onLoad();
+	@Override
+	public void onDataSetChanged()
+	{
+		notifyDataSetChanged();
+	}
 
-	public abstract void onUpdate(ArrayList<T> passedItem);
-
-	public abstract ArrayList<T> getList();
+	@Override
+	public AsyncTaskLoader<ArrayList<T>> createLoader()
+	{
+		return new Loader<>(this);
+	}
 
 	public Context getContext()
 	{
@@ -40,9 +49,9 @@ abstract public class ListAdapter<T> extends android.widget.BaseAdapter
 
 	public static class Loader<E> extends AsyncTaskLoader<ArrayList<E>>
 	{
-		private ListAdapter<E> mAdapter;
+		private ListViewAdapter<E> mAdapter;
 
-		public Loader(ListAdapter<E> adapter)
+		public Loader(ListViewAdapter<E> adapter)
 		{
 			super(adapter.getContext());
 			mAdapter = adapter;

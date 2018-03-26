@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -12,18 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListAdapterImpl;
 
 import java.util.ArrayList;
 
@@ -32,14 +28,13 @@ import java.util.ArrayList;
  * Date: 12/3/16 9:57 AM
  */
 
-public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
+public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapterImpl<T>> extends Fragment
 {
 	public static final String TAG = "ListFragment";
 
 	public static final int TASK_ID_REFRESH = 0;
 
 	private E mAdapter;
-	private ListView mListView;
 	private FrameLayout mListViewContainer;
 	private FrameLayout mCustomViewContainer;
 	private FrameLayout mDefaultViewContainer;
@@ -50,27 +45,6 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 	private ProgressBar mProgressView;
 	private Button mEmptyActionButton;
 	private LoaderCallbackRefresh mLoaderCallbackRefresh = new LoaderCallbackRefresh();
-
-	final private Handler mHandler = new Handler();
-
-	final private Runnable mRequestFocus = new Runnable()
-	{
-		@Override
-		public void run()
-		{
-			mListView.focusableViewAvailable(mListView);
-		}
-	};
-
-	final private AdapterView.OnItemClickListener mOnClickListener
-			= new AdapterView.OnItemClickListener()
-	{
-		@Override
-		public void onItemClick(AdapterView<?> parent, View v, int position, long id)
-		{
-			onListItemClick((ListView) parent, v, position, id);
-		}
-	};
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -96,33 +70,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 		mProgressView = view.findViewById(R.id.customListFragment_progressView);
 		mEmptyActionButton = view.findViewById(R.id.customListFragment_emptyActionButton);
 
-		mListView = view.findViewById(R.id.customListFragment_listView);
-
-		if (mListView == null)
-			mListView = onListView(mContainer, mListViewContainer);
-
-		mListView.setOnItemClickListener(mOnClickListener);
-		mListView.setEmptyView(mEmptyView);
-
 		return view;
-	}
-
-	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
-	{
-		ListView listView = new ListView(getContext());
-
-		listView.setId(R.id.customListFragment_listView);
-
-		listView.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-
-		listViewContainer.addView(listView);
-
-		return listView;
-	}
-
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
 	}
 
 	@Override
@@ -136,24 +84,29 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 	public abstract E onAdapter();
 
+	protected abstract void onEnsureList();
+
+	public abstract boolean onSetListAdapter(E adapter);
+
+	public abstract Z getListView();
+
 	protected void onListRefreshed()
 	{
 	}
 
 	protected Snackbar createSnackbar(int resId, Object... objects)
 	{
-		return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
-
-	private void ensureList()
-	{
-		mListView.setEmptyView(mEmptyView);
-		mHandler.post(mRequestFocus);
+		return Snackbar.make(getListViewContainer(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	public E getAdapter()
 	{
 		return mAdapter;
+	}
+
+	protected FrameLayout getContainer()
+	{
+		return mContainer;
 	}
 
 	public FrameLayout getCustomViewContainer()
@@ -168,14 +121,24 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 	public ImageView getEmptyImage()
 	{
-		ensureList();
+		onEnsureList();
 		return mEmptyImage;
 	}
 
 	public TextView getEmptyText()
 	{
-		ensureList();
+		onEnsureList();
 		return mEmptyText;
+	}
+
+	protected RelativeLayout getEmptyView()
+	{
+		return mEmptyView;
+	}
+
+	protected FrameLayout getListViewContainer()
+	{
+		return mListViewContainer;
 	}
 
 	public LoaderCallbackRefresh getLoaderCallbackRefresh()
@@ -188,15 +151,9 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 		return mAdapter;
 	}
 
-	public ListView getListView()
-	{
-		ensureList();
-		return mListView;
-	}
-
 	public ProgressBar getProgressView()
 	{
-		ensureList();
+		onEnsureList();
 		return mProgressView;
 	}
 
@@ -212,13 +169,13 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 	public void setEmptyImage(int resId)
 	{
-		ensureList();
+		onEnsureList();
 		mEmptyImage.setImageResource(resId);
 	}
 
 	public void setEmptyText(CharSequence text)
 	{
-		ensureList();
+		onEnsureList();
 		mEmptyText.setText(text);
 	}
 
@@ -227,9 +184,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 		boolean hadAdapter = mAdapter != null;
 		mAdapter = adapter;
 
-		if (mListView != null) {
-			mListView.setAdapter(adapter);
-
+		if (onSetListAdapter(adapter)) {
 			if (mContainer.getVisibility() != View.VISIBLE && !hadAdapter)
 				setListShown(true, getView().getWindowToken() != null);
 		}
@@ -242,7 +197,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 
 	public void setListShown(boolean shown, boolean animate)
 	{
-		ensureList();
+		onEnsureList();
 
 		if ((mContainer.getVisibility() == View.VISIBLE) == shown)
 			return;
@@ -304,7 +259,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 			if (mAdapter.getCount() == 0)
 				setListShown(false);
 
-			return new ListAdapter.Loader<>(mAdapter);
+			return mAdapter.createLoader();
 		}
 
 		@Override
@@ -312,7 +267,7 @@ public abstract class ListFragment<T, E extends ListAdapter<T>> extends Fragment
 		{
 			if (isResumed()) {
 				mAdapter.onUpdate(data);
-				mAdapter.notifyDataSetChanged();
+				mAdapter.onDataSetChanged();
 
 				setListShown(true);
 				onListRefreshed();

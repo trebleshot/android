@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 
 abstract public class EditableListFragment<T extends Editable, E extends EditableListAdapter<T>>
-		extends com.genonbeta.TrebleShot.app.ListFragment<T, E>
+		extends com.genonbeta.TrebleShot.app.ListViewFragment<T, E>
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;

@@ -41,6 +41,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.ListFragment;
+import com.genonbeta.TrebleShot.app.ListViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -66,7 +67,7 @@ import org.json.JSONObject;
 import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
-		extends ListFragment<NetworkDevice, NetworkDeviceListAdapter>
+		extends ListViewFragment<NetworkDevice, NetworkDeviceListAdapter>
 		implements TitleSupport, FABSupport, DetachListener
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;

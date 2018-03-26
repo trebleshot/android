@@ -16,9 +16,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.ListFragment;
+import com.genonbeta.TrebleShot.app.ListViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListViewAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -32,7 +32,7 @@ import velitasali.updatewithgithub.RemoteServer;
  * date: 16.03.2018 15:46
  */
 
-public class GitHubContributorsListFragment extends ListFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.ContributorListAdapter>
+public class GitHubContributorsListFragment extends ListViewFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.ContributorListAdapter>
 {
 	@Override
 	public ContributorListAdapter onAdapter()
@@ -103,7 +103,7 @@ public class GitHubContributorsListFragment extends ListFragment<GitHubContribut
 		}
 	}
 
-	public static class ContributorListAdapter extends ListAdapter<ContributorObject>
+	public static class ContributorListAdapter extends ListViewAdapter<ContributorObject>
 	{
 		private ArrayList<ContributorObject> mList = new ArrayList<>();
 

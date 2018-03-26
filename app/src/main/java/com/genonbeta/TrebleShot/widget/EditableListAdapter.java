@@ -15,7 +15,7 @@ import java.util.Comparator;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable> extends ListAdapter<T>
+abstract public class EditableListAdapter<T extends Editable> extends ListViewAdapter<T>
 {
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;

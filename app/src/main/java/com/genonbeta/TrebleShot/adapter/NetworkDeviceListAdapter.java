@@ -6,6 +6,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -15,12 +16,12 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.ListAdapter;
+import com.genonbeta.TrebleShot.widget.ListViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 
-public class NetworkDeviceListAdapter extends ListAdapter<NetworkDevice>
+public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 {
 	private boolean mShowLocalAddresses = false;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
