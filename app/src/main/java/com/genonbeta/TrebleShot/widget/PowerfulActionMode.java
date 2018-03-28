@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Selectable;
@@ -67,7 +66,9 @@ public class PowerfulActionMode extends Toolbar
 
 	public <T extends Selectable> void enableFor(final SelectorConnection<T> selectorConnection)
 	{
-		selectorConnection.getCallback().getActionModeListView()
+		// FIXME: 27.03.2018
+
+		/*selectorConnection.getCallback().getActionModeListView()
 				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
 				{
 					@Override
@@ -81,6 +82,8 @@ public class PowerfulActionMode extends Toolbar
 						return false;
 					}
 				});
+
+				*/
 	}
 
 	public void finish(@NonNull final Callback callback)
@@ -205,7 +208,8 @@ public class PowerfulActionMode extends Toolbar
 
 	public interface Callback<T extends Selectable>
 	{
-		AbsListView getActionModeListView();
+		// FIXME: 27.03.2018 hm what should we do?
+		//AbsListView getActionModeListView();
 
 		ArrayList<T> getSelectableList();
 

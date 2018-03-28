@@ -23,13 +23,14 @@ import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
 
-public abstract class ShareableListFragment<T extends Shareable, E extends ShareableListAdapter<T>>
-		extends EditableListFragment<T, E>
+public abstract class ShareableListFragment<T extends Shareable, V extends RecyclerViewAdapter.ViewHolder, E extends ShareableListAdapter<T, V>>
+		extends EditableListFragment<T, V, E>
 {
 	private ArrayList<T> mCachedList = new ArrayList<>();
 	private boolean mSearchSupport = true;
@@ -87,17 +88,6 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 
 			searchView.setOnQueryTextListener(mSearchComposer);
 			searchView.setMaxWidth(500);
-		}
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		if (!setItemSelected(position)) {
-			Shareable shareable = (Shareable) getAdapter().getItem(position);
-			openFile(shareable.uri, getString(R.string.text_fileOpenAppChoose));
 		}
 	}
 
@@ -203,6 +193,14 @@ public abstract class ShareableListFragment<T extends Shareable, E extends Share
 			e.printStackTrace();
 			Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
 		}
+	}
+
+	public void performLayoutClick(View view, V viewHolder)
+	{
+		T object = getAdapter().getItem(viewHolder.getAdapterPosition());
+
+		if (!setItemSelected(viewHolder.getAdapterPosition()))
+			openFile(object.uri, getString(R.string.text_fileOpenAppChoose));
 	}
 
 	public boolean search(String word)

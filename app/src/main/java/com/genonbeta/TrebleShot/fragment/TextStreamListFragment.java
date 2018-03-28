@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,10 +19,12 @@ import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -31,7 +34,7 @@ import java.util.ArrayList;
  */
 
 public class TextStreamListFragment
-		extends EditableListFragment<TextStreamObject, TextStreamListAdapter>
+		extends EditableListFragment<TextStreamObject, RecyclerViewAdapter.ViewHolder, TextStreamListAdapter>
 		implements TitleSupport
 {
 	private IntentFilter mIntentFilter = new IntentFilter();
@@ -60,7 +63,30 @@ public class TextStreamListFragment
 	@Override
 	public TextStreamListAdapter onAdapter()
 	{
-		return new TextStreamListAdapter(getActivity());
+		return new TextStreamListAdapter(getActivity())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						if (!setItemSelected(holder)) {
+							TextStreamObject textStreamObject = getAdapter().getItem(holder);
+
+							startActivity(new Intent(getContext(), TextEditorActivity.class)
+									.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+									.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
+									.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+						}
+					}
+				});
+			}
+		};
 	}
 
 	@Override
@@ -76,21 +102,6 @@ public class TextStreamListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		if (!setItemSelected(position)) {
-			TextStreamObject textStreamObject = (TextStreamObject) getAdapter().getItem(position);
-
-			startActivity(new Intent(getContext(), TextEditorActivity.class)
-					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
-					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-		}
 	}
 
 	@Override

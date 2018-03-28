@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
@@ -18,11 +17,12 @@ import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
  * date: 26.03.2018 11:45
  */
 
-abstract public class RecyclerViewFragment<T, V extends RecyclerView.ViewHolder, E extends RecyclerViewAdapter<T, V>> extends ListFragment<RecyclerView, T, E>
+abstract public class RecyclerViewFragment<T, V extends RecyclerViewAdapter.ViewHolder, E extends RecyclerViewAdapter<T, V>>
+		extends ListFragment<RecyclerView, T, E>
 {
-	public RecyclerView mRecyclerView;
+	private RecyclerView mRecyclerView;
 
-	/*final private Handler mHandler = new Handler();
+	final private Handler mHandler = new Handler();
 
 	final private Runnable mRequestFocus = new Runnable()
 	{
@@ -31,13 +31,22 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerView.ViewHolder,
 		{
 			mRecyclerView.focusableViewAvailable(mRecyclerView);
 		}
-	};*/
+	};
 
 	@Override
 	protected void onListRefreshed()
 	{
 		super.onListRefreshed();
-		setListShown(getAdapter().getItemCount() > 0);
+
+		boolean isEmpty = getAdapter().getCount() == 0;
+
+		getEmptyView().setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+		getListViewContainer().setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+	}
+
+	public RecyclerView.LayoutManager onLayoutManager()
+	{
+		return getDefaultLayoutManager();
 	}
 
 	@Override
@@ -57,9 +66,8 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerView.ViewHolder,
 	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
 		RecyclerView recyclerView = new RecyclerView(getContext());
-		GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 1);
 
-		recyclerView.setLayoutManager(layoutManager);
+		recyclerView.setLayoutManager(onLayoutManager());
 
 		recyclerView.setLayoutParams(new GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
 				ViewGroup.LayoutParams.MATCH_PARENT));
@@ -72,7 +80,7 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerView.ViewHolder,
 	@Override
 	protected void onEnsureList()
 	{
-		//mHandler.post(mRequestFocus);
+		mHandler.post(mRequestFocus);
 	}
 
 	@Override
@@ -84,6 +92,11 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerView.ViewHolder,
 		mRecyclerView.setAdapter(adapter);
 
 		return true;
+	}
+
+	public RecyclerView.LayoutManager getDefaultLayoutManager()
+	{
+		return  new LinearLayoutManager(getContext());
 	}
 
 	@Override

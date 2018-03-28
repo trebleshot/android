@@ -1,11 +1,12 @@
 package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
-import android.util.AttributeSet;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
@@ -29,12 +31,35 @@ import velitasali.updatewithgithub.RemoteServer;
  * date: 16.03.2018 15:46
  */
 
-public class GitHubContributorsListFragment extends RecyclerViewFragment<GitHubContributorsListFragment.ContributorObject, GitHubContributorsListFragment.TestViewHolder, GitHubContributorsListFragment.ContributorListAdapter>
+public class GitHubContributorsListFragment
+		extends DynamicRecyclerViewFragment<GitHubContributorsListFragment.ContributorObject, RecyclerViewAdapter.ViewHolder, GitHubContributorsListFragment.ContributorListAdapter>
 {
 	@Override
 	public ContributorListAdapter onAdapter()
 	{
-		return new ContributorListAdapter(getContext());
+		return new ContributorListAdapter(getContext())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				final ContributorObject contributorObject = getAdapter().getList().get(position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						if (getContext() == null)
+							return;
+
+						getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+								.setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
+					}
+				});
+			}
+		};
 	}
 
 	@Override
@@ -73,7 +98,7 @@ public class GitHubContributorsListFragment extends RecyclerViewFragment<GitHubC
 		}
 	}
 
-	public static class ContributorListAdapter extends RecyclerViewAdapter<ContributorObject, TestViewHolder>
+	public static class ContributorListAdapter extends RecyclerViewAdapter<ContributorObject, RecyclerViewAdapter.ViewHolder>
 	{
 		private ArrayList<ContributorObject> mList = new ArrayList<>();
 
@@ -84,16 +109,15 @@ public class GitHubContributorsListFragment extends RecyclerViewFragment<GitHubC
 
 		@NonNull
 		@Override
-		public TestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 		{
-			return new TestViewHolder(getInflater().inflate(R.layout.list_contributors, parent, false));
+			return new ViewHolder(getInflater().inflate(R.layout.list_contributors, parent, false));
 		}
 
 		@Override
-		public void onBindViewHolder(@NonNull TestViewHolder holder, int position)
+		public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 		{
-			ContributorObject contributorObject = getList().get(position);
-
+			final ContributorObject contributorObject = getList().get(position);
 			TextView textView = holder.getView().findViewById(R.id.text);
 
 			textView.setText(contributorObject.name);
@@ -151,50 +175,6 @@ public class GitHubContributorsListFragment extends RecyclerViewFragment<GitHubC
 		public ArrayList<ContributorObject> getList()
 		{
 			return mList;
-		}
-	}
-
-	public static class TestViewHolder extends RecyclerView.ViewHolder
-	{
-		private View mView;
-
-		public TestViewHolder(View itemView)
-		{
-			super(itemView);
-			mView = itemView;
-		}
-
-		public View getView()
-		{
-			return mView;
-		}
-	}
-
-	public class NonScrollRecyclerView extends RecyclerView
-	{
-		public NonScrollRecyclerView(Context context)
-		{
-			super(context);
-		}
-
-		public NonScrollRecyclerView(Context context, AttributeSet attrs)
-		{
-			super(context, attrs);
-		}
-
-		public NonScrollRecyclerView(Context context, AttributeSet attrs, int defStyle)
-		{
-			super(context, attrs, defStyle);
-		}
-
-		@Override
-		public void onMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			int heightMeasureSpec_custom = MeasureSpec.makeMeasureSpec(
-					Integer.MAX_VALUE >> 2, MeasureSpec.AT_MOST);
-			super.onMeasure(widthMeasureSpec, heightMeasureSpec_custom);
-			ViewGroup.LayoutParams params = getLayoutParams();
-			params.height = getMeasuredHeight();
 		}
 	}
 }

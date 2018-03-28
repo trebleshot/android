@@ -338,4 +338,6 @@
     <string name="text_qrAllowTrustZoneSummary">Allow TrustZone for QR Code connections</string>
     <string name="text_translateTrebleshot">Help us translate</string>
     <string name="text_contributors">Made possible by these people</string>
+    <string name="butn_gridSize">Grid size</string>
+    <string name="butn_singleRow">Single row</string>
 </resources>

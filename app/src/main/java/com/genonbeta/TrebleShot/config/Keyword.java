@@ -49,6 +49,6 @@ public class Keyword
 	{
 		public static final String
 				NETWORK_INTERFACE_UNKNOWN = "unk0",
-				SETTINGS_SORTING = "sorting_settings";
+				SETTINGS_VIEWING = "sorting_settings";
 	}
 }

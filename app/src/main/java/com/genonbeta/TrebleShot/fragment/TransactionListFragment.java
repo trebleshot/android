@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -19,18 +20,20 @@ import android.widget.ListView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class TransactionListFragment
-		extends EditableListFragment<TransactionObject, TransactionListAdapter>
+		extends EditableListFragment<TransactionObject, RecyclerViewAdapter.ViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
 	public AccessDatabase mDatabase;
@@ -90,38 +93,45 @@ public class TransactionListFragment
 	@Override
 	public TransactionListAdapter onAdapter()
 	{
-		return new TransactionListAdapter(getActivity());
+		return new TransactionListAdapter(getActivity())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						final TransactionObject transactionObject = getAdapter().getItem(holder);
+
+						if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
+							getAdapter().setPath(transactionObject.directory);
+							refreshList();
+
+							if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+								createSnackbar(R.string.mesg_helpFolderSelection)
+										.setAction(R.string.butn_gotIt, new View.OnClickListener()
+										{
+											@Override
+											public void onClick(View v)
+											{
+												PreferenceManager.getDefaultSharedPreferences(getActivity())
+														.edit()
+														.putBoolean("helpFolderSelection", true)
+														.apply();
+											}
+										})
+										.show();
+						} else if (!setItemSelected(holder))
+							new TransactionInfoDialog(getActivity(), mDatabase, transactionObject).show();
+					}
+				});
+			}
+		};
 	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		final TransactionObject transactionObject = (TransactionObject) getAdapter().getItem(position);
-
-		if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
-			getAdapter().setPath(transactionObject.directory);
-			refreshList();
-
-			if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
-				createSnackbar(R.string.mesg_helpFolderSelection)
-						.setAction(R.string.butn_gotIt, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								PreferenceManager.getDefaultSharedPreferences(getActivity())
-										.edit()
-										.putBoolean("helpFolderSelection", true)
-										.apply();
-							}
-						})
-						.show();
-		} else if (!setItemSelected(position))
-			new TransactionInfoDialog(getActivity(), mDatabase, transactionObject).show();
-	}
-
 
 	@Override
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)

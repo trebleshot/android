@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
@@ -18,12 +19,15 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 public class ApplicationListFragment
-		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, ApplicationListAdapter>
+		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder, ApplicationListAdapter>
 		implements TitleSupport
 {
 	private SharedPreferences mPreferences;
@@ -49,7 +53,45 @@ public class ApplicationListFragment
 	@Override
 	public ApplicationListAdapter onAdapter()
 	{
-		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false));
+		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false))
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+
+						if (!setItemSelected(holder)) {
+							final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
+							final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
+
+							if (launchIntent != null) {
+								AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+								dialogBuilder.setMessage(R.string.ques_launchApplication);
+								dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
+								dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialog, int which)
+									{
+										startActivity(launchIntent);
+									}
+								});
+
+								dialogBuilder.show();
+							} else
+								Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
+			}
+		};
 	}
 
 	@Override
@@ -93,35 +135,6 @@ public class ApplicationListFragment
 			shareOthers.setVisible(false);
 
 		return result;
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		if (isSelectionActivated())
-			super.onListItemClick(l, v, position, id);
-		else {
-			final ApplicationListAdapter.PackageHolder appInfo = (ApplicationListAdapter.PackageHolder) getAdapter().getItem(position);
-			final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
-
-			if (launchIntent != null) {
-				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-
-				dialogBuilder.setMessage(R.string.ques_launchApplication);
-				dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-				dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
-						startActivity(launchIntent);
-					}
-				});
-
-				dialogBuilder.show();
-			} else
-				Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
-		}
 	}
 
 	@Override

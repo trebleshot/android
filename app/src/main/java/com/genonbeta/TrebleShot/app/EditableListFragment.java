@@ -6,10 +6,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -19,6 +21,7 @@ import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -27,22 +30,25 @@ import java.util.ArrayList;
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Editable, E extends EditableListAdapter<T>>
-		extends com.genonbeta.TrebleShot.app.ListViewFragment<T, E>
+abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder, E extends EditableListAdapter<T, V>>
+		extends DynamicRecyclerViewFragment<T, V, E>
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
-	private SharedPreferences mSortingPreferences;
+	private SharedPreferences mViewPreferences;
 	private Snackbar mRefreshDelayedSnackbar;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
 	private boolean mDefaultOrderingAscending = true;
 	private int mDefaultSortingCriteria = R.id.actions_abs_editable_sort_by_name;
+	private int mDefaultViewingGridSize = 1;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		mViewPreferences = getContext().getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
 		getAdapter().setFragment(this);
 	}
 
@@ -50,7 +56,6 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-		getListView().setDividerHeight(0);
 
 		if (getPowerfulActionMode() != null) {
 			mSelectionConnection = new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), this);
@@ -61,7 +66,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 			setHasOptionsMenu(true);
 		}
 
-		mSortingPreferences = getActivity().getSharedPreferences(Keyword.Local.SETTINGS_SORTING, Context.MODE_PRIVATE);
+		updateGridSize();
 	}
 
 	@Override
@@ -76,6 +81,18 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_abs_editable_list, menu);
+
+		MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
+
+		if (gridSizeItem != null) {
+			Menu gridSizeMenu = gridSizeItem.getSubMenu();
+
+			for (int i = 1; i < 5; i++)
+				gridSizeMenu.add(R.id.actions_abs_editable_group_grid_size, 0, i,
+						getContext().getResources().getQuantityString(R.plurals.text_gridRow, i, i));
+
+			gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
+		}
 	}
 
 	@Override
@@ -92,6 +109,10 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 				&& multiSelect != null)
 			multiSelect.setVisible(false);
 
+		if (!getAdapter().isGridSupported())
+			menu.findItem(R.id.actions_abs_editable_grid_size)
+					.setVisible(false);
+
 		MenuItem sortingItem = menu.findItem(getSortingCriteria());
 
 		if (sortingItem == null)
@@ -107,6 +128,16 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 			orderingItem = menu.findItem(R.id.actions_abs_editable_sort_order_ascending);
 
 		orderingItem.setChecked(true);
+
+		MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
+
+		if (gridSizeItem != null) {
+			Menu gridRowMenu = gridSizeItem.getSubMenu();
+			int currentRow = getViewingGridSize() - 1;
+
+			if (currentRow < gridRowMenu.size())
+				gridRowMenu.getItem(currentRow).setChecked(true);
+		}
 	}
 
 	@Override
@@ -115,12 +146,14 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		int id = item.getItemId();
 		int groupId = item.getGroupId();
 
-		if (id == R.id.actions_abs_editable_multi_select) {
+		if (id == R.id.actions_abs_editable_multi_select)
 			getPowerfulActionMode().start(this);
-		} else if (groupId == R.id.actions_abs_editable_group_sorting)
+		else if (groupId == R.id.actions_abs_editable_group_sorting)
 			changeSortingCriteria(id);
 		else if (groupId == R.id.actions_abs_editable_group_sort_order)
 			changeOrderingCriteria(id);
+		else if (groupId == R.id.actions_abs_editable_group_grid_size)
+			changeGridViewSize(item.getOrder());
 
 		return super.onOptionsItemSelected(item);
 	}
@@ -140,7 +173,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 		actionMode.setTitle(String.valueOf(0));
 
-		getAdapter().notifySelectionChanges();
+		getAdapter().notifyAllSelectionChanges();
 		return false;
 	}
 
@@ -183,7 +216,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 								if (!selectable.isSelectableSelected())
 									getSelectionConnection().setSelected(selectable, false);
 
-							getAdapter().notifySelectionChanges();
+							getAdapter().notifyAllSelectionChanges();
 						}
 
 					})
@@ -203,22 +236,22 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		loadIfRequested();
 	}
 
+	public void changeGridViewSize(int gridSize)
+	{
+		mViewPreferences.edit().putInt(getClass().getSimpleName() + "GridSize", gridSize).apply();
+		updateGridSize(gridSize);
+	}
+
 	public void changeSortingCriteria(int id)
 	{
-		mSortingPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
+		mViewPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
 		refreshList();
 	}
 
 	public void changeOrderingCriteria(int id)
 	{
-		mSortingPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
+		mViewPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
 		refreshList();
-	}
-
-	@Override
-	public AbsListView getActionModeListView()
-	{
-		return getListView();
 	}
 
 	@Override
@@ -234,7 +267,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public int getSortingCriteria()
 	{
-		return mSortingPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
+		return mViewPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
 	}
 
 	public PowerfulActionMode getPowerfulActionMode()
@@ -242,6 +275,14 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupported
 				? ((PowerfulActionModeSupported) getActivity()).getPowerfulActionMode()
 				: null;
+	}
+
+	public int getViewingGridSize()
+	{
+		if (mViewPreferences == null)
+			return 1;
+
+		return mViewPreferences.getInt(getClass().getSimpleName() + "GridSize", mDefaultViewingGridSize);
 	}
 
 	public boolean isRefreshLocked()
@@ -263,7 +304,7 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 
 	public boolean isSortingAscending()
 	{
-		return mSortingPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
+		return mViewPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -281,11 +322,6 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 			refreshList();
 
 		return refreshed;
-	}
-
-	public void setRefreshRequested(boolean requested)
-	{
-		mRefreshRequested = requested;
 	}
 
 	@Override
@@ -310,16 +346,43 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		}
 	}
 
+	public void setDefaultSortingCriteria(int criteria)
+	{
+		mDefaultSortingCriteria = criteria;
+	}
+
+	public void setDefaultOrderingAscending(boolean ascending)
+	{
+		mDefaultOrderingAscending = ascending;
+	}
+
+	public void setDefaultViewingGridSize(int gridSize)
+	{
+		mDefaultViewingGridSize = gridSize;
+	}
+
+	public boolean setItemSelected(V holder)
+	{
+		return setItemSelected(holder.getAdapterPosition());
+	}
+
 	public boolean setItemSelected(int position)
 	{
 		if (isSelectionActivated()) {
 			getSelectionConnection().setSelected(getSelectableList().get(position));
-			getAdapter().notifySelectionChanges();
+
+			getAdapter().syncSelectionList();
+			getAdapter().notifyItemChanged(position);
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public void setRefreshRequested(boolean requested)
+	{
+		mRefreshRequested = requested;
 	}
 
 	public boolean setSelection()
@@ -344,13 +407,24 @@ abstract public class EditableListFragment<T extends Editable, E extends Editabl
 		mSortingSupported = sortingSupported;
 	}
 
-	public void setDefaultSortingCriteria(int criteria)
+	public boolean updateGridSize()
 	{
-		mDefaultSortingCriteria = criteria;
+		return updateGridSize(getViewingGridSize());
 	}
 
-	public void setDefaultOrderingAscending(boolean ascending)
+	public boolean updateGridSize(int gridSize)
 	{
-		mDefaultOrderingAscending = ascending;
+		if (!getAdapter().isGridSupported())
+			return false;
+
+		getAdapter().notifyGridSizeUpdate();
+
+		getListView().setLayoutManager(gridSize > 1
+				? new GridLayoutManager(getContext(), gridSize)
+				: getDefaultLayoutManager());
+
+		getListView().setAdapter(getAdapter());
+
+		return true;
 	}
 }

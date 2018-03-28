@@ -7,16 +7,19 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 public class ImageListFragment
-		extends ShareableListFragment<ImageListAdapter.ImageHolder, ImageListAdapter>
+		extends ShareableListFragment<ImageListAdapter.ImageHolder, RecyclerViewAdapter.ViewHolder, ImageListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -26,6 +29,7 @@ public class ImageListFragment
 
 		setDefaultOrderingAscending(false);
 		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultViewingGridSize(3);
 	}
 
 	@Override
@@ -58,7 +62,23 @@ public class ImageListFragment
 	@Override
 	public ImageListAdapter onAdapter()
 	{
-		return new ImageListAdapter(getActivity());
+		return new ImageListAdapter(getActivity())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						performLayoutClick(v, holder);
+					}
+				});
+			}
+		};
 	}
 
 	@Override

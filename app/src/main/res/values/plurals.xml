@@ -40,4 +40,9 @@
         <item quantity="one">A file has been deleted</item>
         <item quantity="other">%d files have been deleted</item>
     </plurals>
+
+    <plurals name="text_gridRow">
+        <item quantity="one">Single row</item>
+        <item quantity="other">%d rows</item>
+    </plurals>
 </resources>

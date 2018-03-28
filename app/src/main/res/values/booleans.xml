@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="screen_isLarge">false</bool>
+    <bool name="screen_isLandscape">false</bool>
+</resources>

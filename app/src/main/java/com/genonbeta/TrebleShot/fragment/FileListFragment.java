@@ -9,15 +9,19 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
@@ -31,7 +35,8 @@ import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 
-public class FileListFragment extends ShareableListFragment<FileListAdapter.GenericFileHolder, FileListAdapter>
+public class FileListFragment
+		extends ShareableListFragment<FileListAdapter.GenericFileHolder, FileListAdapter.ViewHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
@@ -117,7 +122,47 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 	@Override
 	public FileListAdapter onAdapter()
 	{
-		return new FileListAdapter(getActivity(), new AccessDatabase(getActivity()));
+		return new FileListAdapter(getActivity(), new AccessDatabase(getActivity()))
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
+
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
+
+						if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo)) {
+							if (fileInfo instanceof FileListAdapter.FileHolder)
+								performLayoutClick(v, holder);
+							else if (fileInfo instanceof FileListAdapter.DirectoryHolder
+									|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
+								FileListFragment.this.goPath(fileInfo.file);
+
+								if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+									createSnackbar(R.string.mesg_helpFolderSelection)
+											.setAction(R.string.butn_gotIt, new View.OnClickListener()
+											{
+												@Override
+												public void onClick(View v)
+												{
+													PreferenceManager.getDefaultSharedPreferences(getActivity())
+															.edit()
+															.putBoolean("helpFolderSelection", true)
+															.apply();
+												}
+											})
+											.show();
+							}
+						}
+					}
+				});
+			}
+		};
 	}
 
 	@Override
@@ -139,36 +184,6 @@ public class FileListFragment extends ShareableListFragment<FileListAdapter.Gene
 	{
 		super.onDestroy();
 		mMediaScanner.disconnect();
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		FileListAdapter.GenericFileHolder fileInfo = (FileListAdapter.GenericFileHolder) getAdapter().getItem(position);
-
-		if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo)) {
-			if (fileInfo instanceof FileListAdapter.FileHolder)
-				super.onListItemClick(l, v, position, id);
-			else if (fileInfo instanceof FileListAdapter.DirectoryHolder
-					|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
-				goPath(fileInfo.file);
-
-				if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
-					createSnackbar(R.string.mesg_helpFolderSelection)
-							.setAction(R.string.butn_gotIt, new View.OnClickListener()
-							{
-								@Override
-								public void onClick(View v)
-								{
-									PreferenceManager.getDefaultSharedPreferences(getActivity())
-											.edit()
-											.putBoolean("helpFolderSelection", true)
-											.apply();
-								}
-							})
-							.show();
-			}
-		}
 	}
 
 	@Override

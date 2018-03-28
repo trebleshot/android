@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/actions_abs_editable_multi_select"
@@ -9,13 +8,21 @@
         android:title="@string/butn_multiSelect"/>
 
     <item
+        android:id="@+id/actions_abs_editable_grid_size"
+        android:orderInCategory="98"
+        android:title="@string/butn_gridSize">
+        <menu />
+    </item>
+
+    <item
         android:id="@+id/actions_abs_editable_sort_by"
         android:orderInCategory="99"
         android:title="@string/butn_sortBy">
 
         <menu>
-            <group android:checkableBehavior="single"
-                android:id="@+id/actions_abs_editable_group_sorting">
+            <group
+                android:id="@+id/actions_abs_editable_group_sorting"
+                android:checkableBehavior="single">
                 <item
                     android:id="@+id/actions_abs_editable_sort_by_name"
                     android:title="@string/text_sortByName"/>

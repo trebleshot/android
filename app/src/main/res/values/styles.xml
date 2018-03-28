@@ -69,6 +69,10 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="marqueeText.primary.small" parent="@style/marqueeText.primary">
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="marqueeText.secondary" parent="@style/marqueeText">
         <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
         <item name="android:textColor">?android:textColorSecondary</item>

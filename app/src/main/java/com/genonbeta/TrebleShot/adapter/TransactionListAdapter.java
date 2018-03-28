@@ -1,17 +1,20 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -23,7 +26,8 @@ import java.util.Collections;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransactionListAdapter extends EditableListAdapter<TransactionObject>
+public class TransactionListAdapter
+		extends EditableListAdapter<TransactionObject, RecyclerViewAdapter.ViewHolder>
 {
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
@@ -97,32 +101,9 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 		mDatabase = new AccessDatabase(context);
 	}
 
-	@Override
-	public int getCount()
-	{
-		return getItemList().size();
-	}
-
 	public int getGroupId()
 	{
 		return mGroupId;
-	}
-
-	@Override
-	public Object getItem(int i)
-	{
-		return getItemList().get(i);
-	}
-
-	@Override
-	public long getItemId(int i)
-	{
-		return 0;
-	}
-
-	public ArrayList<TransactionObject> getList()
-	{
-		return getItemList();
 	}
 
 	public SQLQuery.Select getSelect()
@@ -143,52 +124,6 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 		return mPath;
 	}
 
-	@Override
-	public View getView(int i, View convertView, ViewGroup viewGroup)
-	{
-		if (convertView == null)
-			convertView = getInflater().inflate(R.layout.list_transaction, viewGroup, false);
-
-		final TransactionObject transactionObject = (TransactionObject) getItem(i);
-
-		final View selector = convertView.findViewById(R.id.selector);
-		final View layoutImage = convertView.findViewById(R.id.layout_image);
-		ImageView image = convertView.findViewById(R.id.image);
-		TextView mainText = convertView.findViewById(R.id.text);
-		TextView statusText = convertView.findViewById(R.id.text2);
-		TextView sizeText = convertView.findViewById(R.id.text3);
-
-		if (getSelectionConnection() != null) {
-			selector.setSelected(transactionObject.isSelectableSelected());
-
-			layoutImage.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					getSelectionConnection().setSelected(transactionObject);
-					selector.setSelected(transactionObject.isSelectableSelected());
-				}
-			});
-		}
-
-		if (transactionObject instanceof TransactionFolder) {
-			image.setImageResource(R.drawable.ic_folder_black_24dp);
-			mainText.setText(transactionObject.friendlyName);
-			statusText.setText(R.string.text_folder);
-			sizeText.setText(null);
-		} else {
-			boolean isIncoming = transactionObject.type.equals(TransactionObject.Type.INCOMING);
-
-			image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
-			mainText.setText(transactionObject.friendlyName);
-			statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(transactionObject.flag)).toLowerCase());
-			sizeText.setText(FileUtils.sizeExpression(transactionObject.fileSize, false));
-		}
-
-		return convertView;
-	}
-
 	public void setGroupId(int groupId)
 	{
 		this.mGroupId = groupId;
@@ -205,6 +140,55 @@ public class TransactionListAdapter extends EditableListAdapter<TransactionObjec
 	public void setPathChangedListener(PathChangedListener listener)
 	{
 		this.mListener = listener;
+	}
+
+	@NonNull
+	@Override
+	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	{
+		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false));
+	}
+
+	@Override
+	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	{
+		final TransactionObject object = getItem(position);
+		final View parentView = holder.getView();
+
+		final View selector = parentView.findViewById(R.id.selector);
+		final View layoutImage = parentView.findViewById(R.id.layout_image);
+		ImageView image = parentView.findViewById(R.id.image);
+		TextView mainText = parentView.findViewById(R.id.text);
+		TextView statusText = parentView.findViewById(R.id.text2);
+		TextView sizeText = parentView.findViewById(R.id.text3);
+
+		if (getSelectionConnection() != null) {
+			selector.setSelected(object.isSelectableSelected());
+
+			layoutImage.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					getSelectionConnection().setSelected(object);
+					selector.setSelected(object.isSelectableSelected());
+				}
+			});
+		}
+
+		if (object instanceof TransactionFolder) {
+			image.setImageResource(R.drawable.ic_folder_black_24dp);
+			mainText.setText(object.friendlyName);
+			statusText.setText(R.string.text_folder);
+			sizeText.setText(null);
+		} else {
+			boolean isIncoming = object.type.equals(TransactionObject.Type.INCOMING);
+
+			image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
+			mainText.setText(object.friendlyName);
+			statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(object.flag)).toLowerCase());
+			sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
+		}
 	}
 
 	public interface PathChangedListener

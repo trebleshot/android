@@ -1,15 +1,18 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -20,7 +23,7 @@ import java.util.Collections;
  * date: 30.12.2017 13:25
  */
 
-public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
+public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject, RecyclerViewAdapter.ViewHolder>
 {
 	private AccessDatabase mDatabase;
 
@@ -46,47 +49,27 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject>
 		return mDatabase;
 	}
 
+	@NonNull
 	@Override
-	public int getCount()
+	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return getItemList().size();
+		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
 	}
 
 	@Override
-	public Object getItem(int position)
+	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
 	{
-		return getItemList().get(position);
-	}
+		View parentView = holder.getView();
+		TextStreamObject object = getItem(position);
 
-	@Override
-	public long getItemId(int position)
-	{
-		return 0;
-	}
-
-	@Override
-	public ArrayList<TextStreamObject> getList()
-	{
-		return getItemList();
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
-	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_text_stream, viewGroup, false);
-
-		TextStreamObject holder = (TextStreamObject) getItem(position);
-		View selector = view.findViewById(R.id.selector);
-		TextView text1 = view.findViewById(R.id.text);
-		TextView text2 = view.findViewById(R.id.text2);
+		View selector = parentView.findViewById(R.id.selector);
+		TextView text1 = parentView.findViewById(R.id.text);
+		TextView text2 = parentView.findViewById(R.id.text2);
 
 		if (getSelectionConnection() != null)
-			selector.setSelected(holder.isSelectableSelected());
+			selector.setSelected(object.isSelectableSelected());
 
-		text1.setText(holder.text);
-		text2.setText(AppUtils.formatDateTime(getContext(), holder.time));
-
-		return view;
+		text1.setText(object.text);
+		text2.setText(AppUtils.formatDateTime(getContext(), object.time));
 	}
 }

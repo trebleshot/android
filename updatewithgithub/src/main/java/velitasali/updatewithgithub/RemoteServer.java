@@ -22,9 +22,9 @@ public class RemoteServer
 		request.readTimeout(5000);
 
 		if (postKey != null && postValue != null)
-			request.send(postKey + "=" + URLEncoder.encode(postValue, "UTF-8")).receive(output);
-		else
-			request.receive(output);
+			request.send(postKey + "=" + URLEncoder.encode(postValue, "UTF-8"));
+
+		request.receive(output);
 
 		return output.toString();
 	}

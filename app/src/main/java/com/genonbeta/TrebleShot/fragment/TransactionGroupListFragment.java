@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,10 +16,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -29,7 +32,7 @@ import java.util.ArrayList;
  */
 
 public class TransactionGroupListFragment
-		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, TransactionGroupListAdapter>
+		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, RecyclerViewAdapter.ViewHolder, TransactionGroupListAdapter>
 		implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
@@ -72,8 +75,6 @@ public class TransactionGroupListFragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		getListView().setDividerHeight(0);
-
 		mDatabase = new AccessDatabase(getActivity());
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
@@ -99,16 +100,24 @@ public class TransactionGroupListFragment
 	@Override
 	public TransactionGroupListAdapter onAdapter()
 	{
-		return new TransactionGroupListAdapter(getActivity()).setSelect(getSelect());
-	}
+		return new TransactionGroupListAdapter(getActivity())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			{
+				super.onBindViewHolder(holder, position);
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		if (!setItemSelected(position))
-			TransactionActivity.startInstance(getActivity(), ((TransactionObject.Group) getAdapter().getItem(position)).groupId);
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						if (!setItemSelected(holder))
+							TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
+					}
+				});
+			}
+		}.setSelect(getSelect());
 	}
 
 	@Override

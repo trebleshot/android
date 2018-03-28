@@ -6,15 +6,18 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
@@ -22,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class ApplicationListAdapter
-		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder>
+		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder>
 		implements SweetImageLoader.Handler<ApplicationListAdapter.PackageHolder, Drawable>
 {
 	private boolean mShowSysApps = false;
@@ -62,68 +65,48 @@ public class ApplicationListAdapter
 		return list;
 	}
 
-	@Override
-	public int getCount()
+	public void showSystemApps(boolean show)
 	{
-		return getItemList().size();
+		mShowSysApps = show;
+	}
+
+	@NonNull
+	@Override
+	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	{
+		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_application, parent, false));
 	}
 
 	@Override
-	public Object getItem(int position)
+	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, int position)
 	{
-		return getItemList().get(position);
-	}
+		final View parentView = holder.getView();
+		final PackageHolder object = getItem(position);
 
-	@Override
-	public long getItemId(int p1)
-	{
-		return 0;
-	}
+		final View selector = parentView.findViewById(R.id.selector);
+		final View layoutImage = parentView.findViewById(R.id.layout_image);
+		ImageView image = parentView.findViewById(R.id.image);
+		TextView text1 = parentView.findViewById(R.id.text);
+		TextView text2 = parentView.findViewById(R.id.text2);
 
-	public ArrayList<PackageHolder> getList()
-	{
-		return getItemList();
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup viewGroup)
-	{
-		if (convertView == null)
-			convertView = getInflater().inflate(R.layout.list_application, viewGroup, false);
-
-		final PackageHolder holder = (PackageHolder) getItem(position);
-
-		final View selector = convertView.findViewById(R.id.selector);
-		final View layoutImage = convertView.findViewById(R.id.layout_image);
-		ImageView image = convertView.findViewById(R.id.image);
-		TextView text1 = convertView.findViewById(R.id.text);
-		TextView text2 = convertView.findViewById(R.id.text2);
-
-		text1.setText(holder.friendlyName);
-		text2.setText(holder.version);
+		text1.setText(object.friendlyName);
+		text2.setText(object.version);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(holder.isSelectableSelected());
+			selector.setSelected(object.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					getSelectionConnection().setSelected(holder);
-					selector.setSelected(holder.isSelectableSelected());
+					getSelectionConnection().setSelected(object);
+					selector.setSelected(object.isSelectableSelected());
 				}
 			});
 		}
 
-		SweetImageLoader.load(this, getContext(), image, holder);
-
-		return convertView;
-	}
-
-	public void showSystemApps(boolean show)
-	{
-		mShowSysApps = show;
+		SweetImageLoader.load(this, getContext(), image, object);
 	}
 
 	public static class PackageHolder extends Shareable

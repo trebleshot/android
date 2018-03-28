@@ -7,15 +7,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.util.ArrayList;
@@ -27,7 +30,7 @@ import java.util.Collections;
  */
 
 public class VideoListAdapter
-		extends ShareableListAdapter<VideoListAdapter.VideoHolder>
+		extends ShareableListAdapter<VideoListAdapter.VideoHolder, RecyclerViewAdapter.ViewHolder>
 		implements SweetImageLoader.Handler<VideoListAdapter.VideoHolder, Bitmap>
 {
 	private ContentResolver mResolver;
@@ -85,51 +88,38 @@ public class VideoListAdapter
 		return list;
 	}
 
+	@NonNull
 	@Override
-	public int getCount()
+	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return getItemList().size();
+		return new RecyclerViewAdapter.ViewHolder(getInflater()
+				.inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
 	}
 
 	@Override
-	public Object getItem(int position)
+	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
 	{
-		return getItemList().get(position);
-	}
+		final VideoHolder object = this.getItem(position);
+		final View parentView = holder.getView();
 
-	@Override
-	public long getItemId(int p1)
-	{
-		return 0;
-	}
+		final View selector = parentView.findViewById(R.id.selector);
+		ImageView image = parentView.findViewById(R.id.image);
+		TextView text1 = parentView.findViewById(R.id.text);
+		TextView text2 = parentView.findViewById(R.id.text2);
 
-	public ArrayList<VideoHolder> getList()
-	{
-		return getItemList();
-	}
-
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
-		if (convertView == null)
-			convertView = getInflater().inflate(R.layout.list_video, parent, false);
-
-		final VideoHolder holder = (VideoHolder) this.getItem(position);
-
-		final View selector = convertView.findViewById(R.id.selector);
-		ImageView image = convertView.findViewById(R.id.image);
-		TextView text1 = convertView.findViewById(R.id.text);
-		TextView text2 = convertView.findViewById(R.id.text2);
-
-		text1.setText(holder.friendlyName);
-		text2.setText(holder.duration);
+		text1.setText(object.friendlyName);
+		text2.setText(object.duration);
 
 		if (getSelectionConnection() != null)
-			selector.setSelected(holder.isSelectableSelected());
+			selector.setSelected(object.isSelectableSelected());
 
-		SweetImageLoader.load(this, getContext(), image, holder);
+		SweetImageLoader.load(this, getContext(), image, object);
+	}
 
-		return convertView;
+	@Override
+	public boolean isGridSupported()
+	{
+		return true;
 	}
 
 	public static class VideoHolder extends Shareable

@@ -1,18 +1,21 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
+
+import java.util.List;
 
 /**
  * created by: veli
  * date: 26.03.2018 11:46
  */
 
-abstract public class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder>
+abstract public class RecyclerViewAdapter<T, V extends RecyclerViewAdapter.ViewHolder>
 		extends RecyclerView.Adapter<V>
 		implements ListAdapterImpl<T>
 {
@@ -45,5 +48,21 @@ abstract public class RecyclerViewAdapter<T, V extends RecyclerView.ViewHolder>
 	public LayoutInflater getInflater()
 	{
 		return mInflater;
+	}
+
+	public static class ViewHolder extends RecyclerView.ViewHolder
+	{
+		private View mView;
+
+		public ViewHolder(View itemView)
+		{
+			super(itemView);
+			mView = itemView;
+		}
+
+		public View getView()
+		{
+			return mView;
+		}
 	}
 }

@@ -15,11 +15,12 @@ import java.util.Comparator;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable> extends ListViewAdapter<T>
+abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder> extends RecyclerViewAdapter<T, V>
 {
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private ArrayList<T> mItemList = new ArrayList<>();
+	private boolean mGridLayoutRequested = false;
 
 	public EditableListAdapter(Context context)
 	{
@@ -85,8 +86,14 @@ abstract public class EditableListAdapter<T extends Editable> extends ListViewAd
 			getItemList().clear();
 			getItemList().addAll(passedItem);
 
-			updateSelectionStatus(getItemList());
+			syncSelectionList(getItemList());
 		}
+	}
+
+	@Override
+	public int getCount()
+	{
+		return getItemList().size();
 	}
 
 	public EditableListFragment getFragment()
@@ -94,9 +101,37 @@ abstract public class EditableListAdapter<T extends Editable> extends ListViewAd
 		return mFragment;
 	}
 
+	@Override
+	public int getItemCount()
+	{
+		return getCount();
+	}
+
+	public T getItem(int position)
+	{
+		return getList().get(position);
+	}
+
+	public T getItem(V holder)
+	{
+		return getList().get(holder.getAdapterPosition());
+	}
+
+	@Override
+	public long getItemId(int position)
+	{
+		return position;
+	}
+
 	public ArrayList<T> getItemList()
 	{
 		return mItemList;
+	}
+
+	@Override
+	public ArrayList<T> getList()
+	{
+		return getItemList();
 	}
 
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
@@ -104,13 +139,25 @@ abstract public class EditableListAdapter<T extends Editable> extends ListViewAd
 		return mSelectionConnection;
 	}
 
-	public void notifySelectionChanges()
+	public boolean isGridSupported()
 	{
-		synchronized (getItemList()) {
-			updateSelectionStatus(getItemList());
-		}
+		return false;
+	}
 
+	public boolean isGridLayoutRequested()
+	{
+		return mGridLayoutRequested;
+	}
+
+	public void notifyAllSelectionChanges()
+	{
+		syncSelectionList();
 		notifyDataSetChanged();
+	}
+
+	public void notifyGridSizeUpdate()
+	{
+		mGridLayoutRequested = getFragment() != null && getFragment().getViewingGridSize() > 1;
 	}
 
 	public void setSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
@@ -121,9 +168,17 @@ abstract public class EditableListAdapter<T extends Editable> extends ListViewAd
 	public void setFragment(EditableListFragment fragment)
 	{
 		mFragment = fragment;
+		notifyGridSizeUpdate();
 	}
 
-	public synchronized void updateSelectionStatus(ArrayList<T> itemList)
+	public synchronized void syncSelectionList()
+	{
+		synchronized (getItemList()) {
+			syncSelectionList(getItemList());
+		}
+	}
+
+	public synchronized void syncSelectionList(ArrayList<T> itemList)
 	{
 		if (getSelectionConnection() != null)
 			for (T item : itemList)

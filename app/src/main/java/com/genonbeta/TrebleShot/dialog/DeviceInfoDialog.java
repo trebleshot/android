@@ -238,6 +238,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 									adapter.notifyDataSetChanged();
 
 									if (adapter.getCount() > 0) {
+										// FIXME: 27.03.2018 fixme okat
+										/*
 										builder.setAdapter(adapter, new DialogInterface.OnClickListener()
 										{
 											@Override
@@ -245,7 +247,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 											{
 												TransactionActivity.startInstance(getContext(), ((TransactionObject.Group) adapter.getItem(i)).groupId);
 											}
-										});
+										});*/
+
 									} else
 										builder.setMessage(R.string.text_listEmpty);
 
