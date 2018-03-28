@@ -8,9 +8,8 @@
     <color name="whiteAccent">#fff</color>
     <color name="actionModeBackground">#f3009951</color>
     <color name="actionModeColorPrimary">#175040</color>
-    <color name="videoBackground">#000000</color>
-    <color name="imageBackground">@color/videoBackground</color>
-    <color name="songBackground">@color/videoBackground</color>
+    <color name="thumbnailColor">#999</color>
+    <color name="whiteTextShadowColor">#999</color>
     <color name="videoDescriptionBackground">#a04e4e4e</color>
     <color name="videoTextColor">@android:color/white</color>
     <color name="networkDeviceRipple">@color/colorAccent</color>

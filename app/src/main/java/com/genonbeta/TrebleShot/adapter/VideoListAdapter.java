@@ -3,8 +3,6 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -13,10 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.util.SweetImageLoader;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
@@ -31,24 +29,13 @@ import java.util.Collections;
 
 public class VideoListAdapter
 		extends ShareableListAdapter<VideoListAdapter.VideoHolder, RecyclerViewAdapter.ViewHolder>
-		implements SweetImageLoader.Handler<VideoListAdapter.VideoHolder, Bitmap>
 {
 	private ContentResolver mResolver;
-	private Bitmap mDefaultImageBitmap;
 
 	public VideoListAdapter(Context context)
 	{
 		super(context);
-
 		mResolver = context.getContentResolver();
-		mDefaultImageBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_refresh_white_24dp);
-	}
-
-	@Override
-	public Bitmap onLoadBitmap(VideoHolder object)
-	{
-		Bitmap bitmap = MediaStore.Video.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Video.Thumbnails.MINI_KIND, null);
-		return bitmap == null ? mDefaultImageBitmap : bitmap;
 	}
 
 	@Override
@@ -106,14 +93,20 @@ public class VideoListAdapter
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView text1 = parentView.findViewById(R.id.text);
 		TextView text2 = parentView.findViewById(R.id.text2);
+		TextView text3 = parentView.findViewById(R.id.text3);
 
 		text1.setText(object.friendlyName);
 		text2.setText(object.duration);
+		text3.setText(FileUtils.sizeExpression(object.size, true));
 
 		if (getSelectionConnection() != null)
 			selector.setSelected(object.isSelectableSelected());
 
-		SweetImageLoader.load(this, getContext(), image, object);
+		GlideApp.with(getContext())
+				.load(object.uri)
+				.override(400)
+				.centerCrop()
+				.into(image);
 	}
 
 	@Override

@@ -12,16 +12,12 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
@@ -195,7 +191,7 @@ public class FileListFragment
 		MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
 
 		//if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-			//shareOthers.setVisible(false);
+		//shareOthers.setVisible(false);
 
 		MenuItem ejectDirectory = menu.findItem(R.id.action_mode_file_eject_directory);
 

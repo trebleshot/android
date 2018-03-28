@@ -3,22 +3,18 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
@@ -28,16 +24,13 @@ import java.util.Collections;
 
 public class MusicListAdapter
 		extends ShareableListAdapter<MusicListAdapter.SongHolder, RecyclerViewAdapter.ViewHolder>
-		implements SweetImageLoader.Handler<MusicListAdapter.AlbumHolder, Drawable>
 {
-	private Drawable mDefaultAlbumDrawable;
 	private ContentResolver mResolver;
 
 	public MusicListAdapter(Context context)
 	{
 		super(context);
 		mResolver = context.getContentResolver();
-		mDefaultAlbumDrawable = ContextCompat.getDrawable(getContext(), R.drawable.ic_music_note_white_24dp);
 	}
 
 	@Override
@@ -100,13 +93,6 @@ public class MusicListAdapter
 		return list;
 	}
 
-	@Override
-	public Drawable onLoadBitmap(AlbumHolder object)
-	{
-		Drawable loadedCover = object == null ? null : Drawable.createFromPath(object.art);
-		return loadedCover == null ? mDefaultAlbumDrawable : loadedCover;
-	}
-
 	@NonNull
 	@Override
 	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -145,7 +131,11 @@ public class MusicListAdapter
 		text2.setText(object.artist);
 		text3.setText(object.albumHolder.title);
 
-		SweetImageLoader.load(this, getContext(), image, object.albumHolder);
+		GlideApp.with(getContext())
+				.load(object.albumHolder.art)
+				.override(160)
+				.centerCrop()
+				.into(image);
 	}
 
 	public static class SongHolder extends Shareable

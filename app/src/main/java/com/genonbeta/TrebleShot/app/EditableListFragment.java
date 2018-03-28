@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +40,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	private boolean mDefaultOrderingAscending = true;
 	private int mDefaultSortingCriteria = R.id.actions_abs_editable_sort_by_name;
 	private int mDefaultViewingGridSize = 1;
+	private int mDefaultViewingGridSizeLandscape = 1;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -87,7 +86,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		if (gridSizeItem != null) {
 			Menu gridSizeMenu = gridSizeItem.getSubMenu();
 
-			for (int i = 1; i < 5; i++)
+			for (int i = 1; i < (isScreenLandscape() ? 7 : 5); i++)
 				gridSizeMenu.add(R.id.actions_abs_editable_group_grid_size, 0, i,
 						getContext().getResources().getQuantityString(R.plurals.text_gridRow, i, i));
 
@@ -238,20 +237,28 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public void changeGridViewSize(int gridSize)
 	{
-		mViewPreferences.edit().putInt(getClass().getSimpleName() + "GridSize", gridSize).apply();
+		mViewPreferences.edit()
+				.putInt(getUniqueSettingKey("GridSize" + (isScreenLandscape() ? "Landscape" : "")), gridSize)
+				.apply();
+
 		updateGridSize(gridSize);
 	}
 
 	public void changeSortingCriteria(int id)
 	{
-		mViewPreferences.edit().putInt(getClass().getSimpleName() + "SortBy", id).apply();
+		mViewPreferences.edit().putInt(getUniqueSettingKey("SortBy"), id).apply();
 		refreshList();
 	}
 
 	public void changeOrderingCriteria(int id)
 	{
-		mViewPreferences.edit().putBoolean(getClass().getSimpleName() + "SortOrder", id == R.id.actions_abs_editable_sort_order_ascending).apply();
+		mViewPreferences.edit().putBoolean(getUniqueSettingKey("SortOrder"), id == R.id.actions_abs_editable_sort_order_ascending).apply();
 		refreshList();
+	}
+
+	public String getUniqueSettingKey(String setting)
+	{
+		return getClass().getSimpleName() + setting;
 	}
 
 	@Override
@@ -267,7 +274,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public int getSortingCriteria()
 	{
-		return mViewPreferences.getInt(getClass().getSimpleName() + "SortBy", mDefaultSortingCriteria);
+		return mViewPreferences.getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria);
 	}
 
 	public PowerfulActionMode getPowerfulActionMode()
@@ -282,7 +289,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		if (mViewPreferences == null)
 			return 1;
 
-		return mViewPreferences.getInt(getClass().getSimpleName() + "GridSize", mDefaultViewingGridSize);
+		return isScreenLandscape()
+				? mViewPreferences.getInt(getUniqueSettingKey("GridSizeLandscape"), mDefaultViewingGridSizeLandscape)
+				: mViewPreferences.getInt(getUniqueSettingKey("GridSize"), mDefaultViewingGridSize);
 	}
 
 	public boolean isRefreshLocked()
@@ -304,7 +313,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public boolean isSortingAscending()
 	{
-		return mViewPreferences.getBoolean(getClass().getSimpleName() + "SortOrder", mDefaultOrderingAscending);
+		return mViewPreferences.getBoolean(getUniqueSettingKey("SortOrder"), mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -356,9 +365,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		mDefaultOrderingAscending = ascending;
 	}
 
-	public void setDefaultViewingGridSize(int gridSize)
+	public void setDefaultViewingGridSize(int gridSize, int gridSizeLandscape)
 	{
 		mDefaultViewingGridSize = gridSize;
+		mDefaultViewingGridSizeLandscape = gridSizeLandscape;
 	}
 
 	public boolean setItemSelected(V holder)

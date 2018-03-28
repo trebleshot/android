@@ -4,14 +4,28 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="1dp"
-    android:background="#000">
+    android:background="@color/thumbnailColor">
 
     <ImageView
         android:id="@+id/image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:contentDescription="@string/text_image"/>
+
+    <TextView
+        android:id="@+id/text3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:padding="8dp"
+        android:shadowColor="@color/whiteTextShadowColor"
+        android:shadowRadius="2.5"
+        android:textColor="@color/whiteAccent"
+        android:textSize="12sp"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/text2"
@@ -21,27 +35,23 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:padding="8dp"
-        android:shadowColor="@color/imageBackground"
+        android:shadowColor="@color/whiteTextShadowColor"
         android:shadowRadius="2.5"
         android:textColor="@color/whiteAccent"
-        android:textSize="12sp"/>
+        android:textSize="12sp"
+        android:visibility="gone"/>
 
-    <LinearLayout
+    <TextView
+        android:id="@+id/text"
+        style="@style/marqueeText.primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:padding="10dp">
-
-        <TextView
-            android:id="@+id/text"
-            style="@style/marqueeText.primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:shadowColor="@color/imageBackground"
-            android:shadowRadius="2.5"
-            android:textColor="@color/videoTextColor"/>
-
-    </LinearLayout>
+        android:padding="10dp"
+        android:shadowColor="@color/whiteTextShadowColor"
+        android:shadowRadius="2.5"
+        android:textColor="@color/videoTextColor"
+        android:visibility="gone"/>
 
     <View
         android:id="@+id/selector"

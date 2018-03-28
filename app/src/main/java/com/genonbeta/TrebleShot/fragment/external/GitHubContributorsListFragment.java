@@ -6,16 +6,16 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
@@ -119,8 +119,13 @@ public class GitHubContributorsListFragment
 		{
 			final ContributorObject contributorObject = getList().get(position);
 			TextView textView = holder.getView().findViewById(R.id.text);
+			ImageView imageView = holder.getView().findViewById(R.id.image);
 
 			textView.setText(contributorObject.name);
+
+			Glide.with(getContext())
+					.load(contributorObject.urlAvatar)
+					.into(imageView);
 		}
 
 		@Override

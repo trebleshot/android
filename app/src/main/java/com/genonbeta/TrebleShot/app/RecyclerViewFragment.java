@@ -96,7 +96,7 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerViewAdapter.View
 
 	public RecyclerView.LayoutManager getDefaultLayoutManager()
 	{
-		return  new LinearLayoutManager(getContext());
+		return new LinearLayoutManager(getContext());
 	}
 
 	@Override

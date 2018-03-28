@@ -1,9 +1,6 @@
 package com.genonbeta.TrebleShot;
 
 import android.app.Application;
-import android.content.Intent;
-import android.content.UriPermission;
-import android.os.Build;
 
 /**
  * created by: Veli

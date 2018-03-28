@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -12,11 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -26,7 +24,6 @@ import java.util.Collections;
 
 public class ApplicationListAdapter
 		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder>
-		implements SweetImageLoader.Handler<ApplicationListAdapter.PackageHolder, Drawable>
 {
 	private boolean mShowSysApps = false;
 	private PackageManager mManager;
@@ -36,12 +33,6 @@ public class ApplicationListAdapter
 		super(context);
 		mShowSysApps = showSystemApps;
 		mManager = mContext.getPackageManager();
-	}
-
-	@Override
-	public Drawable onLoadBitmap(PackageHolder object)
-	{
-		return object.appInfo.loadIcon(mManager);
 	}
 
 	@Override
@@ -106,7 +97,11 @@ public class ApplicationListAdapter
 			});
 		}
 
-		SweetImageLoader.load(this, getContext(), image, object);
+		GlideApp.with(getContext())
+				.load(object.appInfo)
+				.override(160)
+				.centerCrop()
+				.into(image);
 	}
 
 	public static class PackageHolder extends Shareable

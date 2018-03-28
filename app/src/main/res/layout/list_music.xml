@@ -15,7 +15,7 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
         android:layout_marginStart="8dp"
-        android:background="@color/songBackground">
+        android:background="@color/thumbnailColor">
 
         <ImageView
             android:id="@+id/image"

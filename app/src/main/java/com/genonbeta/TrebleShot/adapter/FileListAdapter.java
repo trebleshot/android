@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -220,7 +219,7 @@ public class FileListAdapter
 			mSelector = itemView.findViewById(R.id.selector);
 			mLayoutImage = itemView.findViewById(R.id.layout_image);
 			mImage = itemView.findViewById(R.id.image);
-			mText1= itemView.findViewById(R.id.text);
+			mText1 = itemView.findViewById(R.id.text);
 			mText2 = itemView.findViewById(R.id.text2);
 		}
 

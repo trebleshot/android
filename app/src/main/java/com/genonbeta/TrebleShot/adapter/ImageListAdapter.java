@@ -3,8 +3,6 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -13,11 +11,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.SweetImageLoader;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -31,24 +28,13 @@ import java.util.Collections;
 
 public class ImageListAdapter
 		extends ShareableListAdapter<ImageListAdapter.ImageHolder, RecyclerViewAdapter.ViewHolder>
-		implements SweetImageLoader.Handler<ImageListAdapter.ImageHolder, Bitmap>
 {
 	private ContentResolver mResolver;
-	private Bitmap mDefaultImageBitmap;
 
 	public ImageListAdapter(Context context)
 	{
 		super(context);
-
 		mResolver = context.getContentResolver();
-		mDefaultImageBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_refresh_white_24dp);
-	}
-
-	@Override
-	public Bitmap onLoadBitmap(ImageHolder object)
-	{
-		Bitmap bitmap = MediaStore.Images.Thumbnails.getThumbnail(mResolver, object.id, MediaStore.Images.Thumbnails.MINI_KIND, null);
-		return bitmap == null ? mDefaultImageBitmap : bitmap;
 	}
 
 	@Override
@@ -102,7 +88,6 @@ public class ImageListAdapter
 		final ImageHolder object = getItem(position);
 
 		final View selector = parentView.findViewById(R.id.selector);
-		final View layoutImage = parentView.findViewById(R.id.layout_image);
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView text1 = parentView.findViewById(R.id.text);
 		TextView text2 = parentView.findViewById(R.id.text2);
@@ -113,7 +98,11 @@ public class ImageListAdapter
 		if (getSelectionConnection() != null)
 			selector.setSelected(object.isSelectableSelected());
 
-		SweetImageLoader.load(this, getContext(), image, object);
+		GlideApp.with(getContext())
+				.load(object.uri)
+				.override(400)
+				.centerCrop()
+				.into(image);
 	}
 
 	@Override

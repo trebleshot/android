@@ -9,7 +9,6 @@ import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
@@ -25,7 +24,7 @@ public class VideoListFragment
 
 		setDefaultOrderingAscending(false);
 		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
-		setDefaultViewingGridSize(3);
+		setDefaultViewingGridSize(2, 4);
 	}
 
 	@Override

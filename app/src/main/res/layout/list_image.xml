@@ -7,15 +7,15 @@
 
     <FrameLayout
         android:id="@+id/layout_image"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginEnd="23dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="23dp"
         android:layout_marginStart="8dp"
-        android:background="@color/imageBackground">
+        android:background="@color/thumbnailColor">
 
         <ImageView
             android:id="@+id/image"

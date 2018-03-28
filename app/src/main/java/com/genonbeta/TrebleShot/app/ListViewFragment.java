@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.content.AsyncTaskLoader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.widget.ListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.ListViewAdapter;
-
-import java.util.ArrayList;
 
 /**
  * created by: veli

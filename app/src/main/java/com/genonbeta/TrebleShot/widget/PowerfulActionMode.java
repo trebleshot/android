@@ -11,7 +11,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Selectable;
