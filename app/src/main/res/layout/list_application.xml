@@ -21,7 +21,8 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:src="@mipmap/ic_launcher"/>
+            android:src="@drawable/ic_android_head_grey600_36dp"
+            />
 
         <View
             android:id="@+id/selector"
@@ -49,7 +50,7 @@
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="4dp" />
+            android:layout_height="4dp"/>
 
         <TextView
             android:id="@+id/text2"

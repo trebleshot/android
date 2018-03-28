@@ -98,12 +98,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		setSupportActionBar(toolbar);
 
 		mDrawerLayout = findViewById(R.id.drawer_layout);
-
-		if (mDrawerLayout != null) {
-			ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
-			mDrawerLayout.addDrawerListener(toggle);
-			toggle.syncState();
-		}
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
+		mDrawerLayout.addDrawerListener(toggle);
+		toggle.syncState();
 
 		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
 		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);

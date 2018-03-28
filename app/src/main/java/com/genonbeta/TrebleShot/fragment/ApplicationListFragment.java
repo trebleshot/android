@@ -43,7 +43,7 @@ public class ApplicationListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_apps_white_24dp);
+		setEmptyImage(R.drawable.ic_android_head_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyApp));
 	}
 
@@ -62,7 +62,6 @@ public class ApplicationListFragment
 					@Override
 					public void onClick(View v)
 					{
-
 						if (!setItemSelected(holder)) {
 							final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
 							final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);

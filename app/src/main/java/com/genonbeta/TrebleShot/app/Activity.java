@@ -34,6 +34,7 @@ public abstract class Activity extends AppCompatActivity
 			defaultPreferences.edit()
 					.putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
 					.apply();
+
 	}
 
 	@Override

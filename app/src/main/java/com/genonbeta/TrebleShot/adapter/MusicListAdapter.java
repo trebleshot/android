@@ -133,6 +133,7 @@ public class MusicListAdapter
 
 		GlideApp.with(getContext())
 				.load(object.albumHolder.art)
+				.placeholder(R.drawable.ic_music_note_white_24dp)
 				.override(160)
 				.centerCrop()
 				.into(image);

@@ -97,7 +97,7 @@ public class VideoListAdapter
 
 		text1.setText(object.friendlyName);
 		text2.setText(object.duration);
-		text3.setText(FileUtils.sizeExpression(object.size, true));
+		text3.setText(FileUtils.sizeExpression(object.size, false));
 
 		if (getSelectionConnection() != null)
 			selector.setSelected(object.isSelectableSelected());

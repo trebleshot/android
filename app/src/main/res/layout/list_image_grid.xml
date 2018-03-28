@@ -22,7 +22,7 @@
         android:layout_alignParentTop="true"
         android:padding="8dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
+        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"
         android:visibility="gone"/>
@@ -36,7 +36,7 @@
         android:layout_alignParentTop="true"
         android:padding="8dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
+        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"
         android:visibility="gone"/>
@@ -49,7 +49,7 @@
         android:layout_alignParentBottom="true"
         android:padding="10dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
+        android:shadowRadius="5"
         android:textColor="@color/videoTextColor"
         android:visibility="gone"/>
 

@@ -17,12 +17,11 @@
         android:id="@+id/text3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:padding="8dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
+        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
@@ -30,12 +29,11 @@
         android:id="@+id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:padding="8dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
+        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
@@ -47,8 +45,9 @@
         android:layout_alignParentBottom="true"
         android:padding="10dp"
         android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="2.5"
-        android:textColor="@color/videoTextColor"/>
+        android:shadowRadius="5"
+        android:textColor="@color/videoTextColor"
+        android:visibility="gone"/>
 
     <View
         android:id="@+id/selector"

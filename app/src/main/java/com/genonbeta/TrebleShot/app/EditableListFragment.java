@@ -4,12 +4,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -66,6 +70,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		}
 
 		updateGridSize();
+	}
+
+
+	@Override
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+	{
+		super.onViewCreated(view, savedInstanceState);
+		getAdapter().setHasStableIds(true);
 	}
 
 	@Override
@@ -409,7 +421,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		for (T selectable : getSelectableList())
 			getSelectionConnection().setSelected(selectable, selection);
 
-		getAdapter().notifyDataSetChanged();
+		getAdapter().notifyItemRangeChanged(0, getAdapter().getItemCount());
 	}
 
 	public void setSortingSupported(boolean sortingSupported)
@@ -429,11 +441,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 		getAdapter().notifyGridSizeUpdate();
 
-		getListView().setLayoutManager(gridSize > 1
-				? new GridLayoutManager(getContext(), gridSize)
-				: getDefaultLayoutManager());
+		if (getListView().getLayoutManager() instanceof GridLayoutManager
+				&& ((GridLayoutManager)getListView().getLayoutManager()).getSpanCount() > 1
+				&& gridSize > 1) {
+			((GridLayoutManager) getListView().getLayoutManager()).setSpanCount(gridSize);
+		} else {
+			getListView().setLayoutManager(gridSize > 1
+					? new GridLayoutManager(getContext(), gridSize)
+					: getDefaultLayoutManager());
 
-		getListView().setAdapter(getAdapter());
+			getListView().setAdapter(getAdapter());
+		}
 
 		return true;
 	}

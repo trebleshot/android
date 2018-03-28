@@ -13,7 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -123,8 +123,10 @@ public class GitHubContributorsListFragment
 
 			textView.setText(contributorObject.name);
 
-			Glide.with(getContext())
+			GlideApp.with(getContext())
 					.load(contributorObject.urlAvatar)
+					.override(90)
+					.circleCrop()
 					.into(imageView);
 		}
 
