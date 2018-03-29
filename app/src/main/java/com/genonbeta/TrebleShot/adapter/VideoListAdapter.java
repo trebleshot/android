@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -13,25 +14,16 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.date.DateMerger;
-import com.genonbeta.TrebleShot.util.listing.Lister;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 
 /**
  * created by: Veli
  * date: 18.11.2017 13:32
  */
 
-public class VideoListAdapter
-		extends ShareableListAdapter<VideoListAdapter.VideoHolder, RecyclerViewAdapter.ViewHolder>
+public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter.VideoHolder, GroupShareableListAdapter.ViewHolder>
 {
 	public static final int VIEW_TYPE_TITLE = 1;
 
@@ -39,88 +31,27 @@ public class VideoListAdapter
 
 	public VideoListAdapter(Context context)
 	{
-		super(context);
+		super(context, MODE_GROUP_BY_DATE);
 		mResolver = context.getContentResolver();
-	}
-
-	@Override
-	public ArrayList<VideoHolder> onLoad()
-	{
-
-		Lister<VideoHolder, DateMerger<VideoHolder>> mergerLister = new Lister<>();
-		/*Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
-
-		if (cursor != null) {
-			if (cursor.moveToFirst()) {
-				int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
-				int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
-				int displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
-				int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
-				int dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
-				int sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
-				int typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE);
-
-				do {
-					VideoHolder holder = new VideoHolder(cursor.getInt(idIndex),
-							cursor.getString(titleIndex),
-							cursor.getString(displayIndex),
-							cursor.getString(typeIndex),
-							cursor.getLong(lengthIndex),
-							cursor.getLong(dateIndex),
-							cursor.getLong(sizeIndex),
-							Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
-
-					mergerLister.offer(holder, holder.date * 1000);
-				}
-				while (cursor.moveToNext());
-			}
-
-			cursor.close();
-		}
-*/
-		ArrayList<VideoHolder> list = new ArrayList<>();
-
-		Collections.sort(mergerLister.getList(), new Comparator<DateMerger<VideoHolder>>()
-		{
-			@Override
-			public int compare(DateMerger<VideoHolder> o1, DateMerger<VideoHolder> o2)
-			{
-				return o2.compareTo(o1);
-			}
-		});
-
-		for (DateMerger<VideoHolder> thisMerger : mergerLister.getList()) {
-			Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
-
-			list.add(new DateHolder(thisMerger.getYear() + "/" + thisMerger.getMonth() + "/" + thisMerger.getDay()));
-			list.addAll(thisMerger.getBelongings());
-		}
-
-		return list;
 	}
 
 	@NonNull
 	@Override
-	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(viewType == VIEW_TYPE_TITLE
-			? R.layout.layout_list_title
-			: (isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video), parent, false));
+		return viewType == VIEW_TYPE_REPRESENTATIVE
+				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
+				: new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 	{
 		final VideoHolder object = this.getItem(position);
 		final View parentView = holder.getView();
 
-		if (holder.getItemViewType() == VIEW_TYPE_TITLE)
+		if (!holder.tryBinding(object))
 		{
-			DateHolder dateObject = (DateHolder) object;
-			TextView titleText = parentView.findViewById(R.id.layout_list_title_text);
-
-			titleText.setText(dateObject.dateString);
-		} else {
 			final View selector = parentView.findViewById(R.id.selector);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
@@ -143,12 +74,43 @@ public class VideoListAdapter
 	}
 
 	@Override
-	public int getItemViewType(int position)
+	protected void onLoad(GroupLister<VideoHolder> lister)
 	{
-		if (getItem(position) instanceof DateHolder)
-			return VIEW_TYPE_TITLE;
+		Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
-		return super.getItemViewType(position);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
+				int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
+				int displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
+				int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
+				int dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
+				int sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
+				int typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE);
+
+				do {
+					VideoHolder holder = new VideoHolder(cursor.getInt(idIndex),
+							cursor.getString(titleIndex),
+							cursor.getString(displayIndex),
+							cursor.getString(typeIndex),
+							cursor.getLong(lengthIndex),
+							cursor.getLong(dateIndex),
+							cursor.getLong(sizeIndex),
+							Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+
+					lister.offer(holder);
+				}
+				while (cursor.moveToNext());
+			}
+
+			cursor.close();
+		}
+	}
+
+	@Override
+	protected VideoHolder onGenerateRepresentative(String representativeText)
+	{
+		return new VideoHolder(representativeText);
 	}
 
 	@Override
@@ -157,14 +119,14 @@ public class VideoListAdapter
 		return true;
 	}
 
-	public static class VideoHolder extends Shareable
+	public static class VideoHolder extends GroupShareableListAdapter.GroupShareable
 	{
 		public long id;
 		public String duration;
 
-		public VideoHolder()
+		public VideoHolder(String representativeText)
 		{
-			super();
+			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
 		public VideoHolder(int id, String friendlyName, String fileName, String mimeType, long duration, long date, long size, Uri uri)
@@ -173,29 +135,6 @@ public class VideoListAdapter
 
 			this.id = id;
 			this.duration = TimeUtils.getDuration(duration);
-		}
-	}
-
-	public static class DateHolder extends VideoHolder
-	{
-		public String dateString;
-
-		public DateHolder(String dateString)
-		{
-			super();
-			this.dateString = dateString;
-		}
-
-		@Override
-		public boolean searchMatches(String searchWord)
-		{
-			return false;
-		}
-
-		@Override
-		public boolean setSelectableSelected(boolean selected)
-		{
-			return false;
 		}
 	}
 }

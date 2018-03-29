@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.date.DateMerger;
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
 import com.genonbeta.TrebleShot.util.listing.Lister;
+import com.genonbeta.TrebleShot.util.listing.Merger;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 
 import java.util.ArrayList;
@@ -42,15 +43,8 @@ public class ImageListAdapter
 	}
 
 	@Override
-	protected void onLoad(@Nullable Lister<ImageHolder, ComparableMerger<ImageHolder>> lister, ArrayList<ImageHolder> loadedList)
+	protected void onLoad(GroupLister<ImageHolder> lister)
 	{
-
-	}
-
-	@Override
-	public ArrayList<ImageHolder> onLoad()
-	{
-		Lister<ImageHolder, DateMerger<ImageHolder>> mergerLister = new Lister<>();
 		Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
 		if (cursor != null) {
@@ -72,33 +66,13 @@ public class ImageListAdapter
 
 					holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date * 1000));
 
-					mergerLister.offer(holder, new DateMerger<ImageHolder>(holder.date * 1000));
+					lister.offer(holder);
 				}
 				while (cursor.moveToNext());
 			}
 
 			cursor.close();
 		}
-
-		ArrayList<ImageHolder> list = new ArrayList<>();
-
-		Collections.sort(mergerLister.getList(), new Comparator<DateMerger<ImageHolder>>()
-		{
-			@Override
-			public int compare(DateMerger<ImageHolder> o1, DateMerger<ImageHolder> o2)
-			{
-				return o2.compareTo(o1);
-			}
-		});
-
-		for (DateMerger<ImageHolder> thisMerger : mergerLister.getList()) {
-			Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
-
-			list.add(new ImageHolder(String.valueOf(DateUtils.formatDateTime(getContext(), thisMerger.getTime(), DateUtils.FORMAT_SHOW_DATE))));
-			list.addAll(thisMerger.getBelongings());
-		}
-
-		return list;
 	}
 
 	@NonNull
@@ -138,6 +112,12 @@ public class ImageListAdapter
 	}
 
 	@Override
+	protected ImageHolder onGenerateRepresentative(String representativeText)
+	{
+		return new ImageHolder(representativeText);
+	}
+
+	@Override
 	public boolean isGridSupported()
 	{
 		return true;
@@ -147,11 +127,6 @@ public class ImageListAdapter
 	{
 		public long id;
 		public String dateTakenString;
-
-		public ImageHolder()
-		{
-			super();
-		}
 
 		public ImageHolder(String representativeText)
 		{
