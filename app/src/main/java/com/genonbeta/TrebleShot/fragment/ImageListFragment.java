@@ -15,10 +15,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 public class ImageListFragment
-		extends ShareableListFragment<ImageListAdapter.ImageHolder, RecyclerViewAdapter.ViewHolder, ImageListAdapter>
+		extends ShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -68,16 +69,25 @@ public class ImageListFragment
 			{
 				super.onBindViewHolder(holder, position);
 
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
+				if (!holder.isRepresentative())
+					holder.getView().setOnClickListener(new View.OnClickListener()
 					{
-						performLayoutClick(v, holder);
-					}
-				});
+						@Override
+						public void onClick(View v)
+						{
+							performLayoutClick(v, holder);
+						}
+					});
 			}
 		};
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == ImageListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
 
 	@Override

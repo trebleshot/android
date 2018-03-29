@@ -815,9 +815,10 @@ public class ShareActivity extends Activity
 		}
 
 		@Override
-		public void setSelectableSelected(boolean selected)
+		public boolean setSelectableSelected(boolean selected)
 		{
 			mSelected = selected;
+			return true;
 		}
 	}
 }

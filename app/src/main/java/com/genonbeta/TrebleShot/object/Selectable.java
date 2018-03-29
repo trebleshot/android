@@ -11,5 +11,5 @@ public interface Selectable
 
 	boolean isSelectableSelected();
 
-	void setSelectableSelected(boolean selected);
+	boolean setSelectableSelected(boolean selected);
 }

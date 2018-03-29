@@ -56,8 +56,8 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
 
 	public void checkReversed(AppCompatCheckBox checkBox, Selectable selectable)
 	{
-		selectable.setSelectableSelected(!selectable.isSelectableSelected());
-		checkBox.setChecked(selectable.isSelectableSelected());
+		if (selectable.setSelectableSelected(!selectable.isSelectableSelected()))
+			checkBox.setChecked(selectable.isSelectableSelected());
 	}
 
 	public void massCheck(boolean check)

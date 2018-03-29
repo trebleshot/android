@@ -102,9 +102,10 @@ public class TextStreamObject
 	}
 
 	@Override
-	public void setSelectableSelected(boolean selected)
+	public boolean setSelectableSelected(boolean selected)
 	{
 		isSelected = selected;
+		return true;
 	}
 
 	@Override

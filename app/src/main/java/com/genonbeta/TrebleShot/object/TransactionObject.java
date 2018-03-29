@@ -153,9 +153,10 @@ public class TransactionObject
 	}
 
 	@Override
-	public void setSelectableSelected(boolean selected)
+	public boolean setSelectableSelected(boolean selected)
 	{
 		mIsSelected = selected;
+		return true;
 	}
 
 	public static class Group
@@ -259,9 +260,10 @@ public class TransactionObject
 		}
 
 		@Override
-		public void setSelectableSelected(boolean selected)
+		public boolean setSelectableSelected(boolean selected)
 		{
 			mIsSelected = selected;
+			return true;
 		}
 
 		public static class Index

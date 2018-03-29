@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,13 +15,15 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
+import com.genonbeta.TrebleShot.util.date.DateMerger;
+import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
+import com.genonbeta.TrebleShot.util.listing.Lister;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * created by: Veli
@@ -27,82 +31,110 @@ import java.util.Collections;
  */
 
 public class ImageListAdapter
-		extends ShareableListAdapter<ImageListAdapter.ImageHolder, RecyclerViewAdapter.ViewHolder>
+		extends GroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
 {
 	private ContentResolver mResolver;
 
 	public ImageListAdapter(Context context)
 	{
-		super(context);
+		super(context, MODE_GROUP_BY_DATE);
 		mResolver = context.getContentResolver();
+	}
+
+	@Override
+	protected void onLoad(@Nullable Lister<ImageHolder, ComparableMerger<ImageHolder>> lister, ArrayList<ImageHolder> loadedList)
+	{
+
 	}
 
 	@Override
 	public ArrayList<ImageHolder> onLoad()
 	{
-		ArrayList<ImageHolder> list = new ArrayList<>();
+		Lister<ImageHolder, DateMerger<ImageHolder>> mergerLister = new Lister<>();
 		Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
 
-		if (cursor != null && cursor.moveToFirst()) {
-			int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
-			int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
-			int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
-			int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
-			int typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE);
+		if (cursor != null) {
+			if (cursor.moveToFirst()) {
+				int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+				int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
+				int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
+				int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
+				int typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE);
 
-			do {
-				ImageHolder holder = new ImageHolder(
-						cursor.getInt(idIndex),
-						cursor.getString(displayIndex),
-						cursor.getString(typeIndex),
-						cursor.getLong(dateAddedIndex),
-						cursor.getLong(sizeIndex),
-						Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+				do {
+					ImageHolder holder = new ImageHolder(
+							cursor.getInt(idIndex),
+							cursor.getString(displayIndex),
+							cursor.getString(typeIndex),
+							cursor.getLong(dateAddedIndex),
+							cursor.getLong(sizeIndex),
+							Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-				holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date * 1000));
+					holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date * 1000));
 
-				list.add(holder);
+					mergerLister.offer(holder, new DateMerger<ImageHolder>(holder.date * 1000));
+				}
+				while (cursor.moveToNext());
 			}
-			while (cursor.moveToNext());
 
-			Collections.sort(list, getDefaultComparator());
+			cursor.close();
 		}
 
-		cursor.close();
+		ArrayList<ImageHolder> list = new ArrayList<>();
+
+		Collections.sort(mergerLister.getList(), new Comparator<DateMerger<ImageHolder>>()
+		{
+			@Override
+			public int compare(DateMerger<ImageHolder> o1, DateMerger<ImageHolder> o2)
+			{
+				return o2.compareTo(o1);
+			}
+		});
+
+		for (DateMerger<ImageHolder> thisMerger : mergerLister.getList()) {
+			Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
+
+			list.add(new ImageHolder(String.valueOf(DateUtils.formatDateTime(getContext(), thisMerger.getTime(), DateUtils.FORMAT_SHOW_DATE))));
+			list.addAll(thisMerger.getBelongings());
+		}
 
 		return list;
 	}
 
 	@NonNull
 	@Override
-	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new RecyclerViewAdapter.ViewHolder(getInflater()
-				.inflate(isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false));
+		return viewType == VIEW_TYPE_REPRESENTATIVE
+				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
+				: new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 	{
 		final View parentView = holder.getView();
 		final ImageHolder object = getItem(position);
 
-		final View selector = parentView.findViewById(R.id.selector);
-		ImageView image = parentView.findViewById(R.id.image);
-		TextView text1 = parentView.findViewById(R.id.text);
-		TextView text2 = parentView.findViewById(R.id.text2);
+		if (!holder.tryBinding(object))
+		{
+			final View selector = parentView.findViewById(R.id.selector);
+			ImageView image = parentView.findViewById(R.id.image);
+			TextView text1 = parentView.findViewById(R.id.text);
+			TextView text2 = parentView.findViewById(R.id.text2);
 
-		text1.setText(object.friendlyName);
-		text2.setText(object.dateTakenString);
+			text1.setText(object.friendlyName);
+			text2.setText(object.dateTakenString);
 
-		if (getSelectionConnection() != null)
-			selector.setSelected(object.isSelectableSelected());
+			if (getSelectionConnection() != null)
+				selector.setSelected(object.isSelectableSelected());
 
-		GlideApp.with(getContext())
-				.load(object.uri)
-				.override(400)
-				.centerCrop()
-				.into(image);
+			GlideApp.with(getContext())
+					.load(object.uri)
+					.override(400)
+					.centerCrop()
+					.into(image);
+		}
 	}
 
 	@Override
@@ -111,10 +143,20 @@ public class ImageListAdapter
 		return true;
 	}
 
-	public static class ImageHolder extends Shareable
+	public static class ImageHolder extends GroupShareableListAdapter.GroupShareable
 	{
 		public long id;
 		public String dateTakenString;
+
+		public ImageHolder()
+		{
+			super();
+		}
+
+		public ImageHolder(String representativeText)
+		{
+			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
+		}
 
 		public ImageHolder(int id, String filename, String mimeType, long date, long size, Uri uri)
 		{

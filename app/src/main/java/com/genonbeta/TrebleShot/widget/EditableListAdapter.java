@@ -17,6 +17,8 @@ import java.util.Comparator;
 
 abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder> extends RecyclerViewAdapter<T, V>
 {
+	public static final int VIEW_TYPE_DEFAULT = 0;
+
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private ArrayList<T> mItemList = new ArrayList<>();
@@ -126,6 +128,12 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 	public ArrayList<T> getItemList()
 	{
 		return mItemList;
+	}
+
+	@Override
+	public int getItemViewType(int position)
+	{
+		return VIEW_TYPE_DEFAULT;
 	}
 
 	@Override

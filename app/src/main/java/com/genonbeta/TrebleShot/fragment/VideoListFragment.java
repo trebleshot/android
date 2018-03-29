@@ -64,16 +64,25 @@ public class VideoListFragment
 			{
 				super.onBindViewHolder(holder, position);
 
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
+				if (holder.getItemViewType() != VideoListAdapter.VIEW_TYPE_TITLE)
+					holder.getView().setOnClickListener(new View.OnClickListener()
 					{
-						performLayoutClick(v, holder);
-					}
-				});
+						@Override
+						public void onClick(View v)
+						{
+							performLayoutClick(v, holder);
+						}
+					});
 			}
 		};
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == VideoListAdapter.VIEW_TYPE_TITLE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
 
 	@Override

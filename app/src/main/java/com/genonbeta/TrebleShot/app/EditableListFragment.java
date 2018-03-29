@@ -8,14 +8,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -247,6 +246,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		loadIfRequested();
 	}
 
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return 1;
+	}
+
 	public void changeGridViewSize(int gridSize)
 	{
 		mViewPreferences.edit()
@@ -442,7 +446,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		getAdapter().notifyGridSizeUpdate();
 
 		if (getListView().getLayoutManager() instanceof GridLayoutManager
-				&& ((GridLayoutManager)getListView().getLayoutManager()).getSpanCount() > 1
+				&& ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() > 1
 				&& gridSize > 1) {
 			((GridLayoutManager) getListView().getLayoutManager()).setSpanCount(gridSize);
 		} else {
@@ -452,6 +456,23 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 			getListView().setAdapter(getAdapter());
 		}
+
+		final int currentGridSize = getViewingGridSize();
+
+		if (getListView().getLayoutManager() instanceof GridLayoutManager)
+			((GridLayoutManager) getListView().getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
+			{
+				@Override
+				public int getSpanSize(int position)
+				{
+					// should be reserved so it can occupy all the available space of a line
+					int viewType = getAdapter().getItemViewType(position);
+
+					return  viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
+							? 1
+							: onGridSpanSize(viewType, currentGridSize);
+				}
+			});
 
 		return true;
 	}

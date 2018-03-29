@@ -76,8 +76,9 @@ public class Shareable implements Editable
 	}
 
 	@Override
-	public void setSelectableSelected(boolean selected)
+	public boolean setSelectableSelected(boolean selected)
 	{
 		isSelected = selected;
+		return true;
 	}
 }
