@@ -16,6 +16,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 
 /**
@@ -23,7 +24,8 @@ import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
  * date: 18.11.2017 13:32
  */
 
-public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter.VideoHolder, GroupShareableListAdapter.ViewHolder>
+public class VideoListAdapter
+		extends GalleryGroupShareableListAdapter<VideoListAdapter.VideoHolder, GroupShareableListAdapter.ViewHolder>
 {
 	public static final int VIEW_TYPE_TITLE = 1;
 
@@ -83,6 +85,7 @@ public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter
 				int idIndex = cursor.getColumnIndex(MediaStore.Video.Media._ID);
 				int titleIndex = cursor.getColumnIndex(MediaStore.Video.Media.TITLE);
 				int displayIndex = cursor.getColumnIndex(MediaStore.Video.Media.DISPLAY_NAME);
+				int albumIndex = cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME);
 				int lengthIndex = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 				int dateIndex = cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED);
 				int sizeIndex = cursor.getColumnIndex(MediaStore.Video.Media.SIZE);
@@ -92,6 +95,7 @@ public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter
 					VideoHolder holder = new VideoHolder(cursor.getInt(idIndex),
 							cursor.getString(titleIndex),
 							cursor.getString(displayIndex),
+							cursor.getString(albumIndex),
 							cursor.getString(typeIndex),
 							cursor.getLong(lengthIndex),
 							cursor.getLong(dateIndex),
@@ -119,7 +123,7 @@ public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter
 		return true;
 	}
 
-	public static class VideoHolder extends GroupShareableListAdapter.GroupShareable
+	public static class VideoHolder extends GalleryGroupShareableListAdapter.GalleryGroupShareable
 	{
 		public long id;
 		public String duration;
@@ -129,9 +133,9 @@ public class VideoListAdapter extends GroupShareableListAdapter<VideoListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public VideoHolder(int id, String friendlyName, String fileName, String mimeType, long duration, long date, long size, Uri uri)
+		public VideoHolder(int id, String friendlyName, String fileName, String albumName, String mimeType, long duration, long date, long size, Uri uri)
 		{
-			super(friendlyName, fileName, mimeType, date, size, uri);
+			super(friendlyName, fileName, albumName, mimeType, date, size, uri);
 
 			this.id = id;
 			this.duration = TimeUtils.getDuration(duration);

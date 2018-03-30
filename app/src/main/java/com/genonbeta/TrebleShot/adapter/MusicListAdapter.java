@@ -14,8 +14,12 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
+import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
@@ -23,20 +27,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 public class MusicListAdapter
-		extends ShareableListAdapter<MusicListAdapter.SongHolder, RecyclerViewAdapter.ViewHolder>
+		extends GroupShareableListAdapter<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder>
+		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
 {
+	public static final int MODE_GROUP_BY_ALBUM = 100;
+	public static final int MODE_GROUP_BY_ARTIST = 101;
+
 	private ContentResolver mResolver;
 
 	public MusicListAdapter(Context context)
 	{
-		super(context);
+		super(context, MODE_GROUP_BY_ARTIST);
 		mResolver = context.getContentResolver();
 	}
 
 	@Override
-	public ArrayList<SongHolder> onLoad()
+	protected void onLoad(GroupLister<SongHolder> lister)
 	{
-		ArrayList<SongHolder> list = new ArrayList<>();
 		ArrayMap<Integer, AlbumHolder> albumList = new ArrayMap<>();
 		Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
 				null,
@@ -72,7 +79,7 @@ public class MusicListAdapter
 				int typeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
 				do {
-					list.add(new SongHolder(songCursor.getString(nameIndex),
+					lister.offer(new SongHolder(songCursor.getString(nameIndex),
 							songCursor.getString(artistIndex),
 							songCursor.getString(songIndex),
 							songCursor.getString(typeIndex),
@@ -83,72 +90,113 @@ public class MusicListAdapter
 							Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + songCursor.getInt(idIndex))));
 				}
 				while (songCursor.moveToNext());
-
-				Collections.sort(list, getDefaultComparator());
 			}
 
 			songCursor.close();
 		}
+	}
 
-		return list;
+	@Override
+	protected SongHolder onGenerateRepresentative(String representativeText)
+	{
+		return new SongHolder(representativeText);
 	}
 
 	@NonNull
 	@Override
-	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupShareableListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
+		return viewType == VIEW_TYPE_REPRESENTATIVE
+				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
+				: new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull GroupShareableListAdapter.ViewHolder holder, int position)
 	{
 		final SongHolder object = getItem(position);
 		final View parentView = holder.getView();
 
-		final View selector = parentView.findViewById(R.id.selector);
-		final View layoutImage = parentView.findViewById(R.id.layout_image);
-		ImageView image = parentView.findViewById(R.id.image);
-		TextView text1 = parentView.findViewById(R.id.text);
-		TextView text2 = parentView.findViewById(R.id.text2);
-		TextView text3 = parentView.findViewById(R.id.text3);
+		if (!holder.tryBinding(object)) {
+			final View selector = parentView.findViewById(R.id.selector);
+			final View layoutImage = parentView.findViewById(R.id.layout_image);
+			ImageView image = parentView.findViewById(R.id.image);
+			TextView text1 = parentView.findViewById(R.id.text);
+			TextView text2 = parentView.findViewById(R.id.text2);
+			TextView text3 = parentView.findViewById(R.id.text3);
 
-		if (getSelectionConnection() != null) {
-			selector.setSelected(object.isSelectableSelected());
+			if (getSelectionConnection() != null) {
+				selector.setSelected(object.isSelectableSelected());
 
-			layoutImage.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
+				layoutImage.setOnClickListener(new View.OnClickListener()
 				{
-					getSelectionConnection().setSelected(object);
-					selector.setSelected(object.isSelectableSelected());
-				}
-			});
+					@Override
+					public void onClick(View v)
+					{
+						getSelectionConnection().setSelected(object);
+						selector.setSelected(object.isSelectableSelected());
+					}
+				});
+			}
+
+			text1.setText(object.song);
+
+			if (getGroupBy() == MODE_GROUP_BY_ALBUM
+					|| getGroupBy() == MODE_GROUP_BY_ARTIST) {
+				text2.setText(getGroupBy() == MODE_GROUP_BY_ALBUM
+						? object.artist
+						: object.albumHolder.title);
+
+				text3.setVisibility(View.GONE);
+			} else {
+				text2.setText(object.artist);
+				text3.setText(object.albumHolder.title);
+				text3.setVisibility(View.VISIBLE																																																															);
+			}
+			GlideApp.with(getContext())
+					.load(object.albumHolder.art)
+					.placeholder(R.drawable.ic_music_note_white_24dp)
+					.override(160)
+					.centerCrop()
+					.into(image);
 		}
-
-		text1.setText(object.song);
-		text2.setText(object.artist);
-		text3.setText(object.albumHolder.title);
-
-		GlideApp.with(getContext())
-				.load(object.albumHolder.art)
-				.placeholder(R.drawable.ic_music_note_white_24dp)
-				.override(160)
-				.centerCrop()
-				.into(image);
 	}
 
-	public static class SongHolder extends Shareable
+
+	@Override
+	public boolean onCustomGroupListing(GroupLister<SongHolder> lister, int mode, SongHolder object)
+	{
+		if (mode == MODE_GROUP_BY_ALBUM)
+			lister.offer(object, new StringMerger<SongHolder>(object.albumHolder.title));
+		else if (mode == MODE_GROUP_BY_ARTIST)
+			lister.offer(object, new StringMerger<SongHolder>(object.artist));
+		else
+			return false;
+
+		return true;
+	}
+
+	public GroupLister<SongHolder> createLister(ArrayList<SongHolder> loadedList, int groupBy)
+	{
+		return super.createLister(loadedList, groupBy)
+				.setCustomLister(this);
+	}
+
+	public static class SongHolder extends GroupShareableListAdapter.GroupShareable
 	{
 		public String artist;
 		public String song;
 		public int albumId;
 		public AlbumHolder albumHolder;
 
+		public SongHolder(String representativeText)
+		{
+			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
+		}
+
 		public SongHolder(String displayName, String artist, String song, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
 		{
-			super(artist + " - " + song, displayName, mimeType, date, size, uri);
+			super(song + " - " + artist, displayName, mimeType, date, size, uri);
 
 			this.artist = artist;
 			this.song = song;
@@ -165,6 +213,9 @@ public class MusicListAdapter
 		@Override
 		public boolean searchMatches(String searchWord)
 		{
+			if (isGroupRepresentative())
+				return super.searchMatches(searchWord);
+
 			return TextUtils.searchWord(artist, searchWord)
 					|| TextUtils.searchWord(song, searchWord)
 					|| TextUtils.searchWord(albumHolder.title, searchWord);

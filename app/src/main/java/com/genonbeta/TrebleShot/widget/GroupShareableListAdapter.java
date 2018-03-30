@@ -7,7 +7,10 @@ import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.date.DateMerger;
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
 import com.genonbeta.TrebleShot.util.listing.Lister;
@@ -47,7 +50,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 	public ArrayList<T> onLoad()
 	{
 		ArrayList<T> loadedList = new ArrayList<>();
-		GroupLister<T> groupLister = new GroupLister<>(loadedList, mGroupBy);
+		GroupLister<T> groupLister = createLister(loadedList, getGroupBy());
 
 		onLoad(groupLister);
 
@@ -72,8 +75,15 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 				loadedList.addAll(thisMerger.getBelongings());
 			}
 		}
+		else
+			Collections.sort(loadedList, getDefaultComparator());
 
 		return loadedList;
+	}
+
+	public GroupLister<T> createLister(ArrayList<T> loadedList, int groupBy)
+	{
+		return new GroupLister<>(loadedList, groupBy);
 	}
 
 	public int getGroupBy()
@@ -97,6 +107,11 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		return merger.toString();
 	}
 
+	public void setGroupBy(int groupBy)
+	{
+		mGroupBy = groupBy;
+	}
+
 	public static class GroupShareable extends Shareable
 	{
 		public int viewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
@@ -118,21 +133,24 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 			super(friendlyName, fileName, mimeType, date, size, uri);
 		}
 
-		public boolean isGroupRepresentative(boolean isGroupRepresentative, int viewType)
+		public boolean isGroupRepresentative()
 		{
-			return isGroupRepresentative;
+			return representativeText != null;
 		}
 
 		@Override
 		public boolean setSelectableSelected(boolean selected)
 		{
-			return viewType != VIEW_TYPE_REPRESENTATIVE && super.setSelectableSelected(selected);
+			return !isGroupRepresentative() && super.setSelectableSelected(selected);
 		}
 
 		@Override
 		public boolean searchMatches(String searchWord)
 		{
-			return viewType != VIEW_TYPE_REPRESENTATIVE && super.searchMatches(searchWord);
+			if (isGroupRepresentative())
+				return TextUtils.searchWord(representativeText, searchWord);
+
+			return super.searchMatches(searchWord);
 		}
 	}
 
@@ -181,6 +199,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 	{
 		private int mMode;
 		private List<T> mNoGroupingList;
+		private CustomGroupListener<T> mCustomLister;
 
 		public GroupLister(List<T> noGroupingList, int mode)
 		{
@@ -188,12 +207,31 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 			mMode = mode;
 		}
 
+		public GroupLister(List<T> noGroupingListList, int mode, CustomGroupListener<T> customList)
+		{
+			this(noGroupingListList, mode);
+			mCustomLister = customList;
+		}
+
 		public void offer(T object)
 		{
 			if (mMode == MODE_GROUP_BY_DATE)
-				super.offer(object, new DateMerger<T>(object.date * 1000));
-			else
+				offer(object, new DateMerger<T>(object.date * 1000));
+			else if (mMode == MODE_GROUP_BY_NOTHING
+					|| mCustomLister == null
+					|| !mCustomLister.onCustomGroupListing(this, mMode, object))
 				mNoGroupingList.add(object);
+		}
+
+		public GroupLister<T> setCustomLister(CustomGroupListener<T> customLister)
+		{
+			mCustomLister = customLister;
+			return this;
+		}
+
+		public interface CustomGroupListener<T extends GroupShareable>
+		{
+			boolean onCustomGroupListing(GroupLister<T> lister, int mode, T object);
 		}
 	}
 }

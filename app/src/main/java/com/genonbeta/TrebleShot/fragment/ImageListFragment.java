@@ -13,13 +13,18 @@ import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
+import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
+import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
+import java.util.Map;
+
 public class ImageListFragment
-		extends ShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
+		extends GalleryGroupShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -83,16 +88,8 @@ public class ImageListFragment
 	}
 
 	@Override
-	public int onGridSpanSize(int viewType, int currentSpanSize)
-	{
-		return viewType == ImageListAdapter.VIEW_TYPE_REPRESENTATIVE
-				? currentSpanSize
-				: super.onGridSpanSize(viewType, currentSpanSize);
-	}
-
-	@Override
 	public CharSequence getTitle(Context context)
 	{
-		return context.getString(R.string.text_image);
+		return context.getString(R.string.text_photo);
 	}
 }

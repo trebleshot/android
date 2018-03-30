@@ -8,13 +8,18 @@ import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
+import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
+import java.util.Map;
+
 public class MusicListFragment
-		extends ShareableListFragment<MusicListAdapter.SongHolder, RecyclerViewAdapter.ViewHolder, MusicListAdapter>
+		extends GroupShareableListFragment<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder, MusicListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -45,24 +50,35 @@ public class MusicListFragment
 	}
 
 	@Override
+	public void onGroupingOptions(Map<String, Integer> options)
+	{
+		super.onGroupingOptions(options);
+
+		options.put(getString(R.string.text_groupByNothing), MusicListAdapter.MODE_GROUP_BY_NOTHING);
+		options.put(getString(R.string.text_groupByDate), MusicListAdapter.MODE_GROUP_BY_DATE);
+		options.put(getString(R.string.text_groupByAlbum), MusicListAdapter.MODE_GROUP_BY_ALBUM);
+		options.put(getString(R.string.text_groupByArtist), MusicListAdapter.MODE_GROUP_BY_ARTIST);
+	}
+
+	@Override
 	public MusicListAdapter onAdapter()
 	{
 		return new MusicListAdapter(getActivity())
-
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
 			{
 				super.onBindViewHolder(holder, position);
 
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
+				if (!holder.isRepresentative())
+					holder.getView().setOnClickListener(new View.OnClickListener()
 					{
-						performLayoutClick(v, holder);
-					}
-				});
+						@Override
+						public void onClick(View v)
+						{
+							performLayoutClick(v, holder);
+						}
+					});
 			}
 		};
 	}

@@ -340,4 +340,10 @@
     <string name="text_contributors">Made possible by these people</string>
     <string name="butn_gridSize">Grid size</string>
     <string name="butn_singleRow">Single row</string>
+    <string name="butn_groupBy">Group by</string>
+    <string name="text_photo">Photo</string>
+    <string name="text_groupByNothing">Nothing</string>
+    <string name="text_groupByDate">Date</string>
+    <string name="text_groupByAlbum">Album</string>
+    <string name="text_groupByArtist">Artist</string>
 </resources>

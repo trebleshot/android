@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -16,15 +14,9 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.date.DateMerger;
-import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
-import com.genonbeta.TrebleShot.util.listing.Lister;
-import com.genonbeta.TrebleShot.util.listing.Merger;
+import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
+import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * created by: Veli
@@ -32,15 +24,13 @@ import java.util.Comparator;
  */
 
 public class ImageListAdapter
-		extends GroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
+		extends GalleryGroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
 {
-	public static final int MODE_GROUP_BY_DIRECTORY = 100;
-
 	private ContentResolver mResolver;
 
 	public ImageListAdapter(Context context)
 	{
-		super(context, MODE_GROUP_BY_DATE);
+		super(context, MODE_GROUP_BY_ALBUM);
 		mResolver = context.getContentResolver();
 	}
 
@@ -52,7 +42,9 @@ public class ImageListAdapter
 		if (cursor != null) {
 			if (cursor.moveToFirst()) {
 				int idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID);
+				int titleIndex = cursor.getColumnIndex(MediaStore.Images.Media.TITLE);
 				int displayIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME);
+				int albumIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME);
 				int dateAddedIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_ADDED);
 				int sizeIndex = cursor.getColumnIndex(MediaStore.Images.Media.SIZE);
 				int typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE);
@@ -60,7 +52,9 @@ public class ImageListAdapter
 				do {
 					ImageHolder holder = new ImageHolder(
 							cursor.getInt(idIndex),
+							cursor.getString(titleIndex),
 							cursor.getString(displayIndex),
+							cursor.getString(albumIndex),
 							cursor.getString(typeIndex),
 							cursor.getLong(dateAddedIndex),
 							cursor.getLong(sizeIndex),
@@ -92,8 +86,7 @@ public class ImageListAdapter
 		final View parentView = holder.getView();
 		final ImageHolder object = getItem(position);
 
-		if (!holder.tryBinding(object))
-		{
+		if (!holder.tryBinding(object)) {
 			final View selector = parentView.findViewById(R.id.selector);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
@@ -102,14 +95,8 @@ public class ImageListAdapter
 			text1.setText(object.friendlyName);
 			text2.setText(object.dateTakenString);
 
-			if (getSelectionConnection() != null) {
+			if (getSelectionConnection() != null)
 				selector.setSelected(object.isSelectableSelected());
-
-				if (object.isSelectableSelected())
-					parentView.setPadding(15, 15,15,15);
-				else
-					parentView.setPadding(0, 0,0 ,0);
-			}
 
 			GlideApp.with(getContext())
 					.load(object.uri)
@@ -131,7 +118,7 @@ public class ImageListAdapter
 		return true;
 	}
 
-	public static class ImageHolder extends GroupShareableListAdapter.GroupShareable
+	public static class ImageHolder extends GalleryGroupShareableListAdapter.GalleryGroupShareable
 	{
 		public long id;
 		public String dateTakenString;
@@ -141,9 +128,9 @@ public class ImageListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public ImageHolder(int id, String filename, String mimeType, long date, long size, Uri uri)
+		public ImageHolder(int id, String title, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
 		{
-			super(filename, filename, mimeType, date, size, uri);
+			super(title, fileName, albumName, mimeType, date, size, uri);
 			this.id = id;
 		}
 	}

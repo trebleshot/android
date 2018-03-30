@@ -163,9 +163,10 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 		notifyDataSetChanged();
 	}
 
-	public void notifyGridSizeUpdate()
+	public boolean notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
 	{
-		mGridLayoutRequested = getFragment() != null && getFragment().getViewingGridSize() > 1;
+		return mGridLayoutRequested = (!isScreenLarge && gridSize > 1)
+				|| gridSize > 2;
 	}
 
 	public void setSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
@@ -176,7 +177,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 	public void setFragment(EditableListFragment fragment)
 	{
 		mFragment = fragment;
-		notifyGridSizeUpdate();
 	}
 
 	public synchronized void syncSelectionList()

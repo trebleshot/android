@@ -9,7 +9,7 @@ import com.genonbeta.TrebleShot.util.listing.Merger;
  * created by: Veli
  * date: 29.03.2018 01:44
  */
-public class StringMerger extends ComparableMerger<String>
+public class StringMerger<T> extends ComparableMerger<T>
 {
 	private String mString;
 
@@ -30,7 +30,7 @@ public class StringMerger extends ComparableMerger<String>
 	}
 
 	@Override
-	public int compareTo(@NonNull ComparableMerger<String> o)
+	public int compareTo(@NonNull ComparableMerger<T> o)
 	{
 		if (!(o instanceof StringMerger))
 			return -1;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/actions_abs_group_shareable_grouping"
+        android:orderInCategory="80"
+        android:title="@string/butn_groupBy">
+        <menu />
+    </item>
+
+</menu>

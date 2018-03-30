@@ -8,13 +8,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
@@ -49,8 +49,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		mViewPreferences = getContext().getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
 		getAdapter().setFragment(this);
 	}
 
@@ -67,16 +65,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 			setHasOptionsMenu(true);
 		}
-
-		updateGridSize();
 	}
-
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
+
 		getAdapter().setHasStableIds(true);
+		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
 	}
 
 	@Override
@@ -251,24 +248,68 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		return 1;
 	}
 
+	@Override
+	public RecyclerView.LayoutManager onLayoutManager()
+	{
+		final int currentGridSize = getViewingGridSize();
+		final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), currentGridSize > 1
+				? currentGridSize
+				: !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1);
+
+		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
+		{
+			@Override
+			public int getSpanSize(int position)
+			{
+				// should be reserved so it can occupy all the available space of a line
+				int viewType = getAdapter().getItemViewType(position);
+
+				return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
+						? 1
+						: onGridSpanSize(viewType, currentGridSize);
+			}
+		});
+
+		return layoutManager;
+	}
+
+	public boolean applyViewingChanges(int gridSize)
+	{
+		if (!getAdapter().isGridSupported())
+			return false;
+
+		getAdapter().notifyGridSizeUpdate(gridSize, isScreenLarge());
+
+		getListView().setLayoutManager(onLayoutManager());
+		getListView().setAdapter(getAdapter());
+
+		return true;
+	}
+
 	public void changeGridViewSize(int gridSize)
 	{
-		mViewPreferences.edit()
+		getViewPreferences().edit()
 				.putInt(getUniqueSettingKey("GridSize" + (isScreenLandscape() ? "Landscape" : "")), gridSize)
 				.apply();
 
-		updateGridSize(gridSize);
+		applyViewingChanges(gridSize);
 	}
 
 	public void changeSortingCriteria(int id)
 	{
-		mViewPreferences.edit().putInt(getUniqueSettingKey("SortBy"), id).apply();
+		getViewPreferences().edit()
+				.putInt(getUniqueSettingKey("SortBy"), id)
+				.apply();
+
 		refreshList();
 	}
 
 	public void changeOrderingCriteria(int id)
 	{
-		mViewPreferences.edit().putBoolean(getUniqueSettingKey("SortOrder"), id == R.id.actions_abs_editable_sort_order_ascending).apply();
+		getViewPreferences().edit()
+				.putBoolean(getUniqueSettingKey("SortOrder"), id == R.id.actions_abs_editable_sort_order_ascending)
+				.apply();
+
 		refreshList();
 	}
 
@@ -290,7 +331,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public int getSortingCriteria()
 	{
-		return mViewPreferences.getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria);
+		return getViewPreferences().getInt(getUniqueSettingKey("SortBy"), mDefaultSortingCriteria);
 	}
 
 	public PowerfulActionMode getPowerfulActionMode()
@@ -300,14 +341,22 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 				: null;
 	}
 
-	public int getViewingGridSize()
+	public SharedPreferences getViewPreferences()
 	{
 		if (mViewPreferences == null)
+			mViewPreferences = getContext().getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
+
+		return mViewPreferences;
+	}
+
+	public int getViewingGridSize()
+	{
+		if (getViewPreferences() == null)
 			return 1;
 
 		return isScreenLandscape()
-				? mViewPreferences.getInt(getUniqueSettingKey("GridSizeLandscape"), mDefaultViewingGridSizeLandscape)
-				: mViewPreferences.getInt(getUniqueSettingKey("GridSize"), mDefaultViewingGridSize);
+				? getViewPreferences().getInt(getUniqueSettingKey("GridSizeLandscape"), mDefaultViewingGridSizeLandscape)
+				: getViewPreferences().getInt(getUniqueSettingKey("GridSize"), mDefaultViewingGridSize);
 	}
 
 	public boolean isRefreshLocked()
@@ -329,7 +378,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public boolean isSortingAscending()
 	{
-		return mViewPreferences.getBoolean(getUniqueSettingKey("SortOrder"), mDefaultOrderingAscending);
+		return getViewPreferences().getBoolean(getUniqueSettingKey("SortOrder"), mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -431,49 +480,5 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	public void setSortingSupported(boolean sortingSupported)
 	{
 		mSortingSupported = sortingSupported;
-	}
-
-	public boolean updateGridSize()
-	{
-		return updateGridSize(getViewingGridSize());
-	}
-
-	public boolean updateGridSize(int gridSize)
-	{
-		if (!getAdapter().isGridSupported())
-			return false;
-
-		getAdapter().notifyGridSizeUpdate();
-
-		if (getListView().getLayoutManager() instanceof GridLayoutManager
-				&& ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount() > 1
-				&& gridSize > 1) {
-			((GridLayoutManager) getListView().getLayoutManager()).setSpanCount(gridSize);
-		} else {
-			getListView().setLayoutManager(gridSize > 1
-					? new GridLayoutManager(getContext(), gridSize)
-					: getDefaultLayoutManager());
-
-			getListView().setAdapter(getAdapter());
-		}
-
-		final int currentGridSize = getViewingGridSize();
-
-		if (getListView().getLayoutManager() instanceof GridLayoutManager)
-			((GridLayoutManager) getListView().getLayoutManager()).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
-			{
-				@Override
-				public int getSpanSize(int position)
-				{
-					// should be reserved so it can occupy all the available space of a line
-					int viewType = getAdapter().getItemViewType(position);
-
-					return  viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
-							? 1
-							: onGridSpanSize(viewType, currentGridSize);
-				}
-			});
-
-		return true;
 	}
 }

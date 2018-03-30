@@ -15,11 +15,9 @@ abstract public class DynamicRecyclerViewFragment<T, V extends RecyclerViewAdapt
 		extends RecyclerViewFragment<T, V, Z>
 {
 	@Override
-	public RecyclerView.LayoutManager getDefaultLayoutManager()
+	public RecyclerView.LayoutManager onLayoutManager()
 	{
-		return isScreenLarge()
-				? new GridLayoutManager(getContext(), 2)
-				: super.getDefaultLayoutManager();
+		return new GridLayoutManager(getContext(), isScreenLarge() ? 2 : 1);
 	}
 
 	public boolean isScreenLandscape()
