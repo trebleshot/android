@@ -34,6 +34,8 @@ import java.util.Comparator;
 public class ImageListAdapter
 		extends GroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
 {
+	public static final int MODE_GROUP_BY_DIRECTORY = 100;
+
 	private ContentResolver mResolver;
 
 	public ImageListAdapter(Context context)
@@ -100,8 +102,14 @@ public class ImageListAdapter
 			text1.setText(object.friendlyName);
 			text2.setText(object.dateTakenString);
 
-			if (getSelectionConnection() != null)
+			if (getSelectionConnection() != null) {
 				selector.setSelected(object.isSelectableSelected());
+
+				if (object.isSelectableSelected())
+					parentView.setPadding(15, 15,15,15);
+				else
+					parentView.setPadding(0, 0,0 ,0);
+			}
 
 			GlideApp.with(getContext())
 					.load(object.uri)
