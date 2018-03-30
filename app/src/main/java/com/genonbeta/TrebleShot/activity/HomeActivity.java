@@ -70,7 +70,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
-	private AppBarLayout mAppBarLayout;
 	private SharedPreferences mPreferences;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
@@ -100,7 +99,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		mAppBarLayout = findViewById(R.id.app_bar);
 		mDrawerLayout = findViewById(R.id.drawer_layout);
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
 		mDrawerLayout.addDrawerListener(toggle);

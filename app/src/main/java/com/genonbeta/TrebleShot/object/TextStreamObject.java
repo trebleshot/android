@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -14,16 +15,19 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TextStreamObject
+		extends GroupShareableListAdapter.GroupShareable
 		implements DatabaseObject, Editable
 {
 	public int id;
-	public long time;
 	public String text;
-
-	private boolean isSelected = false;
 
 	public TextStreamObject()
 	{
+	}
+
+	public TextStreamObject(String representativeText)
+	{
+		super(GroupShareableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
 	}
 
 	public TextStreamObject(int id)
@@ -33,8 +37,9 @@ public class TextStreamObject
 
 	public TextStreamObject(int id, String index)
 	{
+		super(index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
+
 		this.id = id;
-		this.time = System.currentTimeMillis();
 		this.text = index;
 	}
 
@@ -42,36 +47,6 @@ public class TextStreamObject
 	public boolean equals(Object obj)
 	{
 		return obj instanceof TextStreamObject && ((TextStreamObject) obj).id == id;
-	}
-
-	@Override
-	public boolean isSelectableSelected()
-	{
-		return isSelected;
-	}
-
-	@Override
-	public String getComparableName()
-	{
-		return text;
-	}
-
-	@Override
-	public long getComparableDate()
-	{
-		return time;
-	}
-
-	@Override
-	public long getComparableSize()
-	{
-		return text.length();
-	}
-
-	@Override
-	public String getSelectableFriendlyName()
-	{
-		return text;
 	}
 
 	@Override
@@ -87,7 +62,7 @@ public class TextStreamObject
 		ContentValues values = new ContentValues();
 
 		values.put(AccessDatabase.FIELD_CLIPBOARD_ID, id);
-		values.put(AccessDatabase.FIELD_CLIPBOARD_TIME, time);
+		values.put(AccessDatabase.FIELD_CLIPBOARD_TIME, date);
 		values.put(AccessDatabase.FIELD_CLIPBOARD_TEXT, text);
 
 		return values;
@@ -98,14 +73,7 @@ public class TextStreamObject
 	{
 		this.id = item.getInt(AccessDatabase.FIELD_CLIPBOARD_ID);
 		this.text = item.getString(AccessDatabase.FIELD_CLIPBOARD_TEXT);
-		this.time = item.getLong(AccessDatabase.FIELD_CLIPBOARD_TIME);
-	}
-
-	@Override
-	public boolean setSelectableSelected(boolean selected)
-	{
-		isSelected = selected;
-		return true;
+		this.date = item.getLong(AccessDatabase.FIELD_CLIPBOARD_TIME);
 	}
 
 	@Override

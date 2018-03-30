@@ -94,7 +94,7 @@ public class TextEditorActivity extends Activity
 							if (mTextStreamObject == null)
 								mTextStreamObject = new TextStreamObject(AppUtils.getUniqueNumber());
 
-							mTextStreamObject.time = System.currentTimeMillis();
+							mTextStreamObject.date = System.currentTimeMillis();
 							mTextStreamObject.text = mEditTextEditor.getText().toString();
 
 							mDatabase.publish(mTextStreamObject);

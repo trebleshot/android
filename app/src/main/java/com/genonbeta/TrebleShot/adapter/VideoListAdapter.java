@@ -98,7 +98,7 @@ public class VideoListAdapter
 							cursor.getString(albumIndex),
 							cursor.getString(typeIndex),
 							cursor.getLong(lengthIndex),
-							cursor.getLong(dateIndex),
+							cursor.getLong(dateIndex) * 1000,
 							cursor.getLong(sizeIndex),
 							Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 

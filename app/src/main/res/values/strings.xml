@@ -346,4 +346,5 @@
     <string name="text_groupByDate">Date</string>
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artist</string>
+    <string name="text_groupByFolder">Folder</string>
 </resources>

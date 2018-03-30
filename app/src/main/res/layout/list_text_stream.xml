@@ -2,38 +2,36 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
-        <LinearLayout
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/text2"
+            style="@style/marqueeText.secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
+            android:padding="15dp" />
 
-            <TextView
-                android:id="@+id/text"
-                style="@style/marqueeText.primary.big"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="3"/>
+        <TextView
+            android:id="@+id/text"
+            style="@style/marqueeText.primary.big"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="3" />
 
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="8dp"/>
+    </LinearLayout>
 
-            <TextView
-                android:id="@+id/text2"
-                style="@style/marqueeText.secondary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <View
-            android:id="@+id/selector"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/state_selected_image"/>
+    <View
+        android:id="@+id/selector"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="center"
+        android:background="@drawable/state_selected_image"/>
 
 </FrameLayout>

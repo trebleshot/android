@@ -16,11 +16,14 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
@@ -32,7 +35,7 @@ import java.util.ArrayList;
  */
 
 public class TextStreamListFragment
-		extends EditableListFragment<TextStreamObject, RecyclerViewAdapter.ViewHolder, TextStreamListAdapter>
+		extends GroupShareableListFragment<TextStreamObject, GroupShareableListAdapter.ViewHolder, TextStreamListAdapter>
 		implements TitleSupport
 {
 	private IntentFilter mIntentFilter = new IntentFilter();
@@ -45,6 +48,7 @@ public class TextStreamListFragment
 
 		setDefaultOrderingAscending(false);
 		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
 
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
@@ -73,7 +77,7 @@ public class TextStreamListFragment
 					@Override
 					public void onClick(View v)
 					{
-						if (!setItemSelected(holder)) {
+						if (!holder.isRepresentative() && !setItemSelected(holder)) {
 							TextStreamObject textStreamObject = getAdapter().getItem(holder);
 
 							startActivity(new Intent(getContext(), TextEditorActivity.class)

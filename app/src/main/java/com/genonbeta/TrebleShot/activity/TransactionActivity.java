@@ -121,9 +121,9 @@ public class TransactionActivity
 		mHomeButton = findViewById(R.id.activity_transaction_explorer_image_home);
 		mPowafulActionMode = findViewById(R.id.activity_transaction_action_mode);
 
-		mPowafulActionMode.setContainerLayout(findViewById(R.id.activity_transaction_action_mode_container));
+		//mPowafulActionMode.setContainerLayout(findViewById(R.id.activity_transaction_action_mode_container));
 
-		Toolbar toolbar = findViewById(R.id.toolbar);
+		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
 		mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -146,6 +146,15 @@ public class TransactionActivity
 		mPathView.setLayoutManager(mLayoutManager);
 		mLayoutManager.setStackFromEnd(true);
 		mPathView.setAdapter(mPathAdapter);
+
+		mPowafulActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+		{
+			@Override
+			public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
+			{
+				toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
+			}
+		});
 
 		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<String>()
 		{

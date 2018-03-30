@@ -220,7 +220,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		public void offer(T object)
 		{
 			if (mMode == MODE_GROUP_BY_DATE)
-				offer(object, new DateMerger<T>(object.date * 1000));
+				offer(object, new DateMerger<T>(object.date));
 			else if (mMode == MODE_GROUP_BY_NOTHING
 					|| mCustomLister == null
 					|| !mCustomLister.onCustomGroupListing(this, mMode, object))

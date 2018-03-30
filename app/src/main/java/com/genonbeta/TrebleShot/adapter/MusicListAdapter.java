@@ -32,6 +32,7 @@ public class MusicListAdapter
 {
 	public static final int MODE_GROUP_BY_ALBUM = 100;
 	public static final int MODE_GROUP_BY_ARTIST = 101;
+	public static final int MODE_GROUP_BY_FOLDER = 102;
 
 	private ContentResolver mResolver;
 
@@ -72,6 +73,7 @@ public class MusicListAdapter
 				int idIndex = songCursor.getColumnIndex(MediaStore.Audio.Media._ID);
 				int artistIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
 				int songIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+				int folderIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
 				int albumIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID);
 				int nameIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME);
 				int dateIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.DATE_MODIFIED);
@@ -82,10 +84,11 @@ public class MusicListAdapter
 					lister.offer(new SongHolder(songCursor.getString(nameIndex),
 							songCursor.getString(artistIndex),
 							songCursor.getString(songIndex),
+							songCursor.getString(folderIndex),
 							songCursor.getString(typeIndex),
 							songCursor.getInt(albumIndex),
 							albumList.get(songCursor.getInt(albumIndex)),
-							songCursor.getLong(dateIndex),
+							songCursor.getLong(dateIndex) * 1000,
 							songCursor.getLong(sizeIndex),
 							Uri.parse(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + songCursor.getInt(idIndex))));
 				}
@@ -170,6 +173,8 @@ public class MusicListAdapter
 			lister.offer(object, new StringMerger<SongHolder>(object.albumHolder.title));
 		else if (mode == MODE_GROUP_BY_ARTIST)
 			lister.offer(object, new StringMerger<SongHolder>(object.artist));
+		else if (mode == MODE_GROUP_BY_FOLDER)
+			lister.offer(object, new StringMerger<SongHolder>(object.folder));
 		else
 			return false;
 
@@ -186,6 +191,7 @@ public class MusicListAdapter
 	{
 		public String artist;
 		public String song;
+		public String folder;
 		public int albumId;
 		public AlbumHolder albumHolder;
 
@@ -194,12 +200,13 @@ public class MusicListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public SongHolder(String displayName, String artist, String song, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
+		public SongHolder(String displayName, String artist, String song, String folder, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
 		{
 			super(song + " - " + artist, displayName, mimeType, date, size, uri);
 
 			this.artist = artist;
 			this.song = song;
+			this.folder = folder;
 			this.albumId = albumId;
 			this.albumHolder = albumHolder == null ? new AlbumHolder(albumId, "-", null) : albumHolder;
 		}

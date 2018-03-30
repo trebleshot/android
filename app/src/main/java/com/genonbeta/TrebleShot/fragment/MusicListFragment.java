@@ -23,6 +23,13 @@ public class MusicListFragment
 		implements TitleSupport
 {
 	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+		setDefaultGroupingCriteria(ImageListAdapter.MODE_GROUP_BY_ALBUM);
+	}
+
+	@Override
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
@@ -58,6 +65,7 @@ public class MusicListFragment
 		options.put(getString(R.string.text_groupByDate), MusicListAdapter.MODE_GROUP_BY_DATE);
 		options.put(getString(R.string.text_groupByAlbum), MusicListAdapter.MODE_GROUP_BY_ALBUM);
 		options.put(getString(R.string.text_groupByArtist), MusicListAdapter.MODE_GROUP_BY_ARTIST);
+		options.put(getString(R.string.text_groupByFolder), MusicListAdapter.MODE_GROUP_BY_FOLDER);
 	}
 
 	@Override

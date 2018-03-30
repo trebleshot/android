@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -22,25 +24,28 @@ import java.util.Collections;
  * date: 30.12.2017 13:25
  */
 
-public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject, RecyclerViewAdapter.ViewHolder>
+public class TextStreamListAdapter
+		extends GroupShareableListAdapter<TextStreamObject, GroupShareableListAdapter.ViewHolder>
 {
 	private AccessDatabase mDatabase;
 
 	public TextStreamListAdapter(Context context)
 	{
-		super(context);
-
+		super(context, MODE_GROUP_BY_DATE);
 		mDatabase = new AccessDatabase(getContext());
 	}
 
 	@Override
-	public ArrayList<TextStreamObject> onLoad()
+	protected void onLoad(GroupLister<TextStreamObject> lister)
 	{
-		ArrayList<TextStreamObject> list = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD), TextStreamObject.class);
+		for (TextStreamObject object : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD), TextStreamObject.class))
+			lister.offer(object);
+	}
 
-		Collections.sort(list, getDefaultComparator());
-
-		return list;
+	@Override
+	protected TextStreamObject onGenerateRepresentative(String representativeText)
+	{
+		return new TextStreamObject(representativeText);
 	}
 
 	public AccessDatabase getDatabase()
@@ -50,25 +55,30 @@ public class TextStreamListAdapter extends EditableListAdapter<TextStreamObject,
 
 	@NonNull
 	@Override
-	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
+		return viewType == VIEW_TYPE_REPRESENTATIVE
+				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
+				: new ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
 	}
 
+
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 	{
 		View parentView = holder.getView();
 		TextStreamObject object = getItem(position);
 
-		View selector = parentView.findViewById(R.id.selector);
-		TextView text1 = parentView.findViewById(R.id.text);
-		TextView text2 = parentView.findViewById(R.id.text2);
+		if (!holder.tryBinding(object)) {
+			View selector = parentView.findViewById(R.id.selector);
+			TextView text1 = parentView.findViewById(R.id.text);
+			TextView text2 = parentView.findViewById(R.id.text2);
 
-		if (getSelectionConnection() != null)
-			selector.setSelected(object.isSelectableSelected());
+			if (getSelectionConnection() != null)
+				selector.setSelected(object.isSelectableSelected());
 
-		text1.setText(object.text);
-		text2.setText(AppUtils.formatDateTime(getContext(), object.time));
+			text1.setText(object.text);
+			text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));
+		}
 	}
 }

@@ -61,11 +61,11 @@ public class ImageListAdapter
 							cursor.getString(displayIndex),
 							cursor.getString(albumIndex),
 							cursor.getString(typeIndex),
-							cursor.getLong(dateAddedIndex),
+							cursor.getLong(dateAddedIndex) * 1000,
 							cursor.getLong(sizeIndex),
 							Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-					holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date * 1000));
+					holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date));
 
 					lister.offer(holder);
 				}
