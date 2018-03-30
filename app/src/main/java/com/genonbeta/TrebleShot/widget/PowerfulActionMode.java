@@ -25,6 +25,7 @@ import java.util.ArrayList;
 public class PowerfulActionMode extends Toolbar
 {
 	private View mContainerLayout;
+	private OnSelectionTaskListener mTaskListener;
 	private MenuInflater mMenuInflater;
 	private ArrayMap<Callback, Holder> mActiveActionModes = new ArrayMap<>();
 
@@ -134,6 +135,7 @@ public class PowerfulActionMode extends Toolbar
 
 		updateVisibility(VISIBLE);
 
+
 		setNavigationIcon(R.drawable.ic_close_white_24dp);
 		setNavigationContentDescription(R.string.butn_close);
 		setNavigationOnClickListener(new OnClickListener()
@@ -177,6 +179,11 @@ public class PowerfulActionMode extends Toolbar
 		mContainerLayout = containerLayout;
 	}
 
+	public void setOnSelectionTaskListener(OnSelectionTaskListener taskListener)
+	{
+		mTaskListener = taskListener;
+	}
+
 	public <T extends Selectable> boolean start(@NonNull final Callback<T> callback)
 	{
 		if (!callback.onPrepareActionMenu(getContext(), this) || mActiveActionModes.containsKey(callback)) {
@@ -197,9 +204,15 @@ public class PowerfulActionMode extends Toolbar
 		if (visibility == VISIBLE) {
 			view.setVisibility(visibility);
 			view.setAnimation(AnimationUtils.loadAnimation(getContext(), animationId));
+
+			if (mTaskListener != null)
+				mTaskListener.onSelectionTask(true, this);
 		} else {
 			view.setAnimation(AnimationUtils.loadAnimation(getContext(), animationId));
 			view.setVisibility(visibility);
+
+			if (mTaskListener != null)
+				mTaskListener.onSelectionTask(false, this);
 		}
 	}
 
@@ -299,5 +312,10 @@ public class PowerfulActionMode extends Toolbar
 				return mSelectionList;
 			}
 		}
+	}
+
+	public interface OnSelectionTaskListener
+	{
+		void onSelectionTask(boolean started, PowerfulActionMode actionMode);
 	}
 }

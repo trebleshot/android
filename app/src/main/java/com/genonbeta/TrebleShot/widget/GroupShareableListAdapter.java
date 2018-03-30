@@ -68,14 +68,18 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 				Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
 
 				T generated = onGenerateRepresentative(getRepresentativeText(thisMerger));
+				T firstShareable = thisMerger.getBelongings().get(0);
 
 				if (generated != null)
 					loadedList.add(generated);
 
+				generated.size = thisMerger.getBelongings().size();
+				generated.date = firstShareable.date;
+				generated.friendlyName = generated.representativeText;
+
 				loadedList.addAll(thisMerger.getBelongings());
 			}
-		}
-		else
+		} else
 			Collections.sort(loadedList, getDefaultComparator());
 
 		return loadedList;

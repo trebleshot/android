@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -23,6 +25,7 @@ import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 
@@ -74,6 +77,25 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 		getAdapter().setHasStableIds(true);
 		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
+	}
+
+	@Override
+	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+	{
+		FastScrollRecyclerView recyclerView = new FastScrollRecyclerView(getContext());
+
+		recyclerView.setLayoutManager(onLayoutManager());
+
+		recyclerView.setLayoutParams(new GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+				ViewGroup.LayoutParams.MATCH_PARENT));
+
+		listViewContainer.addView(recyclerView);
+
+		recyclerView.setPopupBgColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+		recyclerView.setPopupTextColor(ContextCompat.getColor(getContext(), R.color.whiteAccent));
+		recyclerView.setThumbColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+
+		return recyclerView;
 	}
 
 	@Override
