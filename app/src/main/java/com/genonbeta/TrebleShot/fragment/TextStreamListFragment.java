@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,6 +23,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -36,7 +38,7 @@ import java.util.ArrayList;
 
 public class TextStreamListFragment
 		extends GroupShareableListFragment<TextStreamObject, GroupShareableListAdapter.ViewHolder, TextStreamListAdapter>
-		implements TitleSupport
+		implements TitleSupport, FABSupport
 {
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
@@ -107,32 +109,6 @@ public class TextStreamListFragment
 	}
 
 	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-	{
-		super.onPrepareActionMenu(context, actionMode);
-		return true;
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-	{
-		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.actions_text_stream, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.menu_action_type_new)
-			startActivity(new Intent(getActivity(), TextEditorActivity.class)
-					.setAction(TextEditorActivity.ACTION_EDIT_TEXT));
-
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
 	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
 	{
 		super.onCreateActionMenu(context, actionMode, menu);
@@ -150,11 +126,11 @@ public class TextStreamListFragment
 		if (id == R.id.action_mode_text_stream_delete) {
 			for (TextStreamObject textStreamObject : selectionList)
 				getAdapter().getDatabase().remove(textStreamObject);
-		} else if (id == R.id.action_mode_text_stream_share || id == R.id.action_mode_text_stream_share_ts) {
+		} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
 			if (selectionList.size() == 1) {
 				TextStreamObject streamObject = selectionList.get(0);
 
-				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_text_stream_share
+				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
 						? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
 						.putExtra(Intent.EXTRA_TEXT, streamObject.text)
 						.setType("text/*");
@@ -174,6 +150,23 @@ public class TextStreamListFragment
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_textStream);
+	}
+
+	@Override
+	public boolean onFABRequested(FloatingActionButton floatingActionButton)
+	{
+		floatingActionButton.setImageResource(R.drawable.ic_add_white_24dp);
+		floatingActionButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				startActivity(new Intent(getActivity(), TextEditorActivity.class)
+						.setAction(TextEditorActivity.ACTION_EDIT_TEXT));
+			}
+		});
+
+		return true;
 	}
 
 	private class StatusReceiver extends BroadcastReceiver

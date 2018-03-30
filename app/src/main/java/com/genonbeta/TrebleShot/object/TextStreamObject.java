@@ -74,6 +74,10 @@ public class TextStreamObject
 		this.id = item.getInt(AccessDatabase.FIELD_CLIPBOARD_ID);
 		this.text = item.getString(AccessDatabase.FIELD_CLIPBOARD_TEXT);
 		this.date = item.getLong(AccessDatabase.FIELD_CLIPBOARD_TIME);
+		this.mimeType = "text/plain";
+		this.size = text.length();
+		this.friendlyName = text;
+		this.fileName = text;
 	}
 
 	@Override
