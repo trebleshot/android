@@ -40,4 +40,8 @@
 	<item quantity="one">Er is één bestand verwijderd</item>
 	<item quantity="other">Er zijn %d bestanden verwijderd</item>
 </plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Enkele rij</item>
+	<item quantity="other">%d rijen</item>
+</plurals>
 </resources>
