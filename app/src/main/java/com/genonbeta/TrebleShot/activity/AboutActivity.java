@@ -12,16 +12,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class AboutActivity extends AppCompatActivity
+public class AboutActivity extends Activity
 {
-	private SharedPreferences mPreferences;
 	private GitHubUpdater mUpdater;
-
 	private TextView mTextUpdates;
 
 	@Override
@@ -33,9 +32,7 @@ public class AboutActivity extends AppCompatActivity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
-
 		mTextUpdates = findViewById(R.id.activity_about_update_text);
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()
@@ -80,15 +77,15 @@ public class AboutActivity extends AppCompatActivity
 			}
 		});
 
-		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null)))
-			highlightUpdater(mPreferences.getString("availableVersion", null));
+		if (getDefaultPreferences().contains("availableVersion") && mUpdater.isNewVersion(getDefaultPreferences().getString("availableVersion", null)))
+			highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
 		else
 			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
 			{
 				@Override
 				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
 				{
-					mPreferences.edit()
+					getDefaultPreferences().edit()
 							.putString("availableVersion", versionName)
 							.apply();
 

@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -49,9 +50,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 	public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 	public static final int JOB_RECEIVE_UPDATE = 1;
 
-	private AlertDialog mThisDialog;
-
-	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final NetworkDevice device)
+	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final SharedPreferences sharedPreferences, final NetworkDevice device)
 	{
 		super(activity);
 
@@ -110,7 +109,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 													openIntent.setComponent(new ComponentName(getContext(), HomeActivity.class))
 															.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext()).getUri());
+															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext(), sharedPreferences).getUri());
 												}
 
 												dynamicNotification.setContentText(getContext().getString(R.string.mesg_updateDownloadComplete))
@@ -128,7 +127,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 								public void onRun()
 								{
 									try {
-										mReceivedFile = UpdateUtils.receiveUpdate(activity, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+										mReceivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
 										{
 											@Override
 											public void onConnectionReady(ServerSocket socket)
@@ -217,7 +216,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 						{
 							final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-							final TransactionGroupListAdapter adapter = new TransactionGroupListAdapter(getContext())
+							final TransactionGroupListAdapter adapter = new TransactionGroupListAdapter(getContext(), database)
 									.setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
 											.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", device.deviceId));
 
@@ -284,11 +283,5 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public AlertDialog show()
-	{
-		return mThisDialog = super.show();
 	}
 }

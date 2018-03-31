@@ -34,7 +34,6 @@ public class TransactionListFragment
 		extends EditableListFragment<TransactionObject, RecyclerViewAdapter.ViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
-	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
 	public BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -68,9 +67,6 @@ public class TransactionListFragment
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
-		mDatabase = new AccessDatabase(getActivity());
-
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
 
@@ -91,7 +87,7 @@ public class TransactionListFragment
 	@Override
 	public TransactionListAdapter onAdapter()
 	{
-		return new TransactionListAdapter(getActivity())
+		return new TransactionListAdapter(getActivity(), getDatabase())
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
@@ -109,14 +105,14 @@ public class TransactionListFragment
 							getAdapter().setPath(transactionObject.directory);
 							refreshList();
 
-							if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+							if (isSelectionActivated() && !getDefaultPreferences().getBoolean("helpFolderSelection", false))
 								createSnackbar(R.string.mesg_helpFolderSelection)
 										.setAction(R.string.butn_gotIt, new View.OnClickListener()
 										{
 											@Override
 											public void onClick(View v)
 											{
-												PreferenceManager.getDefaultSharedPreferences(getActivity())
+												getDefaultPreferences()
 														.edit()
 														.putBoolean("helpFolderSelection", true)
 														.apply();
@@ -124,7 +120,7 @@ public class TransactionListFragment
 										})
 										.show();
 						} else if (!setItemSelected(holder))
-							new TransactionInfoDialog(getActivity(), mDatabase, transactionObject).show();
+							new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transactionObject).show();
 					}
 				});
 			}
@@ -171,7 +167,7 @@ public class TransactionListFragment
 						{
 							for (TransactionObject transactionObject : selectionList)
 								if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
-									mDatabase.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+									getDatabase().delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 											.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
 															+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
 															+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
@@ -179,7 +175,7 @@ public class TransactionListFragment
 													transactionObject.directory + File.separator + "%",
 													transactionObject.directory));
 								} else
-									mDatabase.remove(transactionObject);
+									getDatabase().remove(transactionObject);
 						}
 					});
 				}

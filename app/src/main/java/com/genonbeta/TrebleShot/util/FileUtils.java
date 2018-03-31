@@ -145,14 +145,13 @@ public class FileUtils
 		return DocumentFile.fromUri(context, uri, false);
 	}
 
-	public static DocumentFile getApplicationDirectory(Context context)
+	public static DocumentFile getApplicationDirectory(Context context, SharedPreferences defaultPreferences)
 	{
 		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 
-		if (sharedPreferences.contains("storage_path")) {
+		if (defaultPreferences.contains("storage_path")) {
 			try {
-				DocumentFile savePath = fromUri(context, Uri.parse(sharedPreferences.getString("storage_path", null)));
+				DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path", null)));
 
 				if (savePath != null && savePath.isDirectory() && savePath.canWrite())
 					return savePath;
@@ -192,14 +191,14 @@ public class FileUtils
 		return "";
 	}
 
-	public static DocumentFile getIncomingPseudoFile(Context context, TransactionObject transactionObject, TransactionObject.Group group, boolean createIfNotExists) throws IOException
+	public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransactionObject transactionObject, TransactionObject.Group group, boolean createIfNotExists) throws IOException
 	{
-		return fetchFile(getSavePath(context, group), transactionObject.directory, transactionObject.file, createIfNotExists);
+		return fetchFile(getSavePath(context, preferences, group), transactionObject.directory, transactionObject.file, createIfNotExists);
 	}
 
-	public static DocumentFile getIncomingTransactionFile(Context context, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
+	public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
 	{
-		DocumentFile pseudoFile = getIncomingPseudoFile(context, transactionObject, group, true);
+		DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transactionObject, group, true);
 
 		if (!pseudoFile.canWrite())
 			throw new IOException("File cannot be created or you don't have permission write on it");
@@ -207,7 +206,7 @@ public class FileUtils
 		return pseudoFile;
 	}
 
-	public static DocumentFile getSavePath(Context context, TransactionObject.Group group)
+	public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransactionObject.Group group)
 	{
 		if (group.savePath != null) {
 			try {
@@ -220,7 +219,7 @@ public class FileUtils
 			}
 		}
 
-		return FileUtils.getApplicationDirectory(context);
+		return FileUtils.getApplicationDirectory(context, preferences);
 	}
 
 	public static Uri getSecureUri(Context context, DocumentFile documentFile) throws IOException

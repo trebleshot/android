@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -34,11 +35,14 @@ public class FileListAdapter
 	private String mFileMatch;
 	private DocumentFile mPath;
 	private AccessDatabase mDatabase;
+	private SharedPreferences mPreferences;
 
-	public FileListAdapter(Context context, AccessDatabase database)
+	public FileListAdapter(Context context, AccessDatabase database, SharedPreferences sharedPreferences)
 	{
 		super(context);
+
 		mDatabase = database;
+		mPreferences = sharedPreferences;
 	}
 
 	@Override
@@ -68,7 +72,7 @@ public class FileListAdapter
 			}
 		} else {
 			ArrayList<File> referencedDirectoryList = new ArrayList<>();
-			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
+			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
 			folders.add(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_whatshot_white_24dp));
 			folders.add(new DirectoryHolder(DocumentFile.fromFile(new File(".")),

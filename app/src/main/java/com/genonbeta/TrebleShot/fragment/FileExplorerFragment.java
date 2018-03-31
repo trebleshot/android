@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +21,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
@@ -45,8 +44,6 @@ public class FileExplorerFragment
 
 	public final static int REQUEST_WRITE_ACCESS = 264;
 
-	private AccessDatabase mDatabase;
-
 	private RecyclerView mPathView;
 	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
@@ -66,8 +63,6 @@ public class FileExplorerFragment
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
 		View view = inflater.inflate(R.layout.fragment_fileexplorer, container, false);
-
-		mDatabase = new AccessDatabase(getActivity());
 
 		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
 		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
@@ -217,11 +212,6 @@ public class FileExplorerFragment
 	{
 		if (mFileListFragment != null)
 			mFileListFragment.onPrepareDetach();
-	}
-
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
 	}
 
 	public FileListFragment getFileListFragment()

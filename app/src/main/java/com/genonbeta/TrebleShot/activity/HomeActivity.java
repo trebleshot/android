@@ -70,7 +70,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
-	private SharedPreferences mPreferences;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
@@ -105,7 +104,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		toggle.syncState();
 
 		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
@@ -130,15 +128,15 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			}
 		});
 
-		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null))) {
-			highlightUpdater(mPreferences.getString("availableVersion", null));
+		if (getDefaultPreferences().contains("availableVersion") && mUpdater.isNewVersion(getDefaultPreferences().getString("availableVersion", null))) {
+			highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
 		} else {
 			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
 			{
 				@Override
 				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
 				{
-					mPreferences.edit()
+					getDefaultPreferences().edit()
 							.putString("availableVersion", versionName)
 							.apply();
 
@@ -150,11 +148,11 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-		if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
+		if (getDefaultPreferences().getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
 			// migrating to a new version
 		}
 
-		mPreferences.edit()
+		getDefaultPreferences().edit()
 				.putInt("migrated_version", localDevice.versionNumber)
 				.apply();
 
@@ -408,7 +406,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 					String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-					DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext());
+					DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext(), getDefaultPreferences());
 					DocumentFile codeFile = DocumentFile.fromFile(new File(getApplicationInfo().sourceDir));
 					DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
 

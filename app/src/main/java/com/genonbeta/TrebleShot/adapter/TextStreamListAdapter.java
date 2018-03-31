@@ -29,10 +29,10 @@ public class TextStreamListAdapter
 {
 	private AccessDatabase mDatabase;
 
-	public TextStreamListAdapter(Context context)
+	public TextStreamListAdapter(Context context, AccessDatabase database)
 	{
 		super(context, MODE_GROUP_BY_DATE);
-		mDatabase = new AccessDatabase(getContext());
+		mDatabase = database;
 	}
 
 	@Override

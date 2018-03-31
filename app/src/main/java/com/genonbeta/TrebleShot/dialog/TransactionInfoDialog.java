@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -29,7 +30,7 @@ import java.io.IOException;
 
 public class TransactionInfoDialog extends AlertDialog.Builder
 {
-	public TransactionInfoDialog(@NonNull final Context context, final AccessDatabase database, final TransactionObject transactionObject)
+	public TransactionInfoDialog(@NonNull final Context context, final AccessDatabase database, SharedPreferences preferences, final TransactionObject transactionObject)
 	{
 		super(context);
 
@@ -42,7 +43,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			DocumentFile attemptedFile = null;
 
 			try {
-				attemptedFile = FileUtils.getIncomingPseudoFile(getContext(), transactionObject, group, false);
+				attemptedFile = FileUtils.getIncomingPseudoFile(getContext(), preferences, transactionObject, group, false);
 			} catch (Exception e) {
 			}
 

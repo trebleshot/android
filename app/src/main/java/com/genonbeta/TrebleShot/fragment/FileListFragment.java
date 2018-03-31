@@ -118,7 +118,7 @@ public class FileListFragment
 	@Override
 	public FileListAdapter onAdapter()
 	{
-		return new FileListAdapter(getActivity(), new AccessDatabase(getActivity()))
+		return new FileListAdapter(getActivity(), getDatabase(), getDefaultPreferences())
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
@@ -139,14 +139,14 @@ public class FileListFragment
 									|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
 								FileListFragment.this.goPath(fileInfo.file);
 
-								if (isSelectionActivated() && !PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("helpFolderSelection", false))
+								if (isSelectionActivated() && !getDefaultPreferences().getBoolean("helpFolderSelection", false))
 									createSnackbar(R.string.mesg_helpFolderSelection)
 											.setAction(R.string.butn_gotIt, new View.OnClickListener()
 											{
 												@Override
 												public void onClick(View v)
 												{
-													PreferenceManager.getDefaultSharedPreferences(getActivity())
+													getDefaultPreferences()
 															.edit()
 															.putBoolean("helpFolderSelection", true)
 															.apply();

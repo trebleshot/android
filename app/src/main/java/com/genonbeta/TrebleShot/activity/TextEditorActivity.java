@@ -29,7 +29,6 @@ public class TextEditorActivity extends Activity
 	public static final String EXTRA_CLIPBOARD_ID = "clipboardId";
 
 	private EditText mEditTextEditor;
-	private AccessDatabase mDatabase;
 
 	private TextStreamObject mTextStreamObject;
 	private long mBackPressTime = 0;
@@ -47,15 +46,13 @@ public class TextEditorActivity extends Activity
 			if (getSupportActionBar() != null)
 				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-			mDatabase = new AccessDatabase(this);
-
 			mEditTextEditor = findViewById(R.id.layout_text_editor_activity_text_text_box);
 
 			if (getIntent().hasExtra(EXTRA_CLIPBOARD_ID)) {
 				mTextStreamObject = new TextStreamObject(getIntent().getIntExtra(EXTRA_CLIPBOARD_ID, -1));
 
 				try {
-					mDatabase.reconstruct(mTextStreamObject);
+					getDatabase().reconstruct(mTextStreamObject);
 
 					mEditTextEditor
 							.getText()
@@ -97,7 +94,7 @@ public class TextEditorActivity extends Activity
 							mTextStreamObject.date = System.currentTimeMillis();
 							mTextStreamObject.text = mEditTextEditor.getText().toString();
 
-							mDatabase.publish(mTextStreamObject);
+							getDatabase().publish(mTextStreamObject);
 
 							finish();
 						}

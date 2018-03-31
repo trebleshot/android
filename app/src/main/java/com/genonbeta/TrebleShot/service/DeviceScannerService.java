@@ -1,12 +1,11 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
+import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -31,14 +30,6 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 	public static final String SCANNER_NOT_AVAILABLE = "genonbeta.intent.status.SCANNER_NOT_AVAILABLE";
 
 	private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
-	private AccessDatabase mDatabase;
-
-	@Override
-	public void onCreate()
-	{
-		super.onCreate();
-		mDatabase = new AccessDatabase(getApplicationContext());
-	}
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
@@ -53,11 +44,11 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 					ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
 					NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-					mDatabase.publish(localDevice);
+					getDatabase().publish(localDevice);
 
 					for (AddressedInterface addressedInterface : interfaceList) {
 						NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.deviceId, System.currentTimeMillis());
-						mDatabase.publish(connection);
+						getDatabase().publish(connection);
 					}
 
 					result = mDeviceScanner.scan(interfaceList, this) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE;
@@ -82,9 +73,9 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
 	public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
 	{
 		NetworkDevice.Connection connection = new NetworkDevice.Connection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
-		mDatabase.publish(connection);
+		getDatabase().publish(connection);
 
-		NetworkDeviceLoader.load(mDatabase, address.getHostAddress(), null);
+		NetworkDeviceLoader.load(getDatabase(), address.getHostAddress(), null);
 	}
 
 	@Override

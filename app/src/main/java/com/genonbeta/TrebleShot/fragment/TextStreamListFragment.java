@@ -67,7 +67,7 @@ public class TextStreamListFragment
 	@Override
 	public TextStreamListAdapter onAdapter()
 	{
-		return new TextStreamListAdapter(getActivity())
+		return new TextStreamListAdapter(getActivity(), getDatabase())
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)

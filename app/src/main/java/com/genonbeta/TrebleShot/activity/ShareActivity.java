@@ -76,7 +76,6 @@ public class ShareActivity extends Activity
 	private boolean mQRScanRequested = false;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
-	private AccessDatabase mDatabase;
 	private ProgressDialog mProgressDialog;
 	private Interrupter mInterrupter = new Interrupter();
 	private IntentFilter mFilter = new IntentFilter();
@@ -109,7 +108,6 @@ public class ShareActivity extends Activity
 			getSupportActionBar().setTitle(R.string.text_shareWithTrebleshot);
 
 		mFAB = findViewById(R.id.content_fab);
-		mDatabase = new AccessDatabase(getApplicationContext());
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
 
 		mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -246,7 +244,7 @@ public class ShareActivity extends Activity
 			NetworkDevice chosenDevice = new NetworkDevice(deviceId);
 
 			try {
-				mDatabase.reconstruct(chosenDevice);
+				getDatabase().reconstruct(chosenDevice);
 				showChooserDialog(chosenDevice);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -331,7 +329,7 @@ public class ShareActivity extends Activity
 
 				if (mRemoteAddress != null) {
 					try {
-						NetworkDeviceLoader.load(true, mDatabase, mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
+						NetworkDeviceLoader.load(true, getDatabase(), mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
 						{
 							@Override
 							public void onError(Exception error)
@@ -346,7 +344,7 @@ public class ShareActivity extends Activity
 
 								try {
 									hotspotNetwork.deviceId = device.deviceId;
-									mDatabase.reconstruct(hotspotNetwork);
+									getDatabase().reconstruct(hotspotNetwork);
 
 									device = hotspotNetwork;
 								} catch (Exception e) {
@@ -411,7 +409,7 @@ public class ShareActivity extends Activity
 			@Override
 			public void onRun()
 			{
-				CommunicationBridge.connect(mDatabase, true, new CommunicationBridge.Client.ConnectionHandler()
+				CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
 				{
 					@Override
 					public void onConnect(CommunicationBridge.Client client)
@@ -500,14 +498,14 @@ public class ShareActivity extends Activity
 
 							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
 								if (pendingRegistry.size() > 0) {
-									mDatabase.insert(groupInstance);
+									getDatabase().insert(groupInstance);
 
 									getDefaultInterrupter().addCloser(new Interrupter.Closer()
 									{
 										@Override
 										public void onClose(boolean userAction)
 										{
-											mDatabase.remove(groupInstance);
+											getDatabase().remove(groupInstance);
 										}
 									});
 
@@ -516,7 +514,7 @@ public class ShareActivity extends Activity
 											throw new InterruptedException("Interrupted by user");
 
 										getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
-										mDatabase.insert(transactionObject);
+										getDatabase().insert(transactionObject);
 									}
 
 									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
@@ -740,9 +738,9 @@ public class ShareActivity extends Activity
 	protected void showChooserDialog(final NetworkDevice device)
 	{
 		device.isRestricted = false;
-		mDatabase.publish(device);
+		getDatabase().publish(device);
 
-		new ConnectionChooserDialog(ShareActivity.this, mDatabase, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+		new ConnectionChooserDialog(ShareActivity.this, getDatabase(), device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 		{
 			@Override
 			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)

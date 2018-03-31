@@ -32,9 +32,9 @@ public class CommunicationNotificationHelper
 
 	private NotificationUtils mNotificationUtils;
 
-	public CommunicationNotificationHelper(Context context)
+	public CommunicationNotificationHelper(NotificationUtils notificationUtils)
 	{
-		mNotificationUtils = new NotificationUtils(context);
+		mNotificationUtils = notificationUtils;
 	}
 
 	public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode)

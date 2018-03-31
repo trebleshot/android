@@ -31,11 +31,11 @@ public class TransactionGroupListAdapter
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
 
-	public TransactionGroupListAdapter(Context context)
+	public TransactionGroupListAdapter(Context context, AccessDatabase database)
 	{
 		super(context);
 
-		mDatabase = new AccessDatabase(context);
+		mDatabase = database;
 
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
 	}

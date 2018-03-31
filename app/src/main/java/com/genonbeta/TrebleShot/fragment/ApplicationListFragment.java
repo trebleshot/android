@@ -27,15 +27,11 @@ public class ApplicationListFragment
 		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder, ApplicationListAdapter>
 		implements TitleSupport
 {
-	private SharedPreferences mPreferences;
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
 		setHasOptionsMenu(true);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 	}
 
 	@Override
@@ -50,7 +46,7 @@ public class ApplicationListFragment
 	@Override
 	public ApplicationListAdapter onAdapter()
 	{
-		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false))
+		return new ApplicationListAdapter(getActivity(), getDefaultPreferences().getBoolean("show_system_apps", false))
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
@@ -101,8 +97,13 @@ public class ApplicationListFragment
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if (item.getItemId() == R.id.show_system_apps) {
-			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
-			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
+			boolean isShowingSystem = !getDefaultPreferences().getBoolean("show_system_apps", false);
+
+			getDefaultPreferences().edit()
+					.putBoolean("show_system_apps", isShowingSystem)
+					.apply();
+
+			getAdapter().showSystemApps(isShowingSystem);
 
 			refreshList();
 			return true;
@@ -117,7 +118,7 @@ public class ApplicationListFragment
 		super.onPrepareOptionsMenu(menu);
 
 		MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
-		menuSystemApps.setChecked(mPreferences.getBoolean("show_system_apps", false));
+		menuSystemApps.setChecked(getDefaultPreferences().getBoolean("show_system_apps", false));
 	}
 
 	@Override

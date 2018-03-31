@@ -67,15 +67,13 @@ public class TransactionActivity
 		implements NavigationView.OnNavigationItemSelectedListener, TransactionListAdapter.PathChangedListener, PowerfulActionModeSupported
 {
 	public static final String TAG = TransactionActivity.class.getSimpleName();
-	public static final int JOB_FILE_FIXICATION = 1;
-
+	public static final int JOB_FILE_FIX = 1;
 
 	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-	private AccessDatabase mDatabase;
 	private TransactionListFragment mTransactionFragment;
 	private DrawerLayout mDrawerLayout;
 	private TransactionObject.Group mGroup;
@@ -115,7 +113,6 @@ public class TransactionActivity
 
 		setContentView(R.layout.activity_transaction);
 
-		mDatabase = new AccessDatabase(this);
 		mTransactionFragment = (TransactionListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_transaction_listfragment_transaction);
 		mPathView = findViewById(R.id.activity_transaction_explorer_recycler);
 		mHomeButton = findViewById(R.id.activity_transaction_explorer_image_home);
@@ -178,14 +175,14 @@ public class TransactionActivity
 			TransactionObject.Group group = new TransactionObject.Group(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
 
 			try {
-				mDatabase.reconstruct(group);
+				getDatabase().reconstruct(group);
 
 				NetworkDevice networkDevice = new NetworkDevice(group.deviceId);
-				mDatabase.reconstruct(networkDevice);
+				getDatabase().reconstruct(networkDevice);
 
 				mGroup = group;
 				mDevice = networkDevice;
-				mInfoDialog = new TransactionGroupInfoDialog(this, mDatabase, mGroup);
+				mInfoDialog = new TransactionGroupInfoDialog(this, getDatabase(), getDefaultPreferences(), mGroup);
 
 				if (getSupportActionBar() != null)
 					getSupportActionBar().setTitle(mDevice.nickname);
@@ -208,7 +205,7 @@ public class TransactionActivity
 					@Override
 					public void onClick(View view)
 					{
-						new DeviceInfoDialog(TransactionActivity.this, mDatabase, mDevice)
+						new DeviceInfoDialog(TransactionActivity.this, getDatabase(), getDefaultPreferences(), mDevice)
 								.show();
 
 						if (mDrawerLayout != null)
@@ -263,7 +260,7 @@ public class TransactionActivity
 									@Override
 									public void onClick(DialogInterface dialogInterface, int i)
 									{
-										WorkerService.run(TransactionActivity.this, new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_FIXICATION)
+										WorkerService.run(TransactionActivity.this, new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_FIX)
 										{
 											@Override
 											public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
@@ -282,7 +279,7 @@ public class TransactionActivity
 											@Override
 											public void onRun()
 											{
-												ArrayList<TransactionObject> checkList = mDatabase.
+												ArrayList<TransactionObject> checkList = getDatabase().
 														castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 																.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 																				+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
@@ -293,7 +290,7 @@ public class TransactionActivity
 
 												try {
 													// Illustrate new change to build the structure accordingly
-													mDatabase.reconstruct(pseudoGroup);
+													getDatabase().reconstruct(pseudoGroup);
 													pseudoGroup.savePath = selectedPath.toString();
 
 													for (TransactionObject transactionObject : checkList) {
@@ -301,8 +298,8 @@ public class TransactionActivity
 															break;
 
 														try {
-															DocumentFile file = FileUtils.getIncomingPseudoFile(getApplicationContext(), transactionObject, mGroup, false);
-															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), transactionObject, pseudoGroup, true);
+															DocumentFile file = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transactionObject, mGroup, false);
+															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transactionObject, pseudoGroup, true);
 
 															if (file.canRead())
 																FileUtils.move(TransactionActivity.this, file, pseudoFile, getInterrupter());
@@ -374,7 +371,7 @@ public class TransactionActivity
 
 		if (id == R.id.actions_transaction_resume_all) {
 			try {
-				mDatabase.reconstruct(new NetworkDevice.Connection(mDevice.deviceId, mGroup.connectionAdapter));
+				getDatabase().reconstruct(new NetworkDevice.Connection(mDevice.deviceId, mGroup.connectionAdapter));
 
 				AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
 						.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
@@ -397,7 +394,7 @@ public class TransactionActivity
 
 			contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.PENDING.toString());
 
-			mDatabase.update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+			getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 									+ AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
 									+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
@@ -435,7 +432,7 @@ public class TransactionActivity
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					mDatabase.remove(new TransactionObject.Group(mGroup.groupId));
+					getDatabase().remove(new TransactionObject.Group(mGroup.groupId));
 				}
 			});
 
@@ -443,7 +440,7 @@ public class TransactionActivity
 		} else if (id == R.id.drawer_transaction_show_files) {
 			startActivity(new Intent(this, HomeActivity.class)
 					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
+					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
 		} else if (id == R.id.drawer_transaction_connection) {
 			changeConnection();
 		} else
@@ -473,13 +470,13 @@ public class TransactionActivity
 
 	private void changeConnection()
 	{
-		new ConnectionChooserDialog(this, mDatabase, mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
+		new ConnectionChooserDialog(this, getDatabase(), mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
 		{
 			@Override
 			public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
 			{
 				mGroup.connectionAdapter = connection.adapterName;
-				mDatabase.publish(mGroup);
+				getDatabase().publish(mGroup);
 
 				createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
 						.show();
@@ -507,7 +504,7 @@ public class TransactionActivity
 	public void reconstructGroup()
 	{
 		try {
-			mDatabase.reconstruct(mGroup);
+			getDatabase().reconstruct(mGroup);
 		} catch (Exception e) {
 			e.printStackTrace();
 			finish();
@@ -517,7 +514,7 @@ public class TransactionActivity
 	public void updateSavePath(String selectedPath)
 	{
 		mGroup.savePath = selectedPath;
-		mDatabase.publish(mGroup);
+		getDatabase().publish(mGroup);
 
 		runOnUiThread(new Runnable()
 		{

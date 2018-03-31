@@ -78,6 +78,7 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerViewAdapter.View
 	}
 
 	@Override
+
 	protected void onEnsureList()
 	{
 		mHandler.post(mRequestFocus);

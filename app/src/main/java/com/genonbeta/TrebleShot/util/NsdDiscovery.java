@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 /**
  * created by: Veli
@@ -28,11 +29,11 @@ public class NsdDiscovery
 	private AccessDatabase mDatabase;
 	private SharedPreferences mPreferences;
 
-	public NsdDiscovery(Context context, AccessDatabase database)
+	public NsdDiscovery(Context context, AccessDatabase database, SharedPreferences preferences)
 	{
 		mContext = context;
 		mDatabase = database;
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		mPreferences = preferences;
 	}
 
 	public Context getContext()

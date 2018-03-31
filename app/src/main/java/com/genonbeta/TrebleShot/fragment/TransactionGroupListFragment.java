@@ -33,7 +33,6 @@ public class TransactionGroupListFragment
 		implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
-	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
 	public BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -72,8 +71,6 @@ public class TransactionGroupListFragment
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		mDatabase = new AccessDatabase(getActivity());
-
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 
 		if (getSelect() == null)
@@ -97,7 +94,7 @@ public class TransactionGroupListFragment
 	@Override
 	public TransactionGroupListAdapter onAdapter()
 	{
-		return new TransactionGroupListAdapter(getActivity())
+		return new TransactionGroupListAdapter(getActivity(), getDatabase())
 		{
 			@Override
 			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
@@ -141,7 +138,7 @@ public class TransactionGroupListFragment
 
 		if (id == R.id.action_mode_group_delete) {
 			for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
-				mDatabase.remove(preloadedGroup);
+				getDatabase().remove(preloadedGroup);
 		} else
 			return super.onActionMenuItemSelected(context, actionMode, item);
 

@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -26,19 +27,21 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 {
 	private AccessDatabase mDatabase;
 	private TransactionObject.Group mGroup;
+	private SharedPreferences mPreferences;
 	private TransactionObject.Group.Index mTransactionIndex = new TransactionObject.Group.Index();
 
-	public TransactionGroupInfoDialog(Context context, AccessDatabase database, TransactionObject.Group group)
+	public TransactionGroupInfoDialog(Context context, AccessDatabase database, SharedPreferences sharedPreferences, TransactionObject.Group group)
 	{
 		super(context);
 
 		mDatabase = database;
 		mGroup = group;
+		mPreferences = sharedPreferences;
 	}
 
 	public boolean calculateSpace()
 	{
-		DocumentFile documentFile = FileUtils.getSavePath(getContext(), mGroup);
+		DocumentFile documentFile = FileUtils.getSavePath(getContext(), mPreferences, mGroup);
 
 		long freeSpace = documentFile instanceof LocalDocumentFile
 				? ((LocalDocumentFile) documentFile).getFile().getFreeSpace()
@@ -63,7 +66,7 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		TextView savePath = rootView.findViewById(R.id.transaction_group_info_save_path);
 		TextView usedConnection = rootView.findViewById(R.id.transaction_group_info_connection);
 
-		DocumentFile storageFile = FileUtils.getSavePath(getContext(), mGroup);
+		DocumentFile storageFile = FileUtils.getSavePath(getContext(), mPreferences, mGroup);
 		Resources resources = getContext().getResources();
 
 		incomingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,

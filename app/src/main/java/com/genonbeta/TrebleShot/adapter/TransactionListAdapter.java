@@ -35,10 +35,12 @@ public class TransactionListAdapter
 	private int mGroupId;
 	private PathChangedListener mListener;
 
-	public TransactionListAdapter(Context context)
+	public TransactionListAdapter(Context context, AccessDatabase database)
 	{
 		super(context);
-		initialize(context);
+
+		mDatabase = database;
+
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
 	}
 
@@ -93,11 +95,6 @@ public class TransactionListAdapter
 		mergedList.addAll(mainItems);
 
 		return mergedList;
-	}
-
-	private void initialize(Context context)
-	{
-		mDatabase = new AccessDatabase(context);
 	}
 
 	public int getGroupId()

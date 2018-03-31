@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.util;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -15,8 +16,11 @@ import android.util.Log;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.preference.SuperPreferences;
+import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +32,9 @@ public class AppUtils
 	public static final String TAG = AppUtils.class.getSimpleName();
 
 	private static int mUniqueNumber = 0;
+	private static AccessDatabase mDatabase;
+	private static SuperPreferences mDefaultPreferences;
+	private static SuperPreferences mDefaultLocalPreferences;
 
 	public static void applyAdapterName(NetworkDevice.Connection connection)
 	{
@@ -80,6 +87,52 @@ public class AppUtils
 		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
 	}
 
+	public static AccessDatabase getAccessDatabase(Context context)
+	{
+		if (mDatabase == null)
+			mDatabase = new AccessDatabase(context);
+
+		return mDatabase;
+	}
+
+	public static SuperPreferences getDefaultPreferences(final Context context)
+	{
+		if (mDefaultPreferences == null) {
+			mDefaultPreferences = new SuperPreferences(new BinaryPreferencesBuilder(context)
+					.supportInterProcess(true)
+					.build());
+
+			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+			{
+				@Override
+				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+				{
+					PreferenceUtils.syncPreferences(superPreferences, getDefaultLocalPreferences(context).getWeakManager());
+				}
+			});
+		}
+
+		return mDefaultPreferences;
+	}
+
+	public static SuperPreferences getDefaultLocalPreferences(final Context context)
+	{
+		if (mDefaultLocalPreferences == null) {
+			mDefaultLocalPreferences = new SuperPreferences(PreferenceManager.getDefaultSharedPreferences(context));
+
+			mDefaultLocalPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+			{
+				@Override
+				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+				{
+					PreferenceUtils.syncPreferences(superPreferences, getDefaultPreferences(context).getWeakManager());
+				}
+			});
+		}
+
+		return mDefaultLocalPreferences;
+	}
+
 	public static String getDeviceSerial(Context context)
 	{
 		return Build.VERSION.SDK_INT < 26
@@ -96,7 +149,7 @@ public class AppUtils
 
 	public static String getLocalDeviceName(Context context)
 	{
-		String deviceName = PreferenceManager.getDefaultSharedPreferences(context)
+		String deviceName = getDefaultPreferences(context)
 				.getString("device_name", null);
 
 		return deviceName == null || deviceName.length() == 0

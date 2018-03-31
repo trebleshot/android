@@ -10,6 +10,12 @@ import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.PreferenceUtils;
+import com.ironz.binaryprefs.BinaryPreferencesBuilder;
+import com.ironz.binaryprefs.Preferences;
+
+import java.util.Map;
 
 public class PreferencesActivity extends Activity
 {
@@ -41,7 +47,7 @@ public class PreferencesActivity extends Activity
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+					SharedPreferences sharedPreferences = getDefaultPreferences();
 
 					sharedPreferences.edit()
 							.clear()
@@ -63,5 +69,12 @@ public class PreferencesActivity extends Activity
 	{
 		getMenuInflater().inflate(R.menu.actions_preferences_main, menu);
 		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this), AppUtils.getDefaultPreferences(this).getWeakManager());
 	}
 }

@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.support.v4.content.ContextCompat;
@@ -22,18 +23,17 @@ import java.util.ArrayList;
 
 public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 {
-	private boolean mShowLocalAddresses = false;
-	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 	private AccessDatabase mDatabase;
 	private NetworkDeviceListFragment mFragment;
+	private SharedPreferences mPreferences;
+	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
-	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, boolean showLocalAddresses)
+	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, AccessDatabase database, SharedPreferences preferences)
 	{
 		super(fragment.getActivity());
-
-		mShowLocalAddresses = showLocalAddresses;
-		mDatabase = new AccessDatabase(getContext());
 		mFragment = fragment;
+		mDatabase = database;
+		mPreferences = preferences;
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		for (NetworkDevice device : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
 				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
 			if (device instanceof HotspotNetwork
-					|| (device.nickname != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress)))
+					|| !device.isLocalAddress || mPreferences.getBoolean("developer_mode", false))
 				list.add(device);
 
 		return list;

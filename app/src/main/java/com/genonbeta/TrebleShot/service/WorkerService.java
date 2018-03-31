@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.service;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +10,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
@@ -36,20 +36,12 @@ public class WorkerService extends Service
 	private final ArrayList<RunningTask> mTaskList = new ArrayList<>();
 	private ExecutorService mExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private LocalBinder mBinder = new LocalBinder();
-	private NotificationUtils mNotificationUtils;
 
 	@Nullable
 	@Override
 	public IBinder onBind(Intent intent)
 	{
 		return mBinder;
-	}
-
-	@Override
-	public void onCreate()
-	{
-		super.onCreate();
-		mNotificationUtils = new NotificationUtils(this);
 	}
 
 	@Override
@@ -107,11 +99,6 @@ public class WorkerService extends Service
 		}
 
 		return taskList;
-	}
-
-	public NotificationUtils getNotificationUtils()
-	{
-		return mNotificationUtils;
 	}
 
 	public ArrayList<RunningTask> getTaskList()

@@ -60,6 +60,6 @@ public class NetworkStatusReceiver extends BroadcastReceiver
 
 	protected SharedPreferences getSharedPreferences(Context context)
 	{
-		return PreferenceManager.getDefaultSharedPreferences(context);
+		return AppUtils.getDefaultPreferences(context);
 	}
 }

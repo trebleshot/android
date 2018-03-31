@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.service;
 
-import android.app.Service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
@@ -21,6 +20,7 @@ import android.widget.Toast;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -50,6 +50,7 @@ import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -94,12 +95,12 @@ public class CommunicationService extends Service
 	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
 	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
 
+	private SharedPreferences mPreferences;
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private NsdDiscovery mNsdDiscovery;
 	private CommunicationNotificationHelper mNotificationHelper;
-	private AccessDatabase mDatabase;
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
 	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
@@ -122,9 +123,8 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
-		mNotificationHelper = new CommunicationNotificationHelper(this);
-		mDatabase = new AccessDatabase(this);
-		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase());
+		mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
+		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
 		mMediaScanner = new MediaScannerConnection(this, null);
 		mHotspotUtils = HotspotUtils.getInstance(this);
 		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
@@ -142,7 +142,7 @@ public class CommunicationService extends Service
 		if (getWifiLock() != null)
 			getWifiLock().acquire();
 
-		updateServiceState(getPreferences().getBoolean("trust_always", false));
+		updateServiceState(getDefaultPreferences().getBoolean("trust_always", false));
 
 		if (!AppUtils.checkRunningConditions(this)
 				|| !mCommunicationServer.start()
@@ -160,7 +160,7 @@ public class CommunicationService extends Service
 
 					sendHotspotStatus(reservation.getWifiConfiguration());
 
-					if (getPreferences().getBoolean("hotspot_trust", false))
+					if (getDefaultPreferences().getBoolean("hotspot_trust", false))
 						updateServiceState(true);
 				}
 			});
@@ -207,7 +207,7 @@ public class CommunicationService extends Service
 					if (isAccepted)
 						startFileReceiving(groupId);
 					else
-						mDatabase.remove(transferInstance.getGroup());
+						getDatabase().remove(transferInstance.getGroup());
 				} catch (Exception e) {
 					e.printStackTrace();
 
@@ -224,9 +224,9 @@ public class CommunicationService extends Service
 				NetworkDevice device = new NetworkDevice(deviceId);
 
 				try {
-					mDatabase.reconstruct(device);
+					getDatabase().reconstruct(device);
 					device.isRestricted = !isAccepted;
-					mDatabase.update(device);
+					getDatabase().update(device);
 				} catch (Exception e) {
 					e.printStackTrace();
 					return START_NOT_STICKY;
@@ -368,11 +368,6 @@ public class CommunicationService extends Service
 		return null;
 	}
 
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
 	public HotspotUtils getHotspotUtils()
 	{
 		return mHotspotUtils;
@@ -388,11 +383,6 @@ public class CommunicationService extends Service
 		return mOngoingIndexList;
 	}
 
-	public SharedPreferences getPreferences()
-	{
-		return getNotificationHelper().getUtils().getPreferences();
-	}
-
 	public ExecutorService getSelfExecutor()
 	{
 		return mSelfExecutor;
@@ -405,7 +395,7 @@ public class CommunicationService extends Service
 
 	public boolean isQRFastMode()
 	{
-		return getPreferences().getBoolean("qr_trust", false)
+		return getDefaultPreferences().getBoolean("qr_trust", false)
 				&& (mHotspotUtils.isStarted());
 	}
 
@@ -431,7 +421,7 @@ public class CommunicationService extends Service
 	public void setupHotspot()
 	{
 		boolean isEnabled = !getHotspotUtils().isEnabled();
-		boolean overrideTrustZone = getPreferences().getBoolean("hotspot_trust", false);
+		boolean overrideTrustZone = getDefaultPreferences().getBoolean("hotspot_trust", false);
 
 		// On Oreo devices, we will use platform specific code.
 		if (overrideTrustZone && (!isEnabled || Build.VERSION.SDK_INT < 26))
@@ -535,28 +525,28 @@ public class CommunicationService extends Service
 					NetworkDevice device = new NetworkDevice(deviceSerial);
 
 					try {
-						mDatabase.reconstruct(device);
+						getDatabase().reconstruct(device);
 
 						if (!device.isRestricted)
 							shouldContinue = true;
 					} catch (Exception e1) {
 						e1.printStackTrace();
 
-						device = NetworkDeviceLoader.load(true, mDatabase, activeConnection.getClientAddress(), null);
+						device = NetworkDeviceLoader.load(true, getDatabase(), activeConnection.getClientAddress(), null);
 
 						if (device == null)
 							throw new Exception("Could not reach to the opposite server");
 
 						device.isRestricted = true;
 
-						mDatabase.publish(device);
+						getDatabase().publish(device);
 
 						shouldContinue = true;
 
 						getNotificationHelper().notifyConnectionRequest(device);
 					}
 
-					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(mDatabase, device, activeConnection.getClientAddress());
+					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), device, activeConnection.getClientAddress());
 
 					if (!shouldContinue)
 						replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
@@ -580,7 +570,7 @@ public class CommunicationService extends Service
 											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
 											TransactionObject transactionObject = null;
 
-											mDatabase.publish(group);
+											getDatabase().publish(group);
 
 											synchronized (getOngoingIndexList()) {
 												getOngoingIndexList().put(group.groupId, interrupter);
@@ -617,7 +607,7 @@ public class CommunicationService extends Service
 														if (requestIndex.has(Keyword.INDEX_DIRECTORY))
 															transactionObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
 
-														mDatabase.insert(transactionObject);
+														getDatabase().insert(transactionObject);
 													}
 
 												} catch (JSONException e) {
@@ -637,7 +627,7 @@ public class CommunicationService extends Service
 											}
 
 											if (interrupter.interrupted())
-												mDatabase.remove(group);
+												getDatabase().remove(group);
 											else if (transactionObject != null && count > 0) {
 												if (seamlessActive && finalDevice.isTrusted)
 													try {
@@ -659,7 +649,7 @@ public class CommunicationService extends Service
 									boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
 
 									if (!isAccepted)
-										mDatabase.remove(new TransactionObject.Group(groupId));
+										getDatabase().remove(new TransactionObject.Group(groupId));
 
 									result = true;
 								}
@@ -668,7 +658,7 @@ public class CommunicationService extends Service
 								if (responseJSON.has(Keyword.TRANSFER_CLIPBOARD_TEXT)) {
 									TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(), responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
 
-									mDatabase.publish(textStreamObject);
+									getDatabase().publish(textStreamObject);
 									getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
 
 									result = true;
@@ -830,7 +820,7 @@ public class CommunicationService extends Service
 				processHolder.group = mTransfer.getGroup();
 
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
-				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
+				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
 					String errorCode = mainRequestJSON.has(Keyword.ERROR)
@@ -865,7 +855,7 @@ public class CommunicationService extends Service
 						}
 
 						processHolder.transactionObject = new TransactionObject(receiverInstance);
-						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transactionObject, processHolder.group);
+						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transactionObject, processHolder.group);
 
 						getNotificationHelper().notifyFileTransaction(processHolder);
 

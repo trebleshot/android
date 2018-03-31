@@ -72,7 +72,6 @@ public class NetworkDeviceListFragment
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
 	private NsdDiscovery mNsdDiscovery;
-	private SharedPreferences mPreferences;
 	private AbsListView.OnItemClickListener mClickListener;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
@@ -109,7 +108,7 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-		mNsdDiscovery = new NsdDiscovery(getContext(), getAdapter().getDatabase());
+		mNsdDiscovery = new NsdDiscovery(getContext(), getDatabase(), getDefaultPreferences());
 	}
 
 	@Override
@@ -178,14 +177,14 @@ public class NetworkDeviceListFragment
 		setHasOptionsMenu(true);
 		getListView().setDividerHeight(0);
 
-		if (getPreferences().getBoolean("scan_devices_auto", false))
+		if (getDefaultPreferences().getBoolean("scan_devices_auto", false))
 			requestRefresh();
 	}
 
 	@Override
 	public NetworkDeviceListAdapter onAdapter()
 	{
-		return new NetworkDeviceListAdapter(this, getPreferences().getBoolean("developer_mode", false));
+		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences());
 	}
 
 	@Override
@@ -221,7 +220,7 @@ public class NetworkDeviceListFragment
 
 			builder.show();
 		} else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getActivity(), getAdapter().getDatabase(), device).show();
+			new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
 	}
 
 	@Override
@@ -347,14 +346,6 @@ public class NetworkDeviceListFragment
 			return "";
 
 		return networkName.replace("\"", "");
-	}
-
-	public SharedPreferences getPreferences()
-	{
-		if (mPreferences == null)
-			mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
-
-		return mPreferences;
 	}
 
 	@Override
