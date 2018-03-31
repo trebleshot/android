@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 import com.ironz.binaryprefs.Preferences;
@@ -26,6 +27,8 @@ public class PreferenceUtils
 
 	public static <T> boolean applyGeneric(String key, T object, SharedPreferences.Editor editor)
 	{
+		Log.d(PreferenceUtils.class.getSimpleName(), "Put setting: " + key + " => " + String.valueOf(object));
+
 		if (object instanceof Boolean)
 			editor.putBoolean(key, (Boolean) object);
 		else if (object instanceof Float)

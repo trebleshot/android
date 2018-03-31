@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.preference.SuperPreferences;
 import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
@@ -98,9 +99,7 @@ public class AppUtils
 	public static SuperPreferences getDefaultPreferences(final Context context)
 	{
 		if (mDefaultPreferences == null) {
-			mDefaultPreferences = new SuperPreferences(new BinaryPreferencesBuilder(context)
-					.supportInterProcess(true)
-					.build());
+			mDefaultPreferences = new SuperPreferences(new DbSharablePreferences(context, "__default"));
 
 			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
 			{

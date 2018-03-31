@@ -18,7 +18,12 @@ public class SQLQuery
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 
-			stringBuilder.append("CREATE TABLE `");
+			stringBuilder.append("CREATE TABLE ");
+
+			if (table.mayExist())
+				stringBuilder.append("IF NOT EXISTS ");
+
+			stringBuilder.append("`");
 			stringBuilder.append(table.getName());
 			stringBuilder.append("` (");
 

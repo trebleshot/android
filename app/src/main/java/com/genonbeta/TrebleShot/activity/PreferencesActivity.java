@@ -75,6 +75,7 @@ public class PreferencesActivity extends Activity
 	protected void onPause()
 	{
 		super.onPause();
-		PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this), AppUtils.getDefaultPreferences(this).getWeakManager());
+		PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this),
+				AppUtils.getDefaultPreferences(this).getWeakManager());
 	}
 }

@@ -238,6 +238,10 @@ public class NetworkDeviceListFragment
 			AppUtils.startForegroundService(getActivity(),
 					new Intent(getActivity(), CommunicationService.class)
 							.setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
+
+		getDefaultPreferences().edit()
+				.putString("device_name", "Haha + " + AppUtils.getUniqueNumber())
+				.apply();
 	}
 
 	@Override

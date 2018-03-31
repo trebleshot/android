@@ -21,6 +21,14 @@ public class SQLValues
 		return table;
 	}
 
+	public Table defineTable(String name, boolean mayExist)
+	{
+		Table table = new Table(name, mayExist);
+		getTables().put(name, table);
+
+		return table;
+	}
+
 	public HashMap<String, Table> getTables()
 	{
 		return mIndex;
@@ -118,10 +126,16 @@ public class SQLValues
 	{
 		private String mName;
 		private HashMap<String, Column> mColumns = new HashMap<>();
+		private boolean mMayExist;
 
 		public Table(String name)
 		{
 			setName(name);
+		}
+
+		public Table(String name, boolean mayExist) {
+			this(name);
+			mMayExist = mayExist;
 		}
 
 		public boolean columnExist(String columnName)
@@ -148,6 +162,11 @@ public class SQLValues
 		public String getName()
 		{
 			return mName;
+		}
+
+		public boolean mayExist()
+		{
+			return mMayExist;
 		}
 
 		public void setName(String mName)
