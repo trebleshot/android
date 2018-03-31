@@ -353,4 +353,13 @@
     <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
     <string name="text_translateTrebleshot">Help ons met vertalen</string>
     <string name="text_contributors">Mogelijk gemaakt door deze personen</string>
+<string name="butn_gridSize">Rastergrootte</string>
+    <string name="butn_singleRow">Enkele rij</string>
+    <string name="butn_groupBy">Groeperen op</string>
+    <string name="text_photo">Foto</string>
+    <string name="text_groupByNothing">Niets</string>
+    <string name="text_groupByDate">Datum</string>
+    <string name="text_groupByAlbum">Album</string>
+    <string name="text_groupByArtist">Artiest</string>
+    <string name="text_groupByFolder">Map</string>
 </resources>
