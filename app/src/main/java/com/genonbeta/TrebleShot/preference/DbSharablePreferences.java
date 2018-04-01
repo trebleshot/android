@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
+import android.util.Log;
 
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
@@ -14,6 +15,7 @@ import com.genonbeta.android.database.SQLValues;
 import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,14 +33,25 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 	public static final String FIELD_TYPE = "__type";
 
 	private String mCategory;
+	private boolean mSyncReliant = false;
+
+	private List<OnSharedPreferenceChangeListener> mChangeListener = new ArrayList<>();
+	private Map<String, Object> mSyncedList = new ArrayMap<>();
+	private AsynchronousUpdateListener mUpdateListener;
 
 	// Do not use DB vulnerable words like 'transaction'
-	public DbSharablePreferences(Context context, String categoryName)
+	public DbSharablePreferences(Context context, String categoryName, boolean syncReliant)
 	{
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 		mCategory = categoryName;
+		mSyncReliant = syncReliant;
 
 		initialize();
+	}
+
+	public DbSharablePreferences(Context context, String categoryName)
+	{
+		this(context, categoryName, false);
 	}
 
 	@Override
@@ -63,6 +76,8 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 				.define(new SQLValues.Column(FIELD_VALUE, SQLType.TEXT, true));
 
 		SQLQuery.createTables(getWritableDatabase(), sqlValues);
+
+		setSyncReliant(mSyncReliant);
 	}
 
 	@Override
@@ -77,11 +92,22 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 		return output;
 	}
 
+	public synchronized Map<String, ?> getSyncedList()
+	{
+
+		return mSyncedList;
+	}
+
+	public boolean isSyncReliant()
+	{
+		return mSyncReliant;
+	}
+
 	@Nullable
 	@Override
 	public String getString(String key, @Nullable String defValue)
 	{
-		return valueCast(key, defValue);
+		return valueCast(key, String.class, defValue);
 	}
 
 	@Nullable
@@ -94,25 +120,25 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 	@Override
 	public int getInt(String key, int defValue)
 	{
-		return valueCast(key, defValue);
+		return valueCast(key, Integer.class, defValue);
 	}
 
 	@Override
 	public long getLong(String key, long defValue)
 	{
-		return valueCast(key, defValue);
+		return valueCast(key, Long.class, defValue);
 	}
 
 	@Override
 	public float getFloat(String key, float defValue)
 	{
-		return valueCast(key, defValue);
+		return valueCast(key, Float.class, defValue);
 	}
 
 	@Override
 	public boolean getBoolean(String key, boolean defValue)
 	{
-		return valueCast(key, defValue);
+		return valueCast(key, Boolean.class, defValue);
 	}
 
 	@Override
@@ -121,7 +147,8 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 		try {
 			reconstruct(new StoredData(mCategory, key));
 			return true;
-		} catch (Exception e) { }
+		} catch (Exception e) {
+		}
 
 		return false;
 	}
@@ -135,24 +162,54 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 	@Override
 	public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener)
 	{
-
+		mChangeListener.add(listener);
 	}
 
 	@Override
 	public void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener)
 	{
-
+		mChangeListener.remove(listener);
 	}
 
-	public <T> T valueCast(String key, T defaultValue)
+	public void setSyncReliant(boolean syncReliant)
 	{
-		StoredData data = new StoredData(mCategory, key);
+		mSyncReliant = syncReliant;
 
-		try {
-			reconstruct(data);
-			return (T) data.getTypedValue();
-		} catch (Exception e) {
-			e.printStackTrace();
+		if (syncReliant)
+			sync();
+	}
+
+	// only called when mSyncReliant is true
+	public DbSharablePreferences setUpdateListener(AsynchronousUpdateListener updateListener)
+	{
+		mUpdateListener = updateListener;
+		return this;
+	}
+
+	public void sync()
+	{
+		mSyncedList = new ArrayMap<>();
+		mSyncedList.putAll(getAll());
+	}
+
+	public <T> T valueCast(String key, Class<T> clazz, T defaultValue)
+	{
+		if (isSyncReliant()) {
+			if (getSyncedList().containsKey(key))
+				return (T) getSyncedList().get(key);
+		} else {
+			StoredData data = new StoredData(mCategory, key);
+
+			try {
+				reconstruct(data);
+				return (T) data.getTypedValue();
+			} catch (Exception e) {
+				Log.d(DbSharablePreferences.class.getSimpleName(),
+						"Failed reading and returning default value: " + key +
+								"; default: " + defaultValue +
+								"; requested type: " + clazz.getSimpleName() +
+								"; error msg: " + e.getMessage());
+			}
 		}
 
 		return defaultValue;
@@ -166,7 +223,8 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 		private Type mType;
 
 		public StoredData()
-		{ }
+		{
+		}
 
 		public StoredData(String category, String key)
 		{
@@ -235,13 +293,13 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 				e.printStackTrace();
 			}
 
-			return mType;
+			return mValue;
 		}
 
 		@Override
 		public SQLQuery.Select getWhere()
 		{
-			return new SQLQuery.Select(mCategory).setWhere(FIELD_KEY + "=?", mValue);
+			return new SQLQuery.Select(mCategory).setWhere(FIELD_KEY + "=?", mKey);
 		}
 
 		@Override
@@ -294,10 +352,42 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 
 	public class DbEditor implements Editor
 	{
+		private ArrayList<StoredData> mPendingPublish = new ArrayList<>();
+		private ArrayList<StoredData> mPendingRemoval = new ArrayList<>();
+
+		protected void execute()
+		{
+			for (StoredData removal : mPendingRemoval) {
+				DbSharablePreferences.this.remove(removal);
+
+				if (isSyncReliant())
+					mSyncedList.remove(removal.getKey());
+
+				for (OnSharedPreferenceChangeListener listener : mChangeListener)
+					listener.onSharedPreferenceChanged(DbSharablePreferences.this, removal.getKey());
+			}
+
+			for (StoredData publish : mPendingPublish) {
+				DbSharablePreferences.this.publish(publish);
+
+				if (isSyncReliant())
+					mSyncedList.put(publish.getKey(), publish.getTypedValue());
+
+				for (OnSharedPreferenceChangeListener listener : mChangeListener)
+					listener.onSharedPreferenceChanged(DbSharablePreferences.this, publish.getKey());
+			}
+
+			mPendingRemoval.clear();
+			mPendingPublish.clear();
+
+			if (isSyncReliant() && mUpdateListener != null)
+				mUpdateListener.onCommitComplete();
+		}
+
 		@Override
 		public Editor putString(String key, @Nullable String value)
 		{
-			publish(new StoredData(mCategory, key, value));
+			mPendingPublish.add(new StoredData(mCategory, key, value));
 			return this;
 		}
 
@@ -310,35 +400,35 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 		@Override
 		public Editor putInt(String key, int value)
 		{
-			publish(new StoredData(mCategory, key, value));
+			mPendingPublish.add(new StoredData(mCategory, key, value));
 			return this;
 		}
 
 		@Override
 		public Editor putLong(String key, long value)
 		{
-			publish(new StoredData(mCategory, key, value));
+			mPendingPublish.add(new StoredData(mCategory, key, value));
 			return this;
 		}
 
 		@Override
 		public Editor putFloat(String key, float value)
 		{
-			publish(new StoredData(mCategory, key, value));
+			mPendingPublish.add(new StoredData(mCategory, key, value));
 			return this;
 		}
 
 		@Override
 		public Editor putBoolean(String key, boolean value)
 		{
-			publish(new StoredData(mCategory, key, value));
+			mPendingPublish.add(new StoredData(mCategory, key, value));
 			return this;
 		}
 
 		@Override
 		public Editor remove(String key)
 		{
-			DbSharablePreferences.this.remove(new StoredData(mCategory, key));
+			mPendingRemoval.add(new StoredData(mCategory, key));
 			return this;
 		}
 
@@ -352,13 +442,29 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 		@Override
 		public boolean commit()
 		{
+			apply();
 			return true;
 		}
 
 		@Override
 		public void apply()
 		{
-
+			if (isSyncReliant())
+				new Thread()
+				{
+					@Override
+					public void run()
+					{
+						execute();
+					}
+				}.run();
+			else
+				execute();
 		}
+	}
+
+	public interface AsynchronousUpdateListener
+	{
+		void onCommitComplete();
 	}
 }

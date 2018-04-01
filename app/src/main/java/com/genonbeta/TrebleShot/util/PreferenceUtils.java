@@ -71,7 +71,6 @@ public class PreferenceUtils
 		SharedPreferences chosenSource = preferencesList.get(0);
 
 		chosenSource.edit()
-				.putLong(KEY_SYNC_TIME, syncTime)
 				.apply();
 
 		Map<String, ?> items = chosenSource.getAll();
@@ -104,8 +103,7 @@ public class PreferenceUtils
 			if (applyGeneric(key, from.get(key), editor))
 				totalRegistered++;
 
-		editor.putLong(KEY_SYNC_TIME, syncTime)
-				.apply();
+		editor.apply();
 
 		return totalRegistered;
 	}

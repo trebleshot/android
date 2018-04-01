@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -99,8 +100,20 @@ public class AppUtils
 	public static SuperPreferences getDefaultPreferences(final Context context)
 	{
 		if (mDefaultPreferences == null) {
-			mDefaultPreferences = new SuperPreferences(new DbSharablePreferences(context, "__default"));
+			//mDefaultPreferences = new SuperPreferences(new BinaryPreferencesBuilder(context)
+			//		.supportInterProcess(true)
+			//		.build());
+			DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
+					.setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
+					{
+						@Override
+						public void onCommitComplete()
+						{
+							context.sendBroadcast(new Intent(App.ACTION_REQUEST_PREFERENCES_SYNC));
+						}
+					});
 
+			mDefaultPreferences = new SuperPreferences(databasePreferences);
 			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
 			{
 				@Override

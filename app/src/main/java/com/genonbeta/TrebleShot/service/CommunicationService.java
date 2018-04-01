@@ -95,7 +95,6 @@ public class CommunicationService extends Service
 	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
 	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
 
-	private SharedPreferences mPreferences;
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
