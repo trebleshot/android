@@ -2,23 +2,16 @@ package com.genonbeta.TrebleShot;
 
 import android.app.Application;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
-import com.ironz.binaryprefs.Preferences;
-import com.ironz.binaryprefs.PreferencesEditor;
-
-import java.util.Map;
 
 /**
  * created by: Veli
@@ -36,8 +29,7 @@ public class App extends Application
 		public void onReceive(Context context, Intent intent)
 		{
 			if (intent != null)
-				if (ACTION_REQUEST_PREFERENCES_SYNC.equals(intent.getAction()))
-				{
+				if (ACTION_REQUEST_PREFERENCES_SYNC.equals(intent.getAction())) {
 					SharedPreferences preferences = AppUtils.getDefaultPreferences(context).getWeakManager();
 
 					if (preferences instanceof DbSharablePreferences)

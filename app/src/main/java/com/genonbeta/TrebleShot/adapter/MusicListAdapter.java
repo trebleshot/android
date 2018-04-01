@@ -14,18 +14,12 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MusicListAdapter
 		extends GroupShareableListAdapter<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder>

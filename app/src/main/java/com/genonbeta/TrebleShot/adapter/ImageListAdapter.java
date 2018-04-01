@@ -14,13 +14,9 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScroller;
-
-import java.lang.annotation.Annotation;
 
 /**
  * created by: Veli
@@ -29,7 +25,7 @@ import java.lang.annotation.Annotation;
 
 public class ImageListAdapter
 		extends GalleryGroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
-	implements FastScrollRecyclerView.SectionedAdapter
+		implements FastScrollRecyclerView.SectionedAdapter
 {
 	private ContentResolver mResolver;
 

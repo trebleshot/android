@@ -4,7 +4,6 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -50,7 +49,6 @@ import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 import org.json.JSONArray;
 import org.json.JSONException;

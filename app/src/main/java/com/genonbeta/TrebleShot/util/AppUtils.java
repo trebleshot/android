@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.util;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -22,7 +21,6 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.preference.SuperPreferences;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 import org.json.JSONException;
 import org.json.JSONObject;

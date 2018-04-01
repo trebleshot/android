@@ -5,13 +5,11 @@ import android.content.SharedPreferences;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 /**
  * created by: Veli

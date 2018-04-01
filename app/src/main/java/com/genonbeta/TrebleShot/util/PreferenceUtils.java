@@ -2,11 +2,7 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
-import com.ironz.binaryprefs.Preferences;
 
 import java.util.ArrayList;
 import java.util.Arrays;

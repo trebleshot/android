@@ -44,8 +44,7 @@ public abstract class GroupShareableListFragment<T extends GroupShareableListAda
 		mGroupingOptions.clear();
 		mGroupingOptions.putAll(options);
 
-		if (mGroupingOptions.size() > 0)
-		{
+		if (mGroupingOptions.size() > 0) {
 			inflater.inflate(R.menu.actions_abs_group_shareable_list, menu);
 			MenuItem groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping);
 
@@ -73,17 +72,13 @@ public abstract class GroupShareableListFragment<T extends GroupShareableListAda
 			Menu gridSizeMenu = groupingItem.getSubMenu();
 			int groupingCriteria = getGroupingCriteria();
 
-			for (String title : mGroupingOptions.keySet())
-			{
-				if (mGroupingOptions.get(title) == groupingCriteria)
-				{
+			for (String title : mGroupingOptions.keySet()) {
+				if (mGroupingOptions.get(title) == groupingCriteria) {
 					MenuItem menuItem;
 					int iterator = 0;
 
-					while ((menuItem = gridSizeMenu.getItem(iterator)) != null)
-					{
-						if (title.equals(String.valueOf(menuItem.getTitle())))
-						{
+					while ((menuItem = gridSizeMenu.getItem(iterator)) != null) {
+						if (title.equals(String.valueOf(menuItem.getTitle()))) {
 							menuItem.setChecked(true);
 							break;
 						}
@@ -109,7 +104,8 @@ public abstract class GroupShareableListFragment<T extends GroupShareableListAda
 	}
 
 	public void onGroupingOptions(Map<String, Integer> options)
-	{ }
+	{
+	}
 
 	public void changeGroupingCriteria(int criteria)
 	{

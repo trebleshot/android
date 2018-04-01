@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
 
 /**
  * created by: veli

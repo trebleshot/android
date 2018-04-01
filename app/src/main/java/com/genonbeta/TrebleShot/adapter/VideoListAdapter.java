@@ -52,8 +52,7 @@ public class VideoListAdapter
 		final VideoHolder object = this.getItem(position);
 		final View parentView = holder.getView();
 
-		if (!holder.tryBinding(object))
-		{
+		if (!holder.tryBinding(object)) {
 			final View selector = parentView.findViewById(R.id.selector);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);

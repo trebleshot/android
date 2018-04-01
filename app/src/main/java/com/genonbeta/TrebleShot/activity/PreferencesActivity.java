@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,10 +11,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
-import com.ironz.binaryprefs.BinaryPreferencesBuilder;
-import com.ironz.binaryprefs.Preferences;
-
-import java.util.Map;
 
 public class PreferencesActivity extends Activity
 {

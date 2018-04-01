@@ -197,12 +197,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	@Override
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
 	{
-		getListView().setPadding(0, 0, 0, 200);
-		getListView().setClipToPadding(false);
-
 		actionMode.setTitle(String.valueOf(0));
-
 		getAdapter().notifyAllSelectionChanges();
+
 		return false;
 	}
 

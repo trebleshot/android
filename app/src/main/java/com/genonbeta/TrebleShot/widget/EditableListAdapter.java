@@ -1,13 +1,11 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.widget.SectionIndexer;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.MathUtils;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Comparator;

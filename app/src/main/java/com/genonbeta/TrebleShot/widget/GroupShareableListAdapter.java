@@ -2,14 +2,11 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 
-import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.object.Shareable;
-import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.date.DateMerger;
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;

@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.preference;
 
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
 
@@ -114,7 +113,7 @@ public class SuperPreferences
 		@Override
 		public Editor putString(String key, @Nullable String value)
 		{
-			mEditor.putString(key,value);
+			mEditor.putString(key, value);
 			return this;
 		}
 

@@ -11,10 +11,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
 import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
-import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.Map;
 

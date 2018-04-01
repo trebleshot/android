@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.util.listing.merger;
 import android.support.annotation.NonNull;
 
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
-import com.genonbeta.TrebleShot.util.listing.Merger;
 
 /**
  * created by: Veli
