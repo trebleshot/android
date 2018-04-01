@@ -3,7 +3,9 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -17,11 +19,12 @@ import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.ListViewAdapter;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 
-public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
+public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
 {
 	private AccessDatabase mDatabase;
 	private NetworkDeviceListFragment mFragment;
@@ -31,6 +34,7 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, AccessDatabase database, SharedPreferences preferences)
 	{
 		super(fragment.getActivity());
+
 		mFragment = fragment;
 		mDatabase = database;
 		mPreferences = preferences;
@@ -86,17 +90,6 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		mList.addAll(passedItem);
 	}
 
-	@Override
-	public int getCount()
-	{
-		return mList.size();
-	}
-
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
 	public String getFriendlySSID(String ssid)
 	{
 		return ssid
@@ -105,37 +98,25 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 				.replace("_", " ");
 	}
 
+	@NonNull
 	@Override
-	public Object getItem(int itemId)
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return mList.get(itemId);
+		return new ViewHolder(getInflater().inflate(R.layout.list_network_device, parent, false));
 	}
 
 	@Override
-	public long getItemId(int p1)
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 	{
-		return 0;
-	}
+		View parentView = holder.getView();
+		NetworkDevice device = getList().get(position);
 
-	@Override
-	public ArrayList<NetworkDevice> getList()
-	{
-		return mList;
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
-	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_network_device, viewGroup, false);
-
-		NetworkDevice device = (NetworkDevice) getItem(position);
-		String firstLetters = TextUtils.getFirstLetters(device.nickname, 1);
+		String firstLetters = TextUtils.getFirstLetters(device.nickname, 0);
 		boolean hotspotNetwork = device instanceof HotspotNetwork;
 
-		TextView deviceText = view.findViewById(R.id.network_device_list_device_text);
-		TextView userText = view.findViewById(R.id.network_device_list_user_text);
-		ImageView userImage = view.findViewById(R.id.network_device_list_device_image);
+		TextView deviceText = parentView.findViewById(R.id.network_device_list_device_text);
+		TextView userText = parentView.findViewById(R.id.network_device_list_user_text);
+		ImageView userImage = parentView.findViewById(R.id.network_device_list_device_image);
 
 		userText.setText(device.nickname);
 		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
@@ -143,8 +124,24 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		userImage.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
 				? firstLetters
 				: "?", ContextCompat.getColor(mContext, hotspotNetwork ? R.color.hotspotNetworkRipple : R.color.networkDeviceRipple), 100));
+	}
 
-		return view;
+	@Override
+	public long getItemId(int p1)
+	{
+		return p1;
+	}
+
+	@Override
+	public int getItemCount()
+	{
+		return mList.size();
+	}
+
+	@Override
+	public ArrayList<NetworkDevice> getList()
+	{
+		return mList;
 	}
 
 	public static class HotspotNetwork extends NetworkDevice

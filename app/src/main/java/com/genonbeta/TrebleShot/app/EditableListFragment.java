@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +11,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -197,7 +199,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	@Override
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
 	{
-		actionMode.setTitle(String.valueOf(0));
+		updateSelectionTitle(actionMode);
 		getAdapter().notifyAllSelectionChanges();
 
 		return false;
@@ -212,6 +214,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	@Override
 	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable)
+	{
+		updateSelectionTitle(actionMode);
+	}
+
+	private void updateSelectionTitle(PowerfulActionMode actionMode)
 	{
 		int selectedSize = getSelectionConnection()
 				.getSelectedItemList()
@@ -270,10 +277,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	@Override
 	public RecyclerView.LayoutManager onLayoutManager()
 	{
-		final int currentGridSize = getViewingGridSize();
-		final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), currentGridSize > 1
-				? currentGridSize
-				: !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1);
+		final int preferredGridSize = getViewingGridSize();
+		final int optimalGridSize = preferredGridSize > 1
+				? preferredGridSize
+				: !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1;
+
+		final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), optimalGridSize);
 
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
 		{
@@ -285,7 +294,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 				return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
 						? 1
-						: onGridSpanSize(viewType, currentGridSize);
+						: onGridSpanSize(viewType, optimalGridSize);
 			}
 		});
 

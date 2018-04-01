@@ -60,4 +60,9 @@
         android:layout_centerInParent="true"
         android:background="@drawable/state_selected_image"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/selectableItemBackground"/>
+
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

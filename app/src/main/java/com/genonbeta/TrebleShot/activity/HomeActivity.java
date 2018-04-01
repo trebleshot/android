@@ -175,7 +175,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
 			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
-			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 1);
+			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 0);
 			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 			imageView.setImageDrawable(drawable);
@@ -199,6 +199,20 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	{
 		super.onStop();
 		mIsStopped = true;
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		mActionMode.preserveData();
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState)
+	{
+		super.onRestoreInstanceState(savedInstanceState);
+		mActionMode.dumpPreservedData();
 	}
 
 	@Override

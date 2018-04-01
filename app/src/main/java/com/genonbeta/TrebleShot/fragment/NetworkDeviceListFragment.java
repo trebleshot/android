@@ -24,6 +24,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,6 +40,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.ListViewFragment;
+import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -54,6 +56,7 @@ import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -64,13 +67,13 @@ import org.json.JSONObject;
 import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
-		extends ListViewFragment<NetworkDevice, NetworkDeviceListAdapter>
+		extends RecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder,  NetworkDeviceListAdapter>
 		implements TitleSupport, FABSupport, DetachListener
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
 	private NsdDiscovery mNsdDiscovery;
-	private AbsListView.OnItemClickListener mClickListener;
+	private RecyclerViewAdapter.OnClickListener mClickListener;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -124,7 +127,7 @@ public class NetworkDeviceListFragment
 	}
 
 	@Override
-	protected ListView onListView(View mainContainer, ViewGroup listViewContainer)
+	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
 		Context context = mainContainer.getContext();
 
@@ -141,7 +144,7 @@ public class NetworkDeviceListFragment
 	}
 
 	@Override
-	public void onViewCreated(View view, final Bundle savedInstanceState)
+	public void onViewCreated(@NonNull View view, final Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
@@ -171,9 +174,7 @@ public class NetworkDeviceListFragment
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
 		setHasOptionsMenu(true);
-		getListView().setDividerHeight(0);
 
 		if (getDefaultPreferences().getBoolean("scan_devices_auto", false))
 			requestRefresh();
@@ -182,43 +183,51 @@ public class NetworkDeviceListFragment
 	@Override
 	public NetworkDeviceListAdapter onAdapter()
 	{
-		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences());
-	}
-
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id)
-	{
-		super.onListItemClick(l, v, position, id);
-
-		final NetworkDevice device = (NetworkDevice) getAdapter().getItem(position);
-
-		if (mClickListener != null) {
-			if (device.versionNumber != -1
-					&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
-				createSnackbar(R.string.mesg_versionNotSupported)
-						.show();
-			else
-				mClickListener.onItemClick(l, v, position, id);
-		} else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-			final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-			builder.setTitle(hotspotNetwork.nickname);
-			builder.setMessage(R.string.text_trebleshotHotspotDescription);
-			builder.setNegativeButton(R.string.butn_close, null);
-			builder.setPositiveButton(isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
+		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences())
+		{
+			@Override
+			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
 			{
-				@Override
-				public void onClick(DialogInterface dialog, int which)
-				{
-					toggleConnection(hotspotNetwork);
-				}
-			});
+				super.onBindViewHolder(holder, position);
 
-			builder.show();
-		} else if (device.brand != null && device.model != null)
-			new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
+				holder.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
+
+						if (mClickListener != null) {
+							if (device.versionNumber != -1
+									&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+								createSnackbar(R.string.mesg_versionNotSupported)
+										.show();
+							else
+								mClickListener.onClick(holder);
+						} else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+							final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+
+							AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+							builder.setTitle(hotspotNetwork.nickname);
+							builder.setMessage(R.string.text_trebleshotHotspotDescription);
+							builder.setNegativeButton(R.string.butn_close, null);
+							builder.setPositiveButton(isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									toggleConnection(hotspotNetwork);
+								}
+							});
+
+							builder.show();
+						} else if (device.brand != null && device.model != null)
+							new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
+					}
+				});
+			}
+		};
 	}
 
 	@Override
@@ -673,7 +682,7 @@ public class NetworkDeviceListFragment
 		}
 	}
 
-	public void setOnListClickListener(AbsListView.OnItemClickListener listener)
+	public void setOnListClickListener(RecyclerViewAdapter.OnClickListener listener)
 	{
 		mClickListener = listener;
 	}

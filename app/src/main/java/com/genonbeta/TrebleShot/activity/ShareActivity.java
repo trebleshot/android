@@ -44,6 +44,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -124,12 +125,12 @@ public class ShareActivity extends Activity
 			}
 		});
 
-		mDeviceListFragment.setOnListClickListener(new AdapterView.OnItemClickListener()
+		mDeviceListFragment.setOnListClickListener(new RecyclerViewAdapter.OnClickListener()
 		{
 			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+			public void onClick(RecyclerViewAdapter.ViewHolder holder)
 			{
-				NetworkDevice device = (NetworkDevice) mDeviceListFragment.getListAdapter().getItem(position);
+				NetworkDevice device = mDeviceListFragment.getListAdapter().getList().get(holder.getAdapterPosition());
 
 				if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
 					doCommunicate((NetworkDeviceListAdapter.HotspotNetwork) device);

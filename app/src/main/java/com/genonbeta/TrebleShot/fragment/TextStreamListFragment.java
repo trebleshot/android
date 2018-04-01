@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -58,6 +59,14 @@ public class TextStreamListFragment
 
 		setEmptyImage(R.drawable.ic_forum_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTextStream));
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
 
 	@Override

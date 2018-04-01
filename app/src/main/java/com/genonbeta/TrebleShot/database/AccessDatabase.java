@@ -147,7 +147,6 @@ public class AccessDatabase extends SQLiteDatabase
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
 		if (old != current) {
-			db.execSQL("DROP TABLE `" + TABLE_TRANSFER + "`");
 			db.execSQL("DROP TABLE `" + TABLE_TRANSFERGROUP + "`");
 			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
 			db.execSQL("DROP TABLE `" + TABLE_DEVICECONNECTION + "`");

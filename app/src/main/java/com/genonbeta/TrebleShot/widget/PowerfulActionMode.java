@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 
 public class PowerfulActionMode extends Toolbar
 {
+	private static ArrayMap<Callback, Holder> mSavedActionModes;
+
 	private View mContainerLayout;
 	private OnSelectionTaskListener mTaskListener;
 	private MenuInflater mMenuInflater;
@@ -58,6 +61,26 @@ public class PowerfulActionMode extends Toolbar
 			getHolder(callback).getSelectionList().remove(selectable);
 
 		callback.onItemChecked(getContext(), this, selectable);
+
+		return true;
+	}
+
+	public boolean dumpPreservedData()
+	{
+		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData()");
+
+		if (mSavedActionModes == null)
+			return false;
+
+		// TODO: 02.04.2018 Might need to know which one could be showing after restore
+
+		mActiveActionModes = mSavedActionModes;
+		mSavedActionModes = null;
+
+		// I would consider getting the last one, but well currently it has no effect
+		start(mActiveActionModes.keySet().iterator().next(), true);
+
+		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData() exit");
 
 		return true;
 	}
@@ -123,6 +146,16 @@ public class PowerfulActionMode extends Toolbar
 		mMenuInflater = new MenuInflater(getContext());
 	}
 
+	public void preserveData()
+	{
+		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData()");
+
+		if (mActiveActionModes.size() > 0)
+			mSavedActionModes = mActiveActionModes;
+
+		Log.d(PowerfulActionMode.class.getSimpleName(), "preservedData() exit");
+	}
+
 	public boolean reload(final Callback callback)
 	{
 		getMenu().clear();
@@ -134,7 +167,6 @@ public class PowerfulActionMode extends Toolbar
 		}
 
 		updateVisibility(VISIBLE);
-
 
 		setNavigationIcon(R.drawable.ic_close_white_24dp);
 		setNavigationContentDescription(R.string.butn_close);
@@ -186,7 +218,12 @@ public class PowerfulActionMode extends Toolbar
 
 	public <T extends Selectable> boolean start(@NonNull final Callback<T> callback)
 	{
-		if (!callback.onPrepareActionMenu(getContext(), this) || mActiveActionModes.containsKey(callback)) {
+		return start(callback, false);
+	}
+
+	public <T extends Selectable> boolean start(@NonNull final Callback<T> callback, boolean forceStart)
+	{
+		if (!callback.onPrepareActionMenu(getContext(), this) || (mActiveActionModes.containsKey(callback) && !forceStart)) {
 			finish(callback);
 			return false;
 		}

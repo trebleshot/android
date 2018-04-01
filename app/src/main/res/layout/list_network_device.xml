@@ -2,17 +2,18 @@
               android:id="@+id/network_device_list_layout"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
+              android:background="?android:attr/selectableItemBackground"
               android:gravity="center_vertical"
               android:orientation="horizontal"
-              android:padding="15dp">
+              android:padding="20dp">
 
     <ImageView
         android:id="@+id/network_device_list_device_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginEnd="23dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginEnd="28dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginRight="23dp"
+        android:layout_marginRight="28dp"
         android:layout_marginStart="8dp"
         android:contentDescription="@string/text_image"/>
 
@@ -29,7 +30,7 @@
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="4dp" />
+            android:layout_height="4dp"/>
 
         <TextView
             android:id="@+id/network_device_list_device_text"

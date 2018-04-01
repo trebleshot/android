@@ -197,7 +197,7 @@ public class TransactionActivity
 				TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
 				TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
-				String firstLetters = TextUtils.getFirstLetters(mDevice.nickname, 1);
+				String firstLetters = TextUtils.getFirstLetters(mDevice.nickname, 0);
 				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 				layoutView.setOnClickListener(new View.OnClickListener()
