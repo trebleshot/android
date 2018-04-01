@@ -37,7 +37,7 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 
 	private List<OnSharedPreferenceChangeListener> mChangeListener = new ArrayList<>();
 	private Map<String, Object> mSyncedList = new ArrayMap<>();
-	private AsynchronousUpdateListener mUpdateListener;
+	private AsynchronousUpdateListener mUpdateListener; // only called when mSyncReliant is true
 
 	// Do not use DB vulnerable words like 'transaction'
 	public DbSharablePreferences(Context context, String categoryName, boolean syncReliant)
@@ -94,7 +94,6 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 
 	public synchronized Map<String, ?> getSyncedList()
 	{
-
 		return mSyncedList;
 	}
 
@@ -144,6 +143,9 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 	@Override
 	public boolean contains(String key)
 	{
+		if (isSyncReliant())
+			return mSyncedList.containsKey(key);
+
 		try {
 			reconstruct(new StoredData(mCategory, key));
 			return true;
@@ -179,7 +181,6 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 			sync();
 	}
 
-	// only called when mSyncReliant is true
 	public DbSharablePreferences setUpdateListener(AsynchronousUpdateListener updateListener)
 	{
 		mUpdateListener = updateListener;
@@ -357,31 +358,43 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 
 		protected void execute()
 		{
-			for (StoredData removal : mPendingRemoval) {
+			Map<String, Object> passiveSyncList = new ArrayMap<>();
+
+			if (isSyncReliant())
+				passiveSyncList.putAll(mSyncedList);
+
+			ArrayList<StoredData> pendingRemoval = new ArrayList<>(mPendingRemoval);
+			ArrayList<StoredData> pendingPublish = new ArrayList<>(mPendingPublish);
+
+			for (StoredData removal : pendingRemoval) {
 				DbSharablePreferences.this.remove(removal);
 
 				if (isSyncReliant())
-					mSyncedList.remove(removal.getKey());
+					passiveSyncList.remove(removal.getKey());
 
 				for (OnSharedPreferenceChangeListener listener : mChangeListener)
 					listener.onSharedPreferenceChanged(DbSharablePreferences.this, removal.getKey());
 			}
 
-			for (StoredData publish : mPendingPublish) {
+			for (StoredData publish : pendingPublish) {
 				DbSharablePreferences.this.publish(publish);
 
 				if (isSyncReliant())
-					mSyncedList.put(publish.getKey(), publish.getTypedValue());
+					passiveSyncList.put(publish.getKey(), publish.getTypedValue());
 
 				for (OnSharedPreferenceChangeListener listener : mChangeListener)
 					listener.onSharedPreferenceChanged(DbSharablePreferences.this, publish.getKey());
 			}
 
-			mPendingRemoval.clear();
-			mPendingPublish.clear();
+			mPendingRemoval = new ArrayList<>();
+			mPendingPublish = new ArrayList<>();
 
-			if (isSyncReliant() && mUpdateListener != null)
-				mUpdateListener.onCommitComplete();
+			if (isSyncReliant()) {
+				mSyncedList = passiveSyncList;
+
+				if (mUpdateListener != null)
+					mUpdateListener.onCommitComplete();
+			}
 		}
 
 		@Override
