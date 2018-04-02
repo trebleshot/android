@@ -91,7 +91,7 @@ public class TransactionGroupListAdapter
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, int position)
 	{
 		final PreloadedGroup object = getItem(position);
 		final View parentView = holder.getView();
@@ -111,8 +111,7 @@ public class TransactionGroupListAdapter
 				@Override
 				public void onClick(View v)
 				{
-					getSelectionConnection().setSelected(object);
-					selector.setSelected(object.isSelectableSelected());
+					getSelectionConnection().setSelected(holder.getAdapterPosition());
 				}
 			});
 		}

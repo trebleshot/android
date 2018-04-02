@@ -66,7 +66,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 			mSelectionConnection = new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), this);
 
 			getAdapter().setSelectionConnection(getSelectionConnection());
-			getPowerfulActionMode().enableFor(getSelectionConnection());
 
 			setHasOptionsMenu(true);
 		}
@@ -200,8 +199,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
 	{
 		updateSelectionTitle(actionMode);
-		getAdapter().notifyAllSelectionChanges();
-
 		return false;
 	}
 
@@ -213,18 +210,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	}
 
 	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable)
+	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
 	{
 		updateSelectionTitle(actionMode);
-	}
 
-	private void updateSelectionTitle(PowerfulActionMode actionMode)
-	{
-		int selectedSize = getSelectionConnection()
-				.getSelectedItemList()
-				.size();
-
-		actionMode.setTitle(String.valueOf(selectedSize));
+		if (position != -1) {
+			getAdapter().syncSelectionList();
+			getAdapter().notifyItemChanged(position);
+		}
 	}
 
 	@Override
@@ -249,6 +242,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 								if (!selectable.isSelectableSelected())
 									getSelectionConnection().setSelected(selectable, false);
 
+							// Position cannot be assumed that is why we need to request a refresh
 							getAdapter().notifyAllSelectionChanges();
 						}
 
@@ -471,16 +465,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public boolean setItemSelected(int position)
 	{
-		if (isSelectionActivated()) {
-			getSelectionConnection().setSelected(getSelectableList().get(position));
-
-			getAdapter().syncSelectionList();
-			getAdapter().notifyItemChanged(position);
-
-			return true;
-		}
-
-		return false;
+		return isSelectionActivated() && getSelectionConnection().setSelected(position);
 	}
 
 	public void setRefreshRequested(boolean requested)
@@ -499,14 +484,32 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public void setSelection(boolean selection)
 	{
-		for (T selectable : getSelectableList())
-			getSelectionConnection().setSelected(selectable, selection);
+		setSelection(selection, getSelectableList());
 
-		getAdapter().notifyItemRangeChanged(0, getAdapter().getItemCount());
+		// One-by-one calling caused an ANR
+		getAdapter().syncSelectionList();
+		getAdapter().notifyItemRangeChanged(0, getSelectableList().size() - 1);
 	}
+
+
+	public void setSelection(boolean selection, ArrayList<T> selectableList)
+	{
+		for (T selectable : selectableList)
+			getSelectionConnection().setSelected(selectable, selection);
+	}
+
 
 	public void setSortingSupported(boolean sortingSupported)
 	{
 		mSortingSupported = sortingSupported;
+	}
+
+	private void updateSelectionTitle(PowerfulActionMode actionMode)
+	{
+		int selectedSize = getSelectionConnection()
+				.getSelectedItemList()
+				.size();
+
+		actionMode.setTitle(String.valueOf(selectedSize));
 	}
 }

@@ -50,7 +50,7 @@ public class PowerfulActionMode extends Toolbar
 		initialize();
 	}
 
-	public <T extends Selectable> boolean check(@NonNull Callback<T> callback, T selectable, boolean selected)
+	public <T extends Selectable> boolean check(@NonNull Callback<T> callback, T selectable, boolean selected, int position)
 	{
 		if (!hasActive(callback) || !selectable.setSelectableSelected(selected))
 			return false;
@@ -60,7 +60,7 @@ public class PowerfulActionMode extends Toolbar
 		else
 			getHolder(callback).getSelectionList().remove(selectable);
 
-		callback.onItemChecked(getContext(), this, selectable);
+		callback.onItemChecked(getContext(), this, selectable, position);
 
 		return true;
 	}
@@ -83,28 +83,6 @@ public class PowerfulActionMode extends Toolbar
 		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData() exit");
 
 		return true;
-	}
-
-	public <T extends Selectable> void enableFor(final SelectorConnection<T> selectorConnection)
-	{
-		// FIXME: 27.03.2018
-
-		/*selectorConnection.getCallback().getActionModeListView()
-				.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
-				{
-					@Override
-					public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
-					{
-						if (PowerfulActionMode.this.start(selectorConnection.getCallback())) {
-							selectorConnection.setSelected(selectorConnection.getCallback().getSelectableList().get(i));
-							return true;
-						}
-
-						return false;
-					}
-				});
-
-				*/
 	}
 
 	public void finish(@NonNull final Callback callback)
@@ -228,7 +206,7 @@ public class PowerfulActionMode extends Toolbar
 			return false;
 		}
 
-		mActiveActionModes.put(callback, new Holder());
+		mActiveActionModes.put(callback, new Holder<>());
 
 		return reload(callback);
 	}
@@ -256,8 +234,6 @@ public class PowerfulActionMode extends Toolbar
 	public interface Callback<T extends Selectable>
 	{
 		// FIXME: 27.03.2018 hm what should we do?
-		//AbsListView getActionModeListView();
-
 		ArrayList<T> getSelectableList();
 
 		boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode);
@@ -266,7 +242,7 @@ public class PowerfulActionMode extends Toolbar
 
 		boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item);
 
-		void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable);
+		void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position);
 
 		void onFinish(Context context, PowerfulActionMode actionMode);
 	}
@@ -302,7 +278,6 @@ public class PowerfulActionMode extends Toolbar
 		public boolean isSelected(T selectable)
 		{
 			Holder<T> holder = getMode().getHolder(getCallback());
-
 			return holder != null && holder.getSelectionList().contains(selectable);
 		}
 
@@ -311,12 +286,27 @@ public class PowerfulActionMode extends Toolbar
 			return getMode().hasActive(getCallback());
 		}
 
+		public boolean setSelected(int position)
+		{
+			return setSelected(getCallback().getSelectableList().get(position), position);
+		}
+
 		public boolean setSelected(T selectable)
 		{
-			return setSelected(selectable, !isSelected(selectable));
+			return setSelected(selectable, !isSelected(selectable), -1);
 		}
 
 		public boolean setSelected(T selectable, boolean selected)
+		{
+			return setSelected(selectable, selected, -1);
+		}
+
+		public boolean setSelected(T selectable, @Nullable int position)
+		{
+			return setSelected(selectable, !isSelected(selectable), position);
+		}
+
+		public boolean setSelected(T selectable, boolean selected, @Nullable int position)
 		{
 			// if it is already the same
 			if (selected == isSelected(selectable))
@@ -325,7 +315,7 @@ public class PowerfulActionMode extends Toolbar
 			if (!getMode().hasActive(getCallback()))
 				getMode().start(getCallback());
 
-			return getMode().check(getCallback(), selectable, selected);
+			return getMode().check(getCallback(), selectable, selected, position);
 		}
 
 		public boolean removeSelected(T selectable)

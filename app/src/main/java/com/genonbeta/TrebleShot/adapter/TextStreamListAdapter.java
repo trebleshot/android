@@ -64,12 +64,11 @@ public class TextStreamListAdapter
 		TextStreamObject object = getItem(position);
 
 		if (!holder.tryBinding(object)) {
-			View selector = parentView.findViewById(R.id.selector);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 
 			if (getSelectionConnection() != null)
-				selector.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
 			text1.setText(object.text);
 			text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));

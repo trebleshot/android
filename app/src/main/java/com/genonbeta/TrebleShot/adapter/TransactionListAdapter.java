@@ -146,12 +146,11 @@ public class TransactionListAdapter
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, int position)
 	{
 		final TransactionObject object = getItem(position);
 		final View parentView = holder.getView();
 
-		final View selector = parentView.findViewById(R.id.selector);
 		final View layoutImage = parentView.findViewById(R.id.layout_image);
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView mainText = parentView.findViewById(R.id.text);
@@ -159,15 +158,14 @@ public class TransactionListAdapter
 		TextView sizeText = parentView.findViewById(R.id.text3);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					getSelectionConnection().setSelected(object);
-					selector.setSelected(object.isSelectableSelected());
+					getSelectionConnection().setSelected(holder.getAdapterPosition());
 				}
 			});
 		}

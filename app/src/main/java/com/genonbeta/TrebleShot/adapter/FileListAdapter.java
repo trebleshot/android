@@ -146,20 +146,19 @@ public class FileListAdapter
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final ViewHolder holder, final int position)
 	{
 		final GenericFileHolder object = getItem(position);
 
 		if (getSelectionConnection() != null) {
-			holder.getSelector().setSelected(object.isSelectableSelected());
+			holder.getView().setSelected(object.isSelectableSelected());
 
 			holder.getImageLayout().setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					getSelectionConnection().setSelected(object);
-					holder.getSelector().setSelected(object.isSelectableSelected());
+					getSelectionConnection().setSelected(holder.getAdapterPosition());
 				}
 			});
 		}
@@ -220,7 +219,6 @@ public class FileListAdapter
 		{
 			super(itemView);
 
-			mSelector = itemView.findViewById(R.id.selector);
 			mLayoutImage = itemView.findViewById(R.id.layout_image);
 			mImage = itemView.findViewById(R.id.image);
 			mText1 = itemView.findViewById(R.id.text);
@@ -235,11 +233,6 @@ public class FileListAdapter
 		public View getImageLayout()
 		{
 			return mLayoutImage;
-		}
-
-		public View getSelector()
-		{
-			return mSelector;
 		}
 
 		public TextView getText1()

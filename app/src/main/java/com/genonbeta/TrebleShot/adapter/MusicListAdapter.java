@@ -110,13 +110,12 @@ public class MusicListAdapter
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull GroupShareableListAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final GroupShareableListAdapter.ViewHolder holder, int position)
 	{
 		final SongHolder object = getItem(position);
 		final View parentView = holder.getView();
 
 		if (!holder.tryBinding(object)) {
-			final View selector = parentView.findViewById(R.id.selector);
 			final View layoutImage = parentView.findViewById(R.id.layout_image);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
@@ -124,15 +123,14 @@ public class MusicListAdapter
 			TextView text3 = parentView.findViewById(R.id.text3);
 
 			if (getSelectionConnection() != null) {
-				selector.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
 				layoutImage.setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
-						getSelectionConnection().setSelected(object);
-						selector.setSelected(object.isSelectableSelected());
+						getSelectionConnection().setSelected(holder.getAdapterPosition());
 					}
 				});
 			}

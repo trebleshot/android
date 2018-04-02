@@ -88,7 +88,6 @@ public class ImageListAdapter
 		final ImageHolder object = getItem(position);
 
 		if (!holder.tryBinding(object)) {
-			final View selector = parentView.findViewById(R.id.selector);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
@@ -97,7 +96,7 @@ public class ImageListAdapter
 			text2.setText(object.dateTakenString);
 
 			if (getSelectionConnection() != null)
-				selector.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
 			GlideApp.with(getContext())
 					.load(object.uri)

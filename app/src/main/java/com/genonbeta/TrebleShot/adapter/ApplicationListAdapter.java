@@ -69,12 +69,11 @@ public class ApplicationListAdapter
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, final int position)
 	{
 		final View parentView = holder.getView();
 		final PackageHolder object = getItem(position);
 
-		final View selector = parentView.findViewById(R.id.selector);
 		final View layoutImage = parentView.findViewById(R.id.layout_image);
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView text1 = parentView.findViewById(R.id.text);
@@ -84,15 +83,14 @@ public class ApplicationListAdapter
 		text2.setText(object.version);
 
 		if (getSelectionConnection() != null) {
-			selector.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			layoutImage.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View v)
 				{
-					getSelectionConnection().setSelected(object);
-					selector.setSelected(object.isSelectableSelected());
+					getSelectionConnection().setSelected(holder.getAdapterPosition());
 				}
 			});
 		}
