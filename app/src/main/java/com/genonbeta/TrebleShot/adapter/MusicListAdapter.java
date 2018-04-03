@@ -104,9 +104,15 @@ public class MusicListAdapter
 	@Override
 	public GroupShareableListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return viewType == VIEW_TYPE_REPRESENTATIVE
-				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
-				: new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
+		if (viewType == VIEW_TYPE_REPRESENTATIVE)
+			return new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+
+		GroupShareableListAdapter.ViewHolder holder = new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
+
+		holder.setClickableLayout(getSelectionConnection())
+			.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection());
+
+		return holder;
 	}
 
 	@Override
@@ -116,24 +122,13 @@ public class MusicListAdapter
 		final View parentView = holder.getView();
 
 		if (!holder.tryBinding(object)) {
-			final View layoutImage = parentView.findViewById(R.id.layout_image);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 			TextView text3 = parentView.findViewById(R.id.text3);
 
-			if (getSelectionConnection() != null) {
+			if (getSelectionConnection() != null)
 				parentView.setSelected(object.isSelectableSelected());
-
-				layoutImage.setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						getSelectionConnection().setSelected(holder.getAdapterPosition());
-					}
-				});
-			}
 
 			text1.setText(object.song);
 

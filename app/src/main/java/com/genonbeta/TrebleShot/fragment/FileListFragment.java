@@ -14,9 +14,12 @@ import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
@@ -24,14 +27,17 @@ import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 
 public class FileListFragment
-		extends ShareableListFragment<FileListAdapter.GenericFileHolder, FileListAdapter.ViewHolder, FileListAdapter>
+		extends ShareableListFragment<FileListAdapter.GenericFileHolder, EditableListAdapter.EditableViewHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
@@ -117,23 +123,21 @@ public class FileListFragment
 	@Override
 	public FileListAdapter onAdapter()
 	{
-		return new FileListAdapter(getActivity(), getDatabase(), getDefaultPreferences())
+		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
+				clazz.getView().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
-						FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
+						FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(clazz);
 
 						if (mFileClickedListener == null || !mFileClickedListener.onFileClicked(fileInfo)) {
 							if (fileInfo instanceof FileListAdapter.FileHolder)
-								performLayoutClick(v, holder);
+								performLayoutClick(v, clazz);
 							else if (fileInfo instanceof FileListAdapter.DirectoryHolder
 									|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
 								FileListFragment.this.goPath(fileInfo.file);
@@ -156,6 +160,16 @@ public class FileListFragment
 						}
 					}
 				});
+			}
+		};
+
+		return new FileListAdapter(getActivity(), getDatabase(), getDefaultPreferences())
+		{
+			@NonNull
+			@Override
+			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}

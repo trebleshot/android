@@ -21,6 +21,7 @@ import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
@@ -28,7 +29,7 @@ import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import java.io.File;
 import java.util.ArrayList;
 
-public abstract class ShareableListFragment<T extends Shareable, V extends RecyclerViewAdapter.ViewHolder, E extends ShareableListAdapter<T, V>>
+public abstract class ShareableListFragment<T extends Shareable, V extends EditableListAdapter.EditableViewHolder, E extends ShareableListAdapter<T, V>>
 		extends EditableListFragment<T, V, E>
 {
 	private ArrayList<T> mCachedList = new ArrayList<>();

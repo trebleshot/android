@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -21,6 +22,7 @@ import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
@@ -72,28 +74,30 @@ public class TextStreamListFragment
 	@Override
 	public TextStreamListAdapter onAdapter()
 	{
-		return new TextStreamListAdapter(getActivity(), getDatabase())
+		final AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupShareableListAdapter.ViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
+				if (!clazz.isRepresentative())
+					clazz.getView().setOnClickListener(new View.OnClickListener()
 					{
-						if (!holder.isRepresentative() && !setItemSelected(holder)) {
-							TextStreamObject textStreamObject = getAdapter().getItem(holder);
-
-							startActivity(new Intent(getContext(), TextEditorActivity.class)
-									.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-									.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
-									.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+						@Override
+						public void onClick(View v)
+						{
+							performLayoutClick(v, clazz);
 						}
-					}
-				});
+					});
+			}
+		};
+
+		return new TextStreamListAdapter(getActivity(), getDatabase())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}
@@ -152,12 +156,6 @@ public class TextStreamListFragment
 	}
 
 	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_textStream);
-	}
-
-	@Override
 	public boolean onFABRequested(FloatingActionButton floatingActionButton)
 	{
 		floatingActionButton.setImageResource(R.drawable.ic_add_white_24dp);
@@ -172,6 +170,24 @@ public class TextStreamListFragment
 		});
 
 		return true;
+	}
+
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.text_textStream);
+	}
+
+	@Override
+	public void performLayoutClick(View view, GroupShareableListAdapter.ViewHolder viewHolder)
+	{
+		TextStreamObject object = getAdapter().getItem(viewHolder.getAdapterPosition());
+
+		if (!setItemSelected(viewHolder.getAdapterPosition()))
+			startActivity(new Intent(getContext(), TextEditorActivity.class)
+					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 	}
 
 	private class StatusReceiver extends BroadcastReceiver

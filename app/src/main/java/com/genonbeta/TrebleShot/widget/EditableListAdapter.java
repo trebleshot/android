@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
@@ -15,7 +17,7 @@ import java.util.Comparator;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable, V extends RecyclerViewAdapter.ViewHolder> extends RecyclerViewAdapter<T, V>
+abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder> extends RecyclerViewAdapter<T, V>
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -191,5 +193,74 @@ abstract public class EditableListAdapter<T extends Editable, V extends Recycler
 		if (getSelectionConnection() != null)
 			for (T item : itemList)
 				item.setSelectableSelected(getSelectionConnection().isSelected(item));
+	}
+
+	public static class EditableViewHolder extends ViewHolder
+	{
+		private View mClickableLayout;
+		private View mSelectionOrientedLayout;
+
+		public EditableViewHolder(View itemView)
+		{
+			super(itemView);
+		}
+
+		public View getClickableLayout()
+		{
+			return mClickableLayout;
+		}
+
+		public View getSelectionOrientedLayout()
+		{
+			return mSelectionOrientedLayout;
+		}
+
+		public EditableViewHolder setClickableLayout(PowerfulActionMode.SelectorConnection connection)
+		{
+			return setClickableLayout(getView(), connection);
+		}
+
+		public EditableViewHolder setClickableLayout(int resId, PowerfulActionMode.SelectorConnection connection)
+		{
+			return setClickableLayout(getView().findViewById(resId), connection);
+		}
+
+		public EditableViewHolder setClickableLayout(View clickableLayout, final PowerfulActionMode.SelectorConnection connection)
+		{
+			mClickableLayout = clickableLayout;
+
+			clickableLayout.setOnLongClickListener(new View.OnLongClickListener()
+			{
+				@Override
+				public boolean onLongClick(View v)
+				{
+					return connection != null && connection.setSelected(getAdapterPosition());
+				}
+			});
+
+			return this;
+		}
+
+		public EditableViewHolder setSelectionOrientedLayout(int resId, PowerfulActionMode.SelectorConnection connection)
+		{
+			return setSelectionOrientedLayout(getView().findViewById(resId), connection);
+		}
+
+		public EditableViewHolder setSelectionOrientedLayout(View selectionOrientedLayout, final PowerfulActionMode.SelectorConnection connection)
+		{
+			mSelectionOrientedLayout = selectionOrientedLayout;
+
+			selectionOrientedLayout.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					if (connection != null)
+						connection.setSelected(getAdapterPosition());
+				}
+			});
+
+			return this;
+		}
 	}
 }

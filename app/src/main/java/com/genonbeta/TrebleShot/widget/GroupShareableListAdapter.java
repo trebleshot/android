@@ -155,7 +155,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		}
 	}
 
-	public static class ViewHolder extends RecyclerViewAdapter.ViewHolder
+	public static class ViewHolder extends EditableListAdapter.EditableViewHolder
 	{
 		private TextView mRepresentativeText;
 

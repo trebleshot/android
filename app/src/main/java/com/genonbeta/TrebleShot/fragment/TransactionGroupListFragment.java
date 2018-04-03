@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
@@ -17,6 +18,7 @@ import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -29,7 +31,7 @@ import java.util.ArrayList;
  */
 
 public class TransactionGroupListFragment
-		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, RecyclerViewAdapter.ViewHolder, TransactionGroupListAdapter>
+		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, EditableListAdapter.EditableViewHolder, TransactionGroupListAdapter>
 		implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
@@ -96,8 +98,15 @@ public class TransactionGroupListFragment
 	{
 		return new TransactionGroupListAdapter(getActivity(), getDatabase())
 		{
+			@NonNull
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return super.onCreateViewHolder(parent, viewType);
+			}
+
+			@Override
+			public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, int position)
 			{
 				super.onBindViewHolder(holder, position);
 

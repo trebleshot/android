@@ -478,7 +478,7 @@ public class TransactionActivity
 				mGroup.connectionAdapter = connection.adapterName;
 				getDatabase().publish(mGroup);
 
-				createSnackbar(R.string.mesg_connectionUpdated, getString(TextUtils.getAdapterName(connection)))
+				createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(), connection))
 						.show();
 			}
 		}, false).show();

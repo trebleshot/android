@@ -22,6 +22,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -30,7 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class TransactionListFragment
-		extends EditableListFragment<TransactionObject, RecyclerViewAdapter.ViewHolder, TransactionListAdapter>
+		extends EditableListFragment<TransactionObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
 	public IntentFilter mFilter = new IntentFilter();
@@ -89,7 +90,7 @@ public class TransactionListFragment
 		return new TransactionListAdapter(getActivity(), getDatabase())
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, int position)
 			{
 				super.onBindViewHolder(holder, position);
 

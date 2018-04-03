@@ -6,10 +6,12 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
 import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 
@@ -57,22 +59,30 @@ public class VideoListFragment
 	@Override
 	public VideoListAdapter onAdapter()
 	{
-		return new VideoListAdapter(getActivity())
+		final AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupShareableListAdapter.ViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				if (holder.getItemViewType() != VideoListAdapter.VIEW_TYPE_TITLE)
-					holder.getView().setOnClickListener(new View.OnClickListener()
+				if (!clazz.isRepresentative())
+					clazz.getView().setOnClickListener(new View.OnClickListener()
 					{
 						@Override
 						public void onClick(View v)
 						{
-							performLayoutClick(v, holder);
+							performLayoutClick(v, clazz);
 						}
 					});
+			}
+		};
+
+		return new VideoListAdapter(getActivity())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}

@@ -36,7 +36,7 @@ import java.util.ArrayList;
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder, E extends EditableListAdapter<T, V>>
+abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder, E extends EditableListAdapter<T, V>>
 		extends DynamicRecyclerViewFragment<T, V, E>
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
@@ -488,7 +488,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 		// One-by-one calling caused an ANR
 		getAdapter().syncSelectionList();
-		getAdapter().notifyItemRangeChanged(0, getSelectableList().size() - 1);
+		getAdapter().notifyItemRangeChanged(0, getSelectableList().size() );
 	}
 
 

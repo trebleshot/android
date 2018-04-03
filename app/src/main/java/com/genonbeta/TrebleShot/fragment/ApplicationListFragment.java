@@ -12,17 +12,21 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 public class ApplicationListFragment
-		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder, ApplicationListAdapter>
+		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder, ApplicationListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -44,20 +48,18 @@ public class ApplicationListFragment
 	@Override
 	public ApplicationListAdapter onAdapter()
 	{
-		return new ApplicationListAdapter(getActivity(), getDefaultPreferences().getBoolean("show_system_apps", false))
+		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
+				clazz.getView().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
-						if (!setItemSelected(holder)) {
-							final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
+						if (!setItemSelected(clazz)) {
+							final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(clazz);
 							final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 
 							if (launchIntent != null) {
@@ -82,6 +84,16 @@ public class ApplicationListFragment
 				});
 			}
 		};
+
+		return new ApplicationListAdapter(getActivity(), getDefaultPreferences())
+		{
+			@NonNull
+			@Override
+			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
 	}
 
 	@Override
@@ -100,8 +112,6 @@ public class ApplicationListFragment
 			getDefaultPreferences().edit()
 					.putBoolean("show_system_apps", isShowingSystem)
 					.apply();
-
-			getAdapter().showSystemApps(isShowingSystem);
 
 			refreshList();
 			return true;

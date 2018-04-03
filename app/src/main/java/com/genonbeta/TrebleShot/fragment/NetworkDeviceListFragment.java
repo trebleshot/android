@@ -56,6 +56,7 @@ import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -183,19 +184,17 @@ public class NetworkDeviceListFragment
 	@Override
 	public NetworkDeviceListAdapter onAdapter()
 	{
-		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences())
+		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
+				clazz.getView().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
-						final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
+						final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
 
 						if (mClickListener != null) {
 							if (device.versionNumber != -1
@@ -203,7 +202,7 @@ public class NetworkDeviceListFragment
 								createSnackbar(R.string.mesg_versionNotSupported)
 										.show();
 							else
-								mClickListener.onClick(holder);
+								mClickListener.onClick(clazz);
 						} else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
 							final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
 
@@ -226,6 +225,16 @@ public class NetworkDeviceListFragment
 							new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
 					}
 				});
+			}
+		};
+
+		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}

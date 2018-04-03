@@ -26,7 +26,7 @@ import java.util.Collections;
  */
 
 public class TransactionGroupListAdapter
-		extends EditableListAdapter<TransactionGroupListAdapter.PreloadedGroup, RecyclerViewAdapter.ViewHolder>
+		extends EditableListAdapter<TransactionGroupListAdapter.PreloadedGroup, EditableListAdapter.EditableViewHolder>
 {
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
@@ -85,13 +85,13 @@ public class TransactionGroupListAdapter
 
 	@NonNull
 	@Override
-	public RecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new RecyclerViewAdapter.ViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false));
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull final RecyclerViewAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, int position)
 	{
 		final PreloadedGroup object = getItem(position);
 		final View parentView = holder.getView();

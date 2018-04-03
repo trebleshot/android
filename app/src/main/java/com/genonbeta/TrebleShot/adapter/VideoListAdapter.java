@@ -41,9 +41,14 @@ public class VideoListAdapter
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return viewType == VIEW_TYPE_REPRESENTATIVE
-				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
-				: new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
+		if (viewType == VIEW_TYPE_REPRESENTATIVE)
+				return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+
+		GroupShareableListAdapter.ViewHolder holder =  new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
+
+		holder.setClickableLayout(getSelectionConnection());
+
+		return holder;
 	}
 
 	@Override

@@ -21,6 +21,7 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.preference.SuperPreferences;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -215,11 +216,22 @@ public class AppUtils
 		return device;
 	}
 
+	public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
+	{
+		quickActions.onQuickActions(clazz);
+		return clazz;
+	}
+
 	public static void startForegroundService(Context context, Intent intent)
 	{
 		if (Build.VERSION.SDK_INT >= 26)
 			context.startForegroundService(intent);
 		else
 			context.startService(intent);
+	}
+
+	public interface QuickActions<T>
+	{
+		void onQuickActions(T clazz);
 	}
 }
