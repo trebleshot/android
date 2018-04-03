@@ -25,8 +25,6 @@ import java.util.ArrayList;
 
 public class PowerfulActionMode extends Toolbar
 {
-	private static ArrayMap<Callback, Holder> mSavedActionModes;
-
 	private View mContainerLayout;
 	private OnSelectionTaskListener mTaskListener;
 	private MenuInflater mMenuInflater;
@@ -61,26 +59,6 @@ public class PowerfulActionMode extends Toolbar
 			getHolder(callback).getSelectionList().remove(selectable);
 
 		callback.onItemChecked(getContext(), this, selectable, position);
-
-		return true;
-	}
-
-	public boolean dumpPreservedData()
-	{
-		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData()");
-
-		if (mSavedActionModes == null)
-			return false;
-
-		// TODO: 02.04.2018 Might need to know which one could be showing after restore
-
-		mActiveActionModes = mSavedActionModes;
-		mSavedActionModes = null;
-
-		// I would consider getting the last one, but well currently it has no effect
-		start(mActiveActionModes.keySet().iterator().next(), true);
-
-		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData() exit");
 
 		return true;
 	}
@@ -122,16 +100,6 @@ public class PowerfulActionMode extends Toolbar
 	{
 		mContainerLayout = this;
 		mMenuInflater = new MenuInflater(getContext());
-	}
-
-	public void preserveData()
-	{
-		Log.d(PowerfulActionMode.class.getSimpleName(), "dumpPreservedData()");
-
-		if (mActiveActionModes.size() > 0)
-			mSavedActionModes = mActiveActionModes;
-
-		Log.d(PowerfulActionMode.class.getSimpleName(), "preservedData() exit");
 	}
 
 	public boolean reload(final Callback callback)

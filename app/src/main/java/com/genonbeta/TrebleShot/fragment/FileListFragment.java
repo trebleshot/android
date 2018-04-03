@@ -121,6 +121,13 @@ public class FileListFragment
 	}
 
 	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState)
+	{
+		super.onViewStateRestored(savedInstanceState);
+
+	}
+
+	@Override
 	public FileListAdapter onAdapter()
 	{
 		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()

@@ -30,12 +30,10 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
@@ -51,7 +49,6 @@
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
-
                 <data android:mimeType="*/*"/>
             </intent-filter>
 
@@ -84,7 +81,6 @@
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

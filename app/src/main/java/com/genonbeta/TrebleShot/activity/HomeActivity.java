@@ -202,20 +202,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState)
-	{
-		super.onSaveInstanceState(outState);
-		mActionMode.preserveData();
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState)
-	{
-		super.onRestoreInstanceState(savedInstanceState);
-		mActionMode.dumpPreservedData();
-	}
-
-	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item)
 	{
 		if (R.id.menu_activity_main_device_list == item.getItemId()) {
