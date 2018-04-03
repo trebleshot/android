@@ -1,7 +1,5 @@
 package com.genonbeta.android.database;
 
-import android.app.ActionBar;
-
 import java.util.HashMap;
 
 /**
@@ -48,16 +46,16 @@ public class SQLValues
 			setValue(String.valueOf(value));
 		}
 
-		public Column(String columnName, SQLType type, boolean mNullable)
+		public Column(String columnName, SQLType type, boolean nullable)
 		{
 			setName(columnName);
 			setType(type);
-			setNullable(mNullable);
+			setNullable(nullable);
 		}
 
-		public Column(String columnName, SQLType type, boolean mNullable, String extra)
+		public Column(String columnName, SQLType type, boolean nullable, String extra)
 		{
-			this(columnName, type, mNullable);
+			this(columnName, type, nullable);
 			setExtra(extra);
 		}
 

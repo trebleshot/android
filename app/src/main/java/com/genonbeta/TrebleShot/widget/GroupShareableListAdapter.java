@@ -122,9 +122,9 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 						? object.representativeText
 						: getSectionNameDate(object.getComparableDate());
 			default:
-				return getSectionNameTrimmedText(object.isGroupRepresentative()
-						? object.representativeText
-						: object.getComparableName());
+				return object.isGroupRepresentative()
+						? getSectionNameTrimmedText(object.representativeText)
+						: super.getSectionName(position);
 		}
 	}
 

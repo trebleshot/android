@@ -34,6 +34,6 @@ public class StringMerger<T> extends ComparableMerger<T>
 		if (!(o instanceof StringMerger))
 			return -1;
 
-		return ((StringMerger) o).getString().compareTo(getString());
+		return ((StringMerger) o).getString().compareToIgnoreCase(getString());
 	}
 }

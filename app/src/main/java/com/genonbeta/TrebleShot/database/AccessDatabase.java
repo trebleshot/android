@@ -21,6 +21,14 @@ import java.util.ArrayList;
 
 public class AccessDatabase extends SQLiteDatabase
 {
+	/*
+	 * New database versioning notes;
+	 * A- Do not remove all the available tables whenever the database is updated
+	 * B- Starting with the version 7, it is decided that individual changes to the database are healthier
+	 * C- From now on, the changes to the database will be separated to sections, one of which is belonging to
+	 * 		below version 6 and the other which is new generation 7
+	 */
+
 	public static final int DATABASE_VERSION = 6;
 
 	public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
@@ -91,73 +99,26 @@ public class AccessDatabase extends SQLiteDatabase
 	@Override
 	public void onCreate(android.database.sqlite.SQLiteDatabase db)
 	{
-		SQLValues sqlValues = new SQLValues();
-
-		sqlValues.defineTable(TABLE_TRANSFER)
-				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
-
-		sqlValues.defineTable(TABLE_TRANSFERGROUP)
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_CONNECTIONADAPTER, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
-
-		sqlValues.defineTable(TABLE_DEVICES)
-				.define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false));
-
-		sqlValues.defineTable(TABLE_DEVICECONNECTION)
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
-
-		sqlValues.defineTable(TABLE_CLIPBOARD)
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
-
-		sqlValues.defineTable(TABLE_WRITABLEPATH)
-				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
-
-		SQLQuery.createTables(db, sqlValues);
+		SQLQuery.createTables(db, getDatabaseTables());
 	}
 
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
 	{
-		if (old != current) {
-			db.execSQL("DROP TABLE `" + TABLE_TRANSFERGROUP + "`");
-			db.execSQL("DROP TABLE `" + TABLE_DEVICES + "`");
-			db.execSQL("DROP TABLE `" + TABLE_DEVICECONNECTION + "`");
+		/*
+		 * Version 6 was until version 1.2.5.12 and we don't have any new changes compared to version
+		 * version 6, so we only included version 5 which we did not note the changes and that is why
+		 * we are removing all the available tables right away as to recent statics show that some people are
+		 * installing older versions and migrating to newer ones, which causes crashes.
+		 */
 
-			if (current > 5)
-				db.execSQL("DROP TABLE `" + TABLE_CLIPBOARD + "`");
+		SQLValues sqlValues = getDatabaseTables();
 
-			if (current > 6)
-				db.execSQL("DROP TABLE `" + TABLE_WRITABLEPATH + "`");
+		if (old <= 5) {
+			for (String tableName : getDatabaseTables().getTables().keySet())
+				db.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
-			onCreate(db);
+			SQLQuery.createTables(db, sqlValues);
 		}
 	}
 
@@ -223,6 +184,60 @@ public class AccessDatabase extends SQLiteDatabase
 	public Context getContext()
 	{
 		return mContext;
+	}
+
+	public SQLValues getDatabaseTables()
+	{
+		SQLValues sqlValues = new SQLValues();
+
+		sqlValues.defineTable(TABLE_TRANSFER)
+				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
+
+		sqlValues.defineTable(TABLE_TRANSFERGROUP)
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DEVICEID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_CONNECTIONADAPTER, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
+
+		sqlValues.defineTable(TABLE_DEVICES)
+				.define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false));
+
+		sqlValues.defineTable(TABLE_DEVICECONNECTION)
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
+
+		sqlValues.defineTable(TABLE_CLIPBOARD)
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
+
+		sqlValues.defineTable(TABLE_WRITABLEPATH)
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
+
+		return sqlValues;
 	}
 
 	@Override
