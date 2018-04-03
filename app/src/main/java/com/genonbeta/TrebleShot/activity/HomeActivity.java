@@ -175,7 +175,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
 			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
-			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 0);
+			String firstLetters = TextUtils.getLetters(localDevice.nickname, 0);
 			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 			imageView.setImageDrawable(drawable);

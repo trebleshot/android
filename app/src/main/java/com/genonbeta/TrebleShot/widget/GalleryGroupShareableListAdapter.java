@@ -2,7 +2,9 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
+import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 
 import java.util.ArrayList;
@@ -38,6 +40,21 @@ abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupSha
 	{
 		return super.createLister(loadedList, groupBy)
 				.setCustomLister(this);
+	}
+
+	@NonNull
+	@Override
+	public String getSectionName(int position)
+	{
+		T object = getItem(position);
+
+		if (!object.isGroupRepresentative())
+			if (getGroupBy() == MODE_GROUP_BY_ALBUM)
+				return TextUtils.trimText(object.isGroupRepresentative()
+						? object.representativeText
+						: object.albumName, 1);
+
+		return super.getSectionName(position);
 	}
 
 	public static class GalleryGroupShareable extends GroupShareableListAdapter.GroupShareable

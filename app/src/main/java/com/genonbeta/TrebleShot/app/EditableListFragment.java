@@ -83,18 +83,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	@Override
 	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
-		FastScrollRecyclerView recyclerView = new FastScrollRecyclerView(getContext());
+		FastScrollRecyclerView recyclerView = getLayoutInflater()
+				.inflate(R.layout.abstract_fast_scroll_recyclerview, null, false)
+				.findViewById(R.id.abstract_fast_scroll_recyclerview_view);
 
 		recyclerView.setLayoutManager(onLayoutManager());
 
-		recyclerView.setLayoutParams(new GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-
 		listViewContainer.addView(recyclerView);
-
-		recyclerView.setPopupBgColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-		recyclerView.setPopupTextColor(ContextCompat.getColor(getContext(), R.color.whiteAccent));
-		recyclerView.setThumbColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
 
 		return recyclerView;
 	}
@@ -255,11 +250,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	@Override
 	public void onFinish(Context context, PowerfulActionMode actionMode)
 	{
-		getListView().setPadding(0, 0, 0, 0);
-		getListView().setClipToPadding(true);
-
 		setSelection(false);
-
 		loadIfRequested();
 	}
 

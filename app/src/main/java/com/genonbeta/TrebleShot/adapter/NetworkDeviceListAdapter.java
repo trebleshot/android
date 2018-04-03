@@ -5,7 +5,6 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,7 +17,6 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.ListViewAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -111,7 +109,7 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 		View parentView = holder.getView();
 		NetworkDevice device = getList().get(position);
 
-		String firstLetters = TextUtils.getFirstLetters(device.nickname, 0);
+		String firstLetters = TextUtils.getLetters(device.nickname, 0);
 		boolean hotspotNetwork = device instanceof HotspotNetwork;
 
 		TextView deviceText = parentView.findViewById(R.id.network_device_list_device_text);

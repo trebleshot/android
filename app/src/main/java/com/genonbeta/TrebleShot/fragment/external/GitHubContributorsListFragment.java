@@ -6,6 +6,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +20,10 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -37,20 +43,18 @@ public class GitHubContributorsListFragment
 	@Override
 	public ContributorListAdapter onAdapter()
 	{
-		return new ContributorListAdapter(getContext())
+		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+			public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				final ContributorObject contributorObject = getAdapter().getList().get(position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
+				clazz.getView().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
+						final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
+
 						if (getContext() == null)
 							return;
 
@@ -58,6 +62,16 @@ public class GitHubContributorsListFragment
 								.setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
 					}
 				});
+			}
+		};
+
+		return new ContributorListAdapter(getContext())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}

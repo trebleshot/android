@@ -42,7 +42,7 @@ public class TextUtils
 		return context.getString(adapterNameResource);
 	}
 
-	public static String getFirstLetters(String text, int breakAfter)
+	public static String getLetters(String text, int breakAfter)
 	{
 		if (text == null || text.length() == 0)
 			text = "?";
@@ -86,5 +86,13 @@ public class TextUtils
 		return searchThis == null
 				|| searchThis.length() == 0
 				|| word.toLowerCase().contains(searchThis.toLowerCase());
+	}
+
+	public static String trimText(String text, int length)
+	{
+		if (text == null || text.length() <= length)
+			return text;
+
+		return text.substring(0, length);
 	}
 }

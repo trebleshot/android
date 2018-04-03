@@ -1,13 +1,19 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.view.LayoutInflater;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.MathUtils;
+import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.date.DateMerger;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -17,13 +23,16 @@ import java.util.Comparator;
  * date: 12.01.2018 16:55
  */
 
-abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder> extends RecyclerViewAdapter<T, V>
+abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
+		extends RecyclerViewAdapter<T, V>
+		implements FastScrollRecyclerView.SectionedAdapter
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private ArrayList<T> mItemList = new ArrayList<>();
+	private int mSortingCriteria = -1;
 	private boolean mGridLayoutRequested = false;
 
 	public EditableListAdapter(Context context)
@@ -39,10 +48,12 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
 	public Comparator<T> getDefaultComparator()
 	{
+		mSortingCriteria = getFragment() != null
+				? getFragment().getSortingCriteria()
+				: R.id.actions_abs_editable_sort_by_name;
+
 		return new Comparator<T>()
 		{
-			private int mSortingCriteria = -1;
-
 			@Override
 			public int compare(T toCompare, T compareTo)
 			{
@@ -52,11 +63,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 				int sortingResult = 0;
 
 				switch (getSortingCriteria()) {
-					case R.id.actions_abs_editable_sort_by_name:
-						sortingResult = sortingAscending
-								? toCompare.getComparableName().compareToIgnoreCase(compareTo.getComparableName())
-								: compareTo.getComparableName().compareToIgnoreCase(toCompare.getComparableName());
-						break;
 					case R.id.actions_abs_editable_sort_by_date:
 						sortingResult = sortingAscending
 								? MathUtils.compare(toCompare.getComparableDate(), compareTo.getComparableDate())
@@ -67,18 +73,14 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 								? MathUtils.compare(toCompare.getComparableSize(), compareTo.getComparableSize())
 								: MathUtils.compare(compareTo.getComparableSize(), toCompare.getComparableSize());
 						break;
+					default: // R.id.actions_abs_editable_sort_by_name:
+						sortingResult = sortingAscending
+								? toCompare.getComparableName().compareToIgnoreCase(compareTo.getComparableName())
+								: compareTo.getComparableName().compareToIgnoreCase(toCompare.getComparableName());
+						break;
 				}
 
 				return sortingResult;
-			}
-
-			private int getSortingCriteria()
-			{
-				if (mSortingCriteria != -1)
-					return mSortingCriteria;
-
-				return mSortingCriteria = getFragment() != null
-						? getFragment().getSortingCriteria() : R.id.actions_abs_editable_sort_by_name;
 			}
 		};
 	}
@@ -144,9 +146,40 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return getItemList();
 	}
 
+	@NonNull
+	@Override
+	public String getSectionName(int position)
+	{
+		T object = getItem(position);
+
+		switch (getSortingCriteria()) {
+			case R.id.actions_abs_editable_sort_by_name:
+				return getSectionNameTrimmedText(object.getComparableName());
+			case R.id.actions_abs_editable_sort_by_date:
+				return getSectionNameDate(object.getComparableDate());
+		}
+
+		return String.valueOf(position);
+	}
+
+	public String getSectionNameDate(long date)
+	{
+		return String.valueOf(DateUtils.formatDateTime(getContext(), date, DateUtils.FORMAT_SHOW_DATE));
+	}
+
+	public String getSectionNameTrimmedText(String text)
+	{
+		return TextUtils.trimText(text, 1);
+	}
+
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
 	{
 		return mSelectionConnection;
+	}
+
+	private int getSortingCriteria()
+	{
+		return mSortingCriteria;
 	}
 
 	public boolean isGridSupported()

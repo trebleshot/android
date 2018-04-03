@@ -46,7 +46,7 @@ public class DeviceChooserService extends ChooserTargetService
 
 			bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
 
-			String firstLetters = TextUtils.getFirstLetters(device.nickname, 1);
+			String firstLetters = TextUtils.getLetters(device.nickname, 1);
 			TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(this, R.color.networkDeviceRipple), 100);
 			Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(bitmap);

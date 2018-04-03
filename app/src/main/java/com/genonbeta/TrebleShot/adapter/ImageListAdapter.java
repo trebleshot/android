@@ -25,7 +25,6 @@ import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 public class ImageListAdapter
 		extends GalleryGroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
-		implements FastScrollRecyclerView.SectionedAdapter
 {
 	private ContentResolver mResolver;
 
@@ -77,7 +76,7 @@ public class ImageListAdapter
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-				return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
 		ViewHolder holder = new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false));
 
@@ -121,13 +120,6 @@ public class ImageListAdapter
 	public boolean isGridSupported()
 	{
 		return true;
-	}
-
-	@NonNull
-	@Override
-	public String getSectionName(int position)
-	{
-		return getList().get(position).friendlyName;
 	}
 
 	public static class ImageHolder extends GalleryGroupShareableListAdapter.GalleryGroupShareable

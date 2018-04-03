@@ -18,6 +18,7 @@ import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 public class ImageListFragment
 		extends GalleryGroupShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>

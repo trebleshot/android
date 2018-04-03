@@ -79,7 +79,7 @@ public class MusicListAdapter
 					lister.offer(new SongHolder(songCursor.getString(nameIndex),
 							songCursor.getString(artistIndex),
 							songCursor.getString(songIndex),
-							songCursor.getString(folderIndex),
+							extractFolderName(songCursor.getString(folderIndex)),
 							songCursor.getString(typeIndex),
 							songCursor.getInt(albumIndex),
 							albumList.get(songCursor.getInt(albumIndex)),
@@ -110,7 +110,7 @@ public class MusicListAdapter
 		GroupShareableListAdapter.ViewHolder holder = new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
 
 		holder.setClickableLayout(getSelectionConnection())
-			.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection());
+				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection());
 
 		return holder;
 	}
@@ -144,6 +144,7 @@ public class MusicListAdapter
 				text3.setText(object.albumHolder.title);
 				text3.setVisibility(View.VISIBLE);
 			}
+
 			GlideApp.with(getContext())
 					.load(object.albumHolder.art)
 					.placeholder(R.drawable.ic_music_note_white_24dp)
@@ -161,19 +162,9 @@ public class MusicListAdapter
 			lister.offer(object, new StringMerger<SongHolder>(object.albumHolder.title));
 		else if (mode == MODE_GROUP_BY_ARTIST)
 			lister.offer(object, new StringMerger<SongHolder>(object.artist));
-		else if (mode == MODE_GROUP_BY_FOLDER) {
-			String folder = object.folder;
-
-			int firstSlash = folder.indexOf(File.separator);
-			int lastSlash = folder.lastIndexOf(File.separator);
-
-			if (folder.length() > 0) {
-				folder = folder.substring(firstSlash == 0 ? 1 : 0, lastSlash != -1 ? lastSlash : (folder.length() - 1));
-				folder = folder.replace("/", " > ");
-			}
-
-			lister.offer(object, new StringMerger<SongHolder>(folder));
-		} else
+		else if (mode == MODE_GROUP_BY_FOLDER)
+			lister.offer(object, new StringMerger<SongHolder>(object.folder));
+		else
 			return false;
 
 		return true;
@@ -183,6 +174,36 @@ public class MusicListAdapter
 	{
 		return super.createLister(loadedList, groupBy)
 				.setCustomLister(this);
+	}
+
+	public String extractFolderName(String folder)
+	{
+		if (folder.contains(File.separator)) {
+			String[] split = folder.split("/");
+
+			if (split.length >= 2)
+				folder = split[split.length - 2];
+		}
+
+		return folder;
+	}
+
+	@NonNull
+	@Override
+	public String getSectionName(int position)
+	{
+		SongHolder object = getItem(position);
+
+		if (!object.isGroupRepresentative()) {
+			if (getGroupBy() == MODE_GROUP_BY_ARTIST)
+				return TextUtils.trimText(object.artist, 1);
+			else if (getGroupBy() == MODE_GROUP_BY_FOLDER)
+				return TextUtils.trimText(object.folder, 1);
+			else if (getGroupBy() == MODE_GROUP_BY_ALBUM)
+				return TextUtils.trimText(object.albumHolder.title, 1);
+		}
+
+		return super.getSectionName(position);
 	}
 
 	public static class SongHolder extends GroupShareableListAdapter.GroupShareable
