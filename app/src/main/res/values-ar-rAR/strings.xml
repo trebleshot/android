@@ -108,4 +108,10 @@
     <string name="butn_killNow">قتل الآن</string>
     <string name="mesg_groupOngoingNotice">في انتظار %s حتى ينتهي</string>
     <string name="ques_removeQueue">حذف الطابور</string>
+    <string name="butn_remove">إزالة</string>
+    <string name="butn_removeAll">إزالة الكل</string>
+    <string name="ques_removeDevice">إزالة هذا الجهاز؟</string>
+    <string name="text_removeDeviceSummary">عند إزالة جهاز ما ، ستتم إزالة جميع عملياته</string>
+    <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
+    <string name="ques_removeAll">إزالة الكل</string>
     </resources>
