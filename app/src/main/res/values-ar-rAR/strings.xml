@@ -95,6 +95,17 @@
     <string name="text_receivedTextSummary">تم الاستلام الى الحافظة</string>
     <string name="butn_checkForUpdates">التحقق من وجود تحديثات</string>
     <string name="butn_seeSourceCode">راجع التعليمات البرمجية المصدر</string>
-    <string name="text_typeText">اكت ما تريد ارسالة</string>
+    <string name="text_typeText">اكتب ما تريد ارسالة</string>
     <string name="text_groupByFolder">مجلد</string>
-</resources>
+<string name="text_textEditor">محرر النص</string>
+    <string name="butn_done">تم</string>
+    <string name="text_empty">(فارغ)</string>
+    <string name="text_textStream">تدفق النصوص</string>
+    <string name="butn_wifiSettings">واي فاي</string>
+    <string name="text_pendingTransfers">عمليات نقل معلقة</string>
+    <string name="text_stopping">وقف!</string>
+    <string name="text_cancellingTransfer">إلغاء الوظيفة…</string>
+    <string name="butn_killNow">قتل الآن</string>
+    <string name="mesg_groupOngoingNotice">في انتظار %s حتى ينتهي</string>
+    <string name="ques_removeQueue">حذف الطابور</string>
+    </resources>
