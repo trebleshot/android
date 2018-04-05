@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
@@ -31,9 +32,13 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 	{
 		holder.index = mList.get(position);
 		holder.text.setText(holder.index.title);
+		holder.image.setImageResource(holder.index.imgRes);
+
+		holder.useLeftSpace(position == 0);
+		holder.useRightSpace(position == getItemCount() - 1);
 
 		if (mClickListener != null)
-			holder.text.setOnClickListener(new View.OnClickListener()
+			holder.container.setOnClickListener(new View.OnClickListener()
 			{
 				@Override
 				public void onClick(View view)
@@ -61,24 +66,49 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 
 	public static class Holder<E> extends RecyclerView.ViewHolder
 	{
+		public View container;
+		public View leftSpace;
+		public View rightSpace;
+		public ImageView image;
 		public TextView text;
 		public Index<E> index;
 
 		private Holder(View view)
 		{
 			super(view);
+			this.container = view;
+			this.leftSpace = view.findViewById(R.id.list_pathresolver_left_space);
+			this.rightSpace = view.findViewById(R.id.list_pathresolver_right_space);
+			this.image = view.findViewById(R.id.list_pathresolver_image);
 			this.text = view.findViewById(R.id.list_pathresolver_text);
+		}
+
+		public void useLeftSpace(boolean use)
+		{
+			leftSpace.setVisibility(use ? View.VISIBLE : View.GONE);
+		}
+
+		public void useRightSpace(boolean use)
+		{
+			rightSpace.setVisibility(use ? View.VISIBLE : View.GONE);
 		}
 
 		public static class Index<D>
 		{
 			public String title;
+			public int imgRes;
 			public D object;
+
+			public Index(String title, int imgRes, D object)
+			{
+				this.title = title;
+				this.imgRes = imgRes;
+				this.object = object;
+			}
 
 			public Index(String title, D object)
 			{
-				this.title = title;
-				this.object = object;
+				this(title, R.drawable.ic_keyboard_arrow_right_black_24dp, object);
 			}
 		}
 	}

@@ -40,7 +40,7 @@
         <activity
             android:name=".activity.ShareActivity"
             android:label="@string/text_appName"
-            android:theme="@style/AppTheme.NoActionBar.GreyStatusBar">
+            android:theme="@style/AppTheme.GreyStatusBar">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
                 <action android:name="android.intent.action.SEND"/>
@@ -67,8 +67,8 @@
             android:label="@string/text_fileExplorer"/>
         <activity
             android:name=".activity.TransactionActivity"
-            android:label="@string/text_transactionViewer"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"
+            android:label="@string/text_transactionViewer"/>
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences"/>

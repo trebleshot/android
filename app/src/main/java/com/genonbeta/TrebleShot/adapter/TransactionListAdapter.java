@@ -29,7 +29,6 @@ public class TransactionListAdapter
 {
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
-
 	private String mPath;
 	private int mGroupId;
 	private PathChangedListener mListener;
@@ -121,7 +120,7 @@ public class TransactionListAdapter
 
 	public void setGroupId(int groupId)
 	{
-		this.mGroupId = groupId;
+		mGroupId = groupId;
 	}
 
 	public void setPath(String path)
@@ -134,7 +133,7 @@ public class TransactionListAdapter
 
 	public void setPathChangedListener(PathChangedListener listener)
 	{
-		this.mListener = listener;
+		mListener = listener;
 	}
 
 	@NonNull

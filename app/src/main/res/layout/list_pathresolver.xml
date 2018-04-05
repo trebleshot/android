@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center_vertical"
-              android:orientation="horizontal">
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingBottom="10dp"
+    android:paddingLeft="10dp"
+    android:paddingRight="10dp"
+    android:paddingTop="10dp">
+
+    <View
+        android:id="@+id/list_pathresolver_left_space"
+        android:layout_width="10dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
 
     <ImageView
+        android:id="@+id/list_pathresolver_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:tint="@color/colorAccent"
-        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"/>
+        android:paddingEnd="20dp"
+        android:paddingRight="20dp"
+        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:tint="@color/colorAccent"/>
 
     <TextView
         android:id="@+id/list_pathresolver_text"
-        style="@style/condensedCapsText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:textSize="16sp"
-        />
+        android:textAllCaps="true"
+        android:textColor="?android:textColorPrimary"/>
+
+    <View
+        android:id="@+id/list_pathresolver_right_space"
+        android:layout_width="10dp"
+        android:layout_height="0dp"
+        android:visibility="gone"/>
 
 </LinearLayout>

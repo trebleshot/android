@@ -33,8 +33,8 @@ public class TransactionListFragment
 		extends EditableListFragment<TransactionObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
-	public IntentFilter mFilter = new IntentFilter();
-	public BroadcastReceiver mReceiver = new BroadcastReceiver()
+	private IntentFilter mFilter = new IntentFilter();
+	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
 		public void onReceive(Context context, Intent intent)

@@ -12,32 +12,31 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
+import android.view.ViewGroup;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
@@ -50,6 +49,7 @@ import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -64,7 +64,7 @@ import java.util.ArrayList;
 
 public class TransactionActivity
 		extends Activity
-		implements NavigationView.OnNavigationItemSelectedListener, TransactionListAdapter.PathChangedListener, PowerfulActionModeSupported
+		implements PowerfulActionModeSupported
 {
 	public static final String TAG = TransactionActivity.class.getSimpleName();
 	public static final int JOB_FILE_FIX = 1;
@@ -74,11 +74,8 @@ public class TransactionActivity
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-	private TransactionListFragment mTransactionFragment;
-	private DrawerLayout mDrawerLayout;
 	private TransactionObject.Group mGroup;
 	private NetworkDevice mDevice;
-	private IntentFilter mFilter = new IntentFilter();
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -95,13 +92,8 @@ public class TransactionActivity
 		}
 	};
 
-	private RecyclerView mPathView;
-	private AppCompatImageButton mHomeButton;
-	private LinearLayoutManager mLayoutManager;
-	private TransactionPathResolverRecyclerAdapter mPathAdapter;
 	private TransactionGroupInfoDialog mInfoDialog;
 	private PowerfulActionMode mPowafulActionMode;
-	private NavigationView mNavigationView;
 	private MenuItem mInfoMenu;
 	private MenuItem mStartMenu;
 	private MenuItem mRetryMenu;
@@ -113,36 +105,44 @@ public class TransactionActivity
 
 		setContentView(R.layout.activity_transaction);
 
-		mTransactionFragment = (TransactionListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_transaction_listfragment_transaction);
-		mPathView = findViewById(R.id.activity_transaction_explorer_recycler);
-		mHomeButton = findViewById(R.id.activity_transaction_explorer_image_home);
 		mPowafulActionMode = findViewById(R.id.activity_transaction_action_mode);
-
-		//mPowafulActionMode.setContainerLayout(findViewById(R.id.activity_transaction_action_mode_container));
 
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		mDrawerLayout = findViewById(R.id.drawer_layout);
+		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
+		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
+		final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+		final TransactionFileExplorer transactionFragment = new TransactionFileExplorer();
 
-		if (mDrawerLayout != null) {
-			ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
-			mDrawerLayout.addDrawerListener(toggle);
-			toggle.syncState();
-		}
+		tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
-		mNavigationView = findViewById(R.id.nav_view);
-		mNavigationView.setNavigationItemSelectedListener(this);
+		pagerAdapter.add(transactionFragment, tabLayout);
+		pagerAdapter.add(new TransactionInfo(), tabLayout);
 
-		mPathView.setHasFixedSize(true);
-		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-		mLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-		mPathAdapter = new TransactionPathResolverRecyclerAdapter();
+		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+		{
+			@Override
+			public void onTabSelected(TabLayout.Tab tab)
+			{
+				viewPager.setCurrentItem(tab.getPosition());
+			}
 
-		mPathView.setLayoutManager(mLayoutManager);
-		mLayoutManager.setStackFromEnd(true);
-		mPathView.setAdapter(mPathAdapter);
+			@Override
+			public void onTabUnselected(TabLayout.Tab tab)
+			{
+
+			}
+
+			@Override
+			public void onTabReselected(TabLayout.Tab tab)
+			{
+
+			}
+		});
 
 		mPowafulActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
 		{
@@ -153,23 +153,6 @@ public class TransactionActivity
 			}
 		});
 
-		mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<String>()
-		{
-			@Override
-			public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
-			{
-				goPath(holder.index.object);
-			}
-		});
-
-		mHomeButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				goPath(null);
-			}
-		});
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
 			TransactionObject.Group group = new TransactionObject.Group(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
@@ -187,35 +170,7 @@ public class TransactionActivity
 				if (getSupportActionBar() != null)
 					getSupportActionBar().setTitle(mDevice.nickname);
 
-				mTransactionFragment.getAdapter().setPathChangedListener(this);
-
-				applyPath(null);
-
-				View headerView = mNavigationView.getHeaderView(0);
-				View layoutView = headerView.findViewById(R.id.header_default_device_container);
-				ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
-				TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
-				TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
-
-				String firstLetters = TextUtils.getLetters(mDevice.nickname, 0);
-				TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
-
-				layoutView.setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View view)
-					{
-						new DeviceInfoDialog(TransactionActivity.this, getDatabase(), getDefaultPreferences(), mDevice)
-								.show();
-
-						if (mDrawerLayout != null)
-							mDrawerLayout.closeDrawer(Gravity.START);
-					}
-				});
-
-				imageView.setImageDrawable(drawable);
-				deviceNameText.setText(mDevice.nickname);
-				versionText.setText(mDevice.versionName);
+				transactionFragment.goPath(mGroup.groupId, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -334,7 +289,7 @@ public class TransactionActivity
 	protected void onResume()
 	{
 		super.onResume();
-		registerReceiver(mReceiver, mFilter);
+		registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
 		reconstructGroup();
 	}
 
@@ -412,7 +367,7 @@ public class TransactionActivity
 		return true;
 	}
 
-	@Override
+	// FIXME: 05.04.2018 though
 	public boolean onNavigationItemSelected(@NonNull MenuItem item)
 	{
 		int id = item.getItemId();
@@ -446,26 +401,7 @@ public class TransactionActivity
 		} else
 			return false;
 
-		if (mDrawerLayout != null)
-			mDrawerLayout.closeDrawer(Gravity.START);
-
 		return true;
-	}
-
-	@Override
-	public void onPathChange(String path)
-	{
-		mPathAdapter.goTo(path == null ? null : path.split(File.separator));
-		mPathAdapter.notifyDataSetChanged();
-
-		if (mPathAdapter.getItemCount() > 0)
-			mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
-	}
-
-	public void applyPath(String path)
-	{
-		mTransactionFragment.getAdapter().setGroupId(mGroup.groupId);
-		mTransactionFragment.getAdapter().setPath(path);
 	}
 
 	private void changeConnection()
@@ -486,19 +422,13 @@ public class TransactionActivity
 
 	private Snackbar createSnackbar(int resId, Object... objects)
 	{
-		return Snackbar.make(mTransactionFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+		return Snackbar.make(findViewById(R.id.activity_transaction_view_pager), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	@Override
 	public PowerfulActionMode getPowerfulActionMode()
 	{
 		return mPowafulActionMode;
-	}
-
-	public void goPath(String path)
-	{
-		applyPath(path);
-		mTransactionFragment.refreshList();
 	}
 
 	public void reconstructGroup()
@@ -541,8 +471,6 @@ public class TransactionActivity
 
 					boolean hasIncoming = mInfoDialog.getIndex().incomingCount > 0;
 
-					mNavigationView.getMenu().findItem(R.id.drawer_transaction_saveTo).setEnabled(hasIncoming);
-					mNavigationView.getMenu().findItem(R.id.drawer_transaction_show_files).setEnabled(hasIncoming);
 					mStartMenu.setVisible(hasIncoming);
 					mRetryMenu.setVisible(hasIncoming);
 				}
@@ -550,13 +478,23 @@ public class TransactionActivity
 		}
 	}
 
-	private class TransactionPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
+	public static void startInstance(Context context, int groupId)
+	{
+		context.startActivity(new Intent(context, TransactionActivity.class)
+				.setAction(ACTION_LIST_TRANSFERS)
+				.putExtra(EXTRA_GROUP_ID, groupId)
+				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+	}
+
+	private static class TransactionPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
 	{
 		public void goTo(String[] paths)
 		{
 			getList().clear();
 
 			StringBuilder mergedPath = new StringBuilder();
+
+			getList().add(new Holder.Index<>("Home", R.drawable.ic_home_black_24dp, (String) null));
 
 			if (paths != null)
 				for (String path : paths) {
@@ -574,11 +512,132 @@ public class TransactionActivity
 
 	}
 
-	public static void startInstance(Context context, int groupId)
+	public class PagerAdapter extends FragmentStatePagerAdapter
 	{
-		context.startActivity(new Intent(context, TransactionActivity.class)
-				.setAction(ACTION_LIST_TRANSFERS)
-				.putExtra(EXTRA_GROUP_ID, groupId)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+		private ArrayList<Fragment> mFragments = new ArrayList<>();
+
+		public PagerAdapter(FragmentManager fm)
+		{
+			super(fm);
+		}
+
+		public void add(Fragment fragment)
+		{
+			mFragments.add(fragment);
+		}
+
+		public void add(Fragment fragment, TabLayout tabLayout)
+		{
+			add(fragment);
+
+			if (fragment instanceof TitleSupport)
+				tabLayout.addTab(tabLayout.newTab().setText(((TitleSupport) fragment).getTitle(getApplicationContext())));
+		}
+
+		@Override
+		public Fragment getItem(int position)
+		{
+			return mFragments.get(position);
+		}
+
+		@Override
+		public int getCount()
+		{
+			return mFragments.size();
+		}
+	}
+
+	public static class TransactionInfo
+			extends Fragment
+			implements TitleSupport
+	{
+		@Nullable
+		@Override
+		public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+		{
+			return inflater.inflate(R.layout.layout_device_info, container, false);
+		}
+
+		@Override
+		public CharSequence getTitle(Context context)
+		{
+			return context.getString(R.string.text_transactionDetails);
+		}
+	}
+
+	public static class TransactionFileExplorer
+			extends Fragment
+			implements TransactionListAdapter.PathChangedListener, TitleSupport
+	{
+		private RecyclerView mPathView;
+		private TransactionPathResolverRecyclerAdapter mPathAdapter;
+		private TransactionListFragment mTransactionListFragment;
+
+		@Nullable
+		@Override
+		public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+		{
+			View view = inflater.inflate(R.layout.layout_transaction_explorer, container, false);
+
+			mPathView = view.findViewById(R.id.layout_transaction_explorer_recycler);
+			mTransactionListFragment = (TransactionListFragment) getChildFragmentManager().findFragmentById(R.id.layout_transaction_explorer_fragment_transaction);
+			mPathAdapter = new TransactionPathResolverRecyclerAdapter();
+
+			mTransactionListFragment.getAdapter().setPathChangedListener(this);
+
+			LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+			layoutManager.setStackFromEnd(true);
+
+			mPathView.setHasFixedSize(true);
+			mPathView.setLayoutManager(layoutManager);
+			mPathView.setAdapter(mPathAdapter);
+
+			mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<String>()
+			{
+				@Override
+				public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
+				{
+					goPath(getTransactionListFragment().getAdapter().getGroupId(), holder.index.object);
+				}
+			});
+
+			return view;
+		}
+
+		@Override
+		public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+		{
+			super.onViewCreated(view, savedInstanceState);
+			mPathAdapter.goTo(null);
+		}
+
+		@Override
+		public void onPathChange(String path)
+		{
+			mPathAdapter.goTo(path == null ? null : path.split(File.separator));
+			mPathAdapter.notifyDataSetChanged();
+
+			if (mPathAdapter.getItemCount() > 0)
+				mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
+		}
+
+		public TransactionListFragment getTransactionListFragment()
+		{
+			return mTransactionListFragment;
+		}
+
+		@Override
+		public CharSequence getTitle(Context context)
+		{
+			return context.getString(R.string.text_pendingTransfers);
+		}
+
+		public void goPath(int groupId, String path)
+		{
+			getTransactionListFragment().getAdapter().setGroupId(groupId);
+			getTransactionListFragment().getAdapter().setPath(path);
+
+			mTransactionListFragment.refreshList();
+		}
 	}
 }

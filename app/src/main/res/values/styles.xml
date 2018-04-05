@@ -24,12 +24,14 @@
         <item name="android:windowBackground">@color/windowBackground</item>
     </style>
 
+    <style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar" />
+
     <style name="AppTheme.QRScannerTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.GreyStatusBar" parent="@style/AppTheme">
+    <style name="AppTheme.GreyStatusBar" parent="@style/AppTheme">
         <item name="colorPrimaryDark">#bbb</item>
         <item name="colorPrimary">#bbb</item>
         <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>

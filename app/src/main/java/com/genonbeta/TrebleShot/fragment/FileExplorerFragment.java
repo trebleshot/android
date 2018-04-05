@@ -7,7 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,9 +44,7 @@ public class FileExplorerFragment
 	public final static int REQUEST_WRITE_ACCESS = 264;
 
 	private RecyclerView mPathView;
-	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
-	private LinearLayoutManager mLayoutManager;
 	private FilePathResolverRecyclerAdapter mPathAdapter;
 	private DocumentFile mRequestedPath = null;
 
@@ -62,11 +59,9 @@ public class FileExplorerFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.fragment_fileexplorer, container, false);
+		View view = inflater.inflate(R.layout.fragment_file_explorer, container, false);
 
 		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
-		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
-		mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		mPathAdapter = new FilePathResolverRecyclerAdapter();
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
 				.findFragmentById(R.id.fragment_fileexplorer_fragment_files);
@@ -77,15 +72,6 @@ public class FileExplorerFragment
 			public void onClick(PathResolverRecyclerAdapter.Holder<DocumentFile> holder)
 			{
 				requestPath(holder.index.object);
-			}
-		});
-
-		mHomeButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				requestPath(null);
 			}
 		});
 
@@ -102,10 +88,11 @@ public class FileExplorerFragment
 			}
 		});
 
-		mPathView.setHasFixedSize(true);
+		LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+		layoutManager.setStackFromEnd(true);
 
-		mPathView.setLayoutManager(mLayoutManager);
-		mLayoutManager.setStackFromEnd(true);
+		mPathView.setLayoutManager(layoutManager);
+		mPathView.setHasFixedSize(true);
 		mPathView.setAdapter(mPathAdapter);
 
 		return view;
@@ -115,6 +102,8 @@ public class FileExplorerFragment
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
+
+		mFileListFragment.goPath(null);
 
 		if (mRequestedPath != null)
 			requestPath(mRequestedPath);
@@ -279,6 +268,7 @@ public class FileExplorerFragment
 
 			synchronized (getList()) {
 				getList().clear();
+				getList().add(new Holder.Index<>("Home", R.drawable.ic_home_black_24dp, (DocumentFile) null));
 
 				while (pathIndex.size() != 0) {
 					int currentStage = pathIndex.size() - 1;
