@@ -115,45 +115,6 @@ public class TransactionActivity
 		final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
 		final TransactionFileExplorer transactionFragment = new TransactionFileExplorer();
 
-		tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-
-		pagerAdapter.add(transactionFragment, tabLayout);
-		pagerAdapter.add(new TransactionInfo(), tabLayout);
-
-		viewPager.setAdapter(pagerAdapter);
-		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-		{
-			@Override
-			public void onTabSelected(TabLayout.Tab tab)
-			{
-				viewPager.setCurrentItem(tab.getPosition());
-			}
-
-			@Override
-			public void onTabUnselected(TabLayout.Tab tab)
-			{
-
-			}
-
-			@Override
-			public void onTabReselected(TabLayout.Tab tab)
-			{
-
-			}
-		});
-
-		mPowafulActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
-		{
-			@Override
-			public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
-			{
-				toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
-			}
-		});
-
-
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
 			TransactionObject.Group group = new TransactionObject.Group(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
 
@@ -178,6 +139,52 @@ public class TransactionActivity
 
 		if (mGroup == null)
 			finish();
+		else {
+			Bundle args = new Bundle();
+
+			args.putInt(TransactionFileExplorer.ARG_GROUP_ID, mGroup.groupId);
+			args.putString(TransactionFileExplorer.ARG_PATH, null);
+
+			transactionFragment.setArguments(args);
+
+			tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+			pagerAdapter.add(transactionFragment, tabLayout);
+			pagerAdapter.add(new TransactionInfo(), tabLayout);
+
+			viewPager.setAdapter(pagerAdapter);
+			viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+			tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+			{
+				@Override
+				public void onTabSelected(TabLayout.Tab tab)
+				{
+					viewPager.setCurrentItem(tab.getPosition());
+				}
+
+				@Override
+				public void onTabUnselected(TabLayout.Tab tab)
+				{
+
+				}
+
+				@Override
+				public void onTabReselected(TabLayout.Tab tab)
+				{
+
+				}
+			});
+
+			mPowafulActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+			{
+				@Override
+				public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
+				{
+					toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
+				}
+			});
+		}
 	}
 
 	@Override
@@ -488,13 +495,18 @@ public class TransactionActivity
 
 	private static class TransactionPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
 	{
+		public TransactionPathResolverRecyclerAdapter(Context context)
+		{
+			super(context);
+		}
+
 		public void goTo(String[] paths)
 		{
 			getList().clear();
 
 			StringBuilder mergedPath = new StringBuilder();
 
-			getList().add(new Holder.Index<>("Home", R.drawable.ic_home_black_24dp, (String) null));
+			getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_black_24dp, (String) null));
 
 			if (paths != null)
 				for (String path : paths) {
@@ -569,6 +581,10 @@ public class TransactionActivity
 			extends Fragment
 			implements TransactionListAdapter.PathChangedListener, TitleSupport
 	{
+		public static final String ARG_GROUP_ID = "argGroupId";
+		public static final String ARG_PATH = "path";
+
+		private TransactionObject.Group mGroup;
 		private RecyclerView mPathView;
 		private TransactionPathResolverRecyclerAdapter mPathAdapter;
 		private TransactionListFragment mTransactionListFragment;
@@ -581,7 +597,7 @@ public class TransactionActivity
 
 			mPathView = view.findViewById(R.id.layout_transaction_explorer_recycler);
 			mTransactionListFragment = (TransactionListFragment) getChildFragmentManager().findFragmentById(R.id.layout_transaction_explorer_fragment_transaction);
-			mPathAdapter = new TransactionPathResolverRecyclerAdapter();
+			mPathAdapter = new TransactionPathResolverRecyclerAdapter(getContext());
 
 			mTransactionListFragment.getAdapter().setPathChangedListener(this);
 
@@ -608,7 +624,13 @@ public class TransactionActivity
 		public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 		{
 			super.onViewCreated(view, savedInstanceState);
-			mPathAdapter.goTo(null);
+
+			Bundle args = getArguments();
+
+			if (args != null && args.containsKey(ARG_GROUP_ID))
+				goPath(args.getInt(ARG_GROUP_ID), args.getString(ARG_PATH ));
+			else
+				mPathAdapter.goTo(null);
 		}
 
 		@Override
@@ -637,7 +659,7 @@ public class TransactionActivity
 			getTransactionListFragment().getAdapter().setGroupId(groupId);
 			getTransactionListFragment().getAdapter().setPath(path);
 
-			mTransactionListFragment.refreshList();
+			getTransactionListFragment().refreshList();
 		}
 	}
 }

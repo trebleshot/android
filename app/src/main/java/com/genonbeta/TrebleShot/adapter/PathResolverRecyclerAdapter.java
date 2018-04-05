@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,12 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 {
 	private ArrayList<Holder.Index<T>> mList = new ArrayList<>();
 	private OnClickListener<T> mClickListener;
+	private Context mContext;
+
+	public PathResolverRecyclerAdapter(Context context)
+	{
+		mContext = context;
+	}
 
 	@Override
 	public Holder onCreateViewHolder(ViewGroup parent, int viewType)
@@ -46,6 +53,11 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 					mClickListener.onClick(holder);
 				}
 			});
+	}
+
+	public Context getContext()
+	{
+		return mContext;
 	}
 
 	@Override

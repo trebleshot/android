@@ -62,7 +62,7 @@ public class FileExplorerFragment
 		View view = inflater.inflate(R.layout.fragment_file_explorer, container, false);
 
 		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
-		mPathAdapter = new FilePathResolverRecyclerAdapter();
+		mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
 				.findFragmentById(R.id.fragment_fileexplorer_fragment_files);
 
@@ -250,6 +250,11 @@ public class FileExplorerFragment
 
 	private class FilePathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<DocumentFile>
 	{
+		public FilePathResolverRecyclerAdapter(Context context)
+		{
+			super(context);
+		}
+
 		public void goTo(DocumentFile file)
 		{
 			ArrayList<Holder.Index<DocumentFile>> pathIndex = new ArrayList<>();
@@ -268,7 +273,7 @@ public class FileExplorerFragment
 
 			synchronized (getList()) {
 				getList().clear();
-				getList().add(new Holder.Index<>("Home", R.drawable.ic_home_black_24dp, (DocumentFile) null));
+				getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_black_24dp, (DocumentFile) null));
 
 				while (pathIndex.size() != 0) {
 					int currentStage = pathIndex.size() - 1;
