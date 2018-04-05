@@ -2,17 +2,13 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.date.DateMerger;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
@@ -29,60 +25,24 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
+	public static final int MODE_SORT_BY_NAME = 0;
+	public static final int MODE_SORT_BY_DATE = 1;
+	public static final int MODE_SORT_BY_SIZE = 2;
+
+	public static final int MODE_SORT_ORDER_ASCENDING = 0;
+	public static final int MODE_SORT_ORDER_DESCENDING = 1;
+
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
 	private ArrayList<T> mItemList = new ArrayList<>();
-	private int mSortingCriteria = -1;
+	private int mSortingCriteria = MODE_SORT_BY_NAME;
+	private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
 	private boolean mGridLayoutRequested = false;
+	private Comparator<T> mGeneratedComparator;
 
 	public EditableListAdapter(Context context)
 	{
 		super(context);
-	}
-
-	public EditableListAdapter(Context context, PowerfulActionMode.SelectorConnection<T> selectorConnection)
-	{
-		this(context);
-		setSelectionConnection(selectorConnection);
-	}
-
-	public Comparator<T> getDefaultComparator()
-	{
-		mSortingCriteria = getFragment() != null
-				? getFragment().getSortingCriteria()
-				: R.id.actions_abs_editable_sort_by_name;
-
-		return new Comparator<T>()
-		{
-			@Override
-			public int compare(T toCompare, T compareTo)
-			{
-				boolean sortingAscending = getFragment() == null
-						|| getFragment().isSortingAscending();
-
-				int sortingResult = 0;
-
-				switch (getSortingCriteria()) {
-					case R.id.actions_abs_editable_sort_by_date:
-						sortingResult = sortingAscending
-								? MathUtils.compare(toCompare.getComparableDate(), compareTo.getComparableDate())
-								: MathUtils.compare(compareTo.getComparableDate(), toCompare.getComparableDate());
-						break;
-					case R.id.actions_abs_editable_sort_by_size:
-						sortingResult = sortingAscending
-								? MathUtils.compare(toCompare.getComparableSize(), compareTo.getComparableSize())
-								: MathUtils.compare(compareTo.getComparableSize(), toCompare.getComparableSize());
-						break;
-					default: // R.id.actions_abs_editable_sort_by_name:
-						sortingResult = sortingAscending
-								? toCompare.getComparableName().compareToIgnoreCase(compareTo.getComparableName())
-								: compareTo.getComparableName().compareToIgnoreCase(toCompare.getComparableName());
-						break;
-				}
-
-				return sortingResult;
-			}
-		};
 	}
 
 	@Override
@@ -96,10 +56,44 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		}
 	}
 
+	public int compareItems(int sortingCriteria, int sortingOrder, T objectOne, T object2)
+	{
+		return 0;
+	}
+
 	@Override
 	public int getCount()
 	{
 		return getItemList().size();
+	}
+
+	public Comparator<T> getDefaultComparator()
+	{
+		if (mGeneratedComparator == null)
+			mGeneratedComparator = new Comparator<T>()
+			{
+				@Override
+				public int compare(T toCompare, T compareTo)
+				{
+					boolean sortingAscending = getSortingOrder() == MODE_SORT_ORDER_ASCENDING;
+
+					T objectFirst = sortingAscending ? toCompare : compareTo;
+					T objectSecond = sortingAscending ? compareTo : toCompare;
+
+					switch (getSortingCriteria()) {
+						case MODE_SORT_BY_DATE:
+							return MathUtils.compare(objectFirst.getComparableDate(), objectSecond.getComparableDate());
+						case MODE_SORT_BY_SIZE:
+							return MathUtils.compare(objectFirst.getComparableSize(), objectSecond.getComparableSize());
+						case MODE_SORT_BY_NAME:
+							return objectFirst.getComparableName().compareToIgnoreCase(objectSecond.getComparableName());
+						default:
+							return compareItems(getSortingCriteria(), getSortingOrder(), objectFirst, objectSecond);
+					}
+				}
+			};
+
+		return mGeneratedComparator;
 	}
 
 	public EditableListFragment getFragment()
@@ -148,14 +142,18 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
 	@NonNull
 	@Override
-	public String getSectionName(int position)
+	final public String getSectionName(int position)
 	{
-		T object = getItem(position);
+		return getSectionName(position, getItem(position));
+	}
 
+	@NonNull
+	public String getSectionName(int position, T object)
+	{
 		switch (getSortingCriteria()) {
-			case R.id.actions_abs_editable_sort_by_name:
+			case MODE_SORT_BY_NAME:
 				return getSectionNameTrimmedText(object.getComparableName());
-			case R.id.actions_abs_editable_sort_by_date:
+			case MODE_SORT_BY_DATE:
 				return getSectionNameDate(object.getComparableDate());
 		}
 
@@ -169,7 +167,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
 	public String getSectionNameTrimmedText(String text)
 	{
-		return TextUtils.trimText(text, 1);
+		return TextUtils.trimText(text, 1).toUpperCase();
 	}
 
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
@@ -180,6 +178,11 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	private int getSortingCriteria()
 	{
 		return mSortingCriteria;
+	}
+
+	public int getSortingOrder()
+	{
+		return mSortingOrderAscending;
 	}
 
 	public boolean isGridSupported()
@@ -219,6 +222,12 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		synchronized (getItemList()) {
 			syncSelectionList(getItemList());
 		}
+	}
+
+	public void setSortingCriteria(int sortingCriteria, int sortingOrder)
+	{
+		mSortingCriteria = sortingCriteria;
+		mSortingOrderAscending = sortingOrder;
 	}
 
 	public synchronized void syncSelectionList(ArrayList<T> itemList)

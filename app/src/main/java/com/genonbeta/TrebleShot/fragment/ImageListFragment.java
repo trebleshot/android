@@ -18,7 +18,6 @@ import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 public class ImageListFragment
 		extends GalleryGroupShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
@@ -29,8 +28,8 @@ public class ImageListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(ImageListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(ImageListAdapter.MODE_SORT_BY_DATE);
 		setDefaultViewingGridSize(2, 4);
 	}
 

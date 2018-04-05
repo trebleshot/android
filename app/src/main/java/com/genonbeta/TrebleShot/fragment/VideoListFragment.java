@@ -24,8 +24,8 @@ public class VideoListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(VideoListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(VideoListAdapter.MODE_SORT_BY_DATE);
 		setDefaultViewingGridSize(2, 4);
 	}
 

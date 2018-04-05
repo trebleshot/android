@@ -21,7 +21,6 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.preference.SuperPreferences;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +35,7 @@ public class AppUtils
 	private static AccessDatabase mDatabase;
 	private static SuperPreferences mDefaultPreferences;
 	private static SuperPreferences mDefaultLocalPreferences;
+	private static SuperPreferences mViewingPreferences;
 
 	public static void applyAdapterName(NetworkDevice.Connection connection)
 	{
@@ -214,6 +214,14 @@ public class AppUtils
 		}
 
 		return device;
+	}
+
+	public static SuperPreferences getViewingPreferences(Context context)
+	{
+		if (mViewingPreferences == null)
+			mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE));
+
+		return mViewingPreferences;
 	}
 
 	public static <T> T quickAction(T clazz, QuickActions<T> quickActions)

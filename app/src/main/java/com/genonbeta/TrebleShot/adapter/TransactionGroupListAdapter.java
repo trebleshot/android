@@ -14,7 +14,6 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -87,7 +86,9 @@ public class TransactionGroupListAdapter
 	@Override
 	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false));
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false))
+				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
+				.setClickableLayout(getSelectionConnection());
 	}
 
 	@Override
@@ -96,25 +97,13 @@ public class TransactionGroupListAdapter
 		final PreloadedGroup object = getItem(position);
 		final View parentView = holder.getView();
 
-		final View selector = parentView.findViewById(R.id.selector);
-		final View layoutImage = parentView.findViewById(R.id.layout_image);
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView text1 = parentView.findViewById(R.id.text);
 		TextView text2 = parentView.findViewById(R.id.text2);
 		TextView text3 = parentView.findViewById(R.id.text3);
 
-		if (getSelectionConnection() != null) {
-			selector.setSelected(object.isSelectableSelected());
-
-			layoutImage.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					getSelectionConnection().setSelected(holder.getAdapterPosition());
-				}
-			});
-		}
+		if (getSelectionConnection() != null)
+			parentView.setSelected(object.isSelectableSelected());
 
 		if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
 				|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))

@@ -143,16 +143,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			});
 		}
 
-		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-
-		if (getDefaultPreferences().getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
-			// migrating to a new version
-		}
-
-		getDefaultPreferences().edit()
-				.putInt("migrated_version", localDevice.versionNumber)
-				.apply();
-
 		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
 			changeFragment(mFragmentDeviceList);
 			mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);

@@ -13,8 +13,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 
 public abstract class Activity extends AppCompatActivity
 {
-	private AccessDatabase mDatabase;
-	private SharedPreferences mPreferences;
 	private AlertDialog mOngoingRequest;
 
 	@Override
@@ -46,18 +44,12 @@ public abstract class Activity extends AppCompatActivity
 
 	public AccessDatabase getDatabase()
 	{
-		if (mDatabase == null)
-			mDatabase = AppUtils.getAccessDatabase(this);
-
-		return mDatabase;
+		return AppUtils.getAccessDatabase(this);
 	}
 
 	protected SharedPreferences getDefaultPreferences()
 	{
-		if (mPreferences == null)
-			mPreferences = AppUtils.getDefaultPreferences(this);
-
-		return mPreferences;
+		return AppUtils.getDefaultPreferences(this);
 	}
 
 	public boolean requestRequiredPermissions()

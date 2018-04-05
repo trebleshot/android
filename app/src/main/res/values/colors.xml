@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#009951</color>
     <color name="colorPrimaryDark">#007941</color>
-    <color name="windowBackground">#fafafa</color>
+    <color name="windowBackground">#ffffff</color>
     <color name="navigationColor">#000000</color>
     <color name="colorAccent">#18b65f</color>
     <color name="whiteAccent">#fff</color>

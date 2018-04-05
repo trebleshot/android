@@ -44,17 +44,15 @@ abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupSha
 
 	@NonNull
 	@Override
-	public String getSectionName(int position)
+	public String getSectionName(int position, T object)
 	{
-		T object = getItem(position);
-
 		if (!object.isGroupRepresentative())
 			if (getGroupBy() == MODE_GROUP_BY_ALBUM)
 				return TextUtils.trimText(object.isGroupRepresentative()
 						? object.representativeText
 						: object.albumName, 1);
 
-		return super.getSectionName(position);
+		return super.getSectionName(position, object);
 	}
 
 	public static class GalleryGroupShareable extends GroupShareableListAdapter.GroupShareable

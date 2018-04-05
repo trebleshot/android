@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -112,10 +111,8 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 
 	@NonNull
 	@Override
-	public String getSectionName(int position)
+	public String getSectionName(int position, T object)
 	{
-		T object = getItem(position);
-
 		switch (getGroupBy()) {
 			case MODE_GROUP_BY_DATE:
 				return object.isGroupRepresentative()
@@ -124,7 +121,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 			default:
 				return object.isGroupRepresentative()
 						? getSectionNameTrimmedText(object.representativeText)
-						: super.getSectionName(position);
+						: super.getSectionName(position, object);
 		}
 	}
 

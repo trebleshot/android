@@ -33,7 +33,6 @@ import java.io.IOException;
 @GlideModule
 public final class ApplicationGlideModule extends AppGlideModule
 {
-
 	@Override
 	public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry)
 	{

@@ -209,54 +209,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			setTitle(device.nickname);
 			setView(rootView);
 			setPositiveButton(R.string.butn_close, null);
-			setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int p2)
-						{
-							final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-							final TransactionGroupListAdapter adapter = new TransactionGroupListAdapter(getContext(), database)
-									.setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-											.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", device.deviceId));
-
-							builder.setPositiveButton(R.string.butn_close, null);
-
-							new Thread()
-							{
-								@Override
-								public void run()
-								{
-									super.run();
-
-									Looper.prepare();
-
-									adapter.onUpdate(adapter.onLoad());
-									adapter.notifyDataSetChanged();
-
-									if (adapter.getCount() > 0) {
-										// FIXME: 27.03.2018 fixme okat
-										/*
-										builder.setAdapter(adapter, new DialogInterface.OnClickListener()
-										{
-											@Override
-											public void onClick(DialogInterface dialogInterface, int i)
-											{
-												TransactionActivity.startInstance(getContext(), ((TransactionObject.Group) adapter.getItem(i)).groupId);
-											}
-										});*/
-
-									} else
-										builder.setMessage(R.string.text_listEmpty);
-
-									builder.show();
-
-									Looper.loop();
-								}
-							}.start();
-						}
-					}
-			);
 
 			setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
 			{

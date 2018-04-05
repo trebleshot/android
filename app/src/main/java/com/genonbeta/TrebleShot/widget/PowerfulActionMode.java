@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -201,7 +200,6 @@ public class PowerfulActionMode extends Toolbar
 
 	public interface Callback<T extends Selectable>
 	{
-		// FIXME: 27.03.2018 hm what should we do?
 		ArrayList<T> getSelectableList();
 
 		boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode);

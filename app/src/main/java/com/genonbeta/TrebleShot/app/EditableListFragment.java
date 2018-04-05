@@ -3,15 +3,13 @@ package com.genonbeta.TrebleShot.app;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,17 +17,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -41,14 +39,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		implements PowerfulActionMode.Callback<T>, DetachListener
 {
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
-	private SharedPreferences mViewPreferences;
 	private Snackbar mRefreshDelayedSnackbar;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
-	private boolean mDefaultOrderingAscending = true;
-	private int mDefaultSortingCriteria = R.id.actions_abs_editable_sort_by_name;
+	private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
+	private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
 	private int mDefaultViewingGridSize = 1;
 	private int mDefaultViewingGridSizeLandscape = 1;
+	private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
+	private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -78,6 +77,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 		getAdapter().setHasStableIds(true);
 		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
+		getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 	}
 
 	@Override
@@ -118,6 +118,26 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 			gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
 		}
+
+		Map<String, Integer> sortingOptions = new ArrayMap<>();
+		onSortingOptions(sortingOptions);
+
+		if (sortingOptions.size() > 0) {
+			mSortingOptions.clear();
+			mSortingOptions.putAll(sortingOptions);
+
+			applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by), R.id.actions_abs_editable_group_sorting, mSortingOptions);
+
+			Map<String, Integer> orderingOptions = new ArrayMap<>();
+			onOrderingOptions(orderingOptions);
+
+			if (orderingOptions.size() > 0) {
+				mOrderingOptions.clear();
+				mOrderingOptions.putAll(orderingOptions);
+
+				applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by), R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
+			}
+		}
 	}
 
 	@Override
@@ -138,21 +158,16 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 			menu.findItem(R.id.actions_abs_editable_grid_size)
 					.setVisible(false);
 
-		MenuItem sortingItem = menu.findItem(getSortingCriteria());
+		MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
-		if (sortingItem == null)
-			sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by_name);
+		if (sortingItem != null && sortingItem.isVisible()) {
+			checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
 
-		sortingItem.setChecked(true);
+			MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
 
-		MenuItem orderingItem = menu.findItem(isSortingAscending()
-				? R.id.actions_abs_editable_sort_order_ascending
-				: R.id.actions_abs_editable_sort_order_descending);
-
-		if (orderingItem == null)
-			orderingItem = menu.findItem(R.id.actions_abs_editable_sort_order_ascending);
-
-		orderingItem.setChecked(true);
+			if (orderingItem != null)
+				checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+		}
 
 		MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
 
@@ -174,13 +189,26 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		if (id == R.id.actions_abs_editable_multi_select)
 			getPowerfulActionMode().start(this);
 		else if (groupId == R.id.actions_abs_editable_group_sorting)
-			changeSortingCriteria(id);
+			changeSortingCriteria(item.getOrder());
 		else if (groupId == R.id.actions_abs_editable_group_sort_order)
-			changeOrderingCriteria(id);
+			changeOrderingCriteria(item.getOrder());
 		else if (groupId == R.id.actions_abs_editable_group_grid_size)
 			changeGridViewSize(item.getOrder());
 
 		return super.onOptionsItemSelected(item);
+	}
+
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByName), EditableListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortByDate), EditableListAdapter.MODE_SORT_BY_DATE);
+		options.put(getString(R.string.text_sortBySize), EditableListAdapter.MODE_SORT_BY_SIZE);
+	}
+
+	public void onOrderingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortOrderAscending), EditableListAdapter.MODE_SORT_ORDER_ASCENDING);
+		options.put(getString(R.string.text_sortOrderDescending), EditableListAdapter.MODE_SORT_ORDER_DESCENDING);
 	}
 
 	@Override
@@ -286,6 +314,22 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		return layoutManager;
 	}
 
+	protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, ArrayMap<String, Integer> options)
+	{
+		if (mainItem != null) {
+			mainItem.setVisible(true);
+
+			Menu dynamicMenu = mainItem.getSubMenu();
+
+			for (String currentKey : options.keySet()) {
+				int modeId = options.get(currentKey);
+				dynamicMenu.add(groupId, 0, modeId, currentKey);
+			}
+
+			dynamicMenu.setGroupCheckable(groupId, true, true);
+		}
+	}
+
 	public boolean applyViewingChanges(int gridSize)
 	{
 		if (!getAdapter().isGridSupported())
@@ -308,23 +352,59 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		applyViewingChanges(gridSize);
 	}
 
+	public void changeOrderingCriteria(int id)
+	{
+		getViewPreferences().edit()
+				.putInt(getUniqueSettingKey("SortOrder"), id)
+				.apply();
+
+		getAdapter().setSortingCriteria(getSortingCriteria(), id);
+
+		refreshList();
+	}
+
 	public void changeSortingCriteria(int id)
 	{
 		getViewPreferences().edit()
 				.putInt(getUniqueSettingKey("SortBy"), id)
 				.apply();
 
+		getAdapter().setSortingCriteria(id, getOrderingCriteria());
+
 		refreshList();
 	}
 
-	public void changeOrderingCriteria(int id)
+	public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String, Integer> options)
 	{
-		getViewPreferences().edit()
-				.putBoolean(getUniqueSettingKey("SortOrder"), id == R.id.actions_abs_editable_sort_order_ascending)
-				.apply();
+		if (dynamicItem != null) {
+			Menu gridSizeMenu = dynamicItem.getSubMenu();
 
-		refreshList();
+			for (String title : options.keySet()) {
+				if (options.get(title) == preferredItemId) {
+					MenuItem menuItem;
+					int iterator = 0;
+
+					while ((menuItem = gridSizeMenu.getItem(iterator)) != null) {
+						if (title.equals(String.valueOf(menuItem.getTitle()))) {
+							menuItem.setChecked(true);
+							return;
+						}
+
+						iterator++;
+					}
+
+					// normally we should not be here
+					return;
+				}
+			}
+		}
 	}
+
+	public int getOrderingCriteria()
+	{
+		return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria);
+	}
+
 
 	public String getUniqueSettingKey(String setting)
 	{
@@ -356,10 +436,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 	public SharedPreferences getViewPreferences()
 	{
-		if (mViewPreferences == null)
-			mViewPreferences = getContext().getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
-
-		return mViewPreferences;
+		return AppUtils.getViewingPreferences(getContext());
 	}
 
 	public int getViewingGridSize()
@@ -387,11 +464,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		return getPowerfulActionMode() != null
 				&& getPowerfulActionMode().hasActive(this)
 				&& getSelectionConnection() != null;
-	}
-
-	public boolean isSortingAscending()
-	{
-		return getViewPreferences().getBoolean(getUniqueSettingKey("SortOrder"), mDefaultOrderingAscending);
 	}
 
 	public boolean isSortingSupported()
@@ -438,9 +510,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		mDefaultSortingCriteria = criteria;
 	}
 
-	public void setDefaultOrderingAscending(boolean ascending)
+	public void setDefaultOrderingCriteria(int criteria)
 	{
-		mDefaultOrderingAscending = ascending;
+		mDefaultOrderingCriteria = criteria;
 	}
 
 	public void setDefaultViewingGridSize(int gridSize, int gridSizeLandscape)
@@ -479,7 +551,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 		// One-by-one calling caused an ANR
 		getAdapter().syncSelectionList();
-		getAdapter().notifyItemRangeChanged(0, getSelectableList().size() );
+		getAdapter().notifyItemRangeChanged(0, getSelectableList().size());
 	}
 
 

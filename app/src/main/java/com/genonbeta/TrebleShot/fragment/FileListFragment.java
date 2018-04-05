@@ -16,10 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
@@ -31,9 +29,9 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class FileListFragment
@@ -46,6 +44,7 @@ public class FileListFragment
 	public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
 	public final static String EXTRA_FILE_PARENT = "extraPath";
 	public final static String EXTRA_FILE_NAME = "extraFile";
+	public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
@@ -95,8 +94,8 @@ public class FileListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_DATE);
 	}
 
 	@Override
@@ -118,13 +117,6 @@ public class FileListFragment
 		mMediaScanner.connect();
 		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
-	}
-
-	@Override
-	public void onViewStateRestored(@Nullable Bundle savedInstanceState)
-	{
-		super.onViewStateRestored(savedInstanceState);
-
 	}
 
 	@Override
@@ -201,6 +193,28 @@ public class FileListFragment
 		super.onDestroy();
 		mMediaScanner.disconnect();
 	}
+
+	@Override
+	public void onSaveInstanceState(@NonNull Bundle outState)
+	{
+		super.onSaveInstanceState(outState);
+		outState.putString(EXTRA_FILE_LOCATION, getAdapter().getPath().getUri().toString());
+	}
+
+	@Override
+	public void onViewStateRestored(@Nullable Bundle savedInstanceState)
+	{
+		super.onViewStateRestored(savedInstanceState);
+
+		if (savedInstanceState != null && savedInstanceState.containsKey(EXTRA_FILE_LOCATION)) {
+			try {
+				goPath(FileUtils.fromUri(getContext(), Uri.parse(savedInstanceState.getString(EXTRA_FILE_LOCATION))));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 
 	@Override
 	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)

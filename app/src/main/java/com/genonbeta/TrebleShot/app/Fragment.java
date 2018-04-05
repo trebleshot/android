@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -14,22 +12,13 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class Fragment extends android.support.v4.app.Fragment
 {
-	private SharedPreferences mDefaultPreferences;
-	private AccessDatabase mDatabase;
-
 	public AccessDatabase getDatabase()
 	{
-		if (mDatabase == null && getContext() != null)
-			mDatabase = AppUtils.getAccessDatabase(getContext());
-
-		return mDatabase;
+		return AppUtils.getAccessDatabase(getContext());
 	}
 
 	public SharedPreferences getDefaultPreferences()
 	{
-		if (mDefaultPreferences == null && getContext() != null)
-			mDefaultPreferences = AppUtils.getDefaultPreferences(getContext());
-
-		return mDefaultPreferences;
+		return AppUtils.getDefaultPreferences(getContext());
 	}
 }

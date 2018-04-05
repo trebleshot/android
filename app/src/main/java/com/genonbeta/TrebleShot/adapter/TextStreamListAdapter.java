@@ -52,7 +52,7 @@ public class TextStreamListAdapter
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-				return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
 		ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
 

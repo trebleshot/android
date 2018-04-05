@@ -11,51 +11,21 @@
         android:id="@+id/actions_abs_editable_grid_size"
         android:orderInCategory="90"
         android:title="@string/butn_gridSize">
-        <menu />
+        <menu/>
     </item>
 
     <item
         android:id="@+id/actions_abs_editable_sort_by"
         android:orderInCategory="100"
-        android:title="@string/butn_sortBy">
-
+        android:title="@string/butn_sortBy"
+        android:visible="false">
         <menu>
-            <group
-                android:id="@+id/actions_abs_editable_group_sorting"
-                android:checkableBehavior="single">
-                <item
-                    android:id="@+id/actions_abs_editable_sort_by_name"
-                    android:title="@string/text_sortByName"/>
-
-                <item
-                    android:id="@+id/actions_abs_editable_sort_by_date"
-                    android:title="@string/text_sortByDate"/>
-
-                <item
-                    android:id="@+id/actions_abs_editable_sort_by_size"
-                    android:title="@string/text_sortBySize"/>
-            </group>
-
             <item
+                android:id="@+id/actions_abs_editable_order_by"
                 android:orderInCategory="100"
                 android:title="@string/butn_sortOrder">
-
-                <menu>
-                    <group
-                        android:id="@+id/actions_abs_editable_group_sort_order"
-                        android:checkableBehavior="single">
-                        <item
-                            android:id="@+id/actions_abs_editable_sort_order_ascending"
-                            android:title="@string/text_sortOrderAscending"/>
-
-                        <item
-                            android:id="@+id/actions_abs_editable_sort_order_descending"
-                            android:title="@string/text_sortOrderDescending"/>
-                    </group>
-                </menu>
+                <menu/>
             </item>
-
         </menu>
     </item>
-
 </menu>

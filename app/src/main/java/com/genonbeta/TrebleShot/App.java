@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
@@ -68,5 +69,21 @@ public class App extends Application
 					.apply();
 
 		PreferenceUtils.syncDefaults(getApplicationContext());
+
+		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+		int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
+
+		if (migratedVersion < localDevice.versionNumber) {
+			// migrating to a new version
+
+			if (migratedVersion <= 67)
+				AppUtils.getViewingPreferences(getApplicationContext()).edit()
+						.clear()
+						.apply();
+
+			defaultPreferences.edit()
+					.putInt("migrated_version", localDevice.versionNumber)
+					.apply();
+		}
 	}
 }

@@ -24,7 +24,6 @@ import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -51,8 +50,8 @@ public class TransactionListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(true);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(TransactionListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(TransactionListAdapter.MODE_SORT_BY_DATE);
 	}
 
 	@Override

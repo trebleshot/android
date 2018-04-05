@@ -13,7 +13,6 @@ import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -142,7 +141,9 @@ public class TransactionListAdapter
 	@Override
 	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false));
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false))
+				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
+				.setClickableLayout(getSelectionConnection());
 	}
 
 	@Override
@@ -151,24 +152,13 @@ public class TransactionListAdapter
 		final TransactionObject object = getItem(position);
 		final View parentView = holder.getView();
 
-		final View layoutImage = parentView.findViewById(R.id.layout_image);
 		ImageView image = parentView.findViewById(R.id.image);
 		TextView mainText = parentView.findViewById(R.id.text);
 		TextView statusText = parentView.findViewById(R.id.text2);
 		TextView sizeText = parentView.findViewById(R.id.text3);
 
-		if (getSelectionConnection() != null) {
+		if (getSelectionConnection() != null)
 			parentView.setSelected(object.isSelectableSelected());
-
-			layoutImage.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					getSelectionConnection().setSelected(holder.getAdapterPosition());
-				}
-			});
-		}
 
 		if (object instanceof TransactionFolder) {
 			image.setImageResource(R.drawable.ic_folder_black_24dp);

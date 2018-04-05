@@ -190,10 +190,8 @@ public class MusicListAdapter
 
 	@NonNull
 	@Override
-	public String getSectionName(int position)
+	public String getSectionName(int position, SongHolder object)
 	{
-		SongHolder object = getItem(position);
-
 		if (!object.isGroupRepresentative()) {
 			if (getGroupBy() == MODE_GROUP_BY_ARTIST)
 				return TextUtils.trimText(object.artist, 1);
@@ -203,7 +201,7 @@ public class MusicListAdapter
 				return TextUtils.trimText(object.albumHolder.title, 1);
 		}
 
-		return super.getSectionName(position);
+		return super.getSectionName(position, object);
 	}
 
 	public static class SongHolder extends GroupShareableListAdapter.GroupShareable

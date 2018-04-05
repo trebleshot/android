@@ -41,7 +41,7 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerViewAdapter.View
 		boolean isEmpty = getAdapter().getCount() == 0;
 
 		getEmptyView().setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-		getListViewContainer().setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+		getListView().setVisibility(isEmpty ? View.GONE : View.VISIBLE);
 	}
 
 	public RecyclerView.LayoutManager onLayoutManager()

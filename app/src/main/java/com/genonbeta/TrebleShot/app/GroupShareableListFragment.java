@@ -48,16 +48,8 @@ public abstract class GroupShareableListFragment<T extends GroupShareableListAda
 			inflater.inflate(R.menu.actions_abs_group_shareable_list, menu);
 			MenuItem groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping);
 
-			if (groupingItem != null) {
-				Menu gridSizeMenu = groupingItem.getSubMenu();
-
-				for (String currentKey : mGroupingOptions.keySet()) {
-					int modeId = mGroupingOptions.get(currentKey);
-					gridSizeMenu.add(R.id.actions_abs_group_shareable_group_grouping, 0, modeId, currentKey);
-				}
-
-				gridSizeMenu.setGroupCheckable(R.id.actions_abs_group_shareable_group_grouping, true, true);
-			}
+			if (groupingItem != null)
+				applyDynamicMenuItems(groupingItem, R.id.actions_abs_group_shareable_group_grouping, mGroupingOptions);
 		}
 	}
 
@@ -65,31 +57,7 @@ public abstract class GroupShareableListFragment<T extends GroupShareableListAda
 	public void onPrepareOptionsMenu(Menu menu)
 	{
 		super.onPrepareOptionsMenu(menu);
-
-		MenuItem groupingItem = menu.findItem(R.id.actions_abs_group_shareable_grouping);
-
-		if (groupingItem != null) {
-			Menu gridSizeMenu = groupingItem.getSubMenu();
-			int groupingCriteria = getGroupingCriteria();
-
-			for (String title : mGroupingOptions.keySet()) {
-				if (mGroupingOptions.get(title) == groupingCriteria) {
-					MenuItem menuItem;
-					int iterator = 0;
-
-					while ((menuItem = gridSizeMenu.getItem(iterator)) != null) {
-						if (title.equals(String.valueOf(menuItem.getTitle()))) {
-							menuItem.setChecked(true);
-							break;
-						}
-
-						iterator++;
-					}
-
-					break;
-				}
-			}
-		}
+		checkPreferredDynamicItem(menu.findItem(R.id.actions_abs_group_shareable_grouping), getGroupingCriteria(), mGroupingOptions);
 	}
 
 	@Override

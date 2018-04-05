@@ -16,7 +16,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 /**
  * created by: Veli
