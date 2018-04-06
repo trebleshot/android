@@ -17,7 +17,8 @@ import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.io.StreamDocumentFile;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.io.TreeDocumentFile;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -190,14 +191,14 @@ public class FileUtils
 		return "";
 	}
 
-	public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransactionObject transactionObject, TransactionObject.Group group, boolean createIfNotExists) throws IOException
+	public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
 	{
-		return fetchFile(getSavePath(context, preferences, group), transactionObject.directory, transactionObject.file, createIfNotExists);
+		return fetchFile(getSavePath(context, preferences, group), transferObject.directory, transferObject.file, createIfNotExists);
 	}
 
-	public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransactionObject transactionObject, TransactionObject.Group group) throws IOException
+	public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group) throws IOException
 	{
-		DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transactionObject, group, true);
+		DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transferObject, group, true);
 
 		if (!pseudoFile.canWrite())
 			throw new IOException("File cannot be created or you don't have permission write on it");
@@ -205,7 +206,7 @@ public class FileUtils
 		return pseudoFile;
 	}
 
-	public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransactionObject.Group group)
+	public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
 	{
 		if (group.savePath != null) {
 			try {
@@ -302,14 +303,14 @@ public class FileUtils
 		return false;
 	}
 
-	public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransactionObject transactionObject) throws IOException
+	public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
 	{
-		String uniqueName = FileUtils.getUniqueFileName(savePath, transactionObject.friendlyName, true);
+		String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.friendlyName, true);
 
 		if (!currentFile.renameTo(uniqueName))
 			throw new IOException("Failed to rename object: " + currentFile);
 
-		return savePath.findFile(transactionObject.friendlyName);
+		return savePath.findFile(transferObject.friendlyName);
 	}
 
 	public static String sizeExpression(long bytes, boolean notUseByte)

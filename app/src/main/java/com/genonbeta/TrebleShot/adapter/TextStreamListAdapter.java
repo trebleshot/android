@@ -42,11 +42,6 @@ public class TextStreamListAdapter
 		return new TextStreamObject(representativeText);
 	}
 
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
 	@NonNull
 	@Override
 	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
@@ -60,7 +55,6 @@ public class TextStreamListAdapter
 
 		return holder;
 	}
-
 
 	@Override
 	public void onBindViewHolder(@NonNull ViewHolder holder, int position)

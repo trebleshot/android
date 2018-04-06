@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -90,6 +91,13 @@ public class TransactionGroupListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mReceiver);
+	}
+
+	@Override
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByDate), TransactionGroupListAdapter.MODE_SORT_BY_DATE);
+		options.put(getString(R.string.text_sortBySize), TransactionGroupListAdapter.MODE_SORT_BY_SIZE);
 	}
 
 	@Override

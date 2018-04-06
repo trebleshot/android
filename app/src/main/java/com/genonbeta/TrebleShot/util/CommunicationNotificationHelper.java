@@ -16,7 +16,8 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -96,15 +97,16 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyTransferRequest(TransactionObject transactionObject, NetworkDevice device, int numberOfFiles)
+	public DynamicNotification notifyTransferRequest(TransferObject transferObject, NetworkDevice device, int numberOfFiles)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-		String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transactionObject.friendlyName;
+		DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transferObject.friendlyName;
 
 		Intent acceptIntent = new Intent(getContext(), CommunicationService.class);
 
 		acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transactionObject.groupId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_ID, device.deviceId);
+		acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transferObject.groupId);
 		acceptIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent rejectIntent = ((Intent) acceptIntent.clone());
@@ -121,7 +123,7 @@ public class CommunicationNotificationHelper
 				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0))
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transferObject.groupId), 0))
 				.setDefaults(getUtils().getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
 				.addAction(R.drawable.ic_check_white_24dp, getContext().getString(R.string.butn_accept), positiveIntent)
@@ -135,17 +137,17 @@ public class CommunicationNotificationHelper
 	public DynamicNotification notifyFileTransaction(CommunicationService.ProcessHolder processHolder) throws Exception
 	{
 		if (processHolder.notification == null) {
-			NetworkDevice device = new NetworkDevice(processHolder.group.deviceId);
+			NetworkDevice device = new NetworkDevice(processHolder.assignee.deviceId);
 			getUtils().getDatabase().reconstruct(device);
 
-			boolean isIncoming = TransactionObject.Type.INCOMING.equals(processHolder.transactionObject.type);
+			boolean isIncoming = TransferObject.Type.INCOMING.equals(processHolder.transferObject.type);
 
-			processHolder.notification = getUtils().buildDynamicNotification(processHolder.transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+			processHolder.notification = getUtils().buildDynamicNotification(processHolder.transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 			Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
 
 			cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
-			cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.transactionObject.requestId);
-			cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.transactionObject.groupId);
+			cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.transferObject.requestId);
+			cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.transferObject.groupId);
 			cancelIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, processHolder.notification.getNotificationId());
 
 			processHolder.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
@@ -153,12 +155,12 @@ public class CommunicationNotificationHelper
 					.setContentInfo(device.nickname)
 					.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
 							.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
-							.putExtra(TransactionActivity.EXTRA_GROUP_ID, processHolder.transactionObject.groupId), 0))
+							.putExtra(TransactionActivity.EXTRA_GROUP_ID, processHolder.transferObject.groupId), 0))
 					.setOngoing(true)
 					.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
 		}
 
-		processHolder.notification.setContentTitle(processHolder.transactionObject.friendlyName);
+		processHolder.notification.setContentTitle(processHolder.transferObject.friendlyName);
 
 		return processHolder.notification;
 	}
@@ -208,7 +210,7 @@ public class CommunicationNotificationHelper
 
 	public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, DocumentFile savePath)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 		CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
 		CoolTransfer.TransferProgress progress = transferHandler.getTransferProgress();
 
@@ -234,7 +236,7 @@ public class CommunicationNotificationHelper
 			}
 
 			notification
-					.setContentTitle(processHolder.transactionObject.friendlyName)
+					.setContentTitle(processHolder.transferObject.friendlyName)
 					.addAction(R.drawable.ic_folder_white_24dp, getContext().getString(R.string.butn_showFiles),
 							PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
 									.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
@@ -244,19 +246,19 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyReceiveError(TransactionObject transactionObject)
+	public DynamicNotification notifyReceiveError(TransferObject transferObject)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(transactionObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
 		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_error))
-				.setContentText(getContext().getString(R.string.mesg_fileReceiveError, transactionObject.friendlyName))
+				.setContentText(getContext().getString(R.string.mesg_fileReceiveError, transferObject.friendlyName))
 				.setAutoCancel(true)
 				.setDefaults(getUtils().getNotificationSettings())
 				.setPriority(NotificationCompat.PRIORITY_HIGH)
 				.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
 						.setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
-						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transactionObject.groupId), 0));
+						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transferObject.groupId), 0));
 
 		return notification.show();
 	}
@@ -288,7 +290,7 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyPrepareFiles(TransactionObject.Group group)
+	public DynamicNotification notifyPrepareFiles(TransferGroup group)
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(group.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
@@ -311,7 +313,7 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyStuckThread(TransactionObject transaction)
+	public DynamicNotification notifyStuckThread(TransferObject transaction)
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(transaction.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 		Intent killIntent = new Intent(getContext(), CommunicationService.class)

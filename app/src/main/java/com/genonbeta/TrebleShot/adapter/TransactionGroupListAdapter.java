@@ -10,11 +10,12 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,21 +43,20 @@ public class TransactionGroupListAdapter
 	@Override
 	public ArrayList<PreloadedGroup> onLoad()
 	{
-		ArrayList<PreloadedGroup> list = mDatabase.castQuery(getSelect(), PreloadedGroup.class);
+		ArrayList<PreloadedGroup> list = mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
+		{
+			@Override
+			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, PreloadedGroup object)
+			{
+				// FIXME: 06.04.2018
+				object.assignees.addAll(db.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).
+						setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(object.groupId)), TransferGroup.Assignee.class));
+			}
+		});
 
 		Collections.sort(list, getDefaultComparator());
 
 		for (PreloadedGroup group : list) {
-			try {
-				NetworkDevice device = new NetworkDevice(group.deviceId);
-
-				mDatabase.reconstruct(device);
-
-				group.deviceName = device.nickname;
-			} catch (Exception e) {
-				group.deviceName = "-";
-			}
-
 			mDatabase.calculateTransactionSize(group.groupId, group.index);
 
 			group.totalCount = group.index.incomingCount + group.index.outgoingCount;
@@ -115,17 +115,18 @@ public class TransactionGroupListAdapter
 					? R.drawable.ic_file_upload_black_24dp
 					: R.drawable.ic_file_download_black_24dp);
 
-		text1.setText(object.deviceName);
-		text2.setText(object.totalFiles);
-		text3.setText(object.totalSize);
+		// FIXME: 06.04.2018 What should we show?
+		text1.setText(object.totalFiles);
+		text2.setText(object.totalSize);
+		text3.setText(String.format("%d devices", object.assignees.size()));
 	}
 
 	public static class PreloadedGroup
-			extends TransactionObject.Group
+			extends TransferGroup
 			implements Editable
 	{
 		public Index index = new Index();
-		public String deviceName;
+		public ArrayList<Assignee> assignees = new ArrayList<>();
 		public String totalFiles;
 		public String totalSize;
 
@@ -150,10 +151,11 @@ public class TransactionGroupListAdapter
 			return totalCount;
 		}
 
+		// FIXME: 06.04.2018
 		@Override
 		public String getSelectableFriendlyName()
 		{
-			return deviceName + " (" + totalSize + ")";
+			return groupId + " (" + totalSize + ")";
 		}
 	}
 }

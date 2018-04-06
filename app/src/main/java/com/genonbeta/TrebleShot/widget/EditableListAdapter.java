@@ -7,6 +7,7 @@ import android.view.View;
 
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
@@ -155,6 +156,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 				return getSectionNameTrimmedText(object.getComparableName());
 			case MODE_SORT_BY_DATE:
 				return getSectionNameDate(object.getComparableDate());
+			case MODE_SORT_BY_SIZE:
+				return FileUtils.sizeExpression(object.getComparableSize(), false);
 		}
 
 		return String.valueOf(position);

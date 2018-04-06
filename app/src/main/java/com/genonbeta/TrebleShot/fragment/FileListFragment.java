@@ -198,7 +198,9 @@ public class FileListFragment
 	public void onSaveInstanceState(@NonNull Bundle outState)
 	{
 		super.onSaveInstanceState(outState);
-		outState.putString(EXTRA_FILE_LOCATION, getAdapter().getPath().getUri().toString());
+
+		if (getAdapter().getPath() != null)
+			outState.putString(EXTRA_FILE_LOCATION, getAdapter().getPath().getUri().toString());
 	}
 
 	@Override

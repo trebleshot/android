@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
@@ -25,10 +24,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,9 +39,11 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
+import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -77,8 +76,8 @@ public class TransactionActivity
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
-	private TransactionObject.Group mGroup;
-	private NetworkDevice mDevice;
+	private TransferGroup mGroup;
+	private ArrayList<TransferGroup.Assignee> mAssigneeList = new ArrayList<>();
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -116,24 +115,22 @@ public class TransactionActivity
 		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
 		final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
-		final TransactionFileExplorer transactionFragment = new TransactionFileExplorer();
+		final TransactionExplorerFragment transactionFragment = new TransactionExplorerFragment();
+		final TransferAssigneeListFragment assigneeFragment = new TransferAssigneeListFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
-			TransactionObject.Group group = new TransactionObject.Group(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
+			TransferGroup group = new TransferGroup(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
 
 			try {
 				getDatabase().reconstruct(group);
 
-				NetworkDevice networkDevice = new NetworkDevice(group.deviceId);
-				getDatabase().reconstruct(networkDevice);
+				mAssigneeList = getDatabase().castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId)), TransferGroup.Assignee.class);
 
 				mGroup = group;
-				mDevice = networkDevice;
 				mInfoDialog = new TransactionGroupInfoDialog(this, getDatabase(), getDefaultPreferences(), mGroup);
 
-				if (getSupportActionBar() != null)
-					getSupportActionBar().setTitle(mDevice.nickname);
-
+				assigneeFragment.setGroup(mGroup);
 				transactionFragment.goPath(mGroup.groupId, null);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -145,16 +142,15 @@ public class TransactionActivity
 		else {
 			Bundle args = new Bundle();
 
-			args.putInt(TransactionFileExplorer.ARG_GROUP_ID, mGroup.groupId);
-			args.putString(TransactionFileExplorer.ARG_PATH, null);
+			args.putInt(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
+			args.putString(TransactionExplorerFragment.ARG_PATH, null);
 
 			transactionFragment.setArguments(args);
 
 			tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
 			pagerAdapter.add(transactionFragment, tabLayout);
-			pagerAdapter.add(new TransactionInfo(), tabLayout);
-
+			pagerAdapter.add(assigneeFragment, tabLayout);
 
 			viewPager.setAdapter(pagerAdapter);
 			viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
@@ -253,27 +249,27 @@ public class TransactionActivity
 											@Override
 											public void onRun()
 											{
-												ArrayList<TransactionObject> checkList = getDatabase().
+												ArrayList<TransferObject> checkList = getDatabase().
 														castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 																.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 																				+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
 																				+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-																		String.valueOf(mGroup.groupId), TransactionObject.Type.INCOMING.toString(), TransactionObject.Flag.PENDING.toString()), TransactionObject.class);
+																		String.valueOf(mGroup.groupId), TransferObject.Type.INCOMING.toString(), TransferObject.Flag.PENDING.toString()), TransferObject.class);
 
-												TransactionObject.Group pseudoGroup = new TransactionObject.Group(mGroup.groupId);
+												TransferGroup pseudoGroup = new TransferGroup(mGroup.groupId);
 
 												try {
 													// Illustrate new change to build the structure accordingly
 													getDatabase().reconstruct(pseudoGroup);
 													pseudoGroup.savePath = selectedPath.toString();
 
-													for (TransactionObject transactionObject : checkList) {
+													for (TransferObject transferObject : checkList) {
 														if (getInterrupter().interrupted())
 															break;
 
 														try {
-															DocumentFile file = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transactionObject, mGroup, false);
-															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transactionObject, pseudoGroup, true);
+															DocumentFile file = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transferObject, mGroup, false);
+															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getApplicationContext(), getDefaultPreferences(), transferObject, pseudoGroup, true);
 
 															if (file.canRead())
 																FileUtils.move(TransactionActivity.this, file, pseudoFile, getInterrupter());
@@ -344,37 +340,19 @@ public class TransactionActivity
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transaction_resume_all) {
-			try {
-				getDatabase().reconstruct(new NetworkDevice.Connection(mDevice.deviceId, mGroup.connectionAdapter));
-
-				AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-						.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
-						.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
-			} catch (Exception e) {
-				e.printStackTrace();
-
-				createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
-						.setAction(R.string.butn_setUp, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								changeConnection();
-							}
-						}).show();
-			}
+			resumeReceiving();
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();
 
-			contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.PENDING.toString());
+			contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
 
 			getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 									+ AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
 									+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
 							String.valueOf(mGroup.groupId),
-							TransactionObject.Flag.INTERRUPTED.toString(),
-							TransactionObject.Type.INCOMING.toString()), contentValues);
+							TransferObject.Flag.INTERRUPTED.toString(),
+							TransferObject.Type.INCOMING.toString()), contentValues);
 
 			createSnackbar(R.string.mesg_retryAllInfo)
 					.show();
@@ -387,6 +365,7 @@ public class TransactionActivity
 	}
 
 	// FIXME: 05.04.2018 though
+
 	public boolean onNavigationItemSelected(@NonNull MenuItem item)
 	{
 		int id = item.getItemId();
@@ -406,7 +385,7 @@ public class TransactionActivity
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					getDatabase().remove(new TransactionObject.Group(mGroup.groupId));
+					getDatabase().remove(new TransferGroup(mGroup.groupId));
 				}
 			});
 
@@ -415,28 +394,10 @@ public class TransactionActivity
 			startActivity(new Intent(this, HomeActivity.class)
 					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
 					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
-		} else if (id == R.id.drawer_transaction_connection) {
-			changeConnection();
 		} else
 			return false;
 
 		return true;
-	}
-
-	private void changeConnection()
-	{
-		new ConnectionChooserDialog(this, getDatabase(), mDevice, new ConnectionChooserDialog.OnDeviceSelectedListener()
-		{
-			@Override
-			public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
-			{
-				mGroup.connectionAdapter = connection.adapterName;
-				getDatabase().publish(mGroup);
-
-				createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(), connection))
-						.show();
-			}
-		}, false).show();
 	}
 
 	private Snackbar createSnackbar(int resId, Object... objects)
@@ -457,6 +418,33 @@ public class TransactionActivity
 		} catch (Exception e) {
 			e.printStackTrace();
 			finish();
+		}
+	}
+
+	private void resumeReceiving()
+	{
+		try {
+			TransferGroup.Assignee assignee = mAssigneeList.get(0);
+
+			getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
+
+			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+					.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
+					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId)
+					.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
+		} catch (Exception e) {
+			e.printStackTrace();
+
+			createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
+					.setAction(R.string.butn_setUp, new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							//changeConnection();
+							// FIXME: 06.04.2018
+						}
+					}).show();
 		}
 	}
 
@@ -589,14 +577,13 @@ public class TransactionActivity
 		}
 	}
 
-	public static class TransactionFileExplorer
+	public static class TransactionExplorerFragment
 			extends Fragment
 			implements TransactionListAdapter.PathChangedListener, TitleSupport
 	{
 		public static final String ARG_GROUP_ID = "argGroupId";
 		public static final String ARG_PATH = "path";
 
-		private TransactionObject.Group mGroup;
 		private RecyclerView mPathView;
 		private TransactionPathResolverRecyclerAdapter mPathAdapter;
 		private TransactionListFragment mTransactionListFragment;
@@ -640,7 +627,7 @@ public class TransactionActivity
 			Bundle args = getArguments();
 
 			if (args != null && args.containsKey(ARG_GROUP_ID))
-				goPath(args.getInt(ARG_GROUP_ID), args.getString(ARG_PATH ));
+				goPath(args.getInt(ARG_GROUP_ID), args.getString(ARG_PATH));
 			else
 				mPathAdapter.goTo(null);
 		}
@@ -663,7 +650,7 @@ public class TransactionActivity
 		@Override
 		public CharSequence getTitle(Context context)
 		{
-			return context.getString(R.string.text_pendingTransfers);
+			return context.getString(R.string.textFiles);
 		}
 
 		public void goPath(int groupId, String path)
@@ -678,7 +665,9 @@ public class TransactionActivity
 		public void setHasOptionsMenu(boolean hasMenu)
 		{
 			super.setHasOptionsMenu(hasMenu);
-			getTransactionListFragment().setHasOptionsMenu(hasMenu);
+
+			if (getTransactionListFragment() != null)
+				getTransactionListFragment().setHasOptionsMenu(hasMenu);
 		}
 	}
 }

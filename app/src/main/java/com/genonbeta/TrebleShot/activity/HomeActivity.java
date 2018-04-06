@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,6 +68,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
+	private ColorStateList mFABDefaultColorState;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
@@ -104,6 +106,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
+		mFABDefaultColorState = mFAB.getBackgroundTintList();
 
 		mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -345,6 +348,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 						: getString(R.string.text_appName));
 
 				boolean fabSupported = fragment instanceof FABSupport;
+
+				mFAB.setBackgroundTintList(mFABDefaultColorState);
 
 				if (fabSupported)
 					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);

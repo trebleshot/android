@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -26,7 +26,7 @@ import java.util.Collections;
  */
 
 public class TransactionListAdapter
-		extends EditableListAdapter<TransactionObject, EditableListAdapter.EditableViewHolder>
+		extends EditableListAdapter<TransferObject, EditableListAdapter.EditableViewHolder>
 {
 	public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
 
@@ -46,34 +46,34 @@ public class TransactionListAdapter
 	}
 
 	@Override
-	public ArrayList<TransactionObject> onLoad()
+	public ArrayList<TransferObject> onLoad()
 	{
-		ArrayList<TransactionObject> mergedList = new ArrayList<>();
+		ArrayList<TransferObject> mergedList = new ArrayList<>();
 		String currentPath = getPath();
 
-		for (TransactionObject transactionObject : mDatabase.castQuery(getSelect()
+		for (TransferObject transferObject : mDatabase.castQuery(getSelect()
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?",
 						String.valueOf(getGroupId()),
 						currentPath != null ? currentPath + File.separator + "%" : "%")
-				.setGroupBy(AccessDatabase.FIELD_TRANSFER_DIRECTORY), TransactionObject.class)) {
-			String cleanedName = currentPath != null ? transactionObject.directory.substring(currentPath.length() + File.separator.length()) : transactionObject.directory;
+				.setGroupBy(AccessDatabase.FIELD_TRANSFER_DIRECTORY), TransferObject.class)) {
+			String cleanedName = currentPath != null ? transferObject.directory.substring(currentPath.length() + File.separator.length()) : transferObject.directory;
 			int obtainSlash = cleanedName.indexOf(File.separator);
 
 			if (obtainSlash != -1)
 				cleanedName = cleanedName.substring(0, obtainSlash);
 
-			TransactionFolder transactionFolder = new TransactionFolder();
+			TransferFolder transactionFolder = new TransferFolder();
 
 			transactionFolder.friendlyName = cleanedName;
 			transactionFolder.directory = currentPath != null ? currentPath + File.separator + cleanedName : cleanedName;
 
 			boolean addThis = true;
 
-			for (TransactionObject testObject : mergedList) {
-				if (!(testObject instanceof TransactionFolder))
+			for (TransferObject testObject : mergedList) {
+				if (!(testObject instanceof TransferFolder))
 					continue;
 
-				TransactionFolder testFolder = (TransactionFolder) testObject;
+				TransferFolder testFolder = (TransferFolder) testObject;
 
 				if (testFolder.friendlyName.equals(transactionFolder.friendlyName)) {
 					addThis = false;
@@ -85,11 +85,11 @@ public class TransactionListAdapter
 				mergedList.add(transactionFolder);
 		}
 
-		ArrayList<TransactionObject> mainItems = mDatabase.castQuery((currentPath == null
+		ArrayList<TransferObject> mainItems = mDatabase.castQuery((currentPath == null
 				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
 				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
 				String.valueOf(getGroupId()), currentPath)
-		).setGroupBy(null), TransactionObject.class);
+		).setGroupBy(null), TransferObject.class);
 
 		Collections.sort(mainItems, getDefaultComparator());
 
@@ -99,7 +99,7 @@ public class TransactionListAdapter
 	}
 
 	@Override
-	public int compareItems(int sortingCriteria, int sortingOrder, TransactionObject objectOne, TransactionObject objectTwo)
+	public int compareItems(int sortingCriteria, int sortingOrder, TransferObject objectOne, TransferObject objectTwo)
 	{
 		if (sortingCriteria == MODE_SORT_BY_DEFAULT)
 			return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
@@ -160,7 +160,7 @@ public class TransactionListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, int position)
 	{
-		final TransactionObject object = getItem(position);
+		final TransferObject object = getItem(position);
 		final View parentView = holder.getView();
 
 		ImageView image = parentView.findViewById(R.id.image);
@@ -171,13 +171,13 @@ public class TransactionListAdapter
 		if (getSelectionConnection() != null)
 			parentView.setSelected(object.isSelectableSelected());
 
-		if (object instanceof TransactionFolder) {
+		if (object instanceof TransferFolder) {
 			image.setImageResource(R.drawable.ic_folder_black_24dp);
 			mainText.setText(object.friendlyName);
 			statusText.setText(R.string.text_folder);
 			sizeText.setText(null);
 		} else {
-			boolean isIncoming = object.type.equals(TransactionObject.Type.INCOMING);
+			boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);
 
 			image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 			mainText.setText(object.friendlyName);
@@ -188,21 +188,21 @@ public class TransactionListAdapter
 
 	public interface PathChangedListener
 	{
-		public void onPathChange(String path);
+		void onPathChange(String path);
 	}
 
-	public static class TransactionFolder extends TransactionObject
+	public static class TransferFolder extends TransferObject
 	{
-		public TransactionFolder()
+		public TransferFolder()
 		{
 		}
 
 		@Override
 		public boolean equals(Object obj)
 		{
-			return obj instanceof TransactionFolder
+			return obj instanceof TransferFolder
 					&& directory != null
-					&& directory.equals(((TransactionFolder) obj).directory);
+					&& directory.equals(((TransferFolder) obj).directory);
 		}
 	}
 }

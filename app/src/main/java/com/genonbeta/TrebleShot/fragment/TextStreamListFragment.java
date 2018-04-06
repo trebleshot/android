@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -38,7 +39,6 @@ public class TextStreamListFragment
 		extends GroupShareableListFragment<TextStreamObject, GroupShareableListAdapter.ViewHolder, TextStreamListAdapter>
 		implements TitleSupport, FABSupport
 {
-	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
 	@Override
@@ -49,8 +49,6 @@ public class TextStreamListFragment
 		setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
-
-		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
 
 	@Override
@@ -60,6 +58,13 @@ public class TextStreamListFragment
 
 		setEmptyImage(R.drawable.ic_forum_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTextStream));
+	}
+
+	@Override
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByName), TextStreamListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortByDate), TextStreamListAdapter.MODE_SORT_BY_DATE);
 	}
 
 	@Override
@@ -105,7 +110,8 @@ public class TextStreamListFragment
 	public void onResume()
 	{
 		super.onResume();
-		getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
+
+		getActivity().registerReceiver(mStatusReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
 		refreshList();
 	}
 
@@ -133,7 +139,7 @@ public class TextStreamListFragment
 
 		if (id == R.id.action_mode_text_stream_delete) {
 			for (TextStreamObject textStreamObject : selectionList)
-				getAdapter().getDatabase().remove(textStreamObject);
+				getDatabase().remove(textStreamObject);
 		} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
 			if (selectionList.size() == 1) {
 				TextStreamObject streamObject = selectionList.get(0);

@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferObject;
 
 import java.util.HashMap;
 
@@ -62,7 +62,7 @@ public class TextUtils
 		return stringBuilder.toString().toUpperCase();
 	}
 
-	public static int getTransactionFlagString(TransactionObject.Flag flag)
+	public static int getTransactionFlagString(TransferObject.Flag flag)
 	{
 		switch (flag) {
 			case PENDING:

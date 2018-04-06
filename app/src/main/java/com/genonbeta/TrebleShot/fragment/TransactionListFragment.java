@@ -20,7 +20,7 @@ import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -31,10 +31,9 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class TransactionListFragment
-		extends EditableListFragment<TransactionObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
+		extends EditableListFragment<TransferObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
-	private IntentFilter mFilter = new IntentFilter();
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -64,17 +63,10 @@ public class TransactionListFragment
 	}
 
 	@Override
-	public void onActivityCreated(Bundle savedInstanceState)
-	{
-		super.onActivityCreated(savedInstanceState);
-		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
-	}
-
-	@Override
 	public void onResume()
 	{
 		super.onResume();
-		getActivity().registerReceiver(mReceiver, mFilter);
+		getActivity().registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
 	}
 
 	@Override
@@ -106,10 +98,10 @@ public class TransactionListFragment
 					@Override
 					public void onClick(View v)
 					{
-						final TransactionObject transactionObject = getAdapter().getItem(holder);
+						final TransferObject transferObject = getAdapter().getItem(holder);
 
-						if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
-							getAdapter().setPath(transactionObject.directory);
+						if (transferObject instanceof TransferFolder) {
+							getAdapter().setPath(transferObject.directory);
 							refreshList();
 
 							if (isSelectionActivated() && !getDefaultPreferences().getBoolean("helpFolderSelection", false))
@@ -127,7 +119,7 @@ public class TransactionListFragment
 										})
 										.show();
 						} else if (!setItemSelected(holder))
-							new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transactionObject).show();
+							new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transferObject).show();
 					}
 				});
 			}
@@ -154,7 +146,7 @@ public class TransactionListFragment
 	{
 		int id = item.getItemId();
 
-		final ArrayList<TransactionObject> selectionList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
+		final ArrayList<TransferObject> selectionList = new ArrayList<>(getSelectionConnection().getSelectedItemList());
 
 		if (id == R.id.action_mode_transaction_delete) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -172,17 +164,17 @@ public class TransactionListFragment
 						@Override
 						public void run()
 						{
-							for (TransactionObject transactionObject : selectionList)
-								if (transactionObject instanceof TransactionListAdapter.TransactionFolder) {
+							for (TransferObject transferObject : selectionList)
+								if (transferObject instanceof TransactionListAdapter.TransferFolder) {
 									getDatabase().delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 											.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
 															+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
 															+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
 													String.valueOf(getAdapter().getGroupId()),
-													transactionObject.directory + File.separator + "%",
-													transactionObject.directory));
+													transferObject.directory + File.separator + "%",
+													transferObject.directory));
 								} else
-									getDatabase().remove(transactionObject);
+									getDatabase().remove(transferObject);
 						}
 					});
 				}

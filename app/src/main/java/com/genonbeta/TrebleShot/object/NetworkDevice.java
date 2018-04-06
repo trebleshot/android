@@ -96,10 +96,10 @@ public class NetworkDevice
 		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-		ArrayList<TransactionObject.Group> groupList = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-				.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", deviceId), TransactionObject.Group.class);
+		ArrayList<TransferGroup.Assignee> groupList = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class);
 
-		for (TransactionObject.Group group : groupList)
+		for (TransferGroup.Assignee group : groupList)
 			database.remove(group);
 	}
 
@@ -126,6 +126,11 @@ public class NetworkDevice
 		{
 			this.deviceId = deviceId;
 			this.adapterName = adapterName;
+		}
+
+		public Connection(TransferGroup.Assignee assignee)
+		{
+			this(assignee.deviceId, assignee.connectionAdapter);
 		}
 
 		public Connection(String ipAddress)

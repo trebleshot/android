@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
@@ -32,7 +33,8 @@ import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
@@ -173,6 +175,7 @@ public class CommunicationService extends Service
 
 		if (intent != null && AppUtils.checkRunningConditions(this)) {
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
+				final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
@@ -180,7 +183,7 @@ public class CommunicationService extends Service
 				getNotificationHelper().getUtils().cancel(notificationId);
 
 				try {
-					final TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId);
+					final TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, deviceId, true);
 
 					CommunicationBridge.connect(getDatabase(), new CommunicationBridge.Client.ConnectionHandler()
 					{
@@ -202,7 +205,7 @@ public class CommunicationService extends Service
 					});
 
 					if (isAccepted)
-						startFileReceiving(groupId);
+						startFileReceiving(groupId, deviceId);
 					else
 						getDatabase().remove(transferInstance.getGroup());
 				} catch (Exception e) {
@@ -260,16 +263,18 @@ public class CommunicationService extends Service
 			} else if (ACTION_END_SESSION.equals(intent.getAction())) {
 				stopSelf();
 			} else if (ACTION_SEAMLESS_RECEIVE.equals(intent.getAction())
-					&& intent.hasExtra(EXTRA_GROUP_ID)) {
+					&& intent.hasExtra(EXTRA_GROUP_ID)
+					&& intent.hasExtra(EXTRA_DEVICE_ID)) {
 				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 
 				try {
 					CoolTransfer.TransferHandler<ProcessHolder> process = findProcessById(groupId);
 
 					if (process == null)
-						startFileReceiving(groupId);
+						startFileReceiving(groupId, deviceId);
 					else
-						Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.getExtra().transactionObject.friendlyName), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.getExtra().transferObject.friendlyName), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -302,7 +307,7 @@ public class CommunicationService extends Service
 							e.printStackTrace();
 						}
 					} else {
-						handler.getExtra().notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transactionObject);
+						handler.getExtra().notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transferObject);
 						handler.interrupt();
 					}
 				}
@@ -355,11 +360,11 @@ public class CommunicationService extends Service
 	public CoolTransfer.TransferHandler<ProcessHolder> findProcessById(int groupId)
 	{
 		for (CoolTransfer.TransferHandler<ProcessHolder> handler : mReceive.getProcessList())
-			if (handler.getExtra().transactionObject.groupId == groupId)
+			if (handler.getExtra().transferObject.groupId == groupId)
 				return handler;
 
 		for (CoolTransfer.TransferHandler<ProcessHolder> handler : mSend.getProcessList())
-			if (handler.getExtra().transactionObject.groupId == groupId)
+			if (handler.getExtra().transferObject.groupId == groupId)
 				return handler;
 
 		return null;
@@ -434,9 +439,10 @@ public class CommunicationService extends Service
 		}
 	}
 
-	public void startFileReceiving(int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
+	public void startFileReceiving(int groupId, String deviceId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
-		startFileReceiving(new TransferInstance(getDatabase(), groupId));
+		// it should create its own devices
+		startFileReceiving(new TransferInstance(getDatabase(), groupId, deviceId, true));
 	}
 
 	public void startFileReceiving(TransferInstance transferInstance)
@@ -564,10 +570,12 @@ public class CommunicationService extends Service
 										public void run()
 										{
 											Interrupter interrupter = new Interrupter();
-											TransactionObject.Group group = new TransactionObject.Group(groupId, finalDevice.deviceId, connection.adapterName);
-											TransactionObject transactionObject = null;
+											TransferGroup group = new TransferGroup(groupId);
+											TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, finalDevice, connection);
+											TransferObject transferObject = null;
 
 											getDatabase().publish(group);
+											getDatabase().publish(assignee);
 
 											synchronized (getOngoingIndexList()) {
 												getOngoingIndexList().put(group.groupId, interrupter);
@@ -592,19 +600,19 @@ public class CommunicationService extends Service
 													if (requestIndex != null && requestIndex.has(Keyword.INDEX_FILE_NAME) && requestIndex.has(Keyword.INDEX_FILE_SIZE) && requestIndex.has(Keyword.INDEX_FILE_MIME) && requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
 														count++;
 
-														transactionObject = new TransactionObject(
+														transferObject = new TransferObject(
 																requestIndex.getInt(Keyword.TRANSFER_REQUEST_ID),
 																groupId,
 																requestIndex.getString(Keyword.INDEX_FILE_NAME),
 																"." + UUID.randomUUID() + ".tshare",
 																requestIndex.getString(Keyword.INDEX_FILE_MIME),
 																requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
-																TransactionObject.Type.INCOMING);
+																TransferObject.Type.INCOMING);
 
 														if (requestIndex.has(Keyword.INDEX_DIRECTORY))
-															transactionObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
+															transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
 
-														getDatabase().insert(transactionObject);
+														getDatabase().insert(transferObject);
 													}
 
 												} catch (JSONException e) {
@@ -625,15 +633,15 @@ public class CommunicationService extends Service
 
 											if (interrupter.interrupted())
 												getDatabase().remove(group);
-											else if (transactionObject != null && count > 0) {
+											else if (transferObject != null && count > 0) {
 												if (seamlessActive && finalDevice.isTrusted)
 													try {
-														startFileReceiving(group.groupId);
+														startFileReceiving(group.groupId, finalDevice.deviceId);
 													} catch (Exception e) {
 														e.printStackTrace();
 													}
 												else
-													getNotificationHelper().notifyTransferRequest(transactionObject, finalDevice, count);
+													getNotificationHelper().notifyTransferRequest(transferObject, finalDevice, count);
 
 											}
 										}
@@ -646,7 +654,7 @@ public class CommunicationService extends Service
 									boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
 
 									if (!isAccepted)
-										getDatabase().remove(new TransactionObject.Group(groupId));
+										getDatabase().remove(new TransferGroup(groupId));
 
 									result = true;
 								}
@@ -703,11 +711,12 @@ public class CommunicationService extends Service
 				int groupId = new JSONObject(mainRequest.response)
 						.getInt(Keyword.TRANSFER_GROUP_ID);
 
-				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress());
+				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
 
 				activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
 
 				processHolder.group = transferInstance.getGroup();
+				processHolder.assignee = transferInstance.getAssignee();
 				processHolder.activeConnection = activeConnection;
 
 				while (true) {
@@ -723,16 +732,16 @@ public class CommunicationService extends Service
 						break;
 
 					try {
-						processHolder.transactionObject = new TransactionObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
+						processHolder.transferObject = new TransferObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
 
-						getDatabase().reconstruct(processHolder.transactionObject);
+						getDatabase().reconstruct(processHolder.transferObject);
 
-						processHolder.transactionObject.accessPort = currentRequest.getInt(Keyword.TRANSFER_SOCKET_PORT);
+						processHolder.transferObject.accessPort = currentRequest.getInt(Keyword.TRANSFER_SOCKET_PORT);
 
 						if (currentRequest.has(Keyword.SKIPPED_BYTES))
-							processHolder.transactionObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
+							processHolder.transferObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
 
-						getDatabase().update(processHolder.transactionObject);
+						getDatabase().update(processHolder.transferObject);
 
 						currentReply.put(Keyword.RESULT, true);
 					} catch (Exception e) {
@@ -743,11 +752,11 @@ public class CommunicationService extends Service
 						activeConnection.reply(currentReply.toString());
 
 						if (currentReply.getBoolean(Keyword.RESULT)) {
-							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transactionObject.file));
+							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
 
 							getNotificationHelper().notifyFileTransaction(processHolder);
 
-							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transactionObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
+							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
 						}
 					}
 
@@ -815,6 +824,7 @@ public class CommunicationService extends Service
 
 				processHolder.activeConnection = activeConnection;
 				processHolder.group = mTransfer.getGroup();
+				processHolder.assignee = mTransfer.getAssignee();
 
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
@@ -827,7 +837,7 @@ public class CommunicationService extends Service
 					if (Keyword.ERROR_NOT_FOUND.equals(errorCode)) {
 						ContentValues contentValues = new ContentValues();
 
-						contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransactionObject.Flag.REMOVED.toString());
+						contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
 
 						getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 										.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId)),
@@ -839,10 +849,10 @@ public class CommunicationService extends Service
 					while (true) {
 						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
-										TransactionObject.Type.INCOMING.toString(),
+										TransferObject.Type.INCOMING.toString(),
 										String.valueOf(processHolder.group.groupId),
-										TransactionObject.Flag.INTERRUPTED.toString(),
-										TransactionObject.Flag.REMOVED.toString()));
+										TransferObject.Flag.INTERRUPTED.toString(),
+										TransferObject.Flag.REMOVED.toString()));
 
 						if (receiverInstance == null
 								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
@@ -851,14 +861,14 @@ public class CommunicationService extends Service
 							break;
 						}
 
-						processHolder.transactionObject = new TransactionObject(receiverInstance);
-						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transactionObject, processHolder.group);
+						processHolder.transferObject = new TransferObject(receiverInstance);
+						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, processHolder.group);
 
 						getNotificationHelper().notifyFileTransaction(processHolder);
 
 						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
-						processHolder.transferHandler = mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transactionObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
+						processHolder.transferHandler = mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
 						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
 							break;
@@ -895,10 +905,10 @@ public class CommunicationService extends Service
 		{
 			error.printStackTrace();
 
-			handler.getExtra().transactionObject.flag = TransactionObject.Flag.INTERRUPTED;
+			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 
-			getDatabase().update(handler.getExtra().transactionObject);
-			getNotificationHelper().notifyReceiveError(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transferObject);
+			getNotificationHelper().notifyReceiveError(handler.getExtra().transferObject);
 
 			return Flag.CANCEL_ALL;
 		}
@@ -913,13 +923,13 @@ public class CommunicationService extends Service
 		@Override
 		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
 		{
-			getDatabase().remove(handler.getExtra().transactionObject);
+			getDatabase().remove(handler.getExtra().transferObject);
 
 			DocumentFile currentFile = handler.getExtra().currentFile;
 
 			if (currentFile.getParentFile() != null)
 				try {
-					handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transactionObject);
+					handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transferObject);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -929,9 +939,9 @@ public class CommunicationService extends Service
 		public void onInterrupted(TransferHandler<ProcessHolder> handler)
 		{
 			handler.getExtra().notification.cancel();
-			handler.getExtra().transactionObject.flag = TransactionObject.Flag.INTERRUPTED;
+			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 
-			getDatabase().update(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transferObject);
 		}
 
 		@Override
@@ -946,8 +956,8 @@ public class CommunicationService extends Service
 			try {
 				JSONObject jsonObject = new JSONObject();
 
-				jsonObject.put(Keyword.TRANSFER_REQUEST_ID, handler.getExtra().transactionObject.requestId);
-				jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transactionObject.groupId);
+				jsonObject.put(Keyword.TRANSFER_REQUEST_ID, handler.getExtra().transferObject.requestId);
+				jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transferObject.groupId);
 				jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, serverSocket.getLocalPort());
 				jsonObject.put(Keyword.RESULT, true);
 
@@ -966,8 +976,8 @@ public class CommunicationService extends Service
 					return Flag.CONTINUE;
 				else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
 					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
-						handler.getExtra().transactionObject.flag = TransactionObject.Flag.REMOVED;
-						getDatabase().update(handler.getExtra().transactionObject);
+						handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
+						getDatabase().update(handler.getExtra().transferObject);
 					}
 
 					return Flag.CANCEL_CURRENT;
@@ -985,9 +995,9 @@ public class CommunicationService extends Service
 			handler.linkTo(handler.getExtra().transferHandler);
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
-				TransactionObject.Group.Index indexInstance = new TransactionObject.Group.Index();
+				TransferGroup.Index indexInstance = new TransferGroup.Index();
 
-				getDatabase().calculateTransactionSize(handler.getExtra().transactionObject.groupId, indexInstance);
+				getDatabase().calculateTransactionSize(handler.getExtra().transferObject.groupId, indexInstance);
 
 				handler.getTransferProgress().setTotalByte(indexInstance.incoming);
 			}
@@ -1004,7 +1014,7 @@ public class CommunicationService extends Service
 				DocumentFile currentFile = handler.getExtra().currentFile;
 
 				if (currentFile instanceof LocalDocumentFile && mMediaScanner.isConnected())
-					mMediaScanner.scanFile(((LocalDocumentFile) currentFile).getFile().getAbsolutePath(), handler.getExtra().transactionObject.fileMimeType);
+					mMediaScanner.scanFile(((LocalDocumentFile) currentFile).getFile().getAbsolutePath(), handler.getExtra().transferObject.fileMimeType);
 
 				if (currentFile.getParentFile() != null)
 					sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
@@ -1022,10 +1032,10 @@ public class CommunicationService extends Service
 			error.printStackTrace();
 
 			handler.getExtra()
-					.transactionObject
-					.flag = TransactionObject.Flag.INTERRUPTED;
+					.transferObject
+					.flag = TransferObject.Flag.INTERRUPTED;
 
-			getDatabase().update(handler.getExtra().transactionObject);
+			getDatabase().update(handler.getExtra().transferObject);
 
 			return Flag.CANCEL_ALL;
 		}
@@ -1040,11 +1050,11 @@ public class CommunicationService extends Service
 		@Override
 		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
 		{
-			getDatabase().remove(handler.getExtra().transactionObject);
+			getDatabase().remove(handler.getExtra().transferObject);
 
 			if (getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(handler.getExtra().transactionObject.groupId))) == null)
-				getDatabase().remove(new TransactionObject.Group(handler.getExtra().transactionObject.groupId));
+					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(handler.getExtra().transferObject.groupId))) == null)
+				getDatabase().remove(new TransferGroup(handler.getExtra().transferObject.groupId));
 		}
 
 		@Override
@@ -1064,9 +1074,9 @@ public class CommunicationService extends Service
 			handler.linkTo(handler.getExtra().transferHandler);
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
-				TransactionObject.Group.Index indexInstance = new TransactionObject.Group.Index();
+				TransferGroup.Index indexInstance = new TransferGroup.Index();
 
-				getDatabase().calculateTransactionSize(handler.getExtra().transactionObject.groupId, indexInstance);
+				getDatabase().calculateTransactionSize(handler.getExtra().transferObject.groupId, indexInstance);
 
 				handler.getTransferProgress().setTotalByte(indexInstance.outgoing);
 			}
@@ -1080,9 +1090,9 @@ public class CommunicationService extends Service
 		{
 			super.onOrientatingStreams(handler, inputStream, outputStream);
 
-			if (handler.getExtra().transactionObject.skippedBytes > 0)
+			if (handler.getExtra().transferObject.skippedBytes > 0)
 				try {
-					handler.skipBytes(handler.getExtra().transactionObject.skippedBytes);
+					handler.skipBytes(handler.getExtra().transferObject.skippedBytes);
 				} catch (IOException e) {
 					handler.interrupt();
 					e.printStackTrace();
@@ -1094,9 +1104,10 @@ public class CommunicationService extends Service
 	{
 		public CoolTransfer.TransferHandler<ProcessHolder> transferHandler;
 		public CoolSocket.ActiveConnection activeConnection;
-		public TransactionObject transactionObject;
+		public TransferObject transferObject;
 		public DynamicNotification notification;
-		public TransactionObject.Group group;
+		public TransferGroup group;
+		public TransferGroup.Assignee assignee;
 		public DocumentFile currentFile;
 	}
 }

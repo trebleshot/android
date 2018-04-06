@@ -1,6 +1,8 @@
 package com.genonbeta.android.database;
 
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.Intent;
 
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;

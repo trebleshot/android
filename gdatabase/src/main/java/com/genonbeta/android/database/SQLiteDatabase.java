@@ -21,6 +21,11 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 
 	public <T extends DatabaseObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
 	{
+		return castQuery(select, clazz, null);
+	}
+
+	public <T extends DatabaseObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz, CastQueryListener<T> listener)
+	{
 		ArrayList<T> returnedList = new ArrayList<>();
 		ArrayList<CursorItem> itemList = getTable(select);
 
@@ -29,6 +34,10 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 				T newClazz = clazz.newInstance();
 
 				newClazz.reconstruct(item);
+
+				if (listener != null)
+					listener.onObjectReconstructed(this, item, newClazz);
+
 				returnedList.add(newClazz);
 			}
 		} catch (IllegalAccessException e) {
@@ -147,5 +156,10 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	public int update(SQLQuery.Select select, ContentValues values)
 	{
 		return getWritableDatabase().update(select.tableName, values, select.where, select.whereArgs);
+	}
+
+	public interface CastQueryListener<T extends DatabaseObject>
+	{
+		void onObjectReconstructed(SQLiteDatabase db, CursorItem item, T object);
 	}
 }

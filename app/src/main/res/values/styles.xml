@@ -9,6 +9,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="roundSelector">@drawable/round_selector</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
@@ -22,6 +23,7 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="roundSelector">@drawable/round_selector</item>
     </style>
 
     <style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar" />
@@ -83,5 +85,16 @@
     <style name="condensedCapsText" parent="@style/marqueeText.secondary">
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="overflowButton">
+        <item name="srcCompat">@drawable/ic_more_vert_grey_24dp</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:background">?attr/roundSelector</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:focusable">false</item>
+        <item name="tint">?android:attr/textColorPrimary</item>
     </style>
 </resources>

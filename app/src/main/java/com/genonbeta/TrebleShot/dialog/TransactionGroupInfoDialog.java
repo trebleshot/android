@@ -14,9 +14,11 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+
+import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -26,11 +28,11 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 public class TransactionGroupInfoDialog extends AlertDialog.Builder
 {
 	private AccessDatabase mDatabase;
-	private TransactionObject.Group mGroup;
+	private TransferGroup mGroup;
 	private SharedPreferences mPreferences;
-	private TransactionObject.Group.Index mTransactionIndex = new TransactionObject.Group.Index();
+	private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
 
-	public TransactionGroupInfoDialog(Context context, AccessDatabase database, SharedPreferences sharedPreferences, TransactionObject.Group group)
+	public TransactionGroupInfoDialog(Context context, AccessDatabase database, SharedPreferences sharedPreferences, TransferGroup group)
 	{
 		super(context);
 
@@ -64,7 +66,6 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		TextView outgoingSize = rootView.findViewById(R.id.transaction_group_info_outgoing_size);
 		TextView availableDisk = rootView.findViewById(R.id.transaction_group_info_available_disk_space);
 		TextView savePath = rootView.findViewById(R.id.transaction_group_info_save_path);
-		TextView usedConnection = rootView.findViewById(R.id.transaction_group_info_connection);
 
 		DocumentFile storageFile = FileUtils.getSavePath(getContext(), mPreferences, mGroup);
 		Resources resources = getContext().getResources();
@@ -83,15 +84,6 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 
 		savePath.setText(storageFile.getUri().toString());
 
-		NetworkDevice.Connection connection = new NetworkDevice.Connection(mGroup.deviceId, mGroup.connectionAdapter);
-
-		try {
-			mDatabase.reconstruct(connection);
-			usedConnection.setText(TextUtils.getAdapterName(getContext(), connection));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 		setTitle(R.string.text_transactionGroupDetails);
 		setView(rootView);
 		setPositiveButton(R.string.butn_close, null);
@@ -99,7 +91,7 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		return super.show();
 	}
 
-	public TransactionObject.Group.Index getIndex()
+	public TransferGroup.Index getIndex()
 	{
 		return mTransactionIndex;
 	}

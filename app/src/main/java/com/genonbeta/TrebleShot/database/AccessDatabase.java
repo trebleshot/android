@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
@@ -29,7 +30,7 @@ public class AccessDatabase extends SQLiteDatabase
 	 * 		below version 6 and the other which is new generation 7
 	 */
 
-	public static final int DATABASE_VERSION = 6;
+	public static final int DATABASE_VERSION = 7;
 
 	public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -56,8 +57,6 @@ public class AccessDatabase extends SQLiteDatabase
 
 	public static final String TABLE_TRANSFERGROUP = "transferGroup";
 	public static final String FIELD_TRANSFERGROUP_ID = "id";
-	public static final String FIELD_TRANSFERGROUP_DEVICEID = "deviceId";
-	public static final String FIELD_TRANSFERGROUP_CONNECTIONADAPTER = "connectionAdapter";
 	public static final String FIELD_TRANSFERGROUP_SAVEPATH = "savePath";
 	public static final String FIELD_TRANSFERGROUP_DATECREATED = "dateCreated";
 
@@ -87,6 +86,11 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String TABLE_WRITABLEPATH = "writablePath";
 	public static final String FIELD_WRITABLEPATH_TITLE = "title";
 	public static final String FIELD_WRITABLEPATH_PATH = "path";
+
+	public static final String TABLE_TRANSFERASSIGNEE = "transferAssignee";
+	public static final String FIELD_TRANSFERASSIGNEE_GROUPID = "groupId";
+	public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
+	public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
 
 	private Context mContext;
 
@@ -120,6 +124,17 @@ public class AccessDatabase extends SQLiteDatabase
 
 			SQLQuery.createTables(db, sqlValues);
 		}
+
+		if (old == 6)
+		{
+			SQLValues.Table groupTable = sqlValues.getTables().get(TABLE_TRANSFERGROUP);
+			SQLValues.Table targetDevicesTable = sqlValues.getTables().get(TABLE_TRANSFERASSIGNEE);
+
+			db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
+
+			SQLQuery.createTable(db, groupTable);
+			SQLQuery.createTable(db, targetDevicesTable);
+		}
 	}
 
 	protected void broadcast(SQLQuery.Select select, String type)
@@ -130,22 +145,22 @@ public class AccessDatabase extends SQLiteDatabase
 				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
 	}
 
-	public void calculateTransactionSize(int groupId, TransactionObject.Group.Index indexObject)
+	public void calculateTransactionSize(int groupId, TransferGroup.Index indexObject)
 	{
 		indexObject.reset();
 
-		ArrayList<TransactionObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+		ArrayList<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 								+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 						String.valueOf(groupId),
-						TransactionObject.Flag.REMOVED.toString()), TransactionObject.class);
+						TransferObject.Flag.REMOVED.toString()), TransferObject.class);
 
-		for (TransactionObject transactionObject : transactionList) {
-			if (TransactionObject.Type.INCOMING.equals(transactionObject.type)) {
-				indexObject.incoming += transactionObject.fileSize;
+		for (TransferObject transferObject : transactionList) {
+			if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
+				indexObject.incoming += transferObject.fileSize;
 				indexObject.incomingCount++;
 			} else {
-				indexObject.outgoing += transactionObject.fileSize;
+				indexObject.outgoing += transferObject.fileSize;
 				indexObject.outgoingCount++;
 			}
 		}
@@ -205,8 +220,6 @@ public class AccessDatabase extends SQLiteDatabase
 
 		sqlValues.defineTable(TABLE_TRANSFERGROUP)
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_CONNECTIONADAPTER, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
 
@@ -236,6 +249,11 @@ public class AccessDatabase extends SQLiteDatabase
 		sqlValues.defineTable(TABLE_WRITABLEPATH)
 				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
+
+		sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true));
 
 		return sqlValues;
 	}

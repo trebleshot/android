@@ -13,7 +13,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  * Date: 4/24/17 11:50 PM
  */
 
-public class TransactionObject
+public class TransferObject
 		implements DatabaseObject, Editable
 {
 	public String friendlyName;
@@ -30,11 +30,11 @@ public class TransactionObject
 
 	private boolean mIsSelected = false;
 
-	public TransactionObject()
+	public TransferObject()
 	{
 	}
 
-	public TransactionObject(int requestId, int groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+	public TransferObject(int requestId, int groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
 	{
 		this.friendlyName = friendlyName;
 		this.file = file;
@@ -45,12 +45,12 @@ public class TransactionObject
 		this.type = type;
 	}
 
-	public TransactionObject(int requestId)
+	public TransferObject(int requestId)
 	{
 		this.requestId = requestId;
 	}
 
-	public TransactionObject(CursorItem item)
+	public TransferObject(CursorItem item)
 	{
 		reconstruct(item);
 	}
@@ -58,7 +58,7 @@ public class TransactionObject
 	@Override
 	public boolean equals(Object obj)
 	{
-		return obj instanceof TransactionObject && ((TransactionObject) obj).requestId == requestId;
+		return obj instanceof TransferObject && ((TransferObject) obj).requestId == requestId;
 	}
 
 	@Override
@@ -157,130 +157,6 @@ public class TransactionObject
 	{
 		mIsSelected = selected;
 		return true;
-	}
-
-	public static class Group
-			implements DatabaseObject, Selectable
-	{
-		public int groupId;
-		public String deviceId;
-		public String connectionAdapter;
-		public String savePath;
-		public long dateCreated;
-
-		private boolean mIsSelected = false;
-
-		public Group()
-		{
-		}
-
-		public Group(int groupId, String deviceId, String connectionAdapter)
-		{
-			this.groupId = groupId;
-			this.deviceId = deviceId;
-			this.connectionAdapter = connectionAdapter;
-		}
-
-		public Group(int groupId)
-		{
-			this.groupId = groupId;
-		}
-
-		public Group(CursorItem item)
-		{
-			reconstruct(item);
-		}
-
-		@Override
-		public boolean equals(Object obj)
-		{
-			return obj instanceof TransactionObject.Group && ((TransactionObject.Group) obj).groupId == groupId;
-		}
-
-		@Override
-		public void reconstruct(CursorItem item)
-		{
-			this.groupId = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-			this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID);
-			this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_CONNECTIONADAPTER);
-			this.savePath = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
-			this.dateCreated = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
-		}
-
-		@Override
-		public void onCreateObject(SQLiteDatabase database)
-		{
-			this.dateCreated = System.currentTimeMillis();
-		}
-
-		@Override
-		public void onUpdateObject(SQLiteDatabase database)
-		{
-
-		}
-
-		@Override
-		public void onRemoveObject(SQLiteDatabase database)
-		{
-			database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
-		}
-
-		@Override
-		public boolean isSelectableSelected()
-		{
-			return mIsSelected;
-		}
-
-		@Override
-		public String getSelectableFriendlyName()
-		{
-			return String.valueOf(groupId);
-		}
-
-		@Override
-		public ContentValues getValues()
-		{
-			ContentValues values = new ContentValues();
-
-			values.put(AccessDatabase.FIELD_TRANSFERGROUP_ID, groupId);
-			values.put(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID, deviceId);
-			values.put(AccessDatabase.FIELD_TRANSFERGROUP_CONNECTIONADAPTER, connectionAdapter);
-			values.put(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
-			values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
-
-			return values;
-		}
-
-		@Override
-		public SQLQuery.Select getWhere()
-		{
-			return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-					.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
-		}
-
-		@Override
-		public boolean setSelectableSelected(boolean selected)
-		{
-			mIsSelected = selected;
-			return true;
-		}
-
-		public static class Index
-		{
-			public long incoming = 0;
-			public long outgoing = 0;
-			public int incomingCount = 0;
-			public int outgoingCount = 0;
-
-			public void reset()
-			{
-				incoming = 0;
-				outgoing = 0;
-				incomingCount = 0;
-				outgoingCount = 0;
-			}
-		}
 	}
 
 	public enum Type

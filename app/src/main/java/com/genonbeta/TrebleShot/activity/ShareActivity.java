@@ -34,7 +34,8 @@ import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.Selectable;
-import com.genonbeta.TrebleShot.object.TransactionObject;
+import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -416,8 +417,9 @@ public class ShareActivity extends Activity
 					{
 						try {
 							final JSONObject jsonRequest = new JSONObject();
-							final TransactionObject.Group groupInstance = new TransactionObject.Group(AppUtils.getUniqueNumber(), device.deviceId, connection.adapterName);
-							final ArrayList<TransactionObject> pendingRegistry = new ArrayList<>();
+							final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
+							final TransferGroup.Assignee assignee = new TransferGroup.Assignee(groupInstance, device, connection);
+							final ArrayList<TransferObject> pendingRegistry = new ArrayList<>();
 
 							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork
 									&& ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection)
@@ -443,30 +445,30 @@ public class ShareActivity extends Activity
 									int requestId = AppUtils.getUniqueNumber();
 									JSONObject thisJson = new JSONObject();
 
-									TransactionObject transactionObject = new TransactionObject(requestId,
+									TransferObject transferObject = new TransferObject(requestId,
 											groupInstance.groupId,
 											selectableStream.getSelectableFriendlyName(),
 											selectableStream.getDocumentFile().getUri().toString(),
 											selectableStream.getDocumentFile().getType(),
-											selectableStream.getDocumentFile().length(), TransactionObject.Type.OUTGOING);
+											selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
 
 									if (selectableStream.mDirectory != null)
-										transactionObject.directory = selectableStream.mDirectory;
+										transferObject.directory = selectableStream.mDirectory;
 
-									pendingRegistry.add(transactionObject);
+									pendingRegistry.add(transferObject);
 
 									try {
-										thisJson.put(Keyword.INDEX_FILE_NAME, transactionObject.friendlyName);
-										thisJson.put(Keyword.INDEX_FILE_SIZE, transactionObject.fileSize);
+										thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.friendlyName);
+										thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.fileSize);
 										thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
-										thisJson.put(Keyword.INDEX_FILE_MIME, transactionObject.fileMimeType);
+										thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.fileMimeType);
 
 										if (selectableStream.mDirectory != null)
 											thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.mDirectory);
 
 										filesArray.put(thisJson);
 									} catch (Exception e) {
-										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transactionObject.friendlyName);
+										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.friendlyName);
 									}
 								}
 
@@ -499,6 +501,7 @@ public class ShareActivity extends Activity
 							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
 								if (pendingRegistry.size() > 0) {
 									getDatabase().insert(groupInstance);
+									getDatabase().insert(assignee);
 
 									getDefaultInterrupter().addCloser(new Interrupter.Closer()
 									{
@@ -509,12 +512,12 @@ public class ShareActivity extends Activity
 										}
 									});
 
-									for (TransactionObject transactionObject : pendingRegistry) {
+									for (TransferObject transferObject : pendingRegistry) {
 										if (getDefaultInterrupter().interrupted())
 											throw new InterruptedException("Interrupted by user");
 
 										getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
-										getDatabase().insert(transactionObject);
+										getDatabase().insert(transferObject);
 									}
 
 									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
