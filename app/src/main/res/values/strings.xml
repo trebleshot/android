@@ -165,7 +165,7 @@
     <string name="text_fileMime">File type</string>
     <string name="text_fileStatus">File status</string>
     <string name="butn_resume">Resume</string>
-    <string name="text_transactionDetails">Transaction details</string>
+    <string name="text_transactionDetails">Details</string>
     <string name="text_fileExplorer">File explorer</string>
     <string name="butn_createFolder">Create folder</string>
     <string name="text_chooseFolder">Choose folder</string>
@@ -263,7 +263,7 @@
     <string name="butn_previewSelections">Preview selections</string>
     <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" has failed</string>
     <string name="mesg_retryAllInfo">TrebleShot will retry receiving interrupted transfers</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Please update connection method first using \"Change connection\"</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Please choose the connection method first</string>
     <string name="butn_setUp">Set up</string>
     <string name="text_pseudoLocation">Pseudo location</string>
     <string name="butn_saveAnyway">Save anyway</string>

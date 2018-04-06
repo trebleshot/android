@@ -119,7 +119,8 @@ public class TransactionListFragment
 										})
 										.show();
 						} else if (!setItemSelected(holder))
-							new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transferObject).show();
+							new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transferObject)
+									.show();
 					}
 				});
 			}

@@ -30,29 +30,16 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 	private AccessDatabase mDatabase;
 	private TransferGroup mGroup;
 	private SharedPreferences mPreferences;
-	private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
+	private TransferGroup.Index mIndex;
 
-	public TransactionGroupInfoDialog(Context context, AccessDatabase database, SharedPreferences sharedPreferences, TransferGroup group)
+	public TransactionGroupInfoDialog(Context context, AccessDatabase database, SharedPreferences sharedPreferences, TransferGroup group, TransferGroup.Index index)
 	{
 		super(context);
 
 		mDatabase = database;
 		mGroup = group;
+		mIndex = index;
 		mPreferences = sharedPreferences;
-	}
-
-	public boolean calculateSpace()
-	{
-		DocumentFile documentFile = FileUtils.getSavePath(getContext(), mPreferences, mGroup);
-
-		long freeSpace = documentFile instanceof LocalDocumentFile
-				? ((LocalDocumentFile) documentFile).getFile().getFreeSpace()
-				: -1;
-
-		mDatabase.calculateTransactionSize(mGroup.groupId, getIndex());
-
-		return freeSpace == -1
-				|| freeSpace >= getIndex().incoming;
 	}
 
 	@SuppressLint("SetTextI18n")
@@ -71,12 +58,12 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		Resources resources = getContext().getResources();
 
 		incomingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
-				resources.getQuantityString(R.plurals.text_files, getIndex().incomingCount, getIndex().incomingCount),
-				FileUtils.sizeExpression(getIndex().incoming, false)));
+				resources.getQuantityString(R.plurals.text_files, mIndex.incomingCount, mIndex.incomingCount),
+				FileUtils.sizeExpression(mIndex.incoming, false)));
 
 		outgoingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
-				resources.getQuantityString(R.plurals.text_files, getIndex().outgoingCount, getIndex().outgoingCount),
-				FileUtils.sizeExpression(getIndex().outgoing, false)));
+				resources.getQuantityString(R.plurals.text_files, mIndex.outgoingCount, mIndex.outgoingCount),
+				FileUtils.sizeExpression(mIndex.outgoing, false)));
 
 		availableDisk.setText(storageFile instanceof LocalDocumentFile
 				? FileUtils.sizeExpression(((LocalDocumentFile) storageFile).getFile().getFreeSpace(), false)
@@ -89,10 +76,5 @@ public class TransactionGroupInfoDialog extends AlertDialog.Builder
 		setPositiveButton(R.string.butn_close, null);
 
 		return super.show();
-	}
-
-	public TransferGroup.Index getIndex()
-	{
-		return mTransactionIndex;
 	}
 }

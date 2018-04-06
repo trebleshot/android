@@ -1,11 +1,14 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.content.Context;
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,14 @@ public class TransferUtils
 					listener.onConnectionUpdated(connection, assignee);
 			}
 		}, false).show();
+	}
+
+	public static void resumeTransfer(Context context, TransferGroup group, TransferGroup.Assignee assignee)
+	{
+		AppUtils.startForegroundService(context, new Intent(context, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId)
+				.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
 	}
 
 	public interface ConnectionUpdatedListener

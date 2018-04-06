@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,6 +53,26 @@ public class TransferAssigneeListFragment
 	}
 
 	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	{
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.actions_transfer_assignee, menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == R.id.actions_transfer_assignee_send_another) {
+
+		} else
+			return super.onOptionsItemSelected(item);
+
+		return true;
+	}
+
+	@Override
 	public TransferAssigneeListAdapter onAdapter()
 	{
 		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
@@ -91,7 +112,7 @@ public class TransferAssigneeListFragment
 								if (id == R.id.popup_changeChangeConnection) {
 									TransferUtils.changeConnection(getActivity(), getDatabase(), mGroup, assignee.device, null);
 								} else if (id == R.id.popup_remove) {
-
+									getDatabase().remove(assignee);
 								} else
 									return false;
 
@@ -137,15 +158,15 @@ public class TransferAssigneeListFragment
 		getActivity().unregisterReceiver(mReceiver);
 	}
 
-	public TransferAssigneeListFragment setGroup(TransferGroup group)
-	{
-		mGroup = group;
-		return this;
-	}
-
 	@Override
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_deviceList);
+	}
+
+	public TransferAssigneeListFragment setGroup(TransferGroup group)
+	{
+		mGroup = group;
+		return this;
 	}
 }

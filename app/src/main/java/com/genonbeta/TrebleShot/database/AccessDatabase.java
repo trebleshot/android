@@ -164,6 +164,8 @@ public class AccessDatabase extends SQLiteDatabase
 				indexObject.outgoingCount++;
 			}
 		}
+
+		indexObject.calculated = true;
 	}
 
 	@Override

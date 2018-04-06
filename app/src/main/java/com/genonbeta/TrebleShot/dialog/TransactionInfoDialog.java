@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.dialog;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -17,10 +16,11 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.android.database.CursorItem;
+import com.genonbeta.android.database.SQLQuery;
 
 import java.io.IOException;
 
@@ -145,10 +145,17 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 						public void onClick(DialogInterface dialogInterface, int i)
 						{
 							transferObject.flag = TransferObject.Flag.PENDING;
-
 							database.publish(transferObject);
 
-							// FIXME: 06.04.2018 there was a call for resumeTransfer() here
+							CursorItem assigneeInstance = database.getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+									.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId)));
+
+							if (assigneeInstance != null) {
+								TransferGroup.Assignee assignee = new TransferGroup.Assignee();
+								assignee.reconstruct(assigneeInstance);
+
+								TransferUtils.resumeTransfer(getContext(), group, assignee);
+							}
 						}
 					});
 			}

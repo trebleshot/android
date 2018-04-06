@@ -48,7 +48,6 @@ public class TransactionGroupListAdapter
 			@Override
 			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, PreloadedGroup object)
 			{
-				// FIXME: 06.04.2018
 				object.assignees.addAll(db.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).
 						setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(object.groupId)), TransferGroup.Assignee.class));
 			}
@@ -115,10 +114,10 @@ public class TransactionGroupListAdapter
 					? R.drawable.ic_file_upload_black_24dp
 					: R.drawable.ic_file_download_black_24dp);
 
-		// FIXME: 06.04.2018 What should we show?
 		text1.setText(object.totalFiles);
 		text2.setText(object.totalSize);
-		text3.setText(String.format("%d devices", object.assignees.size()));
+		text3.setText(getContext().getResources()
+				.getQuantityString(R.plurals.text_devicesShared, object.assignees.size(), object.assignees.size()));
 	}
 
 	public static class PreloadedGroup
@@ -151,11 +150,10 @@ public class TransactionGroupListAdapter
 			return totalCount;
 		}
 
-		// FIXME: 06.04.2018
 		@Override
 		public String getSelectableFriendlyName()
 		{
-			return groupId + " (" + totalSize + ")";
+			return totalFiles + " (" + totalSize + ")";
 		}
 	}
 }

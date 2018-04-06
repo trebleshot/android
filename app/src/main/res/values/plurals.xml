@@ -40,9 +40,12 @@
         <item quantity="one">A file has been deleted</item>
         <item quantity="other">%d files have been deleted</item>
     </plurals>
-
     <plurals name="text_gridRow">
         <item quantity="one">Single row</item>
         <item quantity="other">%d rows</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Single share</item>
+        <item quantity="other">Sharing with %d devices</item>
     </plurals>
 </resources>
