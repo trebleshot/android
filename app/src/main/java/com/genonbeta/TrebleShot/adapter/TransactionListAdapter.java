@@ -11,6 +11,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransactionObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -27,6 +28,8 @@ import java.util.Collections;
 public class TransactionListAdapter
 		extends EditableListAdapter<TransactionObject, EditableListAdapter.EditableViewHolder>
 {
+	public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
+
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
 	private String mPath;
@@ -93,6 +96,15 @@ public class TransactionListAdapter
 		mergedList.addAll(mainItems);
 
 		return mergedList;
+	}
+
+	@Override
+	public int compareItems(int sortingCriteria, int sortingOrder, TransactionObject objectOne, TransactionObject objectTwo)
+	{
+		if (sortingCriteria == MODE_SORT_BY_DEFAULT)
+			return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
+
+		return 1;
 	}
 
 	public int getGroupId()

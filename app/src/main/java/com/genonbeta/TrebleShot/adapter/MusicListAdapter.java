@@ -25,9 +25,9 @@ public class MusicListAdapter
 		extends GroupShareableListAdapter<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder>
 		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
 {
-	public static final int MODE_GROUP_BY_ALBUM = 100;
-	public static final int MODE_GROUP_BY_ARTIST = 101;
-	public static final int MODE_GROUP_BY_FOLDER = 102;
+	public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_NOTHING + 1;
+	public static final int MODE_GROUP_BY_ARTIST = MODE_GROUP_BY_ALBUM + 1;
+	public static final int MODE_GROUP_BY_FOLDER = MODE_GROUP_BY_ARTIST + 1;
 
 	private ContentResolver mResolver;
 

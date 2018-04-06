@@ -25,12 +25,12 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
-	public static final int MODE_SORT_BY_NAME = 0;
-	public static final int MODE_SORT_BY_DATE = 1;
-	public static final int MODE_SORT_BY_SIZE = 2;
+	public static final int MODE_SORT_BY_NAME = 100;
+	public static final int MODE_SORT_BY_DATE = 110;
+	public static final int MODE_SORT_BY_SIZE = 120;
 
-	public static final int MODE_SORT_ORDER_ASCENDING = 0;
-	public static final int MODE_SORT_ORDER_DESCENDING = 1;
+	public static final int MODE_SORT_ORDER_ASCENDING = 100;
+	public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
 	private EditableListFragment mFragment;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
@@ -56,9 +56,9 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		}
 	}
 
-	public int compareItems(int sortingCriteria, int sortingOrder, T objectOne, T object2)
+	public int compareItems(int sortingCriteria, int sortingOrder, T objectOne, T objectTwo)
 	{
-		return 0;
+		return 1;
 	}
 
 	@Override

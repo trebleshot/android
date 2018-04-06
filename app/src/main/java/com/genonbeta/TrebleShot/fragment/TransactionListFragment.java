@@ -28,6 +28,7 @@ import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class TransactionListFragment
 		extends EditableListFragment<TransactionObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
@@ -51,7 +52,7 @@ public class TransactionListFragment
 		super.onCreate(savedInstanceState);
 
 		setDefaultOrderingCriteria(TransactionListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(TransactionListAdapter.MODE_SORT_BY_DATE);
+		setDefaultSortingCriteria(TransactionListAdapter.MODE_SORT_BY_DEFAULT);
 	}
 
 	@Override
@@ -81,6 +82,13 @@ public class TransactionListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mReceiver);
+	}
+
+	@Override
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_default), TransactionListAdapter.MODE_SORT_BY_DEFAULT);
+		options.put(getString(R.string.text_sortByName), TransactionListAdapter.MODE_SORT_BY_NAME);
 	}
 
 	@Override

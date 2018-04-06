@@ -27,10 +27,10 @@ import java.util.List;
 abstract public class GroupShareableListAdapter<T extends GroupShareableListAdapter.GroupShareable, V extends GroupShareableListAdapter.ViewHolder>
 		extends ShareableListAdapter<T, V>
 {
-	public static final int VIEW_TYPE_REPRESENTATIVE = 1;
+	public static final int VIEW_TYPE_REPRESENTATIVE = 100;
 
-	public static final int MODE_GROUP_BY_NOTHING = 0;
-	public static final int MODE_GROUP_BY_DATE = 1;
+	public static final int MODE_GROUP_BY_NOTHING = 100;
+	public static final int MODE_GROUP_BY_DATE = 110;
 
 	private int mGroupBy;
 

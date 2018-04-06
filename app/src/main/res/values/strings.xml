@@ -348,4 +348,5 @@
     <string name="text_groupByArtist">Artist</string>
     <string name="text_groupByFolder">Folder</string>
     <string name="text_home">Home</string>
+    <string name="text_default">Default</string>
 </resources>

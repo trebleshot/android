@@ -17,7 +17,7 @@ abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupSha
 		extends GroupShareableListAdapter<T, V>
 		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<T>
 {
-	public static final int MODE_GROUP_BY_ALBUM = 101;
+	public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_DATE + 1;
 
 	public GalleryGroupShareableListAdapter(Context context, int groupBy)
 	{
