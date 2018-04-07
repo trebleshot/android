@@ -107,4 +107,15 @@
     <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
     <string name="ques_removeAll">إزالة الكل</string>
     <string name="text_groupByFolder">مجلد</string>
-</resources>
+<string name="text_navigationDrawerOpen">فتح قائمة التنقل</string>
+    <string name="text_navigationDrawerClose">غلق قائمة التنقل</string>
+    <string name="text_developerModeSummary">يعطل تكوين المستخدم</string>
+    <string name="text_deviceName">اسم الجهاز</string>
+    <string name="text_refresh">تحديث</string>
+    <string name="butn_refresh">تحديث</string>
+    <string name="text_deviceModelInfo">اسم الجهاز</string>
+    <string name="text_showSystemApps">إظهار تطبيقات النظام</string>
+    <string name="butn_showSystemApps">إظهار تطبيقات النظام</string>
+    <string name="butn_wifiSettings">وأي فأي</string>
+    <string name="butn_proceed">أكمل الطلب!</string>
+    </resources>
