@@ -10,6 +10,7 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
+        <item name="rectSelector">@drawable/rect_selector</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
@@ -24,6 +25,7 @@
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
+        <item name="rectSelector">@drawable/rect_selector</item>
     </style>
 
     <style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar" />

@@ -34,8 +34,8 @@ import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
@@ -728,8 +728,11 @@ public class CommunicationService extends Service
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
 					JSONObject currentReply = new JSONObject();
 
-					if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT))
+					if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT)) {
+						// the assignee for this transfer has received the files. We can remove it
+						getDatabase().remove(processHolder.group);
 						break;
+					}
 
 					try {
 						processHolder.transferObject = new TransferObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
@@ -764,6 +767,11 @@ public class CommunicationService extends Service
 							&& processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL))
 						break;
 				}
+
+				if (processHolder.group != null && getDatabase().getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(processHolder.group.groupId))).size() == 0)
+					// no assignee has left, removing the transfer and its all instances.
+					getDatabase().remove(processHolder.group);
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -847,6 +855,10 @@ public class CommunicationService extends Service
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
 				} else {
 					while (true) {
+						// Remove the previous object as it is completed.
+						if (processHolder.transferObject != null)
+							getDatabase().remove(processHolder.transferObject);
+
 						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
 										TransferObject.Type.INCOMING.toString(),
@@ -923,8 +935,6 @@ public class CommunicationService extends Service
 		@Override
 		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
 		{
-			getDatabase().remove(handler.getExtra().transferObject);
-
 			DocumentFile currentFile = handler.getExtra().currentFile;
 
 			if (currentFile.getParentFile() != null)
@@ -1050,11 +1060,7 @@ public class CommunicationService extends Service
 		@Override
 		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
 		{
-			getDatabase().remove(handler.getExtra().transferObject);
 
-			if (getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-					.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(handler.getExtra().transferObject.groupId))) == null)
-				getDatabase().remove(new TransferGroup(handler.getExtra().transferObject.groupId));
 		}
 
 		@Override
