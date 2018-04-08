@@ -30,4 +30,7 @@
 <plurals name="text_fileDeletionCompleted">
 	<item quantity="other">%d ファイルを削除しました</item>
 </plurals>
+<plurals name="text_gridRow">
+	<item quantity="other">%d 行</item>
+</plurals>
 </resources>
