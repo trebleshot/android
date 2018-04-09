@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -81,6 +82,7 @@ public class TransactionListFragment
 	{
 		options.put(getString(R.string.text_default), TransactionListAdapter.MODE_SORT_BY_DEFAULT);
 		options.put(getString(R.string.text_sortByName), TransactionListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortBySize), TransactionGroupListAdapter.MODE_SORT_BY_SIZE);
 	}
 
 	@Override

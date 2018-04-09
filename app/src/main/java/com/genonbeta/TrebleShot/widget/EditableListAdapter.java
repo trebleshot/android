@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 
@@ -50,9 +51,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	public void onUpdate(ArrayList<T> passedItem)
 	{
 		synchronized (getItemList()) {
-			getItemList().clear();
-			getItemList().addAll(passedItem);
-
+			mItemList = passedItem;
 			syncSelectionList(getItemList());
 		}
 	}

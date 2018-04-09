@@ -70,15 +70,5 @@
             android:layout_height="wrap_content"
             android:maxLines="3"/>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="10dp"/>
-
-        <TextView
-            style="@style/marqueeText.primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/text_usedConnection"/>
-
     </LinearLayout>
 </ScrollView>
