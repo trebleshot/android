@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -33,6 +34,8 @@ public class TransferAssigneeListFragment
 		extends RecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
 		implements TitleSupport
 {
+	public static final int REQUEST_ADD_DEVICES = 0;
+
 	private TransferGroup mGroup;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -65,7 +68,9 @@ public class TransferAssigneeListFragment
 		int id = item.getItemId();
 
 		if (id == R.id.actions_transfer_assignee_send_another) {
-
+			startActivityForResult(new Intent(getActivity(), ShareActivity.class)
+					.setAction(ShareActivity.ACTION_ADD_DEVICES)
+					.putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
 		} else
 			return super.onOptionsItemSelected(item);
 
@@ -135,13 +140,6 @@ public class TransferAssigneeListFragment
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
 			}
 		}.setGroup(mGroup);
-	}
-
-	@Override
-	public void onPrepareOptionsMenu(Menu menu)
-	{
-		super.onPrepareOptionsMenu(menu);
-
 	}
 
 	@Override

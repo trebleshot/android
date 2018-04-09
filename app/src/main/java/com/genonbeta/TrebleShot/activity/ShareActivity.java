@@ -68,18 +68,19 @@ public class ShareActivity extends Activity
 
 	public static final int REQUEST_CODE_EDIT_BOX = 1;
 
+	public static final String ACTION_ADD_DEVICES = "genonbeta.intent.action.ADD_DEVICES";
 	public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
 	public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
 
 	public static final String EXTRA_FILENAME_LIST = "extraFileNames";
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
+	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
 	private boolean mQRScanRequested = false;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private ProgressDialog mProgressDialog;
 	private Interrupter mInterrupter = new Interrupter();
-	private IntentFilter mFilter = new IntentFilter();
 	private NetworkDeviceListFragment mDeviceListFragment;
 	private FloatingActionButton mFAB;
 	private WorkerService mWorkerService;
@@ -110,8 +111,6 @@ public class ShareActivity extends Activity
 
 		mFAB = findViewById(R.id.content_fab);
 		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-
-		mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
 		mDeviceListFragment.getListView().setClipToPadding(false);
@@ -153,7 +152,7 @@ public class ShareActivity extends Activity
 	protected void onResume()
 	{
 		super.onResume();
-		registerReceiver(mWifiStatusReceiver, mFilter);
+		registerReceiver(mWifiStatusReceiver, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
 	}
 
 	@Override

@@ -5,6 +5,6 @@
     <item
         android:id="@+id/actions_transfer_assignee_send_another"
         android:icon="@drawable/ic_device_hub_white_24dp"
-        android:title="@string/text_ipAddress"
+        android:title="@string/butn_addPeople"
         app:showAsAction="always"/>
 </menu>

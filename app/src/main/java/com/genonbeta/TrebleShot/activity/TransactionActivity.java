@@ -310,8 +310,11 @@ public class TransactionActivity
 
 	private void resumeReceiving()
 	{
-		if (mAssigneeFragment.getAdapter() == null || mAssigneeFragment.getAdapter().getItemCount() == 0)
+		if (mAssigneeFragment.getAdapter() == null || mAssigneeFragment.getAdapter().getItemCount() == 0) {
+			createSnackbar(R.string.mesg_noReceiverOrSender)
+					.show();
 			return;
+		}
 
 		final TransferAssigneeListAdapter.ShowingAssignee assignee = mAssigneeFragment.getAdapter().getList().get(0);
 
@@ -427,17 +430,6 @@ public class TransactionActivity
 		public int getCount()
 		{
 			return mFragments.size();
-		}
-
-		@Override
-		public Object instantiateItem(ViewGroup container, int position)
-		{
-			Object object = super.instantiateItem(container, position);
-
-			if (object instanceof Fragment)
-				((Fragment) object).setHasOptionsMenu(false);
-
-			return object;
 		}
 	}
 

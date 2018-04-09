@@ -38,7 +38,7 @@
     <string name="mesg_fileSendError">The file cannot be sent. %s</string>
     <string name="mesg_fileReceiveError">While receiving %s, something went wrong</string>
     <string name="text_multipleFileReceiveCompleted">The files have been received</string>
-    <string name="text_deviceList">Device list</string>
+    <string name="text_deviceList">Devices</string>
     <string name="text_fileOpenAppChoose">Open with</string>
     <string name="text_fileShareAppChoose">Choose an app to share with</string>
     <string name="ques_resetToDefault">Reset to default?</string>
@@ -52,8 +52,6 @@
     <string name="butn_refresh">Refresh</string>
     <string name="butn_shareTrebleshot">Share this app</string>
     <string name="text_about">About</string>
-    <string name="text_clearList">Clear the list</string>
-    <string name="mesg_deviceListCleared">Device list has been cleared</string>
     <string name="butn_close">Close</string>
     <string name="text_deviceModelInfo">Device name</string>
     <string name="butn_clearQueue">Clear the queue</string>
@@ -128,7 +126,7 @@
     <string name="text_removeDeviceSummary">When you remove a device, its transfers will also be removed</string>
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
-    <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers in this list</string>
+    <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers you see here</string>
     <string name="text_availableNetworks">Choose network - %s</string>
     <string name="text_noNetworkAvailable">No network available</string>
     <string name="text_savedConnections">Saved connections</string>
@@ -142,7 +140,7 @@
     <string name="text_transactionViewer">View transaction</string>
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
-    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevice list &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevices &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
     <string name="butn_saveTo">Save to</string>
     <string name="mesg_secureExit">Press again to exit</string>
     <string name="butn_create">Create</string>
@@ -248,7 +246,7 @@
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
     <string name="butn_checkAll">Check all</string>
     <string name="butn_undoAll">Undo all</string>
-    <string name="text_previewAndEditList"><![CDATA[Preview & edit list]]></string>
+    <string name="text_previewAndEditList">Preview &amp; edit</string>
     <string name="text_selectableNotCheckedNotice">Unmarked items will be skipped</string>
     <string name="text_fileRoot">File root</string>
     <string name="mesg_versionNotSupported">This version is no longer supported. Please upgrade, and rescan devices.</string>
@@ -270,7 +268,7 @@
     <string name="text_receivedSize">Received size</string>
     <string name="mesg_notValidTransfer">The transfer is not valid anymore</string>
     <string name="ques_saveAnyway">Save anyway?</string>
-    <string name="text_saveAnywaySummary">The sender removed this transfer from the list, but it has not been completed. If you proceed the partly received file will be saved as if it were received.</string>
+    <string name="text_saveAnywaySummary">The sender does know where the file is anymore, but you can still the save the file</string>
     <string name="mesg_fileSaved">The file has been saved</string>
     <string name="butn_sortBy">Sort by</string>
     <string name="butn_sortOrder">Sort order</string>
@@ -350,4 +348,6 @@
     <string name="text_home">Home</string>
     <string name="text_default">Default</string>
     <string name="textFiles">Files</string>
+    <string name="mesg_noReceiverOrSender">You should first add devices</string>
+    <string name="butn_addPeople">Add devices</string>
 </resources>
