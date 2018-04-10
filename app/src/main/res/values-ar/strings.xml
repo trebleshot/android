@@ -89,7 +89,7 @@
     <string name="text_receivedTextSummary">تم الاستلام الى الحافظة</string>
     <string name="butn_checkForUpdates">التحقق من وجود تحديثات</string>
     <string name="butn_seeSourceCode">راجع التعليمات البرمجية المصدر</string>
-    <string name="text_typeText">اكتب ما تريد ارسالة</string>
+    <string name="text_typeText">اكتب ما تريد ارسالة …</string>
     <string name="text_textEditor">محرر النص</string>
     <string name="butn_done">تم</string>
     <string name="text_empty">(فارغ)</string>
@@ -99,13 +99,13 @@
     <string name="text_cancellingTransfer">إلغاء الوظيفة…</string>
     <string name="butn_killNow">قتل الآن</string>
     <string name="mesg_groupOngoingNotice">في انتظار %s حتى ينتهي</string>
-    <string name="ques_removeQueue">حذف الطابور</string>
+    <string name="ques_removeQueue">حذف الطابور؟</string>
     <string name="butn_remove">إزالة</string>
     <string name="butn_removeAll">إزالة الكل</string>
     <string name="ques_removeDevice">إزالة هذا الجهاز؟</string>
     <string name="text_removeDeviceSummary">عند إزالة جهاز ما ، ستتم إزالة جميع عملياته</string>
     <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
-    <string name="ques_removeAll">إزالة الكل</string>
+    <string name="ques_removeAll">إزالة الكل؟</string>
     <string name="text_groupByFolder">مجلد</string>
 <string name="text_navigationDrawerOpen">فتح قائمة التنقل</string>
     <string name="text_navigationDrawerClose">غلق قائمة التنقل</string>
@@ -249,4 +249,5 @@
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيء</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
+    <string name="mesg_errorHotspotPermission">تريبليشوت يحتاج إلى إذن لإنشاء نقطة ساخنة</string>
     </resources>
