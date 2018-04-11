@@ -3,7 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selectable_item_background"
+    android:background="?rectSelector"
     android:padding="15dp">
 
     <FrameLayout

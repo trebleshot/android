@@ -16,7 +16,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/selectable_item_background"/>
+        android:background="?rectSelector"/>
 
     <TextView
         android:id="@+id/text3"

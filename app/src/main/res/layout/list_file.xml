@@ -2,7 +2,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/selectable_item_background"
+    android:background="?rectSelector"
     android:padding="20dp">
 
     <FrameLayout
@@ -27,7 +27,10 @@
             android:src="@drawable/ic_folder_white_24dp"
             android:tint="@color/whiteAccent"/>
 
-        <include layout="@layout/generic_view_selection"/>
+        <include
+            layout="@layout/generic_view_selection_rounded"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
 
     </FrameLayout>
 

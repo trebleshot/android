@@ -48,9 +48,7 @@ abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupSha
 	{
 		if (!object.isGroupRepresentative())
 			if (getGroupBy() == MODE_GROUP_BY_ALBUM)
-				return TextUtils.trimText(object.isGroupRepresentative()
-						? object.representativeText
-						: object.albumName, 1);
+				return object.albumName;
 
 		return super.getSectionName(position, object);
 	}

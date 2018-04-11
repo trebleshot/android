@@ -13,10 +13,12 @@
         android:layout_centerInParent="true"
         android:contentDescription="@string/text_image"/>
 
+    <include layout="@layout/generic_view_selection"/>
+
     <View
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/selectable_item_background"/>
+        android:background="?rectSelector"/>
 
     <TextView
         android:id="@+id/text3"
@@ -57,7 +59,5 @@
         android:shadowRadius="5"
         android:textColor="@color/videoTextColor"
         android:visibility="gone"/>
-
-    <include layout="@layout/generic_view_selection"/>
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

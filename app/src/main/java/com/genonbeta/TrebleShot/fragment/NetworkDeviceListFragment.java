@@ -391,7 +391,7 @@ public class NetworkDeviceListFragment
 
 	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
 	{
-		if (isConnectedToAnyNetwork())
+		if (!isConnectedToAnyNetwork())
 			return false;
 
 		if (hotspotNetwork.BSSID != null)
