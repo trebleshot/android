@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
-import android.text.format.DateUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -102,7 +101,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 	public String getRepresentativeText(Merger merger)
 	{
 		if (merger instanceof DateMerger)
-			return String.valueOf(DateUtils.formatDateTime(getContext(), ((DateMerger) merger).getTime(), DateUtils.FORMAT_SHOW_DATE));
+			return String.valueOf(getSectionNameDate(((DateMerger) merger).getTime()));
 		else if (merger instanceof StringMerger)
 			return ((StringMerger) merger).getString();
 
@@ -113,15 +112,14 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 	@Override
 	public String getSectionName(int position, T object)
 	{
+		if (object.isGroupRepresentative())
+			return object.representativeText;
+
 		switch (getGroupBy()) {
 			case MODE_GROUP_BY_DATE:
-				return object.isGroupRepresentative()
-						? object.representativeText
-						: getSectionNameDate(object.getComparableDate());
+				return getSectionNameDate(object.getComparableDate());
 			default:
-				return object.isGroupRepresentative()
-						? getSectionNameTrimmedText(object.representativeText)
-						: super.getSectionName(position, object);
+				return super.getSectionName(position, object);
 		}
 	}
 

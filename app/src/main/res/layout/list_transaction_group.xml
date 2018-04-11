@@ -27,12 +27,7 @@
             android:src="@drawable/ic_file_upload_black_24dp"
             android:tint="@color/whiteAccent"/>
 
-        <View
-            android:id="@+id/selector"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/state_selected_image"/>
+        <include layout="@layout/generic_view_selection"/>
 
     </FrameLayout>
 

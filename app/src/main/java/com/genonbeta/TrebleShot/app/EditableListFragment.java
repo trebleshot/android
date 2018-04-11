@@ -16,15 +16,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -46,6 +47,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
 	private int mDefaultViewingGridSize = 1;
 	private int mDefaultViewingGridSizeLandscape = 1;
+	private FastScroller mFastScroller;
 	private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
 	private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
 
@@ -78,20 +80,35 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		getAdapter().setHasStableIds(true);
 		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
 		getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
+
+		// We have to recreate the provider class because old one loses its ground
+		getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
 	}
 
 	@Override
 	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
-		FastScrollRecyclerView recyclerView = getLayoutInflater()
-				.inflate(R.layout.abstract_fast_scroll_recyclerview, null, false)
-				.findViewById(R.id.abstract_fast_scroll_recyclerview_view);
+		View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview, null, false);
+
+		RecyclerView recyclerView = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_view);
+		mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
 
 		recyclerView.setLayoutManager(onLayoutManager());
 
-		listViewContainer.addView(recyclerView);
+		listViewContainer.addView(view);
 
 		return recyclerView;
+	}
+
+	@Override
+	public boolean onSetListAdapter(E adapter)
+	{
+		if (super.onSetListAdapter(adapter)) {
+			mFastScroller.setRecyclerView(getListView());
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -400,11 +417,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		}
 	}
 
+	public FastScroller getFastScroller()
+	{
+		return mFastScroller;
+	}
+
 	public int getOrderingCriteria()
 	{
 		return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria);
 	}
-
 
 	public String getUniqueSettingKey(String setting)
 	{

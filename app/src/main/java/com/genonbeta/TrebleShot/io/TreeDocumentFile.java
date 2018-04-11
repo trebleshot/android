@@ -216,7 +216,7 @@ public class TreeDocumentFile extends DocumentFile
 
 		}
 
-		return new DocumentFile[] {};
+		return new DocumentFile[]{};
 	}
 
 	@Override

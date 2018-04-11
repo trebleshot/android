@@ -17,8 +17,8 @@ import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.TransferInstance;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 

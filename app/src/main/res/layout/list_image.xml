@@ -3,7 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/selectable_item_background"
     android:padding="15dp">
 
     <FrameLayout
@@ -25,12 +25,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/text_image"/>
 
-        <View
-            android:id="@+id/selector"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/state_selected_image"/>
+        <include layout="@layout/generic_view_selection"/>
 
     </FrameLayout>
 

@@ -1,13 +1,9 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.InvalidatedMenuSupport;
 
 /**
  * created by: Veli

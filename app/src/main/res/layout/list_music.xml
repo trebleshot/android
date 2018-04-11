@@ -3,7 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
+    android:background="@drawable/selectable_item_background"
     android:padding="15dp">
 
     <FrameLayout
@@ -18,19 +18,14 @@
         android:layout_marginStart="8dp"
         android:background="@color/thumbnailColor">
 
-        <ImageView
+        <com.genonbeta.TrebleShot.view.SelectionIllustratorImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:src="@drawable/ic_music_note_white_24dp"/>
 
-        <View
-            android:id="@+id/selector"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@drawable/state_selected_image"/>
+        <include layout="@layout/generic_view_selection"/>
 
     </FrameLayout>
 

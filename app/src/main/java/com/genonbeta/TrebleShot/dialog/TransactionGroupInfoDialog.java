@@ -13,12 +13,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
-
-import java.util.ArrayList;
 
 /**
  * created by: Veli

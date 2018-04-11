@@ -194,11 +194,11 @@ public class MusicListAdapter
 	{
 		if (!object.isGroupRepresentative()) {
 			if (getGroupBy() == MODE_GROUP_BY_ARTIST)
-				return TextUtils.trimText(object.artist, 1);
+				return object.artist;
 			else if (getGroupBy() == MODE_GROUP_BY_FOLDER)
-				return TextUtils.trimText(object.folder, 1);
+				return object.folder;
 			else if (getGroupBy() == MODE_GROUP_BY_ALBUM)
-				return TextUtils.trimText(object.albumHolder.title, 1);
+				return object.albumHolder.title;
 		}
 
 		return super.getSectionName(position, object);

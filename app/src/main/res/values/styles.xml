@@ -99,4 +99,5 @@
         <item name="android:focusable">false</item>
         <item name="tint">?android:attr/textColorPrimary</item>
     </style>
+
 </resources>

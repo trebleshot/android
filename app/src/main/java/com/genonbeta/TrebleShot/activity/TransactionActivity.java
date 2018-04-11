@@ -653,6 +653,7 @@ public class TransactionActivity
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 		}
 	}
+
 	public static class TransactionExplorerFragment
 			extends Fragment
 			implements TransactionListAdapter.PathChangedListener, TitleSupport

@@ -1,4 +1,7 @@
 <resources>
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="fast_scroller_bubble_date_vertical_margin">16dp</dimen>
+    <dimen name="fast_scroller_bubble_date_handle_size">30dp</dimen>
+    <dimen name="fast_scroller_bubble_date_bubble_size">60dp</dimen>
 </resources>

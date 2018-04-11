@@ -99,9 +99,6 @@ public class AppUtils
 	public static SuperPreferences getDefaultPreferences(final Context context)
 	{
 		if (mDefaultPreferences == null) {
-			//mDefaultPreferences = new SuperPreferences(new BinaryPreferencesBuilder(context)
-			//		.supportInterProcess(true)
-			//		.build());
 			DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
 					.setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
 					{

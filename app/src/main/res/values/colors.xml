@@ -19,5 +19,5 @@
     <color name="fabHotspotEnabled">#d2442e</color>
     <color name="hotspotNetworkRipple">@color/fabHotspotEnabled</color>
     <color name="layoutIconTint">#999</color>
-    <color name="selectorSolid">#9000</color>
+    <color name="selectionBackground">#9eee</color>
 </resources>

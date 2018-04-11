@@ -2,16 +2,15 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -23,7 +22,7 @@ import java.util.Comparator;
 
 abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
 		extends RecyclerViewAdapter<T, V>
-		implements FastScrollRecyclerView.SectionedAdapter
+		implements SectionTitleProvider
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -140,9 +139,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return getItemList();
 	}
 
-	@NonNull
 	@Override
-	final public String getSectionName(int position)
+	public String getSectionTitle(int position)
 	{
 		return getSectionName(position, getItem(position));
 	}
