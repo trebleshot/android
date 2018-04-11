@@ -350,4 +350,5 @@
     <string name="textFiles">Files</string>
     <string name="mesg_noReceiverOrSender">You should first add devices</string>
     <string name="butn_addPeople">Add devices</string>
+    <string name="text_connectDevices">Connect devices</string>
 </resources>

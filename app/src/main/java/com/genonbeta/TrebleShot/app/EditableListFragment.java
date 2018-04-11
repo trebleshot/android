@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.util.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -450,8 +450,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 	public PowerfulActionMode getPowerfulActionMode()
 	{
-		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupported
-				? ((PowerfulActionModeSupported) getActivity()).getPowerfulActionMode()
+		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupport
+				? ((PowerfulActionModeSupport) getActivity()).getPowerfulActionMode()
 				: null;
 	}
 

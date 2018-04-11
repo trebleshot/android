@@ -16,6 +16,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -53,7 +54,7 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 				hotspotNetwork.lastUsageTime = System.currentTimeMillis();
 				hotspotNetwork.SSID = resultIndex.SSID;
 				hotspotNetwork.BSSID = resultIndex.BSSID;
-				hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
+				hotspotNetwork.nickname = AppUtils.getFriendlySSID(resultIndex.SSID);
 
 				list.add(hotspotNetwork);
 			}
@@ -67,7 +68,7 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
 			hotspotNetwork.SSID = wifiInfo.getSSID();
 			hotspotNetwork.BSSID = wifiInfo.getBSSID();
-			hotspotNetwork.nickname = getFriendlySSID(wifiInfo.getSSID());
+			hotspotNetwork.nickname = AppUtils.getFriendlySSID(wifiInfo.getSSID());
 
 			list.add(hotspotNetwork);
 		}
@@ -86,14 +87,6 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 	{
 		mList.clear();
 		mList.addAll(passedItem);
-	}
-
-	public String getFriendlySSID(String ssid)
-	{
-		return ssid
-				.replace("\"", "")
-				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
-				.replace("_", " ");
 	}
 
 	@NonNull

@@ -7,7 +7,7 @@ import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
  * date: 19.11.2017 18:07
  */
 
-public interface PowerfulActionModeSupported
+public interface PowerfulActionModeSupport
 {
 	PowerfulActionMode getPowerfulActionMode();
 }

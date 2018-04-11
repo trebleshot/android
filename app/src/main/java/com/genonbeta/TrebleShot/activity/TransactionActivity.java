@@ -15,8 +15,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
@@ -31,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
@@ -48,7 +47,7 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.util.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -66,7 +65,7 @@ import java.util.ArrayList;
 
 public class TransactionActivity
 		extends Activity
-		implements PowerfulActionModeSupported
+		implements PowerfulActionModeSupport
 {
 	public static final String TAG = TransactionActivity.class.getSimpleName();
 	public static final int JOB_FILE_FIX = 1;
@@ -114,7 +113,7 @@ public class TransactionActivity
 
 		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
-		final PagerAdapter pagerAdapter = new PagerAdapter(getSupportFragmentManager());
+		final DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager());
 		final TransactionExplorerFragment transactionFragment = new TransactionExplorerFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
@@ -398,41 +397,6 @@ public class TransactionActivity
 
 	}
 
-	public class PagerAdapter extends FragmentPagerAdapter
-	{
-		private ArrayList<Fragment> mFragments = new ArrayList<>();
-
-		public PagerAdapter(FragmentManager fm)
-		{
-			super(fm);
-		}
-
-		public void add(Fragment fragment)
-		{
-			mFragments.add(fragment);
-		}
-
-		public void add(Fragment fragment, TabLayout tabLayout)
-		{
-			add(fragment);
-
-			if (fragment instanceof TitleSupport)
-				tabLayout.addTab(tabLayout.newTab().setText(((TitleSupport) fragment).getTitle(getApplicationContext())));
-		}
-
-		@Override
-		public Fragment getItem(int position)
-		{
-			return mFragments.get(position);
-		}
-
-		@Override
-		public int getCount()
-		{
-			return mFragments.size();
-		}
-	}
-
 	public static class TransactionDetailsFragment
 			extends Fragment
 			implements TitleSupport
@@ -606,11 +570,6 @@ public class TransactionActivity
 					}
 				}
 			}
-		}
-
-		private Snackbar createSnackbar(int resId, Object... objects)
-		{
-			return Snackbar.make(getView(), getString(resId, objects), Snackbar.LENGTH_LONG);
 		}
 
 		@Override

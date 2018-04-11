@@ -59,7 +59,7 @@ public class FileExplorerFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.fragment_file_explorer, container, false);
+		View view = inflater.inflate(R.layout.layout_file_explorer, container, false);
 
 		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
 		mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());

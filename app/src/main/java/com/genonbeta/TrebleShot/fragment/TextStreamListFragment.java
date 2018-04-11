@@ -68,6 +68,13 @@ public class TextStreamListFragment
 	}
 
 	@Override
+	public void onGroupingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_groupByNothing), TextStreamListAdapter.MODE_GROUP_BY_NOTHING);
+		options.put(getString(R.string.text_groupByDate), TextStreamListAdapter.MODE_GROUP_BY_DATE);
+	}
+
+	@Override
 	public int onGridSpanSize(int viewType, int currentSpanSize)
 	{
 		return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE

@@ -50,7 +50,9 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	public void onUpdate(ArrayList<T> passedItem)
 	{
 		synchronized (getItemList()) {
-			mItemList = passedItem;
+			mItemList.clear();
+			mItemList.addAll(passedItem);
+
 			syncSelectionList(getItemList());
 		}
 	}

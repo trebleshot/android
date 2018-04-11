@@ -65,7 +65,7 @@ import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
 		extends RecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
-		implements TitleSupport, FABSupport, DetachListener
+		implements TitleSupport, DetachListener
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -74,53 +74,25 @@ public class NetworkDeviceListFragment
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private SwipeRefreshLayout mSwipeRefreshLayout;
-	private FloatingActionButton mFAB;
-	private HotspotUtils mHotspotUtils;
 	private WifiManager mWifiManager;
-	private ConnectivityManager mConnectivityManager;
 	private LocationManager mLocationManager;
-	private MenuItem mMenuItemShowQR;
-	private boolean mShowHotspotInfo = false;
 	private boolean mWirelessEnableRequested = false;
-
-	private ImageView mCodeImageView;
-	private TextView mNetworkInfoTextView;
-	private TextView mNetworkNameTextView;
-	private TextView mNetworkPassTextView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
-		mHotspotUtils = HotspotUtils.getInstance(getContext());
-		mWifiManager = mHotspotUtils.getWifiManager();
-		mConnectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-		mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+		mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+		mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
 		mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
-		mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
 		mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
-		mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
 		mNsdDiscovery = new NsdDiscovery(getContext(), getDatabase(), getDefaultPreferences());
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-	{
-		final View view = super.onCreateView(inflater, container, savedInstanceState);
-		final View qrLayout = getLayoutInflater().inflate(R.layout.layout_illustrate_qr_code, getCustomViewContainer());
-
-		mCodeImageView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_qr_image);
-		mNetworkInfoTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_info_text);
-		mNetworkNameTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_network_text);
-		mNetworkPassTextView = qrLayout.findViewById(R.id.layout_illustrate_qr_code_info_container_password_text);
-
-		return view;
 	}
 
 	@Override
@@ -245,11 +217,6 @@ public class NetworkDeviceListFragment
 		checkRefreshing();
 
 		mNsdDiscovery.startDiscovering();
-
-		if (Build.VERSION.SDK_INT >= 26)
-			AppUtils.startForegroundService(getActivity(),
-					new Intent(getActivity(), CommunicationService.class)
-							.setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
 	}
 
 	@Override
@@ -269,51 +236,15 @@ public class NetworkDeviceListFragment
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu)
-	{
-		super.onPrepareOptionsMenu(menu);
-
-		mMenuItemShowQR = menu.findItem(R.id.network_devices_barcode_generate);
-
-		tryShowingRevealButtonQR();
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		switch (item.getItemId()) {
 			case R.id.network_devices_scan:
 				requestRefresh();
 				return true;
-			case R.id.network_devices_barcode_generate:
-				toggleCustomView();
-				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	public boolean onFABRequested(FloatingActionButton floatingActionButton)
-	{
-		if (!HotspotUtils.isSupported())
-			return false;
-
-		mFAB = floatingActionButton;
-
-		mFAB.setImageResource(R.drawable.ic_wifi_tethering_white_24dp);
-		mFAB.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				toggleHotspot(true);
-			}
-		});
-
-		tryShowingRevealButtonQR();
-
-		return true;
 	}
 
 	@Override
@@ -405,12 +336,6 @@ public class NetworkDeviceListFragment
 		return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 	}
 
-	public boolean isMobileDataActive()
-	{
-		return mConnectivityManager.getActiveNetworkInfo() != null
-				&& mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
-	}
-
 	public void requestRefresh()
 	{
 		getWifiManager().startScan();
@@ -425,12 +350,6 @@ public class NetworkDeviceListFragment
 					.getDeviceScanner()
 					.interrupt();
 		}
-	}
-
-	private void tryShowingRevealButtonQR()
-	{
-		if (mMenuItemShowQR != null)
-			mMenuItemShowQR.setVisible(mFAB != null);
 	}
 
 	public void showConnectionOptions()
@@ -544,149 +463,6 @@ public class NetworkDeviceListFragment
 		return false;
 	}
 
-	public boolean toggleHotspot(boolean conditional)
-	{
-		if (!HotspotUtils.isSupported())
-			return false;
-
-		if (conditional) {
-			if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission())
-				return false;
-
-			if (Build.VERSION.SDK_INT >= 23
-					&& !Settings.System.canWrite(mFAB.getContext())) {
-				createSnackbar(R.string.mesg_errorHotspotPermission)
-						.setDuration(Snackbar.LENGTH_LONG)
-						.setAction(R.string.butn_settings, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-										.setData(Uri.parse("package:" + mFAB.getContext().getPackageName()))
-										.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-							}
-						})
-						.show();
-
-				return false;
-			} else if (Build.VERSION.SDK_INT < 26
-					&& !mHotspotUtils.isEnabled()
-					&& isMobileDataActive()) {
-				createSnackbar(R.string.mesg_warningHotspotMobileActive)
-						.setDuration(Snackbar.LENGTH_LONG)
-						.setAction(R.string.butn_skip, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								toggleHotspot(false);
-							}
-						})
-						.show();
-
-				return false;
-			}
-		}
-
-		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
-
-		if (!mHotspotUtils.isEnabled()
-				|| (wifiConfiguration != null && AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)))
-			createSnackbar(mHotspotUtils.isEnabled()
-					? R.string.mesg_stoppingSelfHotspot
-					: R.string.mesg_startingSelfHotspot)
-					.show();
-
-		AppUtils.startForegroundService(mFAB.getContext(), new Intent(mFAB.getContext(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
-
-		mShowHotspotInfo = true;
-
-		return true;
-	}
-
-	public void updateQRViews(String networkName, String password, int keyManagement)
-	{
-		try {
-			MultiFormatWriter formatWriter = new MultiFormatWriter();
-
-			String text = new JSONObject()
-					.put(Keyword.NETWORK_NAME, networkName)
-					.put(Keyword.NETWORK_PASSWORD, password)
-					.put(Keyword.NETWORK_KEYMGMT, keyManagement)
-					.toString();
-
-			showCustomView(networkName != null && mFAB != null);
-
-			if (networkName != null) {
-				mNetworkInfoTextView.setText(R.string.text_qrCodeAvailableHelp);
-
-				int scaleUsing = getDefaultViewContainer().getWidth() > getDefaultViewContainer().getHeight()
-						? getDefaultViewContainer().getHeight()
-						: getDefaultViewContainer().getWidth();
-
-				int scaledSize = (int) (scaleUsing / 1.5);
-
-				BitMatrix bitMatrix = formatWriter.encode(text, BarcodeFormat.QR_CODE, scaledSize, scaledSize);
-				BarcodeEncoder encoder = new BarcodeEncoder();
-				Bitmap bitmap = encoder.createBitmap(bitMatrix);
-
-				mCodeImageView.setImageBitmap(bitmap);
-
-				mNetworkNameTextView.setText(networkName);
-				mNetworkPassTextView.setText(password == null ? "-" : password);
-			} else {
-				mCodeImageView.setImageResource(R.drawable.ic_qrcode_grey600_48dp);
-				mNetworkInfoTextView.setText(R.string.text_qrCodeHotspotDisabledHelp);
-				mNetworkNameTextView.setText(R.string.text_unknown);
-				mNetworkPassTextView.setText(R.string.text_unknown);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void updateHotspotState()
-	{
-		if (mFAB == null)
-			return;
-
-		boolean isEnabled = mHotspotUtils.isEnabled();
-
-		mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(), isEnabled ? R.color.fabHotspotEnabled : R.color.fabHotspotDisabled)));
-
-		WifiConfiguration wifiConfiguration = mHotspotUtils.getConfiguration();
-
-		if (!isEnabled)
-			updateQRViews(null, null, 0);
-		else if (mHotspotUtils instanceof HotspotUtils.HackAPI
-				&& wifiConfiguration != null)
-			updateQRViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
-
-		if (wifiConfiguration != null
-				&& mHotspotUtils.isEnabled()) {
-			if (mShowHotspotInfo
-					&& AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
-				final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, mHotspotUtils.getConfiguration().SSID, getAdapter().getFriendlySSID(mHotspotUtils.getConfiguration().SSID));
-
-				snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						snackbar.dismiss();
-					}
-				});
-
-				snackbar.setDuration(Snackbar.LENGTH_INDEFINITE)
-						.show();
-
-				mShowHotspotInfo = false;
-			}
-		}
-	}
-
 	public void setOnListClickListener(RecyclerViewAdapter.OnClickListener listener)
 	{
 		mClickListener = listener;
@@ -772,14 +548,7 @@ public class NetworkDeviceListFragment
 					&& AccessDatabase.TABLE_DEVICES.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
 			))
 				refreshList();
-			else if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
-				updateHotspotState();
-			else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
-					&& intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false)) {
-				updateQRViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
-						intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
-						intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
-			} else if (mWirelessEnableRequested
+			else if (mWirelessEnableRequested
 					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
 					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
 				mWirelessEnableRequested = false;

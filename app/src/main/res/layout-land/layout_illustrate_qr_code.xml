@@ -13,7 +13,8 @@
         <ImageView
             android:id="@+id/layout_illustrate_qr_code_qr_image"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_qrcode_grey600_48dp"/>
 
     </LinearLayout>
 

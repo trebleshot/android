@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -31,10 +32,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
@@ -48,7 +49,8 @@ import com.genonbeta.TrebleShot.util.DetachListener;
 import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.util.PowerfulActionModeSupport;
+import com.genonbeta.TrebleShot.util.TabLayoutSupport;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -58,7 +60,7 @@ import java.io.FileNotFoundException;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupported
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
@@ -68,12 +70,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
+	private TabLayout mTabLayout;
 	private ColorStateList mFABDefaultColorState;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
 	private Fragment mCurrentFragment;
-	private Fragment mFragmentDeviceList;
+	private Fragment mFragmentConnectDevices;
 	private Fragment mFragmentFileExplorer;
 	private Fragment mFragmentTransactions;
 	private Fragment mFragmentShareApp;
@@ -106,11 +109,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
+		mTabLayout = findViewById(R.id.content_tab_layout);
 		mFABDefaultColorState = mFAB.getBackgroundTintList();
 
 		mNavigationView.setNavigationItemSelectedListener(this);
 
-		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
+		mFragmentConnectDevices = Fragment.instantiate(this, ConnectDevicesFragment.class.getName());
 		mFragmentFileExplorer = Fragment.instantiate(this, FileExplorerFragment.class.getName());
 		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
 		mFragmentShareApp = Fragment.instantiate(this, ApplicationListFragment.class.getName());
@@ -147,8 +151,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		}
 
 		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
-			changeFragment(mFragmentDeviceList);
-			mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
+			changeFragment(mFragmentConnectDevices);
+			mNavigationView.setCheckedItem(R.id.menu_activity_main_connect_devices);
 		}
 	}
 
@@ -197,8 +201,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item)
 	{
-		if (R.id.menu_activity_main_device_list == item.getItemId()) {
-			changeFragment(mFragmentDeviceList);
+		if (R.id.menu_activity_main_connect_devices == item.getItemId()) {
+			changeFragment(mFragmentConnectDevices);
 		} else if (R.id.menu_activity_main_file_explorer == item.getItemId()) {
 			changeFragment(mFragmentFileExplorer);
 		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId()) {
@@ -329,20 +333,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			@Override
 			public void run()
 			{
-				if (commit) {
-					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-
-					ft.replace(R.id.content_frame, fragment);
-
-					if (!mIsStopped) {
-						ft.commit();
-
-						mDelayedCommitFragment = null;
-						mCurrentFragment = fragment;
-					} else
-						mDelayedCommitFragment = fragment;
-				}
-
 				setTitle(fragment instanceof TitleSupport
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
 						: getString(R.string.text_appName));
@@ -356,6 +346,17 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
 					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
+
+				boolean tabSupported = fragment instanceof TabLayoutSupport;
+
+				mTabLayout.removeAllTabs();
+
+				if (tabSupported)
+					tabSupported = ((TabLayoutSupport) fragment).onTabLayout(mTabLayout);
+
+				if (tabSupported != (mTabLayout.getVisibility() == View.VISIBLE))
+					mTabLayout.setVisibility(tabSupported ? View.VISIBLE : View.GONE);
+
 			}
 		}, 200);
 	}

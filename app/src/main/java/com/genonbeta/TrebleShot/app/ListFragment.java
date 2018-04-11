@@ -112,11 +112,6 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 		return new ListLoader<>(mAdapter);
 	}
 
-	protected Snackbar createSnackbar(int resId, Object... objects)
-	{
-		return Snackbar.make(getListViewContainer(), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
-
 	public E getAdapter()
 	{
 		return mAdapter;

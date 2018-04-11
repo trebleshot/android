@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/menu_activity_main_device_list"
+            android:id="@+id/menu_activity_main_connect_devices"
             android:icon="@drawable/ic_devices_white_24dp"
-            android:title="@string/text_deviceList"/>
+            android:title="@string/text_connectDevices"/>
 
         <item
             android:id="@+id/menu_activity_main_file_explorer"

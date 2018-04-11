@@ -7,8 +7,8 @@
 
     <FrameLayout
         android:id="@+id/layout_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
@@ -23,8 +23,7 @@
             android:layout_height="40dp"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:src="@drawable/ic_android_head_grey600_36dp"
-            />
+            android:src="@drawable/ic_android_head_grey600_36dp"/>
 
         <include layout="@layout/generic_view_selection" />
 

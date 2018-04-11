@@ -148,6 +148,14 @@ public class AppUtils
 				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
 	}
 
+	public static String getFriendlySSID(String ssid)
+	{
+		return ssid
+				.replace("\"", "")
+				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
+				.replace("_", " ");
+	}
+
 	@NonNull
 	public static String getHotspotName(Context context)
 	{
