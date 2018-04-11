@@ -357,6 +357,19 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 				if (tabSupported != (mTabLayout.getVisibility() == View.VISIBLE))
 					mTabLayout.setVisibility(tabSupported ? View.VISIBLE : View.GONE);
 
+				if (commit) {
+					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+					ft.replace(R.id.content_frame, fragment);
+
+					if (!mIsStopped) {
+						ft.commit();
+
+						mDelayedCommitFragment = null;
+						mCurrentFragment = fragment;
+					} else
+						mDelayedCommitFragment = fragment;
+				}
 			}
 		}, 200);
 	}
