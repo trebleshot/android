@@ -12,12 +12,10 @@ import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
@@ -106,13 +104,7 @@ public class ContentSharingActivity extends Activity
 			public void onTabSelected(TabLayout.Tab tab)
 			{
 				viewPager.setCurrentItem(tab.getPosition());
-
-				Fragment currentFragment = pagerAdapter.getItem(viewPager.getCurrentItem());
-
-				if (currentFragment instanceof EditableListFragmentImpl) {
-					EditableListFragmentImpl<Shareable> listFragment = (EditableListFragmentImpl<Shareable>) currentFragment;
-					selectionCallback.updateProvider(listFragment);
-				}
+				selectionCallback.updateProvider((EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem()));
 			}
 
 			@Override

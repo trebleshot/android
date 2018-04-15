@@ -592,7 +592,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 	public boolean setItemSelected(V holder)
 	{
-		return mSelectionConnection != null && mSelectionCallback.setItemSelected(holder.getAdapterPosition());
+		return getSelectionCallback() != null && getSelectionCallback().setItemSelected(holder.getAdapterPosition());
 	}
 
 	public void setLayoutClickListener(LayoutClickListener<V> clickListener)

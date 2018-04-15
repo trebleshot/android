@@ -34,10 +34,10 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
-import com.genonbeta.TrebleShot.ui.callback.DetachListener;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import static junit.framework.Assert.fail;

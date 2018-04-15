@@ -112,6 +112,16 @@ public class TransactionGroupListFragment
 			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
 			{
 				registerLayoutViewClicks(clazz);
+
+				if (getSelectionConnection() != null)
+					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							getSelectionConnection().setSelected(clazz.getAdapterPosition());
+						}
+					});
 			}
 		};
 

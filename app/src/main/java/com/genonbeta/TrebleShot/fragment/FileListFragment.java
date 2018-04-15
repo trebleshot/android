@@ -131,7 +131,7 @@ public class FileListFragment
 				registerLayoutViewClicks(clazz);
 
 				if (getSelectionConnection() != null)
-					clazz.getView().findViewById(R.id.image).setOnClickListener(new View.OnClickListener()
+					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
 					{
 						@Override
 						public void onClick(View v)
