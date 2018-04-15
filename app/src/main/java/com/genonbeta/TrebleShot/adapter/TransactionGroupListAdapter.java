@@ -85,9 +85,7 @@ public class TransactionGroupListAdapter
 	@Override
 	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false))
-				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
-				.setClickableLayout(getSelectionConnection());
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false));
 	}
 
 	@Override
@@ -101,8 +99,7 @@ public class TransactionGroupListAdapter
 		TextView text2 = parentView.findViewById(R.id.text2);
 		TextView text3 = parentView.findViewById(R.id.text3);
 
-		if (getSelectionConnection() != null)
-			parentView.setSelected(object.isSelectableSelected());
+		parentView.setSelected(object.isSelectableSelected());
 
 		if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
 				|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))

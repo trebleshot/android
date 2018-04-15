@@ -351,4 +351,7 @@
     <string name="mesg_noReceiverOrSender">You should first add devices</string>
     <string name="butn_addPeople">Add devices</string>
     <string name="text_connectDevices">Connect devices</string>
+    <string name="text_hotspot">Hotspot</string>
+    <string name="text_connect">Connect</string>
+    <string name="butn_shareWithOtherApps">Share with other apps</string>
 </resources>

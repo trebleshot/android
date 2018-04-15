@@ -44,15 +44,15 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
+import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupport;
-import com.genonbeta.TrebleShot.util.TabLayoutSupport;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
@@ -207,14 +207,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			changeFragment(mFragmentFileExplorer);
 		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId()) {
 			changeFragment(mFragmentTransactions);
-		} else if (R.id.menu_activity_main_share_app == item.getItemId()) {
-			changeFragment(mFragmentShareApp);
-		} else if (R.id.menu_activity_main_share_music == item.getItemId()) {
-			changeFragment(mFragmentShareMusic);
-		} else if (R.id.menu_activity_main_share_video == item.getItemId()) {
-			changeFragment(mFragmentShareVideo);
-		} else if (R.id.menu_activity_main_share_image == item.getItemId()) {
-			changeFragment(mFragmentShareImage);
+		} else if (R.id.menu_activity_main_share == item.getItemId()) {
+			startActivity(new Intent(this, ContentSharingActivity.class));
 		} else if (R.id.menu_activity_main_share_text == item.getItemId()) {
 			changeFragment(mFragmentShareText);
 		} else if (R.id.menu_activity_main_about == item.getItemId()) {

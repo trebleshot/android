@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.app;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -29,7 +28,9 @@ import java.util.ArrayList;
  * Date: 12/3/16 9:57 AM
  */
 
-public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapterImpl<T>> extends Fragment
+public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapterImpl<T>>
+		extends Fragment
+		implements ListFragmentImpl<T>
 {
 	public static final String TAG = "ListFragment";
 

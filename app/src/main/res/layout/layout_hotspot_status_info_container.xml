@@ -8,7 +8,7 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp">
+        android:layout_margin="25dp">
 
         <ScrollView
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
                     android:gravity="center">
 
                     <android.support.v7.widget.AppCompatButton
-                        android:id="@+id/layout_illustrate_qr_code_info_toggle_button"
+                        android:id="@+id/layout_hotspot_status_info_toggle_button"
                         style="?buttonBarPositiveButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -46,13 +46,13 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="20dp"
-                        android:paddingRight="20dp"
+                        android:paddingEnd="25dp"
+                        android:paddingRight="25dp"
                         android:src="@drawable/ic_info_white_24dp"
                         android:tint="@color/colorAccent"/>
 
                     <TextView
-                        android:id="@+id/layout_illustrate_qr_code_info_container_info_text"
+                        android:id="@+id/layout_hotspot_status_info_container_info_text"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -72,13 +72,13 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="20dp"
-                        android:paddingRight="20dp"
+                        android:paddingEnd="25dp"
+                        android:paddingRight="25dp"
                         android:src="@drawable/ic_wifi_tethering_white_24dp"
                         android:tint="@color/layoutIconTint"/>
 
                     <TextView
-                        android:id="@+id/layout_illustrate_qr_code_info_container_network_text"
+                        android:id="@+id/layout_hotspot_status_info_container_network_text"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -98,13 +98,13 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:paddingEnd="20dp"
-                        android:paddingRight="20dp"
+                        android:paddingEnd="25dp"
+                        android:paddingRight="25dp"
                         android:src="@drawable/ic_vpn_key_black_24dp"
                         android:tint="@color/layoutIconTint"/>
 
                     <TextView
-                        android:id="@+id/layout_illustrate_qr_code_info_container_password_text"
+                        android:id="@+id/layout_hotspot_status_info_container_password_text"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

@@ -18,13 +18,15 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.ui.callback.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FABSupport;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
@@ -36,7 +38,7 @@ import java.util.Map;
  */
 
 public class TextStreamListFragment
-		extends GroupShareableListFragment<TextStreamObject, GroupShareableListAdapter.ViewHolder, TextStreamListAdapter>
+		extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
 		implements TitleSupport, FABSupport
 {
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
@@ -49,6 +51,7 @@ public class TextStreamListFragment
 		setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
+		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
 	@Override
@@ -85,20 +88,13 @@ public class TextStreamListFragment
 	@Override
 	public TextStreamListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder>()
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onQuickActions(final GroupShareableListAdapter.ViewHolder clazz)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
 				if (!clazz.isRepresentative())
-					clazz.getView().setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							performLayoutClick(v, clazz);
-						}
-					});
+					registerLayoutViewClicks(clazz);
 			}
 		};
 
@@ -106,11 +102,24 @@ public class TextStreamListFragment
 		{
 			@NonNull
 			@Override
-			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
+
+		startActivity(new Intent(getContext(), TextEditorActivity.class)
+				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+				.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+		return true;
 	}
 
 	@Override
@@ -127,44 +136,6 @@ public class TextStreamListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		super.onCreateActionMenu(context, actionMode, menu);
-		actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-	{
-		int id = item.getItemId();
-
-		ArrayList<TextStreamObject> selectionList = getSelectionConnection().getSelectedItemList();
-
-		if (id == R.id.action_mode_text_stream_delete) {
-			for (TextStreamObject textStreamObject : selectionList)
-				getDatabase().remove(textStreamObject);
-		} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
-			if (selectionList.size() == 1) {
-				TextStreamObject streamObject = selectionList.get(0);
-
-				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
-						? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
-						.putExtra(Intent.EXTRA_TEXT, streamObject.text)
-						.setType("text/*");
-
-				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-			} else {
-				Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
-				return false;
-			}
-		} else
-			return super.onActionMenuItemSelected(context, actionMode, item);
-
-		return true;
 	}
 
 	@Override
@@ -190,18 +161,6 @@ public class TextStreamListFragment
 		return context.getString(R.string.text_textStream);
 	}
 
-	@Override
-	public void performLayoutClick(View view, GroupShareableListAdapter.ViewHolder viewHolder)
-	{
-		TextStreamObject object = getAdapter().getItem(viewHolder.getAdapterPosition());
-
-		if (!setItemSelected(viewHolder.getAdapterPosition()))
-			startActivity(new Intent(getContext(), TextEditorActivity.class)
-					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
-					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-	}
-
 	private class StatusReceiver extends BroadcastReceiver
 	{
 		@Override
@@ -211,6 +170,52 @@ public class TextStreamListFragment
 					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
 					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_CLIPBOARD))
 				refreshList();
+		}
+	}
+
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
+	{
+		public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
+		{
+			super(fragment);
+		}
+
+		@Override
+		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+		{
+			super.onCreateActionMenu(context, actionMode, menu);
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+		{
+			int id = item.getItemId();
+
+			ArrayList<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+
+			if (id == R.id.action_mode_text_stream_delete) {
+				for (TextStreamObject textStreamObject : selectionList)
+					getFragment().getDatabase().remove(textStreamObject);
+			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
+				if (selectionList.size() == 1) {
+					TextStreamObject streamObject = selectionList.get(0);
+
+					Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
+							? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
+							.putExtra(Intent.EXTRA_TEXT, streamObject.text)
+							.setType("text/*");
+
+					getAdapter().getContext().startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getFragment().getContext().getString(R.string.text_fileShareAppChoose)) : shareIntent);
+				} else {
+					Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+			} else
+				return super.onActionMenuItemSelected(context, actionMode, item);
+
+			return true;
 		}
 	}
 }

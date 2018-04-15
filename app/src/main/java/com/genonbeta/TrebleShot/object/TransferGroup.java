@@ -49,28 +49,6 @@ public class TransferGroup implements DatabaseObject, Selectable
 	}
 
 	@Override
-	public void onCreateObject(SQLiteDatabase database)
-	{
-		this.dateCreated = System.currentTimeMillis();
-	}
-
-	@Override
-	public void onUpdateObject(SQLiteDatabase database)
-	{
-
-	}
-
-	@Override
-	public void onRemoveObject(SQLiteDatabase database)
-	{
-		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
-
-		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
-	}
-
-	@Override
 	public boolean isSelectableSelected()
 	{
 		return mIsSelected;
@@ -106,6 +84,28 @@ public class TransferGroup implements DatabaseObject, Selectable
 	{
 		mIsSelected = selected;
 		return true;
+	}
+
+	@Override
+	public void onCreateObject(SQLiteDatabase database)
+	{
+		this.dateCreated = System.currentTimeMillis();
+	}
+
+	@Override
+	public void onUpdateObject(SQLiteDatabase database)
+	{
+
+	}
+
+	@Override
+	public void onRemoveObject(SQLiteDatabase database)
+	{
+		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
+
+		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
 	}
 
 	public static class Index

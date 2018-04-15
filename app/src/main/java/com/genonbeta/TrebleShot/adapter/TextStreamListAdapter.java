@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 /**
@@ -19,7 +19,7 @@ import com.genonbeta.android.database.SQLQuery;
  */
 
 public class TextStreamListAdapter
-		extends GroupShareableListAdapter<TextStreamObject, GroupShareableListAdapter.ViewHolder>
+		extends GroupEditableListAdapter<TextStreamObject, GroupEditableListAdapter.GroupViewHolder>
 {
 	private AccessDatabase mDatabase;
 
@@ -44,20 +44,16 @@ public class TextStreamListAdapter
 
 	@NonNull
 	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-		ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
-
-		holder.setClickableLayout(getSelectionConnection());
-
-		return holder;
+		return new GroupViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
 		View parentView = holder.getView();
 		TextStreamObject object = getItem(position);
@@ -66,8 +62,7 @@ public class TextStreamListAdapter
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 
-			if (getSelectionConnection() != null)
-				parentView.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			text1.setText(object.text);
 			text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));

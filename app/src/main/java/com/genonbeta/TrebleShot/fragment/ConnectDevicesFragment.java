@@ -13,8 +13,8 @@ import android.view.ViewGroup;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Fragment;
-import com.genonbeta.TrebleShot.util.TabLayoutSupport;
-import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 
 /**
  * created by: veli
@@ -71,11 +71,13 @@ public class ConnectDevicesFragment
 		DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(getContext(), getChildFragmentManager());
 		NetworkDeviceListFragment deviceListFragment = new NetworkDeviceListFragment();
 		HotspotStatusFragment statusFragment = new HotspotStatusFragment();
+		CodeConnectFragment connectFragment = new CodeConnectFragment();
 
 		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
 		pagerAdapter.add(deviceListFragment, mTabLayout);
 		pagerAdapter.add(statusFragment, mTabLayout);
+		pagerAdapter.add(connectFragment, mTabLayout);
 
 		mViewPager.setAdapter(pagerAdapter);
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));

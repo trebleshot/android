@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.Menu;
@@ -250,6 +251,11 @@ public class PowerfulActionMode extends Toolbar
 		public boolean selectionActive()
 		{
 			return getMode().hasActive(getCallback());
+		}
+
+		public boolean setSelected(RecyclerView.ViewHolder holder)
+		{
+			return setSelected(holder.getAdapterPosition());
 		}
 
 		public boolean setSelected(int position)

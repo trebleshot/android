@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.ui.callback;
 
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 

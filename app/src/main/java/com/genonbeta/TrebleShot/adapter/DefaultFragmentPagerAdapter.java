@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.genonbeta.TrebleShot.app.Fragment;
-import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 
 import java.util.ArrayList;
 import java.util.List;

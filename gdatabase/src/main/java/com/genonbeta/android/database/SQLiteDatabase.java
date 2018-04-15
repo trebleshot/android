@@ -14,9 +14,12 @@ import java.util.ArrayList;
 
 abstract public class SQLiteDatabase extends SQLiteOpenHelper
 {
+	private Context mContext;
+
 	public SQLiteDatabase(Context context, String name, android.database.sqlite.SQLiteDatabase.CursorFactory factory, int version)
 	{
 		super(context, name, factory, version);
+		mContext = context;
 	}
 
 	public <T extends DatabaseObject> ArrayList<T> castQuery(SQLQuery.Select select, final Class<T> clazz)
@@ -52,6 +55,11 @@ abstract public class SQLiteDatabase extends SQLiteOpenHelper
 	public int delete(SQLQuery.Select select)
 	{
 		return getWritableDatabase().delete(select.tableName, select.where, select.whereArgs);
+	}
+
+	public Context getContext()
+	{
+		return mContext;
 	}
 
 	public CursorItem getFirstFromTable(SQLQuery.Select select)

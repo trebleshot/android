@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
@@ -19,11 +19,11 @@ import java.util.Map;
  * date: 30.03.2018 16:10
  */
 
-public abstract class GroupShareableListFragment<T extends GroupShareableListAdapter.GroupShareable, V extends GroupShareableListAdapter.ViewHolder, E extends GroupShareableListAdapter<T, V>>
-		extends ShareableListFragment<T, V, E>
+public abstract class GroupEditableListFragment<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
+		extends EditableListFragment<T, V, E>
 {
 	private ArrayMap<String, Integer> mGroupingOptions = new ArrayMap<>();
-	private int mDefaultGroupingCriteria = GroupShareableListAdapter.MODE_GROUP_BY_NOTHING;
+	private int mDefaultGroupingCriteria = GroupEditableListAdapter.MODE_GROUP_BY_NOTHING;
 
 	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)

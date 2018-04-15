@@ -62,13 +62,21 @@
             android:stateNotNeeded="true"
             android:theme="@style/AppTheme.QRScannerTheme"
             android:windowSoftInputMode="stateAlwaysHidden"/>
+
+        <activity
+            android:name=".activity.ContentSharingActivity"
+            android:label="@string/text_shareFiles"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"/>
+
         <activity
             android:name=".activity.FilePickerActivity"
             android:label="@string/text_fileExplorer"/>
+
         <activity
             android:name=".activity.TransactionActivity"
-            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"
-            android:label="@string/text_transactionViewer"/>
+            android:label="@string/text_transactionViewer"
+            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"/>
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences"/>

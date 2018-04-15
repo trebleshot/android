@@ -92,12 +92,9 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
 	public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
 
-	private Context mContext;
-
 	public AccessDatabase(Context context)
 	{
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-		mContext = context;
 	}
 
 	@Override
@@ -195,11 +192,6 @@ public class AccessDatabase extends SQLiteDatabase
 		}
 
 		return returnCount;
-	}
-
-	public Context getContext()
-	{
-		return mContext;
 	}
 
 	public SQLValues getDatabaseTables()

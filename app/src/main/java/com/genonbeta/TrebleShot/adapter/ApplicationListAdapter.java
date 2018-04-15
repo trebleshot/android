@@ -17,14 +17,13 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class ApplicationListAdapter
-		extends ShareableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>
+		extends EditableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>
 {
 	private SharedPreferences mPreferences;
 	private PackageManager mManager;
@@ -61,9 +60,7 @@ public class ApplicationListAdapter
 	@Override
 	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_application, parent, false))
-				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
-				.setClickableLayout(getSelectionConnection());
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_application, parent, false));
 	}
 
 	@Override
@@ -78,8 +75,7 @@ public class ApplicationListAdapter
 		text1.setText(object.friendlyName);
 		text2.setText(object.version);
 
-		if (getSelectionConnection() != null)
-			parentView.setSelected(object.isSelectableSelected());
+		parentView.setSelected(object.isSelectableSelected());
 
 		GlideApp.with(getContext())
 				.load(object.appInfo)

@@ -16,14 +16,15 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class MusicListAdapter
-		extends GroupShareableListAdapter<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder>
-		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
+		extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>
+		implements GroupEditableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
 {
 	public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_NOTHING + 1;
 	public static final int MODE_GROUP_BY_ARTIST = MODE_GROUP_BY_ALBUM + 1;
@@ -102,21 +103,16 @@ public class MusicListAdapter
 
 	@NonNull
 	@Override
-	public GroupShareableListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-		GroupShareableListAdapter.ViewHolder holder = new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
-
-		holder.setClickableLayout(getSelectionConnection())
-				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection());
-
-		return holder;
+		return new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull final GroupShareableListAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final GroupViewHolder holder, int position)
 	{
 		final SongHolder object = getItem(position);
 		final View parentView = holder.getView();
@@ -127,8 +123,7 @@ public class MusicListAdapter
 			TextView text2 = parentView.findViewById(R.id.text2);
 			TextView text3 = parentView.findViewById(R.id.text3);
 
-			if (getSelectionConnection() != null)
-				parentView.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			text1.setText(object.song);
 
@@ -204,7 +199,7 @@ public class MusicListAdapter
 		return super.getSectionName(position, object);
 	}
 
-	public static class SongHolder extends GroupShareableListAdapter.GroupShareable
+	public static class SongHolder extends GalleryGroupEditableListAdapter.GroupEditable
 	{
 		public String artist;
 		public String song;

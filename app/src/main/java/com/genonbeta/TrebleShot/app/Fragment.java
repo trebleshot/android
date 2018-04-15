@@ -11,7 +11,9 @@ import com.genonbeta.TrebleShot.util.AppUtils;
  * date: 26.03.2018 16:00
  */
 
-public class Fragment extends android.support.v4.app.Fragment
+public class Fragment
+		extends android.support.v4.app.Fragment
+		implements FragmentImpl
 {
 	private boolean mIsMenuShown;
 

@@ -9,7 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.FABSupport;
 
 /**
  * created by: Veli

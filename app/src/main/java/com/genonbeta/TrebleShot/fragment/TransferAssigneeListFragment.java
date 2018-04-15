@@ -21,8 +21,8 @@ import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 

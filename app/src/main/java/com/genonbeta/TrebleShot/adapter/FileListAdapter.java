@@ -18,7 +18,6 @@ import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -28,7 +27,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class FileListAdapter
-		extends ShareableListAdapter<FileListAdapter.GenericFileHolder, EditableListAdapter.EditableViewHolder>
+		extends EditableListAdapter<FileListAdapter.GenericFileHolder, EditableListAdapter.EditableViewHolder>
 {
 	private boolean mShowDirectories = true;
 	private boolean mShowFiles = true;
@@ -118,7 +117,7 @@ public class FileListAdapter
 				folders.add(fileHolder);
 			}
 
-			ArrayList<WritablePathObject> objectList = getDatabase().castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+			ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
 			if (Build.VERSION.SDK_INT >= 21) {
 				for (WritablePathObject pathObject : objectList)
@@ -142,9 +141,7 @@ public class FileListAdapter
 	@Override
 	public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableViewHolder(getInflater().inflate(R.layout.list_file, parent, false))
-				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
-				.setClickableLayout(getSelectionConnection());
+		return new EditableViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
 	}
 
 	@Override
@@ -157,18 +154,7 @@ public class FileListAdapter
 		TextView textView1 = parentView.findViewById(R.id.text);
 		TextView textView2 = parentView.findViewById(R.id.text2);
 
-		if (getSelectionConnection() != null) {
-			holder.getView().setSelected(object.isSelectableSelected());
-
-			imageView.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					getSelectionConnection().setSelected(holder.getAdapterPosition());
-				}
-			});
-		}
+		holder.getView().setSelected(object.isSelectableSelected());
 
 		imageView.setImageResource(object.iconRes);
 		textView1.setText(object.friendlyName);
@@ -185,11 +171,6 @@ public class FileListAdapter
 		}
 
 		return stringBuilder.toString();
-	}
-
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
 	}
 
 	public DocumentFile getPath()

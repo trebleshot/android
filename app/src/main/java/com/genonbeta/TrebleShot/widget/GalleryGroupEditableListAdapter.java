@@ -4,7 +4,6 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 
 import java.util.ArrayList;
@@ -13,13 +12,13 @@ import java.util.ArrayList;
  * created by: Veli
  * date: 30.03.2018 14:58
  */
-abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupShareableListAdapter.GalleryGroupShareable, V extends GroupShareableListAdapter.ViewHolder>
-		extends GroupShareableListAdapter<T, V>
-		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<T>
+abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupEditable, V extends GroupEditableListAdapter.GroupViewHolder>
+		extends GroupEditableListAdapter<T, V>
+		implements GroupEditableListAdapter.GroupLister.CustomGroupListener<T>
 {
 	public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_DATE + 1;
 
-	public GalleryGroupShareableListAdapter(Context context, int groupBy)
+	public GalleryGroupEditableListAdapter(Context context, int groupBy)
 	{
 		super(context, groupBy);
 	}
@@ -53,16 +52,16 @@ abstract public class GalleryGroupShareableListAdapter<T extends GalleryGroupSha
 		return super.getSectionName(position, object);
 	}
 
-	public static class GalleryGroupShareable extends GroupShareableListAdapter.GroupShareable
+	public static class GalleryGroupEditable extends GroupEditable
 	{
 		public String albumName;
 
-		public GalleryGroupShareable(int viewType, String representativeText)
+		public GalleryGroupEditable(int viewType, String representativeText)
 		{
 			super(viewType, representativeText);
 		}
 
-		public GalleryGroupShareable(String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
+		public GalleryGroupEditable(String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
 		{
 			super(friendlyName, fileName, mimeType, date, size, uri);
 			this.albumName = albumName;

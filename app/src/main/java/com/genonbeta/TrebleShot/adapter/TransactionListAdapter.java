@@ -152,9 +152,7 @@ public class TransactionListAdapter
 	@Override
 	public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false))
-				.setSelectionOrientedLayout(R.id.layout_image, getSelectionConnection())
-				.setClickableLayout(getSelectionConnection());
+		return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false));
 	}
 
 	@Override
@@ -168,8 +166,7 @@ public class TransactionListAdapter
 		TextView statusText = parentView.findViewById(R.id.text2);
 		TextView sizeText = parentView.findViewById(R.id.text3);
 
-		if (getSelectionConnection() != null)
-			parentView.setSelected(object.isSelectableSelected());
+		parentView.setSelected(object.isSelectableSelected());
 
 		if (object instanceof TransferFolder) {
 			image.setImageResource(R.drawable.ic_folder_black_24dp);

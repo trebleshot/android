@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.ui.callback;
 
 import android.support.design.widget.FloatingActionButton;
 
@@ -9,5 +9,5 @@ import android.support.design.widget.FloatingActionButton;
 
 public interface FABSupport
 {
-	public boolean onFABRequested(FloatingActionButton floatingActionButton);
+	boolean onFABRequested(FloatingActionButton floatingActionButton);
 }

@@ -23,8 +23,8 @@ import java.util.List;
  * created by: Veli
  * date: 29.03.2018 08:00
  */
-abstract public class GroupShareableListAdapter<T extends GroupShareableListAdapter.GroupShareable, V extends GroupShareableListAdapter.ViewHolder>
-		extends ShareableListAdapter<T, V>
+abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder>
+		extends EditableListAdapter<T, V>
 {
 	public static final int VIEW_TYPE_REPRESENTATIVE = 100;
 
@@ -33,7 +33,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 
 	private int mGroupBy;
 
-	public GroupShareableListAdapter(Context context, int groupBy)
+	public GroupEditableListAdapter(Context context, int groupBy)
 	{
 		super(context);
 		mGroupBy = groupBy;
@@ -128,23 +128,23 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		mGroupBy = groupBy;
 	}
 
-	public static class GroupShareable extends Shareable
+	public static class GroupEditable extends Shareable
 	{
 		public int viewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
 		public String representativeText;
 
-		public GroupShareable()
+		public GroupEditable()
 		{
 			super();
 		}
 
-		public GroupShareable(int viewType, String representativeText)
+		public GroupEditable(int viewType, String representativeText)
 		{
 			this.viewType = viewType;
 			this.representativeText = representativeText;
 		}
 
-		public GroupShareable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+		public GroupEditable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 		{
 			super(friendlyName, fileName, mimeType, date, size, uri);
 		}
@@ -170,22 +170,22 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		}
 	}
 
-	public static class ViewHolder extends EditableListAdapter.EditableViewHolder
+	public static class GroupViewHolder extends EditableListAdapter.EditableViewHolder
 	{
 		private TextView mRepresentativeText;
 
-		public ViewHolder(View itemView, TextView representativeText)
+		public GroupViewHolder(View itemView, TextView representativeText)
 		{
 			super(itemView);
 			mRepresentativeText = representativeText;
 		}
 
-		public ViewHolder(View itemView, int resRepresentativeText)
+		public GroupViewHolder(View itemView, int resRepresentativeText)
 		{
 			this(itemView, (TextView) itemView.findViewById(resRepresentativeText));
 		}
 
-		public ViewHolder(View itemView)
+		public GroupViewHolder(View itemView)
 		{
 			super(itemView);
 		}
@@ -200,7 +200,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 			return mRepresentativeText != null;
 		}
 
-		public boolean tryBinding(GroupShareable shareable)
+		public boolean tryBinding(GroupEditable shareable)
 		{
 			if (mRepresentativeText == null || shareable.representativeText == null)
 				return false;
@@ -211,7 +211,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 		}
 	}
 
-	public static class GroupLister<T extends GroupShareable> extends Lister<T, ComparableMerger<T>>
+	public static class GroupLister<T extends GroupEditable> extends Lister<T, ComparableMerger<T>>
 	{
 		private int mMode;
 		private List<T> mNoGroupingList;
@@ -245,7 +245,7 @@ abstract public class GroupShareableListAdapter<T extends GroupShareableListAdap
 			return this;
 		}
 
-		public interface CustomGroupListener<T extends GroupShareable>
+		public interface CustomGroupListener<T extends GroupEditable>
 		{
 			boolean onCustomGroupListing(GroupLister<T> lister, int mode, T object);
 		}

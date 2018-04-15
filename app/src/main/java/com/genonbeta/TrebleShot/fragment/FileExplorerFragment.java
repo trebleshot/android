@@ -18,14 +18,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +42,7 @@ import java.util.ArrayList;
 
 public class FileExplorerFragment
 		extends Fragment
-		implements TitleSupport, DetachListener, Activity.OnBackPressedListener
+		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -246,6 +251,114 @@ public class FileExplorerFragment
 		return parent.canRead()
 				? parent
 				: getReadableFolder(parent);
+	}
+
+	@Override
+	public boolean applyViewingChanges(int gridSize)
+	{
+		return getFileListFragment().applyViewingChanges(gridSize);
+	}
+
+	@Override
+	public void changeGridViewSize(int gridSize)
+	{
+		getFileListFragment().changeGridViewSize(gridSize);
+	}
+
+	@Override
+	public void changeOrderingCriteria(int id)
+	{
+		getFileListFragment().changeOrderingCriteria(id);
+	}
+
+	@Override
+	public void changeSortingCriteria(int id)
+	{
+		getFileListFragment().changeSortingCriteria(id);
+	}
+
+	@Override
+	public EditableListAdapterImpl<FileListAdapter.GenericFileHolder> getAdapterImpl()
+	{
+		return getFileListFragment().getAdapterImpl();
+	}
+
+	@Override
+	public int getOrderingCriteria()
+	{
+		return getFileListFragment().getOrderingCriteria();
+	}
+
+	@Override
+	public PowerfulActionMode.SelectorConnection<FileListAdapter.GenericFileHolder> getSelectionConnection()
+	{
+		return getFileListFragment().getSelectionConnection();
+	}
+
+	@Override
+	public EditableListFragment.SelectionCallback<FileListAdapter.GenericFileHolder> getSelectionCallback()
+	{
+		return getFileListFragment().getSelectionCallback();
+	}
+
+	@Override
+	public int getSortingCriteria()
+	{
+		return getFileListFragment().getSortingCriteria();
+	}
+
+	@Override
+	public String getUniqueSettingKey(String setting)
+	{
+		return getFileListFragment().getUniqueSettingKey(setting);
+	}
+
+	@Override
+	public boolean isRefreshLocked()
+	{
+		return getFileListFragment().isRefreshLocked();
+	}
+
+	@Override
+	public boolean isRefreshRequested()
+	{
+		return getFileListFragment().isRefreshRequested();
+	}
+
+	@Override
+	public boolean isSortingSupported()
+	{
+		return getFileListFragment().isSortingSupported();
+	}
+
+	@Override
+	public boolean loadIfRequested()
+	{
+		return getFileListFragment().loadIfRequested();
+	}
+
+	@Override
+	public boolean openUri(Uri uri, String chooserText)
+	{
+		return getFileListFragment().openUri(uri, chooserText);
+	}
+
+	@Override
+	public void setSelectorConnection(PowerfulActionMode.SelectorConnection<FileListAdapter.GenericFileHolder> selectionConnection)
+	{
+		getFileListFragment().setSelectorConnection(selectionConnection);
+	}
+
+	@Override
+	public void setSelectionCallback(EditableListFragment.SelectionCallback<FileListAdapter.GenericFileHolder> selectionCallback)
+	{
+		getFileListFragment().setSelectionCallback(selectionCallback);
+	}
+
+	@Override
+	public void refreshList()
+	{
+
 	}
 
 	private class FilePathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<DocumentFile>

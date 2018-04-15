@@ -14,13 +14,13 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
-import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
+import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 public class ImageListFragment
-		extends GalleryGroupShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
+		extends GalleryGroupEditableListFragment<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder, ImageListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -63,20 +63,13 @@ public class ImageListFragment
 	@Override
 	public ImageListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<GroupShareableListAdapter.ViewHolder>()
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onQuickActions(final GroupShareableListAdapter.ViewHolder clazz)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
 				if (!clazz.isRepresentative())
-					clazz.getView().setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							performLayoutClick(v, clazz);
-						}
-					});
+					registerLayoutViewClicks(clazz);
 			}
 		};
 
@@ -84,11 +77,18 @@ public class ImageListFragment
 		{
 			@NonNull
 			@Override
-			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		performLayoutClickOpenUri(holder);
+		return true;
 	}
 
 	@Override

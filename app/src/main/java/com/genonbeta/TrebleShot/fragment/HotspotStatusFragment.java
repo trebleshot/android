@@ -30,10 +30,10 @@ import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -47,7 +47,7 @@ import org.json.JSONObject;
  */
 public class HotspotStatusFragment
 		extends Fragment
-	implements TitleSupport
+		implements TitleSupport
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -81,13 +81,13 @@ public class HotspotStatusFragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		View view = getLayoutInflater().inflate(R.layout.layout_illustrate_qr_code, container, false);
+		View view = getLayoutInflater().inflate(R.layout.layout_hotspot_status, container, false);
 
-		mCodeImageView = view.findViewById(R.id.layout_illustrate_qr_code_qr_image);
-		mInfoTextView = view.findViewById(R.id.layout_illustrate_qr_code_info_container_info_text);
-		mNameTextView = view.findViewById(R.id.layout_illustrate_qr_code_info_container_network_text);
-		mPassTextView = view.findViewById(R.id.layout_illustrate_qr_code_info_container_password_text);
-		mToggleButton = view.findViewById(R.id.layout_illustrate_qr_code_info_toggle_button);
+		mCodeImageView = view.findViewById(R.id.layout_hotspot_status_qr_image);
+		mInfoTextView = view.findViewById(R.id.layout_hotspot_status_info_container_info_text);
+		mNameTextView = view.findViewById(R.id.layout_hotspot_status_info_container_network_text);
+		mPassTextView = view.findViewById(R.id.layout_hotspot_status_info_container_password_text);
+		mToggleButton = view.findViewById(R.id.layout_hotspot_status_info_toggle_button);
 
 		mToggleButton.setOnClickListener(new View.OnClickListener()
 		{
@@ -123,7 +123,7 @@ public class HotspotStatusFragment
 	@Override
 	public CharSequence getTitle(Context context)
 	{
-		return context.getString(R.string.text_trebleshotHotspot);
+		return context.getString(R.string.text_hotspot);
 	}
 
 	public boolean hasLocationPermission(Context context)
@@ -222,7 +222,10 @@ public class HotspotStatusFragment
 						? getView().getHeight()
 						: getView().getWidth();
 
-				int scaledSize = (int) (scaleUsing / 1.5);
+				if (scaleUsing == 0)
+					scaleUsing = 200;
+
+				int scaledSize = (int) (scaleUsing / 1.7);
 
 				BitMatrix bitMatrix = formatWriter.encode(text, BarcodeFormat.QR_CODE, scaledSize, scaledSize);
 				BarcodeEncoder encoder = new BarcodeEncoder();

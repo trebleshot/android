@@ -16,8 +16,8 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 /**
  * created by: Veli
@@ -25,7 +25,7 @@ import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
  */
 
 public class VideoListAdapter
-		extends GalleryGroupShareableListAdapter<VideoListAdapter.VideoHolder, GroupShareableListAdapter.ViewHolder>
+		extends GalleryGroupEditableListAdapter<VideoListAdapter.VideoHolder, GroupEditableListAdapter.GroupViewHolder>
 {
 	public static final int VIEW_TYPE_TITLE = 1;
 
@@ -39,20 +39,21 @@ public class VideoListAdapter
 
 	@NonNull
 	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-		GroupShareableListAdapter.ViewHolder holder = new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
+		GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
 
-		holder.setClickableLayout(getSelectionConnection());
+		if (isGridLayoutRequested())
+			holder.setClickableLayout(R.id.clickable_layout);
 
 		return holder;
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
 		final VideoHolder object = this.getItem(position);
 		final View parentView = holder.getView();
@@ -67,8 +68,7 @@ public class VideoListAdapter
 			text2.setText(object.duration);
 			text3.setText(FileUtils.sizeExpression(object.size, false));
 
-			if (getSelectionConnection() != null)
-				parentView.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			GlideApp.with(getContext())
 					.load(object.uri)
@@ -126,7 +126,7 @@ public class VideoListAdapter
 		return true;
 	}
 
-	public static class VideoHolder extends GalleryGroupShareableListAdapter.GalleryGroupShareable
+	public static class VideoHolder extends GalleryGroupEditableListAdapter.GalleryGroupEditable
 	{
 		public long id;
 		public String duration;

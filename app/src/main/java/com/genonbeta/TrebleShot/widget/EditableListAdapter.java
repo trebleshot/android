@@ -6,7 +6,7 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MathUtils;
@@ -22,7 +22,7 @@ import java.util.Comparator;
 
 abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
 		extends RecyclerViewAdapter<T, V>
-		implements SectionTitleProvider
+		implements SectionTitleProvider, EditableListAdapterImpl<T>
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -33,8 +33,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	public static final int MODE_SORT_ORDER_ASCENDING = 100;
 	public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
-	private EditableListFragment mFragment;
-	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
+	private EditableListFragmentImpl<T> mFragment;
 	private ArrayList<T> mItemList = new ArrayList<>();
 	private int mSortingCriteria = MODE_SORT_BY_NAME;
 	private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
@@ -97,7 +96,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return mGeneratedComparator;
 	}
 
-	public EditableListFragment getFragment()
+	public EditableListFragmentImpl<T> getFragment()
 	{
 		return mFragment;
 	}
@@ -172,12 +171,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return TextUtils.trimText(text, 1).toUpperCase();
 	}
 
-	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
-	{
-		return mSelectionConnection;
-	}
-
-	private int getSortingCriteria()
+	public int getSortingCriteria()
 	{
 		return mSortingCriteria;
 	}
@@ -209,14 +203,15 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 				|| gridSize > 2;
 	}
 
-	public void setSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
+	public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
 	{
-		mSelectionConnection = selectionConnection;
+		mFragment = fragmentImpl;
 	}
 
-	public void setFragment(EditableListFragment fragment)
+	public void setSortingCriteria(int sortingCriteria, int sortingOrder)
 	{
-		mFragment = fragment;
+		mSortingCriteria = sortingCriteria;
+		mSortingOrderAscending = sortingOrder;
 	}
 
 	public synchronized void syncSelectionList()
@@ -226,84 +221,37 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		}
 	}
 
-	public void setSortingCriteria(int sortingCriteria, int sortingOrder)
-	{
-		mSortingCriteria = sortingCriteria;
-		mSortingOrderAscending = sortingOrder;
-	}
-
 	public synchronized void syncSelectionList(ArrayList<T> itemList)
 	{
-		if (getSelectionConnection() != null)
-			for (T item : itemList)
-				item.setSelectableSelected(getSelectionConnection().isSelected(item));
+		if (getFragment() == null || getFragment().getSelectionConnection() == null)
+			return;
+
+		for (T item : itemList)
+			item.setSelectableSelected(mFragment.getSelectionConnection().isSelected(item));
 	}
 
 	public static class EditableViewHolder extends ViewHolder
 	{
 		private View mClickableLayout;
-		private View mSelectionOrientedLayout;
 
 		public EditableViewHolder(View itemView)
 		{
 			super(itemView);
 		}
 
-		public View getClickableLayout()
+		public View getClickableView()
 		{
-			return mClickableLayout;
+			return mClickableLayout == null ? getView() : mClickableLayout;
 		}
 
-		public View getSelectionOrientedLayout()
+		public EditableViewHolder setClickableLayout(int resId)
 		{
-			return mSelectionOrientedLayout;
+			return setClickableLayout(getView().findViewById(resId));
 		}
 
-		public EditableViewHolder setClickableLayout(PowerfulActionMode.SelectorConnection connection)
-		{
-			return setClickableLayout(getView(), connection);
-		}
-
-		public EditableViewHolder setClickableLayout(int resId, PowerfulActionMode.SelectorConnection connection)
-		{
-			return setClickableLayout(getView().findViewById(resId), connection);
-		}
-
-		public EditableViewHolder setClickableLayout(View clickableLayout, final PowerfulActionMode.SelectorConnection connection)
+		public EditableViewHolder setClickableLayout(View clickableLayout)
 		{
 			mClickableLayout = clickableLayout;
-
-			clickableLayout.setOnLongClickListener(new View.OnLongClickListener()
-			{
-				@Override
-				public boolean onLongClick(View v)
-				{
-					return connection != null && connection.setSelected(getAdapterPosition());
-				}
-			});
-
-			return this;
-		}
-
-		public EditableViewHolder setSelectionOrientedLayout(int resId, PowerfulActionMode.SelectorConnection connection)
-		{
-			return setSelectionOrientedLayout(getView().findViewById(resId), connection);
-		}
-
-		public EditableViewHolder setSelectionOrientedLayout(View selectionOrientedLayout, final PowerfulActionMode.SelectorConnection connection)
-		{
-			mSelectionOrientedLayout = selectionOrientedLayout;
-
-			selectionOrientedLayout.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					if (connection != null)
-						connection.setSelected(getAdapterPosition());
-				}
-			});
-
 			return this;
 		}
 	}

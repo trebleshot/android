@@ -5,7 +5,7 @@ import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
@@ -13,8 +13,8 @@ import java.util.Map;
  * created by: veli
  * date: 30.03.2018 18:15
  */
-abstract public class GalleryGroupShareableListFragment<T extends GroupShareableListAdapter.GroupShareable, V extends GroupShareableListAdapter.ViewHolder, E extends GroupShareableListAdapter<T, V>>
-		extends GroupShareableListFragment<T, V, E>
+abstract public class GalleryGroupEditableListFragment<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
+		extends GroupEditableListFragment<T, V, E>
 {
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)

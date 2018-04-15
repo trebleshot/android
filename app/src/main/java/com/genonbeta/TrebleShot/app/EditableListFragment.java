@@ -2,8 +2,13 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -15,16 +20,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupport;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
@@ -37,9 +47,12 @@ import java.util.Map;
 
 abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder, E extends EditableListAdapter<T, V>>
 		extends DynamicRecyclerViewFragment<T, V, E>
-		implements PowerfulActionMode.Callback<T>, DetachListener
+		implements EditableListFragmentImpl<T>, DetachListener
 {
+	private SelectionCallback<T> mSelectionCallback;
+	private SelectionCallback<T> mDefaultSelectionCallback;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
+	private PowerfulActionMode.SelectorConnection<T> mDefaultSelectionConnection;
 	private Snackbar mRefreshDelayedSnackbar;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
@@ -50,6 +63,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	private FastScroller mFastScroller;
 	private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
 	private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
+	private ContentObserver mObserver;
+	private LayoutClickListener<V> mLayoutClickListener;
+
+	abstract public boolean onDefaultClickAction(V holder);
+
+	public boolean onDefaultLongClickAction(V holder)
+	{
+		return false;
+	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -63,13 +85,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		if (getPowerfulActionMode() != null) {
-			mSelectionConnection = new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), this);
+		if (getPowerfulActionMode() != null && getSelectionCallback() != null)
+			setDefaultSelectionConnection(new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), getSelectionCallback()));
 
-			getAdapter().setSelectionConnection(getSelectionConnection());
-
-			setHasOptionsMenu(true);
-		}
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -77,7 +96,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		getAdapter().setHasStableIds(true);
 		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
 		getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 
@@ -203,8 +221,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		int id = item.getItemId();
 		int groupId = item.getGroupId();
 
-		if (id == R.id.actions_abs_editable_multi_select)
-			getPowerfulActionMode().start(this);
+		if (id == R.id.actions_abs_editable_multi_select && getSelectionCallback() != null)
+			getSelectionConnection().getMode().start(getSelectionCallback());
 		else if (groupId == R.id.actions_abs_editable_group_sorting)
 			changeSortingCriteria(item.getOrder());
 		else if (groupId == R.id.actions_abs_editable_group_sort_order)
@@ -231,72 +249,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	@Override
 	public void onPrepareDetach()
 	{
-		if (getPowerfulActionMode() != null)
-			getPowerfulActionMode().finish(this);
-	}
-
-	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-	{
-		updateSelectionTitle(actionMode);
-		return false;
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
-		return false;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
-	{
-		updateSelectionTitle(actionMode);
-
-		if (position != -1) {
-			getAdapter().syncSelectionList();
-			getAdapter().notifyItemChanged(position);
-		}
-	}
-
-	@Override
-	public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.action_mode_abs_editable_select_all)
-			setSelection(true);
-		else if (id == R.id.action_mode_abs_editable_select_none)
-			setSelection(false);
-		else if (id == R.id.action_mode_abs_editable_preview_selections)
-			new SelectionEditorDialog<>(getActivity(), getSelectionConnection().getSelectedItemList())
-					.setOnDismissListener(new DialogInterface.OnDismissListener()
-					{
-						@Override
-						public void onDismiss(DialogInterface dialog)
-						{
-							ArrayList<T> selectedItems = new ArrayList<>(getSelectionConnection().getSelectedItemList());
-
-							for (T selectable : selectedItems)
-								if (!selectable.isSelectableSelected())
-									getSelectionConnection().setSelected(selectable, false);
-
-							// Position cannot be assumed that is why we need to request a refresh
-							getAdapter().notifyAllSelectionChanges();
-						}
-
-					})
-					.show();
-
-		return false;
-	}
-
-	@Override
-	public void onFinish(Context context, PowerfulActionMode actionMode)
-	{
-		setSelection(false);
-		loadIfRequested();
+		if (getPowerfulActionMode() != null && mSelectionCallback != null)
+			getPowerfulActionMode().finish(mSelectionCallback);
 	}
 
 	public int onGridSpanSize(int viewType, int currentSpanSize)
@@ -417,6 +371,32 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		}
 	}
 
+	public EditableListAdapterImpl<T> getAdapterImpl()
+	{
+		return getAdapter();
+	}
+
+	public ContentObserver getDefaultContentObserver()
+	{
+		if (mObserver == null)
+			mObserver = new ContentObserver(new Handler(Looper.myLooper()))
+			{
+				@Override
+				public boolean deliverSelfNotifications()
+				{
+					return true;
+				}
+
+				@Override
+				public void onChange(boolean selfChange)
+				{
+					refreshList();
+				}
+			};
+
+		return mObserver;
+	}
+
 	public FastScroller getFastScroller()
 	{
 		return mFastScroller;
@@ -432,15 +412,18 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		return getClass().getSimpleName() + setting;
 	}
 
-	@Override
-	public ArrayList<T> getSelectableList()
-	{
-		return getAdapter().getList();
-	}
-
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
 	{
-		return mSelectionConnection;
+		return mSelectionConnection == null
+				? mDefaultSelectionConnection
+				: mSelectionConnection;
+	}
+
+	public SelectionCallback<T> getSelectionCallback()
+	{
+		return mSelectionCallback == null
+				? mDefaultSelectionCallback
+				: mSelectionCallback;
 	}
 
 	public int getSortingCriteria()
@@ -480,19 +463,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		return mRefreshRequested;
 	}
 
-	public boolean isSelectionActivated()
-	{
-		return getPowerfulActionMode() != null
-				&& getPowerfulActionMode().hasActive(this)
-				&& getSelectionConnection() != null;
-	}
-
 	public boolean isSortingSupported()
 	{
 		return mSortingSupported;
 	}
 
-	protected boolean loadIfRequested()
+	public boolean loadIfRequested()
 	{
 		boolean refreshed = isRefreshRequested();
 
@@ -502,6 +478,68 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 			refreshList();
 
 		return refreshed;
+	}
+
+	public boolean openUri(Uri uri, String chooserText)
+	{
+		try {
+			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri);
+			Intent openIntent = FileUtils.applySecureOpenIntent(getActivity(), streamInfo, new Intent(Intent.ACTION_VIEW));
+
+			startActivity(Intent.createChooser(openIntent, chooserText));
+
+			return true;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+		}
+
+		return false;
+	}
+
+	public boolean performLayoutClick(V holder)
+	{
+		return setItemSelected(holder)
+				|| (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, false))
+				|| onDefaultClickAction(holder);
+	}
+
+	public boolean performLayoutLongClick(V holder)
+	{
+		return (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, true))
+				|| onDefaultLongClickAction(holder)
+				|| getSelectionConnection() != null && getSelectionConnection().setSelected(holder);
+	}
+
+	public boolean performLayoutClickOpenUri(V holder)
+	{
+		Object object = getAdapter().getItem(holder.getAdapterPosition());
+
+		if (object instanceof Shareable)
+			return openUri(((Shareable) object).uri, getString(R.string.text_fileOpenAppChoose));
+
+		return false;
+	}
+
+	public void registerLayoutViewClicks(final V holder)
+	{
+		holder.getClickableView().setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				performLayoutClick(holder);
+			}
+		});
+
+		holder.getClickableView().setOnLongClickListener(new View.OnLongClickListener()
+		{
+			@Override
+			public boolean onLongClick(View v)
+			{
+				return performLayoutLongClick(holder);
+			}
+		});
 	}
 
 	@Override
@@ -526,14 +564,24 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		}
 	}
 
-	public void setDefaultSortingCriteria(int criteria)
-	{
-		mDefaultSortingCriteria = criteria;
-	}
-
 	public void setDefaultOrderingCriteria(int criteria)
 	{
 		mDefaultOrderingCriteria = criteria;
+	}
+
+	public void setDefaultSelectionCallback(SelectionCallback<T> selectionCallback)
+	{
+		mDefaultSelectionCallback = selectionCallback;
+	}
+
+	public void setDefaultSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
+	{
+		mDefaultSelectionConnection = selectionConnection;
+	}
+
+	public void setDefaultSortingCriteria(int criteria)
+	{
+		mDefaultSortingCriteria = criteria;
 	}
 
 	public void setDefaultViewingGridSize(int gridSize, int gridSizeLandscape)
@@ -544,12 +592,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 	public boolean setItemSelected(V holder)
 	{
-		return setItemSelected(holder.getAdapterPosition());
+		return mSelectionConnection != null && mSelectionCallback.setItemSelected(holder.getAdapterPosition());
 	}
 
-	public boolean setItemSelected(int position)
+	public void setLayoutClickListener(LayoutClickListener<V> clickListener)
 	{
-		return isSelectionActivated() && getSelectionConnection().setSelected(position);
+		mLayoutClickListener = clickListener;
 	}
 
 	public void setRefreshRequested(boolean requested)
@@ -557,43 +605,163 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		mRefreshRequested = requested;
 	}
 
-	public boolean setSelection()
-	{
-		boolean allSelected = getSelectionConnection().getSelectedItemList().size() != getSelectableList().size();
-
-		setSelection(allSelected);
-
-		return allSelected;
-	}
-
-	public void setSelection(boolean selection)
-	{
-		setSelection(selection, getSelectableList());
-
-		// One-by-one calling caused an ANR
-		getAdapter().syncSelectionList();
-		getAdapter().notifyItemRangeChanged(0, getSelectableList().size());
-	}
-
-
-	public void setSelection(boolean selection, ArrayList<T> selectableList)
-	{
-		for (T selectable : selectableList)
-			getSelectionConnection().setSelected(selectable, selection);
-	}
-
-
 	public void setSortingSupported(boolean sortingSupported)
 	{
 		mSortingSupported = sortingSupported;
 	}
 
-	private void updateSelectionTitle(PowerfulActionMode actionMode)
+	@Override
+	public void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
 	{
-		int selectedSize = getSelectionConnection()
-				.getSelectedItemList()
-				.size();
+		mSelectionConnection = selectionConnection;
+	}
 
-		actionMode.setTitle(String.valueOf(selectedSize));
+	public void setSelectionCallback(SelectionCallback<T> selectionCallback)
+	{
+		mSelectionCallback = selectionCallback;
+	}
+
+	public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>
+	{
+		boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
+	}
+
+	public static class SelectionCallback<T extends Editable> implements PowerfulActionMode.Callback<T>
+	{
+		private EditableListFragmentImpl<T> mFragment;
+
+		public SelectionCallback(EditableListFragmentImpl<T> fragment)
+		{
+			updateProvider(fragment);
+		}
+
+		public EditableListAdapterImpl<T> getAdapter()
+		{
+			return mFragment.getAdapterImpl();
+		}
+
+		public EditableListFragmentImpl<T> getFragment()
+		{
+			return mFragment;
+		}
+
+		public boolean isSelectionActivated()
+		{
+			return mFragment.getSelectionConnection() != null
+					&& mFragment.getSelectionConnection().selectionActive();
+		}
+
+		@Override
+		public ArrayList<T> getSelectableList()
+		{
+			return getAdapter().getList();
+		}
+
+		public boolean setItemSelected(int position)
+		{
+			return isSelectionActivated() && mFragment.getSelectionConnection().setSelected(position);
+		}
+
+		public void setSelection(boolean selection, ArrayList<T> selectableList)
+		{
+			for (T selectable : selectableList)
+				mFragment.getSelectionConnection().setSelected(selectable, selection);
+		}
+
+		public boolean setSelection()
+		{
+			boolean allSelected = mFragment.getSelectionConnection().getSelectedItemList().size() != getSelectableList().size();
+
+			setSelection(allSelected);
+
+			return allSelected;
+		}
+
+		public void setSelection(boolean selection)
+		{
+			setSelection(selection, getSelectableList());
+
+			// One-by-one calling caused an ANR
+			getAdapter().syncSelectionList();
+			getAdapter().notifyItemRangeChanged(0, getSelectableList().size());
+		}
+
+		public void updateProvider(EditableListFragmentImpl<T> fragment)
+		{
+			mFragment = fragment;
+		}
+
+		private void updateSelectionTitle(PowerfulActionMode actionMode)
+		{
+			int selectedSize = mFragment.getSelectionConnection()
+					.getSelectedItemList()
+					.size();
+
+			actionMode.setTitle(String.valueOf(selectedSize));
+		}
+
+		@Override
+		public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+		{
+			updateSelectionTitle(actionMode);
+			return true;
+		}
+
+		@Override
+		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+		{
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
+			return false;
+		}
+
+		@Override
+		public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
+		{
+			updateSelectionTitle(actionMode);
+
+			if (position != -1) {
+				getAdapter().syncSelectionList();
+				getAdapter().notifyItemChanged(position);
+			}
+		}
+
+		@Override
+		public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
+		{
+			int id = item.getItemId();
+
+			if (id == R.id.action_mode_abs_editable_select_all)
+				setSelection(true);
+			else if (id == R.id.action_mode_abs_editable_select_none)
+				setSelection(false);
+			else if (id == R.id.action_mode_abs_editable_preview_selections)
+				new SelectionEditorDialog<>(mFragment.getActivity(), mFragment.getSelectionConnection().getSelectedItemList())
+						.setOnDismissListener(new DialogInterface.OnDismissListener()
+						{
+							@Override
+							public void onDismiss(DialogInterface dialog)
+							{
+								ArrayList<T> selectedItems = new ArrayList<>(mFragment.getSelectionConnection().getSelectedItemList());
+
+								for (T selectable : selectedItems)
+									if (!selectable.isSelectableSelected())
+										mFragment.getSelectionConnection().setSelected(selectable, false);
+
+								// Position cannot be assumed that is why we need to request a refresh
+								getAdapter().notifyAllSelectionChanges();
+							}
+
+						})
+						.show();
+
+			return false;
+		}
+
+		@Override
+		public void onFinish(Context context, PowerfulActionMode actionMode)
+		{
+			setSelection(false);
+			mFragment.loadIfRequested();
+		}
 	}
 }

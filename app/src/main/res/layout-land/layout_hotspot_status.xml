@@ -4,22 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <include
+        layout="@layout/layout_hotspot_status_image_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center">
-
-        <ImageView
-            android:id="@+id/layout_illustrate_qr_code_qr_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_qrcode_grey600_48dp"/>
-
-    </LinearLayout>
+        android:layout_weight="1"/>
 
     <include
-        layout="@layout/layout_illustrate_qr_code_info_container"
+        layout="@layout/layout_hotspot_status_info_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>

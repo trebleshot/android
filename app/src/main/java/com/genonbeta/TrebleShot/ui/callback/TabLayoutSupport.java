@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.TrebleShot.ui.callback;
 
 import android.support.design.widget.TabLayout;
 
