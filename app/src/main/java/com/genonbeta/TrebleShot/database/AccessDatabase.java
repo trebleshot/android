@@ -91,6 +91,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFERASSIGNEE_GROUPID = "groupId";
 	public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
 	public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
+	public static final String FIELD_TRANSFERASSIGNEE_ISCLONE = "isClone";
 
 	public AccessDatabase(Context context)
 	{
@@ -246,7 +247,8 @@ public class AccessDatabase extends SQLiteDatabase
 		sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
 				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true));
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
 
 		return sqlValues;
 	}

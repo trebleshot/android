@@ -47,7 +47,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.acl.Group;
 import java.util.ArrayList;
 
 public class ShareActivity extends Activity
@@ -67,6 +66,7 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
+	private Toolbar mToolbar;
 	private String mAction;
 	private int mGroupId;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
@@ -84,10 +84,10 @@ public class ShareActivity extends Activity
 
 		setContentView(R.layout.activity_share);
 
-		final Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		mToolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(mToolbar);
 
-		toolbar.setTitle(R.string.text_shareWithTrebleshot);
+		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 
 		TabLayout tabLayout = findViewById(R.id.tab_layout);
 		ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
@@ -283,7 +283,7 @@ public class ShareActivity extends Activity
 									ArrayList<TransferObject> pendingTransfers = getDatabase()
 											.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 													.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-													+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+																	+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
 															String.valueOf(existingGroup.groupId),
 															TransferObject.Type.OUTGOING.toString()), TransferObject.class);
 
@@ -320,6 +320,9 @@ public class ShareActivity extends Activity
 
 									final TransferGroup.Assignee addedAssignee = new TransferGroup.Assignee(existingGroup, device, connection);
 
+									// so that if the user rejects it won't be removed from the sender
+									addedAssignee.isClone = true;
+
 									jsonRequest.put(Keyword.FILES_INDEX, filesArray);
 									getDatabase().publish(addedAssignee);
 
@@ -354,28 +357,36 @@ public class ShareActivity extends Activity
 							JSONObject clientResponse = new JSONObject(response.response);
 
 							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-								if (pendingRegistry.size() > 0) {
-									getDatabase().insert(groupInstance);
-									getDatabase().insert(assignee);
+								switch (mAction) {
+									case ACTION_ADD_DEVICES:
+										// TODO: 16/04/18 The new assignee info or device id should be returned
+										setResult(RESULT_OK, new Intent());
+										finish();
+										break;
+									default:
+										if (pendingRegistry.size() > 0) {
+											getDatabase().insert(groupInstance);
+											getDatabase().insert(assignee);
 
-									getDefaultInterrupter().addCloser(new Interrupter.Closer()
-									{
-										@Override
-										public void onClose(boolean userAction)
-										{
-											getDatabase().remove(groupInstance);
+											getDefaultInterrupter().addCloser(new Interrupter.Closer()
+											{
+												@Override
+												public void onClose(boolean userAction)
+												{
+													getDatabase().remove(groupInstance);
+												}
+											});
+
+											for (TransferObject transferObject : pendingRegistry) {
+												if (getDefaultInterrupter().interrupted())
+													throw new InterruptedException("Interrupted by user");
+
+												getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
+												getDatabase().insert(transferObject);
+											}
+
+											TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 										}
-									});
-
-									for (TransferObject transferObject : pendingRegistry) {
-										if (getDefaultInterrupter().interrupted())
-											throw new InterruptedException("Interrupted by user");
-
-										getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
-										getDatabase().insert(transferObject);
-									}
-
-									TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 								}
 							} else {
 								if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
@@ -474,6 +485,8 @@ public class ShareActivity extends Activity
 					break;
 				case ACTION_ADD_DEVICES:
 					mGroupId = getIntent().getIntExtra(EXTRA_GROUP_ID, -1);
+
+					mToolbar.setTitle(R.string.text_addDevicesToTransfer);
 					break;
 				default:
 					mAction = null;

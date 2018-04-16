@@ -132,6 +132,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 		public int groupId;
 		public String deviceId;
 		public String connectionAdapter;
+		public boolean isClone = false;
 
 		public Assignee()
 		{
@@ -175,6 +176,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 			values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
 			values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
 			values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
+			values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_ISCLONE, isClone ? 1 : 0);
 
 			return values;
 		}
@@ -185,6 +187,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 			this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
 			this.groupId = item.getInt(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
 			this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+			this.isClone = item.getInt(AccessDatabase.FIELD_TRANSFERASSIGNEE_ISCLONE) != 0;
 		}
 
 		@Override

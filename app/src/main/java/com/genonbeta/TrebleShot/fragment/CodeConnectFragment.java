@@ -1,16 +1,19 @@
 package com.genonbeta.TrebleShot.fragment;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -51,6 +54,7 @@ public class CodeConnectFragment
 {
 	public static final String TAG = "CodeConnectFragment";
 
+	public static final int REQUEST_PERMISSION_CAMERA = 1;
 	public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
 
 	private BarcodeView mBarcodeView;
@@ -62,6 +66,7 @@ public class CodeConnectFragment
 	private AppCompatButton mTaskInterruptButton;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
+	private boolean mPermissionRequested = false;
 
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -175,6 +180,21 @@ public class CodeConnectFragment
 		getContext().unregisterReceiver(mReceiver);
 	}
 
+	@Override
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
+	{
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+		if (permissions.length > 0)
+			for (int permIterator = 0; permIterator < permissions.length; permIterator++) {
+				if (Manifest.permission.CAMERA.equals(permissions[permIterator]) &&
+						grantResults[permIterator] == PackageManager.PERMISSION_GRANTED) {
+					updateState();
+					mPermissionRequested = false;
+				}
+			}
+	}
+
 	protected void communicate(final Object object)
 	{
 		WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
@@ -221,6 +241,7 @@ public class CodeConnectFragment
 							{
 								mConnected = true;
 
+								// we may be working with direct IP scan
 								if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
 									try {
 										NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) object;
@@ -288,18 +309,28 @@ public class CodeConnectFragment
 	{
 		boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
 
-		mConductImage.setImageResource(wifiEnabled
-				? R.drawable.ic_crop_free_white_144dp
-				: R.drawable.ic_signal_wifi_off_white_144dp);
+		if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+			mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
+			mConductText.setText(R.string.text_cameraPermissionRequired);
 
-		mConductText.setText(wifiEnabled
-				? R.string.text_scanQRCodeHelp
-				: R.string.text_scanQRWifiRequired);
+			if (!mPermissionRequested)
+				ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
 
-		if (wifiEnabled)
-			mBarcodeView.resume();
-		else
-			mBarcodeView.pauseAndWait();
+			mPermissionRequested = true;
+		} else {
+			mConductImage.setImageResource(wifiEnabled
+					? R.drawable.ic_crop_free_white_144dp
+					: R.drawable.ic_signal_wifi_off_white_144dp);
+
+			mConductText.setText(wifiEnabled
+					? R.string.text_scanQRCodeHelp
+					: R.string.text_scanQRWifiRequired);
+
+			if (wifiEnabled)
+				mBarcodeView.resume();
+			else
+				mBarcodeView.pauseAndWait();
+		}
 	}
 
 	public void updateTaskStarted(final Interrupter interrupter)

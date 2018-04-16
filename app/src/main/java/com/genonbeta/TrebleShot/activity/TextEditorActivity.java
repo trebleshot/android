@@ -128,8 +128,8 @@ public class TextEditorActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == R.id.menu_action_done) {
-			Intent intent = new Intent();
-			intent.putExtra(EXTRA_TEXT_INDEX, mEditTextEditor.getText().toString());
+			Intent intent = new Intent()
+					.putExtra(EXTRA_TEXT_INDEX, mEditTextEditor.getText().toString());
 
 			setResult(RESULT_OK, intent);
 			finish();

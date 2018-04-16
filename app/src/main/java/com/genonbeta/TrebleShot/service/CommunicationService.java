@@ -653,10 +653,20 @@ public class CommunicationService extends Service
 									int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
 									boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
 
-									if (!isAccepted)
-										getDatabase().remove(new TransferGroup(groupId));
+									TransferGroup group = new TransferGroup(groupId);
+									TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device);
 
-									result = true;
+									try {
+										getDatabase().reconstruct(assignee);
+
+										if (!isAccepted)
+											getDatabase().remove(assignee.isClone
+													? assignee // if it is clone (later added device to transfer group)
+													: group);
+
+										result = true;
+									} catch (Exception e) {
+									}
 								}
 								break;
 							case (Keyword.REQUEST_CLIPBOARD):
