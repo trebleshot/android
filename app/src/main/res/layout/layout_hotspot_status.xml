@@ -6,15 +6,15 @@
     android:orientation="vertical">
 
     <include
-        layout="@layout/layout_hotspot_status_image_container"
+        layout="@layout/layout_network_status_image_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
     <include
-        layout="@layout/layout_hotspot_status_info_container"
+        layout="@layout/layout_network_status_info_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1.5"/>
+        android:layout_weight="1.2"/>
 
 </LinearLayout>

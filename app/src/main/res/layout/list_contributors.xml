@@ -4,17 +4,18 @@
     android:layout_height="wrap_content"
     android:background="?rectSelector"
     android:gravity="center_vertical"
-    android:paddingBottom="8dp"
-    android:paddingLeft="55dp"
-    android:paddingRight="55dp"
-    android:paddingTop="8dp">
+    android:paddingBottom="15dp"
+    android:paddingLeft="35dp"
+    android:paddingRight="35dp"
+    android:paddingTop="15dp">
 
     <LinearLayout
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginRight="15dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginRight="35dp"
         android:gravity="center"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginEnd="35dp">
 
         <ImageView
             android:id="@+id/image"

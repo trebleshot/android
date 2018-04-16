@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -20,8 +21,6 @@ import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
-import java.util.ArrayList;
-
 /**
  * created by: veli
  * date: 13/04/18 19:45
@@ -31,16 +30,13 @@ public class ContentSharingActivity extends Activity
 {
 	public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
-	private static ArrayList mSavedSelectionLists;
-
-	private PowerfulActionMode.SelectorConnection mSelectorConnection;
-
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_content_sharing);
 
+		final AppBarLayout appBarLayout = findViewById(R.id.app_bar);
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
@@ -54,7 +50,7 @@ public class ContentSharingActivity extends Activity
 		final EditableListFragment videoFragment = new VideoListFragment();
 
 		final SharingActionModeCallback selectionCallback = new SharingActionModeCallback(null);
-		mSelectorConnection = new PowerfulActionMode.SelectorConnection(actionMode, selectionCallback);
+		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(actionMode, selectionCallback);
 
 		final EditableListFragment.LayoutClickListener groupLayoutClickListener
 				= new EditableListFragment.LayoutClickListener()
@@ -65,7 +61,7 @@ public class ContentSharingActivity extends Activity
 				if (longClick)
 					return listFragment.onDefaultClickAction(holder);
 
-				return mSelectorConnection.setSelected(holder);
+				return selectorConnection.setSelected(holder);
 			}
 		};
 
@@ -77,7 +73,7 @@ public class ContentSharingActivity extends Activity
 				EditableListFragment fragment = (EditableListFragment) super.instantiateItem(container, position);
 
 				fragment.setSelectionCallback(selectionCallback);
-				fragment.setSelectorConnection(mSelectorConnection);
+				fragment.setSelectorConnection(selectorConnection);
 				fragment.setLayoutClickListener(groupLayoutClickListener);
 
 				if (viewPager.getCurrentItem() == position)
@@ -104,7 +100,15 @@ public class ContentSharingActivity extends Activity
 			public void onTabSelected(TabLayout.Tab tab)
 			{
 				viewPager.setCurrentItem(tab.getPosition());
-				selectionCallback.updateProvider((EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem()));
+
+				EditableListFragmentImpl fragment = (EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem());
+
+				selectionCallback.updateProvider(fragment);
+
+				if (fragment.getAdapterImpl() != null)
+					fragment.getAdapterImpl().notifyAllSelectionChanges();
+
+				// FIXME: 15/04/18 Rotation causes return of uninitiated fragment which is abnormal; it also leads app stop because of empty adapter reference
 			}
 
 			@Override
@@ -119,15 +123,14 @@ public class ContentSharingActivity extends Activity
 
 			}
 		});
-	}
 
-	@Override
-	protected void onStart()
-	{
-		super.onStart();
-
-		if (mSelectorConnection.getSelectedItemList().size() > 0
-				&& mSelectorConnection.selectionActive())
-			mSelectorConnection.getMode().start(mSelectorConnection.getCallback());
+		actionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+		{
+			@Override
+			public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
+			{
+				appBarLayout.setExpanded(!started, true);
+			}
+		});
 	}
 }

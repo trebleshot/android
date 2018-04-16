@@ -5,13 +5,13 @@
     android:orientation="horizontal">
 
     <include
-        layout="@layout/layout_hotspot_status_image_container"
+        layout="@layout/layout_network_status_image_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>
 
     <include
-        layout="@layout/layout_hotspot_status_info_container"
+        layout="@layout/layout_network_status_info_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"/>

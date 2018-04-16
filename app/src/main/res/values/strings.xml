@@ -321,9 +321,9 @@
     <string name="mesg_wifiEnableRequired">Please enable Wi-Fi to connect</string>
     <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
-    <string name="text_qrCodeAvailableHelp">Tell sender to scan this QR code using TrebleShot</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot first</string>
-    <string name="text_scanQRCodeHelp">Scan the QR code on the receiver\'s screen</string>
+    <string name="text_qrCodeAvailableHelp">Scan this QR code using TrebleShot to connect the hotspot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot or connect to any network for easy discovery</string>
+    <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
     <string name="butn_qrScanToSend">Scan QR Code to send</string>
     <string name="butn_qrToggle">Toggle QR Code showing</string>
     <string name="text_notificationSettingsSummary">Open notification settings</string>
@@ -351,7 +351,13 @@
     <string name="mesg_noReceiverOrSender">You should first add devices</string>
     <string name="butn_addPeople">Add devices</string>
     <string name="text_connectDevices">Connect devices</string>
-    <string name="text_hotspot">Hotspot</string>
+    <string name="text_network">Network</string>
     <string name="text_connect">Connect</string>
     <string name="butn_shareWithOtherApps">Share with other apps</string>
+    <string name="butn_startHotspot">Start hotspot</string>
+    <string name="butn_stopHotspot">Stop hotspot</string>
+    <string name="text_easyDiscoveryHelp">Scan this if the both devices on the same network</string>
+    <string name="text_scanQRWifiRequired">To connect to devices Wireless should be turned on</string>
+    <string name="mesg_completing">Completing</string>
+    <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
 </resources>

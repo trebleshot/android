@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
@@ -150,15 +151,21 @@ public class FileListAdapter
 		final GenericFileHolder object = getItem(position);
 		final View parentView = holder.getView();
 
-		ImageView imageView = parentView.findViewById(R.id.image);
-		TextView textView1 = parentView.findViewById(R.id.text);
-		TextView textView2 = parentView.findViewById(R.id.text2);
+		ImageView image = parentView.findViewById(R.id.image);
+		TextView text1 = parentView.findViewById(R.id.text);
+		TextView text2 = parentView.findViewById(R.id.text2);
 
 		holder.getView().setSelected(object.isSelectableSelected());
 
-		imageView.setImageResource(object.iconRes);
-		textView1.setText(object.friendlyName);
-		textView2.setText(object.info);
+		text1.setText(object.friendlyName);
+		text2.setText(object.info);
+
+		if (!(object instanceof FileHolder))
+			image.setImageResource(object.iconRes);
+		else
+			GlideApp.with(getContext())
+					.load(object.uri)
+					.into(image);
 	}
 
 	public String buildPath(String[] splitPath, int count)

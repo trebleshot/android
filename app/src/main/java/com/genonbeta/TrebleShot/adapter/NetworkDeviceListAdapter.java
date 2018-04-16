@@ -14,8 +14,8 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
@@ -26,17 +26,17 @@ import java.util.ArrayList;
 public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
 {
 	private AccessDatabase mDatabase;
-	private NetworkDeviceListFragment mFragment;
 	private SharedPreferences mPreferences;
+	private UIConnectionUtils mConnectionUtils;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
-	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, AccessDatabase database, SharedPreferences preferences)
+	public NetworkDeviceListAdapter(AccessDatabase database, SharedPreferences preferences, UIConnectionUtils connectionUtils)
 	{
-		super(fragment.getActivity());
+		super(database.getContext());
 
-		mFragment = fragment;
 		mDatabase = database;
 		mPreferences = preferences;
+		mConnectionUtils = connectionUtils;
 	}
 
 	@Override
@@ -44,8 +44,8 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
 
-		if (mFragment.canReadScanResults(getContext())) {
-			for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
+		if (mConnectionUtils.canReadScanResults()) {
+			for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {
 				if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
 					continue;
 
@@ -60,8 +60,8 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 			}
 		}
 
-		if (list.size() == 0 && mFragment.isConnectionSelfNetwork()) {
-			WifiInfo wifiInfo = mFragment.getWifiManager().getConnectionInfo();
+		if (list.size() == 0 && mConnectionUtils.isConnectionSelfNetwork()) {
+			WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
 			HotspotNetwork hotspotNetwork = new HotspotNetwork();
 

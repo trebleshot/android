@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.support.design.widget.Snackbar;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 /**
@@ -13,11 +14,11 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class Fragment
 		extends android.support.v4.app.Fragment
-		implements FragmentImpl
+		implements FragmentImpl, SnackbarSupport
 {
 	private boolean mIsMenuShown;
 
-	protected Snackbar createSnackbar(int resId, Object... objects)
+	public Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return getView() != null
 				? Snackbar.make(getView(), getString(resId, objects), Snackbar.LENGTH_LONG)

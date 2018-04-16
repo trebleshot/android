@@ -36,8 +36,9 @@
     </style>
 
     <style name="AppTheme.GreyStatusBar" parent="@style/AppTheme">
-        <item name="colorPrimaryDark">#bbb</item>
-        <item name="colorPrimary">#bbb</item>
+        <item name="colorPrimaryDark">@color/themeGreyDominant</item>
+        <item name="colorPrimary">@color/themeGreyDominant</item>
+        <item name="colorAccent">@color/themeGreyAccent</item>
         <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
     </style>
 

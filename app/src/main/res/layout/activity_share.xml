@@ -5,15 +5,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".activity.ShareActivity">
+    android:fitsSystemWindows="true">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"/>
+
+    </android.support.design.widget.AppBarLayout>
 
     <fragment
-        android:id="@+id/activity_share_fragment"
-        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+        android:id="@+id/content_fragment"
+        android:name="com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:tag="mainFragment"/>
+        android:layout_height="wrap_content"
+        android:tag="mainFragment"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".activity.ShareActivity"
+        tools:showIn="@layout/activity_share"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/content_fab"

@@ -1,19 +1,12 @@
 package com.genonbeta.TrebleShot.fragment;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.location.LocationManager;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -34,13 +27,13 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
-import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-
-import static junit.framework.Assert.fail;
 
 public class NetworkDeviceListFragment
 		extends RecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
@@ -49,21 +42,16 @@ public class NetworkDeviceListFragment
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
 	private NsdDiscovery mNsdDiscovery;
-	private RecyclerViewAdapter.OnClickListener mClickListener;
+	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private SwipeRefreshLayout mSwipeRefreshLayout;
-	private WifiManager mWifiManager;
-	private LocationManager mLocationManager;
-	private boolean mWirelessEnableRequested = false;
+	private UIConnectionUtils mConnectionUtils;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		mWifiManager = (WifiManager) getContext().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-		mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
 		mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
 		mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
@@ -143,39 +131,40 @@ public class NetworkDeviceListFragment
 					{
 						final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
 
-						if (mClickListener != null) {
-							if (device.versionNumber != -1
-									&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+						if (mDeviceSelectedListener != null
+								&& device.versionNumber != -1
+								&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
 								createSnackbar(R.string.mesg_versionNotSupported)
 										.show();
-							else
-								mClickListener.onClick(clazz);
-						} else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-							final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+						} else if (mDeviceSelectedListener == null
+								|| !mDeviceSelectedListener.onNetworkDeviceSelected(device, null)) {
+							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+								final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
 
-							AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+								AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-							builder.setTitle(hotspotNetwork.nickname);
-							builder.setMessage(R.string.text_trebleshotHotspotDescription);
-							builder.setNegativeButton(R.string.butn_close, null);
-							builder.setPositiveButton(isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
-							{
-								@Override
-								public void onClick(DialogInterface dialog, int which)
+								builder.setTitle(hotspotNetwork.nickname);
+								builder.setMessage(R.string.text_trebleshotHotspotDescription);
+								builder.setNegativeButton(R.string.butn_close, null);
+								builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
 								{
-									toggleConnection(hotspotNetwork);
-								}
-							});
+									@Override
+									public void onClick(DialogInterface dialog, int which)
+									{
+										getConnectionUtils().toggleConnection(hotspotNetwork);
+									}
+								});
 
-							builder.show();
-						} else if (device.brand != null && device.model != null)
-							new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
+								builder.show();
+							} else if (device.brand != null && device.model != null)
+								new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
+						}
 					}
 				});
 			}
 		};
 
-		return new NetworkDeviceListAdapter(this, getDatabase(), getDefaultPreferences())
+		return new NetworkDeviceListAdapter(getDatabase(), getDefaultPreferences(), getConnectionUtils())
 		{
 			@NonNull
 			@Override
@@ -232,19 +221,13 @@ public class NetworkDeviceListFragment
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (REQUEST_LOCATION_PERMISSION == requestCode)
-			showConnectionOptions();
+			getConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
 	}
 
 	@Override
 	public void onPrepareDetach()
 	{
 		showCustomView(false);
-	}
-
-	public boolean canReadScanResults(Context context)
-	{
-		return getWifiManager().isWifiEnabled()
-				&& (Build.VERSION.SDK_INT < 23 || (hasLocationPermission(context) && isLocationServiceEnabled()));
 	}
 
 	public void checkRefreshing()
@@ -254,20 +237,12 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	public boolean disableCurrentNetwork()
+	public UIConnectionUtils getConnectionUtils()
 	{
-		if (!isConnectedToAnyNetwork())
-			return false;
+		if (mConnectionUtils == null)
+			mConnectionUtils = new UIConnectionUtils(getContext(), this);
 
-		return getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
-	}
-
-	public String getCleanNetworkName(String networkName)
-	{
-		if (networkName == null)
-			return "";
-
-		return networkName.replace("\"", "");
+		return mConnectionUtils;
 	}
 
 	@Override
@@ -276,48 +251,9 @@ public class NetworkDeviceListFragment
 		return context.getString(R.string.text_deviceList);
 	}
 
-	public WifiManager getWifiManager()
-	{
-		return mWifiManager;
-	}
-
-	public boolean hasLocationPermission(Context context)
-	{
-		return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-	}
-
-	public boolean isConnectionSelfNetwork()
-	{
-		WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
-
-		return wifiInfo != null
-				&& getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
-	}
-
-	public boolean isConnectedToAnyNetwork()
-	{
-		return getWifiManager().getConnectionInfo() != null;
-	}
-
-	public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
-	{
-		if (!isConnectedToAnyNetwork())
-			return false;
-
-		if (hotspotNetwork.BSSID != null)
-			return hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
-
-		return hotspotNetwork.SSID.equals(getCleanNetworkName(getWifiManager().getConnectionInfo().getSSID()));
-	}
-
-	public boolean isLocationServiceEnabled()
-	{
-		return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-	}
-
 	public void requestRefresh()
 	{
-		getWifiManager().startScan();
+		getConnectionUtils().getWifiManager().startScan();
 
 		if (DeviceScannerService.getDeviceScanner().isScannerAvailable())
 			getContext().startService(new Intent(getContext(), DeviceScannerService.class)
@@ -331,161 +267,9 @@ public class NetworkDeviceListFragment
 		}
 	}
 
-	public void showConnectionOptions()
+	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
 	{
-		if (!getWifiManager().isWifiEnabled())
-			createSnackbar(R.string.mesg_suggestSelfHotspot)
-					.setAction(R.string.butn_enable, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							mWirelessEnableRequested = true;
-							getWifiManager().setWifiEnabled(true);
-						}
-					})
-					.show();
-		else if (validateLocationPermission())
-			createSnackbar(R.string.mesg_scanningSelfHotspot)
-					.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-						}
-					})
-					.show();
-	}
-
-	public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
-	{
-		if (!isConnectedToNetwork(hotspotNetwork)) {
-			if (isConnectedToAnyNetwork())
-				disableCurrentNetwork();
-
-			WifiConfiguration config = new WifiConfiguration();
-
-			config.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
-
-			switch (hotspotNetwork.keyManagement) {
-				case 0: // OPEN
-					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-					break;
-				case 1: // WEP64
-					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-
-					if (hotspotNetwork.password != null
-							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
-						config.wepKeys[0] = hotspotNetwork.password;
-					} else {
-						fail("Please type hex pair for the password");
-					}
-					break;
-				case 2: // WEP128
-					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-
-					if (hotspotNetwork.password != null
-							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
-						config.wepKeys[0] = hotspotNetwork.password;
-					} else {
-						fail("Please type hex pair for the password");
-					}
-					break;
-				case 3: // WPA_TKIP
-					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-					config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-					config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-
-					if (hotspotNetwork.password != null
-							&& hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
-						config.preSharedKey = hotspotNetwork.password;
-					} else {
-						config.preSharedKey = '"' + hotspotNetwork.password + '"';
-					}
-					break;
-				case 4: // WPA2_AES
-					config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-					config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-					config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-					config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-					config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-					config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-
-					if (hotspotNetwork.password != null
-							&& hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
-						config.preSharedKey = hotspotNetwork.password;
-					} else {
-						config.preSharedKey = '"' + hotspotNetwork.password + '"';
-					}
-					break;
-			}
-
-			int netId = getWifiManager().addNetwork(config);
-
-			getWifiManager().disconnect();
-			getWifiManager().enableNetwork(netId, true);
-
-			return getWifiManager().reconnect();
-		}
-
-		disableCurrentNetwork();
-
-		return false;
-	}
-
-	public void setOnListClickListener(RecyclerViewAdapter.OnClickListener listener)
-	{
-		mClickListener = listener;
-	}
-
-	public boolean validateLocationPermission()
-	{
-		if (Build.VERSION.SDK_INT < 23)
-			return true;
-
-		if (!hasLocationPermission(getContext())) {
-			createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-								getActivity().requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-										Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-							}
-						}
-					})
-					.show();
-
-			return false;
-		}
-
-		if (!isLocationServiceEnabled()) {
-			createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-						}
-					})
-					.show();
-
-			return false;
-		}
-
-		return true;
+		mDeviceSelectedListener = listener;
 	}
 
 	private class StatusReceiver extends BroadcastReceiver
@@ -499,7 +283,7 @@ public class NetworkDeviceListFragment
 				String scanStatus = intent.getStringExtra(DeviceScannerService.EXTRA_SCAN_STATUS);
 
 				if (DeviceScannerService.STATUS_OK.equals(scanStatus) || DeviceScannerService.SCANNER_NOT_AVAILABLE.equals(scanStatus)) {
-					boolean selfNetwork = isConnectionSelfNetwork();
+					boolean selfNetwork = getConnectionUtils().isConnectionSelfNetwork();
 
 					if (!selfNetwork)
 						createSnackbar(DeviceScannerService.STATUS_OK.equals(scanStatus) ?
@@ -513,12 +297,12 @@ public class NetworkDeviceListFragment
 									@Override
 									public void onClick(View v)
 									{
-										getWifiManager().disconnect();
+										getConnectionUtils().getWifiManager().disconnect();
 									}
 								})
 								.show();
 				} else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-					showConnectionOptions();
+					getConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
 			} else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
 				createSnackbar(R.string.mesg_scanCompleted)
 						.show();
@@ -527,10 +311,9 @@ public class NetworkDeviceListFragment
 					&& AccessDatabase.TABLE_DEVICES.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
 			))
 				refreshList();
-			else if (mWirelessEnableRequested
+			else if (getConnectionUtils().notifyWirelessRequestHandled()
 					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
 					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
-				mWirelessEnableRequested = false;
 				requestRefresh();
 			}
 		}

@@ -20,4 +20,6 @@
     <color name="hotspotNetworkRipple">@color/fabHotspotEnabled</color>
     <color name="layoutIconTint">#999</color>
     <color name="selectionBackground">#1f000000</color>
+    <color name="themeGreyDominant">#bbb</color>
+    <color name="themeGreyAccent">#777</color>
 </resources>

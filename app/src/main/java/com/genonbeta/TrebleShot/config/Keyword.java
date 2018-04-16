@@ -43,6 +43,8 @@ public class Keyword
 			NETWORK_NAME = "nwName",
 			NETWORK_PASSWORD = "nwPwd",
 			NETWORK_KEYMGMT = "ntKeyMgmt",
+			NETWORK_ADDRESS_BSSID = "bsid",
+			NETWORK_ADDRESS_IP = "ipAdr",
 			FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection";
 
 	public static class Local

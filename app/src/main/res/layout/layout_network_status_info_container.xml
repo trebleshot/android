@@ -31,19 +31,21 @@
                         style="?buttonBarPositiveButtonStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/butn_connect"/>
+                        android:text="@string/butn_startHotspot"/>
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp"
+                    android:id="@+id/layout_hotspot_status_info_container_text1_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingBottom="14dp"
+                    android:paddingTop="14dp">
 
                     <ImageView
+                        android:id="@+id/layout_hotspot_status_info_container_text1_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="25dp"
@@ -52,7 +54,7 @@
                         android:tint="@color/colorAccent"/>
 
                     <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_info_text"
+                        android:id="@+id/layout_hotspot_status_info_container_text1"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -62,14 +64,16 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_hotspot_status_info_container_text2_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:paddingTop="14dp"
+                    android:orientation="horizontal"
                     android:paddingBottom="14dp"
-                    android:orientation="horizontal">
+                    android:paddingTop="14dp">
 
                     <ImageView
+                        android:id="@+id/layout_hotspot_status_info_container_text2_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="25dp"
@@ -78,7 +82,7 @@
                         android:tint="@color/layoutIconTint"/>
 
                     <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_network_text"
+                        android:id="@+id/layout_hotspot_status_info_container_text2"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -88,14 +92,16 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/layout_hotspot_status_info_container_text3_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
-                    android:paddingTop="14dp"
+                    android:orientation="horizontal"
                     android:paddingBottom="14dp"
-                    android:orientation="horizontal">
+                    android:paddingTop="14dp">
 
                     <ImageView
+                        android:id="@+id/layout_hotspot_status_info_container_text3_icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:paddingEnd="25dp"
@@ -104,7 +110,7 @@
                         android:tint="@color/layoutIconTint"/>
 
                     <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_password_text"
+                        android:id="@+id/layout_hotspot_status_info_container_text3"
                         style="@style/marqueeText.secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

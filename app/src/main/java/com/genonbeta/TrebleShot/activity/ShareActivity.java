@@ -1,23 +1,21 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -25,37 +23,31 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
+import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.AddressedInterface;
+import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
+import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.ConnectException;
+import java.security.acl.Group;
 import java.util.ArrayList;
 
 public class ShareActivity extends Activity
@@ -64,7 +56,6 @@ public class ShareActivity extends Activity
 
 	public static final int WORKER_TASK_LOAD_ITEMS = 1;
 	public static final int WORKER_TASK_CONNECT_SERVER = 2;
-	public static final int WORKER_TASK_CONNECT_TS_NETWORK = 4;
 
 	public static final int REQUEST_CODE_EDIT_BOX = 1;
 
@@ -76,44 +67,48 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
-	private boolean mQRScanRequested = false;
+	private String mAction;
+	private int mGroupId;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private ProgressDialog mProgressDialog;
 	private Interrupter mInterrupter = new Interrupter();
-	private NetworkDeviceListFragment mDeviceListFragment;
 	private FloatingActionButton mFAB;
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
-	private BroadcastReceiver mWifiStatusReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (mQRScanRequested
-					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
-				requestQRScan();
-			}
-		}
-	};
 
 	@Override
-
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_share);
 
-		if (getSupportActionBar() != null)
-			getSupportActionBar().setTitle(R.string.text_shareWithTrebleshot);
+		final Toolbar toolbar = findViewById(R.id.toolbar);
+		setSupportActionBar(toolbar);
+
+		toolbar.setTitle(R.string.text_shareWithTrebleshot);
+
+		TabLayout tabLayout = findViewById(R.id.tab_layout);
+		ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
+
+		connectFragment.onTabLayout(tabLayout);
+
+		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		{
+			@Override
+			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
+			{
+				if (connection == null)
+					showChooserDialog(networkDevice);
+				else
+					doCommunicate(networkDevice, connection);
+
+				return true;
+			}
+		});
 
 		mFAB = findViewById(R.id.content_fab);
-		mDeviceListFragment = (NetworkDeviceListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_share_fragment);
-
-		mDeviceListFragment.getListView().setPadding(0, 0, 0, 300);
-		mDeviceListFragment.getListView().setClipToPadding(false);
 
 		mFAB.setOnClickListener(new View.OnClickListener()
 		{
@@ -124,70 +119,7 @@ public class ShareActivity extends Activity
 			}
 		});
 
-		mDeviceListFragment.setOnListClickListener(new RecyclerViewAdapter.OnClickListener()
-		{
-			@Override
-			public void onClick(RecyclerViewAdapter.ViewHolder holder)
-			{
-				NetworkDevice device = mDeviceListFragment.getListAdapter().getList().get(holder.getAdapterPosition());
-
-				if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
-					doCommunicate((NetworkDeviceListAdapter.HotspotNetwork) device);
-				else
-					showChooserDialog(device);
-			}
-		});
-
 		bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		getMenuInflater().inflate(R.menu.actions_activity_share, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		registerReceiver(mWifiStatusReceiver, new IntentFilter(WifiManager.WIFI_STATE_CHANGED_ACTION));
-	}
-
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		unregisterReceiver(mWifiStatusReceiver);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.actions_activity_share_scan_barcode) {
-			if (!mDeviceListFragment.getWifiManager().isWifiEnabled()) {
-				createSnackbar(R.string.mesg_wifiEnableRequired)
-						.setAction(R.string.butn_enable, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View view)
-							{
-								mQRScanRequested = true;
-
-								mDeviceListFragment.getWifiManager()
-										.setWifiEnabled(true);
-							}
-						})
-						.show();
-			} else
-				requestQRScan();
-		} else
-			return super.onOptionsItemSelected(item);
-
-		return true;
 	}
 
 	@Override
@@ -207,33 +139,6 @@ public class ShareActivity extends Activity
 		if (resultCode == RESULT_OK) {
 			if (requestCode == REQUEST_CODE_EDIT_BOX && data != null && data.hasExtra(TextEditorActivity.EXTRA_TEXT_INDEX))
 				mSharedText = data.getStringExtra(TextEditorActivity.EXTRA_TEXT_INDEX);
-			else {
-				IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
-
-				if (result.getContents() != null) {
-					try {
-						JSONObject jsonObject = new JSONObject(result.getContents());
-						NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
-
-						hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
-						hotspotNetwork.qrConnection = true;
-
-						boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
-
-						if (passProtected) {
-							hotspotNetwork.password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
-							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
-						}
-
-						doCommunicate(hotspotNetwork);
-					} catch (JSONException e) {
-						e.printStackTrace();
-
-						createSnackbar(R.string.mesg_somethingWentWrong)
-								.show();
-					}
-				}
-			}
 		}
 	}
 
@@ -280,121 +185,7 @@ public class ShareActivity extends Activity
 
 	protected Snackbar createSnackbar(int resId, Object... objects)
 	{
-		return Snackbar.make(mDeviceListFragment.getListView(), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
-
-	protected void doCommunicate(final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
-	{
-		resetProgressItems();
-
-		getProgressDialog().setMessage(getString(R.string.mesg_connectingToSelfHotspot));
-		getProgressDialog().setMax(20);
-
-		getProgressDialog().show();
-
-		runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
-		{
-			private boolean mConnected = false;
-			private boolean mConnectionToggled = false;
-			private long mStartTime = System.currentTimeMillis();
-			private String mRemoteAddress;
-
-			@Override
-			public void onRun()
-			{
-				while (mRemoteAddress == null) {
-					int passedTime = (int) (System.currentTimeMillis() - mStartTime);
-
-					if (!mDeviceListFragment.getWifiManager().isWifiEnabled()) {
-						if (!mDeviceListFragment.getWifiManager().setWifiEnabled(true))
-							break; // failed to start Wireless
-					} else if (!mDeviceListFragment.isConnectedToNetwork(hotspotNetwork) && !mConnectionToggled) {
-						mConnectionToggled = mDeviceListFragment.toggleConnection(hotspotNetwork);
-					} else {
-						for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
-							if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
-								String remoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
-
-								if (NetworkUtils.ping(remoteAddress, 1000)) {
-									mRemoteAddress = remoteAddress;
-									break;
-								}
-							}
-						}
-					}
-
-					if (interruptionCheck(passedTime))
-						break;
-				}
-
-				if (mRemoteAddress != null) {
-					try {
-						NetworkDeviceLoader.load(true, getDatabase(), mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
-						{
-							@Override
-							public void onError(Exception error)
-							{
-								getProgressDialog().dismiss();
-							}
-
-							@Override
-							public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
-							{
-								mConnected = true;
-
-								try {
-									hotspotNetwork.deviceId = device.deviceId;
-									getDatabase().reconstruct(hotspotNetwork);
-
-									device = hotspotNetwork;
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-
-								final NetworkDevice finalDevice = device;
-
-								if (!getDefaultInterrupter().interrupted())
-									runOnUiThread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											getProgressDialog().dismiss();
-											doCommunicate(finalDevice, connection);
-										}
-									});
-							}
-						});
-					} catch (ConnectException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (!mConnected) {
-					getProgressDialog().dismiss();
-					createSnackbar(R.string.mesg_connectionFailure)
-							.show();
-				}
-
-				// We can't add dialog outside of the else statement as it may close other dialogs as well
-			}
-
-			private boolean interruptionCheck(int passedTime)
-			{
-				try {
-					Thread.sleep(1000);
-					getProgressDialog().setProgress(passedTime / 1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-					return true;
-				} finally {
-					if (passedTime > 20000 || getDefaultInterrupter().interrupted())
-						return true;
-				}
-
-				return false;
-			}
-		});
+		return Snackbar.make(mFAB, getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
@@ -424,57 +215,122 @@ public class ShareActivity extends Activity
 									&& ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection)
 								jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
 
-							if (mSharedText == null) {
-								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-								jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupInstance.groupId);
+							switch (mAction) {
+								case Intent.ACTION_SEND:
+								case Intent.ACTION_SEND_MULTIPLE:
+								case ACTION_SEND:
+								case ACTION_SEND_MULTIPLE:
+									if (mSharedText == null) {
+										jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+										jsonRequest.put(Keyword.TRANSFER_GROUP_ID, groupInstance.groupId);
 
-								JSONArray filesArray = new JSONArray();
+										JSONArray filesArray = new JSONArray();
 
-								getProgressDialog().setMax(mFiles.size());
+										getProgressDialog().setMax(mFiles.size());
 
-								for (SelectableStream selectableStream : mFiles) {
-									if (getDefaultInterrupter().interrupted())
-										throw new InterruptedException("Interrupted by user");
+										for (SelectableStream selectableStream : mFiles) {
+											if (getDefaultInterrupter().interrupted())
+												throw new InterruptedException("Interrupted by user");
 
-									if (!selectableStream.isSelectableSelected())
-										continue;
+											if (!selectableStream.isSelectableSelected())
+												continue;
 
-									getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
+											getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
 
-									int requestId = AppUtils.getUniqueNumber();
-									JSONObject thisJson = new JSONObject();
+											int requestId = AppUtils.getUniqueNumber();
+											JSONObject thisJson = new JSONObject();
 
-									TransferObject transferObject = new TransferObject(requestId,
-											groupInstance.groupId,
-											selectableStream.getSelectableFriendlyName(),
-											selectableStream.getDocumentFile().getUri().toString(),
-											selectableStream.getDocumentFile().getType(),
-											selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
+											TransferObject transferObject = new TransferObject(requestId,
+													groupInstance.groupId,
+													selectableStream.getSelectableFriendlyName(),
+													selectableStream.getDocumentFile().getUri().toString(),
+													selectableStream.getDocumentFile().getType(),
+													selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
 
-									if (selectableStream.mDirectory != null)
-										transferObject.directory = selectableStream.mDirectory;
+											if (selectableStream.mDirectory != null)
+												transferObject.directory = selectableStream.mDirectory;
 
-									pendingRegistry.add(transferObject);
+											pendingRegistry.add(transferObject);
 
-									try {
-										thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.friendlyName);
-										thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.fileSize);
-										thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
-										thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.fileMimeType);
+											try {
+												thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.friendlyName);
+												thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.fileSize);
+												thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
+												thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.fileMimeType);
 
-										if (selectableStream.mDirectory != null)
-											thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.mDirectory);
+												if (selectableStream.mDirectory != null)
+													thisJson.put(Keyword.INDEX_DIRECTORY, selectableStream.mDirectory);
 
-										filesArray.put(thisJson);
-									} catch (Exception e) {
-										Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.friendlyName);
+												filesArray.put(thisJson);
+											} catch (Exception e) {
+												Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.friendlyName);
+											}
+										}
+
+										jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+									} else {
+										jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+										jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mSharedText);
 									}
-								}
+									break;
+								case ACTION_ADD_DEVICES:
+									TransferGroup existingGroup = new TransferGroup(mGroupId);
+									getDatabase().reconstruct(existingGroup);
 
-								jsonRequest.put(Keyword.FILES_INDEX, filesArray);
-							} else {
-								jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-								jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mSharedText);
+									jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+									jsonRequest.put(Keyword.TRANSFER_GROUP_ID, existingGroup.groupId);
+
+									ArrayList<TransferObject> pendingTransfers = getDatabase()
+											.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+													.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+													+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+															String.valueOf(existingGroup.groupId),
+															TransferObject.Type.OUTGOING.toString()), TransferObject.class);
+
+									if (pendingTransfers.size() == 0)
+										throw new Exception("Empty share holder id: " + existingGroup.groupId);
+
+									JSONArray filesArray = new JSONArray();
+
+									getProgressDialog().setMax(pendingTransfers.size());
+
+									for (TransferObject transferObject : pendingTransfers) {
+										if (getDefaultInterrupter().interrupted())
+											throw new InterruptedException("Interrupted by user");
+
+										getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
+
+										int requestId = AppUtils.getUniqueNumber();
+										JSONObject thisJson = new JSONObject();
+
+										try {
+											thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.friendlyName);
+											thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.fileSize);
+											thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
+											thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.fileMimeType);
+
+											if (transferObject.directory != null)
+												thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
+
+											filesArray.put(thisJson);
+										} catch (Exception e) {
+											Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.friendlyName);
+										}
+									}
+
+									final TransferGroup.Assignee addedAssignee = new TransferGroup.Assignee(existingGroup, device, connection);
+
+									jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+									getDatabase().publish(addedAssignee);
+
+									getDefaultInterrupter().addCloser(new Interrupter.Closer()
+									{
+										@Override
+										public void onClose(boolean userAction)
+										{
+											getDatabase().remove(addedAssignee);
+										}
+									});
 							}
 
 							final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
@@ -584,7 +440,7 @@ public class ShareActivity extends Activity
 	private void initialize()
 	{
 		if (getIntent() != null && getIntent().getAction() != null) {
-			String action = getIntent().getAction();
+			String action = mAction = getIntent().getAction();
 
 			switch (action) {
 				case ACTION_SEND:
@@ -616,7 +472,12 @@ public class ShareActivity extends Activity
 
 					organizeFiles(fileUris, fileNames);
 					break;
+				case ACTION_ADD_DEVICES:
+					mGroupId = getIntent().getIntExtra(EXTRA_GROUP_ID, -1);
+					break;
 				default:
+					mAction = null;
+
 					Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
 					finish();
 			}
@@ -686,21 +547,6 @@ public class ShareActivity extends Activity
 					});
 			}
 		});
-	}
-
-	private void requestQRScan()
-	{
-		mQRScanRequested = false;
-
-		IntentIntegrator integrator = new IntentIntegrator(this)
-				.setCaptureActivity(QRScannerActivity.class)
-				.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES)
-				.setPrompt(getString(R.string.text_scanQRCodeHelp))
-				.setOrientationLocked(false)
-				.setBarcodeImageEnabled(true)
-				.setBeepEnabled(false);
-
-		integrator.initiateScan();
 	}
 
 	protected ProgressDialog resetProgressItems()

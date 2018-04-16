@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Fragment;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 
@@ -27,6 +29,7 @@ public class ConnectDevicesFragment
 	private boolean mInitialized = false;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
+	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -68,10 +71,33 @@ public class ConnectDevicesFragment
 		if (mInitialized || mTabLayout == null || mViewPager == null)
 			return;
 
+		mInitialized = true;
+
 		DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(getContext(), getChildFragmentManager());
 		NetworkDeviceListFragment deviceListFragment = new NetworkDeviceListFragment();
-		HotspotStatusFragment statusFragment = new HotspotStatusFragment();
+		NetworkStatusFragment statusFragment = new NetworkStatusFragment();
 		CodeConnectFragment connectFragment = new CodeConnectFragment();
+
+		deviceListFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		{
+			@Override
+			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
+			{
+				return mDeviceSelectedListener != null
+						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
+			}
+			});
+
+		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		{
+			@Override
+			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
+			{
+				mViewPager.setCurrentItem(0);
+				return mDeviceSelectedListener != null
+						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
+			}
+		});
 
 		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
@@ -102,7 +128,10 @@ public class ConnectDevicesFragment
 
 			}
 		});
+	}
 
-		mInitialized = true;
+	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
+	{
+		mDeviceSelectedListener = listener;
 	}
 }

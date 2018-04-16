@@ -761,6 +761,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		public void onFinish(Context context, PowerfulActionMode actionMode)
 		{
 			setSelection(false);
+			getFragment().getSelectionConnection().getSelectedItemList().clear();
+
 			mFragment.loadIfRequested();
 		}
 	}
