@@ -13,31 +13,135 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 /**
  * created by: veli
  * date: 15/04/18 18:44
  */
-public class UIConnectionUtils extends ConnectionUtils
+public class UIConnectionUtils
 {
+	public static final String TAG = "UIConnectionUtils";
+	public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
+
 	private SnackbarSupport mSnackbarSupport;
 	private boolean mShowHotspotInfo = false;
 	private boolean mWirelessEnableRequested = false;
+	private ConnectionUtils mConnectionUtils;
 
-	public UIConnectionUtils(Context context, SnackbarSupport snackbarSupport)
+	public UIConnectionUtils(ConnectionUtils connectionUtils, SnackbarSupport snackbarSupport)
 	{
-		super(context);
+		mConnectionUtils = connectionUtils;
 		mSnackbarSupport = snackbarSupport;
+	}
+
+	public ConnectionUtils getConnectionUtils()
+	{
+		return mConnectionUtils;
 	}
 
 	public SnackbarSupport getSnackbarSupport()
 	{
 		return mSnackbarSupport;
+	}
+
+	public void makeAcquaintance(final FragmentActivity activity, final AccessDatabase database,
+								 final UITask task, final Object object, final int accessPin,
+								 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
+	{
+		WorkerService.run(getConnectionUtils().getContext(), new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
+		{
+			private boolean mConnected = false;
+			private String mRemoteAddress;
+
+			@Override
+			public void onRun()
+			{
+				if (task != null)
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							task.updateTaskStarted(getInterrupter());
+						}
+					});
+
+				if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+					mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
+					{
+						@Override
+						public boolean onTimePassed(int delimiter, long timePassed)
+						{
+							return timePassed >= 20000;
+						}
+					});
+				} else if (object instanceof String)
+					mRemoteAddress = (String) object;
+
+				if (mRemoteAddress != null) {
+					mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener() {
+						@Override
+						public void onDeviceRegistered(final AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
+						{
+							// we may be working with direct IP scan
+							if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+								try {
+									NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) object;
+
+									hotspotNetwork.deviceId = device.deviceId;
+									database.reconstruct(hotspotNetwork);
+
+									device = hotspotNetwork;
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+
+							final NetworkDevice finalDevice = device;
+
+							if (!getInterrupter().interrupted() && activity != null)
+								activity.runOnUiThread(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										if (registerListener != null)
+											registerListener.onDeviceRegistered(database, finalDevice, connection);
+									}
+								});
+						}
+					}) != null;
+				}
+
+				if (!mConnected) {
+					mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
+							.show();
+				}
+
+				if (activity != null)
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							task.updateTaskStopped();
+						}
+					});
+
+				// We can't add dialog outside of the else statement as it may close other dialogs as well
+			}
+		});
 	}
 
 	public boolean notifyShowHotspotHandled()
@@ -60,7 +164,7 @@ public class UIConnectionUtils extends ConnectionUtils
 
 	public void showConnectionOptions(FragmentActivity activity, int locationPermRequestId)
 	{
-		if (!getWifiManager().isWifiEnabled())
+		if (!getConnectionUtils().getWifiManager().isWifiEnabled())
 			getSnackbarSupport().createSnackbar(R.string.mesg_suggestSelfHotspot)
 					.setAction(R.string.butn_enable, new View.OnClickListener()
 					{
@@ -68,7 +172,7 @@ public class UIConnectionUtils extends ConnectionUtils
 						public void onClick(View view)
 						{
 							mWirelessEnableRequested = true;
-							getWifiManager().setWifiEnabled(true);
+							getConnectionUtils().getWifiManager().setWifiEnabled(true);
 						}
 					})
 					.show();
@@ -79,7 +183,7 @@ public class UIConnectionUtils extends ConnectionUtils
 						@Override
 						public void onClick(View view)
 						{
-							getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+							getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
 						}
 					})
 					.show();
@@ -95,7 +199,7 @@ public class UIConnectionUtils extends ConnectionUtils
 				return false;
 
 			if (Build.VERSION.SDK_INT >= 23
-					&& !Settings.System.canWrite(getContext())) {
+					&& !Settings.System.canWrite(getConnectionUtils().getContext())) {
 				getSnackbarSupport().createSnackbar(R.string.mesg_errorHotspotPermission)
 						.setDuration(Snackbar.LENGTH_LONG)
 						.setAction(R.string.butn_settings, new View.OnClickListener()
@@ -103,8 +207,8 @@ public class UIConnectionUtils extends ConnectionUtils
 							@Override
 							public void onClick(View v)
 							{
-								getContext().startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-										.setData(Uri.parse("package:" + getContext().getPackageName()))
+								getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+										.setData(Uri.parse("package:" + getConnectionUtils().getContext().getPackageName()))
 										.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 							}
 						})
@@ -112,8 +216,8 @@ public class UIConnectionUtils extends ConnectionUtils
 
 				return false;
 			} else if (Build.VERSION.SDK_INT < 26
-					&& !getHotspotUtils().isEnabled()
-					&& isMobileDataActive()) {
+					&& !getConnectionUtils().getHotspotUtils().isEnabled()
+					&& getConnectionUtils().isMobileDataActive()) {
 				getSnackbarSupport().createSnackbar(R.string.mesg_warningHotspotMobileActive)
 						.setDuration(Snackbar.LENGTH_LONG)
 						.setAction(R.string.butn_skip, new View.OnClickListener()
@@ -130,16 +234,16 @@ public class UIConnectionUtils extends ConnectionUtils
 			}
 		}
 
-		WifiConfiguration wifiConfiguration = getHotspotUtils().getConfiguration();
+		WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
 
-		if (!getHotspotUtils().isEnabled()
-				|| (wifiConfiguration != null && AppUtils.getHotspotName(getContext()).equals(wifiConfiguration.SSID)))
-			getSnackbarSupport().createSnackbar(getHotspotUtils().isEnabled()
+		if (!getConnectionUtils().getHotspotUtils().isEnabled()
+				|| (wifiConfiguration != null && AppUtils.getHotspotName(getConnectionUtils().getContext()).equals(wifiConfiguration.SSID)))
+			getSnackbarSupport().createSnackbar(getConnectionUtils().getHotspotUtils().isEnabled()
 					? R.string.mesg_stoppingSelfHotspot
 					: R.string.mesg_startingSelfHotspot)
 					.show();
 
-		AppUtils.startForegroundService(getContext(), new Intent(getContext(), CommunicationService.class)
+		AppUtils.startForegroundService(getConnectionUtils().getContext(), new Intent(getConnectionUtils().getContext(), CommunicationService.class)
 				.setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
 
 		mShowHotspotInfo = true;
@@ -152,7 +256,7 @@ public class UIConnectionUtils extends ConnectionUtils
 		if (Build.VERSION.SDK_INT < 23)
 			return true;
 
-		if (!hasLocationPermission(getContext())) {
+		if (!getConnectionUtils().hasLocationPermission(getConnectionUtils().getContext())) {
 			getSnackbarSupport().createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
 					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
 					{
@@ -169,14 +273,14 @@ public class UIConnectionUtils extends ConnectionUtils
 			return false;
 		}
 
-		if (!isLocationServiceEnabled()) {
+		if (!getConnectionUtils().isLocationServiceEnabled()) {
 			getSnackbarSupport().createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
 					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
 					{
 						@Override
 						public void onClick(View view)
 						{
-							getContext().startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+							getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
 						}
 					})
 					.show();

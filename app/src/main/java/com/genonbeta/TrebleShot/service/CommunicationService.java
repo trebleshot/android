@@ -83,8 +83,10 @@ public class CommunicationService extends Service
 	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
 	public final static String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
 	public final static String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
+	public final static String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
+	public static final String EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
@@ -518,17 +520,23 @@ public class CommunicationService extends Service
 					}
 				}
 
-				final boolean qrConnection = responseJSON.has(Keyword.FLAG_TRANSFER_QR_CONNECTION)
-						&& responseJSON.getBoolean(Keyword.FLAG_TRANSFER_QR_CONNECTION);
+				// possibly connected using code
+				final boolean isSecureConnection = responseJSON.has(Keyword.NETWORK_PIN)
+						&& responseJSON.getInt(Keyword.NETWORK_PIN) == getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
 
 				final boolean seamlessActive = mSeamlessMode
-						|| (isQRFastMode() && qrConnection);
+						|| (isQRFastMode() && isSecureConnection);
 
 				if (deviceSerial != null) {
 					NetworkDevice device = new NetworkDevice(deviceSerial);
 
 					try {
 						getDatabase().reconstruct(device);
+
+						if (isSecureConnection) {
+							device.isTrusted = true;
+							device.isRestricted = false;
+						}
 
 						if (!device.isRestricted)
 							shouldContinue = true;
@@ -540,13 +548,15 @@ public class CommunicationService extends Service
 						if (device == null)
 							throw new Exception("Could not reach to the opposite server");
 
-						device.isRestricted = true;
+						device.isRestricted = !isSecureConnection;
+						device.isTrusted = isSecureConnection;
 
 						getDatabase().publish(device);
 
 						shouldContinue = true;
 
-						getNotificationHelper().notifyConnectionRequest(device);
+						if (device.isRestricted)
+							getNotificationHelper().notifyConnectionRequest(device);
 					}
 
 					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), device, activeConnection.getClientAddress());
@@ -678,6 +688,13 @@ public class CommunicationService extends Service
 
 									result = true;
 								}
+								break;
+							case (Keyword.REQUEST_ACQUAINTANCE):
+								sendBroadcast(new Intent(ACTION_DEVICE_ACQUAINTANCE)
+										.putExtra(EXTRA_DEVICE_ID, device.deviceId)
+										.putExtra(EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
+
+								result = true;
 								break;
 						}
 					}

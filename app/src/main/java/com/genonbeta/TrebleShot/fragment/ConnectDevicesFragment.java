@@ -86,9 +86,9 @@ public class ConnectDevicesFragment
 				return mDeviceSelectedListener != null
 						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
 			}
-			});
+		});
 
-		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		NetworkDeviceSelectedListener selectedListener = new NetworkDeviceSelectedListener()
 		{
 			@Override
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
@@ -97,7 +97,10 @@ public class ConnectDevicesFragment
 				return mDeviceSelectedListener != null
 						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
 			}
-		});
+		};
+
+		statusFragment.setDeviceSelectedListener(selectedListener);
+		connectFragment.setDeviceSelectedListener(selectedListener);
 
 		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 

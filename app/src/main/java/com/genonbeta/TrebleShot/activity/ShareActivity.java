@@ -34,11 +34,16 @@ import com.genonbeta.TrebleShot.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+import com.genonbeta.TrebleShot.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.database.SQLQuery;
 
 import org.json.JSONArray;
@@ -49,7 +54,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ShareActivity extends Activity
+public class ShareActivity extends Activity implements SnackbarSupport
 {
 	public static final String TAG = "ShareActivity";
 
@@ -89,17 +94,42 @@ public class ShareActivity extends Activity
 
 		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 
-		TabLayout tabLayout = findViewById(R.id.tab_layout);
-		ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
+		final TabLayout tabLayout = findViewById(R.id.tab_layout);
+		final ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
 
 		connectFragment.onTabLayout(tabLayout);
+
+		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
 
 		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
 		{
 			@Override
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
 			{
-				if (connection == null)
+				if (networkDevice instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+					connectionUtils.makeAcquaintance(ShareActivity.this, getDatabase(), new UITask()
+					{
+						@Override
+						public void updateTaskStarted(Interrupter interrupter)
+						{
+							createSnackbar(R.string.mesg_communicating)
+									.show();
+						}
+
+						@Override
+						public void updateTaskStopped()
+						{
+
+						}
+					}, networkDevice, -1, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+					{
+						@Override
+						public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+						{
+							doCommunicate(device, connection);
+						}
+					});
+				} else if (connection == null)
 					showChooserDialog(networkDevice);
 				else
 					doCommunicate(networkDevice, connection);
@@ -183,7 +213,7 @@ public class ShareActivity extends Activity
 		}
 	}
 
-	protected Snackbar createSnackbar(int resId, Object... objects)
+	public Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(mFAB, getString(resId, objects), Snackbar.LENGTH_LONG);
 	}

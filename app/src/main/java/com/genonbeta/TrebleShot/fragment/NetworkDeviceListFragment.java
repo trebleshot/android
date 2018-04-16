@@ -32,6 +32,7 @@ import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
@@ -221,7 +222,7 @@ public class NetworkDeviceListFragment
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (REQUEST_LOCATION_PERMISSION == requestCode)
-			getConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+			getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
 	}
 
 	@Override
@@ -237,10 +238,15 @@ public class NetworkDeviceListFragment
 				.isScannerAvailable());
 	}
 
-	public UIConnectionUtils getConnectionUtils()
+	public ConnectionUtils getConnectionUtils()
+	{
+		return getUIConnectionUtils().getConnectionUtils();
+	}
+
+	public UIConnectionUtils getUIConnectionUtils()
 	{
 		if (mConnectionUtils == null)
-			mConnectionUtils = new UIConnectionUtils(getContext(), this);
+			mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
 
 		return mConnectionUtils;
 	}
@@ -302,7 +308,7 @@ public class NetworkDeviceListFragment
 								})
 								.show();
 				} else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-					getConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+					getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
 			} else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
 				createSnackbar(R.string.mesg_scanCompleted)
 						.show();
@@ -311,7 +317,7 @@ public class NetworkDeviceListFragment
 					&& AccessDatabase.TABLE_DEVICES.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
 			))
 				refreshList();
-			else if (getConnectionUtils().notifyWirelessRequestHandled()
+			else if (getUIConnectionUtils().notifyWirelessRequestHandled()
 					&& WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
 					&& WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
 				requestRefresh();

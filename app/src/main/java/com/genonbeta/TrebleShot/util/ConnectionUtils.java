@@ -11,12 +11,20 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.WorkerThread;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+
+import org.json.JSONObject;
 
 import java.net.ConnectException;
 
@@ -30,13 +38,15 @@ import static junit.framework.Assert.fail;
  */
 public class ConnectionUtils
 {
+	private static ConnectionUtils mInstance;
+
 	private Context mContext;
 	private WifiManager mWifiManager;
 	private HotspotUtils mHotspotUtils;
 	private LocationManager mLocationManager;
 	private ConnectivityManager mConnectivityManager;
 
-	public ConnectionUtils(Context context)
+	ConnectionUtils(Context context)
 	{
 		mContext = context;
 
@@ -44,6 +54,14 @@ public class ConnectionUtils
 		mLocationManager = (LocationManager) getContext().getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 		mHotspotUtils = HotspotUtils.getInstance(getContext());
 		mConnectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	}
+
+	public static ConnectionUtils getInstance(Context context)
+	{
+		if (mInstance == null)
+			mInstance = new ConnectionUtils(context);
+
+		return mInstance;
 	}
 
 	public static String getCleanNetworkName(String networkName)
@@ -108,6 +126,48 @@ public class ConnectionUtils
 		}
 
 		return remoteAddress;
+	}
+
+	@WorkerThread
+	public NetworkDevice setupConnection(final AccessDatabase database, final String ipAddress, final int accessPin, final NetworkDeviceLoader.OnDeviceRegisteredListener listener)
+	{
+		return CommunicationBridge.connect(database, NetworkDevice.class, new CommunicationBridge.Client.ConnectionHandler()
+		{
+			@Override
+			public void onConnect(CommunicationBridge.Client client)
+			{
+				try {
+					CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
+					NetworkDevice device = client.loadDevice(activeConnection);
+
+					activeConnection.reply(new JSONObject()
+							.put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
+							.put(Keyword.NETWORK_PIN, accessPin)
+							.toString());
+
+					JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
+
+					if (receivedReply.has(Keyword.RESULT)
+							&& receivedReply.getBoolean(Keyword.RESULT)
+							&& device.deviceId != null) {
+						final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(database, device, ipAddress);
+
+						device.lastUsageTime = System.currentTimeMillis();
+						device.isRestricted = false;
+						device.isTrusted = true;
+
+						database.publish(device);
+
+						if (listener != null)
+							listener.onDeviceRegistered(database, device, connection);
+					}
+
+					client.setReturn(device);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public boolean hasLocationPermission(Context context)

@@ -21,6 +21,7 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.preference.SuperPreferences;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;

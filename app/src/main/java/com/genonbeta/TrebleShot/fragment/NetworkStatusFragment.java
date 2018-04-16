@@ -25,9 +25,11 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -65,12 +67,15 @@ public class NetworkStatusFragment
 	private TextView mText3;
 	private ImageView mCodeView;
 	private AppCompatButton mToggleButton;
+	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
+		mIntentFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
+		mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
 		mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
 		mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
 		mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -100,7 +105,7 @@ public class NetworkStatusFragment
 			@Override
 			public void onClick(View v)
 			{
-				getConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION);
+				getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION);
 			}
 		});
 
@@ -113,7 +118,7 @@ public class NetworkStatusFragment
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		if (REQUEST_LOCATION_PERMISSION == requestCode)
-			getConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+			getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
 	}
 
 	@Override
@@ -133,10 +138,15 @@ public class NetworkStatusFragment
 		getContext().unregisterReceiver(mStatusReceiver);
 	}
 
-	public UIConnectionUtils getConnectionUtils()
+	public ConnectionUtils getConnectionUtils()
+	{
+		return getUIConnectionUtils().getConnectionUtils();
+	}
+
+	public UIConnectionUtils getUIConnectionUtils()
 	{
 		if (mConnectionUtils == null)
-			mConnectionUtils = new UIConnectionUtils(getContext(), this);
+			mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
 
 		return mConnectionUtils;
 	}
@@ -145,6 +155,11 @@ public class NetworkStatusFragment
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_network);
+	}
+
+	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
+	{
+		mDeviceSelectedListener = listener;
 	}
 
 	public void updateViewsWithBlank()
@@ -190,6 +205,16 @@ public class NetworkStatusFragment
 	public void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1, @Nullable String text2, @Nullable String text3)
 	{
 		try {
+			if (codeIndex != null) {
+				int networkPin = AppUtils.getUniqueNumber();
+
+				codeIndex.put(Keyword.NETWORK_PIN, networkPin);
+
+				getDefaultPreferences().edit()
+						.putInt(Keyword.NETWORK_PIN, networkPin)
+						.apply();
+			}
+
 			MultiFormatWriter formatWriter = new MultiFormatWriter();
 			String codeString = codeIndex == null ? null : codeIndex.toString();
 
@@ -218,7 +243,7 @@ public class NetworkStatusFragment
 
 	public void updateState()
 	{
-		boolean isEnabled = getConnectionUtils().getHotspotUtils().isEnabled();
+		boolean isEnabled = getUIConnectionUtils().getConnectionUtils().getHotspotUtils().isEnabled();
 
 		mToggleButton.setText(isEnabled ? R.string.butn_stopHotspot : R.string.butn_startHotspot);
 
@@ -245,7 +270,7 @@ public class NetworkStatusFragment
 
 			if (wifiConfiguration != null
 					&& getConnectionUtils().getHotspotUtils().isEnabled()) {
-				if (getConnectionUtils().notifyShowHotspotHandled()
+				if (getUIConnectionUtils().notifyShowHotspotHandled()
 						&& AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
 					final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, getConnectionUtils().getHotspotUtils().getConfiguration().SSID, AppUtils.getFriendlySSID(getConnectionUtils().getHotspotUtils().getConfiguration().SSID));
 
@@ -279,6 +304,21 @@ public class NetworkStatusFragment
 				updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
 						intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
 						intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
+			} else if (CommunicationService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
+					&& intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
+					&& intent.hasExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME)) {
+				NetworkDevice device = new NetworkDevice(intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID));
+				NetworkDevice.Connection connection = new NetworkDevice.Connection(device.deviceId, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
+
+				try {
+					getDatabase().reconstruct(device);
+					getDatabase().reconstruct(connection);
+
+					if (mDeviceSelectedListener != null)
+						mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

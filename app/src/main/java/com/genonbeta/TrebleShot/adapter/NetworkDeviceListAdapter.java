@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
@@ -27,10 +28,10 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 {
 	private AccessDatabase mDatabase;
 	private SharedPreferences mPreferences;
-	private UIConnectionUtils mConnectionUtils;
+	private ConnectionUtils mConnectionUtils;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
-	public NetworkDeviceListAdapter(AccessDatabase database, SharedPreferences preferences, UIConnectionUtils connectionUtils)
+	public NetworkDeviceListAdapter(AccessDatabase database, SharedPreferences preferences, ConnectionUtils connectionUtils)
 	{
 		super(database.getContext());
 

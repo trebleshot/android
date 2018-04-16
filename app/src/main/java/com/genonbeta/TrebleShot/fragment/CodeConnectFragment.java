@@ -21,6 +21,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Fragment;
@@ -28,8 +29,11 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -50,15 +54,14 @@ import java.util.List;
  */
 public class CodeConnectFragment
 		extends Fragment
-		implements TitleSupport
+		implements TitleSupport, UITask
 {
 	public static final String TAG = "CodeConnectFragment";
 
 	public static final int REQUEST_PERMISSION_CAMERA = 1;
-	public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
 
 	private BarcodeView mBarcodeView;
-	private ConnectionUtils mConnectionUtils;
+	private UIConnectionUtils mConnectionUtils;
 	private TextView mConductText;
 	private ImageView mConductImage;
 	private View mConductContainer;
@@ -79,12 +82,22 @@ public class CodeConnectFragment
 		}
 	};
 
+	private NetworkDeviceLoader.OnDeviceRegisteredListener mRegisteredListener = new NetworkDeviceLoader.OnDeviceRegisteredListener()
+	{
+		@Override
+		public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+		{
+			if (mDeviceSelectedListener != null)
+				mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+		}
+	};
+
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 
-		mConnectionUtils = new ConnectionUtils(getContext());
+		mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
 
 		mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -120,6 +133,10 @@ public class CodeConnectFragment
 					JSONObject jsonObject = new JSONObject(result.getResult().getText());
 					NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
 
+					int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
+							? jsonObject.getInt(Keyword.NETWORK_PIN)
+							: -1;
+
 					if (jsonObject.has(Keyword.NETWORK_NAME)) {
 						hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
 						hotspotNetwork.qrConnection = true;
@@ -131,17 +148,17 @@ public class CodeConnectFragment
 							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
 						}
 
-						communicate(hotspotNetwork);
+						mConnectionUtils.makeAcquaintance(getActivity(), getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
 					} else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
 						String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
 						String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
 
-						WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+						WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
 
 						if (wifiInfo != null
 								&& wifiInfo.getBSSID() != null
 								&& wifiInfo.getBSSID().equals(bssid))
-							communicate(ipAddress);
+							mConnectionUtils.makeAcquaintance(getActivity(), getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
 						else
 							createSnackbar(R.string.mesg_errorNotSameNetwork)
 									.show();
@@ -195,105 +212,6 @@ public class CodeConnectFragment
 			}
 	}
 
-	protected void communicate(final Object object)
-	{
-		WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
-		{
-			private boolean mConnected = false;
-			private String mRemoteAddress;
-
-			@Override
-			public void onRun()
-			{
-				if (getActivity() != null)
-					getActivity().runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							updateTaskStarted(getInterrupter());
-						}
-					});
-
-				if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					mRemoteAddress = mConnectionUtils.establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
-					{
-						@Override
-						public boolean onTimePassed(int delimiter, long timePassed)
-						{
-							return timePassed >= 20000;
-						}
-					});
-				} else if (object instanceof String)
-					mRemoteAddress = (String) object;
-
-				if (mRemoteAddress != null) {
-					try {
-						NetworkDeviceLoader.load(true, getDatabase(), mRemoteAddress, new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
-						{
-							@Override
-							public void onError(Exception error)
-							{
-							}
-
-							@Override
-							public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
-							{
-								mConnected = true;
-
-								// we may be working with direct IP scan
-								if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-									try {
-										NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) object;
-
-										hotspotNetwork.deviceId = device.deviceId;
-										getDatabase().reconstruct(hotspotNetwork);
-
-										device = hotspotNetwork;
-									} catch (Exception e) {
-										e.printStackTrace();
-									}
-								}
-
-								final NetworkDevice finalDevice = device;
-
-								if (!getInterrupter().interrupted() && getActivity() != null)
-									getActivity().runOnUiThread(new Runnable()
-									{
-										@Override
-										public void run()
-										{
-											if (mDeviceSelectedListener != null)
-												mDeviceSelectedListener.onNetworkDeviceSelected(finalDevice, connection);
-										}
-									});
-							}
-						});
-					} catch (ConnectException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (!mConnected) {
-					createSnackbar(R.string.mesg_connectionFailure)
-							.show();
-				}
-
-				if (getActivity() != null)
-					getActivity().runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							updateTaskStopped();
-						}
-					});
-
-				// We can't add dialog outside of the else statement as it may close other dialogs as well
-			}
-		});
-	}
-
 	@Override
 	public CharSequence getTitle(Context context)
 	{
@@ -307,7 +225,7 @@ public class CodeConnectFragment
 
 	public void updateState()
 	{
-		boolean wifiEnabled = mConnectionUtils.getWifiManager().isWifiEnabled();
+		boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
 
 		if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 			mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
@@ -333,6 +251,7 @@ public class CodeConnectFragment
 		}
 	}
 
+	@Override
 	public void updateTaskStarted(final Interrupter interrupter)
 	{
 		mBarcodeView.pauseAndWait();
@@ -349,6 +268,7 @@ public class CodeConnectFragment
 		});
 	}
 
+	@Override
 	public void updateTaskStopped()
 	{
 		mBarcodeView.resume();
