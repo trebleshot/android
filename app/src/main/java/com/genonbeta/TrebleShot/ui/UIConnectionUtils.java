@@ -59,7 +59,7 @@ public class UIConnectionUtils
 								 final UITask task, final Object object, final int accessPin,
 								 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
 	{
-		WorkerService.run(getConnectionUtils().getContext(), new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
+		WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
 		{
 			private boolean mConnected = false;
 			private String mRemoteAddress;
@@ -67,16 +67,6 @@ public class UIConnectionUtils
 			@Override
 			public void onRun()
 			{
-				if (task != null)
-					activity.runOnUiThread(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							task.updateTaskStarted(getInterrupter());
-						}
-					});
-
 				if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
 					mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
 					{
@@ -124,10 +114,9 @@ public class UIConnectionUtils
 					}) != null;
 				}
 
-				if (!mConnected) {
+				if (!mConnected)
 					mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
 							.show();
-				}
 
 				if (activity != null)
 					activity.runOnUiThread(new Runnable()
@@ -141,7 +130,10 @@ public class UIConnectionUtils
 
 				// We can't add dialog outside of the else statement as it may close other dialogs as well
 			}
-		});
+		};
+
+		task.updateTaskStarted(runningTask.getInterrupter());
+		WorkerService.run(activity, runningTask);
 	}
 
 	public boolean notifyShowHotspotHandled()

@@ -49,10 +49,12 @@ public class Interrupter
 
 	public boolean interrupt(boolean userAction)
 	{
+		if (userAction)
+			mInterruptedByUser = true;
+
 		if (interrupted())
 			return false;
 
-		mInterruptedByUser = userAction;
 		mInterrupted = true;
 
 		synchronized (getClosers()) {

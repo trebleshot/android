@@ -12,6 +12,7 @@ import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
@@ -159,9 +160,20 @@ public class CodeConnectFragment
 								&& wifiInfo.getBSSID() != null
 								&& wifiInfo.getBSSID().equals(bssid))
 							mConnectionUtils.makeAcquaintance(getActivity(), getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
-						else
+						else {
+							mBarcodeView.pauseAndWait();
+
 							createSnackbar(R.string.mesg_errorNotSameNetwork)
+									.addCallback(new Snackbar.Callback() {
+										@Override
+										public void onDismissed(Snackbar transientBottomBar, int event)
+										{
+											super.onDismissed(transientBottomBar, event);
+											updateState();
+										}
+									})
 									.show();
+						}
 					}
 				} catch (JSONException e) {
 					e.printStackTrace();

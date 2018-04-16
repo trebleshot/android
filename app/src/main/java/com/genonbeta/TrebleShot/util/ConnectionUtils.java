@@ -120,7 +120,8 @@ public class ConnectionUtils
 				e.printStackTrace();
 				break;
 			} finally {
-				if (timeoutListener.onTimePassed(1000, passedTime) || interrupter.interrupted())
+				// FIXME: 17/04/18 Somehow the thread closes itself therefore for now we need to stick to only user interruptions
+				if (timeoutListener.onTimePassed(1000, passedTime) || interrupter.interruptedByUser())
 					break;
 			}
 		}

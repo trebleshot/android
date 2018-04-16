@@ -159,13 +159,7 @@ public class FileListAdapter
 
 		text1.setText(object.friendlyName);
 		text2.setText(object.info);
-
-		if (!(object instanceof FileHolder))
-			image.setImageResource(object.iconRes);
-		else
-			GlideApp.with(getContext())
-					.load(object.uri)
-					.into(image);
+		image.setImageResource(object.iconRes);
 	}
 
 	public String buildPath(String[] splitPath, int count)

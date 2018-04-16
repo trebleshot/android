@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -101,12 +102,19 @@ public class ContentSharingActivity extends Activity
 			{
 				viewPager.setCurrentItem(tab.getPosition());
 
-				EditableListFragmentImpl fragment = (EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem());
+				final EditableListFragmentImpl fragment = (EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem());
 
 				selectionCallback.updateProvider(fragment);
 
 				if (fragment.getAdapterImpl() != null)
-					fragment.getAdapterImpl().notifyAllSelectionChanges();
+					new Handler().postDelayed(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							fragment.getAdapterImpl().notifyAllSelectionChanges();
+						}
+					}, 200);
 
 				// FIXME: 15/04/18 Rotation causes return of uninitiated fragment which is abnormal; it also leads app stop because of empty adapter reference
 			}
