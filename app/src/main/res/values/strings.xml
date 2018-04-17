@@ -268,7 +268,7 @@
     <string name="text_receivedSize">Received size</string>
     <string name="mesg_notValidTransfer">The transfer is not valid anymore</string>
     <string name="ques_saveAnyway">Save anyway?</string>
-    <string name="text_saveAnywaySummary">The sender does know where the file is anymore, but you can still the save the file</string>
+    <string name="text_saveAnywaySummary">The sender does not know where the file is, but you can still save the file</string>
     <string name="mesg_fileSaved">The file has been saved</string>
     <string name="butn_sortBy">Sort by</string>
     <string name="butn_sortOrder">Sort order</string>

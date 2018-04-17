@@ -121,7 +121,7 @@
     <string name="text_pendingTransfers">Bekleyen aktarımlar</string>
     <string name="text_cancellingTransfer">İşlem iptal ediliyor</string>
     <string name="text_noNetworkAvailable">Kullanılabilir ağ yok</string>
-    <string name="text_removeCertainPendingTransfersSummary">Devam ederseniz listede görmüş olduğunuz bekleyen aktarımlar silinecek</string>
+    <string name="text_removeCertainPendingTransfersSummary">Bu, burada görmüş olduğunuz bekleyen aktarımlar kaldıracak</string>
     <string name="text_removeDeviceSummary">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
     <string name="text_availableNetworks">Ağ seçin - %s</string>
     <string name="ques_removeAll">Hepsini kaldır?</string>
@@ -146,9 +146,9 @@
     <string name="text_communicationService">Haberleşme servisi</string>
     <string name="text_serverService">Sunucu servis</string>
     <string name="text_transactionViewer">Bekleyen aktarımlar</string>
-    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin
-\n
-\nAygıt listesi &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
+    <string name="text_notAllowedHelp">%1$s üzerinde izninizin olup olmadığını kontrol edin 
+\n 
+\nCihazlar &gt; %2$s &gt; Erişime izin ver &gt; (etkin)</string>
     <string name="ques_why">Neden?</string>
     <string name="butn_saveTo">Kaydetme yeri</string>
     <string name="mesg_secureExit">Çıkmak için tekrar basın</string>
@@ -168,7 +168,7 @@
     <string name="text_storage">Depolama</string>
     <string name="mesg_currentPathUnavailable">Bu klasör kullanılamıyor</string>
     <string name="text_shareFiles">Dosya paylaş</string>
-    <string name="text_transactionDetails">Aktarım detayı</string>
+    <string name="text_transactionDetails">Detaylar</string>
     <string name="text_fileExplorer">Dosya gezgini</string>
     <string name="butn_createFolder">Klasör oluştur</string>
     <string name="text_chooseFolder">Klasör seçin</string>
@@ -264,7 +264,7 @@
     <string name="butn_checkAll">Hepsini şeç</string>
     <string name="butn_undoAll">Geri al</string>
     <string name="text_selectableNotCheckedNotice">Seçili olmayan nesneler atlanacak</string>
-    <string name="text_previewAndEditList">Listeyi Önizle ve Düzenle</string>
+    <string name="text_previewAndEditList">Önizle ve düzenle</string>
     <string name="text_fileRoot">Dosya kökü</string>
     <string name="mesg_versionNotSupported">Bu cihaz artık desteklenmeyen eski bir sürüm kullanıyor. Lütfen ilk önce güncelleyin ve cihazları yeniden tarayın.</string>
     <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
@@ -278,14 +278,14 @@
     <string name="butn_previewSelections">Seçimleri önizle</string>
     <string name="mesg_deviceConnectionError">\"%s\" ile \"%s\" üzerinden bağlantı başarısız oldu</string>
     <string name="mesg_retryAllInfo">TrebleShot yarıda kesilmiş aktarımları yeniden almayı deneyecek</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Lütfen ilk önce \"Bağlantıyı değiştir\" i kullanarak bağlantı yöntemini güncelleyin</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Lütfen ilk önce bağlantı yöntemini seçin</string>
     <string name="butn_setUp">Ayarla</string>
     <string name="text_pseudoLocation">Sahte konum</string>
     <string name="butn_saveAnyway">Yinede kaydet</string>
     <string name="text_receivedSize">Alınmış boyut</string>
     <string name="mesg_notValidTransfer">Bu aktarım artık geçerli değil</string>
     <string name="ques_saveAnyway">Yinede kaydet?</string>
-    <string name="text_saveAnywaySummary">Gönderen aktarımı listeden kaldırdı ancak aktarım henüz tamamlanmadı. Devam ederseniz dosya alınmış gibi kaydedilecek.</string>
+    <string name="text_saveAnywaySummary">Gönderen dosyanın yerini bilmiyor, ancak dosyayı yine de kaydedebilirsiniz.</string>
     <string name="mesg_fileSaved">Dosya kaydedildi</string>
     <string name="butn_sortBy">Şununla sırala</string>
     <string name="butn_sortOrder">Sıralama düzeni</string>
@@ -336,7 +336,7 @@
     <string name="mesg_wifiEnableRequired">Lütfen bağlanmak için Kablosuzu etkinleştirin</string>
     <string name="text_hotspotStartsTrustZone">Hotspot, GüvenliBölge\'yi de başlatır</string>
     <string name="text_hotspotStartsTrustZoneSummary">GüvenliBölge duruma göre başlatılacak</string>
-    <string name="text_qrCodeAvailableHelp">Göndericiye bu QR kodunu TrebleShot üzerinde taramasını söyleyin</string>
+    <string name="text_qrCodeAvailableHelp">Hotspot\'a bağlanmak bu QR kodunu TrebleShot ile tarayın</string>
     <string name="text_qrCodeHotspotDisabledHelp">TrebleShot Hotspot\'u başlatın veya hızlı bağlantı için bir ağa bağlanın</string>
     <string name="text_scanQRCodeHelp">Bağlanılacak cihazın ekranı üzerindeki QR kodunu tarayın</string>
     <string name="butn_qrScanToSend">Göndermek için QR tara</string>

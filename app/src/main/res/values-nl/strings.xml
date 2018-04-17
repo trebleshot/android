@@ -40,7 +40,7 @@
     <string name="mesg_fileReceiveError">Er is iets misgegaan tijdens het ontvangen van %s</string>
     <string name="mesg_fileReceiveCancelled">Ontvangen van %s geannuleerd</string>
     <string name="text_multipleFileReceiveCompleted">De bestanden zijn ontvangen</string>
-    <string name="text_deviceList">Apparaatlijst</string>
+    <string name="text_deviceList">Apparaten</string>
     <string name="text_fileOpenAppChoose">Openen met</string>
     <string name="text_fileShareAppChoose">Kies een app om mee te delen</string>
     <string name="text_receivedFiles">Ontvangen bestanden</string>
@@ -148,9 +148,9 @@
     <string name="text_transactionViewer">Overdrachten in wachtrij</string>
     <string name="text_error">Fout</string>
     <string name="ques_why">Waarom?</string>
-    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s
+    <string name="text_notAllowedHelp">Controleer of u toegestaan bent op %1$s 
 \n 
-\nApparaatlijst &gt; %2$s &gt; Verbinden toestaan &gt; (vink het aan)</string>
+\nApparaten &gt; %2$s &gt; Verbinden toestaan &gt; (vink het aan)</string>
     <string name="butn_saveTo">Opslaan naar</string>
     <string name="mesg_secureExit">Druk nogmaals om af te sluiten</string>
     <string name="butn_create">Creëren</string>
@@ -178,7 +178,7 @@
     <string name="text_fileMime">Bestandssoort</string>
     <string name="text_fileStatus">Bestandsstatus</string>
     <string name="butn_resume">Hervatten</string>
-    <string name="text_transactionDetails">Overdrachtsgegevens</string>
+    <string name="text_transactionDetails">Details</string>
     <string name="text_fileExplorer">Bestandsverkenner</string>
     <string name="butn_createFolder">Map creëren</string>
     <string name="text_chooseFolder">Map kiezen</string>
@@ -265,7 +265,7 @@
     <string name="text_shareWithTrebleshot">@string/butn_shareWithTrebleshot</string>
     <string name="butn_checkAll">Alles controleren</string>
     <string name="butn_undoAll">Alles ongedaan maken</string>
-    <string name="text_previewAndEditList">Lijst voorvertonen en bewerken</string>
+    <string name="text_previewAndEditList">Voorvertonen en bewerken</string>
     <string name="text_selectableNotCheckedNotice">Ongemarkeerde items zullen worden overgeslagen</string>
     <string name="text_fileRoot">Bestandshoofdmap</string>
     <string name="mesg_versionNotSupported">Deze versie wordt niet langer ondersteund. Werk de app bij en zoek dan opnieuw naar apparaten.</string>
@@ -280,14 +280,14 @@
     <string name="butn_previewSelections">Selectievoorbeeld</string>
     <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
     <string name="mesg_retryAllInfo">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Werk eerst de verbindingsmethode bij via \"Verbinding wijzigen\"</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Kies eerst de verbindingsmethode</string>
     <string name="butn_setUp">Instellen</string>
     <string name="text_pseudoLocation">Neplocatie</string>
     <string name="butn_saveAnyway">Tóch opslaan</string>
     <string name="text_receivedSize">Grootte bij ontvangen</string>
     <string name="mesg_notValidTransfer">De overdracht is ongeldig verklaard</string>
     <string name="ques_saveAnyway">Tóch opslaan?</string>
-    <string name="text_saveAnywaySummary">De afzender heeft deze overdracht verwijderd uit de lijst, maar deze is nog niet afgerond. Als u doorgaat, dan zal het deels ontvangen bestand worden opgeslagen alsof het volledig ontvangen was.</string>
+    <string name="text_saveAnywaySummary">De afzender weet niet meer waar het bestand is, maar u kunt het nog steeds opslaan</string>
     <string name="mesg_fileSaved">Het bestand is opgeslagen</string>
     <string name="butn_sortBy">Sorteren op</string>
     <string name="butn_sortOrder">Sorteervolgorde</string>
@@ -338,9 +338,9 @@
     <string name="mesg_wifiEnableRequired">Schakel Wi-Fi in om te kunnen verbinden</string>
     <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
-    <string name="text_qrCodeAvailableHelp">Zeg tegen de afzender dat hij/zij deze QR-code moet scannen met TrebleShot</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in</string>
-    <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de ontvanger</string>
+    <string name="text_qrCodeAvailableHelp">Scan deze QR-code met TrebleShot om te verbinden met de hotspot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in of maak verbinding met een netwerk</string>
+    <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van het apparaat van de afzender</string>
     <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
     <string name="butn_qrToggle">QR-code weergeven/verbergen</string>
     <string name="text_notificationSettingsSummary">Meldingsinstellingen openen</string>
@@ -362,4 +362,21 @@
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artiest</string>
     <string name="text_groupByFolder">Map</string>
+<string name="text_home">Persoonlijk</string>
+    <string name="text_default">Standaard</string>
+    <string name="textFiles">Bestanden</string>
+    <string name="mesg_noReceiverOrSender">Je moet eerst apparaten toevoegen</string>
+    <string name="butn_addDevices">Apparaten toevoegen</string>
+    <string name="text_connectDevices">Apparaten verbinden</string>
+    <string name="text_network">Netwerk</string>
+    <string name="text_connect">Verbinden</string>
+    <string name="butn_shareWithOtherApps">Delen met andere apps</string>
+    <string name="butn_startHotspot">Hotspot instellen</string>
+    <string name="butn_stopHotspot">Hotspot uitschakelen</string>
+    <string name="text_easyDiscoveryHelp">Scan dit als beide apparaten zich bevinden op hetzelfde netwerk</string>
+    <string name="text_scanQRWifiRequired">Draadloos moet worden ingeschakeld om te kunnen verbinden met apparaten</string>
+    <string name="mesg_completing">Bezig met afronden</string>
+    <string name="mesg_errorNotSameNetwork">De apparaten bevinden zich niet op hetzelfde netwerk</string>
+    <string name="text_cameraPermissionRequired">Camera-machtiging is vereist</string>
+    <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
 </resources>

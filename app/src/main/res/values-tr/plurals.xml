@@ -40,4 +40,12 @@
         <item quantity="one">Bir dosya silindi</item>
         <item quantity="other">%d dosya silindi</item>
     </plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Tek sütun</item>
+	<item quantity="other">%d sütun</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">Tekli paylaşım</item>
+	<item quantity="other">%d cihazla paylaşım</item>
+</plurals>
 </resources>
