@@ -379,4 +379,5 @@
     <string name="mesg_errorNotSameNetwork">De apparaten bevinden zich niet op hetzelfde netwerk</string>
     <string name="text_cameraPermissionRequired">Camera-machtiging is vereist</string>
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
+<string name="text_file">Bestand</string>
 </resources>
