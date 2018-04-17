@@ -44,4 +44,8 @@
 	<item quantity="one">Enkele rij</item>
 	<item quantity="other">%d rijen</item>
 </plurals>
+<plurals name="text_devicesShared">
+	<item quantity="one">Wordt gedeeld met 1 apparaat</item>
+	<item quantity="other">Wordt gedeeld met %d apparaten</item>
+</plurals>
 </resources>
