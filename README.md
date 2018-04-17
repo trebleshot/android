@@ -33,6 +33,7 @@ Send and receive files over available connections without making any effort. Ple
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_7.png)
 
 ## Supported languages
+* Arabic
 * Chinese (Simplified)
 * Dutch
 * English
