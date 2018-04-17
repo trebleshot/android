@@ -305,6 +305,10 @@ public class TransactionActivity
 
 		if (mDetailsFragment != null && mDetailsFragment.isAdded())
 			mDetailsFragment.updateViewState();
+
+		setTitle(getResources().getQuantityString(R.plurals.text_files,
+				getIndex().incomingCount + getIndex().outgoingCount,
+				getIndex().incomingCount + getIndex().outgoingCount));
 	}
 
 	private void resumeReceiving()

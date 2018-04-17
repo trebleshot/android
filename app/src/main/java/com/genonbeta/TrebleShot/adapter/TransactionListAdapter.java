@@ -94,7 +94,8 @@ public class TransactionListAdapter
 		for (GroupEditableTransferObject object : mDatabase.castQuery((currentPath == null
 				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
 				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
-				String.valueOf(getGroupId()), currentPath)).setGroupBy(null), GroupEditableTransferObject.class))
+				String.valueOf(getGroupId()), currentPath)
+		).setGroupBy(null), GroupEditableTransferObject.class))
 			lister.offer(object);
 	}
 

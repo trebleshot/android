@@ -9,18 +9,14 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * created by: Veli
@@ -45,7 +41,7 @@ public class TransactionGroupListAdapter
 	@Override
 	protected void onLoad(GroupLister<PreloadedGroup> lister)
 	{
-		for (PreloadedGroup group :  mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
+		for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
 		{
 			@Override
 			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, PreloadedGroup object)

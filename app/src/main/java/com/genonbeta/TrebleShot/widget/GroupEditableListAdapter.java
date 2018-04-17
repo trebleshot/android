@@ -15,7 +15,6 @@ import com.genonbeta.TrebleShot.util.listing.Lister;
 import com.genonbeta.TrebleShot.util.listing.Merger;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -133,11 +132,15 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	public interface GroupEditable extends Editable
 	{
 		int getViewType();
+
 		String getRepresentativeText();
+
 		boolean isGroupRepresentative();
 
 		void setDate(long date);
+
 		void setSize(long size);
+
 		void setRepresentativeText(CharSequence representativeText);
 
 	}
