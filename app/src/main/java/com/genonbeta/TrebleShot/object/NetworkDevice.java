@@ -19,6 +19,7 @@ public class NetworkDevice
 	public String deviceId;
 	public String versionName;
 	public int versionNumber;
+	public int tmpSecureKey;
 	public long lastUsageTime;
 	public boolean isTrusted = false;
 	public boolean isRestricted = false;
@@ -59,6 +60,7 @@ public class NetworkDevice
 		values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
 		values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
 		values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
+		values.put(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY, tmpSecureKey);
 
 		return values;
 	}
@@ -76,6 +78,7 @@ public class NetworkDevice
 		this.isTrusted = item.getInt(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
 		this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
 		this.isLocalAddress = item.getInt(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
+		this.tmpSecureKey = item.getInt(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
 	}
 
 	@Override

@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -13,7 +14,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
@@ -102,12 +102,12 @@ public class ContentSharingActivity extends Activity
 			{
 				viewPager.setCurrentItem(tab.getPosition());
 
-				final EditableListFragmentImpl fragment = (EditableListFragmentImpl) pagerAdapter.getItem(viewPager.getCurrentItem());
+				final EditableListFragment fragment = (EditableListFragment) pagerAdapter.getItem(tab.getPosition());
 
 				selectionCallback.updateProvider(fragment);
 
 				if (fragment.getAdapterImpl() != null)
-					new Handler().postDelayed(new Runnable()
+					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
 					{
 						@Override
 						public void run()
@@ -115,8 +115,6 @@ public class ContentSharingActivity extends Activity
 							fragment.getAdapterImpl().notifyAllSelectionChanges();
 						}
 					}, 200);
-
-				// FIXME: 15/04/18 Rotation causes return of uninitiated fragment which is abnormal; it also leads app stop because of empty adapter reference
 			}
 
 			@Override

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
@@ -38,6 +39,17 @@ public class DefaultFragmentPagerAdapter extends FragmentPagerAdapter
 		if (fragment instanceof TitleSupport)
 			tabLayout.addTab(tabLayout.newTab().setText(((TitleSupport) fragment).getTitle(getContext())));
 	}
+
+	@Override
+	public Object instantiateItem(ViewGroup container, int position)
+	{
+		Fragment fragment = (Fragment) super.instantiateItem(container, position);
+
+		mFragments.set(position, fragment);
+
+		return fragment;
+	}
+
 
 	public Context getContext()
 	{

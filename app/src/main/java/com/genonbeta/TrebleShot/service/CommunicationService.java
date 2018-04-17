@@ -399,8 +399,7 @@ public class CommunicationService extends Service
 
 	public boolean isQRFastMode()
 	{
-		return getDefaultPreferences().getBoolean("qr_trust", false)
-				&& (mHotspotUtils.isStarted());
+		return getDefaultPreferences().getBoolean("qr_trust", false);
 	}
 
 	public boolean isProcessRunning(int groupId)
@@ -502,6 +501,9 @@ public class CommunicationService extends Service
 				boolean result = false;
 				boolean shouldContinue = false;
 
+				final boolean isSecureConnection = responseJSON.has(Keyword.DEVICE_SECURE_KEY)
+						&& responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) == getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
+
 				String deviceSerial = null;
 
 				AppUtils.applyDeviceToJSON(AppUtils.getLocalDevice(getApplicationContext()), replyJSON);
@@ -520,12 +522,7 @@ public class CommunicationService extends Service
 					}
 				}
 
-				// possibly connected using code
-				final boolean isSecureConnection = responseJSON.has(Keyword.NETWORK_PIN)
-						&& responseJSON.getInt(Keyword.NETWORK_PIN) == getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
-
-				final boolean seamlessActive = mSeamlessMode
-						|| (isQRFastMode() && isSecureConnection);
+				final boolean seamlessActive = mSeamlessMode || (isQRFastMode() && isSecureConnection);
 
 				if (deviceSerial != null) {
 					NetworkDevice device = new NetworkDevice(deviceSerial);

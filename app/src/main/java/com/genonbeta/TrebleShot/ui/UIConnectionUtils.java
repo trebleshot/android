@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -55,8 +56,8 @@ public class UIConnectionUtils
 		return mSnackbarSupport;
 	}
 
-	public void makeAcquaintance(final AccessDatabase database, final UITask task,
-								 final Object object, final int accessPin,
+	public void makeAcquaintance(final Context context, final AccessDatabase database,
+								 final UITask task, final Object object, final int accessPin,
 								 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
 	{
 		WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
@@ -67,71 +68,60 @@ public class UIConnectionUtils
 			@Override
 			public void onRun()
 			{
-				if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
+				try {
+					if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+						mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
+						{
+							@Override
+							public boolean onTimePassed(int delimiter, long timePassed)
+							{
+								return timePassed >= 20000;
+							}
+						});
+					} else if (object instanceof String)
+						mRemoteAddress = (String) object;
+
+					if (mRemoteAddress != null) {
+						mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+						{
+							@Override
+							public void onDeviceRegistered(final AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+							{
+								// we may be working with direct IP scan
+								new Handler(Looper.getMainLooper()).post(new Runnable()
+								{
+									@Override
+									public void run()
+									{
+										if (registerListener != null)
+											registerListener.onDeviceRegistered(database, device, connection);
+									}
+								});
+							}
+						}) != null;
+					}
+
+					if (!mConnected && !getInterrupter().interruptedByUser())
+						mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
+								.show();
+				} catch (Exception e) {
+
+				} finally {
+					new Handler(Looper.getMainLooper()).post(new Runnable()
 					{
 						@Override
-						public boolean onTimePassed(int delimiter, long timePassed)
+						public void run()
 						{
-							return timePassed >= 20000;
+							task.updateTaskStopped();
 						}
 					});
-				} else if (object instanceof String)
-					mRemoteAddress = (String) object;
-
-				if (mRemoteAddress != null) {
-					mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
-					{
-						@Override
-						public void onDeviceRegistered(final AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
-						{
-							// we may be working with direct IP scan
-							if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-								try {
-									NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) object;
-
-									hotspotNetwork.deviceId = device.deviceId;
-									database.reconstruct(hotspotNetwork);
-
-									device = hotspotNetwork;
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-
-							final NetworkDevice finalDevice = device;
-
-							new Handler(Looper.getMainLooper()).post(new Runnable()
-							{
-								@Override
-								public void run()
-								{
-									if (registerListener != null)
-										registerListener.onDeviceRegistered(database, finalDevice, connection);
-								}
-							});
-						}
-					}) != null;
 				}
-
-				if (!mConnected)
-					mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
-							.show();
-
-				new Handler(Looper.getMainLooper()).post(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						task.updateTaskStopped();
-					}
-				});
 				// We can't add dialog outside of the else statement as it may close other dialogs as well
 			}
 		};
 
 		task.updateTaskStarted(runningTask.getInterrupter());
-		WorkerService.run(getConnectionUtils().getContext(), runningTask);
+		WorkerService.run(context, runningTask);
 	}
 
 	public boolean notifyShowHotspotHandled()

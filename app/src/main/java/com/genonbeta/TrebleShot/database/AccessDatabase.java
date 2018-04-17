@@ -71,6 +71,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
 	public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
 	public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
+	public static final String FIELD_DEVICES_TMPSECUREKEY = "tmpSecureKey";
 
 	public static final String TABLE_DEVICECONNECTION = "deviceConnection";
 	public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
@@ -227,7 +228,8 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false));
+				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true));
 
 		sqlValues.defineTable(TABLE_DEVICECONNECTION)
 				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))

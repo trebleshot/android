@@ -107,7 +107,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
 			{
 				if (networkDevice instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					connectionUtils.makeAcquaintance(getDatabase(), new UITask()
+					connectionUtils.makeAcquaintance(ShareActivity.this, getDatabase(), new UITask()
 					{
 						@Override
 						public void updateTaskStarted(Interrupter interrupter)
@@ -235,6 +235,8 @@ public class ShareActivity extends Activity implements SnackbarSupport
 					@Override
 					public void onConnect(CommunicationBridge.Client client)
 					{
+						client.setDevice(device);
+
 						try {
 							final JSONObject jsonRequest = new JSONObject();
 							final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
@@ -381,6 +383,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 								}
 							});
 
+							// TODO: 17/04/18 We can implement this in the main code for more consistency
 							activeConnection.reply(jsonRequest.toString());
 
 							CoolSocket.ActiveConnection.Response response = activeConnection.receive();

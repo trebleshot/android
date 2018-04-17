@@ -11,24 +11,16 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.WorkerThread;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 
 import org.json.JSONObject;
-
-import java.net.ConnectException;
-
-import okio.Timeout;
 
 import static junit.framework.Assert.fail;
 
@@ -138,12 +130,13 @@ public class ConnectionUtils
 			public void onConnect(CommunicationBridge.Client client)
 			{
 				try {
+					client.setSecureKey(accessPin);
+
 					CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
 					NetworkDevice device = client.loadDevice(activeConnection);
 
 					activeConnection.reply(new JSONObject()
 							.put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-							.put(Keyword.NETWORK_PIN, accessPin)
 							.toString());
 
 					JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
@@ -154,6 +147,7 @@ public class ConnectionUtils
 						final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(database, device, ipAddress);
 
 						device.lastUsageTime = System.currentTimeMillis();
+						device.tmpSecureKey = accessPin;
 						device.isRestricted = false;
 						device.isTrusted = true;
 

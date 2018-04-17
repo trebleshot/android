@@ -135,8 +135,8 @@ public class NetworkDeviceListFragment
 						if (mDeviceSelectedListener != null
 								&& device.versionNumber != -1
 								&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
-								createSnackbar(R.string.mesg_versionNotSupported)
-										.show();
+							createSnackbar(R.string.mesg_versionNotSupported)
+									.show();
 						} else if (mDeviceSelectedListener == null
 								|| !mDeviceSelectedListener.onNetworkDeviceSelected(device, null)) {
 							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {

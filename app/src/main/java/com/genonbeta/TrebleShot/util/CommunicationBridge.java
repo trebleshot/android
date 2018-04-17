@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -59,6 +60,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 	public static class Client extends CoolSocket.Client
 	{
 		private AccessDatabase mDatabase;
+		private NetworkDevice mDevice;
+		private int mSecureKey = -1;
 
 		public Client(AccessDatabase database)
 		{
@@ -105,6 +108,12 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 			return mDatabase;
 		}
 
+		@Nullable
+		public NetworkDevice getDevice()
+		{
+			return mDevice;
+		}
+
 		public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection, boolean handshakeOnly) throws IOException, TimeoutException, CommunicationException
 		{
 			try {
@@ -112,6 +121,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 						.put(Keyword.HANDSHAKE_REQUIRED, true)
 						.put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
 						.put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceSerial(getContext()))
+						.put(Keyword.DEVICE_SECURE_KEY, mDevice == null ? mSecureKey : mDevice.tmpSecureKey)
 						.toString());
 			} catch (JSONException e) {
 				throw new CommunicationException("Failed to open connection between devices");
@@ -137,6 +147,16 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 			}
 		}
 
+		public void setDevice(NetworkDevice device)
+		{
+			mDevice = device;
+		}
+
+		public void setSecureKey(int secureKey)
+		{
+			mSecureKey = secureKey;
+		}
+
 		public NetworkDevice updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection, NetworkDevice targetDevice) throws IOException, TimeoutException, CommunicationException, DifferentClientException
 		{
 			NetworkDevice loadedDevice = loadDevice(activeConnection);
@@ -146,7 +166,9 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 				throw new DifferentClientException("The target device did not match with the connected one");
 			else {
 				loadedDevice.lastUsageTime = System.currentTimeMillis();
+
 				mDatabase.publish(loadedDevice);
+				mDevice = loadedDevice;
 			}
 
 			return loadedDevice;

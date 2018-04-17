@@ -146,7 +146,7 @@ public class CodeConnectFragment
 							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
 						}
 
-						mConnectionUtils.makeAcquaintance(getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
+						mConnectionUtils.makeAcquaintance(getContext(), getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
 					} else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
 						String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
 						String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
@@ -156,7 +156,7 @@ public class CodeConnectFragment
 						if (wifiInfo != null
 								&& wifiInfo.getBSSID() != null
 								&& wifiInfo.getBSSID().equals(bssid))
-							mConnectionUtils.makeAcquaintance(getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
+							mConnectionUtils.makeAcquaintance(getContext(), getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
 						else {
 							mBarcodeView.pauseAndWait();
 

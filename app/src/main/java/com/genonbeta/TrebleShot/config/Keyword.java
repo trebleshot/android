@@ -32,6 +32,7 @@ public class Keyword
 			DEVICE_INFO_MODEL = "model",
 			DEVICE_INFO_USER = "user",
 			DEVICE_INFO_SERIAL = "deviceId",
+			DEVICE_SECURE_KEY = "secureKey",
 			APP_INFO = "appInfo",
 			APP_INFO_VERSION_NAME = "versionName",
 			APP_INFO_VERSION_CODE = "versionCode",
