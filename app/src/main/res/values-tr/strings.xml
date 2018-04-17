@@ -285,7 +285,7 @@
     <string name="text_receivedSize">Alınmış boyut</string>
     <string name="mesg_notValidTransfer">Bu aktarım artık geçerli değil</string>
     <string name="ques_saveAnyway">Yinede kaydet?</string>
-    <string name="text_saveAnywaySummary">Gönderen dosyanın yerini bilmiyor, ancak dosyayı yine de kaydedebilirsiniz.</string>
+    <string name="text_saveAnywaySummary">Gönderen dosyanın yerini bilmiyor, ancak dosyayı yine de kaydedebilirsiniz</string>
     <string name="mesg_fileSaved">Dosya kaydedildi</string>
     <string name="butn_sortBy">Şununla sırala</string>
     <string name="butn_sortOrder">Sıralama düzeni</string>
