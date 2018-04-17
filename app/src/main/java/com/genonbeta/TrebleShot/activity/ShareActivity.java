@@ -107,7 +107,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
 			{
 				if (networkDevice instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					connectionUtils.makeAcquaintance(ShareActivity.this, getDatabase(), new UITask()
+					connectionUtils.makeAcquaintance(getDatabase(), new UITask()
 					{
 						@Override
 						public void updateTaskStarted(Interrupter interrupter)

@@ -1,11 +1,12 @@
 package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
@@ -14,7 +15,6 @@ import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -55,8 +55,8 @@ public class UIConnectionUtils
 		return mSnackbarSupport;
 	}
 
-	public void makeAcquaintance(final FragmentActivity activity, final AccessDatabase database,
-								 final UITask task, final Object object, final int accessPin,
+	public void makeAcquaintance(final AccessDatabase database, final UITask task,
+								 final Object object, final int accessPin,
 								 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
 	{
 		WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
@@ -80,7 +80,8 @@ public class UIConnectionUtils
 					mRemoteAddress = (String) object;
 
 				if (mRemoteAddress != null) {
-					mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener() {
+					mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+					{
 						@Override
 						public void onDeviceRegistered(final AccessDatabase database, NetworkDevice device, final NetworkDevice.Connection connection)
 						{
@@ -100,16 +101,15 @@ public class UIConnectionUtils
 
 							final NetworkDevice finalDevice = device;
 
-							if (!getInterrupter().interrupted() && activity != null)
-								activity.runOnUiThread(new Runnable()
+							new Handler(Looper.getMainLooper()).post(new Runnable()
+							{
+								@Override
+								public void run()
 								{
-									@Override
-									public void run()
-									{
-										if (registerListener != null)
-											registerListener.onDeviceRegistered(database, finalDevice, connection);
-									}
-								});
+									if (registerListener != null)
+										registerListener.onDeviceRegistered(database, finalDevice, connection);
+								}
+							});
 						}
 					}) != null;
 				}
@@ -118,22 +118,20 @@ public class UIConnectionUtils
 					mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
 							.show();
 
-				if (activity != null)
-					activity.runOnUiThread(new Runnable()
+				new Handler(Looper.getMainLooper()).post(new Runnable()
+				{
+					@Override
+					public void run()
 					{
-						@Override
-						public void run()
-						{
-							task.updateTaskStopped();
-						}
-					});
-
+						task.updateTaskStopped();
+					}
+				});
 				// We can't add dialog outside of the else statement as it may close other dialogs as well
 			}
 		};
 
 		task.updateTaskStarted(runningTask.getInterrupter());
-		WorkerService.run(activity, runningTask);
+		WorkerService.run(getConnectionUtils().getContext(), runningTask);
 	}
 
 	public boolean notifyShowHotspotHandled()
@@ -256,8 +254,8 @@ public class UIConnectionUtils
 						@Override
 						public void onClick(View view)
 						{
-								activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-										Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
+							activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+									Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
 						}
 					})
 					.show();

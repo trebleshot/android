@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,19 +23,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -46,7 +44,6 @@ import com.journeyapps.barcodescanner.BarcodeView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.ConnectException;
 import java.util.List;
 
 /**
@@ -86,7 +83,7 @@ public class CodeConnectFragment
 	private NetworkDeviceLoader.OnDeviceRegisteredListener mRegisteredListener = new NetworkDeviceLoader.OnDeviceRegisteredListener()
 	{
 		@Override
-		public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+		public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
 		{
 			if (mDeviceSelectedListener != null)
 				mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
@@ -149,7 +146,7 @@ public class CodeConnectFragment
 							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
 						}
 
-						mConnectionUtils.makeAcquaintance(getActivity(), getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
+						mConnectionUtils.makeAcquaintance(getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
 					} else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
 						String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
 						String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
@@ -159,12 +156,13 @@ public class CodeConnectFragment
 						if (wifiInfo != null
 								&& wifiInfo.getBSSID() != null
 								&& wifiInfo.getBSSID().equals(bssid))
-							mConnectionUtils.makeAcquaintance(getActivity(), getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
+							mConnectionUtils.makeAcquaintance(getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
 						else {
 							mBarcodeView.pauseAndWait();
 
 							createSnackbar(R.string.mesg_errorNotSameNetwork)
-									.addCallback(new Snackbar.Callback() {
+									.addCallback(new Snackbar.Callback()
+									{
 										@Override
 										public void onDismissed(Snackbar transientBottomBar, int event)
 										{
@@ -237,7 +235,7 @@ public class CodeConnectFragment
 
 	public void updateState()
 	{
-		boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
+		final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
 
 		if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 			mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
@@ -256,10 +254,17 @@ public class CodeConnectFragment
 					? R.string.text_scanQRCodeHelp
 					: R.string.text_scanQRWifiRequired);
 
-			if (wifiEnabled)
-				mBarcodeView.resume();
-			else
-				mBarcodeView.pauseAndWait();
+			new Handler().postDelayed(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					if (wifiEnabled)
+						mBarcodeView.resume();
+					else
+						mBarcodeView.pauseAndWait();
+				}
+			}, 200);
 		}
 	}
 
