@@ -364,7 +364,7 @@
     <string name="text_default">Varsayılan</string>
     <string name="textFiles">Dosyalar</string>
     <string name="mesg_noReceiverOrSender">Önce cihazlar eklemelisiniz</string>
-    <string name="butn_addPeople">Cihazlar ekle</string>
+    <string name="butn_addDevices">Cihazlar ekle</string>
     <string name="text_connectDevices">Cihazları bağlayın</string>
     <string name="text_network">Ağ</string>
     <string name="text_connect">Bağlan</string>
