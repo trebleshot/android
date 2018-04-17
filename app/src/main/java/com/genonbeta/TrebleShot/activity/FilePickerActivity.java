@@ -14,6 +14,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 /**
  * Created by: veli
@@ -76,10 +77,10 @@ public class FilePickerActivity extends Activity
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
 				getSupportActionBar().setTitle(R.string.text_chooseFile);
 
-				mFileExplorerFragment.getFileListFragment().setLayoutClickListener(new EditableListFragment.LayoutClickListener<EditableListAdapter.EditableViewHolder>()
+				mFileExplorerFragment.getFileListFragment().setLayoutClickListener(new EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder>()
 				{
 					@Override
-					public boolean onLayoutClick(EditableListFragment listFragment, EditableListAdapter.EditableViewHolder holder, boolean longClick)
+					public boolean onLayoutClick(EditableListFragment listFragment, GroupEditableListAdapter.GroupViewHolder holder, boolean longClick)
 					{
 						if (longClick)
 							return false;

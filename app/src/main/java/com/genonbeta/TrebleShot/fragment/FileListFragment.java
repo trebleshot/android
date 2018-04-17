@@ -18,7 +18,8 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
@@ -30,13 +31,14 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class FileListFragment
-		extends EditableListFragment<FileListAdapter.GenericFileHolder, EditableListAdapter.EditableViewHolder, FileListAdapter>
+		extends GroupEditableListFragment<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
 {
 	public static final String TAG = FileListFragment.class.getSimpleName();
 
@@ -94,8 +96,9 @@ public class FileListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_DATE);
+		setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_ASCENDING);
+		setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_NAME);
+		setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);
 		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
@@ -123,22 +126,24 @@ public class FileListFragment
 	@Override
 	public FileListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				registerLayoutViewClicks(clazz);
+				if (!clazz.isRepresentative()) {
+					registerLayoutViewClicks(clazz);
 
-				if (getSelectionConnection() != null)
-					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
+					if (getSelectionConnection() != null)
+						clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
 						{
-							getSelectionConnection().setSelected(clazz.getAdapterPosition());
-						}
-					});
+							@Override
+							public void onClick(View v)
+							{
+								getSelectionConnection().setSelected(clazz.getAdapterPosition());
+							}
+						});
+				}
 			}
 		};
 
@@ -146,7 +151,7 @@ public class FileListFragment
 		{
 			@NonNull
 			@Override
-			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
@@ -154,7 +159,15 @@ public class FileListFragment
 	}
 
 	@Override
-	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == FileListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		performLayoutClickOpenUri(holder);
 		return true;
@@ -221,7 +234,7 @@ public class FileListFragment
 	}
 
 	@Override
-	public boolean performLayoutClick(EditableListAdapter.EditableViewHolder holder)
+	public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
 

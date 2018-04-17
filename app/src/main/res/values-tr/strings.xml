@@ -370,11 +370,12 @@
     <string name="text_connect">Bağlan</string>
     <string name="butn_shareWithOtherApps">Diğerleriyle paylaş</string>
     <string name="butn_startHotspot">Hotspot oluştur</string>
-    <string name="butn_stopHotspot">"Hotspotu durdur "</string>
-    <string name="text_easyDiscoveryHelp">Cihazlar aynı ağ üzerinde tarayın</string>
+    <string name="butn_stopHotspot">Hotspotu durdur</string>
+    <string name="text_easyDiscoveryHelp">Cihazlar aynı ağ üzerindeyse tarayın</string>
     <string name="text_scanQRWifiRequired">Bağlanmak için Kablosuz etkin olmalıdır</string>
     <string name="mesg_completing">Tamamlıyor</string>
     <string name="mesg_errorNotSameNetwork">Cihazlar aynı üzerinde değiller</string>
     <string name="text_cameraPermissionRequired">Kamera izni gerekiyor</string>
     <string name="text_addDevicesToTransfer">Aktarıma cihazlar ekleyin</string>
+    <string name="text_file">Dosya</string>
 </resources>

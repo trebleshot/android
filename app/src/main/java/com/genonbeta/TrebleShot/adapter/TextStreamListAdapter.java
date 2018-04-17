@@ -55,10 +55,11 @@ public class TextStreamListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
-		View parentView = holder.getView();
 		TextStreamObject object = getItem(position);
 
 		if (!holder.tryBinding(object)) {
+			View parentView = holder.getView();
+
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 

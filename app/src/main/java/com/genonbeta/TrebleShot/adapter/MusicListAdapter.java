@@ -16,7 +16,6 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
-import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
@@ -149,7 +148,6 @@ public class MusicListAdapter
 		}
 	}
 
-
 	@Override
 	public boolean onCustomGroupListing(GroupLister<SongHolder> lister, int mode, SongHolder object)
 	{
@@ -199,7 +197,7 @@ public class MusicListAdapter
 		return super.getSectionName(position, object);
 	}
 
-	public static class SongHolder extends GalleryGroupEditableListAdapter.GroupEditable
+	public static class SongHolder extends GroupEditableListAdapter.GroupShareable
 	{
 		public String artist;
 		public String song;

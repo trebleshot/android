@@ -121,7 +121,7 @@ public class ImageListAdapter
 		return true;
 	}
 
-	public static class ImageHolder extends GalleryGroupEditableListAdapter.GalleryGroupEditable
+	public static class ImageHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
 	{
 		public long id;
 		public String dateTakenString;

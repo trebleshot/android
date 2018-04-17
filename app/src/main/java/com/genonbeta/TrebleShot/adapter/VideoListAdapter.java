@@ -126,7 +126,7 @@ public class VideoListAdapter
 		return true;
 	}
 
-	public static class VideoHolder extends GalleryGroupEditableListAdapter.GalleryGroupEditable
+	public static class VideoHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
 	{
 		public long id;
 		public String duration;

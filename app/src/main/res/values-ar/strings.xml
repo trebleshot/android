@@ -14,7 +14,7 @@
     <string name="text_receiving">جاري الإستلام</string>
     <string name="butn_cancelReceiving">إيقاف الاستقبال</string>
     <string name="text_fileReceived">تم إستلام الملف</string>
-    <string name="mesg_fileReceived">تم استلام٪ s</string>
+    <string name="mesg_fileReceived">تم استلام %s</string>
     <string name="butn_scan">بحث</string>
     <string name="text_listEmpty">لاتوجد عناصر</string>
     <string name="text_developerMode">وضع المطور</string>

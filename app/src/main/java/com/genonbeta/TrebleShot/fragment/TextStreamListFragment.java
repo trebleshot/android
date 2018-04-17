@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.callback.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -173,7 +174,7 @@ public class TextStreamListFragment
 		}
 	}
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
+	private static class SelectionCallback extends SharingActionModeCallback<TextStreamObject>
 	{
 		public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
 		{

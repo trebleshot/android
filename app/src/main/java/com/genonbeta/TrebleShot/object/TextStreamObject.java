@@ -15,7 +15,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TextStreamObject
-		extends GroupEditableListAdapter.GroupEditable
+		extends GroupEditableListAdapter.GroupShareable
 		implements DatabaseObject, Editable
 {
 	public int id;

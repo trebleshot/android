@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.date.DateMerger;
@@ -14,6 +15,7 @@ import com.genonbeta.TrebleShot.util.listing.Lister;
 import com.genonbeta.TrebleShot.util.listing.Merger;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
 
+import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -65,14 +67,14 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 				Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
 
 				T generated = onGenerateRepresentative(getRepresentativeText(thisMerger));
-				T firstShareable = thisMerger.getBelongings().get(0);
+				T firstEditable = thisMerger.getBelongings().get(0);
 
 				if (generated != null)
 					loadedList.add(generated);
 
-				generated.size = thisMerger.getBelongings().size();
-				generated.date = firstShareable.date;
-				generated.friendlyName = generated.representativeText;
+				generated.setSize(thisMerger.getBelongings().size());
+				generated.setDate(firstEditable.getComparableDate());
+				generated.setRepresentativeText(generated.getRepresentativeText());
 
 				loadedList.addAll(thisMerger.getBelongings());
 			}
@@ -95,7 +97,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	@Override
 	public int getItemViewType(int position)
 	{
-		return getItem(position).viewType;
+		return getItem(position).getViewType();
 	}
 
 	public String getRepresentativeText(Merger merger)
@@ -113,7 +115,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	public String getSectionName(int position, T object)
 	{
 		if (object.isGroupRepresentative())
-			return object.representativeText;
+			return object.getRepresentativeText();
 
 		switch (getGroupBy()) {
 			case MODE_GROUP_BY_DATE:
@@ -128,30 +130,72 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 		mGroupBy = groupBy;
 	}
 
-	public static class GroupEditable extends Shareable
+	public interface GroupEditable extends Editable
+	{
+		int getViewType();
+		String getRepresentativeText();
+		boolean isGroupRepresentative();
+
+		void setDate(long date);
+		void setSize(long size);
+		void setRepresentativeText(CharSequence representativeText);
+
+	}
+
+	public static class GroupShareable extends Shareable implements GroupEditable
 	{
 		public int viewType = EditableListAdapter.VIEW_TYPE_DEFAULT;
 		public String representativeText;
 
-		public GroupEditable()
+		public GroupShareable()
 		{
 			super();
 		}
 
-		public GroupEditable(int viewType, String representativeText)
+		public GroupShareable(int viewType, String representativeText)
 		{
 			this.viewType = viewType;
 			this.representativeText = representativeText;
 		}
 
-		public GroupEditable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+		public GroupShareable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 		{
 			super(friendlyName, fileName, mimeType, date, size, uri);
+		}
+
+		@Override
+		public int getViewType()
+		{
+			return viewType;
+		}
+
+		@Override
+		public String getRepresentativeText()
+		{
+			return representativeText;
 		}
 
 		public boolean isGroupRepresentative()
 		{
 			return representativeText != null;
+		}
+
+		@Override
+		public void setDate(long date)
+		{
+			this.date = date;
+		}
+
+		@Override
+		public void setSize(long size)
+		{
+			this.size = size;
+		}
+
+		@Override
+		public void setRepresentativeText(CharSequence representativeText)
+		{
+			this.representativeText = String.valueOf(representativeText);
 		}
 
 		@Override
@@ -200,12 +244,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 			return mRepresentativeText != null;
 		}
 
-		public boolean tryBinding(GroupEditable shareable)
+		public boolean tryBinding(GroupEditable editable)
 		{
-			if (mRepresentativeText == null || shareable.representativeText == null)
+			if (getRepresentativeText() == null || editable.getRepresentativeText() == null)
 				return false;
 
-			mRepresentativeText.setText(shareable.representativeText);
+			getRepresentativeText().setText(editable.getRepresentativeText());
 
 			return true;
 		}
@@ -232,7 +276,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 		public void offer(T object)
 		{
 			if (mMode == MODE_GROUP_BY_DATE)
-				offer(object, new DateMerger<T>(object.date));
+				offer(object, new DateMerger<T>(object.getComparableDate()));
 			else if (mMode == MODE_GROUP_BY_NOTHING
 					|| mCustomLister == null
 					|| !mCustomLister.onCustomGroupListing(this, mMode, object))

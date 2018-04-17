@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * created by: Veli
  * date: 30.03.2018 14:58
  */
-abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupEditable, V extends GroupEditableListAdapter.GroupViewHolder>
+abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupShareable, V extends GroupEditableListAdapter.GroupViewHolder>
 		extends GroupEditableListAdapter<T, V>
 		implements GroupEditableListAdapter.GroupLister.CustomGroupListener<T>
 {
@@ -52,16 +52,16 @@ abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEdit
 		return super.getSectionName(position, object);
 	}
 
-	public static class GalleryGroupEditable extends GroupEditable
+	public static class GalleryGroupShareable extends GroupShareable
 	{
 		public String albumName;
 
-		public GalleryGroupEditable(int viewType, String representativeText)
+		public GalleryGroupShareable(int viewType, String representativeText)
 		{
 			super(viewType, representativeText);
 		}
 
-		public GalleryGroupEditable(String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
+		public GalleryGroupShareable(String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
 		{
 			super(friendlyName, fileName, mimeType, date, size, uri);
 			this.albumName = albumName;

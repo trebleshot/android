@@ -383,7 +383,6 @@ public class ShareActivity extends Activity implements SnackbarSupport
 								}
 							});
 
-							// TODO: 17/04/18 We can implement this in the main code for more consistency
 							activeConnection.reply(jsonRequest.toString());
 
 							CoolSocket.ActiveConnection.Response response = activeConnection.receive();

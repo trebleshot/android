@@ -26,7 +26,7 @@ public class MusicListFragment
 	public void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setDefaultGroupingCriteria(ImageListAdapter.MODE_GROUP_BY_ALBUM);
+		setDefaultGroupingCriteria(MusicListAdapter.MODE_GROUP_BY_ALBUM);
 	}
 
 	@Override

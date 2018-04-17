@@ -13,7 +13,7 @@ import java.util.Map;
  * created by: veli
  * date: 30.03.2018 18:15
  */
-abstract public class GalleryGroupEditableListFragment<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
+abstract public class GalleryGroupEditableListFragment<T extends GroupEditableListAdapter.GroupShareable, V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
 		extends GroupEditableListFragment<T, V, E>
 {
 	@Override

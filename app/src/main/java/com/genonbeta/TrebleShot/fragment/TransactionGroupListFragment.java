@@ -14,13 +14,16 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
+import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -33,7 +36,7 @@ import java.util.Map;
  */
 
 public class TransactionGroupListFragment
-		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, EditableListAdapter.EditableViewHolder, TransactionGroupListAdapter>
+		extends GroupEditableListFragment<TransactionGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransactionGroupListAdapter>
 		implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
@@ -59,6 +62,7 @@ public class TransactionGroupListFragment
 
 		setDefaultOrderingCriteria(TransactionGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(TransactionGroupListAdapter.MODE_SORT_BY_DATE);
+		setDefaultGroupingCriteria(TransactionGroupListAdapter.MODE_GROUP_BY_DATE);
 		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
@@ -104,24 +108,41 @@ public class TransactionGroupListFragment
 	}
 
 	@Override
+	public void onGroupingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_groupByNothing), TransactionGroupListAdapter.MODE_GROUP_BY_NOTHING);
+		options.put(getString(R.string.text_groupByDate), TransactionGroupListAdapter.MODE_GROUP_BY_DATE);
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == TransactionGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
+	}
+
+	@Override
 	public TransactionGroupListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				registerLayoutViewClicks(clazz);
+				if (!clazz.isRepresentative()) {
+					registerLayoutViewClicks(clazz);
 
-				if (getSelectionConnection() != null)
-					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
+					if (getSelectionConnection() != null)
+						clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
 						{
-							getSelectionConnection().setSelected(clazz.getAdapterPosition());
-						}
-					});
+							@Override
+							public void onClick(View v)
+							{
+								getSelectionConnection().setSelected(clazz.getAdapterPosition());
+							}
+						});
+				}
 			}
 		};
 
@@ -129,7 +150,7 @@ public class TransactionGroupListFragment
 		{
 			@NonNull
 			@Override
-			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
@@ -137,7 +158,7 @@ public class TransactionGroupListFragment
 	}
 
 	@Override
-	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
 		return true;

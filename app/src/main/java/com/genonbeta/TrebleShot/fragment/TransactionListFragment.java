@@ -17,15 +17,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -34,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class TransactionListFragment
-		extends EditableListFragment<TransferObject, EditableListAdapter.EditableViewHolder, TransactionListAdapter>
+		extends GroupEditableListFragment<TransactionListAdapter.GroupEditableTransferObject, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -55,6 +58,7 @@ public class TransactionListFragment
 
 		setDefaultOrderingCriteria(TransactionListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(TransactionListAdapter.MODE_SORT_BY_DEFAULT);
+		setDefaultGroupingCriteria(TransactionListAdapter.MODE_GROUP_BY_DEFAULT);
 		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
@@ -91,22 +95,24 @@ public class TransactionListFragment
 	@Override
 	public TransactionListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				registerLayoutViewClicks(clazz);
+				if (!clazz.isRepresentative()) {
+					registerLayoutViewClicks(clazz);
 
-				if (getSelectionConnection() != null)
-					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
+					if (getSelectionConnection() != null)
+						clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
 						{
-							getSelectionConnection().setSelected(clazz.getAdapterPosition());
-						}
-					});
+							@Override
+							public void onClick(View v)
+							{
+								getSelectionConnection().setSelected(clazz.getAdapterPosition());
+							}
+						});
+				}
 			}
 		};
 
@@ -114,7 +120,7 @@ public class TransactionListFragment
 		{
 			@NonNull
 			@Override
-			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
@@ -122,7 +128,15 @@ public class TransactionListFragment
 	}
 
 	@Override
-	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == TransactionListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		final TransferObject transferObject = getAdapter().getItem(holder);
 
@@ -139,7 +153,7 @@ public class TransactionListFragment
 	}
 
 	@Override
-	public boolean performLayoutClick(EditableListAdapter.EditableViewHolder holder)
+	public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		final TransferObject transferObject = getAdapter().getItem(holder);
 
@@ -167,7 +181,7 @@ public class TransactionListFragment
 		return true;
 	}
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferObject>
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionListAdapter.GroupEditableTransferObject>
 	{
 		private TransactionListAdapter mAdapter;
 
@@ -190,7 +204,7 @@ public class TransactionListFragment
 		{
 			int id = item.getItemId();
 
-			final ArrayList<TransferObject> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+			final ArrayList<TransactionListAdapter.GroupEditableTransferObject> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
 			if (id == R.id.action_mode_transaction_delete) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());

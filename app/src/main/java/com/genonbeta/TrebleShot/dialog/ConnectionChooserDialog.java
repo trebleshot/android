@@ -138,7 +138,6 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
 				feelLucky.show();
 
-				// TODO: 17/04/18 Should we use Handler with delayed post?
 				new Thread()
 				{
 					@Override
