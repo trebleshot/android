@@ -7,8 +7,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.AppCompatImageButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,14 +18,19 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
+import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -39,18 +42,14 @@ import java.util.ArrayList;
 
 public class FileExplorerFragment
 		extends Fragment
-		implements TitleSupport, DetachListener, Activity.OnBackPressedListener
+		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
 	public final static int REQUEST_WRITE_ACCESS = 264;
 
-	private AccessDatabase mDatabase;
-
 	private RecyclerView mPathView;
-	private AppCompatImageButton mHomeButton;
 	private FileListFragment mFileListFragment;
-	private LinearLayoutManager mLayoutManager;
 	private FilePathResolverRecyclerAdapter mPathAdapter;
 	private DocumentFile mRequestedPath = null;
 
@@ -65,14 +64,10 @@ public class FileExplorerFragment
 	@Override
 	public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		View view = inflater.inflate(R.layout.fragment_fileexplorer, container, false);
-
-		mDatabase = new AccessDatabase(getActivity());
+		View view = inflater.inflate(R.layout.layout_file_explorer, container, false);
 
 		mPathView = view.findViewById(R.id.fragment_fileexplorer_pathresolver);
-		mHomeButton = view.findViewById(R.id.fragment_fileexplorer_pathresolver_home);
-		mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
-		mPathAdapter = new FilePathResolverRecyclerAdapter();
+		mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());
 		mFileListFragment = (FileListFragment) getChildFragmentManager()
 				.findFragmentById(R.id.fragment_fileexplorer_fragment_files);
 
@@ -82,15 +77,6 @@ public class FileExplorerFragment
 			public void onClick(PathResolverRecyclerAdapter.Holder<DocumentFile> holder)
 			{
 				requestPath(holder.index.object);
-			}
-		});
-
-		mHomeButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				requestPath(null);
 			}
 		});
 
@@ -107,10 +93,11 @@ public class FileExplorerFragment
 			}
 		});
 
-		mPathView.setHasFixedSize(true);
+		LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+		layoutManager.setStackFromEnd(true);
 
-		mPathView.setLayoutManager(mLayoutManager);
-		mLayoutManager.setStackFromEnd(true);
+		mPathView.setLayoutManager(layoutManager);
+		mPathView.setHasFixedSize(true);
 		mPathView.setAdapter(mPathAdapter);
 
 		return view;
@@ -120,6 +107,8 @@ public class FileExplorerFragment
 	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
+
+		mFileListFragment.goPath(null);
 
 		if (mRequestedPath != null)
 			requestPath(mRequestedPath);
@@ -219,11 +208,6 @@ public class FileExplorerFragment
 			mFileListFragment.onPrepareDetach();
 	}
 
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
 	public FileListFragment getFileListFragment()
 	{
 		return mFileListFragment;
@@ -269,8 +253,121 @@ public class FileExplorerFragment
 				: getReadableFolder(parent);
 	}
 
+	@Override
+	public boolean applyViewingChanges(int gridSize)
+	{
+		return getFileListFragment().applyViewingChanges(gridSize);
+	}
+
+	@Override
+	public void changeGridViewSize(int gridSize)
+	{
+		getFileListFragment().changeGridViewSize(gridSize);
+	}
+
+	@Override
+	public void changeOrderingCriteria(int id)
+	{
+		getFileListFragment().changeOrderingCriteria(id);
+	}
+
+	@Override
+	public void changeSortingCriteria(int id)
+	{
+		getFileListFragment().changeSortingCriteria(id);
+	}
+
+	@Override
+	public EditableListAdapterImpl<FileListAdapter.GenericFileHolder> getAdapterImpl()
+	{
+		return getFileListFragment().getAdapterImpl();
+	}
+
+	@Override
+	public int getOrderingCriteria()
+	{
+		return getFileListFragment().getOrderingCriteria();
+	}
+
+	@Override
+	public PowerfulActionMode.SelectorConnection<FileListAdapter.GenericFileHolder> getSelectionConnection()
+	{
+		return getFileListFragment().getSelectionConnection();
+	}
+
+	@Override
+	public EditableListFragment.SelectionCallback<FileListAdapter.GenericFileHolder> getSelectionCallback()
+	{
+		return getFileListFragment().getSelectionCallback();
+	}
+
+	@Override
+	public int getSortingCriteria()
+	{
+		return getFileListFragment().getSortingCriteria();
+	}
+
+	@Override
+	public String getUniqueSettingKey(String setting)
+	{
+		return getFileListFragment().getUniqueSettingKey(setting);
+	}
+
+	@Override
+	public boolean isRefreshLocked()
+	{
+		return getFileListFragment().isRefreshLocked();
+	}
+
+	@Override
+	public boolean isRefreshRequested()
+	{
+		return getFileListFragment().isRefreshRequested();
+	}
+
+	@Override
+	public boolean isSortingSupported()
+	{
+		return getFileListFragment().isSortingSupported();
+	}
+
+	@Override
+	public boolean loadIfRequested()
+	{
+		return getFileListFragment().loadIfRequested();
+	}
+
+	@Override
+	public boolean openUri(Uri uri, String chooserText)
+	{
+		return getFileListFragment().openUri(uri, chooserText);
+	}
+
+	@Override
+	public void setSelectorConnection(PowerfulActionMode.SelectorConnection<FileListAdapter.GenericFileHolder> selectionConnection)
+	{
+		getFileListFragment().setSelectorConnection(selectionConnection);
+	}
+
+	@Override
+	public void setSelectionCallback(EditableListFragment.SelectionCallback<FileListAdapter.GenericFileHolder> selectionCallback)
+	{
+		getFileListFragment().setSelectionCallback(selectionCallback);
+	}
+
+	@Override
+	public void refreshList()
+	{
+
+	}
+
 	private class FilePathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<DocumentFile>
 	{
+		public FilePathResolverRecyclerAdapter(Context context)
+		{
+			super(context);
+		}
+
 		public void goTo(DocumentFile file)
 		{
 			ArrayList<Holder.Index<DocumentFile>> pathIndex = new ArrayList<>();
@@ -289,6 +386,7 @@ public class FileExplorerFragment
 
 			synchronized (getList()) {
 				getList().clear();
+				getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_black_24dp, (DocumentFile) null));
 
 				while (pathIndex.size() != 0) {
 					int currentStage = pathIndex.size() - 1;

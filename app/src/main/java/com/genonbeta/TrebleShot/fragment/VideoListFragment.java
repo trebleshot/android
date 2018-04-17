@@ -6,17 +6,17 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.VideoListAdapter;
-import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
-import com.genonbeta.TrebleShot.app.ShareableListFragment;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 public class VideoListFragment
-		extends GalleryGroupShareableListFragment<VideoListAdapter.VideoHolder, GroupShareableListAdapter.ViewHolder, VideoListAdapter>
+		extends GalleryGroupEditableListFragment<VideoListAdapter.VideoHolder, GroupEditableListAdapter.GroupViewHolder, VideoListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -24,8 +24,8 @@ public class VideoListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(VideoListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(VideoListAdapter.MODE_SORT_BY_DATE);
 		setDefaultViewingGridSize(2, 4);
 	}
 
@@ -59,24 +59,32 @@ public class VideoListFragment
 	@Override
 	public VideoListAdapter onAdapter()
 	{
-		return new VideoListAdapter(getActivity())
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				if (holder.getItemViewType() != VideoListAdapter.VIEW_TYPE_TITLE)
-					holder.getView().setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							performLayoutClick(v, holder);
-						}
-					});
+				if (!clazz.isRepresentative())
+					registerLayoutViewClicks(clazz);
 			}
 		};
+
+		return new VideoListAdapter(getActivity())
+		{
+			@NonNull
+			@Override
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		performLayoutClickOpenUri(holder);
+		return true;
 	}
 
 	@Override

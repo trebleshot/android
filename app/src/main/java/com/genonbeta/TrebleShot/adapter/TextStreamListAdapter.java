@@ -10,14 +10,8 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-
-import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * created by: Veli
@@ -25,14 +19,14 @@ import java.util.Collections;
  */
 
 public class TextStreamListAdapter
-		extends GroupShareableListAdapter<TextStreamObject, GroupShareableListAdapter.ViewHolder>
+		extends GroupEditableListAdapter<TextStreamObject, GroupEditableListAdapter.GroupViewHolder>
 {
 	private AccessDatabase mDatabase;
 
-	public TextStreamListAdapter(Context context)
+	public TextStreamListAdapter(Context context, AccessDatabase database)
 	{
 		super(context, MODE_GROUP_BY_DATE);
-		mDatabase = new AccessDatabase(getContext());
+		mDatabase = database;
 	}
 
 	@Override
@@ -48,34 +42,27 @@ public class TextStreamListAdapter
 		return new TextStreamObject(representativeText);
 	}
 
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
 	@NonNull
 	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return viewType == VIEW_TYPE_REPRESENTATIVE
-				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
-				: new ViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
+		if (viewType == VIEW_TYPE_REPRESENTATIVE)
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+
+		return new GroupViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
 	}
 
-
 	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
 		View parentView = holder.getView();
 		TextStreamObject object = getItem(position);
 
 		if (!holder.tryBinding(object)) {
-			View selector = parentView.findViewById(R.id.selector);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 
-			if (getSelectionConnection() != null)
-				selector.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			text1.setText(object.text);
 			text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));

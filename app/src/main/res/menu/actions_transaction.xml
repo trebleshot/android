@@ -6,7 +6,8 @@
         android:id="@+id/actions_transaction_resume_all"
         android:icon="@drawable/ic_play_arrow_white_24dp"
         android:title="@string/butn_resume"
-        app:showAsAction="always"/>
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
         android:id="@+id/actions_transaction_show_info"
@@ -16,6 +17,7 @@
 
     <item
         android:id="@+id/actions_transaction_retry_all"
-        android:title="@string/butn_retry_all"/>
+        android:title="@string/butn_retry_all"
+        android:visible="false"/>
 
 </menu>

@@ -6,20 +6,20 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.MusicListAdapter;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
-import com.genonbeta.TrebleShot.app.ShareableListFragment;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
 public class MusicListFragment
-		extends GroupShareableListFragment<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder, MusicListAdapter>
+		extends GroupEditableListFragment<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder, MusicListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -52,7 +52,8 @@ public class MusicListFragment
 	{
 		super.onPause();
 
-		getContext().getContentResolver()
+		getContext()
+				.getContentResolver()
 				.unregisterContentObserver(getDefaultContentObserver());
 	}
 
@@ -71,24 +72,31 @@ public class MusicListFragment
 	@Override
 	public MusicListAdapter onAdapter()
 	{
-		return new MusicListAdapter(getActivity())
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				if (!holder.isRepresentative())
-					holder.getView().setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							performLayoutClick(v, holder);
-						}
-					});
+				if (!clazz.isRepresentative())
+					registerLayoutViewClicks(clazz);
 			}
 		};
+
+		return new MusicListAdapter(getActivity())
+		{
+			@NonNull
+			@Override
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		return performLayoutClickOpenUri(holder);
 	}
 
 	@Override

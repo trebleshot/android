@@ -38,7 +38,7 @@
     <string name="mesg_fileSendError">The file cannot be sent. %s</string>
     <string name="mesg_fileReceiveError">While receiving %s, something went wrong</string>
     <string name="text_multipleFileReceiveCompleted">The files have been received</string>
-    <string name="text_deviceList">Device list</string>
+    <string name="text_deviceList">Devices</string>
     <string name="text_fileOpenAppChoose">Open with</string>
     <string name="text_fileShareAppChoose">Choose an app to share with</string>
     <string name="ques_resetToDefault">Reset to default?</string>
@@ -52,8 +52,6 @@
     <string name="butn_refresh">Refresh</string>
     <string name="butn_shareTrebleshot">Share this app</string>
     <string name="text_about">About</string>
-    <string name="text_clearList">Clear the list</string>
-    <string name="mesg_deviceListCleared">Device list has been cleared</string>
     <string name="butn_close">Close</string>
     <string name="text_deviceModelInfo">Device name</string>
     <string name="butn_clearQueue">Clear the queue</string>
@@ -128,7 +126,7 @@
     <string name="text_removeDeviceSummary">When you remove a device, its transfers will also be removed</string>
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
-    <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers in this list</string>
+    <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers you see here</string>
     <string name="text_availableNetworks">Choose network - %s</string>
     <string name="text_noNetworkAvailable">No network available</string>
     <string name="text_savedConnections">Saved connections</string>
@@ -142,7 +140,7 @@
     <string name="text_transactionViewer">View transaction</string>
     <string name="text_error">Error</string>
     <string name="ques_why">Why?</string>
-    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevice list &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
+    <string name="text_notAllowedHelp">Check if you are allowed on %1$s \n\nDevices &gt; %2$s &gt; Allow to connect &gt; (check it)</string>
     <string name="butn_saveTo">Save to</string>
     <string name="mesg_secureExit">Press again to exit</string>
     <string name="butn_create">Create</string>
@@ -165,7 +163,7 @@
     <string name="text_fileMime">File type</string>
     <string name="text_fileStatus">File status</string>
     <string name="butn_resume">Resume</string>
-    <string name="text_transactionDetails">Transaction details</string>
+    <string name="text_transactionDetails">Details</string>
     <string name="text_fileExplorer">File explorer</string>
     <string name="butn_createFolder">Create folder</string>
     <string name="text_chooseFolder">Choose folder</string>
@@ -248,7 +246,7 @@
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
     <string name="butn_checkAll">Check all</string>
     <string name="butn_undoAll">Undo all</string>
-    <string name="text_previewAndEditList"><![CDATA[Preview & edit list]]></string>
+    <string name="text_previewAndEditList">Preview &amp; edit</string>
     <string name="text_selectableNotCheckedNotice">Unmarked items will be skipped</string>
     <string name="text_fileRoot">File root</string>
     <string name="mesg_versionNotSupported">This version is no longer supported. Please upgrade, and rescan devices.</string>
@@ -263,14 +261,14 @@
     <string name="butn_previewSelections">Preview selections</string>
     <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" has failed</string>
     <string name="mesg_retryAllInfo">TrebleShot will retry receiving interrupted transfers</string>
-    <string name="mesg_transferConnectionNotSetUpFix">Please update connection method first using \"Change connection\"</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Please choose the connection method first</string>
     <string name="butn_setUp">Set up</string>
     <string name="text_pseudoLocation">Pseudo location</string>
     <string name="butn_saveAnyway">Save anyway</string>
     <string name="text_receivedSize">Received size</string>
     <string name="mesg_notValidTransfer">The transfer is not valid anymore</string>
     <string name="ques_saveAnyway">Save anyway?</string>
-    <string name="text_saveAnywaySummary">The sender removed this transfer from the list, but it has not been completed. If you proceed the partly received file will be saved as if it were received.</string>
+    <string name="text_saveAnywaySummary">The sender does know where the file is anymore, but you can still the save the file</string>
     <string name="mesg_fileSaved">The file has been saved</string>
     <string name="butn_sortBy">Sort by</string>
     <string name="butn_sortOrder">Sort order</string>
@@ -323,9 +321,9 @@
     <string name="mesg_wifiEnableRequired">Please enable Wi-Fi to connect</string>
     <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
-    <string name="text_qrCodeAvailableHelp">Tell sender to scan this QR code using TrebleShot</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot first</string>
-    <string name="text_scanQRCodeHelp">Scan the QR code on the receiver\'s screen</string>
+    <string name="text_qrCodeAvailableHelp">Scan this QR code using TrebleShot to connect the hotspot</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot or connect to a network for easy discovery</string>
+    <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
     <string name="butn_qrScanToSend">Scan QR Code to send</string>
     <string name="butn_qrToggle">Toggle QR Code showing</string>
     <string name="text_notificationSettingsSummary">Open notification settings</string>
@@ -347,4 +345,21 @@
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artist</string>
     <string name="text_groupByFolder">Folder</string>
+    <string name="text_home">Home</string>
+    <string name="text_default">Default</string>
+    <string name="textFiles">Files</string>
+    <string name="mesg_noReceiverOrSender">You should add devices first</string>
+    <string name="butn_addDevices">Add devices</string>
+    <string name="text_connectDevices">Connect devices</string>
+    <string name="text_network">Network</string>
+    <string name="text_connect">Connect</string>
+    <string name="butn_shareWithOtherApps">Share with other apps</string>
+    <string name="butn_startHotspot">Setup hotspot</string>
+    <string name="butn_stopHotspot">Stop hotspot</string>
+    <string name="text_easyDiscoveryHelp">Scan this if the both devices on the same network</string>
+    <string name="text_scanQRWifiRequired">To connect to devices Wireless should be turned on</string>
+    <string name="mesg_completing">Completing</string>
+    <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
+    <string name="text_cameraPermissionRequired">Camera permission is required</string>
+    <string name="text_addDevicesToTransfer">Add devices to transfer</string>
 </resources>

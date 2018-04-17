@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.util.listing.merger;
 import android.support.annotation.NonNull;
 
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
-import com.genonbeta.TrebleShot.util.listing.Merger;
 
 /**
  * created by: Veli
@@ -35,6 +34,6 @@ public class StringMerger<T> extends ComparableMerger<T>
 		if (!(o instanceof StringMerger))
 			return -1;
 
-		return ((StringMerger) o).getString().compareTo(getString());
+		return ((StringMerger) o).getString().compareToIgnoreCase(getString());
 	}
 }

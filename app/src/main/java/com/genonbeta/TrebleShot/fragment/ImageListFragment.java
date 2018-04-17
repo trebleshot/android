@@ -10,21 +10,17 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
-import com.genonbeta.TrebleShot.app.GalleryGroupShareableListFragment;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
-import com.genonbeta.TrebleShot.app.ShareableListFragment;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-
-import java.util.Map;
+import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 public class ImageListFragment
-		extends GalleryGroupShareableListFragment<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder, ImageListAdapter>
+		extends GalleryGroupEditableListFragment<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder, ImageListAdapter>
 		implements TitleSupport
 {
 	@Override
@@ -32,8 +28,8 @@ public class ImageListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(ImageListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(ImageListAdapter.MODE_SORT_BY_DATE);
 		setDefaultViewingGridSize(2, 4);
 	}
 
@@ -67,24 +63,32 @@ public class ImageListFragment
 	@Override
 	public ImageListAdapter onAdapter()
 	{
-		return new ImageListAdapter(getActivity())
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				if (!holder.isRepresentative())
-					holder.getView().setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							performLayoutClick(v, holder);
-						}
-					});
+				if (!clazz.isRepresentative())
+					registerLayoutViewClicks(clazz);
 			}
 		};
+
+		return new ImageListAdapter(getActivity())
+		{
+			@NonNull
+			@Override
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		performLayoutClickOpenUri(holder);
+		return true;
 	}
 
 	@Override

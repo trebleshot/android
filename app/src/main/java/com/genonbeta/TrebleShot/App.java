@@ -1,6 +1,18 @@
 package com.genonbeta.TrebleShot;
 
 import android.app.Application;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.os.Build;
+import android.preference.PreferenceManager;
+
+import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.PreferenceUtils;
 
 /**
  * created by: Veli
@@ -9,16 +21,69 @@ import android.app.Application;
 
 public class App extends Application
 {
+	public static final String TAG = App.class.getSimpleName();
+	public static final String ACTION_REQUEST_PREFERENCES_SYNC = "com.genonbeta.intent.action.REQUEST_PREFERENCES_SYNC";
+
+	private BroadcastReceiver mReceiver = new BroadcastReceiver()
+	{
+		@Override
+		public void onReceive(Context context, Intent intent)
+		{
+			if (intent != null)
+				if (ACTION_REQUEST_PREFERENCES_SYNC.equals(intent.getAction())) {
+					SharedPreferences preferences = AppUtils.getDefaultPreferences(context).getWeakManager();
+
+					if (preferences instanceof DbSharablePreferences)
+						((DbSharablePreferences) preferences).sync();
+				}
+		}
+	};
+
 	@Override
 	public void onCreate()
 	{
 		super.onCreate();
 
-		// assures that permissions are accessible after reboot or in any normal state
-		//if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-		//	for (UriPermission uriPermission : getContentResolver().getPersistedUriPermissions())
-		//		getContentResolver().takePersistableUriPermission(uriPermission.getUri(),
-		//				Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-		//}
+		initializeSettings();
+		getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_REQUEST_PREFERENCES_SYNC));
+	}
+
+	@Override
+	public void onTerminate()
+	{
+		super.onTerminate();
+		getApplicationContext().unregisterReceiver(mReceiver);
+	}
+
+	private void initializeSettings()
+	{
+		SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
+
+		boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
+
+		PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
+
+		if (!nsdDefined)
+			defaultPreferences.edit()
+					.putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+					.apply();
+
+		PreferenceUtils.syncDefaults(getApplicationContext());
+
+		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+		int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
+
+		if (migratedVersion < localDevice.versionNumber) {
+			// migrating to a new version
+
+			if (migratedVersion <= 67)
+				AppUtils.getViewingPreferences(getApplicationContext()).edit()
+						.clear()
+						.apply();
+
+			defaultPreferences.edit()
+					.putInt("migrated_version", localDevice.versionNumber)
+					.apply();
+		}
 	}
 }

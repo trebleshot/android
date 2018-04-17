@@ -3,9 +3,7 @@ package com.genonbeta.TrebleShot.util.date;
 import android.support.annotation.NonNull;
 
 import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
-import com.genonbeta.TrebleShot.util.listing.Merger;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;

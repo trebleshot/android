@@ -1,7 +1,9 @@
 package com.genonbeta.TrebleShot.adapter;
 
+import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,28 +14,30 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.ListViewAdapter;
+import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 
-public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
+public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
 {
-	private boolean mShowLocalAddresses = false;
-	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 	private AccessDatabase mDatabase;
-	private NetworkDeviceListFragment mFragment;
+	private SharedPreferences mPreferences;
+	private ConnectionUtils mConnectionUtils;
+	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
-	public NetworkDeviceListAdapter(NetworkDeviceListFragment fragment, boolean showLocalAddresses)
+	public NetworkDeviceListAdapter(AccessDatabase database, SharedPreferences preferences, ConnectionUtils connectionUtils)
 	{
-		super(fragment.getActivity());
+		super(database.getContext());
 
-		mShowLocalAddresses = showLocalAddresses;
-		mDatabase = new AccessDatabase(getContext());
-		mFragment = fragment;
+		mDatabase = database;
+		mPreferences = preferences;
+		mConnectionUtils = connectionUtils;
 	}
 
 	@Override
@@ -41,8 +45,8 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 	{
 		ArrayList<NetworkDevice> list = new ArrayList<>();
 
-		if (mFragment.canReadScanResults(getContext())) {
-			for (ScanResult resultIndex : mFragment.getWifiManager().getScanResults()) {
+		if (mConnectionUtils.canReadScanResults()) {
+			for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {
 				if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
 					continue;
 
@@ -51,21 +55,21 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 				hotspotNetwork.lastUsageTime = System.currentTimeMillis();
 				hotspotNetwork.SSID = resultIndex.SSID;
 				hotspotNetwork.BSSID = resultIndex.BSSID;
-				hotspotNetwork.nickname = getFriendlySSID(resultIndex.SSID);
+				hotspotNetwork.nickname = AppUtils.getFriendlySSID(resultIndex.SSID);
 
 				list.add(hotspotNetwork);
 			}
 		}
 
-		if (list.size() == 0 && mFragment.isConnectionSelfNetwork()) {
-			WifiInfo wifiInfo = mFragment.getWifiManager().getConnectionInfo();
+		if (list.size() == 0 && mConnectionUtils.isConnectionSelfNetwork()) {
+			WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
 			HotspotNetwork hotspotNetwork = new HotspotNetwork();
 
 			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
 			hotspotNetwork.SSID = wifiInfo.getSSID();
 			hotspotNetwork.BSSID = wifiInfo.getBSSID();
-			hotspotNetwork.nickname = getFriendlySSID(wifiInfo.getSSID());
+			hotspotNetwork.nickname = AppUtils.getFriendlySSID(wifiInfo.getSSID());
 
 			list.add(hotspotNetwork);
 		}
@@ -73,7 +77,7 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		for (NetworkDevice device : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
 				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
 			if (device instanceof HotspotNetwork
-					|| (device.nickname != null && device.model != null && device.brand != null && (mShowLocalAddresses || !device.isLocalAddress)))
+					|| !device.isLocalAddress || mPreferences.getBoolean("developer_mode", false))
 				list.add(device);
 
 		return list;
@@ -86,56 +90,25 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		mList.addAll(passedItem);
 	}
 
+	@NonNull
 	@Override
-	public int getCount()
+	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return mList.size();
-	}
-
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
-
-	public String getFriendlySSID(String ssid)
-	{
-		return ssid
-				.replace("\"", "")
-				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
-				.replace("_", " ");
+		return new ViewHolder(getInflater().inflate(R.layout.list_network_device, parent, false));
 	}
 
 	@Override
-	public Object getItem(int itemId)
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
 	{
-		return mList.get(itemId);
-	}
+		View parentView = holder.getView();
+		NetworkDevice device = getList().get(position);
 
-	@Override
-	public long getItemId(int p1)
-	{
-		return 0;
-	}
-
-	@Override
-	public ArrayList<NetworkDevice> getList()
-	{
-		return mList;
-	}
-
-	@Override
-	public View getView(int position, View view, ViewGroup viewGroup)
-	{
-		if (view == null)
-			view = getInflater().inflate(R.layout.list_network_device, viewGroup, false);
-
-		NetworkDevice device = (NetworkDevice) getItem(position);
-		String firstLetters = TextUtils.getFirstLetters(device.nickname, 1);
+		String firstLetters = TextUtils.getLetters(device.nickname, 0);
 		boolean hotspotNetwork = device instanceof HotspotNetwork;
 
-		TextView deviceText = view.findViewById(R.id.network_device_list_device_text);
-		TextView userText = view.findViewById(R.id.network_device_list_user_text);
-		ImageView userImage = view.findViewById(R.id.network_device_list_device_image);
+		TextView deviceText = parentView.findViewById(R.id.network_device_list_device_text);
+		TextView userText = parentView.findViewById(R.id.network_device_list_user_text);
+		ImageView userImage = parentView.findViewById(R.id.network_device_list_device_image);
 
 		userText.setText(device.nickname);
 		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
@@ -143,8 +116,24 @@ public class NetworkDeviceListAdapter extends ListViewAdapter<NetworkDevice>
 		userImage.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
 				? firstLetters
 				: "?", ContextCompat.getColor(mContext, hotspotNetwork ? R.color.hotspotNetworkRipple : R.color.networkDeviceRipple), 100));
+	}
 
-		return view;
+	@Override
+	public long getItemId(int p1)
+	{
+		return p1;
+	}
+
+	@Override
+	public int getItemCount()
+	{
+		return mList.size();
+	}
+
+	@Override
+	public ArrayList<NetworkDevice> getList()
+	{
+		return mList;
 	}
 
 	public static class HotspotNetwork extends NetworkDevice

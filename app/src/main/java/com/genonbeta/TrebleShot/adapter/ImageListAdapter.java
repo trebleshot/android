@@ -14,13 +14,8 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
-import com.genonbeta.TrebleShot.widget.GalleryGroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScroller;
-
-import java.lang.annotation.Annotation;
+import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 /**
  * created by: Veli
@@ -28,8 +23,7 @@ import java.lang.annotation.Annotation;
  */
 
 public class ImageListAdapter
-		extends GalleryGroupShareableListAdapter<ImageListAdapter.ImageHolder, GroupShareableListAdapter.ViewHolder>
-	implements FastScrollRecyclerView.SectionedAdapter
+		extends GalleryGroupEditableListAdapter<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder>
 {
 	private ContentResolver mResolver;
 
@@ -78,21 +72,26 @@ public class ImageListAdapter
 
 	@NonNull
 	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return viewType == VIEW_TYPE_REPRESENTATIVE
-				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
-				: new ViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false));
+		if (viewType == VIEW_TYPE_REPRESENTATIVE)
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+
+		GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_image_grid : R.layout.list_image, parent, false));
+
+		if (isGridLayoutRequested())
+			holder.setClickableLayout(R.id.clickable_layout);
+
+		return holder;
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
 		final View parentView = holder.getView();
 		final ImageHolder object = getItem(position);
 
 		if (!holder.tryBinding(object)) {
-			final View selector = parentView.findViewById(R.id.selector);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
@@ -100,8 +99,7 @@ public class ImageListAdapter
 			text1.setText(object.friendlyName);
 			text2.setText(object.dateTakenString);
 
-			if (getSelectionConnection() != null)
-				selector.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
 			GlideApp.with(getContext())
 					.load(object.uri)
@@ -123,14 +121,7 @@ public class ImageListAdapter
 		return true;
 	}
 
-	@NonNull
-	@Override
-	public String getSectionName(int position)
-	{
-		return getList().get(position).friendlyName;
-	}
-
-	public static class ImageHolder extends GalleryGroupShareableListAdapter.GalleryGroupShareable
+	public static class ImageHolder extends GalleryGroupEditableListAdapter.GalleryGroupEditable
 	{
 		public long id;
 		public String dateTakenString;

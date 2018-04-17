@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:orientation="vertical">
+
+    <com.journeyapps.barcodescanner.BarcodeView
+        android:id="@+id/layout_code_connect_barcode_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:id="@+id/container_conduct"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/layout_code_connect_conduct_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_crop_free_white_144dp"/>
+
+        <TextView
+            android:id="@+id/layout_code_connect_conduct_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_code_connect_conduct_image"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:shadowColor="@color/whiteTextShadowColor"
+            android:shadowRadius="5"
+            android:text="@string/text_scanQRCodeHelp"
+            android:textColor="@color/whiteAccent"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/container_task"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#a000"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/task_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/task_help_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_progress_bar"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:shadowColor="@color/whiteTextShadowColor"
+            android:shadowRadius="5"
+            android:text="@string/mesg_completing"
+            android:textColor="@color/whiteAccent"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/task_interrupter_button"
+            style="?buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_help_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/butn_cancel"/>
+
+    </RelativeLayout>
+
+</FrameLayout>

@@ -30,19 +30,17 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.ShareActivity"
             android:label="@string/text_appName"
-            android:theme="@style/AppTheme.NoActionBar.GreyStatusBar">
+            android:theme="@style/AppTheme.GreyStatusBar">
             <intent-filter>
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
                 <action android:name="android.intent.action.SEND"/>
@@ -51,7 +49,6 @@
                 <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
 
                 <category android:name="android.intent.category.DEFAULT"/>
-
                 <data android:mimeType="*/*"/>
             </intent-filter>
 
@@ -59,19 +56,21 @@
                 android:name="android.service.chooser.chooser_target_service"
                 android:value=".service.DeviceChooserService"/>
         </activity>
+
         <activity
-            android:name=".activity.QRScannerActivity"
-            android:clearTaskOnLaunch="true"
-            android:stateNotNeeded="true"
-            android:theme="@style/AppTheme.QRScannerTheme"
-            android:windowSoftInputMode="stateAlwaysHidden"/>
+            android:name=".activity.ContentSharingActivity"
+            android:label="@string/text_shareFiles"
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"/>
+
         <activity
             android:name=".activity.FilePickerActivity"
             android:label="@string/text_fileExplorer"/>
+
         <activity
             android:name=".activity.TransactionActivity"
             android:label="@string/text_transactionViewer"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar.DefaultStatusBar"/>
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences"/>
@@ -84,7 +83,6 @@
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
                 <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
-
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>

@@ -9,6 +9,8 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="windowActionModeOverlay">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="roundSelector">@drawable/round_selector</item>
+        <item name="rectSelector">@drawable/rect_selector</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
@@ -22,16 +24,16 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowBackground">@color/windowBackground</item>
+        <item name="roundSelector">@drawable/round_selector</item>
+        <item name="rectSelector">@drawable/rect_selector</item>
     </style>
 
-    <style name="AppTheme.QRScannerTheme" parent="@style/Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
-    </style>
+    <style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar" />
 
-    <style name="AppTheme.NoActionBar.GreyStatusBar" parent="@style/AppTheme">
-        <item name="colorPrimaryDark">#bbb</item>
-        <item name="colorPrimary">#bbb</item>
+    <style name="AppTheme.GreyStatusBar" parent="@style/AppTheme.NoActionBar">
+        <item name="colorPrimaryDark">@color/themeGreyDominant</item>
+        <item name="colorPrimary">@color/themeGreyDominant</item>
+        <item name="colorAccent">@color/themeGreyAccent</item>
         <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
     </style>
 
@@ -61,7 +63,7 @@
     </style>
 
     <style name="marqueeText.primary" parent="@style/marqueeText">
-        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+"        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
@@ -82,4 +84,16 @@
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>
+
+    <style name="overflowButton">
+        <item name="srcCompat">@drawable/ic_more_vert_grey_24dp</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:background">?attr/roundSelector</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:focusable">false</item>
+        <item name="tint">?android:attr/textColorPrimary</item>
+    </style>
+
 </resources>

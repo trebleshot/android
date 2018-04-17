@@ -1,19 +1,18 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
@@ -33,10 +32,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
-import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
@@ -45,14 +44,15 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
+import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.FABSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TitleSupport;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
@@ -60,7 +60,7 @@ import java.io.FileNotFoundException;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupported
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
@@ -70,12 +70,13 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
-	private SharedPreferences mPreferences;
+	private TabLayout mTabLayout;
+	private ColorStateList mFABDefaultColorState;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
 	private Fragment mCurrentFragment;
-	private Fragment mFragmentDeviceList;
+	private Fragment mFragmentConnectDevices;
 	private Fragment mFragmentFileExplorer;
 	private Fragment mFragmentTransactions;
 	private Fragment mFragmentShareApp;
@@ -105,14 +106,15 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		toggle.syncState();
 
 		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
+		mTabLayout = findViewById(R.id.content_tab_layout);
+		mFABDefaultColorState = mFAB.getBackgroundTintList();
 
 		mNavigationView.setNavigationItemSelectedListener(this);
 
-		mFragmentDeviceList = Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
+		mFragmentConnectDevices = Fragment.instantiate(this, ConnectDevicesFragment.class.getName());
 		mFragmentFileExplorer = Fragment.instantiate(this, FileExplorerFragment.class.getName());
 		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
 		mFragmentShareApp = Fragment.instantiate(this, ApplicationListFragment.class.getName());
@@ -130,15 +132,15 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			}
 		});
 
-		if (mPreferences.contains("availableVersion") && mUpdater.isNewVersion(mPreferences.getString("availableVersion", null))) {
-			highlightUpdater(mPreferences.getString("availableVersion", null));
+		if (getDefaultPreferences().contains("availableVersion") && mUpdater.isNewVersion(getDefaultPreferences().getString("availableVersion", null))) {
+			highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
 		} else {
 			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
 			{
 				@Override
 				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
 				{
-					mPreferences.edit()
+					getDefaultPreferences().edit()
 							.putString("availableVersion", versionName)
 							.apply();
 
@@ -148,19 +150,9 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			});
 		}
 
-		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-
-		if (mPreferences.getInt("migrated_version", localDevice.versionNumber) < localDevice.versionNumber) {
-			// migrating to a new version
-		}
-
-		mPreferences.edit()
-				.putInt("migrated_version", localDevice.versionNumber)
-				.apply();
-
 		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
-			changeFragment(mFragmentDeviceList);
-			mNavigationView.setCheckedItem(R.id.menu_activity_main_device_list);
+			changeFragment(mFragmentConnectDevices);
+			mNavigationView.setCheckedItem(R.id.menu_activity_main_connect_devices);
 		}
 	}
 
@@ -180,7 +172,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
 			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
-			String firstLetters = TextUtils.getFirstLetters(localDevice.nickname, 1);
+			String firstLetters = TextUtils.getLetters(localDevice.nickname, 0);
 			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
 
 			imageView.setImageDrawable(drawable);
@@ -209,20 +201,14 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	@Override
 	public boolean onNavigationItemSelected(@NonNull MenuItem item)
 	{
-		if (R.id.menu_activity_main_device_list == item.getItemId()) {
-			changeFragment(mFragmentDeviceList);
+		if (R.id.menu_activity_main_connect_devices == item.getItemId()) {
+			changeFragment(mFragmentConnectDevices);
 		} else if (R.id.menu_activity_main_file_explorer == item.getItemId()) {
 			changeFragment(mFragmentFileExplorer);
 		} else if (R.id.menu_activity_main_ongoing_process == item.getItemId()) {
 			changeFragment(mFragmentTransactions);
-		} else if (R.id.menu_activity_main_share_app == item.getItemId()) {
-			changeFragment(mFragmentShareApp);
-		} else if (R.id.menu_activity_main_share_music == item.getItemId()) {
-			changeFragment(mFragmentShareMusic);
-		} else if (R.id.menu_activity_main_share_video == item.getItemId()) {
-			changeFragment(mFragmentShareVideo);
-		} else if (R.id.menu_activity_main_share_image == item.getItemId()) {
-			changeFragment(mFragmentShareImage);
+		} else if (R.id.menu_activity_main_share == item.getItemId()) {
+			startActivity(new Intent(this, ContentSharingActivity.class));
 		} else if (R.id.menu_activity_main_share_text == item.getItemId()) {
 			changeFragment(mFragmentShareText);
 		} else if (R.id.menu_activity_main_about == item.getItemId()) {
@@ -341,6 +327,30 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			@Override
 			public void run()
 			{
+				setTitle(fragment instanceof TitleSupport
+						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
+						: getString(R.string.text_appName));
+
+				boolean fabSupported = fragment instanceof FABSupport;
+
+				mFAB.setBackgroundTintList(mFABDefaultColorState);
+
+				if (fabSupported)
+					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
+
+				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
+					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
+
+				boolean tabSupported = fragment instanceof TabLayoutSupport;
+
+				mTabLayout.removeAllTabs();
+
+				if (tabSupported)
+					tabSupported = ((TabLayoutSupport) fragment).onTabLayout(mTabLayout);
+
+				if (tabSupported != (mTabLayout.getVisibility() == View.VISIBLE))
+					mTabLayout.setVisibility(tabSupported ? View.VISIBLE : View.GONE);
+
 				if (commit) {
 					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
@@ -354,18 +364,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 					} else
 						mDelayedCommitFragment = fragment;
 				}
-
-				setTitle(fragment instanceof TitleSupport
-						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
-						: getString(R.string.text_appName));
-
-				boolean fabSupported = fragment instanceof FABSupport;
-
-				if (fabSupported)
-					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
-
-				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
-					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
 			}
 		}, 200);
 	}
@@ -408,7 +406,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 					String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-					DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext());
+					DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext(), getDefaultPreferences());
 					DocumentFile codeFile = DocumentFile.fromFile(new File(getApplicationInfo().sourceDir));
 					DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
 

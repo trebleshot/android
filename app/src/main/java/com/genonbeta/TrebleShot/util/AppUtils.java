@@ -12,11 +12,16 @@ import android.support.v4.app.ActivityCompat;
 import android.text.format.DateUtils;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
+import com.genonbeta.TrebleShot.preference.SuperPreferences;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +33,10 @@ public class AppUtils
 	public static final String TAG = AppUtils.class.getSimpleName();
 
 	private static int mUniqueNumber = 0;
+	private static AccessDatabase mDatabase;
+	private static SuperPreferences mDefaultPreferences;
+	private static SuperPreferences mDefaultLocalPreferences;
+	private static SuperPreferences mViewingPreferences;
 
 	public static void applyAdapterName(NetworkDevice.Connection connection)
 	{
@@ -80,11 +89,72 @@ public class AppUtils
 		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
 	}
 
+	public static AccessDatabase getAccessDatabase(Context context)
+	{
+		if (mDatabase == null)
+			mDatabase = new AccessDatabase(context);
+
+		return mDatabase;
+	}
+
+	public static SuperPreferences getDefaultPreferences(final Context context)
+	{
+		if (mDefaultPreferences == null) {
+			DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
+					.setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
+					{
+						@Override
+						public void onCommitComplete()
+						{
+							context.sendBroadcast(new Intent(App.ACTION_REQUEST_PREFERENCES_SYNC));
+						}
+					});
+
+			mDefaultPreferences = new SuperPreferences(databasePreferences);
+			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+			{
+				@Override
+				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+				{
+					PreferenceUtils.syncPreferences(superPreferences, getDefaultLocalPreferences(context).getWeakManager());
+				}
+			});
+		}
+
+		return mDefaultPreferences;
+	}
+
+	public static SuperPreferences getDefaultLocalPreferences(final Context context)
+	{
+		if (mDefaultLocalPreferences == null) {
+			mDefaultLocalPreferences = new SuperPreferences(PreferenceManager.getDefaultSharedPreferences(context));
+
+			mDefaultLocalPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+			{
+				@Override
+				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+				{
+					PreferenceUtils.syncPreferences(superPreferences, getDefaultPreferences(context).getWeakManager());
+				}
+			});
+		}
+
+		return mDefaultLocalPreferences;
+	}
+
 	public static String getDeviceSerial(Context context)
 	{
 		return Build.VERSION.SDK_INT < 26
 				? Build.SERIAL
 				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
+	}
+
+	public static String getFriendlySSID(String ssid)
+	{
+		return ssid
+				.replace("\"", "")
+				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
+				.replace("_", " ");
 	}
 
 	@NonNull
@@ -96,7 +166,7 @@ public class AppUtils
 
 	public static String getLocalDeviceName(Context context)
 	{
-		String deviceName = PreferenceManager.getDefaultSharedPreferences(context)
+		String deviceName = getDefaultPreferences(context)
 				.getString("device_name", null);
 
 		return deviceName == null || deviceName.length() == 0
@@ -152,11 +222,30 @@ public class AppUtils
 		return device;
 	}
 
+	public static SuperPreferences getViewingPreferences(Context context)
+	{
+		if (mViewingPreferences == null)
+			mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE));
+
+		return mViewingPreferences;
+	}
+
+	public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
+	{
+		quickActions.onQuickActions(clazz);
+		return clazz;
+	}
+
 	public static void startForegroundService(Context context, Intent intent)
 	{
 		if (Build.VERSION.SDK_INT >= 26)
 			context.startForegroundService(intent);
 		else
 			context.startService(intent);
+	}
+
+	public interface QuickActions<T>
+	{
+		void onQuickActions(T clazz);
 	}
 }

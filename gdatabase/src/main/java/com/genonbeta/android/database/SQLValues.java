@@ -1,7 +1,5 @@
 package com.genonbeta.android.database;
 
-import android.app.ActionBar;
-
 import java.util.HashMap;
 
 /**
@@ -16,6 +14,14 @@ public class SQLValues
 	public Table defineTable(String name)
 	{
 		Table table = new Table(name);
+		getTables().put(name, table);
+
+		return table;
+	}
+
+	public Table defineTable(String name, boolean mayExist)
+	{
+		Table table = new Table(name, mayExist);
 		getTables().put(name, table);
 
 		return table;
@@ -40,16 +46,16 @@ public class SQLValues
 			setValue(String.valueOf(value));
 		}
 
-		public Column(String columnName, SQLType type, boolean mNullable)
+		public Column(String columnName, SQLType type, boolean nullable)
 		{
 			setName(columnName);
 			setType(type);
-			setNullable(mNullable);
+			setNullable(nullable);
 		}
 
-		public Column(String columnName, SQLType type, boolean mNullable, String extra)
+		public Column(String columnName, SQLType type, boolean nullable, String extra)
 		{
-			this(columnName, type, mNullable);
+			this(columnName, type, nullable);
 			setExtra(extra);
 		}
 
@@ -118,10 +124,16 @@ public class SQLValues
 	{
 		private String mName;
 		private HashMap<String, Column> mColumns = new HashMap<>();
+		private boolean mMayExist;
 
 		public Table(String name)
 		{
 			setName(name);
+		}
+
+		public Table(String name, boolean mayExist) {
+			this(name);
+			mMayExist = mayExist;
 		}
 
 		public boolean columnExist(String columnName)
@@ -148,6 +160,11 @@ public class SQLValues
 		public String getName()
 		{
 			return mName;
+		}
+
+		public boolean mayExist()
+		{
+			return mMayExist;
 		}
 
 		public void setName(String mName)

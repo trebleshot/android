@@ -3,7 +3,7 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -15,7 +15,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 
 public class TextStreamObject
-		extends GroupShareableListAdapter.GroupShareable
+		extends GroupEditableListAdapter.GroupEditable
 		implements DatabaseObject, Editable
 {
 	public int id;
@@ -27,7 +27,7 @@ public class TextStreamObject
 
 	public TextStreamObject(String representativeText)
 	{
-		super(GroupShareableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
+		super(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
 	}
 
 	public TextStreamObject(int id)

@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -56,7 +57,7 @@ public class UpdateUtils
 		socket.close();
 	}
 
-	public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
+	public static DocumentFile receiveUpdate(Context context, SharedPreferences preferences, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
 	{
 		ServerSocket serverSocket = null;
 		Socket socket = null;
@@ -64,7 +65,7 @@ public class UpdateUtils
 
 		try {
 			serverSocket = new ServerSocket(AppConfig.SERVER_PORT_UPDATE_CHANNEL);
-			updateFile = FileUtils.getApplicationDirectory(context)
+			updateFile = FileUtils.getApplicationDirectory(context, preferences)
 					.createFile(null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
 			final ServerSocket finalServer = serverSocket;

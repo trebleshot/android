@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.annotation.SuppressLint;
 import android.net.wifi.WifiConfiguration;
 
 import java.io.BufferedInputStream;
@@ -30,6 +31,12 @@ public class NetworkUtils
 			stringBuilder.append(Integer.toHexString(intVal).toUpperCase());
 		}
 		return stringBuilder.toString();
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static String convertInet4Address(int address)
+	{
+		return String.format("%d.%d.%d.%d", (address & 0xff), (address >> 8 & 0xff), (address >> 16 & 0xff), (address >> 24 & 0xff));
 	}
 
 	public static String getAddressPrefix(String ipv4Address)

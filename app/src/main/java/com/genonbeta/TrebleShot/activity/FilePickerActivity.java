@@ -10,9 +10,10 @@ import android.view.View;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
-import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 /**
  * Created by: veli
@@ -75,15 +76,22 @@ public class FilePickerActivity extends Activity
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
 				getSupportActionBar().setTitle(R.string.text_chooseFile);
 
-				mFileExplorerFragment.getFileListFragment().setOnFileClickedListener(new FileListFragment.OnFileClickedListener()
+				mFileExplorerFragment.getFileListFragment().setLayoutClickListener(new EditableListFragment.LayoutClickListener<EditableListAdapter.EditableViewHolder>()
 				{
 					@Override
-					public boolean onFileClicked(FileListAdapter.GenericFileHolder fileInfo)
+					public boolean onLayoutClick(EditableListFragment listFragment, EditableListAdapter.EditableViewHolder holder, boolean longClick)
 					{
-						if (!(fileInfo instanceof FileListAdapter.FileHolder))
+						if (longClick)
 							return false;
 
-						finishWithResult(((FileListAdapter.FileHolder) fileInfo).file);
+						FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment.getFileListFragment()
+								.getAdapter()
+								.getItem(holder.getAdapterPosition());
+
+						if (!(fileHolder instanceof FileListAdapter.FileHolder))
+							return false;
+
+						finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
 
 						return true;
 					}

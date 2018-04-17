@@ -1,10 +1,10 @@
 package com.genonbeta.TrebleShot.object;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 /**
  * created by: Veli
@@ -13,52 +13,90 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 public class TransferInstance
 {
-	private NetworkDevice.Connection mConnection;
 	private NetworkDevice mDevice;
-	private TransactionObject.Group mGroup;
+	private TransferGroup mGroup;
+	private NetworkDevice.Connection mConnection;
+	private TransferGroup.Assignee mAssignee;
 
-	public TransferInstance(AccessDatabase database, int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException
+	// false means "to find connection first"
+	public TransferInstance(AccessDatabase database, int groupId, String using, boolean findDevice) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
-		initialize(database, groupId);
+		mGroup = buildGroup(database, groupId);
 
-		mConnection = new NetworkDevice.Connection(mGroup.deviceId, mGroup.connectionAdapter);
+		if (findDevice) {
+			mDevice = buildDevice(database, using);
+			mAssignee = buildAssignee(database, mGroup, mDevice);
+			mConnection = buildConnection(database, mAssignee);
+		} else {
+			mConnection = new NetworkDevice.Connection(using);
 
+			try {
+				database.reconstruct(mConnection);
+
+				mDevice = buildDevice(database, mConnection.deviceId);
+				mAssignee = buildAssignee(database, mGroup, mDevice);
+			} catch (Exception e) {
+				throw new ConnectionNotFoundException();
+			}
+		}
+	}
+
+	protected TransferGroup.Assignee buildAssignee(AccessDatabase database, TransferGroup group, NetworkDevice device) throws AssigneeNotFoundException
+	{
 		try {
-			database.reconstruct(mConnection);
+			TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device);
+
+			database.reconstruct(assignee);
+
+			return assignee;
+		} catch (Exception e) {
+			throw new AssigneeNotFoundException();
+		}
+	}
+
+	protected NetworkDevice.Connection buildConnection(AccessDatabase database, TransferGroup.Assignee assignee) throws ConnectionNotFoundException
+	{
+		try {
+			NetworkDevice.Connection connection = new NetworkDevice.Connection(assignee);
+
+			database.reconstruct(connection);
+
+			return connection;
 		} catch (Exception e) {
 			throw new ConnectionNotFoundException();
 		}
 	}
 
-	public TransferInstance(AccessDatabase database, int groupId, String currentConnection) throws DeviceNotFoundException, TransactionGroupNotFoundException
+	protected NetworkDevice buildDevice(AccessDatabase database, String deviceId) throws DeviceNotFoundException
 	{
-		initialize(database, groupId);
-
-		mConnection = NetworkDeviceLoader.processConnection(database, mDevice, currentConnection);
-
-		if (!mConnection.adapterName.equals(mGroup.connectionAdapter)) {
-			mGroup.connectionAdapter = mConnection.adapterName;
-			database.publish(mGroup);
-		}
-	}
-
-	protected void initialize(AccessDatabase database, int groupId) throws TransactionGroupNotFoundException, DeviceNotFoundException
-	{
-		mGroup = new TransactionObject.Group(groupId);
-
 		try {
-			database.reconstruct(mGroup);
-		} catch (Exception e) {
-			throw new TransactionGroupNotFoundException();
-		}
+			NetworkDevice device = new NetworkDevice(deviceId);
 
-		mDevice = new NetworkDevice(mGroup.deviceId);
+			database.reconstruct(device);
 
-		try {
-			database.reconstruct(mDevice);
+			return device;
 		} catch (Exception e) {
 			throw new DeviceNotFoundException();
 		}
+	}
+
+	protected TransferGroup buildGroup(AccessDatabase database, int groupId) throws TransactionGroupNotFoundException
+	{
+		try {
+			TransferGroup group = new TransferGroup(groupId);
+
+			database.reconstruct(group);
+
+			return group;
+		} catch (Exception e) {
+			throw new TransactionGroupNotFoundException();
+		}
+	}
+
+
+	public TransferGroup.Assignee getAssignee()
+	{
+		return mAssignee;
 	}
 
 	public NetworkDevice.Connection getConnection()
@@ -71,7 +109,7 @@ public class TransferInstance
 		return mDevice;
 	}
 
-	public TransactionObject.Group getGroup()
+	public TransferGroup getGroup()
 	{
 		return mGroup;
 	}

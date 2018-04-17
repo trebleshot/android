@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
 
@@ -28,11 +27,11 @@ public class NsdDiscovery
 	private AccessDatabase mDatabase;
 	private SharedPreferences mPreferences;
 
-	public NsdDiscovery(Context context, AccessDatabase database)
+	public NsdDiscovery(Context context, AccessDatabase database, SharedPreferences preferences)
 	{
 		mContext = context;
 		mDatabase = database;
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+		mPreferences = preferences;
 	}
 
 	public Context getContext()

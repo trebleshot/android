@@ -10,18 +10,22 @@ import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.TransactionActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.TitleSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -29,11 +33,10 @@ import java.util.ArrayList;
  */
 
 public class TransactionGroupListFragment
-		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, RecyclerViewAdapter.ViewHolder, TransactionGroupListAdapter>
+		extends EditableListFragment<TransactionGroupListAdapter.PreloadedGroup, EditableListAdapter.EditableViewHolder, TransactionGroupListAdapter>
 		implements TitleSupport
 {
 	public SQLQuery.Select mSelect;
-	public AccessDatabase mDatabase;
 	public IntentFilter mFilter = new IntentFilter();
 	public BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -54,8 +57,9 @@ public class TransactionGroupListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(TransactionGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(TransactionGroupListAdapter.MODE_SORT_BY_DATE);
+		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
 	@Override
@@ -71,8 +75,6 @@ public class TransactionGroupListFragment
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
-		mDatabase = new AccessDatabase(getActivity());
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 
@@ -95,56 +97,49 @@ public class TransactionGroupListFragment
 	}
 
 	@Override
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByDate), TransactionGroupListAdapter.MODE_SORT_BY_DATE);
+		options.put(getString(R.string.text_sortBySize), TransactionGroupListAdapter.MODE_SORT_BY_SIZE);
+	}
+
+	@Override
 	public TransactionGroupListAdapter onAdapter()
 	{
-		return new TransactionGroupListAdapter(getActivity())
+		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
+				registerLayoutViewClicks(clazz);
 
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
+				if (getSelectionConnection() != null)
+					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
 					{
-						if (!setItemSelected(holder))
-							TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
-					}
-				});
+						@Override
+						public void onClick(View v)
+						{
+							getSelectionConnection().setSelected(clazz.getAdapterPosition());
+						}
+					});
+			}
+		};
+
+		return new TransactionGroupListAdapter(getActivity(), getDatabase())
+		{
+			@NonNull
+			@Override
+			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		}.setSelect(getSelect());
 	}
 
 	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
 	{
-		super.onPrepareActionMenu(context, actionMode);
-		return true;
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		super.onCreateActionMenu(context, actionMode, menu);
-		actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-	{
-		int id = item.getItemId();
-
-		ArrayList<TransactionGroupListAdapter.PreloadedGroup> selectionList = getSelectionConnection().getSelectedItemList();
-
-		if (id == R.id.action_mode_group_delete) {
-			for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
-				mDatabase.remove(preloadedGroup);
-		} else
-			return super.onActionMenuItemSelected(context, actionMode, item);
-
+		TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
 		return true;
 	}
 
@@ -163,5 +158,44 @@ public class TransactionGroupListFragment
 	{
 		mSelect = select;
 		return this;
+	}
+
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionGroupListAdapter.PreloadedGroup>
+	{
+		public SelectionCallback(EditableListFragmentImpl<TransactionGroupListAdapter.PreloadedGroup> fragment)
+		{
+			super(fragment);
+		}
+
+		@Override
+		public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+		{
+			super.onPrepareActionMenu(context, actionMode);
+			return true;
+		}
+
+		@Override
+		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+		{
+			super.onCreateActionMenu(context, actionMode, menu);
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+		{
+			int id = item.getItemId();
+
+			ArrayList<TransactionGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+
+			if (id == R.id.action_mode_group_delete) {
+				for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
+					getFragment().getDatabase().remove(preloadedGroup);
+			} else
+				return super.onActionMenuItemSelected(context, actionMode, item);
+
+			return true;
+		}
 	}
 }

@@ -196,22 +196,27 @@ public class TreeDocumentFile extends DocumentFile
 	@Override
 	public DocumentFile[] listFiles()
 	{
-		Uri treeUri = DocumentsContract.buildChildDocumentsUriUsingTree(mUri, DocumentsContract.getDocumentId(mUri));
+		try {
+			Uri treeUri = DocumentsContract.buildChildDocumentsUriUsingTree(mUri, DocumentsContract.getDocumentId(mUri));
+			Cursor cursor = mContext.getContentResolver().query(treeUri, null, null, null, null, null);
 
-		Cursor cursor = mContext.getContentResolver().query(treeUri, null, null, null, null, null);
+			if (cursor == null || !cursor.moveToFirst())
+				return new DocumentFile[0];
 
-		if (cursor == null || !cursor.moveToFirst())
-			return new DocumentFile[0];
+			final DocumentFile[] resultFiles = new DocumentFile[cursor.getCount()];
 
-		final DocumentFile[] resultFiles = new DocumentFile[cursor.getCount()];
+			do {
+				resultFiles[cursor.getPosition()] = new TreeDocumentFile(this, mContext, cursor);
+			} while (cursor.moveToNext());
 
-		do {
-			resultFiles[cursor.getPosition()] = new TreeDocumentFile(this, mContext, cursor);
-		} while (cursor.moveToNext());
+			closeQuietly(cursor);
 
-		closeQuietly(cursor);
+			return resultFiles;
+		} catch (Exception e) {
 
-		return resultFiles;
+		}
+
+		return new DocumentFile[]{};
 	}
 
 	@Override

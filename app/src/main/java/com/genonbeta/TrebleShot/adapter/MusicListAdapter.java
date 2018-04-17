@@ -14,26 +14,21 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
 import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class MusicListAdapter
-		extends GroupShareableListAdapter<MusicListAdapter.SongHolder, GroupShareableListAdapter.ViewHolder>
-		implements GroupShareableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
+		extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>
+		implements GroupEditableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
 {
-	public static final int MODE_GROUP_BY_ALBUM = 100;
-	public static final int MODE_GROUP_BY_ARTIST = 101;
-	public static final int MODE_GROUP_BY_FOLDER = 102;
+	public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_NOTHING + 1;
+	public static final int MODE_GROUP_BY_ARTIST = MODE_GROUP_BY_ALBUM + 1;
+	public static final int MODE_GROUP_BY_FOLDER = MODE_GROUP_BY_ARTIST + 1;
 
 	private ContentResolver mResolver;
 
@@ -85,7 +80,7 @@ public class MusicListAdapter
 					lister.offer(new SongHolder(songCursor.getString(nameIndex),
 							songCursor.getString(artistIndex),
 							songCursor.getString(songIndex),
-							songCursor.getString(folderIndex),
+							extractFolderName(songCursor.getString(folderIndex)),
 							songCursor.getString(typeIndex),
 							songCursor.getInt(albumIndex),
 							albumList.get(songCursor.getInt(albumIndex)),
@@ -108,40 +103,27 @@ public class MusicListAdapter
 
 	@NonNull
 	@Override
-	public GroupShareableListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return viewType == VIEW_TYPE_REPRESENTATIVE
-				? new ViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text)
-				: new GroupShareableListAdapter.ViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
+		if (viewType == VIEW_TYPE_REPRESENTATIVE)
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+
+		return new GroupViewHolder(getInflater().inflate(R.layout.list_music, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull GroupShareableListAdapter.ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final GroupViewHolder holder, int position)
 	{
 		final SongHolder object = getItem(position);
 		final View parentView = holder.getView();
 
 		if (!holder.tryBinding(object)) {
-			final View selector = parentView.findViewById(R.id.selector);
-			final View layoutImage = parentView.findViewById(R.id.layout_image);
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView text1 = parentView.findViewById(R.id.text);
 			TextView text2 = parentView.findViewById(R.id.text2);
 			TextView text3 = parentView.findViewById(R.id.text3);
 
-			if (getSelectionConnection() != null) {
-				selector.setSelected(object.isSelectableSelected());
-
-				layoutImage.setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						getSelectionConnection().setSelected(object);
-						selector.setSelected(object.isSelectableSelected());
-					}
-				});
-			}
+			parentView.setSelected(object.isSelectableSelected());
 
 			text1.setText(object.song);
 
@@ -157,6 +139,7 @@ public class MusicListAdapter
 				text3.setText(object.albumHolder.title);
 				text3.setVisibility(View.VISIBLE);
 			}
+
 			GlideApp.with(getContext())
 					.load(object.albumHolder.art)
 					.placeholder(R.drawable.ic_music_note_white_24dp)
@@ -174,19 +157,9 @@ public class MusicListAdapter
 			lister.offer(object, new StringMerger<SongHolder>(object.albumHolder.title));
 		else if (mode == MODE_GROUP_BY_ARTIST)
 			lister.offer(object, new StringMerger<SongHolder>(object.artist));
-		else if (mode == MODE_GROUP_BY_FOLDER) {
-			String folder = object.folder;
-
-			int firstSlash = folder.indexOf(File.separator);
-			int lastSlash = folder.lastIndexOf(File.separator);
-
-			if (folder.length() > 0) {
-				folder = folder.substring(firstSlash == 0 ? 1 : 0, lastSlash != -1 ? lastSlash : (folder.length() - 1));
-				folder = folder.replace("/", " > ");
-			}
-
-			lister.offer(object, new StringMerger<SongHolder>(folder));
-		} else
+		else if (mode == MODE_GROUP_BY_FOLDER)
+			lister.offer(object, new StringMerger<SongHolder>(object.folder));
+		else
 			return false;
 
 		return true;
@@ -198,7 +171,35 @@ public class MusicListAdapter
 				.setCustomLister(this);
 	}
 
-	public static class SongHolder extends GroupShareableListAdapter.GroupShareable
+	public String extractFolderName(String folder)
+	{
+		if (folder.contains(File.separator)) {
+			String[] split = folder.split("/");
+
+			if (split.length >= 2)
+				folder = split[split.length - 2];
+		}
+
+		return folder;
+	}
+
+	@NonNull
+	@Override
+	public String getSectionName(int position, SongHolder object)
+	{
+		if (!object.isGroupRepresentative()) {
+			if (getGroupBy() == MODE_GROUP_BY_ARTIST)
+				return object.artist;
+			else if (getGroupBy() == MODE_GROUP_BY_FOLDER)
+				return object.folder;
+			else if (getGroupBy() == MODE_GROUP_BY_ALBUM)
+				return object.albumHolder.title;
+		}
+
+		return super.getSectionName(position, object);
+	}
+
+	public static class SongHolder extends GalleryGroupEditableListAdapter.GroupEditable
 	{
 		public String artist;
 		public String song;

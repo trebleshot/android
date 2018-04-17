@@ -2,40 +2,18 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
-import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 public abstract class Activity extends AppCompatActivity
 {
-	private SharedPreferences mPreferences;
 	private AlertDialog mOngoingRequest;
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-
-		SharedPreferences defaultPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-		boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
-
-		PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
-
-		if (!nsdDefined)
-			defaultPreferences.edit()
-					.putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
-					.apply();
-
-	}
 
 	@Override
 	protected void onStart()
@@ -64,12 +42,14 @@ public abstract class Activity extends AppCompatActivity
 			requestRequiredPermissions();
 	}
 
+	public AccessDatabase getDatabase()
+	{
+		return AppUtils.getAccessDatabase(this);
+	}
+
 	protected SharedPreferences getDefaultPreferences()
 	{
-		if (mPreferences == null)
-			mPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-		return mPreferences;
+		return AppUtils.getDefaultPreferences(this);
 	}
 
 	public boolean requestRequiredPermissions()

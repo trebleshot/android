@@ -60,4 +60,9 @@ abstract public class RecyclerViewAdapter<T, V extends RecyclerViewAdapter.ViewH
 			return mView;
 		}
 	}
+
+	public interface OnClickListener
+	{
+		void onClick(ViewHolder holder);
+	}
 }

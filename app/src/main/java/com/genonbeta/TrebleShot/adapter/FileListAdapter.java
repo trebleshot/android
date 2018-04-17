@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -10,14 +11,14 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.genonbeta.TrebleShot.widget.ShareableListAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -27,18 +28,21 @@ import java.util.Arrays;
 import java.util.Collections;
 
 public class FileListAdapter
-		extends ShareableListAdapter<FileListAdapter.GenericFileHolder, FileListAdapter.ViewHolder>
+		extends EditableListAdapter<FileListAdapter.GenericFileHolder, EditableListAdapter.EditableViewHolder>
 {
 	private boolean mShowDirectories = true;
 	private boolean mShowFiles = true;
 	private String mFileMatch;
 	private DocumentFile mPath;
 	private AccessDatabase mDatabase;
+	private SharedPreferences mPreferences;
 
-	public FileListAdapter(Context context, AccessDatabase database)
+	public FileListAdapter(Context context, AccessDatabase database, SharedPreferences sharedPreferences)
 	{
 		super(context);
+
 		mDatabase = database;
+		mPreferences = sharedPreferences;
 	}
 
 	@Override
@@ -68,7 +72,7 @@ public class FileListAdapter
 			}
 		} else {
 			ArrayList<File> referencedDirectoryList = new ArrayList<>();
-			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
+			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
 			folders.add(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_whatshot_white_24dp));
 			folders.add(new DirectoryHolder(DocumentFile.fromFile(new File(".")),
@@ -114,7 +118,7 @@ public class FileListAdapter
 				folders.add(fileHolder);
 			}
 
-			ArrayList<WritablePathObject> objectList = getDatabase().castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+			ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
 			if (Build.VERSION.SDK_INT >= 21) {
 				for (WritablePathObject pathObject : objectList)
@@ -136,33 +140,26 @@ public class FileListAdapter
 
 	@NonNull
 	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+	public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		return new ViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
+		return new EditableViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
 	}
 
 	@Override
-	public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+	public void onBindViewHolder(@NonNull final EditableViewHolder holder, final int position)
 	{
 		final GenericFileHolder object = getItem(position);
+		final View parentView = holder.getView();
 
-		if (getSelectionConnection() != null) {
-			holder.getSelector().setSelected(object.isSelectableSelected());
+		ImageView image = parentView.findViewById(R.id.image);
+		TextView text1 = parentView.findViewById(R.id.text);
+		TextView text2 = parentView.findViewById(R.id.text2);
 
-			holder.getImageLayout().setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					getSelectionConnection().setSelected(object);
-					holder.getSelector().setSelected(object.isSelectableSelected());
-				}
-			});
-		}
+		holder.getView().setSelected(object.isSelectableSelected());
 
-		holder.getImage().setImageResource(object.iconRes);
-		holder.getText1().setText(object.friendlyName);
-		holder.getText2().setText(object.info);
+		text1.setText(object.friendlyName);
+		text2.setText(object.info);
+		image.setImageResource(object.iconRes);
 	}
 
 	public String buildPath(String[] splitPath, int count)
@@ -175,11 +172,6 @@ public class FileListAdapter
 		}
 
 		return stringBuilder.toString();
-	}
-
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
 	}
 
 	public DocumentFile getPath()
@@ -202,51 +194,6 @@ public class FileListAdapter
 		mShowDirectories = showDirectories;
 		mShowFiles = showFiles;
 		mFileMatch = fileMatch;
-	}
-
-	public static class ViewHolder extends RecyclerViewAdapter.ViewHolder
-	{
-		private View mSelector;
-		private View mLayoutImage;
-		private ImageView mImage;
-		private TextView mText1;
-		private TextView mText2;
-
-		public ViewHolder(View itemView)
-		{
-			super(itemView);
-
-			mSelector = itemView.findViewById(R.id.selector);
-			mLayoutImage = itemView.findViewById(R.id.layout_image);
-			mImage = itemView.findViewById(R.id.image);
-			mText1 = itemView.findViewById(R.id.text);
-			mText2 = itemView.findViewById(R.id.text2);
-		}
-
-		public ImageView getImage()
-		{
-			return mImage;
-		}
-
-		public View getImageLayout()
-		{
-			return mLayoutImage;
-		}
-
-		public View getSelector()
-		{
-			return mSelector;
-		}
-
-		public TextView getText1()
-		{
-			return mText1;
-		}
-
-		public TextView getText2()
-		{
-			return mText2;
-		}
 	}
 
 	public static class GenericFileHolder extends Shareable

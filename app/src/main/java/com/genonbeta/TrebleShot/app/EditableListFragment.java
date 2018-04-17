@@ -2,12 +2,17 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.ContentObserver;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -15,38 +20,58 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
+import com.genonbeta.TrebleShot.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.util.DetachListener;
-import com.genonbeta.TrebleShot.util.PowerfulActionModeSupported;
+import com.genonbeta.TrebleShot.object.Shareable;
+import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
-import com.simplecityapps.recyclerview_fastscroll.views.FastScrollRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
  * date: 21.11.2017 10:12
  */
 
-abstract public class EditableListFragment<T extends Editable, V extends RecyclerViewAdapter.ViewHolder, E extends EditableListAdapter<T, V>>
+abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder, E extends EditableListAdapter<T, V>>
 		extends DynamicRecyclerViewFragment<T, V, E>
-		implements PowerfulActionMode.Callback<T>, DetachListener
+		implements EditableListFragmentImpl<T>, DetachListener
 {
+	private SelectionCallback<T> mSelectionCallback;
+	private SelectionCallback<T> mDefaultSelectionCallback;
 	private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
-	private SharedPreferences mViewPreferences;
+	private PowerfulActionMode.SelectorConnection<T> mDefaultSelectionConnection;
 	private Snackbar mRefreshDelayedSnackbar;
 	private boolean mRefreshRequested = false;
 	private boolean mSortingSupported = true;
-	private boolean mDefaultOrderingAscending = true;
-	private int mDefaultSortingCriteria = R.id.actions_abs_editable_sort_by_name;
+	private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
+	private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
 	private int mDefaultViewingGridSize = 1;
 	private int mDefaultViewingGridSizeLandscape = 1;
+	private FastScroller mFastScroller;
+	private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
+	private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
+	private ContentObserver mObserver;
+	private LayoutClickListener<V> mLayoutClickListener;
+
+	abstract public boolean onDefaultClickAction(V holder);
+
+	public boolean onDefaultLongClickAction(V holder)
+	{
+		return false;
+	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -60,14 +85,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	{
 		super.onActivityCreated(savedInstanceState);
 
-		if (getPowerfulActionMode() != null) {
-			mSelectionConnection = new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), this);
+		if (getPowerfulActionMode() != null && getSelectionCallback() != null)
+			setDefaultSelectionConnection(new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), getSelectionCallback()));
 
-			getAdapter().setSelectionConnection(getSelectionConnection());
-			getPowerfulActionMode().enableFor(getSelectionConnection());
-
-			setHasOptionsMenu(true);
-		}
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -75,27 +96,37 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		getAdapter().setHasStableIds(true);
 		getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
+		getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
+
+		// We have to recreate the provider class because old one loses its ground
+		getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
 	}
 
 	@Override
 	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
-		FastScrollRecyclerView recyclerView = new FastScrollRecyclerView(getContext());
+		View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview, null, false);
+
+		RecyclerView recyclerView = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_view);
+		mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
 
 		recyclerView.setLayoutManager(onLayoutManager());
 
-		recyclerView.setLayoutParams(new GridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-				ViewGroup.LayoutParams.MATCH_PARENT));
-
-		listViewContainer.addView(recyclerView);
-
-		recyclerView.setPopupBgColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
-		recyclerView.setPopupTextColor(ContextCompat.getColor(getContext(), R.color.whiteAccent));
-		recyclerView.setThumbColor(ContextCompat.getColor(getContext(), R.color.colorAccent));
+		listViewContainer.addView(view);
 
 		return recyclerView;
+	}
+
+	@Override
+	public boolean onSetListAdapter(E adapter)
+	{
+		if (super.onSetListAdapter(adapter)) {
+			mFastScroller.setRecyclerView(getListView());
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -122,6 +153,26 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 			gridSizeMenu.setGroupCheckable(R.id.actions_abs_editable_group_grid_size, true, true);
 		}
+
+		Map<String, Integer> sortingOptions = new ArrayMap<>();
+		onSortingOptions(sortingOptions);
+
+		if (sortingOptions.size() > 0) {
+			mSortingOptions.clear();
+			mSortingOptions.putAll(sortingOptions);
+
+			applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by), R.id.actions_abs_editable_group_sorting, mSortingOptions);
+
+			Map<String, Integer> orderingOptions = new ArrayMap<>();
+			onOrderingOptions(orderingOptions);
+
+			if (orderingOptions.size() > 0) {
+				mOrderingOptions.clear();
+				mOrderingOptions.putAll(orderingOptions);
+
+				applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by), R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
+			}
+		}
 	}
 
 	@Override
@@ -142,21 +193,16 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 			menu.findItem(R.id.actions_abs_editable_grid_size)
 					.setVisible(false);
 
-		MenuItem sortingItem = menu.findItem(getSortingCriteria());
+		MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
-		if (sortingItem == null)
-			sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by_name);
+		if (sortingItem != null && sortingItem.isVisible()) {
+			checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
 
-		sortingItem.setChecked(true);
+			MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
 
-		MenuItem orderingItem = menu.findItem(isSortingAscending()
-				? R.id.actions_abs_editable_sort_order_ascending
-				: R.id.actions_abs_editable_sort_order_descending);
-
-		if (orderingItem == null)
-			orderingItem = menu.findItem(R.id.actions_abs_editable_sort_order_ascending);
-
-		orderingItem.setChecked(true);
+			if (orderingItem != null)
+				checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+		}
 
 		MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
 
@@ -175,94 +221,36 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		int id = item.getItemId();
 		int groupId = item.getGroupId();
 
-		if (id == R.id.actions_abs_editable_multi_select)
-			getPowerfulActionMode().start(this);
+		if (id == R.id.actions_abs_editable_multi_select && getSelectionCallback() != null)
+			getSelectionConnection().getMode().start(getSelectionCallback());
 		else if (groupId == R.id.actions_abs_editable_group_sorting)
-			changeSortingCriteria(id);
+			changeSortingCriteria(item.getOrder());
 		else if (groupId == R.id.actions_abs_editable_group_sort_order)
-			changeOrderingCriteria(id);
+			changeOrderingCriteria(item.getOrder());
 		else if (groupId == R.id.actions_abs_editable_group_grid_size)
 			changeGridViewSize(item.getOrder());
 
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByName), EditableListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortByDate), EditableListAdapter.MODE_SORT_BY_DATE);
+		options.put(getString(R.string.text_sortBySize), EditableListAdapter.MODE_SORT_BY_SIZE);
+	}
+
+	public void onOrderingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortOrderAscending), EditableListAdapter.MODE_SORT_ORDER_ASCENDING);
+		options.put(getString(R.string.text_sortOrderDescending), EditableListAdapter.MODE_SORT_ORDER_DESCENDING);
+	}
+
 	@Override
 	public void onPrepareDetach()
 	{
-		if (getPowerfulActionMode() != null)
-			getPowerfulActionMode().finish(this);
-	}
-
-	@Override
-	public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-	{
-		getListView().setPadding(0, 0, 0, 200);
-		getListView().setClipToPadding(false);
-
-		actionMode.setTitle(String.valueOf(0));
-
-		getAdapter().notifyAllSelectionChanges();
-		return false;
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
-		return false;
-	}
-
-	@Override
-	public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable)
-	{
-		int selectedSize = getSelectionConnection()
-				.getSelectedItemList()
-				.size();
-
-		actionMode.setTitle(String.valueOf(selectedSize));
-	}
-
-	@Override
-	public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.action_mode_abs_editable_select_all)
-			setSelection(true);
-		else if (id == R.id.action_mode_abs_editable_select_none)
-			setSelection(false);
-		else if (id == R.id.action_mode_abs_editable_preview_selections)
-			new SelectionEditorDialog<>(getActivity(), getSelectionConnection().getSelectedItemList())
-					.setOnDismissListener(new DialogInterface.OnDismissListener()
-					{
-						@Override
-						public void onDismiss(DialogInterface dialog)
-						{
-							ArrayList<T> selectedItems = new ArrayList<>(getSelectionConnection().getSelectedItemList());
-
-							for (T selectable : selectedItems)
-								if (!selectable.isSelectableSelected())
-									getSelectionConnection().setSelected(selectable, false);
-
-							getAdapter().notifyAllSelectionChanges();
-						}
-
-					})
-					.show();
-
-		return false;
-	}
-
-	@Override
-	public void onFinish(Context context, PowerfulActionMode actionMode)
-	{
-		getListView().setPadding(0, 0, 0, 0);
-		getListView().setClipToPadding(true);
-
-		setSelection(false);
-
-		loadIfRequested();
+		if (getPowerfulActionMode() != null && mSelectionCallback != null)
+			getPowerfulActionMode().finish(mSelectionCallback);
 	}
 
 	public int onGridSpanSize(int viewType, int currentSpanSize)
@@ -273,10 +261,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 	@Override
 	public RecyclerView.LayoutManager onLayoutManager()
 	{
-		final int currentGridSize = getViewingGridSize();
-		final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), currentGridSize > 1
-				? currentGridSize
-				: !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1);
+		final int preferredGridSize = getViewingGridSize();
+		final int optimalGridSize = preferredGridSize > 1
+				? preferredGridSize
+				: !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1;
+
+		final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), optimalGridSize);
 
 		layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
 		{
@@ -288,11 +278,27 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 				return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
 						? 1
-						: onGridSpanSize(viewType, currentGridSize);
+						: onGridSpanSize(viewType, optimalGridSize);
 			}
 		});
 
 		return layoutManager;
+	}
+
+	protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, ArrayMap<String, Integer> options)
+	{
+		if (mainItem != null) {
+			mainItem.setVisible(true);
+
+			Menu dynamicMenu = mainItem.getSubMenu();
+
+			for (String currentKey : options.keySet()) {
+				int modeId = options.get(currentKey);
+				dynamicMenu.add(groupId, 0, modeId, currentKey);
+			}
+
+			dynamicMenu.setGroupCheckable(groupId, true, true);
+		}
 	}
 
 	public boolean applyViewingChanges(int gridSize)
@@ -317,22 +323,88 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		applyViewingChanges(gridSize);
 	}
 
+	public void changeOrderingCriteria(int id)
+	{
+		getViewPreferences().edit()
+				.putInt(getUniqueSettingKey("SortOrder"), id)
+				.apply();
+
+		getAdapter().setSortingCriteria(getSortingCriteria(), id);
+
+		refreshList();
+	}
+
 	public void changeSortingCriteria(int id)
 	{
 		getViewPreferences().edit()
 				.putInt(getUniqueSettingKey("SortBy"), id)
 				.apply();
 
+		getAdapter().setSortingCriteria(id, getOrderingCriteria());
+
 		refreshList();
 	}
 
-	public void changeOrderingCriteria(int id)
+	public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String, Integer> options)
 	{
-		getViewPreferences().edit()
-				.putBoolean(getUniqueSettingKey("SortOrder"), id == R.id.actions_abs_editable_sort_order_ascending)
-				.apply();
+		if (dynamicItem != null) {
+			Menu gridSizeMenu = dynamicItem.getSubMenu();
 
-		refreshList();
+			for (String title : options.keySet()) {
+				if (options.get(title) == preferredItemId) {
+					MenuItem menuItem;
+					int iterator = 0;
+
+					while ((menuItem = gridSizeMenu.getItem(iterator)) != null) {
+						if (title.equals(String.valueOf(menuItem.getTitle()))) {
+							menuItem.setChecked(true);
+							return;
+						}
+
+						iterator++;
+					}
+
+					// normally we should not be here
+					return;
+				}
+			}
+		}
+	}
+
+	public EditableListAdapterImpl<T> getAdapterImpl()
+	{
+		return getAdapter();
+	}
+
+	public ContentObserver getDefaultContentObserver()
+	{
+		if (mObserver == null)
+			mObserver = new ContentObserver(new Handler(Looper.myLooper()))
+			{
+				@Override
+				public boolean deliverSelfNotifications()
+				{
+					return true;
+				}
+
+				@Override
+				public void onChange(boolean selfChange)
+				{
+					refreshList();
+				}
+			};
+
+		return mObserver;
+	}
+
+	public FastScroller getFastScroller()
+	{
+		return mFastScroller;
+	}
+
+	public int getOrderingCriteria()
+	{
+		return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria);
 	}
 
 	public String getUniqueSettingKey(String setting)
@@ -340,15 +412,18 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		return getClass().getSimpleName() + setting;
 	}
 
-	@Override
-	public ArrayList<T> getSelectableList()
-	{
-		return getAdapter().getList();
-	}
-
 	public PowerfulActionMode.SelectorConnection<T> getSelectionConnection()
 	{
-		return mSelectionConnection;
+		return mSelectionConnection == null
+				? mDefaultSelectionConnection
+				: mSelectionConnection;
+	}
+
+	public SelectionCallback<T> getSelectionCallback()
+	{
+		return mSelectionCallback == null
+				? mDefaultSelectionCallback
+				: mSelectionCallback;
 	}
 
 	public int getSortingCriteria()
@@ -358,17 +433,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public PowerfulActionMode getPowerfulActionMode()
 	{
-		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupported
-				? ((PowerfulActionModeSupported) getActivity()).getPowerfulActionMode()
+		return getActivity() != null && getActivity() instanceof PowerfulActionModeSupport
+				? ((PowerfulActionModeSupport) getActivity()).getPowerfulActionMode()
 				: null;
 	}
 
 	public SharedPreferences getViewPreferences()
 	{
-		if (mViewPreferences == null)
-			mViewPreferences = getContext().getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE);
-
-		return mViewPreferences;
+		return AppUtils.getViewingPreferences(getContext());
 	}
 
 	public int getViewingGridSize()
@@ -391,24 +463,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		return mRefreshRequested;
 	}
 
-	public boolean isSelectionActivated()
-	{
-		return getPowerfulActionMode() != null
-				&& getPowerfulActionMode().hasActive(this)
-				&& getSelectionConnection() != null;
-	}
-
-	public boolean isSortingAscending()
-	{
-		return getViewPreferences().getBoolean(getUniqueSettingKey("SortOrder"), mDefaultOrderingAscending);
-	}
-
 	public boolean isSortingSupported()
 	{
 		return mSortingSupported;
 	}
 
-	protected boolean loadIfRequested()
+	public boolean loadIfRequested()
 	{
 		boolean refreshed = isRefreshRequested();
 
@@ -418,6 +478,68 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 			refreshList();
 
 		return refreshed;
+	}
+
+	public boolean openUri(Uri uri, String chooserText)
+	{
+		try {
+			StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri);
+			Intent openIntent = FileUtils.applySecureOpenIntent(getActivity(), streamInfo, new Intent(Intent.ACTION_VIEW));
+
+			startActivity(Intent.createChooser(openIntent, chooserText));
+
+			return true;
+		} catch (Throwable e) {
+			e.printStackTrace();
+			Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+		}
+
+		return false;
+	}
+
+	public boolean performLayoutClick(V holder)
+	{
+		return setItemSelected(holder)
+				|| (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, false))
+				|| onDefaultClickAction(holder);
+	}
+
+	public boolean performLayoutLongClick(V holder)
+	{
+		return (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, true))
+				|| onDefaultLongClickAction(holder)
+				|| getSelectionConnection() != null && getSelectionConnection().setSelected(holder);
+	}
+
+	public boolean performLayoutClickOpenUri(V holder)
+	{
+		Object object = getAdapter().getItem(holder.getAdapterPosition());
+
+		if (object instanceof Shareable)
+			return openUri(((Shareable) object).uri, getString(R.string.text_fileOpenAppChoose));
+
+		return false;
+	}
+
+	public void registerLayoutViewClicks(final V holder)
+	{
+		holder.getClickableView().setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				performLayoutClick(holder);
+			}
+		});
+
+		holder.getClickableView().setOnLongClickListener(new View.OnLongClickListener()
+		{
+			@Override
+			public boolean onLongClick(View v)
+			{
+				return performLayoutLongClick(holder);
+			}
+		});
 	}
 
 	@Override
@@ -442,14 +564,24 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		}
 	}
 
+	public void setDefaultOrderingCriteria(int criteria)
+	{
+		mDefaultOrderingCriteria = criteria;
+	}
+
+	public void setDefaultSelectionCallback(SelectionCallback<T> selectionCallback)
+	{
+		mDefaultSelectionCallback = selectionCallback;
+	}
+
+	public void setDefaultSelectionConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
+	{
+		mDefaultSelectionConnection = selectionConnection;
+	}
+
 	public void setDefaultSortingCriteria(int criteria)
 	{
 		mDefaultSortingCriteria = criteria;
-	}
-
-	public void setDefaultOrderingAscending(boolean ascending)
-	{
-		mDefaultOrderingAscending = ascending;
 	}
 
 	public void setDefaultViewingGridSize(int gridSize, int gridSizeLandscape)
@@ -460,21 +592,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 
 	public boolean setItemSelected(V holder)
 	{
-		return setItemSelected(holder.getAdapterPosition());
+		return getSelectionCallback() != null && getSelectionCallback().setItemSelected(holder.getAdapterPosition());
 	}
 
-	public boolean setItemSelected(int position)
+	public void setLayoutClickListener(LayoutClickListener<V> clickListener)
 	{
-		if (isSelectionActivated()) {
-			getSelectionConnection().setSelected(getSelectableList().get(position));
-
-			getAdapter().syncSelectionList();
-			getAdapter().notifyItemChanged(position);
-
-			return true;
-		}
-
-		return false;
+		mLayoutClickListener = clickListener;
 	}
 
 	public void setRefreshRequested(boolean requested)
@@ -482,25 +605,165 @@ abstract public class EditableListFragment<T extends Editable, V extends Recycle
 		mRefreshRequested = requested;
 	}
 
-	public boolean setSelection()
-	{
-		boolean allSelected = getSelectionConnection().getSelectedItemList().size() != getSelectableList().size();
-
-		setSelection(allSelected);
-
-		return allSelected;
-	}
-
-	public void setSelection(boolean selection)
-	{
-		for (T selectable : getSelectableList())
-			getSelectionConnection().setSelected(selectable, selection);
-
-		getAdapter().notifyItemRangeChanged(0, getAdapter().getItemCount());
-	}
-
 	public void setSortingSupported(boolean sortingSupported)
 	{
 		mSortingSupported = sortingSupported;
+	}
+
+	@Override
+	public void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
+	{
+		mSelectionConnection = selectionConnection;
+	}
+
+	public void setSelectionCallback(SelectionCallback<T> selectionCallback)
+	{
+		mSelectionCallback = selectionCallback;
+	}
+
+	public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>
+	{
+		boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
+	}
+
+	public static class SelectionCallback<T extends Editable> implements PowerfulActionMode.Callback<T>
+	{
+		private EditableListFragmentImpl<T> mFragment;
+
+		public SelectionCallback(EditableListFragmentImpl<T> fragment)
+		{
+			updateProvider(fragment);
+		}
+
+		public EditableListAdapterImpl<T> getAdapter()
+		{
+			return mFragment.getAdapterImpl();
+		}
+
+		public EditableListFragmentImpl<T> getFragment()
+		{
+			return mFragment;
+		}
+
+		public boolean isSelectionActivated()
+		{
+			return mFragment.getSelectionConnection() != null
+					&& mFragment.getSelectionConnection().selectionActive();
+		}
+
+		@Override
+		public ArrayList<T> getSelectableList()
+		{
+			return getAdapter().getList();
+		}
+
+		public boolean setItemSelected(int position)
+		{
+			return isSelectionActivated() && mFragment.getSelectionConnection().setSelected(position);
+		}
+
+		public void setSelection(boolean selection, ArrayList<T> selectableList)
+		{
+			for (T selectable : selectableList)
+				mFragment.getSelectionConnection().setSelected(selectable, selection);
+		}
+
+		public boolean setSelection()
+		{
+			boolean allSelected = mFragment.getSelectionConnection().getSelectedItemList().size() != getSelectableList().size();
+
+			setSelection(allSelected);
+
+			return allSelected;
+		}
+
+		public void setSelection(boolean selection)
+		{
+			setSelection(selection, getSelectableList());
+
+			// One-by-one calling caused an ANR
+			getAdapter().syncSelectionList();
+			getAdapter().notifyItemRangeChanged(0, getSelectableList().size());
+		}
+
+		public void updateProvider(EditableListFragmentImpl<T> fragment)
+		{
+			mFragment = fragment;
+		}
+
+		private void updateSelectionTitle(PowerfulActionMode actionMode)
+		{
+			int selectedSize = mFragment.getSelectionConnection()
+					.getSelectedItemList()
+					.size();
+
+			actionMode.setTitle(String.valueOf(selectedSize));
+		}
+
+		@Override
+		public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+		{
+			updateSelectionTitle(actionMode);
+			return true;
+		}
+
+		@Override
+		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+		{
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_abs_editable, menu);
+			return false;
+		}
+
+		@Override
+		public void onItemChecked(Context context, PowerfulActionMode actionMode, T selectable, int position)
+		{
+			updateSelectionTitle(actionMode);
+
+			if (position != -1) {
+				getAdapter().syncSelectionList();
+				getAdapter().notifyItemChanged(position);
+			}
+		}
+
+		@Override
+		public boolean onActionMenuItemSelected(final Context context, PowerfulActionMode actionMode, MenuItem item)
+		{
+			int id = item.getItemId();
+
+			if (id == R.id.action_mode_abs_editable_select_all)
+				setSelection(true);
+			else if (id == R.id.action_mode_abs_editable_select_none)
+				setSelection(false);
+			else if (id == R.id.action_mode_abs_editable_preview_selections)
+				new SelectionEditorDialog<>(mFragment.getActivity(), mFragment.getSelectionConnection().getSelectedItemList())
+						.setOnDismissListener(new DialogInterface.OnDismissListener()
+						{
+							@Override
+							public void onDismiss(DialogInterface dialog)
+							{
+								ArrayList<T> selectedItems = new ArrayList<>(mFragment.getSelectionConnection().getSelectedItemList());
+
+								for (T selectable : selectedItems)
+									if (!selectable.isSelectableSelected())
+										mFragment.getSelectionConnection().setSelected(selectable, false);
+
+								// Position cannot be assumed that is why we need to request a refresh
+								getAdapter().notifyAllSelectionChanges();
+							}
+
+						})
+						.show();
+
+			return false;
+		}
+
+		@Override
+		public void onFinish(Context context, PowerfulActionMode actionMode)
+		{
+			setSelection(false);
+			getFragment().getSelectionConnection().getSelectedItemList().clear();
+
+			mFragment.loadIfRequested();
+		}
 	}
 }

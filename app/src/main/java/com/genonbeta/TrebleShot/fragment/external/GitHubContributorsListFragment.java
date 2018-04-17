@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import org.json.JSONArray;
@@ -37,20 +38,18 @@ public class GitHubContributorsListFragment
 	@Override
 	public ContributorListAdapter onAdapter()
 	{
-		return new ContributorListAdapter(getContext())
+		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+			public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				final ContributorObject contributorObject = getAdapter().getList().get(position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
+				clazz.getView().setOnClickListener(new View.OnClickListener()
 				{
 					@Override
 					public void onClick(View v)
 					{
+						final ContributorObject contributorObject = getAdapter().getList().get(clazz.getAdapterPosition());
+
 						if (getContext() == null)
 							return;
 
@@ -58,6 +57,16 @@ public class GitHubContributorsListFragment
 								.setData(Uri.parse(String.format(AppConfig.URI_GITHUB_PROFILE, contributorObject.name))));
 					}
 				});
+			}
+		};
+
+		return new ContributorListAdapter(getContext())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
 			}
 		};
 	}

@@ -3,10 +3,7 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
@@ -14,32 +11,29 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
-import com.genonbeta.TrebleShot.app.ShareableListFragment;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 public class ApplicationListFragment
-		extends ShareableListFragment<ApplicationListAdapter.PackageHolder, RecyclerViewAdapter.ViewHolder, ApplicationListAdapter>
+		extends EditableListFragment<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder, ApplicationListAdapter>
 		implements TitleSupport
 {
-	private SharedPreferences mPreferences;
-
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState)
 	{
 		super.onActivityCreated(savedInstanceState);
-
 		setHasOptionsMenu(true);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
@@ -50,44 +44,51 @@ public class ApplicationListFragment
 	@Override
 	public ApplicationListAdapter onAdapter()
 	{
-		return new ApplicationListAdapter(getActivity(), PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean("show_system_apps", false))
+		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						if (!setItemSelected(holder)) {
-							final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
-							final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
-
-							if (launchIntent != null) {
-								AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
-
-								dialogBuilder.setMessage(R.string.ques_launchApplication);
-								dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-								dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
-								{
-									@Override
-									public void onClick(DialogInterface dialog, int which)
-									{
-										startActivity(launchIntent);
-									}
-								});
-
-								dialogBuilder.show();
-							} else
-								Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
-						}
-					}
-				});
+				registerLayoutViewClicks(clazz);
 			}
 		};
+
+		return new ApplicationListAdapter(getActivity(), getDefaultPreferences())
+		{
+			@NonNull
+			@Override
+			public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+	{
+		final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
+		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
+
+		if (launchIntent != null) {
+			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+
+			dialogBuilder.setMessage(R.string.ques_launchApplication);
+			dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
+			dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					startActivity(launchIntent);
+				}
+			});
+
+			dialogBuilder.show();
+		} else
+			Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
+
+		return true;
 	}
 
 	@Override
@@ -101,8 +102,11 @@ public class ApplicationListFragment
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if (item.getItemId() == R.id.show_system_apps) {
-			mPreferences.edit().putBoolean("show_system_apps", !mPreferences.getBoolean("show_system_apps", false)).apply();
-			getAdapter().showSystemApps(mPreferences.getBoolean("show_system_apps", false));
+			boolean isShowingSystem = !getDefaultPreferences().getBoolean("show_system_apps", false);
+
+			getDefaultPreferences().edit()
+					.putBoolean("show_system_apps", isShowingSystem)
+					.apply();
 
 			refreshList();
 			return true;
@@ -117,20 +121,7 @@ public class ApplicationListFragment
 		super.onPrepareOptionsMenu(menu);
 
 		MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
-		menuSystemApps.setChecked(mPreferences.getBoolean("show_system_apps", false));
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		boolean result = super.onCreateActionMenu(context, actionMode, menu);
-
-		MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
-
-		if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-			shareOthers.setVisible(false);
-
-		return result;
+		menuSystemApps.setChecked(getDefaultPreferences().getBoolean("show_system_apps", false));
 	}
 
 	@Override

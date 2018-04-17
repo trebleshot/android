@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -30,12 +29,12 @@ public class NotificationUtils
 	private AccessDatabase mDatabase;
 	private SharedPreferences mPreferences;
 
-	public NotificationUtils(Context context)
+	public NotificationUtils(Context context, AccessDatabase database, SharedPreferences preferences)
 	{
 		mContext = context;
 		mManager = NotificationManagerCompat.from(context);
-		mDatabase = new AccessDatabase(context);
-		mPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
+		mDatabase = database;
+		mPreferences = preferences;
 
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);

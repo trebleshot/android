@@ -13,6 +13,14 @@
         android:layout_centerInParent="true"
         android:contentDescription="@string/text_image"/>
 
+    <include layout="@layout/generic_view_selection"/>
+
+    <View
+        android:id="@+id/clickable_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?rectSelector"/>
+
     <TextView
         android:id="@+id/text3"
         android:layout_width="wrap_content"
@@ -52,12 +60,5 @@
         android:shadowRadius="5"
         android:textColor="@color/videoTextColor"
         android:visibility="gone"/>
-
-    <View
-        android:id="@+id/selector"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_centerInParent="true"
-        android:background="@drawable/state_selected_image"/>
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

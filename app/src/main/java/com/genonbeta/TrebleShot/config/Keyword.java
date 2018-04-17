@@ -12,6 +12,7 @@ public class Keyword
 			RESULT = "result",
 			REQUEST_TRANSFER = "requestTransfer",
 			REQUEST_RESPONSE = "requestResponse",
+			REQUEST_ACQUAINTANCE = "requestAcquaintance",
 			REQUEST_CLIPBOARD = "requestClipboard",
 			BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate",
 			TRANSFER_REQUEST_ID = "requestId",
@@ -41,8 +42,11 @@ public class Keyword
 			HANDSHAKE_REQUIRED = "handshakeRequired",
 			HANDSHAKE_ONLY = "handshakeOnly",
 			NETWORK_NAME = "nwName",
+			NETWORK_PIN = "pin",
 			NETWORK_PASSWORD = "nwPwd",
 			NETWORK_KEYMGMT = "ntKeyMgmt",
+			NETWORK_ADDRESS_BSSID = "bsid",
+			NETWORK_ADDRESS_IP = "ipAdr",
 			FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection";
 
 	public static class Local

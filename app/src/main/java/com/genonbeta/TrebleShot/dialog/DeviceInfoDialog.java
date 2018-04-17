@@ -6,7 +6,7 @@ import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Looper;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatButton;
@@ -19,7 +19,6 @@ import android.widget.TextView;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.HomeActivity;
-import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -49,9 +48,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 	public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 	public static final int JOB_RECEIVE_UPDATE = 1;
 
-	private AlertDialog mThisDialog;
-
-	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final NetworkDevice device)
+	public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final SharedPreferences sharedPreferences, final NetworkDevice device)
 	{
 		super(activity);
 
@@ -110,7 +107,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 													openIntent.setComponent(new ComponentName(getContext(), HomeActivity.class))
 															.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext()).getUri());
+															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext(), sharedPreferences).getUri());
 												}
 
 												dynamicNotification.setContentText(getContext().getString(R.string.mesg_updateDownloadComplete))
@@ -128,7 +125,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 								public void onRun()
 								{
 									try {
-										mReceivedFile = UpdateUtils.receiveUpdate(activity, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+										mReceivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
 										{
 											@Override
 											public void onConnectionReady(ServerSocket socket)
@@ -210,54 +207,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 			setTitle(device.nickname);
 			setView(rootView);
 			setPositiveButton(R.string.butn_close, null);
-			setNeutralButton(R.string.butn_pendingTransfers, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int p2)
-						{
-							final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-							final TransactionGroupListAdapter adapter = new TransactionGroupListAdapter(getContext())
-									.setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-											.setWhere(AccessDatabase.FIELD_TRANSFERGROUP_DEVICEID + "=?", device.deviceId));
-
-							builder.setPositiveButton(R.string.butn_close, null);
-
-							new Thread()
-							{
-								@Override
-								public void run()
-								{
-									super.run();
-
-									Looper.prepare();
-
-									adapter.onUpdate(adapter.onLoad());
-									adapter.notifyDataSetChanged();
-
-									if (adapter.getCount() > 0) {
-										// FIXME: 27.03.2018 fixme okat
-										/*
-										builder.setAdapter(adapter, new DialogInterface.OnClickListener()
-										{
-											@Override
-											public void onClick(DialogInterface dialogInterface, int i)
-											{
-												TransactionActivity.startInstance(getContext(), ((TransactionObject.Group) adapter.getItem(i)).groupId);
-											}
-										});*/
-
-									} else
-										builder.setMessage(R.string.text_listEmpty);
-
-									builder.show();
-
-									Looper.loop();
-								}
-							}.start();
-						}
-					}
-			);
 
 			setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
 			{
@@ -284,11 +233,5 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	@Override
-	public AlertDialog show()
-	{
-		return mThisDialog = super.show();
 	}
 }

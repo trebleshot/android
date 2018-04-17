@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/popup_changeChangeConnection"
+        android:title="@string/butn_changeConnection"/>
+
+    <item
+        android:id="@+id/popup_remove"
+        android:title="@string/butn_remove"/>
+
+</menu>

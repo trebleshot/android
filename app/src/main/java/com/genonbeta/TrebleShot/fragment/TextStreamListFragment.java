@@ -9,27 +9,28 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
-import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.GroupShareableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.util.FABSupport;
-import com.genonbeta.TrebleShot.util.TitleSupport;
-import com.genonbeta.TrebleShot.widget.GroupShareableListAdapter;
+import com.genonbeta.TrebleShot.ui.callback.FABSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * created by: Veli
@@ -37,10 +38,9 @@ import java.util.ArrayList;
  */
 
 public class TextStreamListFragment
-		extends GroupShareableListFragment<TextStreamObject, GroupShareableListAdapter.ViewHolder, TextStreamListAdapter>
+		extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
 		implements TitleSupport, FABSupport
 {
-	private IntentFilter mIntentFilter = new IntentFilter();
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
 	@Override
@@ -48,11 +48,10 @@ public class TextStreamListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingAscending(false);
-		setDefaultSortingCriteria(R.id.actions_abs_editable_sort_by_date);
+		setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
-
-		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
 	@Override
@@ -65,39 +64,70 @@ public class TextStreamListFragment
 	}
 
 	@Override
+	public void onSortingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_sortByName), TextStreamListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortByDate), TextStreamListAdapter.MODE_SORT_BY_DATE);
+	}
+
+	@Override
+	public void onGroupingOptions(Map<String, Integer> options)
+	{
+		options.put(getString(R.string.text_groupByNothing), TextStreamListAdapter.MODE_GROUP_BY_NOTHING);
+		options.put(getString(R.string.text_groupByDate), TextStreamListAdapter.MODE_GROUP_BY_DATE);
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
+	}
+
+	@Override
 	public TextStreamListAdapter onAdapter()
 	{
-		return new TextStreamListAdapter(getActivity())
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
 			@Override
-			public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
+			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				super.onBindViewHolder(holder, position);
-
-				holder.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						if (!holder.isRepresentative() && !setItemSelected(holder)) {
-							TextStreamObject textStreamObject = getAdapter().getItem(holder);
-
-							startActivity(new Intent(getContext(), TextEditorActivity.class)
-									.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-									.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textStreamObject.id)
-									.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-						}
-					}
-				});
+				if (!clazz.isRepresentative())
+					registerLayoutViewClicks(clazz);
 			}
 		};
+
+		return new TextStreamListAdapter(getActivity(), getDatabase())
+		{
+			@NonNull
+			@Override
+			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
+	}
+
+	@Override
+	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
+
+		startActivity(new Intent(getContext(), TextEditorActivity.class)
+				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+				.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+		return true;
 	}
 
 	@Override
 	public void onResume()
 	{
 		super.onResume();
-		getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
+
+		getActivity().registerReceiver(mStatusReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
 		refreshList();
 	}
 
@@ -106,50 +136,6 @@ public class TextStreamListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
-	}
-
-	@Override
-	public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-	{
-		super.onCreateActionMenu(context, actionMode, menu);
-		actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-	{
-		int id = item.getItemId();
-
-		ArrayList<TextStreamObject> selectionList = getSelectionConnection().getSelectedItemList();
-
-		if (id == R.id.action_mode_text_stream_delete) {
-			for (TextStreamObject textStreamObject : selectionList)
-				getAdapter().getDatabase().remove(textStreamObject);
-		} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
-			if (selectionList.size() == 1) {
-				TextStreamObject streamObject = selectionList.get(0);
-
-				Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
-						? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
-						.putExtra(Intent.EXTRA_TEXT, streamObject.text)
-						.setType("text/*");
-
-				startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)) : shareIntent);
-			} else {
-				Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
-				return false;
-			}
-		} else
-			return super.onActionMenuItemSelected(context, actionMode, item);
-
-		return true;
-	}
-
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_textStream);
 	}
 
 	@Override
@@ -169,6 +155,12 @@ public class TextStreamListFragment
 		return true;
 	}
 
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.text_textStream);
+	}
+
 	private class StatusReceiver extends BroadcastReceiver
 	{
 		@Override
@@ -178,6 +170,52 @@ public class TextStreamListFragment
 					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
 					&& intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_CLIPBOARD))
 				refreshList();
+		}
+	}
+
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
+	{
+		public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
+		{
+			super(fragment);
+		}
+
+		@Override
+		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+		{
+			super.onCreateActionMenu(context, actionMode, menu);
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
+			return true;
+		}
+
+		@Override
+		public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+		{
+			int id = item.getItemId();
+
+			ArrayList<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+
+			if (id == R.id.action_mode_text_stream_delete) {
+				for (TextStreamObject textStreamObject : selectionList)
+					getFragment().getDatabase().remove(textStreamObject);
+			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
+				if (selectionList.size() == 1) {
+					TextStreamObject streamObject = selectionList.get(0);
+
+					Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
+							? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
+							.putExtra(Intent.EXTRA_TEXT, streamObject.text)
+							.setType("text/*");
+
+					getAdapter().getContext().startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getFragment().getContext().getString(R.string.text_fileShareAppChoose)) : shareIntent);
+				} else {
+					Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
+					return false;
+				}
+			} else
+				return super.onActionMenuItemSelected(context, actionMode, item);
+
+			return true;
 		}
 	}
 }

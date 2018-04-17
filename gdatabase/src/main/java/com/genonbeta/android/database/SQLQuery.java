@@ -12,32 +12,40 @@ import java.util.ArrayList;
 
 public class SQLQuery
 {
+	public static void createTable(SQLiteDatabase db, SQLValues.Table table)
+	{
+		StringBuilder stringBuilder = new StringBuilder();
+
+		stringBuilder.append("CREATE TABLE ");
+
+		if (table.mayExist())
+			stringBuilder.append("IF NOT EXISTS ");
+
+		stringBuilder.append("`");
+		stringBuilder.append(table.getName());
+		stringBuilder.append("` (");
+
+		int count = 0;
+
+		for (SQLValues.Column columnString : table.getColumns().values())
+		{
+			if (count > 0)
+				stringBuilder.append(", ");
+
+			stringBuilder.append(columnString.toString());
+
+			count++;
+		}
+
+		stringBuilder.append(")");
+
+		db.execSQL(stringBuilder.toString());
+	}
+
 	public static void createTables(SQLiteDatabase db, SQLValues values)
 	{
 		for (SQLValues.Table table : values.getTables().values())
-		{
-			StringBuilder stringBuilder = new StringBuilder();
-
-			stringBuilder.append("CREATE TABLE `");
-			stringBuilder.append(table.getName());
-			stringBuilder.append("` (");
-
-			int count = 0;
-
-			for (SQLValues.Column columnString : table.getColumns().values())
-			{
-				if (count > 0)
-					stringBuilder.append(", ");
-
-				stringBuilder.append(columnString.toString());
-
-				count++;
-			}
-
-			stringBuilder.append(")");
-
-			db.execSQL(stringBuilder.toString());
-		}
+			createTable(db, table);
 	}
 
 	public static class Select

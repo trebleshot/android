@@ -1,8 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/state_selected_drawable"
-          android:state_selected="true"/>
+    <item android:state_selected="true">
+        <layer-list>
+            <item>
+                <color android:color="@color/selectionBackground"/>
+            </item>
+            <item android:gravity="center">
+                <bitmap
+                    android:gravity="center"
+                    android:src="@drawable/ic_check_white_24dp"/>
+            </item>
+        </layer-list>
+    </item>
     <item>
-        <color android:color="@android:color/transparent" />
+        <color android:color="@android:color/transparent"/>
     </item>
 </selector>

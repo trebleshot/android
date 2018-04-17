@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -34,7 +35,7 @@ public class DeviceChooserService extends ChooserTargetService
 	@Override
 	public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
 	{
-		AccessDatabase database = new AccessDatabase(getApplicationContext());
+		AccessDatabase database = AppUtils.getAccessDatabase(getApplicationContext());
 		ArrayList<ChooserTarget> list = new ArrayList<>();
 
 		for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
@@ -45,7 +46,7 @@ public class DeviceChooserService extends ChooserTargetService
 
 			bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
 
-			String firstLetters = TextUtils.getFirstLetters(device.nickname, 1);
+			String firstLetters = TextUtils.getLetters(device.nickname, 1);
 			TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(this, R.color.networkDeviceRipple), 100);
 			Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
 			Canvas canvas = new Canvas(bitmap);
