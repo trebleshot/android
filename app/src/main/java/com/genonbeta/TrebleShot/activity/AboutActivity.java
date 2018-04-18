@@ -29,7 +29,7 @@ public class AboutActivity extends Activity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
+		final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(this);
 		mTextUpdates = findViewById(R.id.activity_about_update_text);
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()

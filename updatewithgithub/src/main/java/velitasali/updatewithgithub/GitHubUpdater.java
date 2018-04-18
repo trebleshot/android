@@ -31,7 +31,7 @@ public class GitHubUpdater
 	private Context mContext;
 	private String mRepo;
 	private int mThemeRes;
-	private boolean mPreReleaseIncluded = false;
+	private boolean mPreReleaseIncluded;
 
 	public GitHubUpdater(Context context, String repo, int themeRes, boolean preReleaseIncluded)
 	{
