@@ -380,4 +380,5 @@
     <string name="text_cameraPermissionRequired">Camera-machtiging is vereist</string>
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
 <string name="text_file">Bestand</string>
+<string name="text_noDeviceForTransfer">Er is geen apparaat toegevoegd voor deze overdracht</string>
 </resources>

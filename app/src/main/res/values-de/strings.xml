@@ -29,7 +29,7 @@
     <string name="mesg_fileSendError">Datei konnte nicht gesendet werden. %s</string>
     <string name="mesg_fileReceiveError">Beim Empfang von %s hat etwas nicht geklappt</string>
     <string name="text_multipleFileReceiveCompleted">Die Dateien wurden empfangen</string>
-    <string name="text_deviceList">Geräteliste</string>
+    <string name="text_deviceList">Geräte</string>
     <string name="text_fileOpenAppChoose">Öffnen mit</string>
     <string name="text_fileShareAppChoose">App zum teilen wählen</string>
     <string name="ques_resetToDefault">Auf Standard zurücksetzen?</string>
