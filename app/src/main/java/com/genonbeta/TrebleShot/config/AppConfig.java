@@ -12,7 +12,8 @@ public class AppConfig
 			SUPPORTED_MIN_VERSION = 62,
 			NICKNAME_LENGTH_MAX = 32,
 			BUFFER_LENGTH_DEFAULT = 8096,
-			BUFFER_LENGTH_SMALL = 1024;
+			BUFFER_LENGTH_SMALL = 1024,
+			DELAY_CHECK_FOR_UPDATES = 21600;
 
 	public final static String
 			EMAIL_DEVELOPER = "genonbeta@gmail.com",

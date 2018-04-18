@@ -69,6 +69,16 @@ public class CodeConnectFragment
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 	private boolean mPermissionRequested = false;
 
+	private Snackbar.Callback mWaitedSnackbarCallback = new Snackbar.Callback()
+	{
+		@Override
+		public void onDismissed(Snackbar transientBottomBar, int event)
+		{
+			super.onDismissed(transientBottomBar, event);
+			updateState();
+		}
+	};
+
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -161,15 +171,7 @@ public class CodeConnectFragment
 							mBarcodeView.pauseAndWait();
 
 							createSnackbar(R.string.mesg_errorNotSameNetwork)
-									.addCallback(new Snackbar.Callback()
-									{
-										@Override
-										public void onDismissed(Snackbar transientBottomBar, int event)
-										{
-											super.onDismissed(transientBottomBar, event);
-											updateState();
-										}
-									})
+									.addCallback(mWaitedSnackbarCallback)
 									.show();
 						}
 					}
@@ -264,7 +266,7 @@ public class CodeConnectFragment
 					else
 						mBarcodeView.pauseAndWait();
 				}
-			}, 200);
+			}, 300);
 		}
 	}
 

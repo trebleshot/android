@@ -195,10 +195,10 @@ public class GitHubUpdater
 		return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown");
 	}
 
-	public boolean isNewVersion(String comparedVersionName)
+	public static boolean isNewVersion(Context context, String comparedVersionName)
 	{
 		try {
-			PackageInfo packageInfo = mContext.getPackageManager().getPackageInfo(mContext.getApplicationInfo().packageName, 0);
+			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
 
 			ComparableVersion comparableGiven = new ComparableVersion(comparedVersionName);
 			ComparableVersion comparableCurrent = new ComparableVersion(packageInfo.versionName);
@@ -209,6 +209,11 @@ public class GitHubUpdater
 		}
 
 		return false;
+	}
+
+	public boolean isNewVersion(String comparedVersionName)
+	{
+		return isNewVersion(mContext, comparedVersionName);
 	}
 
 	public interface OnInfoAvailableListener

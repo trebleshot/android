@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -16,6 +17,8 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import velitasali.updatewithgithub.GitHubUpdater;
+
 /**
  * created by: Veli
  * date: 30.12.2017 17:08
@@ -23,6 +26,47 @@ import java.net.Socket;
 
 public class UpdateUtils
 {
+	public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog, final GitHubUpdater.OnInfoAvailableListener listener)
+	{
+		updater.checkForUpdates(popupDialog, new GitHubUpdater.OnInfoAvailableListener()
+		{
+			@Override
+			public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
+			{
+				SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
+
+				sharedPreferences.edit()
+						.putString("availableVersion", versionName)
+						.putLong("checkedForUpdatesTime", System.currentTimeMillis())
+						.apply();
+
+				if (listener != null)
+					listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
+			}
+		});
+	}
+
+	public static String getAvailableVersion(Context context)
+	{
+		return AppUtils.getDefaultPreferences(context).getString("availableVersion", null);
+	}
+
+	public static GitHubUpdater getDefaultUpdater(Context context)
+	{
+		return new GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme, false);
+	}
+
+	public static long getLastTimeCheckedForUpdates(Context context)
+	{
+		return AppUtils.getDefaultPreferences(context).getLong("checkedForUpdatesTime", 0);
+	}
+
+	public static boolean hasNewVersion(Context context)
+	{
+		String availableVersion = getAvailableVersion(context);
+		return availableVersion != null && GitHubUpdater.isNewVersion(context, availableVersion);
+	}
+
 	public static void sendUpdate(Context context, String toIp) throws IOException
 	{
 		Socket socket = new Socket();

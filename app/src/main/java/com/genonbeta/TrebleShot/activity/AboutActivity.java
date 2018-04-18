@@ -12,12 +12,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
+import com.genonbeta.TrebleShot.util.UpdateUtils;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
 public class AboutActivity extends Activity
 {
-	private GitHubUpdater mUpdater;
 	private TextView mTextUpdates;
 
 	@Override
@@ -29,7 +29,7 @@ public class AboutActivity extends Activity
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme, false);
+		final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
 		mTextUpdates = findViewById(R.id.activity_about_update_text);
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()
@@ -70,22 +70,18 @@ public class AboutActivity extends Activity
 			@Override
 			public void onClick(View view)
 			{
-				mUpdater.checkForUpdates(true, null);
+				UpdateUtils.checkForUpdates(AboutActivity.this, updater, true, null);
 			}
 		});
 
-		if (getDefaultPreferences().contains("availableVersion") && mUpdater.isNewVersion(getDefaultPreferences().getString("availableVersion", null)))
-			highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
+		if (UpdateUtils.hasNewVersion(getApplicationContext()))
+			highlightUpdater(UpdateUtils.getAvailableVersion(getApplicationContext()));
 		else
-			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
+			UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, new GitHubUpdater.OnInfoAvailableListener()
 			{
 				@Override
 				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
 				{
-					getDefaultPreferences().edit()
-							.putString("availableVersion", versionName)
-							.apply();
-
 					if (newVersion)
 						highlightUpdater(versionName);
 				}

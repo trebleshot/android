@@ -9,10 +9,14 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
+import com.genonbeta.TrebleShot.util.UpdateUtils;
+
+import velitasali.updatewithgithub.GitHubUpdater;
 
 /**
  * created by: Veli
@@ -46,6 +50,12 @@ public class App extends Application
 
 		initializeSettings();
 		getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_REQUEST_PREFERENCES_SYNC));
+
+		if (!UpdateUtils.hasNewVersion(getApplicationContext())
+				&& (System.currentTimeMillis() - UpdateUtils.getLastTimeCheckedForUpdates(getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
+			GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
+			UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
+		}
 	}
 
 	@Override

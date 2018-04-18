@@ -117,6 +117,7 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 				: "?", ContextCompat.getColor(mContext, hotspotNetwork ? R.color.hotspotNetworkRipple : R.color.networkDeviceRipple), 100));
 	}
 
+	// TODO: for animations we should convert deviceId to an int value and then setHasStableIds(true)
 	@Override
 	public long getItemId(int p1)
 	{

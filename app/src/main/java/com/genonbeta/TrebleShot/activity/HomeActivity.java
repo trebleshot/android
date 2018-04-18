@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
@@ -53,12 +52,11 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.Interrupter;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import velitasali.updatewithgithub.GitHubUpdater;
 
 public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
@@ -68,7 +66,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
-	private GitHubUpdater mUpdater;
 	private FloatingActionButton mFAB;
 	private TabLayout mTabLayout;
 	private ColorStateList mFABDefaultColorState;
@@ -105,7 +102,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mDrawerLayout.addDrawerListener(toggle);
 		toggle.syncState();
 
-		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme, false);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);
@@ -132,23 +128,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			}
 		});
 
-		if (getDefaultPreferences().contains("availableVersion") && mUpdater.isNewVersion(getDefaultPreferences().getString("availableVersion", null))) {
+		if (UpdateUtils.hasNewVersion(this))
 			highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
-		} else {
-			mUpdater.checkForUpdates(false, new GitHubUpdater.OnInfoAvailableListener()
-			{
-				@Override
-				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
-				{
-					getDefaultPreferences().edit()
-							.putString("availableVersion", versionName)
-							.apply();
-
-					if (newVersion)
-						highlightUpdater(versionName);
-				}
-			});
-		}
 
 		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
 			changeFragment(mFragmentConnectDevices);
@@ -365,7 +346,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 						mDelayedCommitFragment = fragment;
 				}
 			}
-		}, 200);
+		}, 400);
 	}
 
 	private void openFolder(@Nullable DocumentFile requestedFolder)
