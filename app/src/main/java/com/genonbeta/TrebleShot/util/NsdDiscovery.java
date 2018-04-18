@@ -176,7 +176,11 @@ public class NsdDiscovery
 			localServiceInfo.setServiceType(AppConfig.NDS_COMM_SERVICE_TYPE);
 			localServiceInfo.setPort(AppConfig.SERVER_PORT_COMMUNICATION);
 
-			getNsdManager().registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, getRegistrationListener());
+			try {
+				getNsdManager().registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, getRegistrationListener());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -184,7 +188,11 @@ public class NsdDiscovery
 	{
 		if (isServiceEnabled()
 				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-			getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, getDiscoveryListener());
+			try {
+				getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, getDiscoveryListener());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 	}
 
 	public void stopDiscovering()
@@ -193,7 +201,7 @@ public class NsdDiscovery
 				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			try {
 				getNsdManager().stopServiceDiscovery(getDiscoveryListener());
-			} catch (IllegalArgumentException e) {
+			} catch (Exception e) {
 				// Listener may not have been initialized
 			}
 	}
@@ -204,7 +212,7 @@ public class NsdDiscovery
 				&& Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
 			try {
 				getNsdManager().unregisterService(getRegistrationListener());
-			} catch (IllegalArgumentException e) {
+			} catch (Exception e) {
 				// Listener may not have been initialized
 			}
 	}

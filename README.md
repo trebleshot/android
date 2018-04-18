@@ -8,11 +8,16 @@ Send and receive files over available connections without making any effort. Ple
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
-* Pause or resume transfers even when an error is given
-* Share your videos and songs within the application
-* There is no limit. You can send thousands of files with only one connection
-* You have the updates installed on your phone but your friend doesn't? Send them using TrebleShot
-* You need to send some text information? Just use TrebleShot to do it
+* Pause and resume transfers even when an error is given
+* Share multiple content from your video, photo, music and application library
+* No internet connection is required: setup a hotspot and connect to it using QR code
+* Share with multiple devices at the same time
+* Exchange texts of any kind and save them to TrebleShot
+* Share folders as they are for backup or any other purpose 
+* Light UI: Works faster than its rivals on low-end devices
+* Speed-oriented: Minimal UI focusing on and optimized for speed
+* Professional features: network change handling, choosing network after speed measurement
+* It is secure by allowing you to give extra permission to or block a device
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
