@@ -338,7 +338,7 @@
     <string name="mesg_wifiEnableRequired">Schakel Wi-Fi in om te kunnen verbinden</string>
     <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
-    <string name="text_qrCodeAvailableHelp">Scan deze QR-code met TrebleShot om te verbinden met de hotspot</string>
+    <string name="text_qrCodeAvailableHelp">Scan deze code om te delen en apparaten te verbinden</string>
     <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in of maak verbinding met een netwerk</string>
     <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van het apparaat van de afzender</string>
     <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
