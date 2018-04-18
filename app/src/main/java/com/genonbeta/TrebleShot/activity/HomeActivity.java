@@ -105,7 +105,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		mDrawerLayout.addDrawerListener(toggle);
 		toggle.syncState();
 
-		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme);
+		mUpdater = new GitHubUpdater(this, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme, false);
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
 		mFAB = findViewById(R.id.content_fab);

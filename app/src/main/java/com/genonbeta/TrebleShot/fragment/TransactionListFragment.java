@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -38,6 +39,9 @@ public class TransactionListFragment
 		extends GroupEditableListFragment<TransactionListAdapter.GroupEditableTransferObject, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
 		implements TitleSupport
 {
+	public static final String TAG = "TransactionListFragment";
+	public static final int TASK_REMOVE_TRANSFER_OBJECTS = 0;
+
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -61,7 +65,7 @@ public class TransactionListFragment
 	}
 
 	@Override
-	public void onViewCreated(View view, @Nullable Bundle savedInstanceState)
+	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
@@ -215,20 +219,20 @@ public class TransactionListFragment
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i)
 					{
-						new Handler(Looper.myLooper()).post(new Runnable()
+						WorkerService.run(getFragment().getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_TRANSFER_OBJECTS)
 						{
 							@Override
-							public void run()
+							protected void onRun()
 							{
-								for (TransferObject transferObject : selectionList)
+								for (TransactionListAdapter.GroupEditableTransferObject transferObject : selectionList)
 									if (transferObject instanceof TransactionListAdapter.TransferFolder) {
-										getFragment().getDatabase().castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+										getFragment().getDatabase().delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 												.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
 																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
 																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
 														String.valueOf(mAdapter.getGroupId()),
 														transferObject.directory + File.separator + "%",
-														transferObject.directory), TransferObject.class);
+														transferObject.directory));
 									} else
 										getFragment().getDatabase().remove(transferObject);
 							}

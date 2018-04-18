@@ -8,7 +8,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Looper;
 import android.support.v7.app.AlertDialog;
@@ -32,12 +31,14 @@ public class GitHubUpdater
 	private Context mContext;
 	private String mRepo;
 	private int mThemeRes;
+	private boolean mPreReleaseIncluded = false;
 
-	public GitHubUpdater(Context context, String repo, int themeRes)
+	public GitHubUpdater(Context context, String repo, int themeRes, boolean preReleaseIncluded)
 	{
 		mContext = context;
 		mRepo = repo;
 		mThemeRes = themeRes;
+		mPreReleaseIncluded = preReleaseIncluded;
 	}
 
 	public void checkForUpdates(final boolean popupDialog, final OnInfoAvailableListener listener)
@@ -73,89 +74,100 @@ public class GitHubUpdater
 					if (releases.length() > 0) {
 						Log.d(TAG, "Reading releases: (total) " + releases.length());
 
-						JSONObject lastRelease = releases.getJSONObject(0);
+						for (int iterator = 0; iterator < releases.length(); iterator++)
+						{
+							JSONObject selectedRelease = releases.getJSONObject(iterator);
 
-						final String lastVersionName = lastRelease.getString("tag_name");
-						final String lastVersionTitle = lastRelease.getString("name");
-						final String lastVersionDate = lastRelease.getString("published_at");
-						final String lastVersionBody = lastRelease.getString("body");
+							final boolean isPreRelease = selectedRelease.getBoolean("prerelease");
 
-						ComparableVersion comLast = new ComparableVersion(lastVersionName);
-						ComparableVersion comCurr = new ComparableVersion(appVersionName);
+							if (isPreRelease && !mPreReleaseIncluded)
+								continue;
 
-						if (listener != null)
-							listener.onInfoAvailable(comLast.compareTo(comCurr) > 0, lastVersionName, lastVersionTitle, lastVersionBody, lastVersionDate);
+							final String lastVersionName = selectedRelease.getString("tag_name");
+							final String lastVersionTitle = selectedRelease.getString("name");
+							final String lastVersionDate = selectedRelease.getString("published_at");
+							final String lastVersionBody = selectedRelease.getString("body");
 
-						final File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + applicationName + " v" + lastVersionName + ".apk");
+							ComparableVersion comLast = new ComparableVersion(lastVersionName);
+							ComparableVersion comCurr = new ComparableVersion(appVersionName);
 
-						if (popupDialog && comLast.compareTo(comCurr) > 0) {
-							Log.d(TAG, "New version found: " + lastVersionName);
+							if (listener != null)
+								listener.onInfoAvailable(comLast.compareTo(comCurr) > 0, lastVersionName, lastVersionTitle, lastVersionBody, lastVersionDate);
 
-							if (lastRelease.has("assets")) {
-								Log.d(TAG, "Reading assets");
+							final File updateFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/" + applicationName + " v" + lastVersionName + ".apk");
 
-								JSONArray releaseAssets = lastRelease.getJSONArray("assets");
+							if (popupDialog && comLast.compareTo(comCurr) > 0) {
+								Log.d(TAG, "New version found: " + lastVersionName);
 
-								if (releaseAssets.length() > 0) {
-									Log.d(TAG, "Assets is cached: (total) " + releaseAssets.length());
+								if (selectedRelease.has("assets")) {
+									Log.d(TAG, "Reading assets");
 
-									final JSONObject firstAsset = releaseAssets.getJSONObject(0);
-									final String downloadURL = firstAsset.getString("browser_download_url");
+									JSONArray releaseAssets = selectedRelease.getJSONArray("assets");
 
-									DialogInterface.OnClickListener downloadStart = new DialogInterface.OnClickListener()
-									{
-										@Override
-										public void onClick(DialogInterface dialog, int which)
+									if (releaseAssets.length() > 0) {
+										Log.d(TAG, "Assets is cached: (total) " + releaseAssets.length());
+
+										final JSONObject firstAsset = releaseAssets.getJSONObject(0);
+										final String downloadURL = firstAsset.getString("browser_download_url");
+
+										DialogInterface.OnClickListener downloadStart = new DialogInterface.OnClickListener()
 										{
-											if (updateFile.isFile())
-												updateFile.delete();
+											@Override
+											public void onClick(DialogInterface dialog, int which)
+											{
+												if (updateFile.isFile())
+													updateFile.delete();
 
-											DownloadManager manager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
-											DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL));
+												DownloadManager manager = (DownloadManager) mContext.getSystemService(Context.DOWNLOAD_SERVICE);
+												DownloadManager.Request downloadRequest = new DownloadManager.Request(Uri.parse(downloadURL));
 
-											downloadRequest.setTitle(mContext.getString(R.string.uwg_downloading_update_title, applicationName, lastVersionName));
-											downloadRequest.setDescription(mContext.getString(R.string.uwg_downloading_update_description, applicationName));
-											downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, applicationName + " v" + lastVersionName + ".apk");
-											downloadRequest.setMimeType("application/vnd.android.package-archive");
-											downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+												downloadRequest.setTitle(mContext.getString(R.string.uwg_downloading_update_title, applicationName, lastVersionName));
+												downloadRequest.setDescription(mContext.getString(R.string.uwg_downloading_update_description, applicationName));
+												downloadRequest.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, applicationName + " v" + lastVersionName + ".apk");
+												downloadRequest.setMimeType("application/vnd.android.package-archive");
+												downloadRequest.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
 
-											manager.enqueue(downloadRequest);
-										}
-									};
+												manager.enqueue(downloadRequest);
+											}
+										};
 
-									DialogInterface.OnClickListener openDownloads = new DialogInterface.OnClickListener()
-									{
-										@Override
-										public void onClick(DialogInterface dialog, int which)
+										DialogInterface.OnClickListener openDownloads = new DialogInterface.OnClickListener()
 										{
-											mContext.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+											@Override
+											public void onClick(DialogInterface dialog, int which)
+											{
+												mContext.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
+											}
+										};
+
+										AlertDialog.Builder dialog = new AlertDialog.Builder(mContext)
+												.setTitle(R.string.uwg_update_available);
+
+										if (updateFile.isFile()) {
+											Log.d(TAG, "File already exists: " + updateFile.getName());
+
+											dialog.setMessage(R.string.uwg_update_exists)
+													.setNeutralButton(R.string.uwg_download, downloadStart)
+													.setPositiveButton(R.string.uwg_open, openDownloads);
+										} else {
+											Log.d(TAG, "Update is downloadable");
+
+											dialog.setMessage(String.format(mContext.getString(R.string.uwg_update_body), appVersionName, lastVersionName, lastVersionDate, lastVersionBody))
+													.setPositiveButton(R.string.uwg_download_now, downloadStart);
 										}
-									};
 
-									AlertDialog.Builder dialog = new AlertDialog.Builder(mContext)
-											.setTitle(R.string.uwg_update_available);
-
-									if (updateFile.isFile()) {
-										Log.d(TAG, "File already exists: " + updateFile.getName());
-
-										dialog.setMessage(R.string.uwg_update_exists)
-												.setNeutralButton(R.string.uwg_download, downloadStart)
-												.setPositiveButton(R.string.uwg_open, openDownloads);
-									} else {
-										Log.d(TAG, "Update is downloadable");
-
-										dialog.setMessage(String.format(mContext.getString(R.string.uwg_update_body), appVersionName, lastVersionName, lastVersionDate, lastVersionBody))
-												.setPositiveButton(R.string.uwg_download_now, downloadStart);
-									}
-
-									dialog.setNegativeButton(R.string.uwg_later, null)
-											.show();
+										dialog.setNegativeButton(R.string.uwg_later, null)
+												.show();
+									} else
+										Log.d(TAG, "No downloadable file is provided");
 								} else
-									Log.d(TAG, "No downloadable file is provided");
-							} else
-								Toast.makeText(mContext, R.string.uwg_no_update_available, Toast.LENGTH_LONG).show();
-						} else if (popupDialog)
-							Toast.makeText(mContext, R.string.uwg_currently_latest_version_info, Toast.LENGTH_LONG).show();
+									Toast.makeText(mContext, R.string.uwg_no_update_available, Toast.LENGTH_LONG).show();
+							} else if (popupDialog)
+								Toast.makeText(mContext, R.string.uwg_currently_latest_version_info, Toast.LENGTH_LONG).show();
+
+							// Notify only the latest release without going through all releases
+							break;
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();

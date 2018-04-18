@@ -126,11 +126,14 @@ public class AccessDatabase extends SQLiteDatabase
 
 		if (old == 6) {
 			SQLValues.Table groupTable = sqlValues.getTables().get(TABLE_TRANSFERGROUP);
+			SQLValues.Table devicesTable = sqlValues.getTables().get(TABLE_DEVICES);
 			SQLValues.Table targetDevicesTable = sqlValues.getTables().get(TABLE_TRANSFERASSIGNEE);
 
 			db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
+			db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
 
 			SQLQuery.createTable(db, groupTable);
+			SQLQuery.createTable(db, devicesTable);
 			SQLQuery.createTable(db, targetDevicesTable);
 		}
 	}

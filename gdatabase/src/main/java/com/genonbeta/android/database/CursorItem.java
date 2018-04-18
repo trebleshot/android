@@ -1,6 +1,7 @@
 package com.genonbeta.android.database;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by: veli
@@ -9,7 +10,7 @@ import java.util.HashMap;
 
 public class CursorItem
 {
-	private HashMap<String, Object> mList = new HashMap<>();
+	private Map<String, Object> mList = new HashMap<>();
 
 	public CursorItem clear()
 	{
@@ -29,22 +30,46 @@ public class CursorItem
 
 	public double getDouble(String keyName)
 	{
-		return Double.valueOf(getString(keyName));
+		try {
+			return Double.valueOf(getString(keyName));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
 	}
 
 	public float getFloat(String keyName)
 	{
-		return Float.valueOf(getString(keyName));
+		try {
+			return Float.valueOf(getString(keyName));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
 	}
 
 	public int getInt(String keyName)
 	{
-		return Integer.valueOf(getString(keyName));
+		try {
+			return Integer.valueOf(getString(keyName));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
 	}
 
 	public long getLong(String keyName)
 	{
-		return Long.valueOf(getString(keyName));
+		try {
+			return Long.valueOf(getString(keyName));
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+
+		return 0;
 	}
 
 	public String getString(String keyName)
@@ -52,12 +77,12 @@ public class CursorItem
 		return mList.get(keyName) == null ? null : String.valueOf(mList.get(keyName));
 	}
 
-	public int lenght()
+	public int length()
 	{
 		return mList.size();
 	}
 
-	public HashMap<String, Object> list()
+	public Map<String, Object> list()
 	{
 		return mList;
 	}
