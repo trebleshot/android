@@ -49,6 +49,14 @@ abstract public class DocumentFile
 		throw new FileNotFoundException("Failed to create right connection for " + uri.toString());
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		return obj instanceof DocumentFile
+				&& getUri() != null
+				&& getUri().equals(((DocumentFile) obj).getUri());
+	}
+
 	public abstract DocumentFile createFile(String mimeType, String displayName);
 
 	public abstract DocumentFile createDirectory(String displayName);

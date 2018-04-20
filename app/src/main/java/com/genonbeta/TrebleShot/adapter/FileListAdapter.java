@@ -88,7 +88,7 @@ public class FileListAdapter
 				if (mediaDir == null || !mediaDir.canWrite())
 					continue;
 
-				DirectoryHolder fileHolder = new DirectoryHolder(DocumentFile.fromFile(mediaDir), getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
+				StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir), getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
 				String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
 				if (splitPath.length >= 2 && splitPath[1].equals("storage")) {
@@ -282,7 +282,31 @@ public class FileListAdapter
 		}
 	}
 
-	public static class WritablePathHolder extends GenericFileHolder
+	public static class StorageHolder
+			extends DirectoryHolder
+			implements StorageHolderImpl
+	{
+		public StorageHolder(DocumentFile file, String info, int iconRes)
+		{
+			super(file, file.getName(), info, iconRes);
+		}
+
+		public StorageHolder(DocumentFile file, String friendlyName, String info, int iconRes)
+		{
+			super(file, friendlyName, info, iconRes);
+		}
+
+		// Don't let these folders to be selected
+		@Override
+		public boolean setSelectableSelected(boolean selected)
+		{
+			return false;
+		}
+	}
+
+	public static class WritablePathHolder
+			extends GenericFileHolder
+			implements StorageHolderImpl
 	{
 		public WritablePathObject pathObject;
 
@@ -292,6 +316,17 @@ public class FileListAdapter
 
 			this.pathObject = object;
 		}
+
+		// Don't let these folders to be selected
+		@Override
+		public boolean setSelectableSelected(boolean selected)
+		{
+			return false;
+		}
+	}
+
+	public interface StorageHolderImpl
+	{
 	}
 
 	public static class FileHolderMerger extends ComparableMerger<GenericFileHolder>
@@ -300,7 +335,7 @@ public class FileListAdapter
 
 		public FileHolderMerger(GenericFileHolder holder)
 		{
-			if (holder instanceof WritablePathHolder)
+			if (holder instanceof StorageHolderImpl)
 				mType = Type.STORAGE;
 			else if (holder instanceof DirectoryHolder)
 				mType = Type.FOLDER;

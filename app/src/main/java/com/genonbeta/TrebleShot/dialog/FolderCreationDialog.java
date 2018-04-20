@@ -26,6 +26,10 @@ public class FolderCreationDialog extends AbstractSingleTextInputDialog
 			public boolean onProceedClick(AlertDialog dialog)
 			{
 				String fileName = getEditText().getText().toString();
+
+				if (fileName.length() == 0)
+					return false;
+
 				DocumentFile createdFile = currentFolder.createDirectory(fileName);
 
 				if (createdFile == null) {

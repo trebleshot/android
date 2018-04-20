@@ -47,6 +47,7 @@ public class FileListFragment
 	public final static String EXTRA_FILE_NAME = "extraFile";
 	public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
+	private DocumentFile mLastKnownPath;
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private MediaScannerConnection mMediaScanner;
 	private OnPathChangedListener mPathChangedListener;
@@ -229,6 +230,21 @@ public class FileListFragment
 
 		getAdapter().goPath(file);
 		refreshList();
+	}
+
+	@Override
+	protected void onListRefreshed()
+	{
+		super.onListRefreshed();
+
+		// Try to bring scope to the top if the user is viewing another folder
+		DocumentFile pathOnTrial = getAdapter().getPath();
+
+		if (!(mLastKnownPath == null && getAdapter().getPath() == null)
+				&& (mLastKnownPath != null && !mLastKnownPath.equals(pathOnTrial)))
+			getListView().scrollToPosition(0);
+
+		mLastKnownPath = pathOnTrial;
 	}
 
 	@Override

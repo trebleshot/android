@@ -50,8 +50,11 @@ public class PowerfulActionMode extends Toolbar
 
 	public <T extends Selectable> boolean check(@NonNull Callback<T> callback, T selectable, boolean selected, int position)
 	{
-		if (!hasActive(callback) || !selectable.setSelectableSelected(selected))
+		if (!selectable.setSelectableSelected(selected))
 			return false;
+
+		if (!hasActive(callback))
+			start(callback);
 
 		if (selected)
 			getHolder(callback).getSelectionList().add(selectable);
@@ -283,9 +286,6 @@ public class PowerfulActionMode extends Toolbar
 			// if it is already the same
 			if (selected == isSelected(selectable))
 				return selected;
-
-			if (!getMode().hasActive(getCallback()))
-				getMode().start(getCallback());
 
 			return getMode().check(getCallback(), selectable, selected, position);
 		}

@@ -249,8 +249,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 	@Override
 	public void onPrepareDetach()
 	{
-		if (getPowerfulActionMode() != null && mSelectionCallback != null)
-			getPowerfulActionMode().finish(mSelectionCallback);
+		if (getPowerfulActionMode() != null && getSelectionCallback() != null)
+			getPowerfulActionMode().finish(getSelectionCallback());
 	}
 
 	public int onGridSpanSize(int viewType, int currentSpanSize)
