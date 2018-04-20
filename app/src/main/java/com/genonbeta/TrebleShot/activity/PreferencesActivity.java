@@ -30,7 +30,7 @@ public class PreferencesActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == android.R.id.home)
-			finish();
+			onBackPressed();
 		else if (id == R.id.actions_preference_main_reset_to_defaults) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 

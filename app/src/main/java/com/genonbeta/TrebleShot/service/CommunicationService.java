@@ -100,16 +100,14 @@ public class CommunicationService extends Service
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
+	private Receive mReceive = new Receive();
+	private Send mSend = new Send();
+	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
 	private NsdDiscovery mNsdDiscovery;
 	private CommunicationNotificationHelper mNotificationHelper;
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
-	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
 	private HotspotUtils mHotspotUtils;
-	private Object mBlockingObject = new Object();
-
-	private Receive mReceive = new Receive();
-	private Send mSend = new Send();
 
 	private boolean mSeamlessMode = false;
 
@@ -132,10 +130,7 @@ public class CommunicationService extends Service
 				.createWifiLock(TAG);
 
 		mReceive.setNotifyDelay(AppConfig.DEFAULT_NOTIFICATION_DELAY);
-		mReceive.setBlockingObject(mBlockingObject);
-
 		mSend.setNotifyDelay(AppConfig.DEFAULT_NOTIFICATION_DELAY);
-		mSend.setBlockingObject(mBlockingObject);
 
 		mMediaScanner.connect();
 		mNsdDiscovery.registerService();

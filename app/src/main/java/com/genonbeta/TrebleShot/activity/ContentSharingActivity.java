@@ -8,6 +8,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
@@ -31,6 +32,9 @@ public class ContentSharingActivity extends Activity
 {
 	public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
+	private PowerfulActionMode mMode;
+	private SharingActionModeCallback mSelectionCallback;
+
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
 	{
@@ -41,7 +45,7 @@ public class ContentSharingActivity extends Activity
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
-		final PowerfulActionMode actionMode = findViewById(R.id.activity_content_sharing_action_mode);
+		mMode = findViewById(R.id.activity_content_sharing_action_mode);
 		final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
@@ -50,8 +54,8 @@ public class ContentSharingActivity extends Activity
 		final EditableListFragment photoFragment = new ImageListFragment();
 		final EditableListFragment videoFragment = new VideoListFragment();
 
-		final SharingActionModeCallback selectionCallback = new SharingActionModeCallback(null);
-		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(actionMode, selectionCallback);
+		mSelectionCallback = new SharingActionModeCallback(null);
+		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
 
 		final EditableListFragment.LayoutClickListener groupLayoutClickListener
 				= new EditableListFragment.LayoutClickListener()
@@ -73,19 +77,22 @@ public class ContentSharingActivity extends Activity
 			{
 				EditableListFragment fragment = (EditableListFragment) super.instantiateItem(container, position);
 
-				fragment.setSelectionCallback(selectionCallback);
+				fragment.setSelectionCallback(mSelectionCallback);
 				fragment.setSelectorConnection(selectorConnection);
 				fragment.setLayoutClickListener(groupLayoutClickListener);
 
 				if (viewPager.getCurrentItem() == position)
-					selectionCallback.updateProvider(fragment);
+					mSelectionCallback.updateProvider(fragment);
 
 				return fragment;
 			}
 		};
 
-		actionMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
+		mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
 		tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+
+		if (getSupportActionBar() != null)
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		pagerAdapter.add(appFragment, tabLayout);
 		pagerAdapter.add(musicFragment, tabLayout);
@@ -104,7 +111,7 @@ public class ContentSharingActivity extends Activity
 
 				final EditableListFragment fragment = (EditableListFragment) pagerAdapter.getItem(tab.getPosition());
 
-				selectionCallback.updateProvider(fragment);
+				mSelectionCallback.updateProvider(fragment);
 
 				if (fragment.getAdapterImpl() != null)
 					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
@@ -130,7 +137,7 @@ public class ContentSharingActivity extends Activity
 			}
 		});
 
-		actionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+		mMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
 		{
 			@Override
 			public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
@@ -138,5 +145,29 @@ public class ContentSharingActivity extends Activity
 				appBarLayout.setExpanded(!started, true);
 			}
 		});
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == android.R.id.home)
+			onBackPressed();
+		else
+			return super.onOptionsItemSelected(item);
+
+		return true;
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		if (mMode != null
+				&& mSelectionCallback != null
+				&& mMode.hasActive(mSelectionCallback))
+			mMode.finish(mSelectionCallback);
+		else
+			super.onBackPressed();
 	}
 }
