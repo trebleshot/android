@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_preferences">الاعدادات</string>
+<resources><string name="text_preferences">التفضيلات</string>
     <string name="mesg_connectionFailure">فشل الاتصال</string>
-    <string name="text_notAvailable">غير متاح</string>
+    <string name="text_notAvailable">غير متوفر</string>
     <string name="text_deviceListEmpty">لا يوجد جهاز</string>
     <string name="mesg_noNetwork">لا يوجد اتصال لاسلكي من اجل العثور على اجهزة قريبة</string>
     <string name="mesg_scanningDevices">العثور على الأجهزة المجاورة</string>
@@ -14,7 +14,7 @@
     <string name="text_receiving">جاري الإستلام</string>
     <string name="butn_cancelReceiving">إيقاف الاستقبال</string>
     <string name="text_fileReceived">تم إستلام الملف</string>
-    <string name="mesg_fileReceived">%s has been received</string>
+    <string name="mesg_fileReceived">قد وردت %s</string>
     <string name="butn_scan">بحث</string>
     <string name="text_listEmpty">لاتوجد عناصر</string>
     <string name="text_developerMode">وضع المطور</string>
@@ -44,7 +44,7 @@
     <string name="butn_close">إغلاق</string>
     <string name="text_deviceModelInfo">أسم الجهاز</string>
     <string name="butn_clearQueue">مسح قائمة الانتظار</string>
-    <string name="text_pendingTransfersOfDevice">Pending queue - %s</string>
+    <string name="text_pendingTransfersOfDevice">قائمة انتظار- %s</string>
     <string name="butn_pendingTransfers">قائمة الانتظار</string>
     <string name="butn_shareWithTrebleshot">مشاركة بواسطة TrebleShot</string>
     <string name="mesg_somethingWentWrong">حدث خطأ</string>
@@ -95,7 +95,7 @@
     <string name="text_receivedTextSummary">تم الاستلام الى الحافظة</string>
     <string name="butn_checkForUpdates">التحقق من وجود تحديثات</string>
     <string name="butn_seeSourceCode">راجع التعليمات البرمجية المصدر</string>
-    <string name="text_typeText">اكتب ما تريد ارسالة</string>
+    <string name="text_typeText">كتابة ما تريد إرساله…</string>
     <string name="text_groupByFolder">مجلد</string>
 <string name="text_textEditor">محرر النص</string>
     <string name="butn_done">تم</string>
@@ -107,11 +107,36 @@
     <string name="text_cancellingTransfer">إلغاء الوظيفة…</string>
     <string name="butn_killNow">قتل الآن</string>
     <string name="mesg_groupOngoingNotice">في انتظار %s حتى ينتهي</string>
-    <string name="ques_removeQueue">حذف الطابور</string>
+    <string name="ques_removeQueue">حذف الطابور؟</string>
     <string name="butn_remove">إزالة</string>
     <string name="butn_removeAll">إزالة الكل</string>
     <string name="ques_removeDevice">إزالة هذا الجهاز؟</string>
     <string name="text_removeDeviceSummary">عند إزالة جهاز ما ، ستتم إزالة جميع عملياته</string>
     <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
-    <string name="ques_removeAll">إزالة الكل</string>
+    <string name="ques_removeAll">إزالة الكل؟</string>
+    <string name="text_navigationDrawerOpen">افتح درج الإنتقال</string>
+    <string name="text_navigationDrawerClose">اغلق درج الإنتقال</string>
+    <string name="text_developerModeSummary">يقوم بتعطيل تكوين المستخدم</string>
+    <string name="butn_proceed">المضي قدما</string>
+    <string name="text_removeCertainPendingTransfersSummary">يؤدي هذا إلى إزالة كافة عمليات النقل المعلقة التي تراها هنا</string>
+    <string name="text_availableNetworks">اختر الشبكة - %s</string>
+    <string name="text_noNetworkAvailable">لاتوجد شبكة متوفرة</string>
+    <string name="text_savedConnections">اتصالات المحفوظة</string>
+    <string name="text_newVersionAvailable">النسخة الجديدة متوفرة!</string>
+    <string name="butn_goUp">الانتقال لأعلى</string>
+    <string name="text_folder">مجلد</string>
+    <string name="mesg_organizingFiles">تنظيم الملفات الخاصة بك</string>
+    <string name="mesg_communicating">التواصل</string>
+    <string name="text_communicationService">خدمة الاتصالات</string>
+    <string name="text_chooserTargetService">اختيار جهاز الموفر</string>
+    <string name="text_transactionViewer">عرض الحركة</string>
+    <string name="text_error">خطأ</string>
+    <string name="ques_why">لماذا؟</string>
+    <string name="text_notAllowedHelp">"تحقق إذا كان مسموح لك في %1$s  أجهزة &gt; %2$s &gt; السماح للاتصال &gt; (التحقق من ذلك)"</string>
+    <string name="butn_saveTo">حفظ إلى</string>
+    <string name="mesg_secureExit">اضغط مرة أخرى للخروج</string>
+    <string name="butn_create">أنشئ</string>
+    <string name="text_createFolder">إنشاء مجلد</string>
+    <string name="mesg_fileAlreadyExists">الملف موجود مسبقا</string>
+    <string name="mesg_folderCreateError">تعذر إنشاء المجلد</string>
     </resources>
