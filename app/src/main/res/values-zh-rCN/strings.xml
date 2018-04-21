@@ -7,7 +7,7 @@
     <string name="text_available">可用</string>
     <string name="text_notAvailable">不可用</string>
     <string name="text_deviceListEmpty">没有设备</string>
-    <string name="mesg_noNetwork">我需要一个连接如Wi-Fi来查找附近的设备</string>
+    <string name="mesg_noNetwork">无连接，需要启用Wi-Fi 等连接来查找附近的设备</string>
     <string name="mesg_scanningDevices">正在寻找附近的设备</string>
     <string name="ques_receiveFile">是否接收文件？</string>
     <string name="butn_accept">接受</string>
@@ -19,19 +19,19 @@
     <string name="butn_cancelReceiving">取消接收</string>
     <string name="text_fileReceived">文件已接收</string>
     <string name="butn_scan">扫描</string>
-    <string name="text_listEmpty">列表为空！</string>
+    <string name="text_listEmpty">列表为空</string>
     <string name="text_developerMode">开发者模式</string>
     <string name="text_developerModeSummary">这会禁用用户设置</string>
     <string name="text_deviceName">设备名</string>
     <string name="text_deviceNameSummary">这个名字会在其他设备显示</string>
-    <string name="text_deviceNameTitle">输入设备名</string>
+    <string name="text_deviceNameTitle">输入一个设备名</string>
     <string name="mesg_formatNotSupported">格式不支持</string>
     <string name="mesg_fileSendError">文件无法发送 %s</string>
     <string name="mesg_fileReceiveError">接收%s时出错</string>
     <string name="text_multipleFileReceiveCompleted">多个文件已接收</string>
-    <string name="text_deviceList">设备列表</string>
+    <string name="text_deviceList">设备</string>
     <string name="text_fileOpenAppChoose">用...打开</string>
-    <string name="text_fileShareAppChoose">选择一个应用</string>
+    <string name="text_fileShareAppChoose">选择一个应用来分享</string>
     <string name="text_receivedFiles">已收到文件</string>
     <string name="butn_edit">编辑</string>
     <string name="butn_share">分享</string>
@@ -49,7 +49,7 @@
     <string name="butn_pendingTransfers">队列</string>
     <string name="butn_shareWithTrebleshot">用TrebleShow分享</string>
     <string name="mesg_somethingWentWrong">出错了</string>
-    <string name="text_findDevicesHint">轻触搜索图标以寻找附近的设备！</string>
+    <string name="text_findDevicesHint">没有熟悉的设备</string>
     <string name="text_autoScanDevices">自动扫描设备</string>
     <string name="text_autoScanDevicesSummary">需要时扫描设备</string>
     <string name="mesg_stillScanning">仍在扫描</string>
@@ -99,7 +99,7 @@
     <string name="text_cancellingTransfer">正在取消任务…</string>
     <string name="butn_killNow">现在中止</string>
     <string name="mesg_groupOngoingNotice">等待%s完成再传输这个文件</string>
-    <string name="ques_removeQueue">移除传输队列？</string>
+    <string name="ques_removeQueue">移除传输？</string>
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除这个设备吗？</string>
@@ -146,9 +146,9 @@
     <string name="text_noNetworkAvailable">无可用的网络</string>
     <string name="mesg_organizingFiles">整理您的文件</string>
     <string name="text_communicationService">通信服务</string>
-    <string name="text_notAllowedHelp">检查您是否在 %1$s 上被允许。
-\n
-\n设备列表 &gt; %2$s &gt; 允许连接 &gt; （打勾）</string>
+    <string name="text_notAllowedHelp">检查您是否在 %1$s 上被允许
+\n 
+\n设备 &gt; %2$s &gt; 允许连接 &gt; （打勾）</string>
     <string name="mesg_pathSaved">该文件夹已保存</string>
     <string name="butn_search">搜索</string>
     <string name="butn_changeConnection">更改连接</string>
@@ -163,4 +163,48 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">检查破损的文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-</resources>
+<string name="ques_resetToDefault">恢复默认？</string>
+    <string name="butn_refresh">刷新</string>
+    <string name="butn_showSystemApps">显示系统应用</string>
+    <string name="text_transactionDetails">详细信息</string>
+    <string name="butn_show">显示</string>
+    <string name="text_preparingFiles">正在准备文件</string>
+    <string name="text_savingDetails">在接收之前保存详细信息</string>
+    <string name="text_version">版本</string>
+    <string name="text_flagPending">等待中</string>
+    <string name="text_flagRunning">正在进行</string>
+    <string name="text_flagInterrupted">已中断</string>
+    <string name="text_flagResume">已继续</string>
+    <string name="text_unknown">未知</string>
+    <string name="text_longAgo">很久以前</string>
+    <string name="text_interfaceWifiDirect">Wi-Fi 直连</string>
+    <string name="text_interfaceWireless">Wi-Fi</string>
+    <string name="text_interfaceBluetooth">蓝牙</string>
+    <string name="text_interfaceEthernet">以太网</string>
+    <string name="text_interfaceUnknown">未知的连接</string>
+    <string name="text_shareTextShort">文本</string>
+    <string name="butn_feelLucky">手气不错</string>
+    <string name="butn_connectionList">连接</string>
+    <string name="text_feelLuckyFailed">没有一个连接对于设备来说是可用的。它的地址可能已经改变。尝试在TrebleShot运行时重新连接到网络。</string>
+    <string name="text_feelLuckyOngoing">TrebleShot将会为你做出决定</string>
+    <string name="butn_retry_all">重试所有</string>
+    <string name="text_permissionRequest">权限申请</string>
+    <string name="text_requestPermissionStorage">存储权限</string>
+    <string name="text_requestPermissionReadPhoneState">读取手机状态权限</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot读取您的设备id来创建一个长期使用的ID号码，这可以帮助其他运行TrebleShot的设备发现你。如果你的设备版本在Android Oreo(8.0+)或更高版本，TrebleShot将需要询问这个权限来获取id。如果您拒绝，TrebleShot将停止运行。</string>
+    <string name="text_mediaDirectory">媒体文件夹</string>
+    <string name="mesg_notEnoughSpace">存储空间不足</string>
+    <string name="text_totalIncomingSize">传入文件的总大小</string>
+    <string name="text_totalOutgoingSize">传出文件的总大小</string>
+    <string name="text_availableDiskSpace">可用空间</string>
+    <string name="text_savePath">保存路径</string>
+    <string name="text_network">网络</string>
+    <string name="text_connect">连接到设备</string>
+    <string name="butn_startHotspot">建立热点</string>
+    <string name="butn_stopHotspot">停止热点</string>
+    <string name="text_easyDiscoveryHelp">当两个设备在同一个网络时扫描它</string>
+    <string name="mesg_completing">正在完成</string>
+    <string name="mesg_errorNotSameNetwork">设备不在同一网络下</string>
+    <string name="text_cameraPermissionRequired">需要相机权限</string>
+    <string name="text_file">文件</string>
+    </resources>
