@@ -40,7 +40,7 @@
     <string name="mesg_fileReceiveError">Under mottak av %s, gikk noe galt</string>
     <string name="mesg_fileReceiveCancelled">Avbrøt mottak av %s</string>
     <string name="text_multipleFileReceiveCompleted">Filene har blitt mottatt</string>
-    <string name="text_deviceList">Enhetsliste</string>
+    <string name="text_deviceList">Enheter</string>
     <string name="text_fileOpenAppChoose">Åpne med</string>
     <string name="text_fileShareAppChoose">Velg et program</string>
     <string name="text_receivedFiles">Mottatte filer</string>
@@ -149,9 +149,9 @@
     <string name="text_transactionViewer">Vis overføring</string>
     <string name="text_error">Feil</string>
     <string name="ques_why">Hvorfor?</string>
-    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s
+    <string name="text_notAllowedHelp">Sjekk hvorvidt du tillates på %1$s 
 \n 
-\nEnhetsliste &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)</string>
+\nEnheter &gt; %2$s &gt; Tillat tilgang til &gt; (skru det på)</string>
     <string name="butn_saveTo">Lagre til</string>
     <string name="mesg_secureExit">Trykk igjen for å avslutte</string>
     <string name="butn_create">Opprett</string>
@@ -178,7 +178,7 @@
     <string name="text_fileMime">Filtype</string>
     <string name="text_fileStatus">Filstatus</string>
     <string name="butn_resume">Gjenoppta</string>
-    <string name="text_transactionDetails">Overføringsdetaljer</string>
+    <string name="text_transactionDetails">Detaljer</string>
     <string name="text_fileExplorer">Filutforsker</string>
     <string name="butn_createFolder">Opprett mappe</string>
     <string name="text_chooseFolder">Velg mappe</string>
@@ -249,7 +249,7 @@
     <string name="mesg_helpFolderSelection">For å velge en mappe, trykk på dens ikon</string>
     <string name="butn_typeNewEntry">Skriv inn ny oppføring</string>
     <string name="mesg_providerNotAllowedError">Den forvalgte mappen er ikke tilgjengelig for andre programmer</string>
-    <string name="text_previewAndEditList">Forhåndsvis og rediger liste</string>
+    <string name="text_previewAndEditList">Forhåndsvis og rediger</string>
     <string name="text_selectableNotCheckedNotice">Umarkerte elementer vil bli hoppet over</string>
     <string name="mesg_ongoingUpdateDownload">Laster ned den nye versjonen</string>
     <string name="mesg_hotspotCreatedInfo">Koble til \"%s\" i \"Wi-Fi -innstillinger\" eller send filer via \"%s\" inne i TrebleShot</string>
