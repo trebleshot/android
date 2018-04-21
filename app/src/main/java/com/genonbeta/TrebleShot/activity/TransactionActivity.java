@@ -111,6 +111,9 @@ public class TransactionActivity
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
 
+		if (getSupportActionBar() != null)
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
 		final DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager());
@@ -227,7 +230,9 @@ public class TransactionActivity
 	{
 		int id = item.getItemId();
 
-		if (id == R.id.actions_transaction_resume_all) {
+		if (id == android.R.id.home)
+			onBackPressed();
+		else if (id == R.id.actions_transaction_resume_all) {
 			resumeReceiving();
 		} else if (id == R.id.actions_transaction_retry_all) {
 			ContentValues contentValues = new ContentValues();

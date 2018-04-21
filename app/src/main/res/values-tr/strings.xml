@@ -379,4 +379,5 @@
     <string name="text_addDevicesToTransfer">Aktarıma cihazlar ekleyin</string>
     <string name="text_file">Dosya</string>
 <string name="text_noDeviceForTransfer">Bu aktarım için hiç cihaz eklenmedi</string>
+    <string name="text_thirdPartyLibraries">Üçüncü parti kütüphaneler</string>
 </resources>

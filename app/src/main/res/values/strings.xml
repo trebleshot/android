@@ -364,4 +364,5 @@
     <string name="text_addDevicesToTransfer">Add devices to transfer</string>
     <string name="text_file">File</string>
     <string name="text_noDeviceForTransfer">No device was added for this transfer</string>
+    <string name="text_thirdPartyLibraries">Third party libraries</string>
 </resources>

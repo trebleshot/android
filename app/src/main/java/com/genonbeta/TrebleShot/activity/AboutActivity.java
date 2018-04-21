@@ -13,6 +13,12 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.mikepenz.aboutlibraries.Libs;
+import com.mikepenz.aboutlibraries.LibsBuilder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
@@ -71,6 +77,20 @@ public class AboutActivity extends Activity
 			public void onClick(View view)
 			{
 				UpdateUtils.checkForUpdates(AboutActivity.this, updater, true, null);
+			}
+		});
+
+		findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				new LibsBuilder()
+						//provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)
+						.withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
+						.withActivityTitle(getString(R.string.text_thirdPartyLibraries))
+						//start the activity
+						.start(AboutActivity.this);
 			}
 		});
 

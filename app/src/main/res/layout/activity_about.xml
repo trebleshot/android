@@ -60,8 +60,10 @@
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
+                android:paddingEnd="25dp"
                 android:paddingLeft="25dp"
-                android:paddingRight="25dp">
+                android:paddingRight="25dp"
+                android:paddingStart="25dp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -69,7 +71,6 @@
                     android:padding="16dp"
                     android:src="@drawable/ic_info_white_24dp"
                     android:tint="@color/colorAccent"/>
-
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -85,8 +86,10 @@
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="25dp"
                 android:layout_marginLeft="25dp"
-                android:layout_marginRight="25dp">
+                android:layout_marginRight="25dp"
+                android:layout_marginStart="25dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -97,7 +100,7 @@
                         android:id="@+id/activity_about_see_source_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
+                        android:background="?rectSelector"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="15dp">
@@ -105,8 +108,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
-                            android:src="@drawable/ic_github_circle_grey600_24dp"/>
+                            android:src="@drawable/ic_github_circle_grey600_24dp"
+                            android:tint="@color/layoutIconTint"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -119,7 +124,7 @@
                         android:id="@+id/activity_about_translate_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
+                        android:background="?rectSelector"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="15dp">
@@ -127,8 +132,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
-                            android:src="@drawable/ic_translate_grey600_24dp"/>
+                            android:src="@drawable/ic_translate_grey600_24dp"
+                            android:tint="@color/layoutIconTint"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -138,10 +145,10 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/activity_about_update_layout"
+                        android:id="@+id/activity_about_third_party_libraries_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="?android:attr/selectableItemBackground"
+                        android:background="?rectSelector"
                         android:gravity="center_vertical"
                         android:orientation="horizontal"
                         android:padding="15dp">
@@ -149,6 +156,32 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginRight="15dp"
+                            android:src="@drawable/ic_copyright_black_24dp"
+                            android:tint="@color/layoutIconTint"/>
+
+                        <TextView
+                            android:id="@+id/activity_about_third_party_libraries_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_thirdPartyLibraries"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/activity_about_update_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?rectSelector"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
                             android:src="@drawable/ic_system_update_white_24dp"
                             android:tint="@color/colorAccent"/>
@@ -160,7 +193,6 @@
                             android:text="@string/butn_checkForUpdates"/>
 
                     </LinearLayout>
-
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -195,6 +227,7 @@
                     android:tag="contributorsFragment"/>
 
             </LinearLayout>
+
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 

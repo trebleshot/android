@@ -160,7 +160,7 @@ public class AppUtils
 	public static String getHotspotName(Context context)
 	{
 		return AppConfig.PREFIX_ACCESS_POINT + AppUtils.getLocalDeviceName(context)
-				.replace(" ", "_");
+				.replaceAll(" ", "_");
 	}
 
 	public static String getLocalDeviceName(Context context)
