@@ -44,7 +44,7 @@
 	<item quantity="other">%d rader</item>
 </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Enkel deling</item>
-	<item quantity="other"></item>
+	<item quantity="one">Enkelt deling</item>
+	<item quantity="other">Deler med %d enheter</item>
 </plurals>
 </resources>
