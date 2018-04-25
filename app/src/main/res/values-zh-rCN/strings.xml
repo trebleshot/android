@@ -32,7 +32,7 @@
     <string name="text_deviceList">设备</string>
     <string name="text_fileOpenAppChoose">用...打开</string>
     <string name="text_fileShareAppChoose">选择一个应用来分享</string>
-    <string name="text_receivedFiles">已收到文件</string>
+    <string name="text_receivedFiles">已收到的文件</string>
     <string name="butn_edit">编辑</string>
     <string name="butn_share">分享</string>
     <string name="butn_delete">删除</string>
