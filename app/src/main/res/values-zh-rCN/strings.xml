@@ -239,4 +239,26 @@
     <string name="mesg_locationPermissionRequiredSelfHotspot">允许TrebleShot寻找或建立热点</string>
     <string name="butn_locationSettings">位置</string>
     <string name="text_connectDevices">连接到设备</string>
+    <string name="mesg_notValidTransfer">这个传输已失效</string>
+    <string name="ques_saveAnyway">仍要保存吗？</string>
+    <string name="mesg_fileSaved">文件已被保存</string>
+    <string name="butn_sortBy">排序方式</string>
+    <string name="butn_sortOrder">顺序/倒序</string>
+    <string name="text_sortOrderAscending">顺序排列</string>
+    <string name="text_sortOrderDescending">倒序排列</string>
+    <string name="text_sortByName">文件名</string>
+    <string name="text_sortByDate">日期</string>
+    <string name="text_sortBySize">大小</string>
+    <string name="text_trustZoneDeviceNotice">勾选后会允许该设备当信任域打开时在无需通知你的情况下向你发送文件</string>
+    <string name="text_allowingToConnectNotice">勾选后，这个设备可以连接到你</string>
+    <string name="butn_resetToDefault">重置回默认值</string>
+    <string name="text_resetPreferencesToDefaultSummary">这将会恢复默认设置</string>
+    <string name="text_taskCompleted">任务已完成</string>
+    <string name="text_deletingFilesOngoing">正在删除已选中的文件</string>
+    <string name="text_networkServiceDiscovery">启用NSD</string>
+    <string name="text_networkServiceDiscoverySummary">NSD将会改进可发现性</string>
+    <string name="text_notificationChannelHigh">重要的通知</string>
+    <string name="text_notificationChannelLow">低优先级通知</string>
+    <string name="text_receivedTransfer">已在 %s 接收 %s</string>
+    <string name="butn_exit">退出</string>
     </resources>
