@@ -190,11 +190,11 @@ public class FileExplorerFragment
 			else
 				Snackbar.make(mFileListFragment.getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 		} else if (id == R.id.actions_file_explorer_mount_directory) {
-			startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-					.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
+			startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
+					/*.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
 							| Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 							| Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-							| Intent.FLAG_GRANT_PREFIX_URI_PERMISSION), REQUEST_WRITE_ACCESS);
+							| Intent.FLAG_GRANT_PREFIX_URI_PERMISSION), REQUEST_WRITE_ACCESS);*/
 			Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
 		} else
 			return super.onOptionsItemSelected(item);

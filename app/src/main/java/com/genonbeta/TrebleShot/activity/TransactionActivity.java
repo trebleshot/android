@@ -124,14 +124,7 @@ public class TransactionActivity
 
 			try {
 				getDatabase().reconstruct(group);
-
 				mGroup = group;
-
-				mAssigneeFragment.setGroup(mGroup);
-				mDetailsFragment.setGroup(mGroup);
-				mDetailsFragment.setIndex(getIndex());
-
-				transactionFragment.goPath(mGroup.groupId, null);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -140,6 +133,14 @@ public class TransactionActivity
 		if (mGroup == null)
 			finish();
 		else {
+			Bundle detailsFragmentArgs = new Bundle();
+			detailsFragmentArgs.putInt(TransactionDetailsFragment.ARG_GROUP_ID, mGroup.groupId);
+			mDetailsFragment.setArguments(detailsFragmentArgs);
+
+			Bundle assigneeFragmentArgs = new Bundle();
+			detailsFragmentArgs.putInt(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+			mAssigneeFragment.setArguments(assigneeFragmentArgs);
+
 			Bundle args = new Bundle();
 
 			args.putInt(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
@@ -309,7 +310,7 @@ public class TransactionActivity
 		mRetryMenu.setVisible(hasIncoming);
 
 		if (mDetailsFragment != null && mDetailsFragment.isAdded())
-			mDetailsFragment.updateViewState();
+			mDetailsFragment.updateViewState(getIndex());
 
 		setTitle(getResources().getQuantityString(R.plurals.text_files,
 				getIndex().incomingCount + getIndex().outgoingCount,
@@ -410,14 +411,15 @@ public class TransactionActivity
 			extends Fragment
 			implements TitleSupport
 	{
-		public static final int REQUEST_CHOOSE_FOLDER = 1;
+		public static final String ARG_GROUP_ID = "groupId";
 
-		private TransferGroup mGroup;
-		private TransferGroup.Index mIndex;
+		public static final int REQUEST_CHOOSE_FOLDER = 1;
 
 		private View mRemoveView;
 		private View mShowFiles;
 		private View mSaveTo;
+
+		private TransferGroup mHeldGroup;
 
 		@Nullable
 		@Override
@@ -445,7 +447,7 @@ public class TransactionActivity
 						@Override
 						public void onClick(DialogInterface dialog, int which)
 						{
-							getDatabase().remove(new TransferGroup(mGroup.groupId));
+							getDatabase().remove(getTransferGroup());
 						}
 					});
 
@@ -470,7 +472,7 @@ public class TransactionActivity
 				{
 					startActivity(new Intent(getActivity(), HomeActivity.class)
 							.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-							.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(getContext(), getDefaultPreferences(), mGroup).getUri()));
+							.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(getContext(), getDefaultPreferences(), getTransferGroup()).getUri()));
 				}
 			});
 
@@ -489,7 +491,7 @@ public class TransactionActivity
 							if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
 								final Uri selectedPath = data.getParcelableExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
 
-								if (selectedPath.toString().equals(mGroup.savePath)) {
+								if (selectedPath.toString().equals(getTransferGroup().savePath)) {
 									createSnackbar(R.string.mesg_pathSameError).show();
 								} else {
 									AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -536,9 +538,9 @@ public class TransactionActivity
 																	.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 																					+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
 																					+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-																			String.valueOf(mGroup.groupId), TransferObject.Type.INCOMING.toString(), TransferObject.Flag.PENDING.toString()), TransferObject.class);
+																			String.valueOf(getTransferGroup().groupId), TransferObject.Type.INCOMING.toString(), TransferObject.Flag.PENDING.toString()), TransferObject.class);
 
-													TransferGroup pseudoGroup = new TransferGroup(mGroup.groupId);
+													TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().groupId);
 
 													try {
 														// Illustrate new change to build the structure accordingly
@@ -550,7 +552,7 @@ public class TransactionActivity
 																break;
 
 															try {
-																DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), getDefaultPreferences(), transferObject, mGroup, false);
+																DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), getDefaultPreferences(), transferObject, getTransferGroup(), false);
 																DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), getDefaultPreferences(), transferObject, pseudoGroup, true);
 
 																if (file.canRead())
@@ -587,21 +589,27 @@ public class TransactionActivity
 			return context.getString(R.string.text_transactionDetails);
 		}
 
-		public TransactionDetailsFragment setGroup(TransferGroup group)
+		public TransferGroup getTransferGroup()
 		{
-			mGroup = group;
-			return this;
-		}
+			if (mHeldGroup == null) {
+				mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
 
-		public void setIndex(TransferGroup.Index index)
-		{
-			mIndex = index;
+				try {
+					getDatabase().reconstruct(mHeldGroup);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			return mHeldGroup;
 		}
 
 		public void updateSavePath(String selectedPath)
 		{
-			mGroup.savePath = selectedPath;
-			getDatabase().publish(mGroup);
+			TransferGroup group = getTransferGroup();
+
+			group.savePath = selectedPath;
+			getDatabase().publish(group);
 
 			getActivity().runOnUiThread(new Runnable()
 			{
@@ -613,9 +621,9 @@ public class TransactionActivity
 			});
 		}
 
-		public void updateViewState()
+		public void updateViewState(TransferGroup.Index index)
 		{
-			boolean isIncoming = mIndex.incomingCount > 0;
+			boolean isIncoming = index.incomingCount > 0;
 
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);

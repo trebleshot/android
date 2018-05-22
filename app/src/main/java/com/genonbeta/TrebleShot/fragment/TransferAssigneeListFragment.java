@@ -34,9 +34,10 @@ public class TransferAssigneeListFragment
 		extends RecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
 		implements TitleSupport
 {
+	public static final String ARG_GROUP_ID = "groupId";
+
 	public static final int REQUEST_ADD_DEVICES = 0;
 
-	private TransferGroup mGroup;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -47,6 +48,8 @@ public class TransferAssigneeListFragment
 				refreshList();
 		}
 	};
+
+	private TransferGroup mHeldGroup;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -79,7 +82,7 @@ public class TransferAssigneeListFragment
 		if (id == R.id.actions_transfer_assignee_send_another) {
 			startActivityForResult(new Intent(getActivity(), ShareActivity.class)
 					.setAction(ShareActivity.ACTION_ADD_DEVICES)
-					.putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
+					.putExtra(ShareActivity.EXTRA_GROUP_ID, getTransferGroup().groupId), REQUEST_ADD_DEVICES);
 		} else
 			return super.onOptionsItemSelected(item);
 
@@ -124,7 +127,7 @@ public class TransferAssigneeListFragment
 								int id = item.getItemId();
 
 								if (id == R.id.popup_changeChangeConnection) {
-									TransferUtils.changeConnection(getActivity(), getDatabase(), mGroup, assignee.device, null);
+									TransferUtils.changeConnection(getActivity(), getDatabase(), getTransferGroup(), assignee.device, null);
 								} else if (id == R.id.popup_remove) {
 									getDatabase().remove(assignee);
 								} else
@@ -148,7 +151,7 @@ public class TransferAssigneeListFragment
 			{
 				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
 			}
-		}.setGroup(mGroup);
+		}.setGroup(getTransferGroup());
 	}
 
 	@Override
@@ -171,9 +174,18 @@ public class TransferAssigneeListFragment
 		return context.getString(R.string.text_deviceList);
 	}
 
-	public TransferAssigneeListFragment setGroup(TransferGroup group)
+	public TransferGroup getTransferGroup()
 	{
-		mGroup = group;
-		return this;
+		if (mHeldGroup == null) {
+			mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
+
+			try {
+				getDatabase().reconstruct(mHeldGroup);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return mHeldGroup;
 	}
 }

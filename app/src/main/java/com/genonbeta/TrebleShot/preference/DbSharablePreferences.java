@@ -206,7 +206,7 @@ public class DbSharablePreferences extends SQLiteDatabase implements SharedPrefe
 				return (T) data.getTypedValue();
 			} catch (Exception e) {
 				Log.d(DbSharablePreferences.class.getSimpleName(),
-						"Failed reading and returning default value: " + key +
+						"Failed to read and returning the default value: " + key +
 								"; default: " + defaultValue +
 								"; requested type: " + clazz.getSimpleName() +
 								"; error msg: " + e.getMessage());

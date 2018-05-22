@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
             app:toolbarId="@+id/toolbar">
 
             <ImageView
@@ -111,7 +111,7 @@
                             android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
                             android:src="@drawable/ic_github_circle_grey600_24dp"
-                            android:tint="?android:textColorPrimary"/>
+                            android:tint="@color/layoutIconTint"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -136,7 +136,7 @@
                             android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
                             android:src="@drawable/ic_translate_grey600_24dp"
-                            android:tint="?android:textColorPrimary"/>
+                            android:tint="@color/layoutIconTint"/>
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -161,7 +161,7 @@
                             android:layout_marginEnd="15dp"
                             android:layout_marginRight="15dp"
                             android:src="@drawable/ic_copyright_black_24dp"
-                            android:tint="?android:textColorPrimary"/>
+                            android:tint="@color/layoutIconTint"/>
 
                         <TextView
                             android:id="@+id/activity_about_third_party_libraries_text"

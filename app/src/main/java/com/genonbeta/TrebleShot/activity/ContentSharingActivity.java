@@ -89,7 +89,6 @@ public class ContentSharingActivity extends Activity
 		};
 
 		mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
-		tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
 		if (getSupportActionBar() != null)
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);

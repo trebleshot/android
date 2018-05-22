@@ -93,7 +93,7 @@
         <item name="android:background">?attr/roundSelector</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:focusable">false</item>
-        <item name="tint">?android:attr/textColorPrimary</item>
+        <item name="tint">@color/layoutIconTint</item>
     </style>
 
 </resources>

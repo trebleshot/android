@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
@@ -142,6 +143,49 @@ public class FileListFragment
 								getSelectionConnection().setSelected(clazz.getAdapterPosition());
 							}
 						});
+
+					clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
+					{
+						@Override
+						public void onClick(View v)
+						{
+							final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
+							boolean canWrite = fileHolder.file.canWrite();
+
+							PopupMenu popupMenu = new PopupMenu(getContext(), v);
+							Menu menuItself = popupMenu.getMenu(); // Like the song Life Itself from Glass Animals, you got it?
+
+							popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
+
+							menuItself.findItem(R.id.action_mode_file_rename).setVisible(canWrite);
+							menuItself.findItem(R.id.action_mode_file_delete).setVisible(canWrite);
+
+							menuItself.findItem(R.id.action_mode_file_eject_directory)
+									.setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
+
+							popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+							{
+								@Override
+								public boolean onMenuItemClick(MenuItem item)
+								{
+									int id = item.getItemId();
+
+									ArrayList<FileListAdapter.GenericFileHolder> generateSelectionList = new ArrayList<>();
+									generateSelectionList.add(fileHolder);
+
+									if (id == R.id.action_mode_file_eject_directory
+											&& fileHolder instanceof FileListAdapter.WritablePathHolder) {
+										getDatabase().remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+									} else if (handleEditingAction(id, FileListFragment.this, generateSelectionList))
+										return false;
+
+									return true;
+								}
+							});
+
+							popupMenu.show();
+						}
+					});
 				}
 			}
 		};
@@ -294,6 +338,61 @@ public class FileListFragment
 		mPathChangedListener = pathChangedListener;
 	}
 
+	public static boolean handleEditingAction(int id, final FileListFragment fragment, ArrayList<FileListAdapter.GenericFileHolder> selectedItemList)
+	{
+		final FileListAdapter adapter = fragment.getAdapter();
+
+		if (id == R.id.action_mode_file_delete && adapter.getPath() != null) {
+			new FileDeletionDialog<>(fragment.getActivity(), selectedItemList, new FileDeletionDialog.Listener()
+			{
+				@Override
+				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
+				{
+					fragment.scanFile(file);
+				}
+
+				@Override
+				public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
+				{
+					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+							.putExtra(EXTRA_FILE_PARENT, adapter.getPath().getUri()));
+				}
+			}).show();
+		} else if (id == R.id.action_mode_file_rename) {
+			new FileRenameDialog<>(fragment.getActivity(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
+			{
+				@Override
+				public void onFileRename(DocumentFile file, String displayName)
+				{
+					fragment.scanFile(file);
+				}
+
+				@Override
+				public void onFileRenameCompleted()
+				{
+					fragment.refreshList();
+				}
+			}).show();
+		} else if (id == R.id.action_mode_file_copy_here) {
+			WorkerService.run(fragment.getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_COPY_FILES)
+			{
+				@Override
+				protected void onRun()
+				{
+
+				}
+
+				@Override
+				public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
+				{
+
+				}
+			});
+		} else return false;
+
+		return true;
+	}
+
 	public interface OnPathChangedListener
 	{
 		void onPathChanged(DocumentFile file);
@@ -302,14 +401,11 @@ public class FileListFragment
 	private static class SelectionCallback extends SharingActionModeCallback<FileListAdapter.GenericFileHolder>
 	{
 		private FileListFragment mFragment;
-		private FileListAdapter mAdapter;
 
 		public SelectionCallback(FileListFragment fragment)
 		{
 			super(fragment);
-
 			mFragment = fragment;
-			mAdapter = fragment.getAdapter();
 		}
 
 		@Override
@@ -339,59 +435,7 @@ public class FileListFragment
 			if (getFragment().getSelectionConnection().getSelectedItemList().size() == 0)
 				return super.onActionMenuItemSelected(context, actionMode, item);
 
-			if (id == R.id.action_mode_file_delete && mAdapter.getPath() != null) {
-				new FileDeletionDialog<>(getFragment().getActivity(), getFragment().getSelectionConnection().getSelectedItemList(), new FileDeletionDialog.Listener()
-				{
-					@Override
-					public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
-					{
-						mFragment.scanFile(file);
-					}
-
-					@Override
-					public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
-					{
-						context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-								.putExtra(EXTRA_FILE_PARENT, mAdapter.getPath().getUri()));
-					}
-				}).show();
-			} else if (id == R.id.action_mode_file_eject_directory) {
-				ArrayList<FileListAdapter.GenericFileHolder> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
-
-				for (FileListAdapter.GenericFileHolder holder : selectionList)
-					if (holder instanceof FileListAdapter.WritablePathHolder)
-						getFragment().getDatabase().remove(((FileListAdapter.WritablePathHolder) holder).pathObject);
-			} else if (id == R.id.action_mode_file_rename) {
-				new FileRenameDialog<>(getFragment().getActivity(), getFragment().getSelectionConnection().getSelectedItemList(), new FileRenameDialog.OnFileRenameListener()
-				{
-					@Override
-					public void onFileRename(DocumentFile file, String displayName)
-					{
-						mFragment.scanFile(file);
-					}
-
-					@Override
-					public void onFileRenameCompleted()
-					{
-						getFragment().refreshList();
-					}
-				}).show();
-			} else if (id == R.id.action_mode_file_copy_here) {
-				WorkerService.run(getFragment().getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_COPY_FILES)
-				{
-					@Override
-					protected void onRun()
-					{
-
-					}
-
-					@Override
-					public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
-					{
-
-					}
-				});
-			} else
+			if (handleEditingAction(id, mFragment, getFragment().getSelectionConnection().getSelectedItemList()))
 				return super.onActionMenuItemSelected(context, actionMode, item);
 
 			return true;

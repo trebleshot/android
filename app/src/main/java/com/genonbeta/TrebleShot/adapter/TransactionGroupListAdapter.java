@@ -197,6 +197,12 @@ public class TransactionGroupListAdapter
 		}
 
 		@Override
+		public boolean setSelectableSelected(boolean selected)
+		{
+			return !isGroupRepresentative() && super.setSelectableSelected(selected);
+		}
+
+		@Override
 		public void setSize(long size)
 		{
 			this.totalCount = ((Long) size).intValue();

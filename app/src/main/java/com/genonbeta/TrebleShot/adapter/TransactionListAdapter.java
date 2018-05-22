@@ -276,6 +276,12 @@ public class TransactionListAdapter
 		}
 
 		@Override
+		public boolean setSelectableSelected(boolean selected)
+		{
+			return !isGroupRepresentative() && super.setSelectableSelected(selected);
+		}
+
+		@Override
 		public void setSize(long size)
 		{
 			this.fileSize = size;

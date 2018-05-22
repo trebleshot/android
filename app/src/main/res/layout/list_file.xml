@@ -5,6 +5,14 @@
     android:background="?rectSelector"
     android:padding="20dp">
 
+
+    <ImageView
+        android:id="@+id/menu"
+        style="@style/overflowButton"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="center_vertical"/>
+
     <FrameLayout
         android:id="@+id/layout_image"
         android:layout_width="40dp"
@@ -39,7 +47,9 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@id/layout_image"
+        android:layout_toLeftOf="@id/menu"
         android:layout_toRightOf="@id/layout_image"
+        android:layout_toStartOf="@id/menu"
         android:orientation="vertical">
 
         <TextView

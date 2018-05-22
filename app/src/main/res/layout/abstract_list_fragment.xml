@@ -49,8 +49,9 @@
                     android:layout_centerInParent="true"
                     android:background="@drawable/ripple_background_accent"
                     android:cropToPadding="true"
-                    android:padding="15dp"
-                    android:src="@drawable/ic_whatshot_white_24dp"/>
+                    android:padding="10dp"
+                    android:src="@drawable/ic_whatshot_white_24dp"
+                    android:tint="@color/whiteAccent"/>
 
                 <TextView
                     android:id="@+id/customListFragment_emptyTextView"
@@ -59,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/customListFragment_emptyImageView"
                     android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center_horizontal"
                     android:maxLines="5"
                     android:text="@string/text_listEmpty"/>
