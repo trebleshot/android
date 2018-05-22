@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">Souhaitez-vous supprimer %d fichiers ?</item>
+	<item quantity="other"></item>
+</plurals>
+    </resources>

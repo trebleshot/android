@@ -39,4 +39,12 @@
 	<item quantity="one">Ei fil har blitt slettet</item>
 	<item quantity="other">%d filer har blitt slettet</item>
 </plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Enkelt rad</item>
+	<item quantity="other">%d rader</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">Enkelt deling</item>
+	<item quantity="other">Deler med %d enheter</item>
+</plurals>
 </resources>

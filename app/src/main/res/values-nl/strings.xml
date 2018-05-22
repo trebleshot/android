@@ -381,5 +381,5 @@
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
 <string name="text_file">Bestand</string>
 <string name="text_noDeviceForTransfer">Er is geen apparaat toegevoegd voor deze overdracht</string>
-<string name="text_thirdPartyLibraries">Derde partij bibliotheken</string>
+<string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
 </resources>

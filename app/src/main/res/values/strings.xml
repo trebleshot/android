@@ -357,7 +357,7 @@
     <string name="butn_startHotspot">Setup hotspot</string>
     <string name="butn_stopHotspot">Stop hotspot</string>
     <string name="text_easyDiscoveryHelp">Scan this if the both devices on the same network</string>
-    <string name="text_scanQRWifiRequired">To connect to devices Wireless should be turned on</string>
+    <string name="text_scanQRWifiRequired">To connect to devices Wi-Fi should be turned on</string>
     <string name="mesg_completing">Completing</string>
     <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
     <string name="text_cameraPermissionRequired">Camera permission is required</string>
