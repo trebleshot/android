@@ -380,4 +380,6 @@
     <string name="text_file">Dosya</string>
 <string name="text_noDeviceForTransfer">Bu aktarım için hiç cihaz eklenmedi</string>
     <string name="text_thirdPartyLibraries">Üçüncü parti kütüphaneler</string>
+    <string name="text_killServiceAfterLeaving">Uygulamadan ayrılmak servisi durdurur</string>
+    <string name="text_killServiceAfterLeavingSummary">Devam eden iş yoksa haberleşme sona erer</string>
 </resources>

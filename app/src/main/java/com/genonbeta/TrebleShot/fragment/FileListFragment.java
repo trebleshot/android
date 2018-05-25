@@ -413,17 +413,6 @@ public class FileListFragment
 		{
 			super.onCreateActionMenu(context, actionMode, menu);
 			actionMode.getMenuInflater().inflate(R.menu.action_mode_file, menu);
-
-			MenuItem shareOthers = menu.findItem(R.id.action_mode_share_all_apps);
-
-			//if (shareOthers != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-			//shareOthers.setVisible(false);
-
-			MenuItem ejectDirectory = menu.findItem(R.id.action_mode_file_eject_directory);
-
-			if (ejectDirectory != null && Build.VERSION.SDK_INT >= 21)
-				ejectDirectory.setVisible(true);
-
 			return true;
 		}
 

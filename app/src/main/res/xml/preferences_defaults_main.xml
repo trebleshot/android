@@ -19,6 +19,10 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
+        android:key="kill_service_on_exit"/>
+
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="notification_vibrate"/>
 
     <CheckBoxPreference

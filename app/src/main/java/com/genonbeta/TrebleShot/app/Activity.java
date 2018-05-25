@@ -16,19 +16,26 @@ public abstract class Activity extends AppCompatActivity
 	private AlertDialog mOngoingRequest;
 
 	@Override
-	protected void onStart()
-	{
-		super.onStart();
-		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
-	}
-
-	@Override
 	protected void onResume()
 	{
 		super.onResume();
 
 		if (!AppUtils.checkRunningConditions(this))
 			requestRequiredPermissions();
+
+		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_SERVICE_STATUS)
+				.putExtra(CommunicationService.EXTRA_STATUS_STARTED, true));
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+
+		AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_SERVICE_STATUS)
+				.putExtra(CommunicationService.EXTRA_STATUS_STARTED, false));
 	}
 
 	@Override

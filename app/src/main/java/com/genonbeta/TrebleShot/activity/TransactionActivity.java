@@ -138,15 +138,13 @@ public class TransactionActivity
 			mDetailsFragment.setArguments(detailsFragmentArgs);
 
 			Bundle assigneeFragmentArgs = new Bundle();
-			detailsFragmentArgs.putInt(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+			assigneeFragmentArgs.putInt(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
 			mAssigneeFragment.setArguments(assigneeFragmentArgs);
 
-			Bundle args = new Bundle();
-
-			args.putInt(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
-			args.putString(TransactionExplorerFragment.ARG_PATH, null);
-
-			transactionFragment.setArguments(args);
+			Bundle transactionFragmentArgs = new Bundle();
+			transactionFragmentArgs.putInt(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
+			transactionFragmentArgs.putString(TransactionExplorerFragment.ARG_PATH, null);
+			transactionFragment.setArguments(transactionFragmentArgs);
 
 			tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
@@ -267,8 +265,7 @@ public class TransactionActivity
 				? ((LocalDocumentFile) documentFile).getFile().getFreeSpace()
 				: -1;
 
-		return freeSpace == -1
-				|| freeSpace >= getIndex().incoming;
+		return freeSpace == -1 || freeSpace >= getIndex().incoming;
 	}
 
 	private Snackbar createSnackbar(int resId, Object... objects)

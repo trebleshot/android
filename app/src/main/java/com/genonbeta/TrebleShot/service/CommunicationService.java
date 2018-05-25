@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.annotation.RequiresApi;
 import android.support.v4.util.ArrayMap;
@@ -77,15 +79,17 @@ public class CommunicationService extends Service
 	public static final String ACTION_IP = "com.genonbeta.TrebleShot.action.IP";
 	public static final String ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION";
 	public static final String ACTION_SEAMLESS_RECEIVE = "com.genonbeta.intent.action.SEAMLESS_START";
-	public final static String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
-	public final static String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
-	public final static String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
-	public final static String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
-	public final static String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
-	public final static String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
-	public final static String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
+	public static final String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
+	public static final String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
+	public static final String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
+	public static final String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
+	public static final String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
+	public static final String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
+	public static final String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
+	public static final String ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
+	public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
 	public static final String EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName";
 	public static final String EXTRA_REQUEST_ID = "extraRequestId";
 	public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
@@ -109,6 +113,7 @@ public class CommunicationService extends Service
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
 
+	private boolean mDestroyApproved = false;
 	private boolean mSeamlessMode = false;
 
 	@Override
@@ -163,7 +168,7 @@ public class CommunicationService extends Service
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId)
+	public int onStartCommand(Intent intent, int flags, final int startId)
 	{
 		super.onStartCommand(intent, flags, startId);
 
@@ -313,8 +318,27 @@ public class CommunicationService extends Service
 			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
 					&& (Build.VERSION.SDK_INT < 23 || Settings.System.canWrite(this))) {
 				setupHotspot();
-			} else if (ACTION_REQUEST_HOTSPOT_STATUS.equals(intent.getAction()))
+			} else if (ACTION_REQUEST_HOTSPOT_STATUS.equals(intent.getAction())) {
 				sendHotspotStatus(getHotspotUtils().getConfiguration());
+			} else if (ACTION_SERVICE_STATUS.equals(intent.getAction())
+					&& intent.hasExtra(EXTRA_STATUS_STARTED)) {
+				boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
+
+				mDestroyApproved = !startRequested && !hasOngoingTasks();
+
+				if (mDestroyApproved)
+					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							if (mDestroyApproved
+									&& !hasOngoingTasks()
+									&& getDefaultPreferences().getBoolean("kill_service_on_exit", true))
+								stopSelf();
+						}
+					}, 3000);
+			}
 		}
 
 		return START_STICKY;
@@ -352,6 +376,11 @@ public class CommunicationService extends Service
 			for (CoolTransfer.TransferHandler<ProcessHolder> transferHandler : mSend.getProcessList())
 				transferHandler.interrupt();
 		}
+	}
+
+	public boolean hasOngoingTasks()
+	{
+		return (getOngoingIndexList().size() + mReceive.getProcessList().size() + mSend.getProcessList().size()) > 0;
 	}
 
 	public CoolTransfer.TransferHandler<ProcessHolder> findProcessById(int groupId)
@@ -867,7 +896,7 @@ public class CommunicationService extends Service
 						contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
 
 						getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-										.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId)), contentValues);
+								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId)), contentValues);
 					}
 
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
