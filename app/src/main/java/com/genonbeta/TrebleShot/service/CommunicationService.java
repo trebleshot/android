@@ -334,7 +334,7 @@ public class CommunicationService extends Service
 						{
 							if (mDestroyApproved
 									&& !hasOngoingTasks()
-									&& getDefaultPreferences().getBoolean("kill_service_on_exit", true))
+									&& getDefaultPreferences().getBoolean("kill_service_on_exit", false))
 								stopSelf();
 						}
 					}, 3000);

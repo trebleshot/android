@@ -47,8 +47,9 @@ Send and receive files over available connections without making any effort. Ple
 * Japanese
 * Norwegian Bokmål
 * Russian
+* Spanish
 * Turkish
 
-Huge thanks to all language contributors. If you want to contribute on any language, follow this [link](https://hosted.weblate.org/engage/TrebleShot/), create account, select your preferred languages and that's all.
+Go to [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all the available languages. Huge thanks to all language contributors. If you want to contribute to a language follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
 
 This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
