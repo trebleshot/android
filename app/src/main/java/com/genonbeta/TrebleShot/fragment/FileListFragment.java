@@ -388,7 +388,8 @@ public class FileListFragment
 
 				}
 			});
-		} else return false;
+		} else
+			return false;
 
 		return true;
 	}
@@ -424,7 +425,7 @@ public class FileListFragment
 			if (getFragment().getSelectionConnection().getSelectedItemList().size() == 0)
 				return super.onActionMenuItemSelected(context, actionMode, item);
 
-			if (handleEditingAction(id, mFragment, getFragment().getSelectionConnection().getSelectedItemList()))
+			if (!handleEditingAction(id, mFragment, getFragment().getSelectionConnection().getSelectedItemList()))
 				return super.onActionMenuItemSelected(context, actionMode, item);
 
 			return true;

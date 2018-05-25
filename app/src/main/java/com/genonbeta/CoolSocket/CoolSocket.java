@@ -67,15 +67,13 @@ abstract public class CoolSocket
 
 	public static void connect(final Client.ConnectionHandler handler)
 	{
-		final Client clientInstance = new Client();
-
 		new Thread()
 		{
 			@Override
 			public void run()
 			{
 				super.run();
-				handler.onConnect(clientInstance);
+				connect(handler, null);
 			}
 		}.start();
 	}
@@ -282,6 +280,7 @@ abstract public class CoolSocket
 	{
 		private Socket mSocket;
 		private int mTimeout = NO_TIMEOUT;
+		private int mId = getClass().hashCode();
 
 		public ActiveConnection(Socket socket)
 		{
@@ -313,6 +312,11 @@ abstract public class CoolSocket
 		public String getClientAddress()
 		{
 			return this.getAddress().getHostAddress();
+		}
+
+		public int getId()
+		{
+			return mId;
 		}
 
 		public Socket getSocket()
@@ -408,6 +412,11 @@ abstract public class CoolSocket
 					throw new TimeoutException("Read timed out!");
 			}
 			while (len != -1);
+		}
+
+		public void setId(int id)
+		{
+			mId = id;
 		}
 
 		public void setTimeout(int timeout)

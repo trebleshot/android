@@ -20,9 +20,11 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
@@ -127,7 +129,15 @@ public class TransferAssigneeListFragment
 								int id = item.getItemId();
 
 								if (id == R.id.popup_changeChangeConnection) {
-									TransferUtils.changeConnection(getActivity(), getDatabase(), getTransferGroup(), assignee.device, null);
+									TransferUtils.changeConnection(getActivity(), getDatabase(), getTransferGroup(), assignee.device, new TransferUtils.ConnectionUpdatedListener()
+									{
+										@Override
+										public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
+										{
+											createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getContext(), connection))
+													.show();
+										}
+									});
 								} else if (id == R.id.popup_remove) {
 									getDatabase().remove(assignee);
 								} else

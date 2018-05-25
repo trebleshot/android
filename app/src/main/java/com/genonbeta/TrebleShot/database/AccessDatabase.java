@@ -110,9 +110,7 @@ public class AccessDatabase extends SQLiteDatabase
 	{
 		/*
 		 * Version 6 was until version 1.2.5.12 and we don't have any new changes compared to version
-		 * 6, so we only included version 5 which we did not note the changes and that is why
-		 * we are removing all the available tables right away as to recent statics show that some people are
-		 * installing older versions and migrating to newer ones, which causes crashes.
+		 * 6, so we only included version 5 which we did not note the changes
 		 */
 
 		SQLValues sqlValues = getDatabaseTables();

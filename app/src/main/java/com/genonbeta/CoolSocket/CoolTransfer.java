@@ -35,6 +35,11 @@ abstract public class CoolTransfer<T>
 
 	public abstract Flag onStart(TransferHandler<T> handler);
 
+	public Flag onCloseStreams(TransferHandler<T> handler)
+	{
+		return Flag.CONTINUE;
+	}
+
 	public void onPrepareNext(TransferHandler<T> handler)
 	{
 	}
@@ -271,7 +276,6 @@ abstract public class CoolTransfer<T>
 			private OutputStream mStream;
 			private ServerSocket mServerSocket;
 
-
 			public Handler(T extra, int port, OutputStream stream, long fileSize, byte[] bufferSize, int timeout)
 			{
 				super(port, fileSize, bufferSize, extra);
@@ -333,6 +337,8 @@ abstract public class CoolTransfer<T>
 
 								getOutputStream().close();
 								inputStream.close();
+
+								setFlag(onCloseStreams(this));
 							}
 						}
 

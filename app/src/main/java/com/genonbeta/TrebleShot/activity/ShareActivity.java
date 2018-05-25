@@ -332,13 +332,12 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 										getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
 
-										int requestId = AppUtils.getUniqueNumber();
 										JSONObject thisJson = new JSONObject();
 
 										try {
 											thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.friendlyName);
 											thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.fileSize);
-											thisJson.put(Keyword.TRANSFER_REQUEST_ID, requestId);
+											thisJson.put(Keyword.TRANSFER_REQUEST_ID, transferObject.requestId);
 											thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.fileMimeType);
 
 											if (transferObject.directory != null)

@@ -43,6 +43,7 @@ import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
@@ -52,7 +53,9 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.io.File;
 import java.io.IOException;
@@ -316,13 +319,33 @@ public class TransactionActivity
 
 	private void resumeReceiving()
 	{
-		if (mAssigneeFragment.getAdapter() == null || mAssigneeFragment.getAdapter().getItemCount() == 0) {
+		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));
+
+		ArrayList<TransferAssigneeListAdapter.ShowingAssignee> assignees = getDatabase().castQuery(select, TransferAssigneeListAdapter.ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<TransferAssigneeListAdapter.ShowingAssignee>()
+		{
+			@Override
+			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, TransferAssigneeListAdapter.ShowingAssignee object)
+			{
+				object.device = new NetworkDevice(object.deviceId);
+				object.connection = new NetworkDevice.Connection(object);
+
+				try {
+					db.reconstruct(object.device);
+					db.reconstruct(object.connection);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		if (assignees.size() == 0) {
 			createSnackbar(R.string.mesg_noReceiverOrSender)
 					.show();
 			return;
 		}
 
-		final TransferAssigneeListAdapter.ShowingAssignee assignee = mAssigneeFragment.getAdapter().getList().get(0);
+		final TransferAssigneeListAdapter.ShowingAssignee assignee = assignees.get(0);
 
 		try {
 			getDatabase().reconstruct(new NetworkDevice.Connection(assignee));

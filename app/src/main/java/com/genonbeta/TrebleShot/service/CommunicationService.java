@@ -63,6 +63,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -101,6 +102,7 @@ public class CommunicationService extends Service
 	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
 	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
 
+	private ArrayList<ProcessHolder> mActiveProcessList = new ArrayList<>();
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
 	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
@@ -271,46 +273,49 @@ public class CommunicationService extends Service
 				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 
 				try {
-					CoolTransfer.TransferHandler<ProcessHolder> process = findProcessById(groupId);
+					ProcessHolder process = findProcessById(groupId, deviceId);
 
 					if (process == null)
 						startFileReceiving(groupId, deviceId);
 					else
-						Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.getExtra().transferObject.friendlyName), Toast.LENGTH_SHORT).show();
+						Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.transferObject.friendlyName), Toast.LENGTH_SHORT).show();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			} else if (ACTION_CANCEL_JOB.equals(intent.getAction())
 					|| ACTION_CANCEL_KILL.equals(intent.getAction())) {
-				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
+				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
 
-				CoolTransfer.TransferHandler<ProcessHolder> handler = findProcessById(groupId);
+				ProcessHolder processHolder = findProcessById(groupId, deviceId);
 
-				if (handler == null || ACTION_CANCEL_KILL.equals(intent.getAction()))
+				if (processHolder == null || ACTION_CANCEL_KILL.equals(intent.getAction()))
 					getNotificationHelper().getUtils().cancel(notificationId);
 
-				if (handler != null) {
+				if (processHolder != null) {
 					if (ACTION_CANCEL_KILL.equals(intent.getAction())) {
 						try {
-							if (handler instanceof CoolTransfer.Receive.Handler) {
-								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) handler);
+							if (processHolder.transferHandler instanceof CoolTransfer.Receive.Handler) {
+								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) processHolder.transferHandler);
 
 								if (receiveHandler.getServerSocket() != null)
 									receiveHandler.getServerSocket().close();
 							}
 
-							if (handler.getExtra().activeConnection.getSocket() != null)
-								handler.getExtra().activeConnection.getSocket().close();
+							if (processHolder.activeConnection.getSocket() != null)
+								processHolder.activeConnection.getSocket().close();
 
-							if (handler.getSocket() != null)
-								handler.getSocket().close();
+							if (processHolder.transferHandler.getSocket() != null)
+								processHolder.transferHandler.getSocket().close();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
 					} else {
-						handler.getExtra().notification = getNotificationHelper().notifyStuckThread(handler.getExtra().transferObject);
-						handler.interrupt();
+						processHolder.notification = getNotificationHelper().notifyStuckThread(processHolder);
+
+						if (processHolder.transferHandler != null)
+							processHolder.transferHandler.interrupt();
 					}
 				}
 			} else if (ACTION_TOGGLE_SEAMLESS_MODE.equals(intent.getAction())) {
@@ -333,9 +338,12 @@ public class CommunicationService extends Service
 						public void run()
 						{
 							if (mDestroyApproved
+									&& !getHotspotUtils().isStarted()
 									&& !hasOngoingTasks()
-									&& getDefaultPreferences().getBoolean("kill_service_on_exit", false))
+									&& getDefaultPreferences().getBoolean("kill_service_on_exit", false)) {
 								stopSelf();
+								Log.d(TAG, "onStartCommand(): Destroy state has been applied");
+							}
 						}
 					}, 3000);
 			}
@@ -354,46 +362,56 @@ public class CommunicationService extends Service
 		mMediaScanner.disconnect();
 		mNsdDiscovery.unregisterService();
 
-		if (getHotspotUtils().unloadPreviousConfig())
+		if (getHotspotUtils().unloadPreviousConfig()) {
 			getHotspotUtils().disable();
+			Log.d(TAG, "onDestroy(): Stopping hotspot (previously started)");
+		}
 
-		if (getWifiLock() != null && getWifiLock().isHeld())
+		if (getWifiLock() != null && getWifiLock().isHeld()) {
 			getWifiLock().release();
+			Log.d(TAG, "onDestroy(): Releasing Wi-Fi lock");
+		}
 
 		stopForeground(true);
 
 		synchronized (getOngoingIndexList()) {
-			for (Interrupter interrupter : getOngoingIndexList().values())
+			for (Interrupter interrupter : getOngoingIndexList().values()) {
 				interrupter.interrupt(false);
+				Log.d(TAG, "onDestroy(): Ongoing indexing stopped: " + interrupter.toString());
+			}
 		}
 
-		synchronized (mReceive.getProcessList()) {
-			for (CoolTransfer.TransferHandler<ProcessHolder> transferHandler : mReceive.getProcessList())
-				transferHandler.interrupt();
-		}
-
-		synchronized (mSend.getProcessList()) {
-			for (CoolTransfer.TransferHandler<ProcessHolder> transferHandler : mSend.getProcessList())
-				transferHandler.interrupt();
+		synchronized (getActiveProcessList()) {
+			for (ProcessHolder processHolder : getActiveProcessList())
+				if (processHolder.transferHandler != null) {
+					processHolder.transferHandler.interrupt();
+					Log.d(TAG, "onDestroy(): Killing sending process: " + processHolder.transferHandler.toString());
+				}
 		}
 	}
 
 	public boolean hasOngoingTasks()
 	{
-		return (getOngoingIndexList().size() + mReceive.getProcessList().size() + mSend.getProcessList().size()) > 0;
+		return mCommunicationServer.getConnections().size() > 0
+				|| getOngoingIndexList().size() > 0
+				|| getActiveProcessList().size() > 0;
 	}
 
-	public CoolTransfer.TransferHandler<ProcessHolder> findProcessById(int groupId)
+	public ProcessHolder findProcessById(int groupId, String deviceId)
 	{
-		for (CoolTransfer.TransferHandler<ProcessHolder> handler : mReceive.getProcessList())
-			if (handler.getExtra().transferObject.groupId == groupId)
-				return handler;
-
-		for (CoolTransfer.TransferHandler<ProcessHolder> handler : mSend.getProcessList())
-			if (handler.getExtra().transferObject.groupId == groupId)
-				return handler;
+		synchronized (getActiveProcessList()) {
+			for (ProcessHolder processHolder : getActiveProcessList())
+				if (processHolder.group.groupId == groupId
+						&& deviceId.equals(processHolder.assignee.deviceId))
+					return processHolder;
+		}
 
 		return null;
+	}
+
+	public synchronized ArrayList<ProcessHolder> getActiveProcessList()
+	{
+		return mActiveProcessList;
 	}
 
 	public HotspotUtils getHotspotUtils()
@@ -426,9 +444,9 @@ public class CommunicationService extends Service
 		return getDefaultPreferences().getBoolean("qr_trust", false);
 	}
 
-	public boolean isProcessRunning(int groupId)
+	public boolean isProcessRunning(int groupId, String deviceId)
 	{
-		return findProcessById(groupId) != null;
+		return findProcessById(groupId, deviceId) != null;
 	}
 
 	public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
@@ -451,8 +469,10 @@ public class CommunicationService extends Service
 		boolean overrideTrustZone = getDefaultPreferences().getBoolean("hotspot_trust", false);
 
 		// On Oreo devices, we will use platform specific code.
-		if (overrideTrustZone && (!isEnabled || Build.VERSION.SDK_INT < 26))
+		if (overrideTrustZone && (!isEnabled || Build.VERSION.SDK_INT < 26)) {
 			updateServiceState(isEnabled);
+			Log.d(TAG, "setupHotspot(): Start with TrustZone");
+		}
 
 		if (isEnabled)
 			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
@@ -753,11 +773,17 @@ public class CommunicationService extends Service
 		{
 			ProcessHolder processHolder = new ProcessHolder();
 
+			synchronized (getActiveProcessList()) {
+				getActiveProcessList().add(processHolder);
+			}
+
 			try {
 				ActiveConnection.Response mainRequest = activeConnection.receive();
 
 				int groupId = new JSONObject(mainRequest.response)
 						.getInt(Keyword.TRANSFER_GROUP_ID);
+
+				activeConnection.setId(groupId);
 
 				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
 
@@ -770,15 +796,20 @@ public class CommunicationService extends Service
 				while (true) {
 					ActiveConnection.Response currentResponse = activeConnection.receive();
 
-					if (currentResponse.response == null || currentResponse.totalLength < 1)
+					if (currentResponse.response == null || currentResponse.totalLength < 1) {
+						Log.d(TAG, "SeamlessServer.onConnected(): NULL response was received exiting loop");
 						break;
+					}
 
 					JSONObject currentRequest = new JSONObject(currentResponse.response);
 					JSONObject currentReply = new JSONObject();
 
 					if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT)) {
 						// the assignee for this transfer has received the files. We can remove it
-						getDatabase().remove(processHolder.group);
+						if (!currentRequest.has(Keyword.TRANSFER_JOB_DONE) || currentRequest.getBoolean(Keyword.TRANSFER_JOB_DONE))
+							getDatabase().remove(processHolder.assignee);
+
+						Log.d(TAG, "SeamlessServer.onConnected(): Removing assignee: " + processHolder.assignee.deviceId);
 						break;
 					}
 
@@ -789,13 +820,17 @@ public class CommunicationService extends Service
 
 						processHolder.transferObject.accessPort = currentRequest.getInt(Keyword.TRANSFER_SOCKET_PORT);
 
-						if (currentRequest.has(Keyword.SKIPPED_BYTES))
+						if (currentRequest.has(Keyword.SKIPPED_BYTES)) {
 							processHolder.transferObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
+							Log.d(TAG, "SeamlessServes.onConnected(): Has skipped bytes: " + processHolder.transferObject.skippedBytes);
+						}
 
 						getDatabase().update(processHolder.transferObject);
 
 						currentReply.put(Keyword.RESULT, true);
 					} catch (Exception e) {
+						Log.d(TAG, "SeamlessServer.onConnected(): Exception is handled: " + e.toString());
+
 						currentReply.put(Keyword.RESULT, false);
 						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
 						currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
@@ -803,23 +838,28 @@ public class CommunicationService extends Service
 						activeConnection.reply(currentReply.toString());
 
 						if (currentReply.getBoolean(Keyword.RESULT)) {
+							Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
+
 							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
 
 							getNotificationHelper().notifyFileTransaction(processHolder);
 
-							processHolder.transferHandler = mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
+							mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
 						}
 					}
 
 					if (processHolder.transferHandler != null
-							&& processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL))
+							&& processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL)) {
+						Log.d(TAG, "SeamlessServer.onConnected(): Cancelled all");
 						break;
+					}
 				}
 
 				if (processHolder.group != null && getDatabase().getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(processHolder.group.groupId))).size() == 0)
-					// no assignee has left, removing the transfer and its all instances.
+						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(processHolder.group.groupId))).size() == 0) {
 					getDatabase().remove(processHolder.group);
+					Log.d(TAG, "SeamlessServer.onConnected(): No assignee is left, removing the transfer and all of its instances: " + processHolder.group);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -834,6 +874,8 @@ public class CommunicationService extends Service
 						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 
 					activeConnection.reply(currentReply.toString());
+
+					Log.d(TAG, "SeamlessServer.onConnected(): Exception status is notified");
 				} catch (Exception e1) {
 					e1.printStackTrace();
 				}
@@ -850,6 +892,10 @@ public class CommunicationService extends Service
 
 				if (processHolder.notification != null)
 					processHolder.notification.cancel();
+
+				synchronized (getActiveProcessList()) {
+					getActiveProcessList().remove(processHolder);
+				}
 			}
 		}
 	}
@@ -869,7 +915,44 @@ public class CommunicationService extends Service
 			ProcessHolder processHolder = new ProcessHolder();
 			CoolSocket.ActiveConnection activeConnection = null;
 
+			synchronized (getActiveProcessList()) {
+				getActiveProcessList().add(processHolder);
+			}
+
 			try {
+				Boolean initialConnectionOkay = CommunicationBridge.connect(getDatabase(), Boolean.class, new CommunicationBridge.Client.ConnectionHandler()
+				{
+					@Override
+					public void onConnect(CommunicationBridge.Client client)
+					{
+						client.setDevice(mTransfer.getDevice());
+
+						try {
+							CoolSocket.ActiveConnection initialConnection = client.communicate(mTransfer.getDevice(), mTransfer.getConnection());
+
+							initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE).toString());
+
+							JSONObject resultObject = new JSONObject(initialConnection.receive().response);
+
+							Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection response: " + resultObject.toString());
+
+							client.setReturn(resultObject.getBoolean(Keyword.RESULT));
+
+							return;
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+
+						client.setReturn(false);
+					}
+				});
+
+				if (initialConnectionOkay == null || !initialConnectionOkay)
+				{
+					Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection failed.");
+					throw new Exception("Initial connection failed");
+				}
+
 				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 				activeConnection.reply(new JSONObject()
@@ -886,6 +969,8 @@ public class CommunicationService extends Service
 				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
 
 				if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
+					Log.d(TAG, "SeamlessClientHandler.onConnect(): false result, it will exit.");
+
 					String errorCode = mainRequestJSON.has(Keyword.ERROR)
 							? mainRequestJSON.getString(Keyword.ERROR)
 							: null;
@@ -903,9 +988,6 @@ public class CommunicationService extends Service
 				} else {
 					while (true) {
 						// Remove the previous object as it is completed.
-						if (processHolder.transferObject != null)
-							getDatabase().remove(processHolder.transferObject);
-
 						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
 										TransferObject.Type.INCOMING.toString(),
@@ -917,6 +999,7 @@ public class CommunicationService extends Service
 								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId))) == null) {
 							getDatabase().remove(processHolder.group);
+							Log.d(TAG, "SeamlessClientHandler(): Removing group because there is no file instance left");
 							break;
 						}
 
@@ -927,16 +1010,30 @@ public class CommunicationService extends Service
 
 						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
-						processHolder.transferHandler = mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
+						mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
-						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag()))
+						if (CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
+							if (processHolder.transferObject != null) {
+								Log.d(TAG, "SeamlessClientHandler.onConnect(): Removing received transfer instance: " + processHolder.transferObject.file);
+								getDatabase().remove(processHolder.transferObject);
+							}
+						} else if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag())) {
+							Log.d(TAG, "SeamlessClientHandler.onConnect(): Cancel is requested. Exiting.");
 							break;
+						}
 					}
 
-					if (processHolder.transferHandler != null && CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag()))
-						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
+					boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag());
 
-					activeConnection.reply(new JSONObject().put(Keyword.RESULT, false).toString());
+					if (processHolder.transferHandler != null && isJobDone) {
+						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
+						Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+					}
+
+					activeConnection.reply(new JSONObject()
+							.put(Keyword.RESULT, false)
+							.put(Keyword.TRANSFER_JOB_DONE, isJobDone)
+							.toString());
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -950,6 +1047,10 @@ public class CommunicationService extends Service
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
+				}
+
+				synchronized (getActiveProcessList()) {
+					getActiveProcessList().remove(processHolder);
 				}
 			}
 
@@ -1002,6 +1103,22 @@ public class CommunicationService extends Service
 		}
 
 		@Override
+		public Flag onCloseStreams(TransferHandler<ProcessHolder> handler)
+		{
+			try {
+				handler.getExtra().currentFile.sync();
+
+				if (handler.getExtra().currentFile.length() == handler.getExtra().transferObject.fileSize)
+					return super.onCloseStreams(handler);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			handler.interrupt();
+			return Flag.CANCEL_ALL;
+		}
+
+		@Override
 		public Flag onSocketReady(TransferHandler<ProcessHolder> handler)
 		{
 			return Flag.CONTINUE;
@@ -1049,7 +1166,9 @@ public class CommunicationService extends Service
 		@Override
 		public Flag onStart(TransferHandler<ProcessHolder> handler)
 		{
+			// set transfer handler here
 			handler.linkTo(handler.getExtra().transferHandler);
+			handler.getExtra().transferHandler = handler;
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransferGroup.Index indexInstance = new TransferGroup.Index();
@@ -1125,6 +1244,7 @@ public class CommunicationService extends Service
 		public Flag onStart(TransferHandler<ProcessHolder> handler)
 		{
 			handler.linkTo(handler.getExtra().transferHandler);
+			handler.getExtra().transferHandler = handler;
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransferGroup.Index indexInstance = new TransferGroup.Index();

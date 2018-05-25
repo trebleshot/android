@@ -20,6 +20,7 @@ public class Keyword
 			TRANSFER_SOCKET_PORT = "socketPort",
 			TRANSFER_IS_ACCEPTED = "isAccepted",
 			TRANSFER_CLIPBOARD_TEXT = "clipboardText",
+			TRANSFER_JOB_DONE = "jobDone",
 			FLAG = "flag",
 			FLAG_GROUP_EXISTS = "flagGroupExists",
 			FILES_INDEX = "filesIndex",
