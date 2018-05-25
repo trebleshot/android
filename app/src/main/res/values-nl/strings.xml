@@ -382,4 +382,6 @@
 <string name="text_file">Bestand</string>
 <string name="text_noDeviceForTransfer">Er is geen apparaat toegevoegd voor deze overdracht</string>
 <string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
+<string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
+    <string name="text_killServiceAfterLeaving">Door het verlaten van de app wordt de dienst gestopt</string>
 </resources>
