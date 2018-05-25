@@ -50,6 +50,6 @@ Send and receive files over available connections without making any effort. Ple
 * Spanish
 * Turkish
 
-Go to [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all the available languages. Huge thanks to all language contributors. If you want to contribute to a language follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
+Go to [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all the available languages. Huge thanks to all language contributors. If you want to contribute to any language, please follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
 
 This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
