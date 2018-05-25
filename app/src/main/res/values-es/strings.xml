@@ -271,7 +271,7 @@
     <string name="text_allowingToConnectNotice">Cuando esté marcado, este dispositivo podrá conectarse con usted</string>
     <string name="butn_resetToDefault">Restablecer a los valores por defecto</string>
     <string name="text_resetPreferencesToDefaultSummary">Esto aplicará los ajustes por defecto</string>
-    <string name="text_workerService">"servicio Worker "</string>
+    <string name="text_workerService">Servicio trabajador</string>
     <string name="text_taskCompleted">Tarea completada</string>
     <string name="text_deletingFilesOngoing">Borrando los archivos seleccionados</string>
     <string name="text_taskOngoing">Tarea continua</string>
@@ -352,4 +352,5 @@
     <string name="text_file">Archivo</string>
     <string name="text_noDeviceForTransfer">No se añadió ningún dispositivo para esta transferencia</string>
     <string name="text_thirdPartyLibraries">Librerías de terceros</string>
-</resources>
+<string name="butn_qrToggle">Activar el código Qr que se muestra</string>
+    </resources>
