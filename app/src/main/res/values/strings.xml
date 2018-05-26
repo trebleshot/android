@@ -354,7 +354,7 @@
     <string name="text_network">Network</string>
     <string name="text_connect">Connect</string>
     <string name="butn_shareWithOtherApps">Share with other apps</string>
-    <string name="butn_startHotspot">Setup hotspot</string>
+    <string name="butn_startHotspot">Set up hotspot</string>
     <string name="butn_stopHotspot">Stop hotspot</string>
     <string name="text_easyDiscoveryHelp">Scan this if the both devices are on the same network</string>
     <string name="text_scanQRWifiRequired">To connect to devices Wi-Fi should be turned on</string>
