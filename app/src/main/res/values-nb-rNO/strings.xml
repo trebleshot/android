@@ -379,4 +379,6 @@
     <string name="text_noDeviceForTransfer">Ingen enhet lagt til for denne overføringen</string>
     <string name="text_thirdPartyLibraries">Tredjepartsbiblioteker</string>
 <string name="text_scanQRWifiRequired">For å koble til enheter må trådløskommunikasjon være påslått</string>
-    </resources>
+    <string name="text_killServiceAfterLeavingSummary">Stopper kommunikasjon hvis ingen oppgave er underveis</string>
+    <string name="text_killServiceAfterLeaving">Å forlate programmet stopper tjenesten</string>
+</resources>
