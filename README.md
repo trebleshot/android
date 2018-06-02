@@ -1,5 +1,5 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections without making any effort. Please read "Wiki" to learn more.
+Send and receive files over available connections without making any effort. Please read the wiki to learn more.
 
 [Join the discussion on Google+](https://plus.google.com/communities/102916752990309950243)
  
@@ -10,13 +10,13 @@ Send and receive files over available connections without making any effort. Ple
 ## Main features
 * Pause and resume transfers even when an error is given
 * Share multiple content from your video, photo, music and application library
-* No internet connection is required: setup a hotspot and connect to it using QR code
+* No internet connection is required: Set up a hotspot and connect to it using a QR code
 * Share with multiple devices at the same time
 * Exchange texts of any kind and save them to TrebleShot
 * Share folders as they are for backup or any other purpose 
 * Light UI: Works faster than its rivals on low-end devices
 * Speed-oriented: Minimal UI focusing on and optimized for speed
-* Professional features: network change handling, choosing network after speed measurement
+* Professional features: Network change handling, choosing network after speed measurement
 * It is secure by allowing you to give extra permission to or block a device
 
 ## Project status
@@ -50,6 +50,6 @@ Send and receive files over available connections without making any effort. Ple
 * Spanish
 * Turkish
 
-Go to [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all the available languages. Huge thanks to all language contributors. If you want to contribute to any language, please follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
+Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. Huge thanks to all language contributors. If you want to contribute to any language, please follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
 
-This application is licenced under GPL-2.0 and uses some components licenced under Apache License, Version 2.0
+This application is licenced under GPL-2.0+ and uses some components licenced under Apache License, Version 2.0
