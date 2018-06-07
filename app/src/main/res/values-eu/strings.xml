@@ -222,7 +222,7 @@
     <string name="text_trebleshotHotspot">TrebleShot Wifigunea</string>
     <string name="butn_connect">Konektatu</string>
     <string name="butn_disconnect">Deskonektatu</string>
-    <string name="text_trebleshotHotspotDescription">Fitxategiak zuzenean bidali ditzakezu TrebleShot gailuak sortutako sare ireki honetatik</string>
+    <string name="text_trebleshotHotspotDescription">Fitxategiak zuzenean bidali ditzakezu TrebleShot gailuak sortutako sare ireki honetatik.</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Wifigunera konektatzen</string>
     <string name="mesg_warningHotspotMobileActive">Besteak zure sarera konektatu daitezke datu mugikorrak aktibatuta daudela</string>
     <string name="butn_skip">Saltatu</string>
@@ -260,7 +260,7 @@
     <string name="ques_saveAnyway">Gorde hala ere?</string>
     <string name="text_saveAnywaySummary">Bidaltzaileak ez daki non dagoen fitxategia, baina fitxategia gorde dezakezu hala ere</string>
     <string name="mesg_fileSaved">Fitxategia gorde da</string>
-    <string name="butn_sortBy">Ordenatzeko irizpidea:</string>
+    <string name="butn_sortBy">Ordenatu honela</string>
     <string name="butn_sortOrder">Ordenatzeko irizpidea</string>
     <string name="text_sortOrderAscending">Goranzkoa</string>
     <string name="text_sortOrderDescending">Beheranzkoa</string>
