@@ -314,7 +314,7 @@
     <string name="mesg_errorReadFolder">Can not access the \"%s\" folder</string>
     <string name="butn_mountDirectory">Mount folder</string>
     <string name="mesg_mountDirectoryHelp">Select the folder you want to access to</string>
-    <string name="butn_ejectDirectory">Leave folder</string>
+    <string name="butn_ejectDirectory">Unmount folder</string>
     <string name="text_movedCacheFiles">Cache files moved</string>
     <string name="mode_itemCounted" translatable="false">%s (%d)</string>
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
