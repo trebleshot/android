@@ -1,1 +1,1 @@
-include ':app', ':gdatabase', ':updatewithgithub'
+include ':app', ':updatewithgithub'
