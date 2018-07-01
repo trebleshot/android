@@ -44,6 +44,7 @@ dependencies {
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation "com.mikepenz:aboutlibraries:6.0.8"
     implementation "com.genonbeta.android:gdatabase:1.0"
+    implementation 'com.genonbeta.coolsocket:main:1.0'
 
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
