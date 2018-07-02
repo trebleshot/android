@@ -29,6 +29,10 @@ android {
     }
 }
 
+repositories {
+    maven { url "https://dl.bintray.com/genonbeta/coolsocket" }
+}
+
 dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
@@ -39,12 +43,13 @@ dependencies {
     implementation 'com.android.support:design:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'
 
-    implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
-    implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
-    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    implementation "com.mikepenz:aboutlibraries:6.0.8"
     implementation "com.genonbeta.android:gdatabase:1.0"
     implementation 'com.genonbeta.coolsocket:main:1.0'
+
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
+    implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
+    implementation "com.mikepenz:aboutlibraries:6.0.8"
 
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
