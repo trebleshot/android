@@ -57,4 +57,10 @@ public class Keyword
 				NETWORK_INTERFACE_UNKNOWN = "unk0",
 				SETTINGS_VIEWING = "sorting_settings";
 	}
+
+	public enum Flavor {
+		unknown,
+		fossReliant,
+		googlePlay
+	}
 }

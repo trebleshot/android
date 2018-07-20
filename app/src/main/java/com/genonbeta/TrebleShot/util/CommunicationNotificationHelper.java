@@ -47,7 +47,7 @@ public class CommunicationNotificationHelper
 				.setContentText(getContext().getString(R.string.text_communicationServiceStop))
 				.setAutoCancel(true)
 				.addAction(R.drawable.ic_compare_arrows_white_24dp, getContext().getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),
-						PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE), 0))
+						PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE), PendingIntent.FLAG_CANCEL_CURRENT))
 				.setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class)
 						.setAction(CommunicationService.ACTION_END_SESSION), 0));
 

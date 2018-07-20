@@ -14,6 +14,7 @@
     <color name="videoTextColor">@android:color/white</color>
     <color name="networkDeviceRipple">@color/colorAccent</color>
     <color name="notEnoughSpaceMenuTint">#f76534</color>
+    <color name="donateMenuTint">#c6d12a</color>
     <color name="unavailableConnection">#555</color>
     <color name="fabHotspotDisabled">@color/colorAccent</color>
     <color name="fabHotspotEnabled">#d2442e</color>

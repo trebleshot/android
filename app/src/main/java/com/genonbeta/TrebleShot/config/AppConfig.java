@@ -25,7 +25,13 @@ public class AppConfig
 			PREFIX_ACCESS_POINT = "TS_",
 			NETWORK_INTERFACE_WIFI = "wlan0",
 			NDS_COMM_SERVICE_NAME = "TSComm",
-			NDS_COMM_SERVICE_TYPE = "_tscomm._tcp.";
+			NDS_COMM_SERVICE_TYPE = "_tscomm._tcp.",
+			KEY_GOOLE_PUBLIC = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAk1peq7MhNms9ynhnoRtwxnb"
+					+ "izdEr3TKifUGlUPB3r33WkvPWjwowRvYeuY36+CkBmtjc46Xg/6/jrhPY+L0a+wd58lsNxLUMpo7"
+					+ "tN2std0TGrsMmmlihb4Bsxcu/6ThsY4CIQx0bdze2v8Zle3e4EoHuXcqQnpwkb+3wMx2rR2E9ih+"
+					+ "6utqrYAop9NdAbsRZ6BDXDUgJEuiHnRKwDZGDjU5PD4TCiR1jz2YJPYiRuI1QytJM6LirJu6YwE/"
+					+ "o6pfzSQ3xXlK4yGpGUhzLdTmSNQNIJTWRqZoM7qNgp+0ocmfQRJ32/6E+BxbJaVbHdTINhbVAvLR"
+					+ "+UFyQ2FldecfuQQIDAQAB";
 
 	public final static String[] DEFAULT_DISABLED_INTERFACES = new String[]{"rmnet"};
 

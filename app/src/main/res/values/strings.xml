@@ -367,4 +367,5 @@
     <string name="text_thirdPartyLibraries">Third party libraries</string>
     <string name="text_killServiceAfterLeavingSummary">Stops communication if there is no ongoing task</string>
     <string name="text_killServiceAfterLeaving">Leaving the app stops the service</string>
+    <string name="butn_donate">Donate</string>
 </resources>

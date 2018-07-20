@@ -63,7 +63,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
@@ -947,8 +946,7 @@ public class CommunicationService extends Service
 					}
 				});
 
-				if (initialConnectionOkay == null || !initialConnectionOkay)
-				{
+				if (initialConnectionOkay == null || !initialConnectionOkay) {
 					Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection failed.");
 					throw new Exception("Initial connection failed");
 				}

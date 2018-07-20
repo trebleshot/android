@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -11,14 +12,10 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.mikepenz.aboutlibraries.Libs;
-import com.mikepenz.aboutlibraries.LibsBuilder;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 
 import velitasali.updatewithgithub.GitHubUpdater;
 
@@ -71,26 +68,36 @@ public class AboutActivity extends Activity
 			}
 		});
 
-		findViewById(R.id.activity_about_update_layout).setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View view)
+		if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+			findViewById(R.id.activity_about_update_layout).setVisibility(View.GONE);
+
+			findViewById(R.id.activity_about_donate_layout).setOnClickListener(new View.OnClickListener()
 			{
-				UpdateUtils.checkForUpdates(AboutActivity.this, updater, true, null);
-			}
-		});
+				@Override
+				public void onClick(View view)
+				{
+					startActivity(new Intent(AboutActivity.this, DonationActivity.class));
+				}
+			});
+		} else {
+			findViewById(R.id.activity_about_donate_layout).setVisibility(View.GONE);
+
+			findViewById(R.id.activity_about_update_layout).setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View view)
+				{
+					UpdateUtils.checkForUpdates(AboutActivity.this, updater, true, null);
+				}
+			});
+		}
 
 		findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				new LibsBuilder()
-						//provide a style (optional) (LIGHT, DARK, LIGHT_DARK_TOOLBAR)
-						.withActivityStyle(Libs.ActivityStyle.LIGHT_DARK_TOOLBAR)
-						.withActivityTitle(getString(R.string.text_thirdPartyLibraries))
-						//start the activity
-						.start(AboutActivity.this);
+				startActivity(new Intent(AboutActivity.this, ThirdPartyLibrariesActivity.class));
 			}
 		});
 

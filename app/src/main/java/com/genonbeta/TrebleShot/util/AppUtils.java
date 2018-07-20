@@ -13,6 +13,7 @@ import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.App;
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -94,6 +95,17 @@ public class AppUtils
 			mDatabase = new AccessDatabase(context);
 
 		return mDatabase;
+	}
+
+	public static Keyword.Flavor getBuildFlavor()
+	{
+		try {
+			return Keyword.Flavor.valueOf(BuildConfig.FLAVOR);
+		} catch (Exception e) {
+			Log.e(TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
+					"the vocab. Is this a custom build?");
+			return Keyword.Flavor.unknown;
+		}
 	}
 
 	public static SuperPreferences getDefaultPreferences(final Context context)
@@ -196,7 +208,7 @@ public class AppUtils
 
 	public static int getUniqueNumber()
 	{
-		return (int) System.currentTimeMillis() + (++mUniqueNumber);
+		return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);
 	}
 
 	public static NetworkDevice getLocalDevice(Context context)

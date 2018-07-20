@@ -92,6 +92,9 @@
             android:label="@string/text_about"
             android:theme="@style/AppTheme.NoActionBar"/>
 
+        <activity android:name=".activity.ThirdPartyLibrariesActivity"
+                  android:label="@string/text_thirdPartyLibraries" />
+
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"
@@ -151,6 +154,8 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+
+        <activity android:name=".activity.DonationActivity" />
     </application>
 
 </manifest>

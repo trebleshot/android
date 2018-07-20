@@ -91,6 +91,17 @@ public class GitHubContributorsListFragment
 				return true;
 			}
 		});
+
+		useEmptyActionButton(true);
+		getEmptyActionButton().setText(R.string.butn_refresh);
+		getEmptyActionButton().setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				refreshList();
+			}
+		});
 	}
 
 	public static class ContributorObject
