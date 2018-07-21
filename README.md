@@ -28,6 +28,12 @@ Send and receive files over available connections without making any effort. Ple
 
 `1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`
 
+## Build from source notes
+Even though it should be easy to compile the app by yourself, you may need to;
+* Select a debug build variant (Build Variants > app > fossReliantDebug)
+* When deploying signed packages, create "signing.properties" in which the required properties are defined
+* Run the gradle task "generateLicenceReport" to sync the licences for used packages which is shown in the About section 
+
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_2.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_2.png)
