@@ -4,5 +4,6 @@
 /.idea
 /projectFilesBackup
 *.iml
+signing.properties
 local.properties
 *.apk

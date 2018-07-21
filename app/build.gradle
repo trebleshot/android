@@ -1,20 +1,18 @@
 apply plugin: 'com.android.application'
 
-def localPropertiesFile = project.rootProject.file('local.properties');
+def localPropertiesFile = project.rootProject.file('signing.properties');
 def useLocalSigning = localPropertiesFile.exists()
 Properties localProperties = null
 
 if (useLocalSigning) {
     localProperties = new Properties()
     localProperties.load(localPropertiesFile.newDataInputStream())
-
-    useLocalSigning = localProperties.hasProperty('signing.storeFile')
 }
 
 android {
     signingConfigs {
-        if (useLocalSigning) {
-            gbDistribution {
+        gbDistribution {
+            if (useLocalSigning) {
                 storeFile file(localProperties.getProperty('signing.storeFile'))
                 keyAlias localProperties.getProperty('signing.keyAlias')
                 storePassword localProperties.getProperty('signing.storePassword')
@@ -51,15 +49,11 @@ android {
     productFlavors {
         fossReliant {
             dimension 'mode'
-
-            if (useLocalSigning)
-                signingConfig signingConfigs.gbDistribution
+            signingConfig signingConfigs.gbDistribution
         }
         googlePlay {
             dimension 'mode'
-
-            if (useLocalSigning)
-                signingConfig signingConfigs.gbDistribution
+            signingConfig signingConfigs.gbDistribution
         }
     }
 }
