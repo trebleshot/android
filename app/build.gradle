@@ -1,28 +1,25 @@
 apply plugin: 'com.android.application'
 
-def getProperties(String fileName) {
-    final Properties properties = new Properties()
-    def file = file(fileName)
-    if (file.exists()) {
-        file.withInputStream { stream -> properties.load(stream) }
-    }
-    return properties
-}
+def localPropertiesFile = project.rootProject.file('local.properties');
+def useLocalSigning = localPropertiesFile.exists()
+Properties localProperties = null
 
-static def getProperty(@Nullable Properties properties, String name) {
-    return properties.getProperty(name) ?: "$name missing"
+if (useLocalSigning) {
+    localProperties = new Properties()
+    localProperties.load(localPropertiesFile.newDataInputStream())
+
+    useLocalSigning = localProperties.hasProperty('signing.storeFile')
 }
 
 android {
     signingConfigs {
-        gbDistribution {
-            Properties properties = new Properties()
-            properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-            storeFile file(getProperty(properties, 'signing.storeFile'))
-            keyAlias getProperty(properties, 'signing.keyAlias')
-            storePassword getProperty(properties, 'signing.storePassword')
-            keyPassword getProperty(properties, 'signing.keyPassword')
+        if (useLocalSigning) {
+            gbDistribution {
+                storeFile file(localProperties.getProperty('signing.storeFile'))
+                keyAlias localProperties.getProperty('signing.keyAlias')
+                storePassword localProperties.getProperty('signing.storePassword')
+                keyPassword localProperties.getProperty('signing.keyPassword')
+            }
         }
     }
     compileSdkVersion 27
@@ -54,11 +51,15 @@ android {
     productFlavors {
         fossReliant {
             dimension 'mode'
-            signingConfig signingConfigs.gbDistribution
+
+            if (useLocalSigning)
+                signingConfig signingConfigs.gbDistribution
         }
         googlePlay {
             dimension 'mode'
-            signingConfig signingConfigs.gbDistribution
+
+            if (useLocalSigning)
+                signingConfig signingConfigs.gbDistribution
         }
     }
 }
