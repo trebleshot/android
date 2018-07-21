@@ -261,4 +261,18 @@
     <string name="text_notificationChannelLow">低优先级通知</string>
     <string name="text_receivedTransfer">已在 %s 接收 %s</string>
     <string name="butn_exit">退出</string>
+    <string name="text_transactionGroupDetails">任务组详细信息</string>
+    <string name="butn_typeNewEntry">输入新条目</string>
+    <string name="mesg_textSaveNotice">保存文本或再按一次以退出</string>
+    <string name="mesg_textShareLimit">一次性只能分享一个文本</string>
+    <string name="mesg_locationDisabledSelfHotspot">开启位置服务来查看扫描结果并建立热点</string>
+    <string name="mesg_stoppingSelfHotspot">正在停止TrebleShot热点</string>
+    <string name="mesg_startingSelfHotspot">正在开启TrebleShot热点</string>
+    <string name="butn_checkAll">全选</string>
+    <string name="butn_undoAll">撤销全部</string>
+    <string name="text_previewAndEditList">预览 &amp; 编辑</string>
+    <string name="text_selectableNotCheckedNotice">未标记的项目将被跳过</string>
+    <string name="text_fileRoot">根目录</string>
+    <string name="mesg_versionNotSupported">这个版本不受支持了。请更新后重新扫描设备。</string>
+    <string name="mesg_ongoingUpdateDownload">正在下载新版本</string>
     </resources>
