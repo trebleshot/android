@@ -1,6 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.github.jk1.dependency-license-report'
-
 
 def getProperties(String fileName) {
     final Properties properties = new Properties()
@@ -15,15 +13,16 @@ static def getProperty(@Nullable Properties properties, String name) {
     return properties.getProperty(name) ?: "$name missing"
 }
 
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
 android {
     signingConfigs {
         gbDistribution {
-            Properties signingProperties = getProperties('/media/veli/Storage/Development/Signing/genonbeta.properties')
-
-            storeFile file(getProperty(signingProperties, 'storeFile'))
-            keyAlias getProperty(signingProperties, 'keyAlias')
-            storePassword getProperty(signingProperties, 'storePassword')
-            keyPassword getProperty(signingProperties, 'keyPassword')
+            storeFile file(getProperty(properties, 'signing.storeFile'))
+            keyAlias getProperty(properties, 'signing.keyAlias')
+            storePassword getProperty(properties, 'signing.storePassword')
+            keyPassword getProperty(properties, 'signing.keyPassword')
         }
     }
     compileSdkVersion 27
@@ -35,7 +34,6 @@ android {
         targetSdkVersion 27
         versionCode 74
         versionName "1.2.6.4"
-        signingConfig signingConfigs.gbDistribution
     }
 
     lintOptions {
