@@ -13,12 +13,12 @@ static def getProperty(@Nullable Properties properties, String name) {
     return properties.getProperty(name) ?: "$name missing"
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
 android {
     signingConfigs {
         gbDistribution {
+            Properties properties = new Properties()
+            properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
             storeFile file(getProperty(properties, 'signing.storeFile'))
             keyAlias getProperty(properties, 'signing.keyAlias')
             storePassword getProperty(properties, 'signing.storePassword')
