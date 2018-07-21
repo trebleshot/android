@@ -10,10 +10,19 @@ if (useLocalSigning) {
 }
 
 android {
-    signingConfigs {
-    }
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
+
+    signingConfigs {
+        gbDistribution {
+            if (useLocalSigning) {
+                storeFile file(localProperties.getProperty('signing.storeFile'))
+                keyAlias localProperties.getProperty('signing.keyAlias')
+                storePassword localProperties.getProperty('signing.storePassword')
+                keyPassword localProperties.getProperty('signing.keyPassword')
+            }
+        }
+    }
 
     defaultConfig {
         applicationId "com.genonbeta.TrebleShot"
@@ -41,9 +50,11 @@ android {
     productFlavors {
         fossReliant {
             dimension 'mode'
+            signingConfig signingConfigs.gbDistribution
         }
         googlePlay {
             dimension 'mode'
+            signingConfig signingConfigs.gbDistribution
         }
     }
 }
