@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+// In the root folder of the project, you can find the template properties file
+// named 'signing.properties.txt'.
+// Rename it to 'signing.properties'
+// Be careful because Git may check it even though it is excluded in '.gitignore'.
 def localPropertiesFile = project.rootProject.file('signing.properties');
 def useLocalSigning = localPropertiesFile.exists()
 Properties localProperties = null

@@ -1,0 +1,14 @@
+## This file must *NOT* be checked into Version Control Systems
+## after renamed to 'signing.properties' to be used.
+
+## This file is an example for signing properties that will be used by gradle
+## and the call for the properties can be found in 'app/build.gradle'.
+
+## You should change the variables depending on your needs.
+
+## If you don't have a keystore file, you can create it using Android Studio.
+
+signing.storeFile=/home/user/signing.jks
+signing.storePassword=password
+signing.keyAlias=companyNameOrSomething
+signing.keyPassword=password
