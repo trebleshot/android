@@ -29,7 +29,7 @@
     <string name="text_developerMode">Ontwikkelaarsmodus</string>
     <string name="text_developerModeSummary">Schakelt de gebruikersconfiguratie uit</string>
     <string name="text_deviceName">Apparaatnaam</string>
-    <string name="text_deviceNameSummary">Deze naam zal worden getoond op andere apparaten</string>
+    <string name="text_deviceNameSummary">Deze naam wordt getoond op andere apparaten</string>
     <string name="text_deviceNameTitle">Voer een apparaatnaam in</string>
     <string name="mesg_formatNotSupported">Niet-ondersteund formaat</string>
     <string name="mesg_fileSendError">Bestand kan niet worden verstuurd. %s</string>
@@ -111,7 +111,7 @@
     <string name="text_textReceived">Tekst ontvangen</string>
     <string name="text_receivedTextSummary">Klembordtekst ontvangen</string>
     <string name="butn_checkForUpdates">Controleren op updates</string>
-    <string name="butn_seeSourceCode">Broncode bekijken</string>
+    <string name="butn_seeSourceCode">Bekijk de broncode</string>
     <string name="text_typeText">Schrijf een tekst…</string>
     <string name="text_textEditor">Tekstbewerker</string>
     <string name="butn_done">Afgerond</string>
