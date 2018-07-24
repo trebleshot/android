@@ -55,7 +55,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 	}
 
 	@Override
-	public String getSelectableFriendlyName()
+	public String getSelectableTitle()
 	{
 		return String.valueOf(groupId);
 	}

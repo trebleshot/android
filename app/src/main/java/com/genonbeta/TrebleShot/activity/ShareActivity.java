@@ -274,7 +274,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 											TransferObject transferObject = new TransferObject(requestId,
 													groupInstance.groupId,
-													selectableStream.getSelectableFriendlyName(),
+													selectableStream.getSelectableTitle(),
 													selectableStream.getDocumentFile().getUri().toString(),
 													selectableStream.getDocumentFile().getType(),
 													selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
@@ -583,7 +583,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 							if (getSupportActionBar() != null && mFiles.size() > 0)
 								getSupportActionBar().setTitle(mFiles.size() == 1
-										? mFiles.get(0).getSelectableFriendlyName()
+										? mFiles.get(0).getSelectableTitle()
 										: getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
 
 							onRequestReady();
@@ -688,7 +688,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 		}
 
 		@Override
-		public String getSelectableFriendlyName()
+		public String getSelectableTitle()
 		{
 			return mFriendlyName;
 		}

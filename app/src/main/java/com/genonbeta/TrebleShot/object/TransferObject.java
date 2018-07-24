@@ -125,7 +125,7 @@ public class TransferObject
 	@Override
 	public String getComparableName()
 	{
-		return getSelectableFriendlyName();
+		return getSelectableTitle();
 	}
 
 	@Override
@@ -141,7 +141,7 @@ public class TransferObject
 	}
 
 	@Override
-	public String getSelectableFriendlyName()
+	public String getSelectableTitle()
 	{
 		return friendlyName;
 	}

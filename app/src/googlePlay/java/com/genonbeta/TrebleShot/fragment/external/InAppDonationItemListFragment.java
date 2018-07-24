@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
@@ -113,7 +115,7 @@ public class InAppDonationItemListFragment
 	@Override
 	public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details)
 	{
-		Toast.makeText(getContext(), R.string.mesg_donationSuccessful, Toast.LENGTH_SHORT).show();
+		showToast(R.string.mesg_donationSuccessful);
 	}
 
 	@Override
@@ -125,13 +127,25 @@ public class InAppDonationItemListFragment
 	@Override
 	public void onBillingError(int errorCode, @Nullable Throwable error)
 	{
-		Toast.makeText(getContext(), R.string.mesg_donationBillingError, Toast.LENGTH_SHORT).show();
+		showToast(R.string.mesg_donationBillingError);
 	}
 
 	@Override
 	public void onBillingInitialized()
 	{
 		refreshList();
+	}
+
+	private void showToast(final int stringRes)
+	{
+		new Handler(Looper.getMainLooper()).post(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				Toast.makeText(getActivity(), stringRes, Toast.LENGTH_LONG).show();
+			}
+		});
 	}
 
 	public class DefaultAdapter extends RecyclerViewAdapter<SkuDetails, RecyclerViewAdapter.ViewHolder>

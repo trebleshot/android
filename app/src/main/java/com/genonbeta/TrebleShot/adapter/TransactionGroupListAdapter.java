@@ -151,7 +151,7 @@ public class TransactionGroupListAdapter
 		@Override
 		public String getComparableName()
 		{
-			return getSelectableFriendlyName();
+			return getSelectableTitle();
 		}
 
 		@Override
@@ -167,7 +167,7 @@ public class TransactionGroupListAdapter
 		}
 
 		@Override
-		public String getSelectableFriendlyName()
+		public String getSelectableTitle()
 		{
 			return totalFiles + " (" + totalSize + ")";
 		}

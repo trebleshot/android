@@ -43,7 +43,7 @@ public class Shareable implements Editable
 	@Override
 	public String getComparableName()
 	{
-		return getSelectableFriendlyName();
+		return getSelectableTitle();
 	}
 
 	@Override
@@ -59,7 +59,7 @@ public class Shareable implements Editable
 	}
 
 	@Override
-	public String getSelectableFriendlyName()
+	public String getSelectableTitle()
 	{
 		return this.friendlyName;
 	}

@@ -124,7 +124,7 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
 			final AppCompatCheckBox checkBox = convertView.findViewById(R.id.checkbox);
 			TextView text1 = convertView.findViewById(R.id.text);
 
-			text1.setText(selectable.getSelectableFriendlyName());
+			text1.setText(selectable.getSelectableTitle());
 			checkBox.setChecked(selectable.isSelectableSelected());
 
 			convertView.setClickable(true);

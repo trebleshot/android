@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
@@ -36,14 +38,12 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.TransactionGroupInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.io.DocumentFile;
 import com.genonbeta.TrebleShot.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferInstance;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
@@ -98,7 +98,6 @@ public class TransactionActivity
 
 	private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
 	private PowerfulActionMode mPowafulActionMode;
-	private MenuItem mInfoMenu;
 	private MenuItem mStartMenu;
 	private MenuItem mRetryMenu;
 
@@ -215,7 +214,6 @@ public class TransactionActivity
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
-		mInfoMenu = menu.findItem(R.id.actions_transaction_show_info);
 		mStartMenu = menu.findItem(R.id.actions_transaction_resume_all);
 		mRetryMenu = menu.findItem(R.id.actions_transaction_retry_all);
 
@@ -251,15 +249,13 @@ public class TransactionActivity
 
 			createSnackbar(R.string.mesg_retryAllInfo)
 					.show();
-		} else if (id == R.id.actions_transaction_show_info)
-			new TransactionGroupInfoDialog(this, getDatabase(), getDefaultPreferences(), mGroup, getIndex())
-					.show();
-		else
+		} else
 			return super.onOptionsItemSelected(item);
 
 		return true;
 	}
 
+	/*
 	public boolean calculateSpace()
 	{
 		DocumentFile documentFile = FileUtils.getSavePath(this, getDefaultPreferences(), mGroup);
@@ -268,8 +264,11 @@ public class TransactionActivity
 				? ((LocalDocumentFile) documentFile).getFile().getFreeSpace()
 				: -1;
 
+		//return freeSpace == -1 || freeSpace >= getIndex().incoming;
+		//MenuItemCompat.setIconTintList(mInfoMenu, ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.notEnoughSpaceMenuTint)));
+
 		return freeSpace == -1 || freeSpace >= getIndex().incoming;
-	}
+	}*/
 
 	private Snackbar createSnackbar(int resId, Object... objects)
 	{
@@ -299,10 +298,8 @@ public class TransactionActivity
 
 	private void showMenus()
 	{
-		if (!calculateSpace()) {
-			mInfoMenu.setTitle(R.string.mesg_notEnoughSpace);
-			MenuItemCompat.setIconTintList(mInfoMenu, ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.notEnoughSpaceMenuTint)));
-		}
+		// TODO: 7/24/18 This function is currently ineffective. Fix it by using commented references
+		//calculateSpace();
 
 		boolean hasIncoming = getIndex().incomingCount > 0;
 
@@ -375,17 +372,15 @@ public class TransactionActivity
 
 	public void updateCalculations()
 	{
-		if (mInfoMenu != null) {
-			new Handler(Looper.myLooper()).post(new Runnable()
+		new Handler(Looper.myLooper()).post(new Runnable()
+		{
+			@Override
+			public void run()
 			{
-				@Override
-				public void run()
-				{
-					getDatabase().calculateTransactionSize(mGroup.groupId, getIndex());
-					showMenus();
-				}
-			});
-		}
+				getDatabase().calculateTransactionSize(mGroup.groupId, getIndex());
+				showMenus();
+			}
+		});
 	}
 
 	public static void startInstance(Context context, int groupId)
@@ -603,6 +598,34 @@ public class TransactionActivity
 			}
 		}
 
+		public void applyViewChanges(TransferGroup.Index index)
+		{
+			if (getView() == null)
+				return;
+
+			TextView incomingSize = getView().findViewById(R.id.transaction_group_info_incoming_size);
+			TextView outgoingSize = getView().findViewById(R.id.transaction_group_info_outgoing_size);
+			TextView availableDisk = getView().findViewById(R.id.transaction_group_info_available_disk_space);
+			TextView savePath = getView().findViewById(R.id.transaction_group_info_save_path);
+
+			DocumentFile storageFile = FileUtils.getSavePath(getContext(), getDefaultPreferences(), getTransferGroup());
+			Resources resources = getContext().getResources();
+
+			incomingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
+					resources.getQuantityString(R.plurals.text_files, index.incomingCount, index.incomingCount),
+					FileUtils.sizeExpression(index.incoming, false)));
+
+			outgoingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
+					resources.getQuantityString(R.plurals.text_files, index.outgoingCount, index.outgoingCount),
+					FileUtils.sizeExpression(index.outgoing, false)));
+
+			availableDisk.setText(storageFile instanceof LocalDocumentFile
+					? FileUtils.sizeExpression(((LocalDocumentFile) storageFile).getFile().getFreeSpace(), false)
+					: getContext().getString(R.string.text_unknown));
+
+			savePath.setText(storageFile.getUri().toString());
+		}
+
 		@Override
 		public CharSequence getTitle(Context context)
 		{
@@ -644,6 +667,9 @@ public class TransactionActivity
 		public void updateViewState(TransferGroup.Index index)
 		{
 			boolean isIncoming = index.incomingCount > 0;
+
+			applyViewChanges(index);
+
 
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);

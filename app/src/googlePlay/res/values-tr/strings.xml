@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_donate">Bağış yap</string>
+    <string name="mesg_donationSuccessful">Teşekkürler</string>
+    <string name="mesg_donationBillingError">Birşeyler çalışmıyor</string>
+    <string name="butn_donate">Bağış yap</string>
+</resources>

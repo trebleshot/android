@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="listContentIcon" parent="parentListContentIcon">
+        <item name="android:layout_marginEnd">@dimen/padding_list_content_icon_main_margin_right</item>
+        <item name="android:layout_marginStart">@dimen/padding_list_content_icon_main_margin_left</item>
+    </style>
+</resources>

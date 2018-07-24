@@ -1,21 +1,17 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
+    style="@style/listContentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    android:padding="15dp">
+    android:background="?rectSelector">
 
     <FrameLayout
         android:id="@+id/layout_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        style="@style/listContentIcon"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginEnd="23dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="23dp"
-        android:layout_marginStart="8dp"
+        android:layout_centerVertical="true"
         android:background="@color/thumbnailColor">
 
         <ImageView
@@ -45,7 +41,7 @@
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="4dp"/>
+            android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
 
         <LinearLayout
             android:layout_width="match_parent"

@@ -7,4 +7,16 @@
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="font_size_primary">16sp</dimen>
+    <dimen name="font_size_secondary">13sp</dimen>
+    <dimen name="font_size_tiny">10sp</dimen>
+    <dimen name="font_size_small">12sp</dimen>
+    <dimen name="font_size_big">18sp</dimen>
+    <dimen name="icon_size_list_small">25dp</dimen>
+    <dimen name="icon_size_list_normal">35dp</dimen>
+    <dimen name="icon_size_list_big">50dp</dimen>
+    <dimen name="padding_list_content_parent_layout">18dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_left">8dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_right">26dp</dimen>
+    <dimen name="padding_list_content_two_lines_separation_height">2dp</dimen>
 </resources>

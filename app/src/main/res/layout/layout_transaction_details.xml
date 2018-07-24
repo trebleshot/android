@@ -1,100 +1,196 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
 
-    <View
-        android:layout_width="wrap_content"
-        android:layout_height="15dp"/>
-
-    <android.support.v7.widget.CardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"/>
+
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp">
 
             <LinearLayout
-                android:id="@+id/layout_transaction_details_remove"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp">
+                android:orientation="vertical">
 
-                <ImageView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_remove"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/ic_delete_white_24dp"
-                    android:tint="?colorAccent"/>
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/ic_delete_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_removeAll"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_save_to"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/butn_removeAll"
-                    android:textColor="?android:textColorPrimary"/>
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/ic_save_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_saveTo"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_show_files"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="20dp"
+                        android:src="@drawable/ic_folder_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <TextView
+                        android:id="@+id/activity_about_update_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_showFiles"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/layout_transaction_details_save_to"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp">
+        </android.support.v7.widget.CardView>
 
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/ic_save_white_24dp"
-                    android:tint="?colorAccent"/>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/butn_saveTo"
-                    android:textColor="?android:textColorPrimary"/>
-
-            </LinearLayout>
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp">
 
             <LinearLayout
-                android:id="@+id/layout_transaction_details_show_files"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="?android:attr/selectableItemBackground"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="20dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="20dp"
-                    android:src="@drawable/ic_folder_white_24dp"
-                    android:tint="?colorAccent"/>
+                android:orientation="vertical"
+                android:padding="24dp">
 
                 <TextView
-                    android:id="@+id/activity_about_update_text"
+                    style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/butn_showFiles"
-                    android:textColor="?android:textColorPrimary"/>
+                    android:text="@string/text_totalIncomingSize"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/transaction_group_info_incoming_size"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp"/>
+
+                <TextView
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_totalOutgoingSize"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/transaction_group_info_outgoing_size"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp"/>
+
+                <TextView
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_availableDiskSpace"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/transaction_group_info_available_disk_space"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="10dp"/>
+
+                <TextView
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_savePath"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/transaction_group_info_save_path"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="3"/>
 
             </LinearLayout>
+        </android.support.v7.widget.CardView>
 
-        </LinearLayout>
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="15dp"/>
 
-    </android.support.v7.widget.CardView>
-
-</LinearLayout>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>
