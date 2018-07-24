@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,9 +19,14 @@ import com.anjlab.android.iab.v3.TransactionDetails;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.MathUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * created by: veli
@@ -45,7 +52,7 @@ public class InAppDonationItemListFragment
 	@Override
 	public RecyclerView.LayoutManager onLayoutManager()
 	{
-		int sizeScale = isScreenLarge() ? 4 : 2;
+		int sizeScale = isScreenLarge() ? 3 : 2;
 		int rotationScale = isScreenLandscape() ? 2 : 1;
 
 		return new GridLayoutManager(getContext(), sizeScale * rotationScale);
@@ -71,7 +78,37 @@ public class InAppDonationItemListFragment
 	@Override
 	public DefaultAdapter onAdapter()
 	{
-		return new DefaultAdapter(getContext());
+		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
+		{
+			@Override
+			public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
+			{
+				clazz.getView().setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						final SkuDetails skuDetails = getAdapter().getList().get(clazz.getAdapterPosition());
+
+						if (getContext() == null)
+							return;
+
+						mBillingProcessor.purchase(getActivity(), skuDetails.productId, "Donations are not real world items");
+					}
+				});
+			}
+		};
+
+
+		return new DefaultAdapter(getContext())
+		{
+			@NonNull
+			@Override
+			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+			{
+				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+			}
+		};
 	}
 
 	@Override
@@ -119,8 +156,12 @@ public class InAppDonationItemListFragment
 		{
 			SkuDetails details = getList().get(position);
 			TextView text1 = holder.getView().findViewById(R.id.text);
+			TextView text2 = holder.getView().findViewById(R.id.text2);
+			TextView text3 = holder.getView().findViewById(R.id.text3);
 
-			text1.setText(details.title);
+			text1.setText(details.title.substring(0, details.title.lastIndexOf(" (")));
+			text2.setText(details.description);
+			text3.setText(details.priceText);
 		}
 
 		@Override
@@ -140,8 +181,27 @@ public class InAppDonationItemListFragment
 				ArrayList<String> items = new ArrayList<>();
 
 				items.add("trebleshot.donation.1");
+				items.add("trebleshot.donation.2");
+				items.add("trebleshot.donation.3");
+				items.add("trebleshot.donation.4");
+				items.add("trebleshot.donation.5");
+				items.add("trebleshot.donation.6");
 
-				returnedList.addAll(mBillingProcessor.getPurchaseListingDetails(items));
+				List<SkuDetails> skuDetails = mBillingProcessor.getPurchaseListingDetails(items);
+
+				if (skuDetails != null)
+				{
+					Collections.sort(skuDetails, new Comparator<SkuDetails>()
+					{
+						@Override
+						public int compare(SkuDetails o1, SkuDetails o2)
+						{
+							return MathUtils.compare(o1.priceLong, o2.priceLong);
+						}
+					});
+
+					returnedList.addAll(skuDetails);
+				}
 			}
 
 			return returnedList;

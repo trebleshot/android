@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -17,5 +18,21 @@ public class ThirdPartyLibrariesActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_third_party_libraries);
+
+		if (getSupportActionBar() != null)
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == android.R.id.home)
+			onBackPressed();
+		else
+			return super.onOptionsItemSelected(item);
+
+		return true;
 	}
 }
