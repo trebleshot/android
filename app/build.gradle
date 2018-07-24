@@ -32,7 +32,7 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 75
+        versionCode 74
         versionName "1.2.6.4"
     }
 

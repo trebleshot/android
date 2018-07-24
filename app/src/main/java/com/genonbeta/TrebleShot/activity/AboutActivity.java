@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -21,8 +20,6 @@ import velitasali.updatewithgithub.GitHubUpdater;
 
 public class AboutActivity extends Activity
 {
-	private TextView mTextUpdates;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -31,9 +28,6 @@ public class AboutActivity extends Activity
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
-
-		final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(this);
-		mTextUpdates = findViewById(R.id.activity_about_update_text);
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()
 		{
@@ -68,29 +62,21 @@ public class AboutActivity extends Activity
 			}
 		});
 
-		if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
-			findViewById(R.id.activity_about_update_layout).setVisibility(View.GONE);
-
-			findViewById(R.id.activity_about_donate_layout).setOnClickListener(new View.OnClickListener()
+		findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
 			{
-				@Override
-				public void onClick(View view)
-				{
-					startActivity(new Intent(AboutActivity.this, DonationActivity.class));
-				}
-			});
-		} else {
-			findViewById(R.id.activity_about_donate_layout).setVisibility(View.GONE);
-
-			findViewById(R.id.activity_about_update_layout).setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View view)
-				{
-					UpdateUtils.checkForUpdates(AboutActivity.this, updater, true, null);
-				}
-			});
-		}
+				if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+					try {
+						startActivity(new Intent(AboutActivity.this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+					} catch (ClassNotFoundException e) {
+						e.printStackTrace();
+					}
+				} else
+					UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(AboutActivity.this), true, null);
+			}
+		});
 
 		findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(new View.OnClickListener()
 		{
@@ -101,28 +87,32 @@ public class AboutActivity extends Activity
 			}
 		});
 
-		if (UpdateUtils.hasNewVersion(getApplicationContext()))
-			highlightUpdater(UpdateUtils.getAvailableVersion(getApplicationContext()));
-		else
-			UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, new GitHubUpdater.OnInfoAvailableListener()
-			{
-				@Override
-				public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
-				{
-					if (newVersion)
-						highlightUpdater(versionName);
-				}
-			});
+		if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+			final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(this);
+			final TextView updateText = findViewById(R.id.activity_about_option_fourth_text);
 
+			if (UpdateUtils.hasNewVersion(getApplicationContext()))
+				highlightUpdater(updateText, UpdateUtils.getAvailableVersion(getApplicationContext()));
+			else
+				UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, new GitHubUpdater.OnInfoAvailableListener()
+				{
+					@Override
+					public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
+					{
+						if (newVersion)
+							highlightUpdater(updateText, versionName);
+					}
+				});
+		}
 		GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
 
 		if (contributorsListFragment != null)
 			contributorsListFragment.getListView().setNestedScrollingEnabled(false);
 	}
 
-	private void highlightUpdater(String availableVersion)
+	private void highlightUpdater(TextView textView, String availableVersion)
 	{
-		mTextUpdates.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
-		mTextUpdates.setText(R.string.text_newVersionAvailable);
+		textView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+		textView.setText(R.string.text_newVersionAvailable);
 	}
 }
