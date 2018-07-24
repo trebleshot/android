@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.fragment.external;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -12,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.SkuDetails;
@@ -114,7 +113,7 @@ public class InAppDonationItemListFragment
 	@Override
 	public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details)
 	{
-
+		Toast.makeText(getContext(), R.string.mesg_donationSuccessful, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -126,7 +125,7 @@ public class InAppDonationItemListFragment
 	@Override
 	public void onBillingError(int errorCode, @Nullable Throwable error)
 	{
-
+		Toast.makeText(getContext(), R.string.mesg_donationBillingError, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override

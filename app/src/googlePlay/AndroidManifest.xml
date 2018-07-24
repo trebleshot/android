@@ -5,4 +5,11 @@
     <!--Only Google Play version will require this permission for donation implementation-->
     <uses-permission android:name="com.android.vending.BILLING" />
 
+    <application>
+        <activity
+            android:label="@string/text_donate"
+            android:name=".activity.DonationActivity"
+            android:theme="@style/AppTheme.GreyStatusBar"/>
+    </application>
+
 </manifest>

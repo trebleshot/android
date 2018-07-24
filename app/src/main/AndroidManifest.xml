@@ -96,11 +96,6 @@
             android:name=".activity.ThirdPartyLibrariesActivity"
             android:label="@string/text_thirdPartyLibraries"/>
 
-        <activity
-            android:label="Donate love"
-            android:name=".activity.DonationActivity"
-            android:theme="@style/AppTheme.GreyStatusBar"/>
-
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"
