@@ -45,6 +45,7 @@ Even though it should be easy to compile the app by yourself, you may need to;
 
 ## Supported languages
 * Arabic
+* Basque
 * Chinese (Simplified)
 * Dutch
 * English
