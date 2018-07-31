@@ -3,6 +3,8 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.view.LayoutInflater;
 
+import com.genonbeta.android.framework.widget.ListAdapterImpl;
+
 /**
  * Created by: veli
  * Date: 12/4/16 11:54 PM

@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.app;
+package com.genonbeta.android.framework.app;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,8 +18,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.widget.ListAdapterImpl;
+import com.genonbeta.android.framework.R;
+import com.genonbeta.android.framework.widget.ListAdapterImpl;
 
 import java.util.ArrayList;
 
@@ -56,21 +56,21 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		super.onCreateView(inflater, container, savedInstanceState);
 
-		View view = getLayoutInflater().inflate(R.layout.abstract_list_fragment, container, false);
+		View view = getLayoutInflater().inflate(R.layout.genfw_abstract_list_fragment, container, false);
 
-		mCustomViewContainer = view.findViewById(R.id.customListFragment_customViewContainer);
-		mDefaultViewContainer = view.findViewById(R.id.customListFragment_defaultViewContainer);
-		mListViewContainer = view.findViewById(R.id.customListFragment_listViewContainer);
-		mContainer = view.findViewById(R.id.customListFragment_container);
-		mEmptyView = view.findViewById(R.id.customListFragment_emptyView);
-		mEmptyText = view.findViewById(R.id.customListFragment_emptyTextView);
-		mEmptyImage = view.findViewById(R.id.customListFragment_emptyImageView);
-		mProgressView = view.findViewById(R.id.customListFragment_progressView);
-		mEmptyActionButton = view.findViewById(R.id.customListFragment_emptyActionButton);
+		mCustomViewContainer = view.findViewById(R.id.genfw_customListFragment_customViewContainer);
+		mDefaultViewContainer = view.findViewById(R.id.genfw_customListFragment_defaultViewContainer);
+		mListViewContainer = view.findViewById(R.id.genfw_customListFragment_listViewContainer);
+		mContainer = view.findViewById(R.id.genfw_customListFragment_container);
+		mEmptyView = view.findViewById(R.id.genfw_customListFragment_emptyView);
+		mEmptyText = view.findViewById(R.id.genfw_customListFragment_emptyTextView);
+		mEmptyImage = view.findViewById(R.id.genfw_customListFragment_emptyImageView);
+		mProgressView = view.findViewById(R.id.genfw_customListFragment_progressView);
+		mEmptyActionButton = view.findViewById(R.id.genfw_customListFragment_emptyActionButton);
 
 		return view;
 	}
@@ -81,8 +81,8 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 		super.onViewCreated(view, savedInstanceState);
 
 		if (getListView() != null
-				&& getListView().getId() != R.id.customListFragment_listView)
-			getListView().setId(R.id.customListFragment_listView);
+				&& getListView().getId() != R.id.genfw_customListFragment_listView)
+			getListView().setId(R.id.genfw_customListFragment_listView);
 	}
 
 	@Override
@@ -264,6 +264,7 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 		private boolean mRunning = false;
 		private boolean mReloadRequested = false;
 
+		@NonNull
 		@Override
 		public Loader<ArrayList<T>> onCreateLoader(int id, Bundle args)
 		{
@@ -294,7 +295,7 @@ public abstract class ListFragment<Z extends ViewGroup, T, E extends ListAdapter
 		}
 
 		@Override
-		public void onLoaderReset(Loader<ArrayList<T>> loader)
+		public void onLoaderReset(@NonNull Loader<ArrayList<T>> loader)
 		{
 
 		}

@@ -13,17 +13,10 @@ import com.genonbeta.TrebleShot.util.AppUtils;
  */
 
 public class Fragment
-		extends android.support.v4.app.Fragment
+		extends com.genonbeta.android.framework.app.Fragment
 		implements FragmentImpl, SnackbarSupport
 {
 	private boolean mIsMenuShown;
-
-	public Snackbar createSnackbar(int resId, Object... objects)
-	{
-		return getView() != null
-				? Snackbar.make(getView(), getString(resId, objects), Snackbar.LENGTH_LONG)
-				: null;
-	}
 
 	public AccessDatabase getDatabase()
 	{

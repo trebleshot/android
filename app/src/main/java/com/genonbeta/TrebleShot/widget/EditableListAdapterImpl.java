@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.widget;
 
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.android.framework.widget.ListAdapterImpl;
 
 import java.util.ArrayList;
 

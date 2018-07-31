@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.ListViewAdapter;
+import com.genonbeta.android.framework.app.ListFragment;
 
 /**
  * created by: veli
@@ -43,11 +45,11 @@ abstract public class ListViewFragment<T, E extends ListViewAdapter<T>> extends 
 	};
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 
-		mListView = view.findViewById(R.id.customListFragment_listView);
+		mListView = view.findViewById(R.id.genfw_customListFragment_listView);
 
 		if (mListView == null)
 			mListView = onListView(getContainer(), getListViewContainer());

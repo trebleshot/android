@@ -10,12 +10,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
  * created by: veli
  * date: 14/04/18 10:52
  */
-public interface FragmentImpl
+public interface FragmentImpl extends com.genonbeta.android.framework.app.FragmentImpl
 {
-	FragmentActivity getActivity();
-
-	Context getContext();
-
 	AccessDatabase getDatabase();
 
 	SharedPreferences getDefaultPreferences();

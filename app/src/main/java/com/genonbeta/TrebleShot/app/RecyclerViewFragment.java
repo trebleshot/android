@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +12,7 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.app.ListFragment;
 
 /**
  * created by: veli
@@ -50,11 +52,11 @@ abstract public class RecyclerViewFragment<T, V extends RecyclerViewAdapter.View
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		View view = super.onCreateView(inflater, container, savedInstanceState);
 
-		mRecyclerView = view.findViewById(R.id.customListFragment_listView);
+		mRecyclerView = view.findViewById(R.id.genfw_customListFragment_listView);
 
 		if (mRecyclerView == null)
 			mRecyclerView = onListView(getContainer(), getListViewContainer());

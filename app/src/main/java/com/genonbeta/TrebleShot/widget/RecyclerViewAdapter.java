@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import com.genonbeta.android.framework.widget.ListAdapterImpl;
+
 /**
  * created by: veli
  * date: 26.03.2018 11:46

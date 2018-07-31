@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.app;
+package com.genonbeta.android.framework.app;
 
 /**
  * created by: veli

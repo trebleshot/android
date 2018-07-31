@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="customListFragment_listView" type="id"/>
     <item name="actions_abs_editable_group_grid_size" type="id"/>
     <item name="actions_abs_group_shareable_group_grouping" type="id"/>
     <item name="actions_abs_editable_group_sorting" type="id"/>

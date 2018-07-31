@@ -5,18 +5,18 @@
              android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/customListFragment_customViewContainer"
+        android:id="@+id/genfw_customListFragment_customViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"/>
 
     <FrameLayout
-        android:id="@+id/customListFragment_defaultViewContainer"
+        android:id="@+id/genfw_customListFragment_defaultViewContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <ProgressBar
-            android:id="@+id/customListFragment_progressView"
+            android:id="@+id/genfw_customListFragment_progressView"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="210dip"
             android:layout_height="wrap_content"
@@ -25,17 +25,17 @@
             android:visibility="gone"/>
 
         <FrameLayout
-            android:id="@+id/customListFragment_container"
+            android:id="@+id/genfw_customListFragment_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <FrameLayout
-                android:id="@+id/customListFragment_listViewContainer"
+                android:id="@+id/genfw_customListFragment_listViewContainer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
             <RelativeLayout
-                android:id="@+id/customListFragment_emptyView"
+                android:id="@+id/genfw_customListFragment_emptyView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingLeft="15dp"
@@ -43,7 +43,7 @@
                 android:visibility="gone">
 
                 <ImageView
-                    android:id="@+id/customListFragment_emptyImageView"
+                    android:id="@+id/genfw_customListFragment_emptyImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -54,7 +54,7 @@
                     android:tint="@color/whiteAccent"/>
 
                 <TextView
-                    android:id="@+id/customListFragment_emptyTextView"
+                    android:id="@+id/genfw_customListFragment_emptyTextView"
                     style="@style/marqueeText.primary.big"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                     android:text="@string/text_listEmpty"/>
 
                 <Button
-                    android:id="@+id/customListFragment_emptyActionButton"
+                    android:id="@+id/genfw_customListFragment_emptyActionButton"
                     style="?attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

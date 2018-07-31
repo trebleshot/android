@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.widget;
+package com.genonbeta.android.framework.widget;
 
 import android.content.Context;
 import android.view.LayoutInflater;
