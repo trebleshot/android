@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -35,7 +36,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 import java.util.Map;

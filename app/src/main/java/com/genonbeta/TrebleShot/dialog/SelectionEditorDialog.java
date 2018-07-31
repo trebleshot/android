@@ -11,7 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Selectable;
+import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.ArrayList;
 

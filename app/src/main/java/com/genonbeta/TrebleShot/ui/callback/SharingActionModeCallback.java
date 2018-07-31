@@ -14,7 +14,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.ShareableListFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 

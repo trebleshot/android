@@ -12,12 +12,11 @@ import android.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-
-import velitasali.updatewithgithub.GitHubUpdater;
+import com.genonbeta.android.framework.preference.DbSharablePreferences;
+import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
 /**
  * created by: Veli

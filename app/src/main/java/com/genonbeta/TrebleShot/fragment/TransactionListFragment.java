@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
@@ -116,7 +116,7 @@ public class TransactionListFragment
 			}
 		};
 
-		return new TransactionListAdapter(getActivity(), getDatabase())
+		return new TransactionListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
 		{
 			@NonNull
 			@Override
@@ -140,7 +140,7 @@ public class TransactionListFragment
 	{
 		final TransferObject transferObject = getAdapter().getItem(holder);
 
-		new TransactionInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), transferObject)
+		new TransactionInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), transferObject)
 				.show();
 
 		return false;
@@ -161,14 +161,14 @@ public class TransactionListFragment
 			getAdapter().setPath(transferObject.directory);
 			refreshList();
 
-			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !getDefaultPreferences().getBoolean("helpFolderSelection", false))
+			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
 				createSnackbar(R.string.mesg_helpFolderSelection)
 						.setAction(R.string.butn_gotIt, new View.OnClickListener()
 						{
 							@Override
 							public void onClick(View v)
 							{
-								getDefaultPreferences()
+								AppUtils.getDefaultPreferences(getContext())
 										.edit()
 										.putBoolean("helpFolderSelection", true)
 										.apply();
@@ -224,7 +224,7 @@ public class TransactionListFragment
 							{
 								for (TransactionListAdapter.GroupEditableTransferObject transferObject : selectionList)
 									if (transferObject instanceof TransactionListAdapter.TransferFolder) {
-										getFragment().getDatabase().delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+										AppUtils.getDatabase(getFragment().getContext()).delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 												.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
 																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
 																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
@@ -232,7 +232,7 @@ public class TransactionListFragment
 														transferObject.directory + File.separator + "%",
 														transferObject.directory));
 									} else
-										getFragment().getDatabase().remove(transferObject);
+										AppUtils.getDatabase(getFragment().getContext()).remove(transferObject);
 							}
 						});
 					}

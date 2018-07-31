@@ -11,6 +11,7 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Comparator;

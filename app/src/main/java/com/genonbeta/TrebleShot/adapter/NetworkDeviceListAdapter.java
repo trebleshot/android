@@ -18,7 +18,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;

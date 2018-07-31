@@ -27,7 +27,7 @@ import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -98,7 +98,7 @@ public class TextStreamListFragment
 			}
 		};
 
-		return new TextStreamListAdapter(getActivity(), getDatabase())
+		return new TextStreamListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
 		{
 			@NonNull
 			@Override
@@ -197,7 +197,7 @@ public class TextStreamListFragment
 
 			if (id == R.id.action_mode_text_stream_delete) {
 				for (TextStreamObject textStreamObject : selectionList)
-					getFragment().getDatabase().remove(textStreamObject);
+					AppUtils.getDatabase(getFragment().getContext()).remove(textStreamObject);
 			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
 				if (selectionList.size() == 1) {
 					TextStreamObject streamObject = selectionList.get(0);

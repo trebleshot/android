@@ -35,7 +35,7 @@ public class DeviceChooserService extends ChooserTargetService
 	@Override
 	public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
 	{
-		AccessDatabase database = AppUtils.getAccessDatabase(getApplicationContext());
+		AccessDatabase database = AppUtils.getDatabase(getApplicationContext());
 		ArrayList<ChooserTarget> list = new ArrayList<>();
 
 		for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {

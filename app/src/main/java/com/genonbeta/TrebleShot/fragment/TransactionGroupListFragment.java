@@ -22,7 +22,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ public class TransactionGroupListFragment
 			}
 		};
 
-		return new TransactionGroupListAdapter(getActivity(), getDatabase())
+		return new TransactionGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
 		{
 			@NonNull
 			@Override
@@ -210,7 +210,7 @@ public class TransactionGroupListFragment
 
 			if (id == R.id.action_mode_group_delete) {
 				for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
-					getFragment().getDatabase().remove(preloadedGroup);
+					AppUtils.getDatabase(getFragment().getContext()).remove(preloadedGroup);
 			} else
 				return super.onActionMenuItemSelected(context, actionMode, item);
 

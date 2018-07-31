@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
 
 /**

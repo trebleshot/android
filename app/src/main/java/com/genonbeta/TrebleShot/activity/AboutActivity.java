@@ -15,8 +15,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-
-import velitasali.updatewithgithub.GitHubUpdater;
+import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
 public class AboutActivity extends Activity
 {

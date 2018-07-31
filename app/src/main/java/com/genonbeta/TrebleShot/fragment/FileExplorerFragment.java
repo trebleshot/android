@@ -24,14 +24,15 @@ import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -42,8 +43,8 @@ import java.util.ArrayList;
  */
 
 public class FileExplorerFragment
-		extends Fragment
-		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport
+		extends com.genonbeta.android.framework.app.Fragment
+		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -129,7 +130,7 @@ public class FileExplorerFragment
 						String pathString = pathUri.toString();
 						String title = pathString.substring(pathString.lastIndexOf(File.separator));
 
-						getDatabase().publish(new WritablePathObject(title, pathUri));
+						AppUtils.getDatabase(getContext()).publish(new WritablePathObject(title, pathUri));
 
 						if (getContext() != null)
 							getContext().getContentResolver().takePersistableUriPermission(pathUri,

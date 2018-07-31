@@ -25,17 +25,18 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.android.framework.util.Interrupter;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -51,8 +52,8 @@ import java.util.List;
  * date: 12/04/18 17:21
  */
 public class CodeConnectFragment
-		extends Fragment
-		implements TitleSupport, UITask
+		extends com.genonbeta.android.framework.app.Fragment
+		implements TitleSupport, UITask, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
 	public static final String TAG = "CodeConnectFragment";
 
@@ -156,7 +157,7 @@ public class CodeConnectFragment
 							hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
 						}
 
-						mConnectionUtils.makeAcquaintance(getContext(), getDatabase(), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
+						mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
 					} else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
 						String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
 						String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
@@ -166,7 +167,7 @@ public class CodeConnectFragment
 						if (wifiInfo != null
 								&& wifiInfo.getBSSID() != null
 								&& wifiInfo.getBSSID().equals(bssid))
-							mConnectionUtils.makeAcquaintance(getContext(), getDatabase(), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
+							mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
 						else {
 							mBarcodeView.pauseAndWait();
 

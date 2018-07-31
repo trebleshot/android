@@ -20,7 +20,7 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-        <com.genonbeta.TrebleShot.widget.PowerfulActionMode
+        <com.genonbeta.android.framework.widget.PowerfulActionMode
             android:id="@+id/content_powerful_action_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

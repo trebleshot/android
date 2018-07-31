@@ -23,13 +23,13 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -47,8 +47,8 @@ import org.json.JSONObject;
  * date: 11/04/18 20:53
  */
 public class NetworkStatusFragment
-		extends Fragment
-		implements TitleSupport
+		extends com.genonbeta.android.framework.app.Fragment
+		implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -210,7 +210,7 @@ public class NetworkStatusFragment
 
 				codeIndex.put(Keyword.NETWORK_PIN, networkPin);
 
-				getDefaultPreferences().edit()
+				AppUtils.getDefaultPreferences(getContext()).edit()
 						.putInt(Keyword.NETWORK_PIN, networkPin)
 						.apply();
 			}
@@ -311,8 +311,8 @@ public class NetworkStatusFragment
 				NetworkDevice.Connection connection = new NetworkDevice.Connection(device.deviceId, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
 
 				try {
-					getDatabase().reconstruct(device);
-					getDatabase().reconstruct(connection);
+					AppUtils.getDatabase(getContext()).reconstruct(device);
+					AppUtils.getDatabase(getContext()).reconstruct(connection);
 
 					if (mDeviceSelectedListener != null)
 						mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);

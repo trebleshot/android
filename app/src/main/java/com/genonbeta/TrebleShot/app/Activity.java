@@ -51,7 +51,7 @@ public abstract class Activity extends AppCompatActivity
 
 	public AccessDatabase getDatabase()
 	{
-		return AppUtils.getAccessDatabase(this);
+		return AppUtils.getDatabase(this);
 	}
 
 	protected SharedPreferences getDefaultPreferences()

@@ -33,10 +33,11 @@ import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -49,7 +50,7 @@ import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -420,8 +421,8 @@ public class TransactionActivity
 	}
 
 	public static class TransactionDetailsFragment
-			extends Fragment
-			implements TitleSupport
+			extends com.genonbeta.android.framework.app.Fragment
+			implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 	{
 		public static final String ARG_GROUP_ID = "groupId";
 
@@ -459,7 +460,7 @@ public class TransactionActivity
 						@Override
 						public void onClick(DialogInterface dialog, int which)
 						{
-							getDatabase().remove(getTransferGroup());
+							AppUtils.getDatabase(getContext()).remove(getTransferGroup());
 						}
 					});
 
@@ -484,7 +485,7 @@ public class TransactionActivity
 				{
 					startActivity(new Intent(getActivity(), HomeActivity.class)
 							.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-							.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(getContext(), getDefaultPreferences(), getTransferGroup()).getUri()));
+							.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), getTransferGroup()).getUri()));
 				}
 			});
 
@@ -545,7 +546,7 @@ public class TransactionActivity
 												@Override
 												public void onRun()
 												{
-													ArrayList<TransferObject> checkList = getDatabase().
+													ArrayList<TransferObject> checkList = AppUtils.getDatabase(getContext()).
 															castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 																	.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
 																					+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
@@ -556,7 +557,7 @@ public class TransactionActivity
 
 													try {
 														// Illustrate new change to build the structure accordingly
-														getDatabase().reconstruct(pseudoGroup);
+														AppUtils.getDatabase(getContext()).reconstruct(pseudoGroup);
 														pseudoGroup.savePath = selectedPath.toString();
 
 														for (TransferObject transferObject : checkList) {
@@ -564,8 +565,8 @@ public class TransactionActivity
 																break;
 
 															try {
-																DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), getDefaultPreferences(), transferObject, getTransferGroup(), false);
-																DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), getDefaultPreferences(), transferObject, pseudoGroup, true);
+																DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, getTransferGroup(), false);
+																DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, pseudoGroup, true);
 
 																if (file.canRead())
 																	FileUtils.move(getContext(), file, pseudoFile, getInterrupter());
@@ -605,7 +606,7 @@ public class TransactionActivity
 			TextView availableDisk = getView().findViewById(R.id.transaction_group_info_available_disk_space);
 			TextView savePath = getView().findViewById(R.id.transaction_group_info_save_path);
 
-			DocumentFile storageFile = FileUtils.getSavePath(getContext(), getDefaultPreferences(), getTransferGroup());
+			DocumentFile storageFile = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), getTransferGroup());
 			Resources resources = getContext().getResources();
 
 			incomingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
@@ -635,7 +636,7 @@ public class TransactionActivity
 				mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
 
 				try {
-					getDatabase().reconstruct(mHeldGroup);
+					AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -649,7 +650,7 @@ public class TransactionActivity
 			TransferGroup group = getTransferGroup();
 
 			group.savePath = selectedPath;
-			getDatabase().publish(group);
+			AppUtils.getDatabase(getContext()).publish(group);
 
 			getActivity().runOnUiThread(new Runnable()
 			{
@@ -667,15 +668,14 @@ public class TransactionActivity
 
 			applyViewChanges(index);
 
-
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 		}
 	}
 
 	public static class TransactionExplorerFragment
-			extends Fragment
-			implements TransactionListAdapter.PathChangedListener, TitleSupport
+			extends com.genonbeta.android.framework.app.Fragment
+			implements TransactionListAdapter.PathChangedListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 	{
 		public static final String ARG_GROUP_ID = "argGroupId";
 		public static final String ARG_PATH = "path";

@@ -13,7 +13,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;

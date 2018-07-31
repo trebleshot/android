@@ -21,7 +21,7 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
+import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
@@ -34,7 +34,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 public class NetworkDeviceListFragment
 		extends RecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
@@ -60,7 +60,7 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-		mNsdDiscovery = new NsdDiscovery(getContext(), getDatabase(), getDefaultPreferences());
+		mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()));
 	}
 
 	@Override
@@ -113,7 +113,7 @@ public class NetworkDeviceListFragment
 		super.onActivityCreated(savedInstanceState);
 		setHasOptionsMenu(true);
 
-		if (getDefaultPreferences().getBoolean("scan_devices_auto", false))
+		if (AppUtils.getDefaultPreferences(getContext()).getBoolean("scan_devices_auto", false))
 			requestRefresh();
 	}
 
@@ -158,14 +158,14 @@ public class NetworkDeviceListFragment
 
 								builder.show();
 							} else if (device.brand != null && device.model != null)
-								new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), device).show();
+								new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
 						}
 					}
 				});
 			}
 		};
 
-		return new NetworkDeviceListAdapter(getDatabase(), getDefaultPreferences(), getConnectionUtils())
+		return new NetworkDeviceListAdapter(AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), getConnectionUtils())
 		{
 			@NonNull
 			@Override

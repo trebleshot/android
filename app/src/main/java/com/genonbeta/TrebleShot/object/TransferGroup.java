@@ -7,6 +7,7 @@ import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.object.Selectable;
 
 /**
  * created by: veli

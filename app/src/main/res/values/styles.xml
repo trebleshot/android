@@ -12,6 +12,9 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
         <item name="rectSelector">@drawable/rect_selector</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/customListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/customListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
@@ -27,6 +30,9 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
         <item name="rectSelector">@drawable/rect_selector</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/customListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/customListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
     <style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar"/>
@@ -114,5 +120,16 @@
     </style>
 
     <style name="listContentIcon" parent="parentListContentIcon" />
+
+    <style name="customListFragmentEmptyImageStyle">
+        <item name="android:background">@drawable/ripple_background_accent</item>
+        <item name="android:cropToPadding">true</item>
+        <item name="android:src">@drawable/ic_whatshot_white_24dp</item>
+        <item name="android:tint">@color/whiteAccent</item>
+    </style>
+
+    <style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">
+        <item name="android:text">@string/text_listEmpty</item>
+    </style>
 
 </resources>

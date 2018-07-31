@@ -83,7 +83,7 @@ public class AppUtils
 		return true;
 	}
 
-	public static AccessDatabase getAccessDatabase(Context context)
+	public static AccessDatabase getDatabase(Context context)
 	{
 		if (mDatabase == null)
 			mDatabase = new AccessDatabase(context);

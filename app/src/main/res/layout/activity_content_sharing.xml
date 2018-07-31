@@ -46,7 +46,7 @@
             android:theme="@style/AppTheme.AppBarOverlay"
             android:visibility="gone">
 
-            <com.genonbeta.TrebleShot.widget.PowerfulActionMode
+            <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

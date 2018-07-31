@@ -6,9 +6,10 @@ import android.content.pm.PackageManager;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.updatewithgithub.GitHubUpdater;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,8 +18,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-
-import velitasali.updatewithgithub.GitHubUpdater;
 
 /**
  * created by: Veli

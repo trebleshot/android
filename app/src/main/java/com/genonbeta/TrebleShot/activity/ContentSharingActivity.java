@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -21,7 +22,7 @@ import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 /**
  * created by: veli
@@ -72,6 +73,7 @@ public class ContentSharingActivity extends Activity
 
 		final DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager())
 		{
+			@NonNull
 			@Override
 			public Object instantiateItem(ViewGroup container, int position)
 			{

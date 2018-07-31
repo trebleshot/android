@@ -17,7 +17,7 @@ import android.widget.PopupMenu;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
-import com.genonbeta.TrebleShot.app.RecyclerViewFragment;
+import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 /**
  * created by: veli
@@ -106,7 +106,7 @@ public class TransferAssigneeListFragment
 					{
 						TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
-						new DeviceInfoDialog(getActivity(), getDatabase(), getDefaultPreferences(), assignee.device)
+						new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), assignee.device)
 								.show();
 					}
 				});
@@ -129,7 +129,7 @@ public class TransferAssigneeListFragment
 								int id = item.getItemId();
 
 								if (id == R.id.popup_changeChangeConnection) {
-									TransferUtils.changeConnection(getActivity(), getDatabase(), getTransferGroup(), assignee.device, new TransferUtils.ConnectionUpdatedListener()
+									TransferUtils.changeConnection(getActivity(), AppUtils.getDatabase(getContext()), getTransferGroup(), assignee.device, new TransferUtils.ConnectionUpdatedListener()
 									{
 										@Override
 										public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
@@ -139,7 +139,7 @@ public class TransferAssigneeListFragment
 										}
 									});
 								} else if (id == R.id.popup_remove) {
-									getDatabase().remove(assignee);
+									AppUtils.getDatabase(getContext()).remove(assignee);
 								} else
 									return false;
 
@@ -153,7 +153,7 @@ public class TransferAssigneeListFragment
 			}
 		};
 
-		return new TransferAssigneeListAdapter(getContext(), getDatabase())
+		return new TransferAssigneeListAdapter(getContext(), AppUtils.getDatabase(getContext()))
 		{
 			@NonNull
 			@Override
@@ -190,7 +190,7 @@ public class TransferAssigneeListFragment
 			mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
 
 			try {
-				getDatabase().reconstruct(mHeldGroup);
+				AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

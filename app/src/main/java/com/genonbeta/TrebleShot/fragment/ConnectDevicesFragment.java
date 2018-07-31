@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 
@@ -23,8 +23,8 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
  * date: 11/04/18 20:52
  */
 public class ConnectDevicesFragment
-		extends Fragment
-		implements TabLayoutSupport, TitleSupport
+		extends com.genonbeta.android.framework.app.Fragment
+		implements TabLayoutSupport, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
 	private boolean mInitialized = false;
 	private ViewPager mViewPager;

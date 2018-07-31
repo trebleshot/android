@@ -53,7 +53,7 @@ public class ApplicationListFragment
 			}
 		};
 
-		return new ApplicationListAdapter(getActivity(), getDefaultPreferences())
+		return new ApplicationListAdapter(getActivity(), AppUtils.getDefaultPreferences(getContext()))
 		{
 			@NonNull
 			@Override
@@ -102,9 +102,9 @@ public class ApplicationListFragment
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		if (item.getItemId() == R.id.show_system_apps) {
-			boolean isShowingSystem = !getDefaultPreferences().getBoolean("show_system_apps", false);
+			boolean isShowingSystem = !AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps", false);
 
-			getDefaultPreferences().edit()
+			AppUtils.getDefaultPreferences(getContext()).edit()
 					.putBoolean("show_system_apps", isShowingSystem)
 					.apply();
 
@@ -121,7 +121,7 @@ public class ApplicationListFragment
 		super.onPrepareOptionsMenu(menu);
 
 		MenuItem menuSystemApps = menu.findItem(R.id.show_system_apps);
-		menuSystemApps.setChecked(getDefaultPreferences().getBoolean("show_system_apps", false));
+		menuSystemApps.setChecked(AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps", false));
 	}
 
 	@Override

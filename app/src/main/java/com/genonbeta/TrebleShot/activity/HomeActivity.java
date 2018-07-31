@@ -53,7 +53,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;

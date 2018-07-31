@@ -1,13 +1,14 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.view.ViewGroup;
 
-import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.android.framework.app.Fragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ public class DefaultFragmentPagerAdapter extends FragmentPagerAdapter
 			tabLayout.addTab(tabLayout.newTab().setText(((TitleSupport) fragment).getTitle(getContext())));
 	}
 
+	@NonNull
 	@Override
 	public Object instantiateItem(ViewGroup container, int position)
 	{

@@ -16,7 +16,7 @@ abstract public class Service extends android.app.Service
 
 	public AccessDatabase getDatabase()
 	{
-		return AppUtils.getAccessDatabase(this);
+		return AppUtils.getDatabase(this);
 	}
 
 	public SharedPreferences getDefaultPreferences()

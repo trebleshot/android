@@ -30,7 +30,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.TrebleShot.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -174,7 +174,7 @@ public class FileListFragment
 
 									if (id == R.id.action_mode_file_eject_directory
 											&& fileHolder instanceof FileListAdapter.WritablePathHolder) {
-										getDatabase().remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+										AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
 									} else if (handleEditingAction(id, FileListFragment.this, generateSelectionList))
 										return false;
 
@@ -189,7 +189,7 @@ public class FileListFragment
 			}
 		};
 
-		return new FileListAdapter(getActivity(), getDatabase(), getDefaultPreferences())
+		return new FileListAdapter(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()))
 		{
 			@NonNull
 			@Override
@@ -301,14 +301,14 @@ public class FileListFragment
 				|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
 			FileListFragment.this.goPath(fileInfo.file);
 
-			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !getDefaultPreferences().getBoolean("helpFolderSelection", false))
+			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
 				createSnackbar(R.string.mesg_helpFolderSelection)
 						.setAction(R.string.butn_gotIt, new View.OnClickListener()
 						{
 							@Override
 							public void onClick(View v)
 							{
-								getDefaultPreferences()
+								AppUtils.getDefaultPreferences(getContext())
 										.edit()
 										.putBoolean("helpFolderSelection", true)
 										.apply();

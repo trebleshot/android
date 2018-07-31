@@ -15,17 +15,16 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.android.updatewithgithub.RemoteServer;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import velitasali.updatewithgithub.RemoteServer;
 
 /**
  * created by: Veli
