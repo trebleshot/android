@@ -9,7 +9,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.text.format.DateUtils;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.App;
@@ -20,8 +19,8 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.preference.DbSharablePreferences;
-import com.genonbeta.TrebleShot.preference.SuperPreferences;
+import com.genonbeta.android.framework.preference.DbSharablePreferences;
+import com.genonbeta.android.framework.preference.SuperPreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,11 +81,6 @@ public class AppUtils
 				return false;
 
 		return true;
-	}
-
-	public static CharSequence formatDateTime(Context context, long millis)
-	{
-		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
 	}
 
 	public static AccessDatabase getAccessDatabase(Context context)

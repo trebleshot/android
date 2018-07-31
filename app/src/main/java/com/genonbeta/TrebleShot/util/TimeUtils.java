@@ -1,9 +1,10 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.text.format.DateUtils;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.date.ElapsedTime;
+import com.genonbeta.android.framework.util.date.ElapsedTime;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,11 @@ import java.util.ArrayList;
 
 public class TimeUtils
 {
+	public static CharSequence formatDateTime(Context context, long millis)
+	{
+		return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
+	}
+
 	public static String getDuration(long milliseconds)
 	{
 		StringBuilder string = new StringBuilder();

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 
-import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
+import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.util.ArrayList;
 

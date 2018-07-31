@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.Fragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
-import com.genonbeta.TrebleShot.io.DocumentFile;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;

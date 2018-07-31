@@ -5,7 +5,7 @@ import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.io.DocumentFile;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 /**
  * Created by: veli

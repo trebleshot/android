@@ -15,7 +15,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.InterruptAwareJob;
-import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 
 import java.util.ArrayList;

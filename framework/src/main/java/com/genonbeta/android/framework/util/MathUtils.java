@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.android.framework.util;
 
 /**
  * created by: Veli
@@ -14,6 +14,6 @@ public class MathUtils
 
 	public static int compare(long x, long y)
 	{
-		return (x < y) ? -1 : ((x == y) ? 0 : 1);
+		return x < y ? -1 : (x == y ? 0 : 1);
 	}
 }

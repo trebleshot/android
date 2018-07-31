@@ -21,7 +21,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.MathUtils;
+import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;

@@ -1,5 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
+import com.genonbeta.android.framework.util.Interrupter;
+
 /**
  * created by: Veli
  * date: 11.02.2018 19:37

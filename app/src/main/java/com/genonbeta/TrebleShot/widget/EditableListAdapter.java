@@ -9,7 +9,7 @@ import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.MathUtils;
+import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 
 import java.util.ArrayList;

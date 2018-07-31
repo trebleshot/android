@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
+import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;

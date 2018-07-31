@@ -25,7 +25,7 @@ import android.widget.Toast;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
-import com.genonbeta.TrebleShot.io.StreamInfo;
+import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;

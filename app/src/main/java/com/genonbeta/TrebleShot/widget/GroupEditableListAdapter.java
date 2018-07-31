@@ -9,11 +9,11 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.date.DateMerger;
-import com.genonbeta.TrebleShot.util.listing.ComparableMerger;
-import com.genonbeta.TrebleShot.util.listing.Lister;
-import com.genonbeta.TrebleShot.util.listing.Merger;
-import com.genonbeta.TrebleShot.util.listing.merger.StringMerger;
+import com.genonbeta.android.framework.util.date.DateMerger;
+import com.genonbeta.android.framework.util.listing.ComparableMerger;
+import com.genonbeta.android.framework.util.listing.Lister;
+import com.genonbeta.android.framework.util.listing.Merger;
+import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.util.ArrayList;
 import java.util.Collections;

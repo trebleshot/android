@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.widget.GalleryGroupEditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
@@ -59,7 +59,7 @@ public class ImageListAdapter
 							cursor.getLong(sizeIndex),
 							Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-					holder.dateTakenString = String.valueOf(AppUtils.formatDateTime(getContext(), holder.date));
+					holder.dateTakenString = String.valueOf(TimeUtils.formatDateTime(getContext(), holder.date));
 
 					lister.offer(holder);
 				}

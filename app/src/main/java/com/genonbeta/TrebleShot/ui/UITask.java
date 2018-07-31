@@ -1,6 +1,6 @@
 package com.genonbeta.TrebleShot.ui;
 
-import com.genonbeta.TrebleShot.util.Interrupter;
+import com.genonbeta.android.framework.util.Interrupter;
 
 /**
  * created by: veli

@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.util;
+package com.genonbeta.android.framework.util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
