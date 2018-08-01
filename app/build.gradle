@@ -63,11 +63,6 @@ android {
     }
 }
 
-repositories {
-    maven { url "https://dl.bintray.com/genonbeta/androidsdk" }
-    maven { url "https://dl.bintray.com/genonbeta/coolsocket" }
-}
-
 dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
