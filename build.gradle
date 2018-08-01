@@ -1,4 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.github.jk1.license.render.JsonReportRenderer
 
 buildscript {
     repositories {
@@ -19,9 +20,12 @@ plugins {
 
 licenseReport {
     outputDir = "$projectDir/app/src/main/res/raw"
-    renderers = [new com.github.jk1.license.render.JsonReportRenderer('libraries_index.json')]
+    renderers = [new JsonReportRenderer('libraries_index.json', true)]
     projects = [project] + project.subprojects
-    configurations = ['compile']
+    // the option for licence rendering which is arg 'compile' in array
+    // won't work therefore, we have to remove the directories
+    // inside the output dir for they will cause build errors
+    configurations = ALL
 }
 
 allprojects {
