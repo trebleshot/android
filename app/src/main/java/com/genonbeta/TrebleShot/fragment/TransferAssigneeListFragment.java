@@ -187,7 +187,7 @@ public class TransferAssigneeListFragment
 	public TransferGroup getTransferGroup()
 	{
 		if (mHeldGroup == null) {
-			mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
+			mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
 
 			try {
 				AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);

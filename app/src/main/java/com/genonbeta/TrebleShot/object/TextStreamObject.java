@@ -18,7 +18,6 @@ public class TextStreamObject
 		extends GroupEditableListAdapter.GroupShareable
 		implements DatabaseObject, Editable
 {
-	public int id;
 	public String text;
 
 	public TextStreamObject()
@@ -30,15 +29,14 @@ public class TextStreamObject
 		super(GroupEditableListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
 	}
 
-	public TextStreamObject(int id)
+	public TextStreamObject(long id)
 	{
-		this.id = id;
+		setId(id);
 	}
 
 	public TextStreamObject(long id, String index)
 	{
 		super(id, index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
-
 		this.text = index;
 	}
 
@@ -52,7 +50,7 @@ public class TextStreamObject
 	public SQLQuery.Select getWhere()
 	{
 		return new SQLQuery.Select(AccessDatabase.TABLE_CLIPBOARD)
-				.setWhere(AccessDatabase.FIELD_CLIPBOARD_ID + "=?", String.valueOf(id));
+				.setWhere(AccessDatabase.FIELD_CLIPBOARD_ID + "=?", String.valueOf(getId()));
 	}
 
 	@Override
@@ -70,7 +68,7 @@ public class TextStreamObject
 	@Override
 	public void reconstruct(CursorItem item)
 	{
-		this.id = item.getInt(AccessDatabase.FIELD_CLIPBOARD_ID);
+		this.id = item.getLong(AccessDatabase.FIELD_CLIPBOARD_ID);
 		this.text = item.getString(AccessDatabase.FIELD_CLIPBOARD_TEXT);
 		this.date = item.getLong(AccessDatabase.FIELD_CLIPBOARD_TIME);
 		this.mimeType = "text/plain";

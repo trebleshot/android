@@ -36,7 +36,7 @@ public class TransactionListAdapter
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
 	private String mPath;
-	private int mGroupId;
+	private long mGroupId;
 	private PathChangedListener mListener;
 
 	public TransactionListAdapter(Context context, AccessDatabase database)
@@ -131,7 +131,7 @@ public class TransactionListAdapter
 				.setCustomLister(this);
 	}
 
-	public int getGroupId()
+	public long getGroupId()
 	{
 		return mGroupId;
 	}
@@ -169,7 +169,7 @@ public class TransactionListAdapter
 		return this;
 	}
 
-	public void setGroupId(int groupId)
+	public void setGroupId(long groupId)
 	{
 		mGroupId = groupId;
 	}

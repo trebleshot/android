@@ -128,7 +128,7 @@ public class TransactionActivity
 		final TransactionExplorerFragment transactionFragment = new TransactionExplorerFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
-			TransferGroup group = new TransferGroup(getIntent().getIntExtra(EXTRA_GROUP_ID, -1));
+			TransferGroup group = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
 
 			try {
 				getDatabase().reconstruct(group);
@@ -757,7 +757,7 @@ public class TransactionActivity
 			Bundle args = getArguments();
 
 			if (args != null && args.containsKey(ARG_GROUP_ID))
-				goPath(args.getInt(ARG_GROUP_ID), args.getString(ARG_PATH));
+				goPath(args.getLong(ARG_GROUP_ID), args.getString(ARG_PATH));
 			else
 				mPathAdapter.goTo(null);
 
@@ -785,7 +785,7 @@ public class TransactionActivity
 			return context.getString(R.string.textFiles);
 		}
 
-		public void goPath(int groupId, String path)
+		public void goPath(long groupId, String path)
 		{
 			getTransactionListFragment().getAdapter().setGroupId(groupId);
 			getTransactionListFragment().getAdapter().setPath(path);

@@ -62,8 +62,6 @@ public class ImageListAdapter
 
 					holder.dateTakenString = String.valueOf(TimeUtils.formatDateTime(getContext(), holder.date));
 
-					Log.d(ImageListAdapter.class.getSimpleName(), "idIndex: " + holder.id);
-
 					lister.offer(holder);
 				}
 				while (cursor.moveToNext());

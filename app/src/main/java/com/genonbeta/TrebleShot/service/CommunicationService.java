@@ -136,7 +136,7 @@ public class CommunicationService extends Service
 					protected boolean onTransact(int code, @NonNull Parcel data, @Nullable Parcel reply, int flags) throws RemoteException
 					{
 
-						reply.writeString("Fuck");
+						reply.writeString("I mean it works");
 						return true;
 					}
 				};
@@ -200,7 +200,7 @@ public class CommunicationService extends Service
 		if (intent != null && AppUtils.checkRunningConditions(this)) {
 			if (ACTION_FILE_TRANSFER.equals(intent.getAction())) {
 				final String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
-				final int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				final long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 				final int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				final boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
 
@@ -257,7 +257,7 @@ public class CommunicationService extends Service
 				}
 			} else if (ACTION_CANCEL_INDEXING.equals(intent.getAction())) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 
 				getNotificationHelper().getUtils().cancel(notificationId);
 
@@ -289,7 +289,7 @@ public class CommunicationService extends Service
 			} else if (ACTION_SEAMLESS_RECEIVE.equals(intent.getAction())
 					&& intent.hasExtra(EXTRA_GROUP_ID)
 					&& intent.hasExtra(EXTRA_DEVICE_ID)) {
-				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
 
 				try {
@@ -305,7 +305,7 @@ public class CommunicationService extends Service
 			} else if (ACTION_CANCEL_JOB.equals(intent.getAction())
 					|| ACTION_CANCEL_KILL.equals(intent.getAction())) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-				int groupId = intent.getIntExtra(EXTRA_GROUP_ID, -1);
+				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 				String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
 
 				ProcessHolder processHolder = findProcessById(groupId, deviceId);
@@ -417,7 +417,7 @@ public class CommunicationService extends Service
 				|| getActiveProcessList().size() > 0;
 	}
 
-	public ProcessHolder findProcessById(int groupId, String deviceId)
+	public ProcessHolder findProcessById(long groupId, String deviceId)
 	{
 		synchronized (getActiveProcessList()) {
 			for (ProcessHolder processHolder : getActiveProcessList())
@@ -630,7 +630,7 @@ public class CommunicationService extends Service
 								if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID) && getOngoingIndexList().size() < 1) {
 									String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
 									final JSONArray jsonArray = new JSONArray(jsonIndex);
-									final int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
+									final long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
 									final NetworkDevice finalDevice = device;
 
 									result = true;
@@ -672,7 +672,7 @@ public class CommunicationService extends Service
 														count++;
 
 														transferObject = new TransferObject(
-																requestIndex.getInt(Keyword.TRANSFER_REQUEST_ID),
+																requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
 																groupId,
 																requestIndex.getString(Keyword.INDEX_FILE_NAME),
 																"." + UUID.randomUUID() + ".tshare",

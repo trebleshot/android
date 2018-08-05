@@ -50,14 +50,11 @@ public class NotificationUtils
 		}
 	}
 
-	public DynamicNotification buildDynamicNotification(int notificationId, String channelId)
-	{
-		return new DynamicNotification(getContext(), getManager(), channelId, notificationId);
-	}
-
 	public DynamicNotification buildDynamicNotification(long notificationId, String channelId)
 	{
-		return buildDynamicNotification(notificationId / 1000, channelId);
+		// Let's hope it will turn out to be less painful
+		return new DynamicNotification(getContext(), getManager(), channelId,
+				(int) (notificationId > Integer.MAX_VALUE ? notificationId / 100000 : notificationId));
 	}
 
 	public NotificationUtils cancel(int notificationId)

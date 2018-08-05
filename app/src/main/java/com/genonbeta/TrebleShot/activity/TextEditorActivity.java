@@ -48,7 +48,7 @@ public class TextEditorActivity extends Activity
 			mEditTextEditor = findViewById(R.id.layout_text_editor_activity_text_text_box);
 
 			if (getIntent().hasExtra(EXTRA_CLIPBOARD_ID)) {
-				mTextStreamObject = new TextStreamObject(getIntent().getIntExtra(EXTRA_CLIPBOARD_ID, -1));
+				mTextStreamObject = new TextStreamObject(getIntent().getLongExtra(EXTRA_CLIPBOARD_ID, -1));
 
 				try {
 					getDatabase().reconstruct(mTextStreamObject);

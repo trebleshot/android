@@ -186,7 +186,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 		public void reconstruct(CursorItem item)
 		{
 			this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-			this.groupId = item.getInt(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
+			this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
 			this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
 			this.isClone = item.getInt(AccessDatabase.FIELD_TRANSFERASSIGNEE_ISCLONE) != 0;
 		}
