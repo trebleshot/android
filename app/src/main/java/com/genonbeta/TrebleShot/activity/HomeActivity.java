@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionManager;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -255,13 +257,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		return true;
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent event)
-	{
-
-		return super.onTouchEvent(event);
-	}
-
 	public boolean checkRequestedFragment(Intent intent)
 	{
 		if (intent == null)
@@ -334,6 +329,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 				if (commit) {
 					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+
+					ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
 					ft.replace(R.id.content_frame, fragment);
 

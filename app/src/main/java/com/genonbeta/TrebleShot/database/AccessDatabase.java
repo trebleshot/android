@@ -144,7 +144,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
 	}
 
-	public void calculateTransactionSize(int groupId, TransferGroup.Index indexObject)
+	public void calculateTransactionSize(long groupId, TransferGroup.Index indexObject)
 	{
 		indexObject.reset();
 
@@ -202,8 +202,8 @@ public class AccessDatabase extends SQLiteDatabase
 		SQLValues sqlValues = new SQLValues();
 
 		sqlValues.defineTable(TABLE_TRANSFER)
-				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
@@ -211,12 +211,12 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
 
 		sqlValues.defineTable(TABLE_TRANSFERGROUP)
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
 
 		sqlValues.defineTable(TABLE_DEVICES)
@@ -248,7 +248,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
 
 		sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
 				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));

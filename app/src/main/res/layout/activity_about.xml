@@ -192,14 +192,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_contributors"
-                    android:textAllCaps="true"/>
+                    style="@style/condensedTitleStyle"/>
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minHeight="200dp">
+                android:minHeight="400dp">
 
                 <fragment
                     android:id="@+id/activity_about_contributors_fragment"

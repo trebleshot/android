@@ -167,6 +167,12 @@ public class TransactionGroupListAdapter
 		}
 
 		@Override
+		public long getId()
+		{
+			return groupId;
+		}
+
+		@Override
 		public String getSelectableTitle()
 		{
 			return totalFiles + " (" + totalSize + ")";
@@ -194,6 +200,12 @@ public class TransactionGroupListAdapter
 		public void setDate(long date)
 		{
 			this.dateCreated = date;
+		}
+
+		@Override
+		public void setId(long id)
+		{
+			this.groupId = id;
 		}
 
 		@Override

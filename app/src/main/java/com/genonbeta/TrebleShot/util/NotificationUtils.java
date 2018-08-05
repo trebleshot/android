@@ -55,6 +55,11 @@ public class NotificationUtils
 		return new DynamicNotification(getContext(), getManager(), channelId, notificationId);
 	}
 
+	public DynamicNotification buildDynamicNotification(long notificationId, String channelId)
+	{
+		return buildDynamicNotification(notificationId / 1000, channelId);
+	}
+
 	public NotificationUtils cancel(int notificationId)
 	{
 		mManager.cancel(notificationId);

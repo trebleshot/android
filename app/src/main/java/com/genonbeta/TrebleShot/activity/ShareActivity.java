@@ -269,7 +269,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 											getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
 
-											int requestId = AppUtils.getUniqueNumber();
+											long requestId = AppUtils.getUniqueNumber();
 											JSONObject thisJson = new JSONObject();
 
 											TransferObject transferObject = new TransferObject(requestId,

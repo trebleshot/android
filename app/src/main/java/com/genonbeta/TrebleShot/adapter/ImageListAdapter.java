@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -50,7 +51,7 @@ public class ImageListAdapter
 
 				do {
 					ImageHolder holder = new ImageHolder(
-							cursor.getInt(idIndex),
+							cursor.getLong(idIndex),
 							cursor.getString(titleIndex),
 							cursor.getString(displayIndex),
 							cursor.getString(albumIndex),
@@ -60,6 +61,8 @@ public class ImageListAdapter
 							Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
 					holder.dateTakenString = String.valueOf(TimeUtils.formatDateTime(getContext(), holder.date));
+
+					Log.d(ImageListAdapter.class.getSimpleName(), "idIndex: " + holder.id);
 
 					lister.offer(holder);
 				}
@@ -123,7 +126,6 @@ public class ImageListAdapter
 
 	public static class ImageHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
 	{
-		public long id;
 		public String dateTakenString;
 
 		public ImageHolder(String representativeText)
@@ -131,10 +133,9 @@ public class ImageListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public ImageHolder(int id, String title, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
+		public ImageHolder(long id, String title, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
 		{
-			super(title, fileName, albumName, mimeType, date, size, uri);
-			this.id = id;
+			super(id, title, fileName, albumName, mimeType, date, size, uri);
 		}
 	}
 }

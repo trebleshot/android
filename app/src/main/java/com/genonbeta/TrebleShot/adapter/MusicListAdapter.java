@@ -76,7 +76,9 @@ public class MusicListAdapter
 				int typeIndex = songCursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE);
 
 				do {
-					lister.offer(new SongHolder(songCursor.getString(nameIndex),
+					lister.offer(new SongHolder(
+							songCursor.getLong(idIndex),
+							songCursor.getString(nameIndex),
 							songCursor.getString(artistIndex),
 							songCursor.getString(songIndex),
 							extractFolderName(songCursor.getString(folderIndex)),
@@ -172,7 +174,7 @@ public class MusicListAdapter
 	public String extractFolderName(String folder)
 	{
 		if (folder.contains(File.separator)) {
-			String[] split = folder.split("/");
+			String[] split = folder.split(File.separator);
 
 			if (split.length >= 2)
 				folder = split[split.length - 2];
@@ -210,9 +212,9 @@ public class MusicListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public SongHolder(String displayName, String artist, String song, String folder, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
+		public SongHolder(long id, String displayName, String artist, String song, String folder, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
 		{
-			super(song + " - " + artist, displayName, mimeType, date, size, uri);
+			super(id, song + " - " + artist, displayName, mimeType, date, size, uri);
 
 			this.artist = artist;
 			this.song = song;

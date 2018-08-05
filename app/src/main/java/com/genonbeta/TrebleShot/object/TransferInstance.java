@@ -19,7 +19,7 @@ public class TransferInstance
 	private TransferGroup.Assignee mAssignee;
 
 	// false means "to find connection first"
-	public TransferInstance(AccessDatabase database, int groupId, String using, boolean findDevice) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+	public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
 		mGroup = buildGroup(database, groupId);
 
@@ -80,7 +80,7 @@ public class TransferInstance
 		}
 	}
 
-	protected TransferGroup buildGroup(AccessDatabase database, int groupId) throws TransactionGroupNotFoundException
+	protected TransferGroup buildGroup(AccessDatabase database, long groupId) throws TransactionGroupNotFoundException
 	{
 		try {
 			TransferGroup group = new TransferGroup(groupId);

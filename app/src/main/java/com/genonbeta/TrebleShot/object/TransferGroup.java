@@ -15,9 +15,9 @@ import com.genonbeta.android.framework.object.Selectable;
  */
 public class TransferGroup implements DatabaseObject, Selectable
 {
-	public int groupId;
-	public String savePath;
+	public long groupId;
 	public long dateCreated;
+	public String savePath;
 
 	private boolean mIsSelected = false;
 
@@ -25,7 +25,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 	{
 	}
 
-	public TransferGroup(int groupId)
+	public TransferGroup(long groupId)
 	{
 		this.groupId = groupId;
 	}
@@ -130,7 +130,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 
 	public static class Assignee implements DatabaseObject
 	{
-		public int groupId;
+		public long groupId;
 		public String deviceId;
 		public String connectionAdapter;
 		public boolean isClone = false;
@@ -140,7 +140,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 
 		}
 
-		public Assignee(int groupId, String deviceId)
+		public Assignee(long groupId, String deviceId)
 		{
 			this.groupId = groupId;
 			this.deviceId = deviceId;
@@ -151,7 +151,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 			this(group.groupId, device.deviceId);
 		}
 
-		public Assignee(int groupId, String deviceId, String connectionAdapter)
+		public Assignee(long groupId, String deviceId, String connectionAdapter)
 		{
 			this(groupId, deviceId);
 			this.connectionAdapter = connectionAdapter;

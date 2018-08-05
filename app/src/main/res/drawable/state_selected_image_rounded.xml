@@ -12,7 +12,7 @@
                         android:left="1dp"
                         android:right="1dp" />
 
-                    <solid android:color="@color/colorAccent"/>
+                    <solid android:color="@color/themeGreyAccent"/>
                 </shape>
             </item>
             <item android:gravity="center">

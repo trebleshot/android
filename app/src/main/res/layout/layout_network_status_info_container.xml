@@ -8,7 +8,7 @@
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="25dp">
+        android:layout_margin="17dp">
 
         <ScrollView
             android:layout_width="match_parent"

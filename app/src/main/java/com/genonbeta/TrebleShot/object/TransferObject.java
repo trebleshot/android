@@ -20,11 +20,11 @@ public class TransferObject
 	public String file;
 	public String fileMimeType;
 	public String directory;
-	public int requestId;
-	public int groupId;
-	public int accessPort;
-	public int skippedBytes;
+	public long requestId;
+	public long groupId;
+	public long skippedBytes;
 	public long fileSize = 0;
+	public int accessPort;
 	public Type type = Type.INCOMING;
 	public Flag flag = Flag.PENDING;
 
@@ -34,7 +34,7 @@ public class TransferObject
 	{
 	}
 
-	public TransferObject(int requestId, int groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+	public TransferObject(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
 	{
 		this.friendlyName = friendlyName;
 		this.file = file;
@@ -95,12 +95,12 @@ public class TransferObject
 		this.file = item.getString(AccessDatabase.FIELD_TRANSFER_FILE);
 		this.fileSize = item.getLong(AccessDatabase.FIELD_TRANSFER_SIZE);
 		this.fileMimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
-		this.requestId = item.getInt(AccessDatabase.FIELD_TRANSFER_ID);
-		this.groupId = item.getInt(AccessDatabase.FIELD_TRANSFER_GROUPID);
+		this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
+		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
 		this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
 		this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
 		this.accessPort = item.getInt(AccessDatabase.FIELD_TRANSFER_ACCESSPORT);
-		this.skippedBytes = item.getInt(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
+		this.skippedBytes = item.getLong(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
 		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
 	}
 
@@ -141,6 +141,12 @@ public class TransferObject
 	}
 
 	@Override
+	public long getId()
+	{
+		return requestId;
+	}
+
+	@Override
 	public String getSelectableTitle()
 	{
 		return friendlyName;
@@ -150,6 +156,13 @@ public class TransferObject
 	public boolean isSelectableSelected()
 	{
 		return mIsSelected;
+	}
+
+	@Override
+	public void setId(long id)
+	{
+		// it will && should be effective on representative text items
+		this.requestId = id;
 	}
 
 	@Override

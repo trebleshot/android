@@ -61,9 +61,9 @@ abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEdit
 			super(viewType, representativeText);
 		}
 
-		public GalleryGroupShareable(String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
+		public GalleryGroupShareable(long id, String friendlyName, String fileName, String albumName, String mimeType, long date, long size, Uri uri)
 		{
-			super(friendlyName, fileName, mimeType, date, size, uri);
+			super(id, friendlyName, fileName, mimeType, date, size, uri);
 			this.albumName = albumName;
 		}
 	}

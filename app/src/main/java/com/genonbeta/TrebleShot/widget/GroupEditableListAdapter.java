@@ -62,6 +62,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 				}
 			});
 
+			long representativeIdIterator = -1;
+
 			for (ComparableMerger<T> thisMerger : groupLister.getList()) {
 				Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
 
@@ -74,6 +76,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 				generated.setSize(thisMerger.getBelongings().size());
 				generated.setDate(firstEditable.getComparableDate());
 				generated.setRepresentativeText(generated.getRepresentativeText());
+				generated.setId(representativeIdIterator--);
 
 				loadedList.addAll(thisMerger.getBelongings());
 			}
@@ -161,9 +164,9 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 			this.representativeText = representativeText;
 		}
 
-		public GroupShareable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+		public GroupShareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 		{
-			super(friendlyName, fileName, mimeType, date, size, uri);
+			super(id, friendlyName, fileName, mimeType, date, size, uri);
 		}
 
 		@Override

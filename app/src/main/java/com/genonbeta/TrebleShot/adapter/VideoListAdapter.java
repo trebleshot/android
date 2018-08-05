@@ -95,7 +95,8 @@ public class VideoListAdapter
 				int typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE);
 
 				do {
-					VideoHolder holder = new VideoHolder(cursor.getInt(idIndex),
+					VideoHolder holder = new VideoHolder(
+							cursor.getInt(idIndex),
 							cursor.getString(titleIndex),
 							cursor.getString(displayIndex),
 							cursor.getString(albumIndex),
@@ -128,7 +129,6 @@ public class VideoListAdapter
 
 	public static class VideoHolder extends GalleryGroupEditableListAdapter.GalleryGroupShareable
 	{
-		public long id;
 		public String duration;
 
 		public VideoHolder(String representativeText)
@@ -136,11 +136,9 @@ public class VideoListAdapter
 			super(VIEW_TYPE_REPRESENTATIVE, representativeText);
 		}
 
-		public VideoHolder(int id, String friendlyName, String fileName, String albumName, String mimeType, long duration, long date, long size, Uri uri)
+		public VideoHolder(long id, String friendlyName, String fileName, String albumName, String mimeType, long duration, long date, long size, Uri uri)
 		{
-			super(friendlyName, fileName, albumName, mimeType, date, size, uri);
-
-			this.id = id;
+			super(id, friendlyName, fileName, albumName, mimeType, date, size, uri);
 			this.duration = TimeUtils.getDuration(duration);
 		}
 	}

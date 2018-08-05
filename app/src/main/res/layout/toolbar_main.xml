@@ -34,7 +34,8 @@
             android:layout_gravity="center_horizontal"
             android:minHeight="?attr/actionBarSize"
             android:visibility="gone"
-            app:tabMode="scrollable"/>
+            app:tabMode="scrollable"
+            app:layout_scrollFlags="snap"/>
 
     </android.support.design.widget.AppBarLayout>
 

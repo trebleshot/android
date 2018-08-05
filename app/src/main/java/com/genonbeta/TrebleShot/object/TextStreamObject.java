@@ -35,11 +35,10 @@ public class TextStreamObject
 		this.id = id;
 	}
 
-	public TextStreamObject(int id, String index)
+	public TextStreamObject(long id, String index)
 	{
-		super(index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
+		super(id, index, index, "text/plain", System.currentTimeMillis(), index.length(), null);
 
-		this.id = id;
 		this.text = index;
 	}
 

@@ -3,15 +3,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector"
-    style="@style/listContentLayout">
+    style="@style/listContentLayoutStyle">
 
     <FrameLayout
         android:id="@+id/layout_image"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        style="@style/listContentIcon"
-        android:background="@drawable/ripple_background_accent">
+        style="@style/listContentIconStyle">
 
         <ImageView
             android:id="@+id/image"
@@ -20,7 +19,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
             android:src="@drawable/ic_file_upload_black_24dp"
-            android:tint="@color/whiteAccent"/>
+            android:tint="@color/colorAccent"/>
 
         <include
             layout="@layout/generic_view_selection_rounded"

@@ -11,6 +11,7 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 
 public class Shareable implements Editable
 {
+	public long id;
 	public String friendlyName;
 	public String fileName;
 	public String mimeType;
@@ -24,8 +25,9 @@ public class Shareable implements Editable
 	{
 	}
 
-	public Shareable(String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+	public Shareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 	{
+		this.id = id;
 		this.friendlyName = friendlyName;
 		this.fileName = fileName;
 		this.mimeType = mimeType;
@@ -59,6 +61,12 @@ public class Shareable implements Editable
 	}
 
 	@Override
+	public long getId()
+	{
+		return this.id;
+	}
+
+	@Override
 	public String getSelectableTitle()
 	{
 		return this.friendlyName;
@@ -73,6 +81,12 @@ public class Shareable implements Editable
 	public boolean searchMatches(String searchWord)
 	{
 		return TextUtils.searchWord(this.friendlyName, searchWord);
+	}
+
+	@Override
+	public void setId(long id)
+	{
+		this.id = id;
 	}
 
 	@Override

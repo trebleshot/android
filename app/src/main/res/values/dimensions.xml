@@ -15,8 +15,8 @@
     <dimen name="icon_size_list_small">25dp</dimen>
     <dimen name="icon_size_list_normal">35dp</dimen>
     <dimen name="icon_size_list_big">50dp</dimen>
-    <dimen name="padding_list_content_parent_layout">18dp</dimen>
-    <dimen name="padding_list_content_icon_main_margin_left">8dp</dimen>
-    <dimen name="padding_list_content_icon_main_margin_right">26dp</dimen>
+    <dimen name="padding_list_content_parent_layout">15dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_left">11dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_right">29dp</dimen>
     <dimen name="padding_list_content_two_lines_separation_height">2dp</dimen>
 </resources>

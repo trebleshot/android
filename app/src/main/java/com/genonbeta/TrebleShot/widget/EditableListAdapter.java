@@ -44,6 +44,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	public EditableListAdapter(Context context)
 	{
 		super(context);
+		setHasStableIds(true);
 	}
 
 	@Override
@@ -121,7 +122,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	@Override
 	public long getItemId(int position)
 	{
-		return position;
+		return getItem(position).getId();
 	}
 
 	public ArrayList<T> getItemList()

@@ -1,16 +1,21 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -20,6 +25,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,6 +42,8 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -134,15 +142,15 @@ public class TransactionActivity
 			finish();
 		else {
 			Bundle detailsFragmentArgs = new Bundle();
-			detailsFragmentArgs.putInt(TransactionDetailsFragment.ARG_GROUP_ID, mGroup.groupId);
+			detailsFragmentArgs.putLong(TransactionDetailsFragment.ARG_GROUP_ID, mGroup.groupId);
 			mDetailsFragment.setArguments(detailsFragmentArgs);
 
 			Bundle assigneeFragmentArgs = new Bundle();
-			assigneeFragmentArgs.putInt(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+			assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
 			mAssigneeFragment.setArguments(assigneeFragmentArgs);
 
 			Bundle transactionFragmentArgs = new Bundle();
-			transactionFragmentArgs.putInt(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
+			transactionFragmentArgs.putLong(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
 			transactionFragmentArgs.putString(TransactionExplorerFragment.ARG_PATH, null);
 			transactionFragment.setArguments(transactionFragmentArgs);
 
@@ -185,6 +193,32 @@ public class TransactionActivity
 				}
 			});
 		}
+
+		bindService(new Intent(TransactionActivity.this, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_SERVICE_CONNECTION_TRANSFER_QUEUE), new ServiceConnection()
+		{
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder service)
+			{
+				Log.d(TAG, "The service " + name.getClassName() + " has connected");
+
+				Parcel parcelMsg = Parcel.obtain();
+				Parcel replyMsg = Parcel.obtain();
+
+				try {
+					Log.d(TAG, "The result is: " + service.transact(IBinder.FIRST_CALL_TRANSACTION, parcelMsg, replyMsg, 0));
+					Log.d(TAG, "Everything is just like they are supposed to be " + replyMsg.readString());
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name)
+			{
+				Log.d(TAG, "The service " + name.getClassName() + " has disconnected");
+			}
+		}, 0);
 	}
 
 	@Override
@@ -381,7 +415,7 @@ public class TransactionActivity
 		});
 	}
 
-	public static void startInstance(Context context, int groupId)
+	public static void startInstance(Context context, long groupId)
 	{
 		context.startActivity(new Intent(context, TransactionActivity.class)
 				.setAction(ACTION_LIST_TRANSFERS)
@@ -633,7 +667,7 @@ public class TransactionActivity
 		public TransferGroup getTransferGroup()
 		{
 			if (mHeldGroup == null) {
-				mHeldGroup = new TransferGroup(getArguments().getInt(ARG_GROUP_ID, -1));
+				mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
 
 				try {
 					AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);

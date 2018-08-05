@@ -6,7 +6,7 @@
         <item name="android:textStyle">normal</item>
     </style>
 
-    <style name="condensedCapsText" parent="@style/marqueeText">
+    <style name="condensedCapsTextStyle" parent="@style/marqueeText">
         <item name="android:fontFamily">sans-serif-condensed</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>

@@ -12,8 +12,12 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
         <item name="rectSelector">@drawable/rect_selector</item>
-        <item name="genfw_customListFragmentEmptyImageStyle">@style/customListFragmentEmptyImageStyle</item>
-        <item name="genfw_customListFragmentEmptyTextStyle">@style/customListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">
+            @style/customListFragmentEmptyImageStyle
+        </item>
+        <item name="genfw_customListFragmentEmptyTextStyle">
+            @style/customListFragmentEmptyTextStyle
+        </item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
@@ -30,8 +34,12 @@
         <item name="android:windowBackground">@color/windowBackground</item>
         <item name="roundSelector">@drawable/round_selector</item>
         <item name="rectSelector">@drawable/rect_selector</item>
-        <item name="genfw_customListFragmentEmptyImageStyle">@style/customListFragmentEmptyImageStyle</item>
-        <item name="genfw_customListFragmentEmptyTextStyle">@style/customListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">
+            @style/customListFragmentEmptyImageStyle
+        </item>
+        <item name="genfw_customListFragmentEmptyTextStyle">
+            @style/customListFragmentEmptyTextStyle
+        </item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
@@ -89,7 +97,7 @@
         <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
-    <style name="condensedCapsText" parent="@style/marqueeText.secondary">
+    <style name="condensedCapsTextStyle" parent="@style/marqueeText.secondary">
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
     </style>
@@ -105,12 +113,11 @@
         <item name="tint">@color/layoutIconTint</item>
     </style>
 
-    <style name="listContentLayout">
+    <style name="listContentLayoutStyle">
         <item name="android:padding">@dimen/padding_list_content_parent_layout</item>
     </style>
 
-
-    <style name="parentListContentIcon">
+    <style name="parentListContentIconStyle">
         <item name="android:layout_width">@dimen/icon_size_list_normal</item>
         <item name="android:layout_height">@dimen/icon_size_list_normal</item>
         <item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left
@@ -119,7 +126,7 @@
         </item>
     </style>
 
-    <style name="listContentIcon" parent="parentListContentIcon" />
+    <style name="listContentIconStyle" parent="parentListContentIconStyle"/>
 
     <style name="customListFragmentEmptyImageStyle">
         <item name="android:background">@drawable/ripple_background_accent</item>
@@ -130,6 +137,13 @@
 
     <style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">
         <item name="android:text">@string/text_listEmpty</item>
+    </style>
+
+    <style name="condensedTitleStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="fontFamily">sans-serif-condensed</item>
     </style>
 
 </resources>

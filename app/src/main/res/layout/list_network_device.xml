@@ -1,7 +1,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:app="http://schemas.android.com/apk/res-auto"
               android:id="@+id/network_device_list_layout"
-              style="@style/listContentLayout"
+              style="@style/listContentLayoutStyle"
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:background="?rectSelector"
@@ -10,7 +10,7 @@
 
     <ImageView
         android:id="@+id/network_device_list_device_image"
-        style="@style/listContentIcon"
+        style="@style/listContentIconStyle"
         android:contentDescription="@string/text_image"/>
 
     <LinearLayout

@@ -95,7 +95,8 @@ public class ApplicationListAdapter
 
 		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
 		{
-			super(friendlyName,
+			super(appInfo.uid,
+					friendlyName,
 					friendlyName + "_" + version + ".apk",
 					MIME_TYPE,
 					executableFile.lastModified(),

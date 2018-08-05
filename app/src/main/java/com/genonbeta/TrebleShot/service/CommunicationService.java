@@ -8,11 +8,17 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
+import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.IInterface;
 import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.util.ArrayMap;
 import android.util.Log;
@@ -58,6 +64,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -87,6 +94,7 @@ public class CommunicationService extends Service
 	public static final String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
 	public static final String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
 	public static final String ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS";
+	public static final String ACTION_SERVICE_CONNECTION_TRANSFER_QUEUE = "com.genonbeta.TrebleShot.transaction.action.SERVICE_CONNECTION_TRANSFER_QUEUE";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -104,7 +112,7 @@ public class CommunicationService extends Service
 	private ArrayList<ProcessHolder> mActiveProcessList = new ArrayList<>();
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
 	private SeamlessServer mSeamlessServer = new SeamlessServer();
-	private ArrayMap<Integer, Interrupter> mOngoingIndexList = new ArrayMap<>();
+	private ArrayMap<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private Receive mReceive = new Receive();
 	private Send mSend = new Send();
 	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
@@ -120,7 +128,20 @@ public class CommunicationService extends Service
 	@Override
 	public IBinder onBind(Intent intent)
 	{
-		return null;
+		if (intent != null)
+			if (ACTION_SERVICE_CONNECTION_TRANSFER_QUEUE.equals(intent.getAction()))
+				return new Binder()
+				{
+					@Override
+					protected boolean onTransact(int code, @NonNull Parcel data, @Nullable Parcel reply, int flags) throws RemoteException
+					{
+
+						reply.writeString("Fuck");
+						return true;
+					}
+				};
+
+		 return null;
 	}
 
 	@Override
@@ -423,7 +444,7 @@ public class CommunicationService extends Service
 		return mNotificationHelper;
 	}
 
-	public synchronized ArrayMap<Integer, Interrupter> getOngoingIndexList()
+	public synchronized ArrayMap<Long, Interrupter> getOngoingIndexList()
 	{
 		return mOngoingIndexList;
 	}
@@ -483,7 +504,7 @@ public class CommunicationService extends Service
 		}
 	}
 
-	public void startFileReceiving(int groupId, String deviceId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+	public void startFileReceiving(long groupId, String deviceId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
 		// it should create its own devices
 		startFileReceiving(new TransferInstance(getDatabase(), groupId, deviceId, true));
