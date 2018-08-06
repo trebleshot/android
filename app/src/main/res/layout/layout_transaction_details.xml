@@ -13,7 +13,33 @@
             android:layout_width="wrap_content"
             android:layout_height="15dp"/>
 
+        <LinearLayout
+            android:id="@+id/layout_transaction_details_not_enough_space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="20dp"
+                android:src="@drawable/ic_info_white_24dp"
+                android:tint="@color/notEnoughSpaceMenuTint"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mesg_notEnoughSpace"/>
+
+        </LinearLayout>
+
         <android.support.v7.widget.CardView
+            android:id="@+id/layout_transaction_details_layout_actions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
@@ -28,7 +54,7 @@
                     android:id="@+id/layout_transaction_details_remove"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
+                    android:background="?rectSelector"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="20dp">
@@ -36,6 +62,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="20dp"
                         android:layout_marginRight="20dp"
                         android:src="@drawable/ic_delete_white_24dp"
                         android:tint="?colorAccent"/>
@@ -53,10 +80,11 @@
                     android:id="@+id/layout_transaction_details_save_to"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
+                    android:background="?rectSelector"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -78,10 +106,10 @@
                     android:id="@+id/layout_transaction_details_show_files"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="20dp">
+                    android:padding="20dp"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -109,6 +137,7 @@
             android:layout_height="15dp"/>
 
         <android.support.v7.widget.CardView
+            android:id="@+id/layout_transaction_details_layout_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
@@ -124,14 +153,14 @@
                     style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_totalIncomingSize"
-                    android:textStyle="bold"/>
+                    android:text="@string/text_totalIncomingSize"/>
 
                 <TextView
-                    android:id="@+id/transaction_group_info_incoming_size"
+                    android:id="@+id/layout_transaction_details_incoming_size"
                     style="@style/marqueeText.secondary"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"/>
 
                 <View
                     android:layout_width="wrap_content"
@@ -141,14 +170,14 @@
                     style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_totalOutgoingSize"
-                    android:textStyle="bold"/>
+                    android:text="@string/text_totalOutgoingSize"/>
 
                 <TextView
-                    android:id="@+id/transaction_group_info_outgoing_size"
+                    android:id="@+id/layout_transaction_details_outgoing_size"
                     style="@style/marqueeText.secondary"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"/>
 
                 <View
                     android:layout_width="wrap_content"
@@ -158,14 +187,14 @@
                     style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_availableDiskSpace"
-                    android:textStyle="bold"/>
+                    android:text="@string/text_availableDiskSpace"/>
 
                 <TextView
-                    android:id="@+id/transaction_group_info_available_disk_space"
+                    android:id="@+id/layout_transaction_details_available_disk_space"
                     style="@style/marqueeText.secondary"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"/>
 
                 <View
                     android:layout_width="wrap_content"
@@ -175,15 +204,15 @@
                     style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_savePath"
-                    android:textStyle="bold"/>
+                    android:text="@string/text_savePath"/>
 
                 <TextView
-                    android:id="@+id/transaction_group_info_save_path"
+                    android:id="@+id/layout_transaction_details_save_path"
                     style="@style/marqueeText.secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:maxLines="3"/>
+                    android:maxLines="3"
+                    android:textStyle="bold"/>
 
             </LinearLayout>
         </android.support.v7.widget.CardView>

@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -306,6 +307,19 @@ public class TransactionListAdapter
 			return obj instanceof TransferFolder
 					&& directory != null
 					&& directory.equals(((TransferFolder) obj).directory);
+		}
+
+		@Override
+		public long getId()
+		{
+			return directory.hashCode();
+		}
+
+		@Override
+		public void setId(long id)
+		{
+			super.setId(id);
+			Log.d(TransactionListAdapter.class.getSimpleName(), "setId(): This method should not be invoked");
 		}
 	}
 

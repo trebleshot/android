@@ -37,6 +37,8 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 		mDatabase = database;
 		mPreferences = preferences;
 		mConnectionUtils = connectionUtils;
+
+		setHasStableIds(true);
 	}
 
 	@Override
@@ -117,11 +119,10 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 				: "?", ContextCompat.getColor(mContext, hotspotNetwork ? R.color.hotspotNetworkRipple : R.color.networkDeviceRipple), 100));
 	}
 
-	// TODO: for animations we should convert deviceId to an int value and then setHasStableIds(true)
 	@Override
-	public long getItemId(int p1)
+	public long getItemId(int position)
 	{
-		return p1;
+		return getList().get(position).deviceId.hashCode();
 	}
 
 	@Override

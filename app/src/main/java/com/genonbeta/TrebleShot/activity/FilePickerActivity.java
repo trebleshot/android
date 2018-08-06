@@ -2,18 +2,22 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.view.WindowInsets;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 /**
  * Created by: veli
@@ -56,10 +60,15 @@ public class FilePickerActivity extends Activity
 
 				mFileExplorerFragment.getFileListFragment().refreshList();
 
-				mFileExplorerFragment.getFileListFragment().getListView().setPadding(0, 0, 0, 200);
-				mFileExplorerFragment.getFileListFragment().getListView().setClipToPadding(false);
+				RecyclerView recyclerView = mFileExplorerFragment.getFileListFragment()
+						.getListView();
 
-				mFAB.setVisibility(View.VISIBLE);
+				recyclerView.setPadding(0,0,0, 200);
+
+				recyclerView.setClipToPadding(false);
+
+				mFAB.show();
+
 				mFAB.setOnClickListener(new View.OnClickListener()
 				{
 					@Override

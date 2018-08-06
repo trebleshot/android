@@ -45,7 +45,7 @@ public class TransferObject
 		this.type = type;
 	}
 
-	public TransferObject(int requestId)
+	public TransferObject(long requestId)
 	{
 		this.requestId = requestId;
 	}

@@ -46,9 +46,6 @@ public class FileListAdapter
 
 		mDatabase = database;
 		mPreferences = sharedPreferences;
-
-		// it is not possible to assign an id to files
-		setHasStableIds(false);
 	}
 
 	@Override
@@ -250,7 +247,7 @@ public class FileListAdapter
 
 		public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
 		{
-			super(0, friendlyName, friendlyName, file.getType(), date, size, uri);
+			super(file.getUri().toString().hashCode(), friendlyName, friendlyName, file.getType(), date, size, uri);
 
 			this.file = file;
 			this.info = info;

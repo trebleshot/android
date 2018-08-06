@@ -20,8 +20,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -42,26 +44,25 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
-import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.io.IOException;
@@ -91,8 +92,7 @@ public class TransactionActivity
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
 					&& intent.hasExtra(AccessDatabase.EXTRA_CHANGE_TYPE)
-					&& AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
-					&& AccessDatabase.TYPE_REMOVE.equals(intent.getStringExtra(AccessDatabase.EXTRA_CHANGE_TYPE))) {
+					&& AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))) {
 				reconstructGroup();
 				updateCalculations();
 			}
@@ -287,21 +287,6 @@ public class TransactionActivity
 		return true;
 	}
 
-	/*
-	public boolean calculateSpace()
-	{
-		DocumentFile documentFile = FileUtils.getSavePath(this, getDefaultPreferences(), mGroup);
-
-		long freeSpace = documentFile instanceof LocalDocumentFile
-				? ((LocalDocumentFile) documentFile).getFile().getFreeSpace()
-				: -1;
-
-		//return freeSpace == -1 || freeSpace >= getIndex().incoming;
-		//MenuItemCompat.setIconTintList(mInfoMenu, ColorStateList.valueOf(ContextCompat.getColor(getApplicationContext(), R.color.notEnoughSpaceMenuTint)));
-
-		return freeSpace == -1 || freeSpace >= getIndex().incoming;
-	}*/
-
 	private Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(findViewById(R.id.activity_transaction_view_pager), getString(resId, objects), Snackbar.LENGTH_LONG);
@@ -330,9 +315,6 @@ public class TransactionActivity
 
 	private void showMenus()
 	{
-		// TODO: 7/24/18 This function is currently ineffective. Fix it by using commented references
-		//calculateSpace();
-
 		boolean hasIncoming = getIndex().incomingCount > 0;
 
 		mStartMenu.setVisible(hasIncoming);
@@ -635,13 +617,19 @@ public class TransactionActivity
 			if (getView() == null)
 				return;
 
-			TextView incomingSize = getView().findViewById(R.id.transaction_group_info_incoming_size);
-			TextView outgoingSize = getView().findViewById(R.id.transaction_group_info_outgoing_size);
-			TextView availableDisk = getView().findViewById(R.id.transaction_group_info_available_disk_space);
-			TextView savePath = getView().findViewById(R.id.transaction_group_info_save_path);
+			View notEnoughSpaceWarning = getView().findViewById(R.id.layout_transaction_details_not_enough_space);
+			TextView incomingSize = getView().findViewById(R.id.layout_transaction_details_incoming_size);
+			TextView outgoingSize = getView().findViewById(R.id.layout_transaction_details_outgoing_size);
+			TextView availableDisk = getView().findViewById(R.id.layout_transaction_details_available_disk_space);
+			TextView savePath = getView().findViewById(R.id.layout_transaction_details_save_path);
 
 			DocumentFile storageFile = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), getTransferGroup());
 			Resources resources = getContext().getResources();
+
+			notEnoughSpaceWarning.setVisibility(storageFile instanceof LocalDocumentFile
+					&& ((LocalDocumentFile) storageFile).getFile().getFreeSpace() < index.incoming
+					? View.VISIBLE
+					: View.GONE);
 
 			incomingSize.setText(getContext().getString(R.string.mode_itemCountedDetailed,
 					resources.getQuantityString(R.plurals.text_files, index.incomingCount, index.incomingCount),
@@ -704,6 +692,9 @@ public class TransactionActivity
 
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
+
+			TransitionManager.beginDelayedTransition((CardView) getView().findViewById(R.id.layout_transaction_details_layout_actions));
+			TransitionManager.beginDelayedTransition((CardView) getView().findViewById(R.id.layout_transaction_details_layout_info));
 		}
 	}
 
