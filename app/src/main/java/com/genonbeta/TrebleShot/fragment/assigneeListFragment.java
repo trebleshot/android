@@ -32,7 +32,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * created by: veli
  * date: 06.04.2018 12:58
  */
-public class TransferAssigneeListFragment
+public class assigneeListFragment
 		extends RecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
 		implements TitleSupport
 {

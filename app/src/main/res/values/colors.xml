@@ -23,4 +23,5 @@
     <color name="selectionBackground">#1f000000</color>
     <color name="themeGreyDominant">#bbb</color>
     <color name="themeGreyAccent">#777</color>
+    <color name="separatorColor">#eee</color>
 </resources>

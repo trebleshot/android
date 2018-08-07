@@ -46,8 +46,19 @@ public class TransactionGroupListAdapter
 			@Override
 			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, PreloadedGroup object)
 			{
-				object.assignees.addAll(db.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).
-						setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(object.groupId)), TransferGroup.Assignee.class));
+				StringBuilder assigneesText = new StringBuilder();
+
+				for (TransferAssigneeListAdapter.ShowingAssignee showingAssignee
+						: TransferAssigneeListAdapter.loadAssigneeList(db, object.groupId)) {
+					if (assigneesText.length() > 0)
+						assigneesText.append(", ");
+
+					assigneesText.append(showingAssignee.device.nickname);
+				}
+
+				object.assignees = assigneesText.length() > 0
+						? assigneesText.toString()
+				: getContext().getString(R.string.text_empty);
 			}
 		})) {
 			mDatabase.calculateTransactionSize(group.groupId, group.index);
@@ -116,10 +127,9 @@ public class TransactionGroupListAdapter
 						? R.drawable.ic_file_upload_black_24dp
 						: R.drawable.ic_file_download_black_24dp);
 
-			text1.setText(object.totalFiles);
+			text1.setText(object.assignees);
 			text2.setText(object.totalSize);
-			text3.setText(getContext().getResources()
-					.getQuantityString(R.plurals.text_devicesShared, object.assignees.size(), object.assignees.size()));
+			text3.setText(object.totalFiles);
 		}
 	}
 
@@ -131,7 +141,7 @@ public class TransactionGroupListAdapter
 		public String representativeText;
 
 		public Index index = new Index();
-		public ArrayList<Assignee> assignees = new ArrayList<>();
+		public String assignees;
 		public String totalFiles;
 		public String totalSize;
 

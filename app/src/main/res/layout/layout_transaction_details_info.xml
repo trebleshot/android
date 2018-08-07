@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_transaction_details_layout_info"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp">
+
+    <TextView
+        style="@style/marqueeText.primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_totalIncomingSize"/>
+
+    <TextView
+        android:id="@+id/layout_transaction_details_incoming_size"
+        style="@style/marqueeText.secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_emptySymbol"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"/>
+
+    <TextView
+        style="@style/marqueeText.primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_totalOutgoingSize"/>
+
+    <TextView
+        android:id="@+id/layout_transaction_details_outgoing_size"
+        style="@style/marqueeText.secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_emptySymbol"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"/>
+
+    <TextView
+        style="@style/marqueeText.primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_availableDiskSpace"/>
+
+    <TextView
+        android:id="@+id/layout_transaction_details_available_disk_space"
+        style="@style/marqueeText.secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_emptySymbol"
+        android:textStyle="bold"/>
+
+    <View
+        android:layout_width="wrap_content"
+        android:layout_height="10dp"/>
+
+    <TextView
+        style="@style/marqueeText.primary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_savePath"/>
+
+    <TextView
+        android:id="@+id/layout_transaction_details_save_path"
+        style="@style/marqueeText.secondary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="3"
+        android:text="@string/text_emptySymbol"
+        android:textStyle="bold"/>
+
+</LinearLayout>

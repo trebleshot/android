@@ -10,10 +10,9 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.res.Resources;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.os.Parcel;
 import android.os.RemoteException;
 import android.support.annotation.NonNull;
@@ -43,7 +42,7 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
-import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
+import com.genonbeta.TrebleShot.fragment.assigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -80,6 +79,8 @@ public class TransactionActivity
 	public static final String TAG = TransactionActivity.class.getSimpleName();
 	public static final int JOB_FILE_FIX = 1;
 
+	public static final int TASK_CRUNCH_DATA = 1;
+
 	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
@@ -99,10 +100,8 @@ public class TransactionActivity
 		}
 	};
 
-	private TransferAssigneeListFragment mAssigneeFragment = new TransferAssigneeListFragment();
-	private TransactionDetailsFragment mDetailsFragment = new TransactionDetailsFragment();
-
 	private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
+	private DefaultFragmentPagerAdapter mPagerAdapter;
 	private PowerfulActionMode mPowafulActionMode;
 	private MenuItem mStartMenu;
 	private MenuItem mRetryMenu;
@@ -115,6 +114,7 @@ public class TransactionActivity
 		setContentView(R.layout.activity_transaction);
 
 		mPowafulActionMode = findViewById(R.id.activity_transaction_action_mode);
+		mPagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager());
 
 		final Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
@@ -124,8 +124,9 @@ public class TransactionActivity
 
 		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
-		final DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager());
-		final TransactionExplorerFragment transactionFragment = new TransactionExplorerFragment();
+		final TransactionDetailsFragment detailsFragment = new TransactionDetailsFragment();
+		final assigneeListFragment assigneeListFragment = new assigneeListFragment();
+		final explorerFragment transactionFragment = new explorerFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
 			TransferGroup group = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
@@ -143,24 +144,24 @@ public class TransactionActivity
 		else {
 			Bundle detailsFragmentArgs = new Bundle();
 			detailsFragmentArgs.putLong(TransactionDetailsFragment.ARG_GROUP_ID, mGroup.groupId);
-			mDetailsFragment.setArguments(detailsFragmentArgs);
+			detailsFragment.setArguments(detailsFragmentArgs);
 
 			Bundle assigneeFragmentArgs = new Bundle();
-			assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
-			mAssigneeFragment.setArguments(assigneeFragmentArgs);
+			assigneeFragmentArgs.putLong(com.genonbeta.TrebleShot.fragment.assigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+			assigneeListFragment.setArguments(assigneeFragmentArgs);
 
 			Bundle transactionFragmentArgs = new Bundle();
-			transactionFragmentArgs.putLong(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
-			transactionFragmentArgs.putString(TransactionExplorerFragment.ARG_PATH, null);
+			transactionFragmentArgs.putLong(explorerFragment.ARG_GROUP_ID, mGroup.groupId);
+			transactionFragmentArgs.putString(explorerFragment.ARG_PATH, null);
 			transactionFragment.setArguments(transactionFragmentArgs);
 
 			tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
-			pagerAdapter.add(mDetailsFragment, tabLayout);
-			pagerAdapter.add(transactionFragment, tabLayout);
-			pagerAdapter.add(mAssigneeFragment, tabLayout);
+			mPagerAdapter.add(detailsFragment, tabLayout);
+			mPagerAdapter.add(transactionFragment, tabLayout);
+			mPagerAdapter.add(assigneeListFragment, tabLayout);
 
-			viewPager.setAdapter(pagerAdapter);
+			viewPager.setAdapter(mPagerAdapter);
 			viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
 			tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
@@ -200,7 +201,7 @@ public class TransactionActivity
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service)
 			{
-				Log.d(TAG, "The service " + name.getClassName() + " has connected");
+				Log.d(TAG, "The service " + name.getClassName() + " has connected; binder:" + service.getClass().getCanonicalName());
 
 				Parcel parcelMsg = Parcel.obtain();
 				Parcel replyMsg = Parcel.obtain();
@@ -292,6 +293,12 @@ public class TransactionActivity
 		return Snackbar.make(findViewById(R.id.activity_transaction_view_pager), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
+	@Nullable
+	public TransferGroup getGroup()
+	{
+		return mGroup;
+	}
+
 	public TransferGroup.Index getIndex()
 	{
 		return mTransactionIndex;
@@ -320,8 +327,16 @@ public class TransactionActivity
 		mStartMenu.setVisible(hasIncoming);
 		mRetryMenu.setVisible(hasIncoming);
 
-		if (mDetailsFragment != null && mDetailsFragment.isAdded())
-			mDetailsFragment.updateViewState(getIndex());
+		// FIXME: 8/6/18 After recreation of the activity we lose our link with the fragment
+		// it is because the fragment is being loaded by its adapter
+		// who is calling its old instance which is the instance we are possibly having
+		// to overcome this issue best thing to do is to get the fragment from the adapter
+		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
+			TransactionDetailsFragment fragment = (TransactionDetailsFragment) mPagerAdapter.getItem(0);
+
+			if (fragment.isAdded())
+				fragment.updateViewState(getIndex());
+		}
 
 		setTitle(getResources().getQuantityString(R.plurals.text_files,
 				getIndex().incomingCount + getIndex().outgoingCount,
@@ -386,15 +401,14 @@ public class TransactionActivity
 
 	public void updateCalculations()
 	{
-		new Handler(Looper.myLooper()).post(new Runnable()
+		new CrunchLatestDataTask(new CrunchLatestDataTask.PostExecuteListener()
 		{
 			@Override
-			public void run()
+			public void onPostExecute()
 			{
-				getDatabase().calculateTransactionSize(mGroup.groupId, getIndex());
 				showMenus();
 			}
-		});
+		}).execute(this);
 	}
 
 	public static void startInstance(Context context, long groupId)
@@ -433,7 +447,6 @@ public class TransactionActivity
 					getList().add(new Holder.Index<>(path, mergedPath.toString()));
 				}
 		}
-
 	}
 
 	public static class TransactionDetailsFragment
@@ -693,12 +706,12 @@ public class TransactionActivity
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 
-			TransitionManager.beginDelayedTransition((CardView) getView().findViewById(R.id.layout_transaction_details_layout_actions));
-			TransitionManager.beginDelayedTransition((CardView) getView().findViewById(R.id.layout_transaction_details_layout_info));
+			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_actions));
+			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_info));
 		}
 	}
 
-	public static class TransactionExplorerFragment
+	public static class explorerFragment
 			extends com.genonbeta.android.framework.app.Fragment
 			implements TransactionListAdapter.PathChangedListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 	{
@@ -791,6 +804,45 @@ public class TransactionActivity
 
 			if (getTransactionListFragment() != null)
 				getTransactionListFragment().setMenuVisibility(menuVisible);
+		}
+	}
+
+	public static class CrunchLatestDataTask extends AsyncTask<TransactionActivity, Void, Void>
+	{
+		private PostExecuteListener mListener;
+
+		public CrunchLatestDataTask(PostExecuteListener listener)
+		{
+			mListener = listener;
+		}
+
+		/* "possibility of having more than one TransactionActivity" < "sun turning into black hole" */
+		@Override
+		protected Void doInBackground(TransactionActivity... activities)
+		{
+			for (TransactionActivity activity : activities) {
+				if (activity.getGroup() != null)
+					activity.getDatabase()
+							.calculateTransactionSize(activity.getGroup().groupId, activity.getIndex());
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid)
+		{
+			super.onPostExecute(aVoid);
+			mListener.onPostExecute();
+		}
+
+		/* Should we have used a generic type class for this?
+		 * This interface aims to keep its parent class non-anonymous
+		 */
+
+		public interface PostExecuteListener
+		{
+			void onPostExecute();
 		}
 	}
 }

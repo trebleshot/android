@@ -73,7 +73,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 	private Toolbar mToolbar;
 	private String mAction;
-	private int mGroupId;
+	private long mGroupId;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private ProgressDialog mProgressDialog;
@@ -515,7 +515,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 					organizeFiles(fileUris, fileNames);
 					break;
 				case ACTION_ADD_DEVICES:
-					mGroupId = getIntent().getIntExtra(EXTRA_GROUP_ID, -1);
+					mGroupId = getIntent().getLongExtra(EXTRA_GROUP_ID, -1);
 
 					mToolbar.setTitle(R.string.text_addDevicesToTransfer);
 					break;

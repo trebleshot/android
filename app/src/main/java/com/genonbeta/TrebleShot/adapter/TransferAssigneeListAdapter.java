@@ -64,25 +64,7 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
 	@Override
 	public ArrayList<ShowingAssignee> onLoad()
 	{
-		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));
-
-		return mDatabase.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-		{
-			@Override
-			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-			{
-				object.device = new NetworkDevice(object.deviceId);
-				object.connection = new NetworkDevice.Connection(object);
-
-				try {
-					db.reconstruct(object.device);
-					db.reconstruct(object.connection);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		return loadAssigneeList(mDatabase, mGroup.groupId);
 	}
 
 	@Override
@@ -107,6 +89,28 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
 	{
 		mGroup = group;
 		return this;
+	}
+
+	public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId) {
+		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+
+		return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+		{
+			@Override
+			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+			{
+				object.device = new NetworkDevice(object.deviceId);
+				object.connection = new NetworkDevice.Connection(object);
+
+				try {
+					db.reconstruct(object.device);
+					db.reconstruct(object.connection);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public static class ShowingAssignee extends TransferGroup.Assignee
