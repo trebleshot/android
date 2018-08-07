@@ -22,7 +22,6 @@ import android.support.design.widget.TabLayout;
 import android.support.transition.TransitionManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -42,7 +41,7 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
-import com.genonbeta.TrebleShot.fragment.assigneeListFragment;
+import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -125,7 +124,7 @@ public class TransactionActivity
 		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
 		final TransactionDetailsFragment detailsFragment = new TransactionDetailsFragment();
-		final assigneeListFragment assigneeListFragment = new assigneeListFragment();
+		final TransferAssigneeListFragment assigneeListFragment = new TransferAssigneeListFragment();
 		final explorerFragment transactionFragment = new explorerFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
@@ -147,7 +146,7 @@ public class TransactionActivity
 			detailsFragment.setArguments(detailsFragmentArgs);
 
 			Bundle assigneeFragmentArgs = new Bundle();
-			assigneeFragmentArgs.putLong(com.genonbeta.TrebleShot.fragment.assigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+			assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
 			assigneeListFragment.setArguments(assigneeFragmentArgs);
 
 			Bundle transactionFragmentArgs = new Bundle();
