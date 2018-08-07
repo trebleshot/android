@@ -12,7 +12,6 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.IInterface;
 import android.os.Looper;
 import android.os.Parcel;
 import android.os.RemoteException;
@@ -36,9 +35,6 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.LocalDocumentFile;
-import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -50,7 +46,6 @@ import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
@@ -59,12 +54,15 @@ import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
+import com.genonbeta.android.framework.io.StreamInfo;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -141,7 +139,7 @@ public class CommunicationService extends Service
 					}
 				};
 
-		 return null;
+		return null;
 	}
 
 	@Override
@@ -643,6 +641,16 @@ public class CommunicationService extends Service
 											Interrupter interrupter = new Interrupter();
 											TransferGroup group = new TransferGroup(groupId);
 											TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, finalDevice, connection);
+
+											boolean usePublishing = false;
+
+											try {
+												getDatabase().reconstruct(group);
+												usePublishing = true;
+											} catch (Exception e) {
+												e.printStackTrace();
+											}
+
 											TransferObject transferObject = null;
 
 											getDatabase().publish(group);
@@ -683,7 +691,10 @@ public class CommunicationService extends Service
 														if (requestIndex.has(Keyword.INDEX_DIRECTORY))
 															transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
 
-														getDatabase().insert(transferObject);
+														if (usePublishing)
+															getDatabase().publish(transferObject);
+														else
+															getDatabase().insert(transferObject);
 													}
 
 												} catch (JSONException e) {
@@ -868,18 +879,25 @@ public class CommunicationService extends Service
 						}
 					}
 
-					if (processHolder.transferHandler != null
-							&& processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL)) {
-						Log.d(TAG, "SeamlessServer.onConnected(): Cancelled all");
-						break;
+					if (processHolder.transferHandler != null) {
+						if (processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL)) {
+							Log.d(TAG, "SeamlessServer.onConnected(): Cancelled all");
+							break;
+						} else if (processHolder.transferHandler.getFlag().equals(CoolTransfer.Flag.CONTINUE)
+								&& processHolder.transferObject != null) {
+							processHolder.transferObject.flag = TransferObject.Flag.DONE;
+							getDatabase().update(processHolder.transferObject);
+						}
 					}
 				}
 
+				// TODO: 8/7/18 We are not removing the group like we used to
+				/*
 				if (processHolder.group != null && getDatabase().getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
 						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(processHolder.group.groupId))).size() == 0) {
 					getDatabase().remove(processHolder.group);
 					Log.d(TAG, "SeamlessServer.onConnected(): No assignee is left, removing the transfer and all of its instances: " + processHolder.group);
-				}
+				}*/
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -1008,16 +1026,22 @@ public class CommunicationService extends Service
 					while (true) {
 						// Remove the previous object as it is completed.
 						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?  AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " !=?",
+								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
 										TransferObject.Type.INCOMING.toString(),
 										String.valueOf(processHolder.group.groupId),
-										TransferObject.Flag.INTERRUPTED.toString(),
-										TransferObject.Flag.REMOVED.toString()));
+										TransferObject.Flag.PENDING.toString()));
 
+						// TODO: 8/7/18 build.77.alpha: The items will not be removed from
+						/*
 						if (receiverInstance == null
 								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId))) == null) {
 							getDatabase().remove(processHolder.group);
+							Log.d(TAG, "SeamlessClientHandler(): Removing group because there is no file instance left");
+							break;
+						}*/
+
+						if (receiverInstance == null) {
 							Log.d(TAG, "SeamlessClientHandler(): Removing group because there is no file instance left");
 							break;
 						}
@@ -1033,8 +1057,10 @@ public class CommunicationService extends Service
 
 						if (CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag())) {
 							if (processHolder.transferObject != null) {
-								Log.d(TAG, "SeamlessClientHandler.onConnect(): Removing received transfer instance: " + processHolder.transferObject.file);
-								getDatabase().remove(processHolder.transferObject);
+								Log.d(TAG, "SeamlessClientHandler.onConnect(): Updating the transfer instance received transfer instance: " + processHolder.transferObject.file);
+
+								processHolder.transferObject.flag = TransferObject.Flag.DONE;
+								getDatabase().update(processHolder.transferObject);
 							}
 						} else if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag())) {
 							Log.d(TAG, "SeamlessClientHandler.onConnect(): Cancel is requested. Exiting.");
@@ -1042,17 +1068,18 @@ public class CommunicationService extends Service
 						}
 					}
 
+					// FIXME: 8/7/18 When the connection closed via CANCEL_ALL the message is consumed properly!!!
 					boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag());
-
-					if (processHolder.transferHandler != null && isJobDone) {
-						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
-						Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
-					}
 
 					activeConnection.reply(new JSONObject()
 							.put(Keyword.RESULT, false)
 							.put(Keyword.TRANSFER_JOB_DONE, isJobDone)
 							.toString());
+
+					if (processHolder.transferHandler != null && isJobDone) {
+						getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
+						Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1177,6 +1204,7 @@ public class CommunicationService extends Service
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				onError(handler, e);
 			}
 
 			return Flag.CANCEL_ALL;

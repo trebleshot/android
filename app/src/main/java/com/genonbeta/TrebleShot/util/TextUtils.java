@@ -67,6 +67,8 @@ public class TextUtils
 		switch (flag) {
 			case PENDING:
 				return R.string.text_flagPending;
+			case DONE:
+				return R.string.text_taskCompleted;
 			case INTERRUPTED:
 				return R.string.text_flagInterrupted;
 				/*

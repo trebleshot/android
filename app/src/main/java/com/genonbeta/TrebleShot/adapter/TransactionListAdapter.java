@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +14,15 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.android.framework.util.listing.ComparableMerger;
-import com.genonbeta.android.framework.util.listing.Merger;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.util.MathUtils;
+import com.genonbeta.android.framework.util.listing.ComparableMerger;
+import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.io.File;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 /**
@@ -39,12 +42,14 @@ public class TransactionListAdapter
 	private String mPath;
 	private long mGroupId;
 	private PathChangedListener mListener;
+	private NumberFormat mPercentFormat;
 
 	public TransactionListAdapter(Context context, AccessDatabase database)
 	{
 		super(context, MODE_GROUP_BY_DEFAULT);
 
 		mDatabase = database;
+		mPercentFormat = NumberFormat.getPercentInstance();
 
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
 	}
@@ -52,52 +57,80 @@ public class TransactionListAdapter
 	@Override
 	protected void onLoad(GroupLister<GroupEditableTransferObject> lister)
 	{
-		ArrayList<GroupEditableTransferObject> mergedList = new ArrayList<>();
+		ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
+		ArrayList<GroupEditableTransferObject> files = new ArrayList<>();
 		String currentPath = getPath();
 
-		for (GroupEditableTransferObject transferObject : mDatabase.castQuery(getSelect()
-				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?",
-						String.valueOf(getGroupId()),
-						currentPath != null ? currentPath + File.separator + "%" : "%")
-				.setGroupBy(AccessDatabase.FIELD_TRANSFER_DIRECTORY), GroupEditableTransferObject.class)) {
-			String cleanedName = currentPath != null ? transferObject.directory.substring(currentPath.length() + File.separator.length()) : transferObject.directory;
-			int obtainSlash = cleanedName.indexOf(File.separator);
+		ArrayList<GroupEditableTransferObject> derivedList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroupId)), GroupEditableTransferObject.class);
 
-			if (obtainSlash != -1)
-				cleanedName = cleanedName.substring(0, obtainSlash);
+		// in an order to keep the database sequences at the least level possible
+		// we should gather all the available data and crunch it as needed
 
-			TransferFolder transactionFolder = new TransferFolder();
+		currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
-			transactionFolder.friendlyName = cleanedName;
-			transactionFolder.directory = currentPath != null ? currentPath + File.separator + cleanedName : cleanedName;
+		// we first get the default files
+		for (GroupEditableTransferObject object : derivedList) {
+			object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
-			boolean addThis = true;
+			if (currentPath != null && object.directory == null)
+				continue;
 
-			for (TransferObject testObject : mergedList) {
-				if (!(testObject instanceof TransferFolder))
-					continue;
+			if ((currentPath == null && object.directory == null)
+					|| object.directory.equals(currentPath)) {
+				files.add(object);
+			} else if (currentPath == null
+					|| (object.directory != null && object.directory.startsWith(currentPath))) {
+				int pathToErase = currentPath == null ? 0 : currentPath.length() + File.separator.length();
+				String cleanedPath = object.directory.substring(pathToErase);
+				int slashPos = cleanedPath.indexOf(File.separator);
 
-				TransferFolder testFolder = (TransferFolder) testObject;
+				if (slashPos != -1)
+					cleanedPath = cleanedPath.substring(0, slashPos);
 
-				if (testFolder.friendlyName.equals(transactionFolder.friendlyName)) {
-					addThis = false;
-					break;
+				TransferFolder transferFolder = folders.get(cleanedPath);
+
+				if (transferFolder == null) {
+					transferFolder = new TransferFolder();
+
+					transferFolder.friendlyName = cleanedPath;
+					transferFolder.directory = currentPath != null
+							? currentPath + File.separator + cleanedPath
+							: cleanedPath;
+
+					folders.put(cleanedPath, transferFolder);
 				}
-			}
 
-			if (addThis)
-				mergedList.add(transactionFolder);
+				if (TransferObject.Flag.DONE.equals(object.flag))
+					transferFolder.filesReceived++;
+
+				transferFolder.filesTotal++;
+			}
 		}
 
-		for (GroupEditableTransferObject object : mergedList)
-			lister.offer(object);
+		StatusItem statusItem = new StatusItem();
 
-		for (GroupEditableTransferObject object : mDatabase.castQuery((currentPath == null
-				? getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " IS NULL", String.valueOf(getGroupId()))
-				: getSelect().setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=?",
-				String.valueOf(getGroupId()), currentPath)
-		).setGroupBy(null), GroupEditableTransferObject.class))
-			lister.offer(object);
+		statusItem.directory = currentPath;
+		statusItem.friendlyName = currentPath == null
+				? getContext().getString(R.string.text_home)
+				: (currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath);
+
+		lister.offer(statusItem);
+
+		for (TransferFolder folder : folders.values()) {
+			statusItem.filesTotal += folder.filesTotal;
+			statusItem.filesReceived += folder.filesReceived;
+			lister.offer(folder);
+		}
+
+		for (GroupEditableTransferObject file : files) {
+			if (TransferObject.Flag.DONE.equals(file.flag))
+				statusItem.filesReceived++;
+
+			statusItem.filesTotal++;
+
+			lister.offer(file);
+		}
 	}
 
 	@Override
@@ -147,6 +180,8 @@ public class TransactionListAdapter
 	{
 		if (merger instanceof GroupEditableTransferObjectMerger) {
 			switch (((GroupEditableTransferObjectMerger) merger).getType()) {
+				case STATUS:
+					return getContext().getString(R.string.text_transactionDetails);
 				case FOLDER:
 					return getContext().getString(R.string.text_folder);
 				default:
@@ -206,6 +241,7 @@ public class TransactionListAdapter
 		if (!holder.tryBinding(object)) {
 			final View parentView = holder.getView();
 
+			int appliedColor = R.color.colorAccent;
 			ImageView image = parentView.findViewById(R.id.image);
 			TextView mainText = parentView.findViewById(R.id.text);
 			TextView statusText = parentView.findViewById(R.id.text2);
@@ -214,11 +250,31 @@ public class TransactionListAdapter
 			parentView.setSelected(object.isSelectableSelected());
 
 			if (object instanceof TransferFolder) {
-				image.setImageResource(R.drawable.ic_folder_black_24dp);
+				TransferFolder transferFolder = (TransferFolder) object;
+
+				image.setImageResource(object instanceof StatusItem
+						? R.drawable.ic_info_white_24dp
+						: R.drawable.ic_folder_black_24dp);
 				mainText.setText(object.friendlyName);
-				statusText.setText(R.string.text_folder);
-				sizeText.setText(null);
+
+				statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
+				sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
+
+				appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
+						? R.color.colorAccent : R.color.layoutIconTint;
 			} else {
+				switch (object.flag) {
+					case DONE:
+						appliedColor = R.color.colorAccent;
+						break;
+					case REMOVED:
+					case INTERRUPTED:
+						appliedColor = R.color.errorTintColor;
+						break;
+					default:
+						appliedColor = R.color.layoutIconTint;
+				}
+
 				boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);
 
 				image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
@@ -226,6 +282,8 @@ public class TransactionListAdapter
 				statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(object.flag)).toLowerCase());
 				sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
 			}
+
+			mainText.setTextColor(ContextCompat.getColor(getContext(), appliedColor));
 		}
 	}
 
@@ -297,6 +355,9 @@ public class TransactionListAdapter
 
 	public static class TransferFolder extends GroupEditableTransferObject
 	{
+		public int filesTotal = 0;
+		public int filesReceived = 0;
+
 		public TransferFolder()
 		{
 		}
@@ -315,11 +376,41 @@ public class TransactionListAdapter
 			return directory.hashCode();
 		}
 
+		public double getPercent()
+		{
+			double result = filesTotal == filesReceived ? 1000.00 : 1000.00 / filesTotal * Integer.valueOf(filesReceived).doubleValue();
+
+			Log.d(TransactionListAdapter.class.getSimpleName(), "Result is = " + result + "; Total = "+ filesTotal + "; Received = " + filesReceived);
+
+			return result;
+		}
+
 		@Override
 		public void setId(long id)
 		{
 			super.setId(id);
 			Log.d(TransactionListAdapter.class.getSimpleName(), "setId(): This method should not be invoked");
+		}
+	}
+
+	public static class StatusItem extends TransferFolder
+	{
+		@Override
+		public boolean isSelectableSelected()
+		{
+			return false;
+		}
+
+		@Override
+		public long getId()
+		{
+			return (directory != null ? directory : friendlyName).hashCode();
+		}
+
+		@Override
+		public boolean setSelectableSelected(boolean selected)
+		{
+			return false;
 		}
 	}
 
@@ -329,7 +420,9 @@ public class TransactionListAdapter
 
 		public GroupEditableTransferObjectMerger(GroupEditableTransferObject holder)
 		{
-			if (holder instanceof TransferFolder)
+			if (holder instanceof StatusItem)
+				mType = Type.STATUS;
+			else if (holder instanceof TransferFolder)
 				mType = Type.FOLDER;
 			else
 				mType = Type.FILE;
@@ -358,6 +451,7 @@ public class TransactionListAdapter
 
 		public enum Type
 		{
+			STATUS,
 			FOLDER,
 			FILE
 		}

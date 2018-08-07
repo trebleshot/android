@@ -182,6 +182,7 @@ public class TransferObject
 	{
 		INTERRUPTED,
 		PENDING,
-		REMOVED
+		REMOVED,
+		DONE
 	}
 }
