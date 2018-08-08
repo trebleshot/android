@@ -158,9 +158,15 @@ public class AccessDatabase extends SQLiteDatabase
 			if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
 				indexObject.incoming += transferObject.fileSize;
 				indexObject.incomingCount++;
+
+				if (TransferObject.Flag.DONE.equals(transferObject.flag))
+					indexObject.incomingCountCompleted++;
 			} else {
 				indexObject.outgoing += transferObject.fileSize;
 				indexObject.outgoingCount++;
+
+				if (TransferObject.Flag.DONE.equals(transferObject.flag))
+					indexObject.outgoingCountCompleted++;
 			}
 		}
 

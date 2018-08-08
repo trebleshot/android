@@ -265,7 +265,7 @@ public class TransactionListAdapter
 				sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
 
 				appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
-						? R.color.colorAccent : R.color.layoutIconTint;
+						? R.color.colorAccent : R.color.layoutTintLightColor;
 			} else {
 				switch (object.flag) {
 					case DONE:
@@ -276,7 +276,7 @@ public class TransactionListAdapter
 						appliedColor = R.color.errorTintColor;
 						break;
 					default:
-						appliedColor = R.color.layoutIconTint;
+						appliedColor = R.color.layoutTintLightColor;
 				}
 
 				boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);

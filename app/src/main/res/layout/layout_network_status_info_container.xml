@@ -79,7 +79,7 @@
                         android:paddingEnd="25dp"
                         android:paddingRight="25dp"
                         android:src="@drawable/ic_wifi_tethering_white_24dp"
-                        android:tint="@color/layoutIconTint"/>
+                        android:tint="@color/layoutTintColor"/>
 
                     <TextView
                         android:id="@+id/layout_hotspot_status_info_container_text2"
@@ -107,7 +107,7 @@
                         android:paddingEnd="25dp"
                         android:paddingRight="25dp"
                         android:src="@drawable/ic_vpn_key_black_24dp"
-                        android:tint="@color/layoutIconTint"/>
+                        android:tint="@color/layoutTintColor"/>
 
                     <TextView
                         android:id="@+id/layout_hotspot_status_info_container_text3"

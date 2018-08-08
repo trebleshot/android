@@ -368,5 +368,6 @@
     <string name="text_killServiceAfterLeavingSummary">Stops communication if there is no ongoing task</string>
     <string name="text_killServiceAfterLeaving">Leaving the app stops the service</string>
     <string name="text_emptySymbol">-</string>
-    <string name="text_transferStatusFiles" formatted="false">%1$d of %2$d</string>
+    <string name="text_transferStatusFiles">%1d of %2d</string>
+
 </resources>

@@ -110,7 +110,7 @@
         <item name="android:background">?attr/roundSelector</item>
         <item name="android:focusableInTouchMode">false</item>
         <item name="android:focusable">false</item>
-        <item name="tint">@color/layoutIconTint</item>
+        <item name="tint">@color/layoutTintColor</item>
     </style>
 
     <style name="listContentLayoutStyle">
