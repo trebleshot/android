@@ -41,6 +41,7 @@ public class Keyword
 			ERROR = "error",
 			ERROR_NOT_ALLOWED = "notAllowed",
 			ERROR_NOT_FOUND = "notFound",
+			ERROR_NOT_ACCESSIBLE = "notAccessible",
 			HANDSHAKE_REQUIRED = "handshakeRequired",
 			HANDSHAKE_ONLY = "handshakeOnly",
 			NETWORK_NAME = "nwName",

@@ -67,7 +67,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 			try {
 				DocumentFile savePath = fromUri(context, Uri.parse(group.savePath));
 
-				if (savePath != null && savePath.isDirectory() && savePath.canWrite())
+				if (savePath.isDirectory() && savePath.canWrite())
 					return savePath;
 			} catch (Exception e) {
 				e.printStackTrace();

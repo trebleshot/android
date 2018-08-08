@@ -837,8 +837,15 @@ public class CommunicationService extends Service
 
 					if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT)) {
 						// the assignee for this transfer has received the files. We can remove it
-						if (!currentRequest.has(Keyword.TRANSFER_JOB_DONE) || currentRequest.getBoolean(Keyword.TRANSFER_JOB_DONE))
+						if (!currentRequest.has(Keyword.TRANSFER_JOB_DONE) || currentRequest.getBoolean(Keyword.TRANSFER_JOB_DONE)) {
 							getDatabase().remove(processHolder.assignee);
+
+							ContentValues values = new ContentValues();
+							values.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
+
+							getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+									.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(transferInstance.getGroup().groupId)), values);
+						}
 
 						Log.d(TAG, "SeamlessServer.onConnected(): Removing assignee: " + processHolder.assignee.deviceId);
 						break;
@@ -866,16 +873,26 @@ public class CommunicationService extends Service
 						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
 						currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 					} finally {
-						activeConnection.reply(currentReply.toString());
+						StreamInfo streamInfo = null;
 
-						if (currentReply.getBoolean(Keyword.RESULT)) {
-							Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
+						try {
+							 streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
+						} catch (Exception e) {
+							Log.d(TAG, "SeamlessServer.onConnected(): File is not accessible ? " + processHolder.transferObject.friendlyName);
 
-							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
+							currentReply.put(Keyword.RESULT, false);
+							currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
+							currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
+						} finally {
+							activeConnection.reply(currentReply.toString());
 
-							getNotificationHelper().notifyFileTransaction(processHolder);
+							if (currentReply.getBoolean(Keyword.RESULT) && streamInfo != null) {
+								Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
 
-							mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
+								getNotificationHelper().notifyFileTransaction(processHolder);
+
+								mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
+							}
 						}
 					}
 
@@ -1109,13 +1126,7 @@ public class CommunicationService extends Service
 		@Override
 		public Flag onError(TransferHandler<ProcessHolder> handler, Exception error)
 		{
-			error.printStackTrace();
-
-			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-
-			getDatabase().update(handler.getExtra().transferObject);
-			getNotificationHelper().notifyReceiveError(handler.getExtra().transferObject);
-
+			handleError(handler, error);
 			return Flag.CANCEL_ALL;
 		}
 
@@ -1198,6 +1209,9 @@ public class CommunicationService extends Service
 					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
 						handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
 						getDatabase().update(handler.getExtra().transferObject);
+					} else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
+						handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+						getDatabase().update(handler.getExtra().transferObject);
 					}
 
 					return Flag.CANCEL_CURRENT;
@@ -1245,6 +1259,16 @@ public class CommunicationService extends Service
 							.putExtra(FileListFragment.EXTRA_FILE_NAME, currentFile.getName()));
 			}
 		}
+
+		protected void handleError(TransferHandler<ProcessHolder> handler, Exception error) {
+			error.printStackTrace();
+
+			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+
+			getDatabase().update(handler.getExtra().transferObject);
+			getNotificationHelper().notifyReceiveError(handler.getExtra().transferObject);
+		}
+
 	}
 
 	public class Send extends CoolTransfer.Send<ProcessHolder>

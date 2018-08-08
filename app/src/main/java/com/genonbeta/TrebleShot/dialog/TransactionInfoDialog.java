@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.transition.TransitionManager;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +48,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			try {
 				attemptedFile = FileUtils.getIncomingPseudoFile(getContext(), preferences, transferObject, group, false);
 			} catch (Exception e) {
+				e.printStackTrace();
 			}
 
 			final DocumentFile pseudoFile = attemptedFile;
@@ -102,7 +105,8 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 				}
 			});
 
-			if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
+			if (TransferObject.Type.INCOMING.equals(transferObject.type)
+					&& !TransferObject.Flag.DONE.equals(transferObject.flag)) {
 				incomingDetailsLayout.setVisibility(View.VISIBLE);
 
 				if (fileExists

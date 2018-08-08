@@ -249,7 +249,7 @@ public class CommunicationNotificationHelper
 
 	public DynamicNotification notifyReceiveError(TransferObject transferObject)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+		DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.requestId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
 		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_error))

@@ -18,8 +18,8 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -122,7 +122,10 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 	@Override
 	public long getItemId(int position)
 	{
-		return getList().get(position).deviceId.hashCode();
+		NetworkDevice device = getList().get(position);
+
+		return (device instanceof HotspotNetwork ? ((HotspotNetwork) device).SSID : device.deviceId)
+				.hashCode();
 	}
 
 	@Override

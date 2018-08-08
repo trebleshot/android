@@ -58,7 +58,7 @@ public class TransactionGroupListAdapter
 
 				object.assignees = assigneesText.length() > 0
 						? assigneesText.toString()
-				: getContext().getString(R.string.text_empty);
+				: getContext().getString(R.string.text_emptySymbol);
 			}
 		})) {
 			mDatabase.calculateTransactionSize(group.groupId, group.index);
