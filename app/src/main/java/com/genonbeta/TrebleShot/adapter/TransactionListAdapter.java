@@ -22,6 +22,7 @@ import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -50,6 +51,9 @@ public class TransactionListAdapter
 
 		mDatabase = database;
 		mPercentFormat = NumberFormat.getPercentInstance();
+
+		DecimalFormat pctFormat = new DecimalFormat("##.0%");
+		pctFormat.setMultiplier(1);
 
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
 	}
@@ -378,11 +382,8 @@ public class TransactionListAdapter
 
 		public double getPercent()
 		{
-			double result = filesTotal == filesReceived ? 1000.00 : 1000.00 / filesTotal * Integer.valueOf(filesReceived).doubleValue();
-
-			Log.d(TransactionListAdapter.class.getSimpleName(), "Result is = " + result + "; Total = "+ filesTotal + "; Received = " + filesReceived);
-
-			return result;
+			return filesReceived == 0 || filesTotal == 0
+					? 0 : Integer.valueOf(filesReceived).doubleValue() / Integer.valueOf(filesTotal).doubleValue();
 		}
 
 		@Override
