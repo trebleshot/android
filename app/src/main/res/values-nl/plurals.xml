@@ -21,9 +21,9 @@
 	<item quantity="other">%d verbindingen</item>
 </plurals>
     <plurals name="ques_receiveMultipleFiles">
-        <item quantity="one">Wilt u dit bestand ontvangen?</item>
-        <item quantity="other">Wilt u %d bestanden ontvangen?</item>
-    </plurals>
+	<item quantity="one">Wil je dit bestand ontvangen?</item>
+	<item quantity="other">Wil je %d bestanden ontvangen?</item>
+</plurals>
 <plurals name="text_files">
 	<item quantity="one">%d bestand</item>
 	<item quantity="other">%d bestanden</item>
