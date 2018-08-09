@@ -18,11 +18,11 @@ import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.SkuDetails;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.util.MathUtils;
-import com.genonbeta.TrebleShot.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -172,7 +172,9 @@ public class InAppDonationItemListFragment
 			TextView text2 = holder.getView().findViewById(R.id.text2);
 			TextView text3 = holder.getView().findViewById(R.id.text3);
 
-			text1.setText(details.title.substring(0, details.title.lastIndexOf(" (")));
+			int lastParenthesis = details.title.lastIndexOf(" (");
+
+			text1.setText(lastParenthesis != -1 ? details.title.substring(0, lastParenthesis) : details.title);
 			text2.setText(details.description);
 			text3.setText(details.priceText);
 		}
@@ -200,10 +202,18 @@ public class InAppDonationItemListFragment
 				items.add("trebleshot.donation.5");
 				items.add("trebleshot.donation.6");
 
-				List<SkuDetails> skuDetails = mBillingProcessor.getPurchaseListingDetails(items);
+				// For testing purposes
+				//items.add("android.test.purchased");
 
-				if (skuDetails != null)
-				{
+				List<SkuDetails> skuDetails = null;
+
+				try {
+					skuDetails = mBillingProcessor.getPurchaseListingDetails(items);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+
+				if (skuDetails != null) {
 					Collections.sort(skuDetails, new Comparator<SkuDetails>()
 					{
 						@Override

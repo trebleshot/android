@@ -343,7 +343,7 @@
         {
             "moduleName": "com.genonbeta.android:framework",
             "moduleUrl": "https://github.com/genonbeta/framework-android",
-            "moduleVersion": "1.0",
+            "moduleVersion": "1.0.1",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
