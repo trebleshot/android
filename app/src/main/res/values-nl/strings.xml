@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources>
     <string name="text_appName">TrebleShot</string>
-    <string name="text_navigationDrawerOpen">Navigatiebalk openen</string>
-    <string name="text_navigationDrawerClose">Navigatiebalk sluiten</string>
+    <string name="text_navigationDrawerOpen">Navigatiemenu openen</string>
+    <string name="text_navigationDrawerClose">Navigatiemenu sluiten</string>
     <string name="text_preferences">Instellingen</string>
     <string name="mesg_loading">Bezig met laden…</string>
     <string name="text_unknownUser">Onbekende gebruiker</string>
