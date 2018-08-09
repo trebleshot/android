@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<resources>
-    <string name="text_donate">Donate</string>
-    <string name="mesg_donationSuccessful">Thank you!</string>
-    <string name="mesg_donationBillingError">Something is not working</string>
-    <string name="butn_donate">Donate</string>
-</resources>

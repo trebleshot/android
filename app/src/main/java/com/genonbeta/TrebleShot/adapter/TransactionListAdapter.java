@@ -44,6 +44,7 @@ public class TransactionListAdapter
 	private long mGroupId;
 	private PathChangedListener mListener;
 	private NumberFormat mPercentFormat;
+	private long totalByte;
 
 	public TransactionListAdapter(Context context, AccessDatabase database)
 	{

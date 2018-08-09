@@ -382,4 +382,7 @@
     <string name="text_thirdPartyLibraries">Üçüncü parti kütüphaneler</string>
     <string name="text_killServiceAfterLeaving">Uygulamadan ayrılmak servisi durdurur</string>
     <string name="text_killServiceAfterLeavingSummary">Devam eden iş yoksa haberleşme sona erer</string>
+    <string name="text_donate">Bağış yap</string>
+    <string name="mesg_donationSuccessful">Teşekkür ederiz!</string>
+    <string name="butn_donate">Bağış yap</string>
 </resources>

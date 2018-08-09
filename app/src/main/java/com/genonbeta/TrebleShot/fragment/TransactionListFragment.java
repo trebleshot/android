@@ -147,6 +147,12 @@ public class TransactionListFragment
 	}
 
 	@Override
+	protected void onListRefreshed()
+	{
+		super.onListRefreshed();
+	}
+
+	@Override
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_pendingTransfers);

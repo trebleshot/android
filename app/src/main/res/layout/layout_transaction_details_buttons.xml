@@ -116,7 +116,6 @@
                 android:tint="?colorAccent"/>
 
             <TextView
-                android:id="@+id/activity_about_update_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/butn_showFiles"
@@ -124,5 +123,7 @@
                 android:textStyle="bold"/>
 
         </LinearLayout>
+
+       <include layout="@layout/include_layout_transaction_details_buttons_fourth" />
     </LinearLayout>
 </LinearLayout>

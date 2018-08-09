@@ -369,5 +369,8 @@
     <string name="text_killServiceAfterLeaving">Leaving the app stops the service</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d of %2d</string>
-
+    <string name="text_donate">Donate</string>
+    <string name="mesg_donationSuccessful">Thank you!</string>
+    <string name="butn_donate">Donate</string>
+    <string name="msg">Donate</string>
 </resources>

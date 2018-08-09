@@ -103,6 +103,7 @@ public class AboutActivity extends Activity
 					}
 				});
 		}
+
 		GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
 
 		if (contributorsListFragment != null)

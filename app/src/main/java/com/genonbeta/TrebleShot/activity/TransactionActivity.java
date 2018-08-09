@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
@@ -459,6 +460,7 @@ public class TransactionActivity
 		private View mRemoveView;
 		private View mShowFiles;
 		private View mSaveTo;
+		private View mButtonFourth;
 
 		private TransferGroup mHeldGroup;
 
@@ -471,6 +473,7 @@ public class TransactionActivity
 			mRemoveView = view.findViewById(R.id.layout_transaction_details_remove);
 			mShowFiles = view.findViewById(R.id.layout_transaction_details_show_files);
 			mSaveTo = view.findViewById(R.id.layout_transaction_details_save_to);
+			mButtonFourth = view.findViewById(R.id.layout_transaction_details_button_fourth);
 
 			mRemoveView.setOnClickListener(new View.OnClickListener()
 			{
@@ -704,6 +707,23 @@ public class TransactionActivity
 
 			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
 			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
+
+			if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
+					&& (index.outgoingCountCompleted + index.incomingCountCompleted) == (index.incomingCount + index.outgoingCount)) {
+				mButtonFourth.setVisibility(View.VISIBLE);
+				mButtonFourth.setOnClickListener(new View.OnClickListener()
+				{
+					@Override
+					public void onClick(View v)
+					{
+						try {
+							startActivity(new Intent(getContext(), Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+						} catch (ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+				});
+			}
 
 			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_actions));
 			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_info));

@@ -127,7 +127,7 @@ public class InAppDonationItemListFragment
 	@Override
 	public void onBillingError(int errorCode, @Nullable Throwable error)
 	{
-		showToast(R.string.mesg_donationBillingError);
+		showToast(R.string.mesg_somethingWentWrong);
 	}
 
 	@Override
