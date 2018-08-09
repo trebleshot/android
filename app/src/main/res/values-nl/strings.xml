@@ -385,4 +385,9 @@
 <string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
     <string name="text_killServiceAfterLeaving">Dienst stoppen als app wordt afgesloten</string>
 <string name="butn_donate">Doneren</string>
+<string name="text_emptySymbol">-</string>
+    <string name="text_transferStatusFiles">%1d van %2d</string>
+    <string name="text_donate">Doneren</string>
+    <string name="mesg_donationSuccessful">Bedankt!</string>
+    <string name="msg">Doneren</string>
 </resources>
