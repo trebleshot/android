@@ -21,10 +21,10 @@
     <string name="text_deviceName">أسم الجهاز</string>
     <string name="text_deviceNameSummary">هذا الاسم سوف يظهر للاجهزه الاخرى</string>
     <string name="text_deviceNameTitle">ادخل اسم الجهاز</string>
-    <string name="mesg_formatNotSupported">هذا الصيغة غير مدعومة</string>
-    <string name="mesg_fileSendError">هذ الملف لم يتم ارسالة. %s</string>
-    <string name="mesg_fileReceiveError">حدث خطأ أثناء تلقي % s،</string>
-    <string name="text_multipleFileReceiveCompleted">تم إستلام الملفات بنجاح</string>
+    <string name="mesg_formatNotSupported">صيغة غير مدعومة</string>
+    <string name="mesg_fileSendError">لا يمكن إرسال الملف. %s</string>
+    <string name="mesg_fileReceiveError">"حدث خطأ أثناء تلقي  %s."</string>
+    <string name="text_multipleFileReceiveCompleted">تم إستلام ملفات جديدة</string>
     <string name="text_deviceList">قائمة الأجهزة</string>
     <string name="text_fileOpenAppChoose">فتح بإستخدام</string>
     <string name="text_fileShareAppChoose">مشاركة بواسطة</string>
@@ -93,9 +93,9 @@
     <string name="ques_copyToClipboard">نسخ إلى الحافظة؟</string>
     <string name="text_textReceived">تلقي النص</string>
     <string name="text_receivedTextSummary">تم الاستلام الى الحافظة</string>
-    <string name="butn_checkForUpdates">التحقق من وجود تحديثات</string>
+    <string name="butn_checkForUpdates">التحقق من الإصدار الجديد</string>
     <string name="butn_seeSourceCode">راجع التعليمات البرمجية المصدر</string>
-    <string name="text_typeText">كتابة ما تريد إرساله…</string>
+    <string name="text_typeText">اكتب شيئا لإرسال…</string>
     <string name="text_groupByFolder">مجلد</string>
 <string name="text_textEditor">محرر النص</string>
     <string name="butn_done">تم</string>
@@ -212,7 +212,7 @@
     <string name="text_trustZoneEnabledSummary">تمكين الوثوق بالاجهزة عند بدء تشغيل التطبيق افتراضيا</string>
     <string name="butn_typeNewEntry">إدخال نوع جديد</string>
     <string name="butn_download">تحميل</string>
-    <string name="mesg_clipboardUpdateNotice">تحديث النص، أو اضغط على الزر مرة أخرى للخروج</string>
+    <string name="mesg_clipboardUpdateNotice">حفظ النص أو اضغط مرة أخرى للخروج</string>
     <string name="mesg_textSaveNotice">حفظ النص أو اضغط مرة أخرى للخروج</string>
     <string name="butn_update">تحديث</string>
     <string name="butn_save">احفظ</string>
