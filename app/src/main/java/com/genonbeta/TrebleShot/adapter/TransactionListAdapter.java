@@ -52,9 +52,6 @@ public class TransactionListAdapter
 		mDatabase = database;
 		mPercentFormat = NumberFormat.getPercentInstance();
 
-		DecimalFormat pctFormat = new DecimalFormat("##.0%");
-		pctFormat.setMultiplier(1);
-
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
 	}
 

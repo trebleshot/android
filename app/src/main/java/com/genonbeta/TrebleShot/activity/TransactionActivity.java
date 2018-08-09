@@ -125,7 +125,7 @@ public class TransactionActivity
 		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
 		final TransactionDetailsFragment detailsFragment = new TransactionDetailsFragment();
 		final TransferAssigneeListFragment assigneeListFragment = new TransferAssigneeListFragment();
-		final explorerFragment transactionFragment = new explorerFragment();
+		final TransactionExplorerFragment transactionFragment = new TransactionExplorerFragment();
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
 			TransferGroup group = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
@@ -150,8 +150,8 @@ public class TransactionActivity
 			assigneeListFragment.setArguments(assigneeFragmentArgs);
 
 			Bundle transactionFragmentArgs = new Bundle();
-			transactionFragmentArgs.putLong(explorerFragment.ARG_GROUP_ID, mGroup.groupId);
-			transactionFragmentArgs.putString(explorerFragment.ARG_PATH, null);
+			transactionFragmentArgs.putLong(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
+			transactionFragmentArgs.putString(TransactionExplorerFragment.ARG_PATH, null);
 			transactionFragment.setArguments(transactionFragmentArgs);
 
 			tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
@@ -710,7 +710,7 @@ public class TransactionActivity
 		}
 	}
 
-	public static class explorerFragment
+	public static class TransactionExplorerFragment
 			extends com.genonbeta.android.framework.app.Fragment
 			implements TransactionListAdapter.PathChangedListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 	{
