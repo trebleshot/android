@@ -12,6 +12,7 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.support.annotation.WorkerThread;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
@@ -31,6 +32,8 @@ import static junit.framework.Assert.fail;
  */
 public class ConnectionUtils
 {
+	public static final String TAG = ConnectionUtils.class.getSimpleName();
+
 	private static ConnectionUtils mInstance;
 
 	private Context mContext;
@@ -73,10 +76,10 @@ public class ConnectionUtils
 
 	public boolean disableCurrentNetwork()
 	{
-		if (!isConnectedToAnyNetwork())
-			return false;
-
-		return getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+		// TODO: Networks added by other applications will possibly reconnect even if we disconnect them
+		// And it is the case that then the return value of disableNetwork will be false.
+		return isConnectedToAnyNetwork()
+				&& getWifiManager().disconnect() && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
 	}
 
 	@WorkerThread
@@ -90,19 +93,32 @@ public class ConnectionUtils
 			int passedTime = (int) (System.currentTimeMillis() - startTime);
 
 			if (!getWifiManager().isWifiEnabled()) {
-				if (!getWifiManager().setWifiEnabled(true))
-					break; // failed to start Wireless
+				Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
+				if (!getWifiManager().setWifiEnabled(true)) {
+					Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.");
+					break;
+				}
 			} else if (!isConnectedToNetwork(hotspotNetwork) && !connectionToggled) {
-				connectionToggled = toggleConnection(hotspotNetwork);
+				Log.d(TAG, "establishHotspotConnection(): Requested network toggle");
+				toggleConnection(hotspotNetwork);
+
+				connectionToggled = true;
 			} else {
+				Log.d(TAG, "establishHotspotConnection(): Waiting to connect to the server");
+
 				for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
 					if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
+						Log.d(TAG, "establishHotspotConnection(): A network is connected. Waiting to get a response from the server");
+
 						String testedRemoteAddress = NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress()) + "1";
 
 						if (NetworkUtils.ping(testedRemoteAddress, 1000)) {
+							Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+
 							remoteAddress = testedRemoteAddress;
 							break;
-						}
+						} else
+							Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
 					}
 				}
 			}
@@ -313,6 +329,7 @@ public class ConnectionUtils
 
 		return false;
 	}
+
 
 	public interface TimeoutListener
 	{

@@ -768,6 +768,9 @@ public class CommunicationService extends Service
 
 								result = true;
 								break;
+							case (Keyword.REQUEST_HANDSHAKE):
+								result = true;
+								break;
 						}
 					}
 				}
@@ -991,7 +994,7 @@ public class CommunicationService extends Service
 						try {
 							CoolSocket.ActiveConnection initialConnection = client.communicate(mTransfer.getDevice(), mTransfer.getConnection());
 
-							initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE).toString());
+							initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_HANDSHAKE).toString());
 
 							JSONObject resultObject = new JSONObject(initialConnection.receive().response);
 

@@ -14,6 +14,7 @@ public class Keyword
 			REQUEST_RESPONSE = "requestResponse",
 			REQUEST_ACQUAINTANCE = "requestAcquaintance",
 			REQUEST_CLIPBOARD = "requestClipboard",
+			REQUEST_HANDSHAKE = "requestHandshake",
 			BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate",
 			TRANSFER_REQUEST_ID = "requestId",
 			TRANSFER_GROUP_ID = "groupId",
