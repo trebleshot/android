@@ -356,4 +356,9 @@
     <string name="text_killServiceAfterLeavingSummary">Komunikazioa eteten du jarduerarik ez badago</string>
     <string name="text_killServiceAfterLeaving">Aplikaziotik irteteak zerbitzua eteten du</string>
 <string name="butn_donate">Dohaintza</string>
+<string name="text_emptySymbol">-</string>
+    <string name="text_transferStatusFiles">%1d / %2d</string>
+    <string name="text_donate">Dohaintza</string>
+    <string name="mesg_donationSuccessful">Eskerrik asko!</string>
+    <string name="msg">Dohaintza</string>
 </resources>
