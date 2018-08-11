@@ -3,6 +3,36 @@
 	<item quantity="other">您想要删除 %d 文件吗？</item>
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="other">%d 个文件已接收</item>
+	<item quantity="other">已接收 %d 文件</item>
 </plurals>
-    </resources>
+    <plurals name="text_itemSelected">
+	<item quantity="other">已选择 %d 个文件</item>
+</plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="other">%d 个等待的传输将被移除</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="other">%d 个连接</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="other">接收 %d 个文件？</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="other">%d 个文件</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="other">%d 秒之前</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="other">%d 分钟之前</item>
+</plurals>
+    <plurals name="text_fileDeletionCompleted">
+	<item quantity="other">已删除 %d 个文件</item>
+</plurals>
+    <plurals name="text_gridRow">
+	<item quantity="other">%d 行</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="other">分享至 %d 个设备</item>
+</plurals>
+</resources>
