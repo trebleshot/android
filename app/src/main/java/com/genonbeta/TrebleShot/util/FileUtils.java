@@ -84,7 +84,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 		if (!currentFile.renameTo(uniqueName))
 			throw new IOException("Failed to rename object: " + currentFile);
 
-		return savePath.findFile(transferObject.friendlyName);
+		return savePath.findFile(uniqueName);
 	}
 
 	public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,

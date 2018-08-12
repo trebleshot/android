@@ -854,6 +854,8 @@ public class CommunicationService extends Service
 						break;
 					}
 
+					StreamInfo streamInfo = null;
+
 					try {
 						processHolder.transferObject = new TransferObject(currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID));
 
@@ -869,16 +871,6 @@ public class CommunicationService extends Service
 						getDatabase().update(processHolder.transferObject);
 
 						currentReply.put(Keyword.RESULT, true);
-					} catch (Exception e) {
-						Log.d(TAG, "SeamlessServer.onConnected(): Exception is handled: " + e.toString());
-
-						currentReply.put(Keyword.RESULT, false);
-						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
-						currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
-
-						processHolder.transferObject.flag = TransferObject.Flag.INTERRUPTED;
-					} finally {
-						StreamInfo streamInfo = null;
 
 						try {
 							streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
@@ -890,18 +882,27 @@ public class CommunicationService extends Service
 							currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
 
 							processHolder.transferObject.flag = TransferObject.Flag.INTERRUPTED;
-						} finally {
-							activeConnection.reply(currentReply.toString());
-
-							if (currentReply.getBoolean(Keyword.RESULT) && streamInfo != null) {
-								Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
-
-								getNotificationHelper().notifyFileTransaction(processHolder);
-
-								mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
-							}
 						}
+					} catch (Exception e) {
+						Log.d(TAG, "SeamlessServer.onConnected(): Exception is handled: " + e.toString());
+
+						currentReply.put(Keyword.RESULT, false);
+						currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
+						currentReply.put(Keyword.FLAG, Keyword.FLAG_GROUP_EXISTS);
+
+						processHolder.transferObject.flag = TransferObject.Flag.INTERRUPTED;
+					} finally {
+						activeConnection.reply(currentReply.toString());
 					}
+
+					if (streamInfo != null) {
+						Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
+
+						getNotificationHelper().notifyFileTransaction(processHolder);
+
+						mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
+					}
+
 
 					// We are now updating instances always at the end because it will be
 					// changed by the process itself naturally
@@ -916,14 +917,6 @@ public class CommunicationService extends Service
 						break;
 					}
 				}
-
-				// TODO: 8/7/18 We are not removing the group like we used to :(
-				/*
-				if (processHolder.group != null && getDatabase().getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(processHolder.group.groupId))).size() == 0) {
-					getDatabase().remove(processHolder.group);
-					Log.d(TAG, "SeamlessServer.onConnected(): No assignee is left, removing the transfer and all of its instances: " + processHolder.group);
-				}*/
 			} catch (Exception e) {
 				e.printStackTrace();
 
@@ -1050,14 +1043,14 @@ public class CommunicationService extends Service
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
 				} else {
 					while (true) {
-						// Remove the previous object as it is completed.
-						CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-								.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
-										TransferObject.Type.INCOMING.toString(),
-										String.valueOf(processHolder.group.groupId),
-										TransferObject.Flag.PENDING.toString()));
+						try {
+							// Remove the previous object as it is completed.
+							CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+									.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
+											TransferObject.Type.INCOMING.toString(),
+											String.valueOf(processHolder.group.groupId),
+											TransferObject.Flag.PENDING.toString()));
 
-						// TODO: 8/7/18 build.77.alpha: The items will not be removed from
 						/*
 						if (receiverInstance == null
 								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
@@ -1067,35 +1060,39 @@ public class CommunicationService extends Service
 							break;
 						}*/
 
-						if (receiverInstance == null) {
-							Log.d(TAG, "SeamlessClientHandler(): Removing group because there is no file instance left");
-							break;
+							if (receiverInstance == null) {
+								Log.d(TAG, "SeamlessClientHandler(): Exiting because there is no pending file instance left");
+								break;
+							}
+
+							processHolder.transferObject = new TransferObject(receiverInstance);
+							processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, processHolder.group);
+
+							getNotificationHelper().notifyFileTransaction(processHolder);
+
+							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
+
+							mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
+
+							if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag())) {
+								Log.d(TAG, "SeamlessClientHandler.onConnect(): Cancel is requested. Exiting.");
+								break;
+							}
+						} catch (Exception e) {
+							// Throw the error again. It is for making sure that the latest known instance
+							// of the object is saved properly on any condition
+							throw e;
+						} finally {
+							if (processHolder.transferObject != null) {
+								// We are now updating instances always at the end because it will be
+								// changed by the process itself naturally
+								Log.d(TAG, "SeamlessClientHandler.onConnect(): Updating file instances to " + processHolder.transferObject.flag.toString());
+								getDatabase().update(processHolder.transferObject);
+							}
 						}
-
-						processHolder.transferObject = new TransferObject(receiverInstance);
-						processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, processHolder.group);
-
-						getNotificationHelper().notifyFileTransaction(processHolder);
-
-						StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
-
-						mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
-
-						if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.transferHandler.getFlag())) {
-							Log.d(TAG, "SeamlessClientHandler.onConnect(): Cancel is requested. Exiting.");
-							break;
-						}
-
-						// We are now updating instances always at the end because it will be
-						// changed by the process itself naturally
-						if (processHolder.transferObject != null) {
-							Log.d(TAG, "SeamlessClientHandler.onConnect(): Updating file instances to " + processHolder.transferObject.flag.toString());
-							getDatabase().update(processHolder.transferObject);
-						}
-
-						// Check if all the pending files are flagged with Flag.DONE
 					}
 
+					// Check if all the pending files are flagged with Flag.DONE
 					boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag());
 					boolean hasLeftFiles = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 							.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
@@ -1164,6 +1161,8 @@ public class CommunicationService extends Service
 			if (currentFile.getParentFile() != null)
 				try {
 					handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transferObject);
+					handler.getExtra().transferObject.file = handler.getExtra().currentFile.getName();
+					Log.d(TAG, "Receive.onTransferCompleted(): Saved as: " + handler.getExtra().currentFile.getName());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -1172,8 +1171,6 @@ public class CommunicationService extends Service
 		@Override
 		public void onInterrupted(TransferHandler<ProcessHolder> handler)
 		{
-			// TODO: 8/8/18 We will update & remove it at the end
-			//handler.getExtra().notification.cancel();
 			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 		}
 
@@ -1226,10 +1223,10 @@ public class CommunicationService extends Service
 				else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
 					if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
 						handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
-						getDatabase().update(handler.getExtra().transferObject);
+						Log.d(TAG, "Receive.onStart(): Sender says it does not have the file defined");
 					} else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
 						handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-						getDatabase().update(handler.getExtra().transferObject);
+						Log.d(TAG, "Receive.onStart(): Sender says it can't open the file");
 					}
 
 					return Flag.CANCEL_CURRENT;

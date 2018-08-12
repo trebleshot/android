@@ -327,10 +327,6 @@ public class TransactionActivity
 		mStartMenu.setVisible(hasIncoming);
 		mRetryMenu.setVisible(hasIncoming);
 
-		// FIXME: 8/6/18 After recreation of the activity we lose our link with the fragment
-		// it is because the fragment is being loaded by its adapter
-		// who is calling its old instance which is the instance we are possibly having
-		// to overcome this issue best thing to do is to get the fragment from the adapter
 		if (mPagerAdapter != null && mPagerAdapter.getCount() > 0) {
 			TransactionDetailsFragment fragment = (TransactionDetailsFragment) mPagerAdapter.getItem(0);
 
