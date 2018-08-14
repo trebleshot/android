@@ -10,7 +10,7 @@ The default TrebleShot name is the name of your device.
 
 ##### What permission does TrebleShot require?
 
-TrebleShot requires the following permission on your device:
+TrebleShot needs to access these on your device (requirements may vary):
 Phone, location, wifi, hotspot, storage.
 
 ##### How do I change my TrebleShot device name?
