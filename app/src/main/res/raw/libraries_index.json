@@ -356,7 +356,10 @@
         },
         {
             "moduleName": "com.genonbeta.coolsocket:main",
-            "moduleVersion": "1.0"
+            "moduleUrl": "https://github.com/genonbeta/CoolSocket",
+            "moduleVersion": "1.0.1.1",
+            "moduleLicense": "General Public Licence, Version 2.0",
+            "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
         {
             "moduleName": "com.github.bumptech.glide:annotations",
@@ -675,13 +678,6 @@
             "moduleVersion": "13.0",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
-        },
-        {
-            "moduleName": "org.json:json",
-            "moduleUrl": "https://github.com/douglascrockford/JSON-java",
-            "moduleVersion": "20180130",
-            "moduleLicense": "The JSON License",
-            "moduleLicenseUrl": "http://json.org/license.html"
         },
         {
             "moduleName": "org.jvnet.staxex:stax-ex",
