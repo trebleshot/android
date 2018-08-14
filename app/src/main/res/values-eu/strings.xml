@@ -361,4 +361,5 @@
     <string name="text_donate">Dohaintza</string>
     <string name="mesg_donationSuccessful">Eskerrik asko!</string>
     <string name="msg">Dohaintza</string>
+<string name="butn_open">Ireki</string>
 </resources>
