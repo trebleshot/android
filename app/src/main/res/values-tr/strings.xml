@@ -388,4 +388,5 @@
 <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%2d dsyada %1d tmm</string>
     <string name="msg">Bağış yap</string>
+<string name="butn_open">Aç</string>
 </resources>
