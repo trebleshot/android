@@ -369,4 +369,5 @@
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">捐赠</string>
     <string name="msg">捐赠</string>
+<string name="butn_open">打开</string>
 </resources>
