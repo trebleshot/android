@@ -279,11 +279,11 @@
     <string name="mesg_connectionUpdated">正在通过 \"%s\" 连接通讯</string>
     <string name="butn_gotIt">知道了</string>
     <string name="mesg_helpFolderSelection">轻触文件夹的图标以选中文件夹</string>
-    <string name="mesg_hotspotCreatedInfo">在“Wi-Fi设置”中连接至\"%s\"或通过TrebleShot中\"%s\"发送文件。</string>
+    <string name="mesg_hotspotCreatedInfo">在“Wi-Fi设置”中连接至\"%s\"或通过TrebleShot中\"%s\"发送文件</string>
     <string name="butn_selectAll">全选</string>
     <string name="butn_selectNone">全不选</string>
     <string name="butn_previewSelections">预览所选项</string>
-    <string name="mesg_retryAllInfo">TrebleShot将会重试被中断的传输。</string>
+    <string name="mesg_retryAllInfo">TrebleShot将会重试被中断的传输</string>
     <string name="mesg_transferConnectionNotSetUpFix">请首先选择连接方式</string>
     <string name="butn_setUp">设置</string>
     <string name="butn_saveAnyway">仍然保存</string>
@@ -364,7 +364,7 @@
     <string name="text_killServiceAfterLeavingSummary">如果没有正在进行的任务将停止通讯</string>
     <string name="text_killServiceAfterLeaving">关闭应用时停止服务</string>
     <string name="text_emptySymbol">-</string>
-    <string name="text_transferStatusFiles">已传输 %1d ，共 %2d</string>
+    <string name="text_transferStatusFiles">"已传输 %1d  共 %2d"</string>
     <string name="text_donate">捐赠</string>
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">捐赠</string>
