@@ -187,7 +187,7 @@
     <string name="butn_connectionList">连接</string>
     <string name="text_feelLuckyFailed">没有一个连接对于设备来说是可用的。它的地址可能已经改变。尝试在TrebleShot运行时重新连接到网络。</string>
     <string name="text_feelLuckyOngoing">TrebleShot将会为你做出决定</string>
-    <string name="butn_retry_all">重试所有</string>
+    <string name="butn_retry_all">全部重试</string>
     <string name="text_permissionRequest">权限申请</string>
     <string name="text_requestPermissionStorage">存储权限</string>
     <string name="text_requestPermissionReadPhoneState">读取手机状态权限</string>
