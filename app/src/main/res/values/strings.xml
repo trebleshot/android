@@ -9,7 +9,7 @@
 -->
 <resources>
     <string name="text_appName" translatable="false">TrebleShot</string>
-    <string name="text_navigationDrawerOpen">Open navigation drawer</string>
+    <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
     <string name="mesg_connectionFailure">Connection failed</string>
@@ -372,6 +372,5 @@
     <string name="text_donate">Donate</string>
     <string name="mesg_donationSuccessful">Thank you!</string>
     <string name="butn_donate">Donate</string>
-    <string name="msg">Donate</string>
     <string name="butn_open">Open</string>
 </resources>

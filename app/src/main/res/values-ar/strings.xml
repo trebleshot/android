@@ -1,5 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_preferences">الاعدادات</string>
+<resources>
+    <string name="text_preferences">الاعدادات</string>
     <string name="mesg_connectionFailure">فشل الاتصال</string>
     <string name="text_notAvailable">غير متاح</string>
     <string name="text_deviceListEmpty">لا يوجد جهاز</string>
@@ -107,7 +108,7 @@
     <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
     <string name="ques_removeAll">إزالة الكل؟</string>
     <string name="text_groupByFolder">مجلد</string>
-<string name="text_navigationDrawerOpen">فتح قائمة التنقل</string>
+    <string name="text_navigationDrawerOpen">فتح قائمة التنقل</string>
     <string name="text_navigationDrawerClose">غلق قائمة التنقل</string>
     <string name="text_developerModeSummary">يعطل تكوين المستخدم</string>
     <string name="text_deviceName">اسم الجهاز</string>
@@ -276,4 +277,4 @@
     <string name="text_taskCompleted">إكتمال المهمة</string>
     <string name="text_deletingFilesOngoing">حذف الملفات المحددة</string>
     <string name="text_taskOngoing">المهمة الجارية</string>
-    </resources>
+</resources>

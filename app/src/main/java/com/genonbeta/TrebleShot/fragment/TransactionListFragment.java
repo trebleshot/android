@@ -26,8 +26,8 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -138,10 +138,15 @@ public class TransactionListFragment
 	@Override
 	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
-		final TransferObject transferObject = getAdapter().getItem(holder);
+		try {
+			final TransferObject transferObject = getAdapter().getItem(holder);
+			new TransactionInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), transferObject)
+					.show();
 
-		new TransactionInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), transferObject)
-				.show();
+			return true;
+		} catch (Exception e) {
+
+		}
 
 		return false;
 	}
@@ -161,30 +166,36 @@ public class TransactionListFragment
 	@Override
 	public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
 	{
-		final TransferObject transferObject = getAdapter().getItem(holder);
+		try {
+			final TransferObject transferObject = getAdapter().getItem(holder);
 
-		if (transferObject instanceof TransactionListAdapter.TransferFolder) {
-			getAdapter().setPath(transferObject.directory);
-			refreshList();
+			if (transferObject instanceof TransactionListAdapter.TransferFolder) {
+				getAdapter().setPath(transferObject.directory);
+				refreshList();
 
-			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
-				createSnackbar(R.string.mesg_helpFolderSelection)
-						.setAction(R.string.butn_gotIt, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
+				if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
+					createSnackbar(R.string.mesg_helpFolderSelection)
+							.setAction(R.string.butn_gotIt, new View.OnClickListener()
 							{
-								AppUtils.getDefaultPreferences(getContext())
-										.edit()
-										.putBoolean("helpFolderSelection", true)
-										.apply();
-							}
-						})
-						.show();
-		} else
-			return super.performLayoutClick(holder);
+								@Override
+								public void onClick(View v)
+								{
+									AppUtils.getDefaultPreferences(getContext())
+											.edit()
+											.putBoolean("helpFolderSelection", true)
+											.apply();
+								}
+							})
+							.show();
+			} else
+				return super.performLayoutClick(holder);
 
-		return true;
+			return true;
+		} catch (Exception e) {
+
+		}
+
+		return false;
 	}
 
 	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionListAdapter.GroupEditableTransferObject>

@@ -89,24 +89,28 @@ public class ImageListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
-		final View parentView = holder.getView();
-		final ImageHolder object = getItem(position);
+		try {
+			final View parentView = holder.getView();
+			final ImageHolder object = getItem(position);
 
-		if (!holder.tryBinding(object)) {
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
+			if (!holder.tryBinding(object)) {
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
 
-			text1.setText(object.friendlyName);
-			text2.setText(object.dateTakenString);
+				text1.setText(object.friendlyName);
+				text2.setText(object.dateTakenString);
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			GlideApp.with(getContext())
-					.load(object.uri)
-					.override(400)
-					.centerCrop()
-					.into(image);
+				GlideApp.with(getContext())
+						.load(object.uri)
+						.override(400)
+						.centerCrop()
+						.into(image);
+			}
+		} catch (Exception e) {
+
 		}
 	}
 

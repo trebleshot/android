@@ -55,26 +55,29 @@ public class VideoListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
-		final VideoHolder object = this.getItem(position);
-		final View parentView = holder.getView();
+		try {
+			final VideoHolder object = this.getItem(position);
+			final View parentView = holder.getView();
 
-		if (!holder.tryBinding(object)) {
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
-			TextView text3 = parentView.findViewById(R.id.text3);
+			if (!holder.tryBinding(object)) {
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
+				TextView text3 = parentView.findViewById(R.id.text3);
 
-			text1.setText(object.friendlyName);
-			text2.setText(object.duration);
-			text3.setText(FileUtils.sizeExpression(object.size, false));
+				text1.setText(object.friendlyName);
+				text2.setText(object.duration);
+				text3.setText(FileUtils.sizeExpression(object.size, false));
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			GlideApp.with(getContext())
-					.load(object.uri)
-					.override(400)
-					.centerCrop()
-					.into(image);
+				GlideApp.with(getContext())
+						.load(object.uri)
+						.override(400)
+						.centerCrop()
+						.into(image);
+			}
+		} catch (Exception e) {
 		}
 	}
 

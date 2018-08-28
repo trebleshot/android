@@ -55,18 +55,22 @@ public class TextStreamListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull GroupViewHolder holder, int position)
 	{
-		TextStreamObject object = getItem(position);
+		try {
+			TextStreamObject object = getItem(position);
 
-		if (!holder.tryBinding(object)) {
-			View parentView = holder.getView();
+			if (!holder.tryBinding(object)) {
+				View parentView = holder.getView();
 
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			text1.setText(object.text);
-			text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));
+				text1.setText(object.text);
+				text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));
+			}
+		} catch (Exception e) {
+
 		}
 	}
 }

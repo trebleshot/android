@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.transition.TransitionManager;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +30,12 @@ import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -56,6 +57,8 @@ public class NetworkStatusFragment
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private UIConnectionUtils mConnectionUtils;
 
+	private ViewGroup mContainerQRImage;
+	private ViewGroup mContainerInfo;
 	private View mContainerText1;
 	private View mContainerText2;
 	private View mContainerText3;
@@ -88,6 +91,8 @@ public class NetworkStatusFragment
 	{
 		View view = getLayoutInflater().inflate(R.layout.layout_hotspot_status, container, false);
 
+		mContainerQRImage = view.findViewById(R.id.layout_hotspot_status_qr_image_container);
+		mContainerInfo = view.findViewById(R.id.layout_hotspot_status_info_container);
 		mCodeView = view.findViewById(R.id.layout_hotspot_status_qr_image);
 		mContainerText1 = view.findViewById(R.id.layout_hotspot_status_info_container_text1_container);
 		mContainerText2 = view.findViewById(R.id.layout_hotspot_status_info_container_text2_container);
@@ -236,6 +241,9 @@ public class NetworkStatusFragment
 			mText1.setText(text1);
 			mText2.setText(text2);
 			mText3.setText(text3);
+
+			TransitionManager.beginDelayedTransition(mContainerQRImage);
+			TransitionManager.beginDelayedTransition(mContainerInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

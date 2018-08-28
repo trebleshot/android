@@ -112,14 +112,19 @@ public class TextStreamListFragment
 	@Override
 	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
-		TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
+		try {
+			TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
 
-		startActivity(new Intent(getContext(), TextEditorActivity.class)
-				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-				.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
-				.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+			startActivity(new Intent(getContext(), TextEditorActivity.class)
+					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
-		return true;
+			return true;
+		} catch (Exception e) {
+		}
+
+		return false;
 	}
 
 	@Override

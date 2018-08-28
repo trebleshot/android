@@ -6,8 +6,11 @@ import android.text.format.DateUtils;
 import android.view.View;
 
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -109,20 +112,30 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return getCount();
 	}
 
-	public T getItem(int position)
+	public T getItem(int position) throws NotReadyException
 	{
+		if (position >= getCount() || position < 0)
+			throw new NotReadyException("The list does not contain  this index: " + position);
+
 		return getList().get(position);
 	}
 
-	public T getItem(V holder)
+	public T getItem(V holder) throws NotReadyException
 	{
-		return getList().get(holder.getAdapterPosition());
+		return getItem(holder.getAdapterPosition());
 	}
 
 	@Override
 	public long getItemId(int position)
 	{
-		return getItem(position).getId();
+		try {
+			return getItem(position).getId();
+		} catch (NotReadyException e) {
+			e.printStackTrace();
+		}
+
+		// This may be changed in the future
+		return AppUtils.getUniqueNumber();
 	}
 
 	public ArrayList<T> getItemList()
@@ -145,7 +158,13 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 	@Override
 	public String getSectionTitle(int position)
 	{
-		return getSectionName(position, getItem(position));
+		try {
+			return getSectionName(position, getItem(position));
+		} catch (NotReadyException e) {
+			e.printStackTrace();
+		}
+
+		return getContext().getString(R.string.text_emptySymbol);
 	}
 
 	@NonNull

@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
@@ -48,7 +49,7 @@ import java.util.Map;
 
 abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder, E extends EditableListAdapter<T, V>>
 		extends DynamicRecyclerViewFragment<T, V, E>
-		implements EditableListFragmentImpl<T>, DetachListener
+		implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, DetachListener
 {
 	private SelectionCallback<T> mSelectionCallback;
 	private SelectionCallback<T> mDefaultSelectionCallback;
@@ -516,10 +517,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
 	public boolean performLayoutClickOpenUri(V holder)
 	{
-		Object object = getAdapter().getItem(holder.getAdapterPosition());
+		try {
+			Object object = getAdapter().getItem(holder.getAdapterPosition());
 
-		if (object instanceof Shareable)
-			return openUri(((Shareable) object).uri, getString(R.string.text_fileOpenAppChoose));
+			if (object instanceof Shareable)
+				return openUri(((Shareable) object).uri, getString(R.string.text_fileOpenAppChoose));
+		} catch (NotReadyException e) {
+			e.printStackTrace();
+		}
 
 		return false;
 	}
@@ -598,6 +603,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 		return getSelectionCallback() != null && getSelectionCallback().setItemSelected(holder.getAdapterPosition());
 	}
 
+	@Override
 	public void setLayoutClickListener(LayoutClickListener<V> clickListener)
 	{
 		mLayoutClickListener = clickListener;

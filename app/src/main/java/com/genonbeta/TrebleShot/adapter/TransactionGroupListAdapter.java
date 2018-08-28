@@ -118,35 +118,38 @@ public class TransactionGroupListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, int position)
 	{
-		final PreloadedGroup object = getItem(position);
+		try {
+			final PreloadedGroup object = getItem(position);
 
-		if (!holder.tryBinding(object)) {
-			final View parentView = holder.getView();
+			if (!holder.tryBinding(object)) {
+				final View parentView = holder.getView();
 
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
-			TextView text3 = parentView.findViewById(R.id.text3);
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
+				TextView text3 = parentView.findViewById(R.id.text3);
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
-					|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))
-				image.setImageResource(object.index.outgoingCount > 0
-						? R.drawable.ic_compare_arrows_white_24dp
-						: R.drawable.ic_error_white_24dp);
-			else
-				image.setImageResource(object.index.outgoingCount > 0
-						? R.drawable.ic_file_upload_black_24dp
-						: R.drawable.ic_file_download_black_24dp);
+				if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
+						|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))
+					image.setImageResource(object.index.outgoingCount > 0
+							? R.drawable.ic_compare_arrows_white_24dp
+							: R.drawable.ic_error_white_24dp);
+				else
+					image.setImageResource(object.index.outgoingCount > 0
+							? R.drawable.ic_file_upload_black_24dp
+							: R.drawable.ic_file_download_black_24dp);
 
-			text1.setTextColor(ContextCompat.getColor(getContext(), object.totalPercent == 1.0
-					? R.color.colorAccent
-					: R.color.layoutTintLightColor));
+				text1.setTextColor(ContextCompat.getColor(getContext(), object.totalPercent == 1.0
+						? R.color.colorAccent
+						: R.color.layoutTintLightColor));
 
-			text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, object.totalSize));
-			text2.setText(mPercentFormat.format(object.totalPercent));
-			text3.setText(object.totalFiles);
+				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, object.totalSize));
+				text2.setText(mPercentFormat.format(object.totalPercent));
+				text3.setText(object.totalFiles);
+			}
+		} catch (Exception e) {
 		}
 	}
 

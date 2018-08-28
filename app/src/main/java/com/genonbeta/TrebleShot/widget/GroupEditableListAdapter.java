@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -62,8 +63,6 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 				}
 			});
 
-			long representativeIdIterator = -1;
-
 			for (ComparableMerger<T> thisMerger : groupLister.getList()) {
 				Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
 
@@ -75,8 +74,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 
 				generated.setSize(thisMerger.getBelongings().size());
 				generated.setDate(firstEditable.getComparableDate());
-				generated.setRepresentativeText(generated.getRepresentativeText());
-				generated.setId(representativeIdIterator--);
+				generated.setId(~generated.getRepresentativeText().hashCode());
 
 				loadedList.addAll(thisMerger.getBelongings());
 			}
@@ -99,7 +97,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	@Override
 	public int getItemViewType(int position)
 	{
-		return getItem(position).getViewType();
+		try {
+			return getItem(position).getViewType();
+		} catch (NotReadyException e) {
+			e.printStackTrace();
+			return VIEW_TYPE_DEFAULT;
+		}
 	}
 
 	public String getRepresentativeText(Merger merger)

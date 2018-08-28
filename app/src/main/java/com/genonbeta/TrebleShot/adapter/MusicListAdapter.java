@@ -115,38 +115,42 @@ public class MusicListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final GroupViewHolder holder, int position)
 	{
-		final SongHolder object = getItem(position);
-		final View parentView = holder.getView();
+		try {
+			final SongHolder object = getItem(position);
+			final View parentView = holder.getView();
 
-		if (!holder.tryBinding(object)) {
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
-			TextView text3 = parentView.findViewById(R.id.text3);
+			if (!holder.tryBinding(object)) {
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
+				TextView text3 = parentView.findViewById(R.id.text3);
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			text1.setText(object.song);
+				text1.setText(object.song);
 
-			if (getGroupBy() == MODE_GROUP_BY_ALBUM
-					|| getGroupBy() == MODE_GROUP_BY_ARTIST) {
-				text2.setText(getGroupBy() == MODE_GROUP_BY_ALBUM
-						? object.artist
-						: object.albumHolder.title);
+				if (getGroupBy() == MODE_GROUP_BY_ALBUM
+						|| getGroupBy() == MODE_GROUP_BY_ARTIST) {
+					text2.setText(getGroupBy() == MODE_GROUP_BY_ALBUM
+							? object.artist
+							: object.albumHolder.title);
 
-				text3.setVisibility(View.GONE);
-			} else {
-				text2.setText(object.artist);
-				text3.setText(object.albumHolder.title);
-				text3.setVisibility(View.VISIBLE);
+					text3.setVisibility(View.GONE);
+				} else {
+					text2.setText(object.artist);
+					text3.setText(object.albumHolder.title);
+					text3.setVisibility(View.VISIBLE);
+				}
+
+				GlideApp.with(getContext())
+						.load(object.albumHolder.art)
+						.placeholder(R.drawable.ic_music_note_white_24dp)
+						.override(160)
+						.centerCrop()
+						.into(image);
 			}
+		} catch (Exception e) {
 
-			GlideApp.with(getContext())
-					.load(object.albumHolder.art)
-					.placeholder(R.drawable.ic_music_note_white_24dp)
-					.override(160)
-					.centerCrop()
-					.into(image);
 		}
 	}
 

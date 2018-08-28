@@ -22,8 +22,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -158,8 +158,13 @@ public class TransactionGroupListFragment
 	@Override
 	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
-		TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
-		return true;
+		try {
+			TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
+			return true;
+		} catch (Exception e) {
+		}
+
+		return false;
 	}
 
 	@Override

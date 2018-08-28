@@ -16,12 +16,17 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentModelImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
+import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 /**
@@ -50,10 +55,10 @@ public class ContentSharingActivity extends Activity
 		final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-		final EditableListFragment appFragment = new ApplicationListFragment();
-		final EditableListFragment musicFragment = new MusicListFragment();
-		final EditableListFragment photoFragment = new ImageListFragment();
-		final EditableListFragment videoFragment = new VideoListFragment();
+		final Fragment appFragment = new ApplicationListFragment();
+		final Fragment musicFragment = new MusicListFragment();
+		final Fragment photoFragment = new ImageListFragment();
+		final Fragment videoFragment = new VideoListFragment();
 
 		mSelectionCallback = new SharingActionModeCallback(null);
 		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
@@ -77,14 +82,16 @@ public class ContentSharingActivity extends Activity
 			@Override
 			public Object instantiateItem(ViewGroup container, int position)
 			{
-				EditableListFragment fragment = (EditableListFragment) super.instantiateItem(container, position);
+				Fragment fragment = (Fragment) super.instantiateItem(container, position);
+				EditableListFragmentImpl fragmentImpl = (EditableListFragmentImpl) fragment;
+				EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) fragment;
 
-				fragment.setSelectionCallback(mSelectionCallback);
-				fragment.setSelectorConnection(selectorConnection);
-				fragment.setLayoutClickListener(groupLayoutClickListener);
+				fragmentImpl.setSelectionCallback(mSelectionCallback);
+				fragmentImpl.setSelectorConnection(selectorConnection);
+				fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
 				if (viewPager.getCurrentItem() == position)
-					mSelectionCallback.updateProvider(fragment);
+					mSelectionCallback.updateProvider(fragmentImpl);
 
 				return fragment;
 			}
@@ -96,7 +103,7 @@ public class ContentSharingActivity extends Activity
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		pagerAdapter.add(appFragment, tabLayout);
-		pagerAdapter.add(musicFragment, tabLayout);
+ 		pagerAdapter.add(musicFragment, tabLayout);
 		pagerAdapter.add(photoFragment, tabLayout);
 		pagerAdapter.add(videoFragment, tabLayout);
 

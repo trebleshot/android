@@ -11,6 +11,11 @@
         android:layout_height="0dp"
         android:layout_weight="1"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/separatorColor"/>
+
     <include
         layout="@layout/layout_network_status_info_container"
         android:layout_width="match_parent"

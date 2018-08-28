@@ -66,22 +66,25 @@ public class ApplicationListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, final int position)
 	{
-		final View parentView = holder.getView();
-		final PackageHolder object = getItem(position);
-		ImageView image = parentView.findViewById(R.id.image);
-		TextView text1 = parentView.findViewById(R.id.text);
-		TextView text2 = parentView.findViewById(R.id.text2);
+		try {
+			final View parentView = holder.getView();
+			final PackageHolder object = getItem(position);
+			ImageView image = parentView.findViewById(R.id.image);
+			TextView text1 = parentView.findViewById(R.id.text);
+			TextView text2 = parentView.findViewById(R.id.text2);
 
-		text1.setText(object.friendlyName);
-		text2.setText(object.version);
+			text1.setText(object.friendlyName);
+			text2.setText(object.version);
 
-		parentView.setSelected(object.isSelectableSelected());
+			parentView.setSelected(object.isSelectableSelected());
 
-		GlideApp.with(getContext())
-				.load(object.appInfo)
-				.override(160)
-				.centerCrop()
-				.into(image);
+			GlideApp.with(getContext())
+					.load(object.appInfo)
+					.override(160)
+					.centerCrop()
+					.into(image);
+		} catch (Exception e) {
+		}
 	}
 
 	public static class PackageHolder extends Shareable
@@ -95,7 +98,7 @@ public class ApplicationListAdapter
 
 		public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
 		{
-			super(appInfo.uid,
+			super(appInfo.packageName.hashCode(),
 					friendlyName,
 					friendlyName + "_" + version + ".apk",
 					MIME_TYPE,

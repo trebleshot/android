@@ -25,6 +25,7 @@ import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -296,31 +297,37 @@ public class FileListFragment
 	@Override
 	public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
 	{
-		FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
+		try {
+			FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
 
-		if (fileInfo instanceof FileListAdapter.FileHolder)
-			return super.performLayoutClick(holder);
-		else if (fileInfo instanceof FileListAdapter.DirectoryHolder
-				|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
-			FileListFragment.this.goPath(fileInfo.file);
+			if (fileInfo instanceof FileListAdapter.FileHolder)
+				return super.performLayoutClick(holder);
+			else if (fileInfo instanceof FileListAdapter.DirectoryHolder
+					|| fileInfo instanceof FileListAdapter.WritablePathHolder) {
+				FileListFragment.this.goPath(fileInfo.file);
 
-			if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
-				createSnackbar(R.string.mesg_helpFolderSelection)
-						.setAction(R.string.butn_gotIt, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
+				if (getSelectionCallback() != null && getSelectionCallback().isSelectionActivated() && !AppUtils.getDefaultPreferences(getContext()).getBoolean("helpFolderSelection", false))
+					createSnackbar(R.string.mesg_helpFolderSelection)
+							.setAction(R.string.butn_gotIt, new View.OnClickListener()
 							{
-								AppUtils.getDefaultPreferences(getContext())
-										.edit()
-										.putBoolean("helpFolderSelection", true)
-										.apply();
-							}
-						})
-						.show();
+								@Override
+								public void onClick(View v)
+								{
+									AppUtils.getDefaultPreferences(getContext())
+											.edit()
+											.putBoolean("helpFolderSelection", true)
+											.apply();
+								}
+							})
+							.show();
+			}
+
+			return true;
+		} catch (NotReadyException e) {
+			e.printStackTrace();
 		}
 
-		return true;
+		return false;
 	}
 
 	public boolean scanFile(DocumentFile file)

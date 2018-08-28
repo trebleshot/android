@@ -143,7 +143,7 @@ public class TransferObject
 	@Override
 	public long getId()
 	{
-		return requestId;
+		return (requestId * 10) + type.ordinal();
 	}
 
 	@Override

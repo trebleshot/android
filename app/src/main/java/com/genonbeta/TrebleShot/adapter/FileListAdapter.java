@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,14 +14,15 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Merger;
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.SQLQuery;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -160,20 +162,24 @@ public class FileListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final GroupViewHolder holder, final int position)
 	{
-		final GenericFileHolder object = getItem(position);
+		try {
+			final GenericFileHolder object = getItem(position);
 
-		if (!holder.tryBinding(object)) {
-			final View parentView = holder.getView();
+			if (!holder.tryBinding(object)) {
+				final View parentView = holder.getView();
 
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView text1 = parentView.findViewById(R.id.text);
-			TextView text2 = parentView.findViewById(R.id.text2);
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView text1 = parentView.findViewById(R.id.text);
+				TextView text2 = parentView.findViewById(R.id.text2);
 
-			holder.getView().setSelected(object.isSelectableSelected());
+				holder.getView().setSelected(object.isSelectableSelected());
 
-			text1.setText(object.friendlyName);
-			text2.setText(object.info);
-			image.setImageResource(object.iconRes);
+				text1.setText(object.friendlyName);
+				text2.setText(object.info);
+				image.setImageResource(object.iconRes);
+			}
+		} catch (NotReadyException e) {
+			e.printStackTrace();
 		}
 	}
 

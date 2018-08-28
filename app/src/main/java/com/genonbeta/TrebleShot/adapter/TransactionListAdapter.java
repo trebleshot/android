@@ -22,7 +22,6 @@ import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
@@ -44,7 +43,6 @@ public class TransactionListAdapter
 	private long mGroupId;
 	private PathChangedListener mListener;
 	private NumberFormat mPercentFormat;
-	private long totalByte;
 
 	public TransactionListAdapter(Context context, AccessDatabase database)
 	{
@@ -62,14 +60,19 @@ public class TransactionListAdapter
 		ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
 		ArrayList<GroupEditableTransferObject> files = new ArrayList<>();
 		String currentPath = getPath();
-
-		ArrayList<GroupEditableTransferObject> derivedList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroupId)), GroupEditableTransferObject.class);
-
-		// in an order to keep the database sequences at the least level possible
-		// we should gather all the available data and crunch it as needed
-
 		currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
+
+		SQLQuery.Select sqlSelect = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
+
+		if (currentPath == null)
+			sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroupId));
+		else
+			// Does the SQL do better job?
+			sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
+					+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
+					+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroupId), currentPath, currentPath + File.separator + "%");
+
+		ArrayList<GroupEditableTransferObject> derivedList = mDatabase.castQuery(sqlSelect, GroupEditableTransferObject.class);
 
 		// we first get the default files
 		for (GroupEditableTransferObject object : derivedList) {
@@ -238,54 +241,58 @@ public class TransactionListAdapter
 	@Override
 	public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, int position)
 	{
-		final GroupEditableTransferObject object = getItem(position);
+		try {
+			final GroupEditableTransferObject object = getItem(position);
 
-		if (!holder.tryBinding(object)) {
-			final View parentView = holder.getView();
+			if (!holder.tryBinding(object)) {
+				final View parentView = holder.getView();
 
-			int appliedColor = R.color.colorAccent;
-			ImageView image = parentView.findViewById(R.id.image);
-			TextView mainText = parentView.findViewById(R.id.text);
-			TextView statusText = parentView.findViewById(R.id.text2);
-			TextView sizeText = parentView.findViewById(R.id.text3);
+				int appliedColor = R.color.colorAccent;
+				ImageView image = parentView.findViewById(R.id.image);
+				TextView mainText = parentView.findViewById(R.id.text);
+				TextView statusText = parentView.findViewById(R.id.text2);
+				TextView sizeText = parentView.findViewById(R.id.text3);
 
-			parentView.setSelected(object.isSelectableSelected());
+				parentView.setSelected(object.isSelectableSelected());
 
-			if (object instanceof TransferFolder) {
-				TransferFolder transferFolder = (TransferFolder) object;
+				if (object instanceof TransferFolder) {
+					TransferFolder transferFolder = (TransferFolder) object;
 
-				image.setImageResource(object instanceof StatusItem
-						? R.drawable.ic_info_white_24dp
-						: R.drawable.ic_folder_black_24dp);
-				mainText.setText(object.friendlyName);
+					image.setImageResource(object instanceof StatusItem
+							? R.drawable.ic_info_white_24dp
+							: R.drawable.ic_folder_black_24dp);
+					mainText.setText(object.friendlyName);
 
-				statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
-				sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
+					statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
+					sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
 
-				appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
-						? R.color.colorAccent : R.color.layoutTintLightColor;
-			} else {
-				switch (object.flag) {
-					case DONE:
-						appliedColor = R.color.colorAccent;
-						break;
-					case REMOVED:
-					case INTERRUPTED:
-						appliedColor = R.color.errorTintColor;
-						break;
-					default:
-						appliedColor = R.color.layoutTintLightColor;
+					appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
+							? R.color.colorAccent : R.color.layoutTintLightColor;
+				} else {
+					switch (object.flag) {
+						case DONE:
+							appliedColor = R.color.colorAccent;
+							break;
+						case REMOVED:
+						case INTERRUPTED:
+							appliedColor = R.color.errorTintColor;
+							break;
+						default:
+							appliedColor = R.color.layoutTintLightColor;
+					}
+
+					boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);
+
+					image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
+					mainText.setText(object.friendlyName);
+					statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(object.flag)).toLowerCase());
+					sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
 				}
 
-				boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);
-
-				image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
-				mainText.setText(object.friendlyName);
-				statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(object.flag)).toLowerCase());
-				sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
+				mainText.setTextColor(ContextCompat.getColor(getContext(), appliedColor));
 			}
+		} catch (Exception e) {
 
-			mainText.setTextColor(ContextCompat.getColor(getContext(), appliedColor));
 		}
 	}
 

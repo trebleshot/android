@@ -67,28 +67,33 @@ public class ApplicationListFragment
 	@Override
 	public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
 	{
-		final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
-		final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
+		try {
+			final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
+			final Intent launchIntent = getActivity().getPackageManager().getLaunchIntentForPackage(appInfo.packageName);
 
-		if (launchIntent != null) {
-			AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
+			if (launchIntent != null) {
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity());
 
-			dialogBuilder.setMessage(R.string.ques_launchApplication);
-			dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-			dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialog, int which)
+				dialogBuilder.setMessage(R.string.ques_launchApplication);
+				dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
+				dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
 				{
-					startActivity(launchIntent);
-				}
-			});
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						startActivity(launchIntent);
+					}
+				});
 
-			dialogBuilder.show();
-		} else
-			Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
+				dialogBuilder.show();
+			} else
+				Toast.makeText(getActivity(), R.string.mesg_launchApplicationError, Toast.LENGTH_SHORT).show();
 
-		return true;
+			return true;
+		} catch (Exception e) {
+		}
+
+		return false;
 	}
 
 	@Override

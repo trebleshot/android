@@ -15,6 +15,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -93,16 +94,20 @@ public class FilePickerActivity extends Activity
 						if (longClick)
 							return false;
 
-						FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment.getFileListFragment()
-								.getAdapter()
-								.getItem(holder.getAdapterPosition());
+						try {
+							FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment.getFileListFragment()
+									.getAdapter()
+									.getItem(holder.getAdapterPosition());
 
-						if (!(fileHolder instanceof FileListAdapter.FileHolder))
-							return false;
+							if (fileHolder instanceof FileListAdapter.FileHolder) {
+								finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
+								return true;
+							}
+						} catch (NotReadyException e) {
+							e.printStackTrace();
+						}
 
-						finishWithResult(((FileListAdapter.FileHolder) fileHolder).file);
-
-						return true;
+						return false;
 					}
 				});
 			} else

@@ -28,23 +28,23 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.object.Selectable;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -184,6 +184,14 @@ public class ShareActivity extends Activity implements SnackbarSupport
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+
+		if (mSharedText != null) {
+			mFAB.setImageResource(R.drawable.ic_edit_white_24dp);
+			mFAB.show();
+		} else if (mFiles.size() > 0) {
+			mFAB.setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
+			mFAB.show();
 		}
 	}
 
@@ -349,20 +357,19 @@ public class ShareActivity extends Activity implements SnackbarSupport
 										}
 									}
 
-									final TransferGroup.Assignee addedAssignee = new TransferGroup.Assignee(existingGroup, device, connection);
+									assignee.groupId = existingGroup.groupId;
 
 									// so that if the user rejects it won't be removed from the sender
-									addedAssignee.isClone = true;
+									assignee.isClone = true;
 
 									jsonRequest.put(Keyword.FILES_INDEX, filesArray);
-									getDatabase().publish(addedAssignee);
 
 									getDefaultInterrupter().addCloser(new Interrupter.Closer()
 									{
 										@Override
 										public void onClose(boolean userAction)
 										{
-											getDatabase().remove(addedAssignee);
+											getDatabase().remove(assignee);
 										}
 									});
 							}
@@ -390,8 +397,12 @@ public class ShareActivity extends Activity implements SnackbarSupport
 							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
 								switch (mAction) {
 									case ACTION_ADD_DEVICES:
-										// TODO: 16/04/18 The new assignee info or device id should be returned
-										setResult(RESULT_OK, new Intent());
+										getDatabase().publish(assignee);
+
+										setResult(RESULT_OK, new Intent()
+												.putExtra(EXTRA_DEVICE_ID, assignee.deviceId)
+												.putExtra(EXTRA_GROUP_ID, assignee.groupId));
+
 										finish();
 										break;
 									default:
@@ -506,6 +517,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 						organizeFiles(fileUris, fileNames);
 					}
+
 					break;
 				case ACTION_SEND_MULTIPLE:
 				case Intent.ACTION_SEND_MULTIPLE:
@@ -581,10 +593,18 @@ public class ShareActivity extends Activity implements SnackbarSupport
 						{
 							getProgressDialog().dismiss();
 
-							if (getSupportActionBar() != null && mFiles.size() > 0)
-								getSupportActionBar().setTitle(mFiles.size() == 1
-										? mFiles.get(0).getSelectableTitle()
-										: getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size()));
+							if (getSupportActionBar() != null) {
+								String title;
+
+								if (mFiles.size() == 0)
+									title = getString(R.string.text_empty);
+								else
+									title = mFiles.size() == 1
+											? mFiles.get(0).getSelectableTitle()
+											: getResources().getQuantityString(R.plurals.text_itemSelected, mFiles.size(), mFiles.size());
+
+								getSupportActionBar().setTitle(title);
+							}
 
 							onRequestReady();
 						}

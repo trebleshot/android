@@ -23,8 +23,10 @@ import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.EditableListFragmentModelImpl;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -44,7 +46,7 @@ import java.util.ArrayList;
 
 public class FileExplorerFragment
 		extends com.genonbeta.android.framework.app.Fragment
-		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+		implements EditableListFragmentImpl<FileListAdapter.GenericFileHolder>, EditableListFragmentModelImpl<GroupEditableListAdapter.GroupViewHolder>, Activity.OnBackPressedListener, DetachListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -343,6 +345,12 @@ public class FileExplorerFragment
 	public boolean openUri(Uri uri, String chooserText)
 	{
 		return getFileListFragment().openUri(uri, chooserText);
+	}
+
+	@Override
+	public void setLayoutClickListener(EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder> clickListener)
+	{
+		getFileListFragment().setLayoutClickListener(clickListener);
 	}
 
 	@Override

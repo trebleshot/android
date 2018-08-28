@@ -154,7 +154,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 										});
 									} catch (Exception e) {
 										e.printStackTrace();
-									} finally {
 									}
 								}
 							});
@@ -163,7 +162,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				}
 			});
 
-			modelText.setText(device.brand.toUpperCase() + " " + device.model.toUpperCase());
+			modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
 			versionText.setText(device.versionName);
 
 			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
@@ -176,6 +175,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 								connections.size()) : connections.get(0).ipAddress);
 
 			accessSwitch.setChecked(!device.isRestricted);
+
+			trustSwitch.setEnabled(!device.isRestricted);
 			trustSwitch.setChecked(device.isTrusted);
 
 			accessSwitch.setOnCheckedChangeListener(
