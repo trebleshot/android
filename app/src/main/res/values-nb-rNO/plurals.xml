@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources><plurals name="ques_deleteFile">
-	<item quantity="one">Ønsker du å slette den fila?</item>
+	<item quantity="one">Ønsker du å slette denne fila?</item>
 	<item quantity="other">Ønsker du å slette %d filer?</item>
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
@@ -12,11 +12,11 @@
 	<item quantity="other">%d filer valgt</item>
 </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">En ventende overføring vil bli fjernet</item>
+	<item quantity="one">Denne ventende overføringen vil bli fjernet</item>
 	<item quantity="other">%d ventende overføringer vil bli fjernet</item>
 </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">En tilkobling</item>
+	<item quantity="one">Én tilkobling</item>
 	<item quantity="other">%d tilkoblinger</item>
 </plurals>
     <plurals name="ques_receiveMultipleFiles">
@@ -24,7 +24,7 @@
 	<item quantity="other">Ta imot %d filer?</item>
 </plurals>
 <plurals name="text_files">
-	<item quantity="one">ei fil</item>
+	<item quantity="one">Ei fil</item>
 	<item quantity="other">%d filer</item>
 </plurals>
     <plurals name="text_secondsAgo">
