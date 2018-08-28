@@ -382,4 +382,10 @@
     <string name="text_killServiceAfterLeavingSummary">Stopper kommunikasjon hvis ingen oppgave er underveis</string>
     <string name="text_killServiceAfterLeaving">Å forlate programmet stopper tjenesten</string>
 <string name="butn_donate">Doner</string>
+<string name="text_emptySymbol">-</string>
+    <string name="text_transferStatusFiles">%1d av %2d</string>
+    <string name="text_donate">Doner</string>
+    <string name="mesg_donationSuccessful">Takk!</string>
+    <string name="msg">Doner</string>
+    <string name="butn_open">Åpne</string>
 </resources>
