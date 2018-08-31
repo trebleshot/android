@@ -23,14 +23,14 @@
     <string name="text_developerMode">开发者模式</string>
     <string name="text_developerModeSummary">这会禁用用户设置</string>
     <string name="text_deviceName">设备名</string>
-    <string name="text_deviceNameSummary">这个名字会在其他设备显示</string>
-    <string name="text_deviceNameTitle">输入一个设备名</string>
+    <string name="text_deviceNameSummary">这个名称将会在其他设备显示</string>
+    <string name="text_deviceNameTitle">输入一个设备名称</string>
     <string name="mesg_formatNotSupported">不支持的格式</string>
     <string name="mesg_fileSendError">无法发送文件 %s</string>
     <string name="mesg_fileReceiveError">无法接收 %s。</string>
     <string name="text_multipleFileReceiveCompleted">文件已接收</string>
     <string name="text_deviceList">设备</string>
-    <string name="text_fileOpenAppChoose">用...打开</string>
+    <string name="text_fileOpenAppChoose">打开方式</string>
     <string name="text_fileShareAppChoose">选择一个应用来分享</string>
     <string name="text_receivedFiles">已收到的文件</string>
     <string name="butn_edit">编辑</string>
@@ -163,7 +163,7 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">检查破损的文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-<string name="ques_resetToDefault">恢复默认？</string>
+<string name="ques_resetToDefault">重置为默认值？</string>
     <string name="butn_refresh">刷新</string>
     <string name="butn_showSystemApps">显示系统应用</string>
     <string name="text_transactionDetails">详细信息</string>
@@ -187,7 +187,7 @@
     <string name="butn_connectionList">连接</string>
     <string name="text_feelLuckyFailed">没有一个连接对于设备来说是可用的。它的地址可能已经改变。尝试在TrebleShot运行时重新连接到网络。</string>
     <string name="text_feelLuckyOngoing">TrebleShot将会为你做出决定</string>
-    <string name="butn_retry_all">重试所有</string>
+    <string name="butn_retry_all">全部重试</string>
     <string name="text_permissionRequest">权限申请</string>
     <string name="text_requestPermissionStorage">存储权限</string>
     <string name="text_requestPermissionReadPhoneState">读取手机状态权限</string>
@@ -369,4 +369,5 @@
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">捐赠</string>
     <string name="msg">捐赠</string>
+<string name="butn_open">打开</string>
 </resources>

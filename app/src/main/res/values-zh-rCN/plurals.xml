@@ -3,7 +3,7 @@
 	<item quantity="other">您想要删除 %d 文件吗？</item>
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="other">已接收 %d 文件</item>
+	<item quantity="other">已接收 %d 个文件</item>
 </plurals>
     <plurals name="text_itemSelected">
 	<item quantity="other">已选择 %d 个文件</item>

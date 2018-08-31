@@ -390,4 +390,5 @@
     <string name="text_donate">Doneren</string>
     <string name="mesg_donationSuccessful">Bedankt!</string>
     <string name="msg">Doneren</string>
+<string name="butn_open">Openen</string>
 </resources>
