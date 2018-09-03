@@ -55,10 +55,11 @@ public class ContentSharingActivity extends Activity
 		final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-		final Fragment appFragment = new ApplicationListFragment();
-		final Fragment musicFragment = new MusicListFragment();
-		final Fragment photoFragment = new ImageListFragment();
-		final Fragment videoFragment = new VideoListFragment();
+		final EditableListFragment appFragment = new ApplicationListFragment();
+		final EditableListFragment filesFragment = new FileExplorerFragment();
+		final EditableListFragment musicFragment = new MusicListFragment();
+		final EditableListFragment photoFragment = new ImageListFragment();
+		final EditableListFragment videoFragment = new VideoListFragment();
 
 		mSelectionCallback = new SharingActionModeCallback(null);
 		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
@@ -103,6 +104,7 @@ public class ContentSharingActivity extends Activity
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		pagerAdapter.add(appFragment, tabLayout);
+		pagerAdapter.add(filesFragment, tabLayout);
  		pagerAdapter.add(musicFragment, tabLayout);
 		pagerAdapter.add(photoFragment, tabLayout);
 		pagerAdapter.add(videoFragment, tabLayout);

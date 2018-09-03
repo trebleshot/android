@@ -1,6 +1,5 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.animation.LayoutTransition;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -21,9 +20,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.transition.TransitionManager;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -46,9 +43,7 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
-import com.genonbeta.TrebleShot.ui.callback.FABSupport;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
-import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -68,9 +63,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 	public static final int REQUEST_PERMISSION_ALL = 1;
 
-	private FloatingActionButton mFAB;
-	private TabLayout mTabLayout;
-	private ColorStateList mFABDefaultColorState;
 	private PowerfulActionMode mActionMode;
 	private NavigationView mNavigationView;
 	private DrawerLayout mDrawerLayout;
@@ -78,10 +70,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	private Fragment mFragmentConnectDevices;
 	private Fragment mFragmentFileExplorer;
 	private Fragment mFragmentTransactions;
-	private Fragment mFragmentShareApp;
-	private Fragment mFragmentShareMusic;
-	private Fragment mFragmentShareVideo;
-	private Fragment mFragmentShareImage;
 	private Fragment mFragmentShareText;
 
 	private Fragment mDelayedCommitFragment;
@@ -106,19 +94,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
-		mFAB = findViewById(R.id.content_fab);
-		mTabLayout = findViewById(R.id.content_tab_layout);
-		mFABDefaultColorState = mFAB.getBackgroundTintList();
 
 		mNavigationView.setNavigationItemSelectedListener(this);
 
 		mFragmentConnectDevices = Fragment.instantiate(this, ConnectDevicesFragment.class.getName());
 		mFragmentFileExplorer = Fragment.instantiate(this, FileExplorerFragment.class.getName());
 		mFragmentTransactions = Fragment.instantiate(this, TransactionGroupListFragment.class.getName());
-		mFragmentShareApp = Fragment.instantiate(this, ApplicationListFragment.class.getName());
-		mFragmentShareImage = Fragment.instantiate(this, ImageListFragment.class.getName());
-		mFragmentShareMusic = Fragment.instantiate(this, MusicListFragment.class.getName());
-		mFragmentShareVideo = Fragment.instantiate(this, VideoListFragment.class.getName());
 		mFragmentShareText = Fragment.instantiate(this, TextStreamListFragment.class.getName());
 
 		mActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
@@ -263,7 +244,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			return false;
 
 		if (ACTION_OPEN_RECEIVED_FILES.equals(intent.getAction())) {
-
 			if (intent.hasExtra(EXTRA_FILE_PATH)) {
 				Uri directoryUri = intent.getParcelableExtra(EXTRA_FILE_PATH);
 
@@ -307,26 +287,6 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 						? ((TitleSupport) fragment).getTitle(HomeActivity.this)
 						: getString(R.string.text_appName));
 
-				boolean fabSupported = fragment instanceof FABSupport;
-
-				mFAB.setBackgroundTintList(mFABDefaultColorState);
-
-				if (fabSupported)
-					fabSupported = ((FABSupport) fragment).onFABRequested(mFAB);
-
-				if (fabSupported != (mFAB.getVisibility() == View.VISIBLE))
-					mFAB.setVisibility(fabSupported ? View.VISIBLE : View.GONE);
-
-				boolean tabSupported = fragment instanceof TabLayoutSupport;
-
-				mTabLayout.removeAllTabs();
-
-				if (tabSupported)
-					tabSupported = ((TabLayoutSupport) fragment).onTabLayout(mTabLayout);
-
-				if (tabSupported != (mTabLayout.getVisibility() == View.VISIBLE))
-					mTabLayout.setVisibility(tabSupported ? View.VISIBLE : View.GONE);
-
 				if (commit) {
 					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
@@ -353,7 +313,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		if (requestedFolder != null)
 			((FileExplorerFragment) mFragmentFileExplorer)
-					.requestPath(requestedFolder);
+					.goPath(requestedFolder);
 	}
 
 	private boolean restorePreviousFragment()

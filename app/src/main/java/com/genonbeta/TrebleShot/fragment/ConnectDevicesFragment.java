@@ -14,9 +14,8 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.TrebleShot.ui.callback.TabLayoutSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 
 /**
  * created by: veli
@@ -24,54 +23,17 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
  */
 public class ConnectDevicesFragment
 		extends com.genonbeta.android.framework.app.Fragment
-		implements TabLayoutSupport, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+		implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
-	private boolean mInitialized = false;
-	private ViewPager mViewPager;
-	private TabLayout mTabLayout;
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
-
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		mInitialized = false;
-	}
 
 	@Nullable
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		return mViewPager = (ViewPager) inflater.inflate(R.layout.layout_connect_devices, container, false);
-	}
-
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
-		tryToInitialize();
-	}
-
-	@Override
-	public boolean onTabLayout(TabLayout tabLayout)
-	{
-		mTabLayout = tabLayout;
-		tryToInitialize();
-		return true;
-	}
-
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_connectDevices);
-	}
-
-	protected void tryToInitialize()
-	{
-		if (mInitialized || mTabLayout == null || mViewPager == null)
-			return;
-
-		mInitialized = true;
+		final View view = inflater.inflate(R.layout.layout_connect_devices, container, false);
+		final TabLayout tabLayout = view.findViewById(R.id.activity_transaction_tab_layout);
+		final ViewPager viewPager = view.findViewById(R.id.activity_transaction_view_pager);
 
 		DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(getContext(), getChildFragmentManager());
 		NetworkDeviceListFragment deviceListFragment = new NetworkDeviceListFragment();
@@ -86,6 +48,12 @@ public class ConnectDevicesFragment
 				return mDeviceSelectedListener != null
 						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
 			}
+
+			@Override
+			public boolean isListenerEffective()
+			{
+				return mDeviceSelectedListener != null;
+			}
 		});
 
 		NetworkDeviceSelectedListener selectedListener = new NetworkDeviceSelectedListener()
@@ -93,30 +61,36 @@ public class ConnectDevicesFragment
 			@Override
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
 			{
-				mViewPager.setCurrentItem(0);
+				viewPager.setCurrentItem(0);
 				return mDeviceSelectedListener != null
 						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
+			}
+
+			@Override
+			public boolean isListenerEffective()
+			{
+				return true;
 			}
 		};
 
 		statusFragment.setDeviceSelectedListener(selectedListener);
 		connectFragment.setDeviceSelectedListener(selectedListener);
 
-		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+		tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
-		pagerAdapter.add(deviceListFragment, mTabLayout);
-		pagerAdapter.add(statusFragment, mTabLayout);
-		pagerAdapter.add(connectFragment, mTabLayout);
+		pagerAdapter.add(deviceListFragment, tabLayout);
+		pagerAdapter.add(statusFragment, tabLayout);
+		pagerAdapter.add(connectFragment, tabLayout);
 
-		mViewPager.setAdapter(pagerAdapter);
-		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+		viewPager.setAdapter(pagerAdapter);
+		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 
-		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+		tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
 		{
 			@Override
 			public void onTabSelected(TabLayout.Tab tab)
 			{
-				mViewPager.setCurrentItem(tab.getPosition());
+				viewPager.setCurrentItem(tab.getPosition());
 			}
 
 			@Override
@@ -131,6 +105,14 @@ public class ConnectDevicesFragment
 
 			}
 		});
+
+		return view;
+	}
+
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.text_connectDevices);
 	}
 
 	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

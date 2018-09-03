@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
@@ -34,6 +33,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 public class NetworkDeviceListFragment
@@ -132,13 +132,12 @@ public class NetworkDeviceListFragment
 					{
 						final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
 
-						if (mDeviceSelectedListener != null
-								&& device.versionNumber != -1
-								&& device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
-							createSnackbar(R.string.mesg_versionNotSupported)
-									.show();
-						} else if (mDeviceSelectedListener == null
-								|| !mDeviceSelectedListener.onNetworkDeviceSelected(device, null)) {
+						if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
+							if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
+								createSnackbar(R.string.mesg_versionNotSupported).show();
+							} else
+								mDeviceSelectedListener.onNetworkDeviceSelected(device, null);
+						} else {
 							if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
 								final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
 
@@ -157,7 +156,7 @@ public class NetworkDeviceListFragment
 								});
 
 								builder.show();
-							} else if (device.brand != null && device.model != null)
+							} else
 								new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
 						}
 					}

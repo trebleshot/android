@@ -18,11 +18,10 @@
         android:layout_below="@id/fragment_fileexplorer_pathresolver"
         android:background="#eee"/>
 
-    <fragment
-        android:id="@+id/fragment_fileexplorer_fragment_files"
-        android:name="com.genonbeta.TrebleShot.fragment.FileListFragment"
+    <FrameLayout
+        android:id="@+id/fragment_fileexplorer_listViewContainer"
+        android:layout_below="@+id/fragment_fileexplorer_separator"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/fragment_fileexplorer_separator"/>
+        android:layout_height="match_parent"/>
 
 </RelativeLayout>

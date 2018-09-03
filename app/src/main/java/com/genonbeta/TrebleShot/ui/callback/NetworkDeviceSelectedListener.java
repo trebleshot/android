@@ -11,4 +11,6 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 public interface NetworkDeviceSelectedListener
 {
 	boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection);
+
+	boolean isListenerEffective();
 }

@@ -94,11 +94,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 
-		final TabLayout tabLayout = findViewById(R.id.tab_layout);
 		final ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
-
-		connectFragment.onTabLayout(tabLayout);
-
 		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
 
 		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
@@ -134,6 +130,12 @@ public class ShareActivity extends Activity implements SnackbarSupport
 				else
 					doCommunicate(networkDevice, connection);
 
+				return true;
+			}
+
+			@Override
+			public boolean isListenerEffective()
+			{
 				return true;
 			}
 		});
@@ -475,6 +477,12 @@ public class ShareActivity extends Activity implements SnackbarSupport
 					.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 		else
 			new SelectionEditorDialog<>(this, mFiles).show();
+	}
+
+	@Override
+	public Intent getIntent()
+	{
+		return super.getIntent();
 	}
 
 	public Interrupter getDefaultInterrupter()

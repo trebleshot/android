@@ -55,13 +55,12 @@ public class FilePickerActivity extends Activity
 				getSupportActionBar().setTitle(R.string.text_chooseFolder);
 
 				mFileExplorerFragment
-						.getFileListFragment()
 						.getAdapter()
 						.setConfiguration(true, false, null);
 
-				mFileExplorerFragment.getFileListFragment().refreshList();
+				mFileExplorerFragment.refreshList();
 
-				RecyclerView recyclerView = mFileExplorerFragment.getFileListFragment()
+				RecyclerView recyclerView = mFileExplorerFragment
 						.getListView();
 
 				recyclerView.setPadding(0,0,0, 200);
@@ -75,7 +74,7 @@ public class FilePickerActivity extends Activity
 					@Override
 					public void onClick(View v)
 					{
-						DocumentFile selectedPath = mFileExplorerFragment.getFileListFragment().getAdapter().getPath();
+						DocumentFile selectedPath = mFileExplorerFragment.getAdapter().getPath();
 
 						if (selectedPath != null && selectedPath.canWrite())
 							finishWithResult(selectedPath);
@@ -86,7 +85,7 @@ public class FilePickerActivity extends Activity
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
 				getSupportActionBar().setTitle(R.string.text_chooseFile);
 
-				mFileExplorerFragment.getFileListFragment().setLayoutClickListener(new EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder>()
+				mFileExplorerFragment.setLayoutClickListener(new EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder>()
 				{
 					@Override
 					public boolean onLayoutClick(EditableListFragment listFragment, GroupEditableListAdapter.GroupViewHolder holder, boolean longClick)
@@ -95,7 +94,7 @@ public class FilePickerActivity extends Activity
 							return false;
 
 						try {
-							FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment.getFileListFragment()
+							FileListAdapter.GenericFileHolder fileHolder = mFileExplorerFragment
 									.getAdapter()
 									.getItem(holder.getAdapterPosition());
 

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -22,7 +24,6 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.ui.callback.FABSupport;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -39,7 +40,7 @@ import java.util.Map;
 
 public class TextStreamListFragment
 		extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
-		implements TitleSupport, FABSupport
+		implements TitleSupport
 {
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
@@ -52,6 +53,27 @@ public class TextStreamListFragment
 		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
 		setDefaultSelectionCallback(new SelectionCallback(this));
+	}
+
+	@Override
+	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+	{
+		FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null, false);
+		FloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
+
+		listViewContainer.addView(view);
+
+		actionButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				startActivity(new Intent(getActivity(), TextEditorActivity.class)
+						.setAction(TextEditorActivity.ACTION_EDIT_TEXT));
+			}
+		});
+
+		return super.onListView(mainContainer, (FrameLayout) view.findViewById(R.id.layout_text_stream_content));
 	}
 
 	@Override
@@ -141,23 +163,6 @@ public class TextStreamListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
-	}
-
-	@Override
-	public boolean onFABRequested(FloatingActionButton floatingActionButton)
-	{
-		floatingActionButton.setImageResource(R.drawable.ic_add_white_24dp);
-		floatingActionButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				startActivity(new Intent(getActivity(), TextEditorActivity.class)
-						.setAction(TextEditorActivity.ACTION_EDIT_TEXT));
-			}
-		});
-
-		return true;
 	}
 
 	@Override
