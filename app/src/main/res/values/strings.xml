@@ -347,7 +347,7 @@
     <string name="text_groupByFolder">Folder</string>
     <string name="text_home">Home</string>
     <string name="text_default">Default</string>
-    <string name="textFiles">Files</string>
+    <string name="text_files">Files</string>
     <string name="mesg_noReceiverOrSender">You should add devices first</string>
     <string name="butn_addDevices">Add devices</string>
     <string name="text_connectDevices">Connect devices</string>

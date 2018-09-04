@@ -173,7 +173,7 @@ public class CommunicationNotificationHelper
 		Intent acceptIntent = new Intent(getContext(), CommunicationService.class)
 				.setAction(CommunicationService.ACTION_CLIPBOARD)
 				.putExtra(CommunicationService.EXTRA_CLIPBOARD_ID, object.id)
-				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, object.id);
+				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		Intent activityIntent = new Intent(getContext(), TextEditorActivity.class);
 

@@ -31,6 +31,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
@@ -727,27 +728,25 @@ public class TransactionActivity
 	}
 
 	public static class TransactionExplorerFragment
-			extends com.genonbeta.android.framework.app.Fragment
-			implements TransactionListAdapter.PathChangedListener, TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+			extends TransactionListFragment
+			implements TransactionListAdapter.PathChangedListener, TitleSupport, SnackbarSupport
 	{
 		public static final String ARG_GROUP_ID = "argGroupId";
 		public static final String ARG_PATH = "path";
 
 		private RecyclerView mPathView;
 		private TransactionPathResolverRecyclerAdapter mPathAdapter;
-		private TransactionListFragment mTransactionListFragment;
 
-		@Nullable
 		@Override
-		public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+		protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 		{
-			View view = inflater.inflate(R.layout.layout_transaction_explorer, container, false);
+			View adaptedView = getLayoutInflater().inflate(R.layout.layout_transaction_explorer, null, false);
+			listViewContainer.addView(adaptedView);
 
-			mPathView = view.findViewById(R.id.layout_transaction_explorer_recycler);
-			mTransactionListFragment = (TransactionListFragment) getChildFragmentManager().findFragmentById(R.id.layout_transaction_explorer_fragment_transaction);
+			mPathView = adaptedView.findViewById(R.id.layout_transaction_explorer_recycler);
 			mPathAdapter = new TransactionPathResolverRecyclerAdapter(getContext());
 
-			mTransactionListFragment.getAdapter().setPathChangedListener(this);
+			getAdapter().setPathChangedListener(this);
 
 			LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
 			layoutManager.setStackFromEnd(true);
@@ -761,11 +760,11 @@ public class TransactionActivity
 				@Override
 				public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
 				{
-					goPath(getTransactionListFragment().getAdapter().getGroupId(), holder.index.object);
+					goPath(getAdapter().getGroupId(), holder.index.object);
 				}
 			});
 
-			return view;
+			return super.onListView(mainContainer, (FrameLayout) adaptedView.findViewById(R.id.layout_transaction_explorer_fragment_content));
 		}
 
 		@Override
@@ -780,7 +779,7 @@ public class TransactionActivity
 			else
 				mPathAdapter.goTo(null);
 
-			getTransactionListFragment().setMenuVisibility(isMenuShown());
+			setMenuVisibility(isMenuShown());
 		}
 
 		@Override
@@ -793,32 +792,18 @@ public class TransactionActivity
 				mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
 		}
 
-		public TransactionListFragment getTransactionListFragment()
-		{
-			return mTransactionListFragment;
-		}
-
 		@Override
 		public CharSequence getTitle(Context context)
 		{
-			return context.getString(R.string.textFiles);
+			return context.getString(R.string.text_files);
 		}
 
 		public void goPath(long groupId, String path)
 		{
-			getTransactionListFragment().getAdapter().setGroupId(groupId);
-			getTransactionListFragment().getAdapter().setPath(path);
+			getAdapter().setGroupId(groupId);
+			getAdapter().setPath(path);
 
-			getTransactionListFragment().refreshList();
-		}
-
-		@Override
-		public void setMenuVisibility(boolean menuVisible)
-		{
-			super.setMenuVisibility(menuVisible);
-
-			if (getTransactionListFragment() != null)
-				getTransactionListFragment().setMenuVisibility(menuVisible);
+			refreshList();
 		}
 	}
 

@@ -18,11 +18,10 @@
         android:layout_below="@id/layout_transaction_explorer_recycler"
         android:background="#eee"/>
 
-    <fragment
-        android:id="@+id/layout_transaction_explorer_fragment_transaction"
-        android:name="com.genonbeta.TrebleShot.fragment.TransactionListFragment"
+    <FrameLayout
+        android:id="@+id/layout_transaction_explorer_fragment_content"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/layout_transaction_explorer_separator"/>
 

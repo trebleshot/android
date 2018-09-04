@@ -362,7 +362,7 @@
     <string name="text_groupByFolder">Klasör</string>
     <string name="text_home">Ev</string>
     <string name="text_default">Varsayılan</string>
-    <string name="textFiles">Dosyalar</string>
+    <string name="text_files">Dosyalar</string>
     <string name="mesg_noReceiverOrSender">Önce cihazlar eklemelisiniz</string>
     <string name="butn_addDevices">Cihazlar ekle</string>
     <string name="text_connectDevices">Cihazları bağlayın</string>

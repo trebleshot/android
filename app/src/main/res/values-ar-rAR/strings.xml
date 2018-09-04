@@ -335,7 +335,7 @@
     <string name="text_groupByArtist">الفنان</string>
     <string name="text_home">الصفحة الرئيسية</string>
     <string name="text_default">الافتراضي</string>
-    <string name="textFiles">الملفات</string>
+    <string name="text_files">الملفات</string>
     <string name="mesg_noReceiverOrSender">يجب عليك إضافة الأجهزة أولاً</string>
     <string name="butn_addDevices">إضافة أجهزة</string>
     <string name="text_connectDevices">قم بتوصيل الأجهزة</string>

@@ -335,7 +335,7 @@
     <string name="text_groupByFolder">Karpeta</string>
     <string name="text_home">Hasiera</string>
     <string name="text_default">Lehenetsia</string>
-    <string name="textFiles">Fitxategiak</string>
+    <string name="text_files">Fitxategiak</string>
     <string name="mesg_noReceiverOrSender">Gailuak gehitu behar dituzu aurretik</string>
     <string name="butn_addDevices">Gehitu gailuak</string>
     <string name="text_connectDevices">Konektatu gailuak</string>

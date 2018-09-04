@@ -364,7 +364,7 @@
     <string name="text_groupByFolder">Map</string>
 <string name="text_home">Persoonlijk</string>
     <string name="text_default">Standaard</string>
-    <string name="textFiles">Bestanden</string>
+    <string name="text_files">Bestanden</string>
     <string name="mesg_noReceiverOrSender">Je moet eerst apparaten toevoegen</string>
     <string name="butn_addDevices">Apparaten toevoegen</string>
     <string name="text_connectDevices">Apparaten verbinden</string>

@@ -137,6 +137,7 @@
 
     <style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">
         <item name="android:text">@string/text_listEmpty</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
     <style name="condensedTitleStyle">

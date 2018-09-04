@@ -361,7 +361,7 @@
     <string name="text_groupByFolder">Mappe</string>
     <string name="text_home">Hjem</string>
     <string name="text_default">Forvalg</string>
-    <string name="textFiles">Filer</string>
+    <string name="text_files">Filer</string>
     <string name="mesg_noReceiverOrSender">Du må legge til enheter først</string>
     <string name="butn_addDevices">Legg til enheter</string>
     <string name="text_connectDevices">Koble til enheter</string>

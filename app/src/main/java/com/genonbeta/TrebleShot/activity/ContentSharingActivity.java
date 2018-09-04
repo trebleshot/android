@@ -22,7 +22,6 @@ import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
 import com.genonbeta.TrebleShot.fragment.MusicListFragment;
-import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
@@ -104,7 +103,8 @@ public class ContentSharingActivity extends Activity
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		pagerAdapter.add(appFragment, tabLayout);
-		pagerAdapter.add(filesFragment, tabLayout);
+		pagerAdapter.add(filesFragment);
+		tabLayout.addTab(tabLayout.newTab().setText(R.string.text_files));
  		pagerAdapter.add(musicFragment, tabLayout);
 		pagerAdapter.add(photoFragment, tabLayout);
 		pagerAdapter.add(videoFragment, tabLayout);

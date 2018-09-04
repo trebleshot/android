@@ -353,7 +353,7 @@
     <string name="text_groupByFolder">文件夹</string>
     <string name="text_home">主目录</string>
     <string name="text_default">默认</string>
-    <string name="textFiles">文件</string>
+    <string name="text_files">文件</string>
     <string name="mesg_noReceiverOrSender">你应该先添加设备</string>
     <string name="butn_addDevices">添加设备</string>
     <string name="butn_shareWithOtherApps">通过其他应用分享</string>

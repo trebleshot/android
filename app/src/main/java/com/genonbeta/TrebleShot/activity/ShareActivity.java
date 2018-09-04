@@ -12,7 +12,6 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -28,6 +27,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
+import com.genonbeta.TrebleShot.fragment.inner.SelectionListFragment;
+import com.genonbeta.TrebleShot.fragment.inner.TextViewerFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -41,6 +42,7 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -54,7 +56,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class ShareActivity extends Activity implements SnackbarSupport
+public class ShareActivity extends Activity
+		implements SnackbarSupport, SelectionListFragment.ReadyLoadListener, TextViewerFragment.ReadyLoadListener
 {
 	public static final String TAG = "ShareActivity";
 
@@ -74,11 +77,11 @@ public class ShareActivity extends Activity implements SnackbarSupport
 	private Toolbar mToolbar;
 	private String mAction;
 	private long mGroupId;
+	private ConnectDevicesFragment mConnectDevicesFragment;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
 	private ProgressDialog mProgressDialog;
 	private Interrupter mInterrupter = new Interrupter();
-	private FloatingActionButton mFAB;
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
 
@@ -89,15 +92,15 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 		setContentView(R.layout.activity_share);
 
+		mConnectDevicesFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
 		mToolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 
 		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 
-		final ConnectDevicesFragment connectFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
 		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
 
-		connectFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		mConnectDevicesFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
 		{
 			@Override
 			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
@@ -140,17 +143,6 @@ public class ShareActivity extends Activity implements SnackbarSupport
 			}
 		});
 
-		mFAB = findViewById(R.id.content_fab);
-
-		mFAB.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				fabClicked();
-			}
-		});
-
 		bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -188,13 +180,41 @@ public class ShareActivity extends Activity implements SnackbarSupport
 			}
 		}
 
+		com.genonbeta.android.framework.app.Fragment definedFragment = null;
+
 		if (mSharedText != null) {
-			mFAB.setImageResource(R.drawable.ic_edit_white_24dp);
-			mFAB.show();
+			definedFragment = (Fragment) Fragment.instantiate(this, TextViewerFragment.class.getName());
 		} else if (mFiles.size() > 0) {
-			mFAB.setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
-			mFAB.show();
+			definedFragment = (Fragment) Fragment.instantiate(this, SelectionListFragment.class.getName());
 		}
+
+		if (definedFragment != null) {
+			mConnectDevicesFragment.getPagerAdapter().getFragments().add(0, definedFragment);
+			mConnectDevicesFragment.getViewPager().setAdapter(mConnectDevicesFragment.getPagerAdapter());
+			mConnectDevicesFragment.getPagerAdapter().notifyDataSetChanged();
+			mConnectDevicesFragment.showDevices();
+		}
+	}
+
+	@Override
+	public ArrayList<? extends Selectable> onSelectionReadyLoad()
+	{
+		return mFiles;
+	}
+
+	@Override
+	public CharSequence onTextViewerReadyLoad()
+	{
+		return mSharedText;
+	}
+
+	@Override
+	public void onTextViewerEditRequested()
+	{
+		startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
+				.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+				.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
+				.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
 	}
 
 	protected void createFolderStructure(DocumentFile file, String folderName)
@@ -225,7 +245,7 @@ public class ShareActivity extends Activity implements SnackbarSupport
 
 	public Snackbar createSnackbar(int resId, Object... objects)
 	{
-		return Snackbar.make(mFAB, getString(resId, objects), Snackbar.LENGTH_LONG);
+		return Snackbar.make(mConnectDevicesFragment.getViewPager(), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
 	protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
@@ -466,17 +486,6 @@ public class ShareActivity extends Activity implements SnackbarSupport
 				});
 			}
 		});
-	}
-
-	protected void fabClicked()
-	{
-		if (mSharedText != null)
-			startActivityForResult(new Intent(ShareActivity.this, TextEditorActivity.class)
-					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-					.putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, mSharedText)
-					.putExtra(TextEditorActivity.EXTRA_SUPPORT_APPLY, true), REQUEST_CODE_EDIT_BOX);
-		else
-			new SelectionEditorDialog<>(this, mFiles).show();
 	}
 
 	@Override

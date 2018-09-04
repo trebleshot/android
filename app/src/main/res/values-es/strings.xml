@@ -334,7 +334,7 @@
     <string name="text_groupByFolder">Carpeta</string>
     <string name="text_home">Inicio</string>
     <string name="text_default">Por defecto</string>
-    <string name="textFiles">Archivos</string>
+    <string name="text_files">Archivos</string>
     <string name="mesg_noReceiverOrSender">Debe añadir dispositivos primero</string>
     <string name="butn_addDevices">Añadir dispositivos</string>
     <string name="text_connectDevices">Conectar dispositivos</string>

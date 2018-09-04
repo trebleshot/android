@@ -265,7 +265,7 @@ public class CommunicationService extends Service
 					interrupter.interrupt();
 			} else if (ACTION_CLIPBOARD.equals(intent.getAction()) && intent.hasExtra(EXTRA_CLIPBOARD_ACCEPTED)) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
-				int clipboardId = intent.getIntExtra(EXTRA_CLIPBOARD_ID, -1);
+				long clipboardId = intent.getLongExtra(EXTRA_CLIPBOARD_ID, -1);
 				boolean isAccepted = intent.getBooleanExtra(EXTRA_CLIPBOARD_ACCEPTED, false);
 
 				TextStreamObject textStreamObject = new TextStreamObject(clipboardId);

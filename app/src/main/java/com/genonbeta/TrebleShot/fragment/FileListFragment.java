@@ -330,6 +330,24 @@ public class FileListFragment
 		return false;
 	}
 
+	@Override
+	public boolean performLayoutLongClick(GroupEditableListAdapter.GroupViewHolder holder)
+	{
+		try {
+			FileListAdapter.GenericFileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
+
+			if ((fileHolder instanceof FileListAdapter.DirectoryHolder
+					|| fileHolder instanceof FileListAdapter.WritablePathHolder)
+					&& getSelectionConnection() != null
+					&& getSelectionConnection().setSelected(holder))
+				return true;
+		} catch (NotReadyException e) {
+			e.printStackTrace();
+		}
+
+		return super.performLayoutLongClick(holder);
+	}
+
 	public boolean scanFile(DocumentFile file)
 	{
 		if (!(file instanceof LocalDocumentFile) || !mMediaScanner.isConnected())
