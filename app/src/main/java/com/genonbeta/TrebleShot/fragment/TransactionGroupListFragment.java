@@ -51,8 +51,7 @@ public class TransactionGroupListFragment
 					|| intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFER)
 			))
 				refreshList();
-
-			if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
+			else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
 				getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING));
 				refreshList();

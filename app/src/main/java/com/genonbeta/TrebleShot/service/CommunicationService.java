@@ -1101,7 +1101,10 @@ public class CommunicationService extends Service
 						contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
 
 						getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId)), contentValues);
+								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?" +
+										" AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
+										String.valueOf(processHolder.group.groupId),
+										TransferObject.Flag.DONE.toString()), contentValues);
 					}
 
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);

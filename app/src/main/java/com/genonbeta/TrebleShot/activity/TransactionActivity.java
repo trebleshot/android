@@ -8,16 +8,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +63,7 @@ public class TransactionActivity
 	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
+	private OnBackPressedListener mBackPressedListener;
 	private TransferGroup mGroup;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -97,7 +97,7 @@ public class TransactionActivity
 	};
 
 	private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
-	private PowerfulActionMode mPowafulActionMode;
+	private PowerfulActionMode mMode;
 	private MenuItem mStartMenu;
 	private MenuItem mRetryMenu;
 	private MenuItem mShowFiles;
@@ -112,10 +112,12 @@ public class TransactionActivity
 
 		setContentView(R.layout.activity_transaction);
 
-		mPowafulActionMode = findViewById(R.id.activity_transaction_action_mode);
-		SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager());
+		mMode = findViewById(R.id.activity_transaction_action_mode);
 
 		final Toolbar toolbar = findViewById(R.id.toolbar);
+		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
+		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
+
 		setSupportActionBar(toolbar);
 
 		if (getSupportActionBar() != null) {
@@ -123,8 +125,16 @@ public class TransactionActivity
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 
-		final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
-		final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
+		final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager()) {
+			@Override
+			public void onItemInstantiated(StableItem item)
+			{
+				super.onItemInstantiated(item);
+
+				if (viewPager.getCurrentItem() == item.getCurrentPosition())
+					attachListeners(item.getInitiatedItem());
+			}
+		};
 
 		if (ACTION_LIST_TRANSFERS.equals(getIntent().getAction()) && getIntent().hasExtra(EXTRA_GROUP_ID)) {
 			TransferGroup group = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
@@ -141,9 +151,6 @@ public class TransactionActivity
 			finish();
 		else {
 			tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
-
-			Bundle detailsFragmentArgs = new Bundle();
-			detailsFragmentArgs.putLong(TransactionDetailsFragment.ARG_GROUP_ID, mGroup.groupId);
 
 			Bundle assigneeFragmentArgs = new Bundle();
 			assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
@@ -165,6 +172,7 @@ public class TransactionActivity
 				public void onTabSelected(TabLayout.Tab tab)
 				{
 					viewPager.setCurrentItem(tab.getPosition());
+					attachListeners(pagerAdapter.getItem(tab.getPosition()));
 				}
 
 				@Override
@@ -180,7 +188,7 @@ public class TransactionActivity
 				}
 			});
 
-			mPowafulActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+			mMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
 			{
 				@Override
 				public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
@@ -244,7 +252,7 @@ public class TransactionActivity
 		int id = item.getItemId();
 
 		if (id == android.R.id.home) {
-			onBackPressed();
+			finish();
 		} else if (id == R.id.actions_transaction_resume) {
 			toggleTask();
 		} else if (id == R.id.actions_transaction_remove) {
@@ -288,6 +296,20 @@ public class TransactionActivity
 		return true;
 	}
 
+	@Override
+	public void onBackPressed()
+	{
+		if (mBackPressedListener == null || !mBackPressedListener.onBackPressed())
+			super.onBackPressed();
+	}
+
+	private void attachListeners(Fragment initiatedItem)
+	{
+		mBackPressedListener = initiatedItem instanceof OnBackPressedListener
+				? (OnBackPressedListener) initiatedItem
+				: null;
+	}
+
 	private Snackbar createSnackbar(int resId, Object... objects)
 	{
 		return Snackbar.make(findViewById(R.id.activity_transaction_view_pager), getString(resId, objects), Snackbar.LENGTH_LONG);
@@ -307,7 +329,7 @@ public class TransactionActivity
 	@Override
 	public PowerfulActionMode getPowerfulActionMode()
 	{
-		return mPowafulActionMode;
+		return mMode;
 	}
 
 	public void reconstructGroup()
@@ -459,118 +481,6 @@ public class TransactionActivity
 
 					getList().add(new Holder.Index<>(path, mergedPath.toString()));
 				}
-		}
-	}
-
-	public static class TransactionDetailsFragment
-			extends com.genonbeta.android.framework.app.Fragment
-			implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
-	{
-		public static final String ARG_GROUP_ID = "groupId";
-
-		private View mRemoveView;
-		private View mShowFiles;
-		private View mSaveTo;
-		private View mButtonFourth;
-
-		@Nullable
-		@Override
-		public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-		{
-			View view = inflater.inflate(R.layout.layout_transaction_details, container, false);
-
-			mRemoveView = view.findViewById(R.id.layout_transaction_details_remove);
-			mShowFiles = view.findViewById(R.id.layout_transaction_details_show_files);
-			mButtonFourth = view.findViewById(R.id.layout_transaction_details_button_fourth);
-
-			/*
-			mRemoveView.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-
-				}
-			});
-
-			mShowFiles.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					startActivity(new Intent(getActivity(), HomeActivity.class)
-							.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-							.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), getTransferGroup()).getUri()));
-				}
-			});*/
-
-			return view;
-		}
-
-		public void applyViewChanges(TransferGroup.Index index)
-		{
-			if (getView() == null)
-				return;
-
-			/*
-			View notEnoughSpaceWarning = getView().findViewById(R.id.layout_transaction_details_not_enough_space);
-			TextView totalSize = getView().findViewById(R.id.layout_transaction_details_total_size);
-			TextView availableDisk = getView().findViewById(R.id.layout_transaction_details_available_disk_space);
-			TextView savePath = getView().findViewById(R.id.layout_transaction_details_save_path);
-
-			DocumentFile storageFile = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), getTransferGroup());
-
-			notEnoughSpaceWarning.setVisibility(storageFile instanceof LocalDocumentFile
-					&& ((LocalDocumentFile) storageFile).getFile().getFreeSpace() < index.incoming
-					? View.VISIBLE
-					: View.GONE);
-
-			totalSize.setText(FileUtils.sizeExpression(index.incoming + index.outgoing, false));
-
-			availableDisk.setText(storageFile instanceof LocalDocumentFile
-					? FileUtils.sizeExpression(((LocalDocumentFile) storageFile).getFile().getFreeSpace(), false)
-					: getContext().getString(R.string.text_unknown));
-
-			savePath.setText(storageFile.getName());
-			*/
-		}
-
-		@Override
-		public CharSequence getTitle(Context context)
-		{
-			return context.getString(R.string.text_transactionDetails);
-		}
-
-		public void updateViewState(TransferGroup.Index index)
-		{
-			boolean isIncoming = index.incomingCount > 0;
-
-			applyViewChanges(index);
-
-			/*
-			mShowFiles.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
-			mSaveTo.setVisibility(isIncoming ? View.VISIBLE : View.GONE);
-
-			if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
-					&& (index.outgoingCountCompleted + index.incomingCountCompleted) == (index.incomingCount + index.outgoingCount)) {
-				mButtonFourth.setVisibility(View.VISIBLE);
-				mButtonFourth.setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						try {
-							startActivity(new Intent(getContext(), Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
-						} catch (ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				});
-			}
-
-			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_actions));
-			TransitionManager.beginDelayedTransition((ViewGroup) getView().findViewById(R.id.layout_transaction_details_layout_info));
-			*/
 		}
 	}
 

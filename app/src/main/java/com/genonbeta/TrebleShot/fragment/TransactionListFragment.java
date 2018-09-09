@@ -43,7 +43,7 @@ import java.util.Map;
 
 public class TransactionListFragment
 		extends GroupEditableListFragment<TransactionListAdapter.GroupEditableTransferObject, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
-		implements TitleSupport
+		implements TitleSupport, Activity.OnBackPressedListener
 {
 	public static final String TAG = "TransactionListFragment";
 
@@ -55,6 +55,7 @@ public class TransactionListFragment
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
 
 	private TransferGroup mHeldGroup;
+	private String mLastKnownPath;
 
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -63,7 +64,8 @@ public class TransactionListFragment
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
 					&& (AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
-					|| AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))))
+					|| AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
+			))
 				refreshList();
 		}
 	};
@@ -177,6 +179,38 @@ public class TransactionListFragment
 	protected void onListRefreshed()
 	{
 		super.onListRefreshed();
+
+		String pathOnTrial = getAdapter().getPath();
+
+		if (!(mLastKnownPath == null && getAdapter().getPath() == null)
+				&& (mLastKnownPath != null && !mLastKnownPath.equals(pathOnTrial)))
+			getListView().scrollToPosition(0);
+
+		mLastKnownPath = pathOnTrial;
+	}
+
+	@Override
+	public boolean onBackPressed()
+	{
+		String path = getAdapter().getPath();
+
+		if (path == null) {
+			if (getSelectionCallback() != null
+					&& getSelectionConnection() != null
+					&& getSelectionConnection().getMode().hasActive(getSelectionCallback())) {
+				getSelectionConnection().getMode().finish(getSelectionCallback());
+				return true;
+			} else
+				return false;
+		}
+
+		int slashPos = path.lastIndexOf(File.separator);
+
+		goPath(getAdapter().getGroupId(), slashPos == -1 && path.length() > 0
+				? null
+				: path.substring(0, slashPos));
+
+		return true;
 	}
 
 	@Override

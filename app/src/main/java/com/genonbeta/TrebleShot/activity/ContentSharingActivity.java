@@ -36,6 +36,7 @@ public class ContentSharingActivity extends Activity
 
 	private PowerfulActionMode mMode;
 	private SharingActionModeCallback mSelectionCallback;
+	private Activity.OnBackPressedListener mBackPressedListener;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -80,7 +81,7 @@ public class ContentSharingActivity extends Activity
 				fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
 				if (viewPager.getCurrentItem() == item.getCurrentPosition())
-					mSelectionCallback.updateProvider(fragmentImpl);
+					attachListeners(fragmentImpl);
 			}
 		};
 
@@ -109,7 +110,7 @@ public class ContentSharingActivity extends Activity
 
 				final EditableListFragment fragment = (EditableListFragment) pagerAdapter.getItem(tab.getPosition());
 
-				mSelectionCallback.updateProvider(fragment);
+				attachListeners(fragment);
 
 				if (fragment.getAdapterImpl() != null)
 					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
@@ -161,11 +162,20 @@ public class ContentSharingActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		if (mMode != null
-				&& mSelectionCallback != null
-				&& mMode.hasActive(mSelectionCallback))
-			mMode.finish(mSelectionCallback);
-		else
-			super.onBackPressed();
+		if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
+			if (mMode != null
+					&& mSelectionCallback != null
+					&& mMode.hasActive(mSelectionCallback))
+				mMode.finish(mSelectionCallback);
+			else
+				super.onBackPressed();
+		}
+	}
+
+	public void attachListeners(EditableListFragmentImpl fragment) {
+		mSelectionCallback.updateProvider(fragment);
+		mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
+				? (OnBackPressedListener) fragment
+				: null;
 	}
 }
