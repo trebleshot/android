@@ -8,6 +8,17 @@ import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.LOCAL_VARIABLE;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PACKAGE;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.RetentionPolicy.CLASS;
+
 /**
  * Created by: veli
  * Date: 4/24/17 11:50 PM
@@ -98,7 +109,15 @@ public class TransferObject
 		this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
 		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
 		this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
-		this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
+
+		// We may  have put long in that field indicating that the file was / is progress so generate
+		try {
+			this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
+		} catch (Exception e) {
+			this.flag = Flag.IN_PROGRESS;
+			this.flag.setBytesValue(item.getLong(AccessDatabase.FIELD_TRANSFER_FLAG));
+		}
+
 		this.accessPort = item.getInt(AccessDatabase.FIELD_TRANSFER_ACCESSPORT);
 		this.skippedBytes = item.getLong(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
 		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
@@ -183,6 +202,33 @@ public class TransferObject
 		INTERRUPTED,
 		PENDING,
 		REMOVED,
-		DONE
+		IN_PROGRESS,
+		DONE;
+
+		private long bytesValue;
+
+		public long getBytesValue()
+		{
+			return bytesValue;
+		}
+
+		public void setBytesValue(long bytesValue)
+		{
+			this.bytesValue = bytesValue;
+		}
+
+		@Override
+		public String toString()
+		{
+			return getBytesValue() > 0
+					? String.valueOf(getBytesValue())
+					: super.toString();
+		}
+	}
+
+	@Retention(CLASS)
+	@Target({METHOD, PARAMETER, FIELD, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE})
+	public @interface Virtual
+	{
 	}
 }

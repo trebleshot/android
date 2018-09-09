@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -74,5 +75,9 @@ public abstract class Activity extends AppCompatActivity
 	public interface OnBackPressedListener
 	{
 		boolean onBackPressed();
+	}
+
+	public interface OnPreloadArgumentWatcher {
+		Bundle passPreloadingArguments();
 	}
 }

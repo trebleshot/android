@@ -13,7 +13,7 @@
             android:id="@+id/layout_text_viewer_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="12dp"
+            android:padding="24dp"
             android:textColor="?android:textColorPrimary"/>
 
     </LinearLayout>

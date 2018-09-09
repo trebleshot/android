@@ -17,6 +17,7 @@ import android.widget.PopupMenu;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
@@ -33,7 +34,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment
-		extends RecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
+		extends DynamicRecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
 		implements TitleSupport
 {
 	public static final String ARG_GROUP_ID = "groupId";

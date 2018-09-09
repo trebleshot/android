@@ -9,24 +9,265 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include
-            layout="@layout/layout_transaction_details_buttons"
+        <LinearLayout
+            android:id="@+id/layout_transaction_details_not_enough_space"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="15dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="35dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/ic_info_white_24dp"
+                android:tint="@color/errorTintColor"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/mesg_notEnoughSpace"/>
+
+        </LinearLayout>
+
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"/>
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                style="@style/listContentLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/layout_transaction_details_action_start_toggle"
+                    style="@style/listContentIconStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:background="?roundSelector"
+                    android:clickable="true"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_play_arrow_white_24dp"
+                    android:tint="@color/colorAccent"/>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@id/layout_transaction_details_action_start_toggle"
+                    android:layout_toRightOf="@id/layout_transaction_details_action_start_toggle">
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/layout_transaction_details_total_size"
+                            style="@style/marqueeText.secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:text="@string/text_emptySymbol"
+                            android:textStyle="bold"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginStart="8dp"/>
+
+                        <ProgressBar
+                            android:layout_centerVertical="true"
+                            style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_toLeftOf="@id/layout_transaction_details_total_size"
+                            android:layout_toStartOf="@id/layout_transaction_details_total_size"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/separatorColor"/>
 
-        <include
-            layout="@layout/layout_transaction_details_info"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
-            android:layout_marginTop="15dp"/>
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
 
+            <LinearLayout
+                android:id="@+id/layout_transaction_details_layout_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_remove"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="35dp"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_delete_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_removeAll"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_show_files"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="35dp"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_folder_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_showFiles"
+                        android:textColor="?android:textColorPrimary"
+                        android:textStyle="bold"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/layout_transaction_details_save_to"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="35dp"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_save_white_24dp"
+                        android:tint="?colorAccent"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/text_savePath"
+                            android:textColor="?android:textColorPrimary"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/layout_transaction_details_save_path"
+                            style="@style/marqueeText.secondary"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:maxLines="3"
+                            android:text="@string/text_emptySymbol"
+                            android:textStyle="bold"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <include layout="@layout/include_layout_transaction_details_buttons_fourth"/>
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/separatorColor"/>
+
+        <LinearLayout
+            android:id="@+id/layout_transaction_details_layout_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:paddingLeft="74dp"
+                android:paddingStart="74dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_availableDiskSpace"
+                    android:textColor="?android:textColorPrimary"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:id="@+id/layout_transaction_details_available_disk_space"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_emptySymbol"
+                    android:textStyle="bold"/>
+
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
+
 </android.support.v4.widget.NestedScrollView>

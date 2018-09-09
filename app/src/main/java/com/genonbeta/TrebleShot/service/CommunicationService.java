@@ -8,13 +8,10 @@ import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
-import android.os.Binder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Parcel;
-import android.os.RemoteException;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -93,6 +90,10 @@ public class CommunicationService extends Service
 	public static final String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
 	public static final String ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS";
 	public static final String ACTION_SERVICE_CONNECTION_TRANSFER_QUEUE = "com.genonbeta.TrebleShot.transaction.action.SERVICE_CONNECTION_TRANSFER_QUEUE";
+	public static final String ACTION_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE";
+	public static final String ACTION_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE";
+	public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
+	public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -106,6 +107,11 @@ public class CommunicationService extends Service
 	public static final String EXTRA_HOTSPOT_NAME = "extraHotspotName";
 	public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
 	public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
+	public static final String EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType";
+	public static final String EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning";
+
+	public static final int TASK_STATUS_ONGOING = 0;
+	public static final int TASK_STATUS_STOPPED = 1;
 
 	private ArrayList<ProcessHolder> mActiveProcessList = new ArrayList<>();
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
@@ -126,19 +132,6 @@ public class CommunicationService extends Service
 	@Override
 	public IBinder onBind(Intent intent)
 	{
-		if (intent != null)
-			if (ACTION_SERVICE_CONNECTION_TRANSFER_QUEUE.equals(intent.getAction()))
-				return new Binder()
-				{
-					@Override
-					protected boolean onTransact(int code, @NonNull Parcel data, @Nullable Parcel reply, int flags) throws RemoteException
-					{
-
-						reply.writeString("I mean it works");
-						return true;
-					}
-				};
-
 		return null;
 	}
 
@@ -304,9 +297,14 @@ public class CommunicationService extends Service
 					|| ACTION_CANCEL_KILL.equals(intent.getAction())) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
-				String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
+				String deviceId = intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
+						? intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID)
+						: null;
 
 				ProcessHolder processHolder = findProcessById(groupId, deviceId);
+
+				if (processHolder == null)
+					notifyTaskStatusChange(groupId, deviceId, TASK_STATUS_STOPPED);
 
 				if (processHolder == null || ACTION_CANCEL_KILL.equals(intent.getAction()))
 					getNotificationHelper().getUtils().cancel(notificationId);
@@ -364,6 +362,18 @@ public class CommunicationService extends Service
 							}
 						}
 					}, 3000);
+			} else if (ACTION_REQUEST_TASK_STATUS_CHANGE.equals(intent.getAction())
+					&& intent.hasExtra(EXTRA_GROUP_ID)) {
+				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
+				String deviceId = intent.hasExtra(EXTRA_DEVICE_ID)
+						? intent.getStringExtra(EXTRA_DEVICE_ID)
+						: null;
+
+				notifyTaskStatusChange(groupId, deviceId, findProcessById(groupId, deviceId) != null
+						? TASK_STATUS_ONGOING
+						: TASK_STATUS_STOPPED);
+			} else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
+				notifyTaskRunningListChange();
 			}
 		}
 
@@ -408,6 +418,16 @@ public class CommunicationService extends Service
 		}
 	}
 
+	public synchronized boolean addProcess(ProcessHolder processHolder)
+	{
+		return getActiveProcessList().add(processHolder);
+	}
+
+	public synchronized boolean removeProcess(ProcessHolder processHolder)
+	{
+		return getActiveProcessList().remove(processHolder);
+	}
+
 	public boolean hasOngoingTasks()
 	{
 		return mCommunicationServer.getConnections().size() > 0
@@ -419,8 +439,9 @@ public class CommunicationService extends Service
 	{
 		synchronized (getActiveProcessList()) {
 			for (ProcessHolder processHolder : getActiveProcessList())
-				if (processHolder.group.groupId == groupId
-						&& deviceId.equals(processHolder.assignee.deviceId))
+				if (processHolder.group != null
+						&& processHolder.group.groupId == groupId
+						&& (deviceId == null || deviceId.equals(processHolder.assignee.deviceId)))
 					return processHolder;
 		}
 
@@ -465,6 +486,38 @@ public class CommunicationService extends Service
 	public boolean isProcessRunning(int groupId, String deviceId)
 	{
 		return findProcessById(groupId, deviceId) != null;
+	}
+
+	public void notifyTaskStatusChange(@NonNull long groupId, @Nullable String deviceId, int state)
+	{
+		Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
+				.putExtra(EXTRA_TASK_CHANGE_TYPE, state)
+				.putExtra(EXTRA_GROUP_ID, groupId)
+				.putExtra(EXTRA_DEVICE_ID, deviceId);
+
+		sendBroadcast(intent);
+
+		notifyTaskRunningListChange();
+	}
+
+	public void notifyTaskRunningListChange()
+	{
+		ArrayList<Long> taskList = new ArrayList<>();
+
+		synchronized (getActiveProcessList()) {
+			for (ProcessHolder processHolder : getActiveProcessList()) {
+				if (processHolder.group != null)
+					taskList.add(processHolder.group.groupId);
+			}
+		}
+
+		long[] taskArray = new long[taskList.size()];
+
+		for (int i = 0; i < taskList.size(); i++)
+			taskArray[i] = taskList.get(i);
+
+		sendBroadcast(new Intent(ACTION_TASK_RUNNING_LIST_CHANGE)
+				.putExtra(EXTRA_TASK_LIST_RUNNING, taskArray));
 	}
 
 	public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
@@ -811,6 +864,8 @@ public class CommunicationService extends Service
 				getActiveProcessList().add(processHolder);
 			}
 
+			TransferInstance transferInstance = null;
+
 			try {
 				ActiveConnection.Response mainRequest = activeConnection.receive();
 
@@ -819,13 +874,17 @@ public class CommunicationService extends Service
 
 				activeConnection.setId(groupId);
 
-				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
+				transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
+
+				notifyTaskStatusChange(transferInstance.getGroup().groupId, transferInstance.getAssignee().deviceId, TASK_STATUS_ONGOING);
 
 				activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
 
 				processHolder.group = transferInstance.getGroup();
 				processHolder.assignee = transferInstance.getAssignee();
 				processHolder.activeConnection = activeConnection;
+
+				notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_ONGOING);
 
 				while (true) {
 					ActiveConnection.Response currentResponse = activeConnection.receive();
@@ -846,6 +905,7 @@ public class CommunicationService extends Service
 
 							ContentValues values = new ContentValues();
 							values.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
+							values.put(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES, 0);
 
 							getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 									.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(transferInstance.getGroup().groupId)), values);
@@ -864,10 +924,11 @@ public class CommunicationService extends Service
 						processHolder.transferObject.accessPort = currentRequest.getInt(Keyword.TRANSFER_SOCKET_PORT);
 
 						if (currentRequest.has(Keyword.SKIPPED_BYTES)) {
-							processHolder.transferObject.skippedBytes = currentRequest.getInt(Keyword.SKIPPED_BYTES);
+							processHolder.transferObject.skippedBytes = currentRequest.getLong(Keyword.SKIPPED_BYTES);
 							Log.d(TAG, "SeamlessServes.onConnected(): Has skipped bytes: " + processHolder.transferObject.skippedBytes);
 						}
 
+						// This changes the state of the object to pending from any other
 						getDatabase().update(processHolder.transferObject);
 
 						currentReply.put(Keyword.RESULT, true);
@@ -902,7 +963,6 @@ public class CommunicationService extends Service
 
 						mSend.send(activeConnection.getClientAddress(), processHolder.transferObject.accessPort, streamInfo.openInputStream(), streamInfo.size, AppConfig.BUFFER_LENGTH_DEFAULT, processHolder, true);
 					}
-
 
 					// We are now updating instances always at the end because it will be
 					// changed by the process itself naturally
@@ -952,6 +1012,9 @@ public class CommunicationService extends Service
 
 				synchronized (getActiveProcessList()) {
 					getActiveProcessList().remove(processHolder);
+
+					if (transferInstance != null)
+						notifyTaskStatusChange(transferInstance.getGroup().groupId, transferInstance.getAssignee().deviceId, TASK_STATUS_STOPPED);
 				}
 			}
 		}
@@ -973,6 +1036,7 @@ public class CommunicationService extends Service
 			CoolSocket.ActiveConnection activeConnection = null;
 
 			synchronized (getActiveProcessList()) {
+				notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_ONGOING);
 				getActiveProcessList().add(processHolder);
 			}
 
@@ -1051,15 +1115,6 @@ public class CommunicationService extends Service
 											String.valueOf(processHolder.group.groupId),
 											TransferObject.Flag.PENDING.toString()));
 
-						/*
-						if (receiverInstance == null
-								&& getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(processHolder.group.groupId))) == null) {
-							getDatabase().remove(processHolder.group);
-							Log.d(TAG, "SeamlessClientHandler(): Removing group because there is no file instance left");
-							break;
-						}*/
-
 							if (receiverInstance == null) {
 								Log.d(TAG, "SeamlessClientHandler(): Exiting because there is no pending file instance left");
 								break;
@@ -1129,6 +1184,7 @@ public class CommunicationService extends Service
 
 				synchronized (getActiveProcessList()) {
 					getActiveProcessList().remove(processHolder);
+					notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_STOPPED);
 				}
 			}
 
@@ -1150,6 +1206,11 @@ public class CommunicationService extends Service
 		{
 			handler.getExtra().notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(handler.getTransferProgress().getTimeRemaining())));
 			handler.getExtra().notification.updateProgress(100, percentage, false);
+
+			handler.getExtra().transferObject.flag = TransferObject.Flag.IN_PROGRESS;
+			handler.getExtra().transferObject.flag.setBytesValue(handler.getTransferProgress().getCurrentTransferredByte());
+
+			getDatabase().update(handler.getExtra().transferObject);
 		}
 
 		@Override
@@ -1301,12 +1362,19 @@ public class CommunicationService extends Service
 		{
 			handler.getExtra().notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(handler.getTransferProgress().getTimeRemaining())));
 			handler.getExtra().notification.updateProgress(100, percentage, false);
+
+			handler.getExtra().transferObject.flag = TransferObject.Flag.IN_PROGRESS;
+			handler.getExtra().transferObject.flag.setBytesValue(handler.getTransferProgress().getCurrentTransferredByte());
+
+			getDatabase().update(handler.getExtra().transferObject);
 		}
 
 		@Override
 		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
 		{
-			handler.getExtra().transferObject.flag = TransferObject.Flag.DONE;
+			handler.getExtra().transferObject.flag = handler.getTransferProgress().getCurrentTransferredByte() == handler.getFileSize()
+					? TransferObject.Flag.DONE
+					: TransferObject.Flag.INTERRUPTED;
 		}
 
 		@Override

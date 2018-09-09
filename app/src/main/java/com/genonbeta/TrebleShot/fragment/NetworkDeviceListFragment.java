@@ -33,11 +33,12 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 public class NetworkDeviceListFragment
-		extends RecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
+		extends DynamicRecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
 		implements TitleSupport, DetachListener
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;

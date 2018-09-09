@@ -373,4 +373,5 @@
     <string name="mesg_donationSuccessful">Thank you!</string>
     <string name="butn_donate">Donate</string>
     <string name="butn_open">Open</string>
+    <string name="butn_pause">Pause</string>
 </resources>

@@ -14,7 +14,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -28,9 +30,10 @@ import java.util.ArrayList;
  */
 public class SelectionListFragment
 		extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder, SelectionListFragment.MyAdapter>
-		implements IconSupport
+		implements IconSupport, TitleSupport, SmartFragmentPagerAdapter.ShowingChangeListener
 {
 	private WeakReference<ReadyLoadListener> mListener;
+	private SmartFragmentPagerAdapter.TabSelectionOracle mTabSelectionOracle = new SmartFragmentPagerAdapter.TabSelectionOracle(this);
 
 	@Override
 	public MyAdapter onAdapter()
@@ -89,7 +92,21 @@ public class SelectionListFragment
 	public void onResume()
 	{
 		super.onResume();
-		refreshList();
+		mTabSelectionOracle.cycle(true);
+	}
+
+	@Override
+	public void onPause()
+	{
+		super.onPause();
+		mTabSelectionOracle.cycle(false);
+	}
+
+	@Override
+	public void onNotifyShowingChange()
+	{
+		if (mTabSelectionOracle.isResuming())
+			refreshList();
 	}
 
 	@DrawableRes
@@ -97,6 +114,18 @@ public class SelectionListFragment
 	public int getIconRes()
 	{
 		return R.drawable.ic_insert_drive_file_white_24dp;
+	}
+
+	@Override
+	public SmartFragmentPagerAdapter.TabSelectionOracle getTabSelectionOracle()
+	{
+		return mTabSelectionOracle;
+	}
+
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.butn_previewSelections);
 	}
 
 	protected boolean loadIfReady()
@@ -142,7 +171,7 @@ public class SelectionListFragment
 		return false;
 	}
 
-	public class MyAdapter extends RecyclerViewAdapter<Selectable, RecyclerViewAdapter.ViewHolder>
+	public static class MyAdapter extends RecyclerViewAdapter<Selectable, RecyclerViewAdapter.ViewHolder>
 	{
 		final private ArrayList<Selectable> mList = new ArrayList<>();
 		final private ArrayList<Selectable> mPendingList = new ArrayList<>();

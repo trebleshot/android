@@ -112,8 +112,11 @@ public class TransferGroup implements DatabaseObject, Selectable
 	public static class Index
 	{
 		public boolean calculated = false;
+		public boolean hasIssues = false;
 		public long incoming = 0;
+		public long incomingCompleted = 0;
 		public long outgoing = 0;
+		public long outgoingCompleted = 0;
 		public int incomingCount = 0;
 		public int outgoingCount = 0;
 		public int incomingCountCompleted;
@@ -122,6 +125,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 		public void reset()
 		{
 			calculated = false;
+			hasIssues = false;
 
 			incoming = 0;
 			outgoing = 0;

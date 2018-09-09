@@ -1,9 +1,13 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.annotation.ColorInt;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.widget.ImageViewCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,11 +16,15 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.util.listing.ComparableMerger;
 import com.genonbeta.android.framework.util.listing.Merger;
@@ -57,6 +65,7 @@ public class TransactionListAdapter
 	@Override
 	protected void onLoad(GroupLister<GroupEditableTransferObject> lister)
 	{
+		boolean hasIncoming = false;
 		ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
 		ArrayList<GroupEditableTransferObject> files = new ArrayList<>();
 		String currentPath = getPath();
@@ -106,36 +115,96 @@ public class TransactionListAdapter
 					folders.put(cleanedPath, transferFolder);
 				}
 
-				if (TransferObject.Flag.DONE.equals(object.flag))
+				if (TransferObject.Flag.DONE.equals(object.flag)) {
 					transferFolder.filesReceived++;
+					transferFolder.bytesReceived += object.fileSize;
+				} else if (TransferObject.Flag.IN_PROGRESS.equals(object.flag)) {
+					transferFolder.bytesReceived += object.flag.getBytesValue();
+				} else if (TransferObject.Flag.INTERRUPTED.equals(object.flag)) {
+					transferFolder.hasIssues = true;
+				}
 
 				transferFolder.filesTotal++;
+				transferFolder.bytesTotal += object.fileSize;
+			}
+
+			if (!hasIncoming
+					&& TransferObject.Type.INCOMING.equals(object.type))
+				hasIncoming = true;
+		}
+
+
+		HomeStatusItem homeItem = null;
+
+		if (currentPath == null
+				&& hasIncoming) {
+			try {
+				TransferGroup group = new TransferGroup(mGroupId);
+				mDatabase.reconstruct(group);
+				DocumentFile savePath = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), group);
+
+				homeItem = new HomeStatusItem();
+				homeItem.directory = savePath.getUri().toString();
+				homeItem.friendlyName = savePath.getName();
+
+				if (savePath instanceof LocalDocumentFile) {
+					File saveFile = ((LocalDocumentFile) savePath).getFile();
+					homeItem.bytesTotal = saveFile.getTotalSpace();
+					homeItem.bytesReceived = saveFile.getTotalSpace() - saveFile.getFreeSpace(); // return used space
+				} else {
+					homeItem.bytesTotal = -1;
+					homeItem.bytesReceived = -1;
+				}
+
+				lister.offer(homeItem);
+			} catch (Exception e) {
+
 			}
 		}
 
 		StatusItem statusItem = new StatusItem();
-
 		statusItem.directory = currentPath;
-		statusItem.friendlyName = currentPath == null
-				? getContext().getString(R.string.text_home)
-				: (currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath);
+
+		if (currentPath == null)
+			statusItem.friendlyName = getContext().getString(R.string.text_home);
+		else
+			statusItem.friendlyName = currentPath.contains(File.separator)
+					? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
+					: currentPath;
 
 		lister.offer(statusItem);
 
 		for (TransferFolder folder : folders.values()) {
 			statusItem.filesTotal += folder.filesTotal;
 			statusItem.filesReceived += folder.filesReceived;
+			statusItem.bytesTotal += folder.bytesTotal;
+			statusItem.bytesReceived += folder.bytesReceived;
+
+			if (folder.hasIssues)
+				statusItem.hasIssues = true;
+
 			lister.offer(folder);
 		}
 
 		for (GroupEditableTransferObject file : files) {
-			if (TransferObject.Flag.DONE.equals(file.flag))
+			if (TransferObject.Flag.DONE.equals(file.flag)) {
 				statusItem.filesReceived++;
+				statusItem.bytesReceived += file.fileSize;
+			} else if (TransferObject.Flag.IN_PROGRESS.equals(file.flag)) {
+				statusItem.bytesReceived += file.flag.getBytesValue();
+			} else if (TransferObject.Flag.INTERRUPTED.equals(file.flag)) {
+				statusItem.hasIssues = true;
+			}
 
 			statusItem.filesTotal++;
+			statusItem.bytesTotal += file.fileSize;
 
 			lister.offer(file);
 		}
+
+		if (homeItem != null)
+			homeItem.hasIssues = homeItem.bytesTotal != -1
+					&& homeItem.bytesTotal < statusItem.bytesTotal - statusItem.bytesReceived;
 	}
 
 	@Override
@@ -247,7 +316,7 @@ public class TransactionListAdapter
 			if (!holder.tryBinding(object)) {
 				final View parentView = holder.getView();
 
-				int appliedColor = R.color.colorAccent;
+				int appliedColorRes;
 				ImageView image = parentView.findViewById(R.id.image);
 				TextView mainText = parentView.findViewById(R.id.text);
 				TextView statusText = parentView.findViewById(R.id.text2);
@@ -258,38 +327,51 @@ public class TransactionListAdapter
 				if (object instanceof TransferFolder) {
 					TransferFolder transferFolder = (TransferFolder) object;
 
-					image.setImageResource(object instanceof StatusItem
-							? R.drawable.ic_info_white_24dp
-							: R.drawable.ic_folder_black_24dp);
 					mainText.setText(object.friendlyName);
 
-					statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
-					sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
+					if (transferFolder.bytesTotal == -1
+							|| transferFolder.bytesReceived == -1)
+						statusText.setText(getContext().getString(R.string.text_emptySymbol));
+					else
+						statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
 
-					appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
-							? R.color.colorAccent : R.color.layoutTintLightColor;
+					if (object instanceof HomeStatusItem) {
+						if (transferFolder.bytesReceived == -1)
+							sizeText.setText(getContext().getString(R.string.text_emptySymbol));
+						else
+							sizeText.setText(FileUtils.sizeExpression(transferFolder.bytesTotal - transferFolder.bytesReceived, false));
+					} else
+						sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
+
+					if (transferFolder.hasIssues)
+						appliedColorRes = R.color.errorTintColor;
+					else
+						appliedColorRes = transferFolder.filesReceived == transferFolder.filesTotal
+								? R.color.colorAccent : R.color.layoutTintLightColor;
 				} else {
 					switch (object.flag) {
 						case DONE:
-							appliedColor = R.color.colorAccent;
+							appliedColorRes = R.color.colorAccent;
 							break;
 						case REMOVED:
 						case INTERRUPTED:
-							appliedColor = R.color.errorTintColor;
+							appliedColorRes = R.color.errorTintColor;
 							break;
 						default:
-							appliedColor = R.color.layoutTintLightColor;
+							appliedColorRes = R.color.layoutTintLightColor;
 					}
 
-					boolean isIncoming = object.type.equals(TransferObject.Type.INCOMING);
-
-					image.setImageResource(isIncoming ? R.drawable.ic_file_download_black_24dp : R.drawable.ic_file_upload_black_24dp);
 					mainText.setText(object.friendlyName);
-					statusText.setText(getContext().getString(TextUtils.getTransactionFlagString(object.flag)).toLowerCase());
+					statusText.setText(TextUtils.getTransactionFlagString(getContext(), object, mPercentFormat).toLowerCase());
 					sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
 				}
 
-				mainText.setTextColor(ContextCompat.getColor(getContext(), appliedColor));
+				@ColorInt
+				int appliedColor = ContextCompat.getColor(getContext(), appliedColorRes);
+
+				image.setImageResource(object.getIconRes());
+				mainText.setTextColor(appliedColor);
+				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 			}
 		} catch (Exception e) {
 
@@ -319,11 +401,20 @@ public class TransactionListAdapter
 			setRepresentativeText(representativeText);
 		}
 
+		@DrawableRes
+		public int getIconRes()
+		{
+			return type.equals(TransferObject.Type.INCOMING)
+					? R.drawable.ic_file_download_white_24dp
+					: R.drawable.ic_file_upload_black_24dp;
+		}
+
 		@Override
 		public int getViewType()
 		{
 			return this.viewType;
 		}
+
 
 		@Override
 		public String getRepresentativeText()
@@ -366,6 +457,9 @@ public class TransactionListAdapter
 	{
 		public int filesTotal = 0;
 		public int filesReceived = 0;
+		public long bytesTotal = 0;
+		public long bytesReceived = 0;
+		public boolean hasIssues = false;
 
 		public TransferFolder()
 		{
@@ -385,10 +479,16 @@ public class TransactionListAdapter
 			return directory.hashCode();
 		}
 
+		@Override
+		public int getIconRes()
+		{
+			return R.drawable.ic_folder_white_24dp;
+		}
+
 		public double getPercent()
 		{
-			return filesReceived == 0 || filesTotal == 0
-					? 0 : Integer.valueOf(filesReceived).doubleValue() / Integer.valueOf(filesTotal).doubleValue();
+			return bytesReceived == 0 || bytesTotal == 0
+					? 0 : Long.valueOf(bytesReceived).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
 		}
 
 		@Override
@@ -408,6 +508,12 @@ public class TransactionListAdapter
 		}
 
 		@Override
+		public int getIconRes()
+		{
+			return R.drawable.ic_info_white_24dp;
+		}
+
+		@Override
 		public long getId()
 		{
 			return (directory != null ? directory : friendlyName).hashCode();
@@ -417,6 +523,15 @@ public class TransactionListAdapter
 		public boolean setSelectableSelected(boolean selected)
 		{
 			return false;
+		}
+	}
+
+	public static class HomeStatusItem extends StatusItem
+	{
+		@Override
+		public int getIconRes()
+		{
+			return R.drawable.ic_save_white_24dp;
 		}
 	}
 

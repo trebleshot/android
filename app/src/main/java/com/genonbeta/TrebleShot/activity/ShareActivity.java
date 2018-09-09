@@ -10,8 +10,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,11 +21,11 @@ import android.widget.Toast;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.inner.SelectionListFragment;
 import com.genonbeta.TrebleShot.fragment.inner.TextViewerFragment;
@@ -42,7 +42,6 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -57,7 +56,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class ShareActivity extends Activity
-		implements SnackbarSupport, SelectionListFragment.ReadyLoadListener, TextViewerFragment.ReadyLoadListener
+		implements SnackbarSupport, SelectionListFragment.ReadyLoadListener, TextViewerFragment.ReadyLoadListener, Activity.OnPreloadArgumentWatcher
 {
 	public static final String TAG = "ShareActivity";
 
@@ -84,65 +83,12 @@ public class ShareActivity extends Activity
 	private Interrupter mInterrupter = new Interrupter();
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
+	private Bundle mPreloadingBundle = new Bundle();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-
-		setContentView(R.layout.activity_share);
-
-		mConnectDevicesFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
-		mToolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(mToolbar);
-
-		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
-
-		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
-
-		mConnectDevicesFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
-		{
-			@Override
-			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
-			{
-				if (networkDevice instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-					connectionUtils.makeAcquaintance(ShareActivity.this, getDatabase(), new UITask()
-					{
-						@Override
-						public void updateTaskStarted(Interrupter interrupter)
-						{
-							createSnackbar(R.string.mesg_communicating)
-									.show();
-						}
-
-						@Override
-						public void updateTaskStopped()
-						{
-
-						}
-					}, networkDevice, -1, new NetworkDeviceLoader.OnDeviceRegisteredListener()
-					{
-						@Override
-						public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
-						{
-							doCommunicate(device, connection);
-						}
-					});
-				} else if (connection == null)
-					showChooserDialog(networkDevice);
-				else
-					doCommunicate(networkDevice, connection);
-
-				return true;
-			}
-
-			@Override
-			public boolean isListenerEffective()
-			{
-				return true;
-			}
-		});
-
 		bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -180,20 +126,12 @@ public class ShareActivity extends Activity
 			}
 		}
 
-		com.genonbeta.android.framework.app.Fragment definedFragment = null;
+		Fragment fragment = mConnectDevicesFragment.getPagerAdapter().getItem(0);
 
-		if (mSharedText != null) {
-			definedFragment = (Fragment) Fragment.instantiate(this, TextViewerFragment.class.getName());
-		} else if (mFiles.size() > 0) {
-			definedFragment = (Fragment) Fragment.instantiate(this, SelectionListFragment.class.getName());
-		}
-
-		if (definedFragment != null) {
-			mConnectDevicesFragment.getPagerAdapter().getFragments().add(0, definedFragment);
-			mConnectDevicesFragment.getViewPager().setAdapter(mConnectDevicesFragment.getPagerAdapter());
-			mConnectDevicesFragment.getPagerAdapter().notifyDataSetChanged();
-			mConnectDevicesFragment.showDevices();
-		}
+		if (fragment instanceof SelectionListFragment)
+			((SelectionListFragment) fragment).refreshList();
+		else if (fragment instanceof TextViewerFragment)
+			((TextViewerFragment) fragment).updateText();
 	}
 
 	@Override
@@ -517,6 +455,8 @@ public class ShareActivity extends Activity
 				case Intent.ACTION_SEND:
 					if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
 						mSharedText = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+
+						setupUi(UiType.TEXT);
 						onRequestReady();
 					} else {
 						ArrayList<Uri> fileUris = new ArrayList<>();
@@ -532,6 +472,7 @@ public class ShareActivity extends Activity
 							fileNames.add(fileName);
 						}
 
+						setupUi(UiType.FILE);
 						organizeFiles(fileUris, fileNames);
 					}
 
@@ -541,11 +482,13 @@ public class ShareActivity extends Activity
 					ArrayList<Uri> fileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 					ArrayList<CharSequence> fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
+					setupUi(UiType.FILE);
 					organizeFiles(fileUris, fileNames);
 					break;
 				case ACTION_ADD_DEVICES:
 					mGroupId = getIntent().getLongExtra(EXTRA_GROUP_ID, -1);
 
+					setupUi(UiType.DEVICE_ADDITION);
 					mToolbar.setTitle(R.string.text_addDevicesToTransfer);
 					break;
 				default:
@@ -630,6 +573,12 @@ public class ShareActivity extends Activity
 		});
 	}
 
+	@Override
+	public Bundle passPreloadingArguments()
+	{
+		return mPreloadingBundle;
+	}
+
 	protected ProgressDialog resetProgressItems()
 	{
 		getDefaultInterrupter().reset();
@@ -662,6 +611,79 @@ public class ShareActivity extends Activity
 		mWorkerService.run(runningTask.setInterrupter(getDefaultInterrupter()));
 
 		return true;
+	}
+
+	protected void setupUi(UiType type)
+	{
+		ArrayList<SmartFragmentPagerAdapter.StableItem> cdfArguments = new ArrayList<>();
+
+		switch (type) {
+			case FILE:
+				cdfArguments.add(new SmartFragmentPagerAdapter.StableItem(2000, SelectionListFragment.class, new Bundle())
+						.setIconOnly(true));
+				break;
+			case TEXT:
+				cdfArguments.add(new SmartFragmentPagerAdapter.StableItem(2001, TextViewerFragment.class, new Bundle())
+						.setIconOnly(true));
+				break;
+		}
+
+		mPreloadingBundle.putParcelableArrayList(ConnectDevicesFragment.EXTRA_CDF_FRAGMENT_NAMES_FRONT, cdfArguments);
+
+		setContentView(R.layout.activity_share);
+
+		mConnectDevicesFragment = (ConnectDevicesFragment) getSupportFragmentManager().findFragmentById(R.id.content_fragment);
+		mToolbar = findViewById(R.id.toolbar);
+
+		setSupportActionBar(mToolbar);
+
+		mConnectDevicesFragment.showDevices();
+		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
+
+		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
+
+		mConnectDevicesFragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+		{
+			@Override
+			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
+			{
+				if (networkDevice instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+					connectionUtils.makeAcquaintance(ShareActivity.this, getDatabase(), new UITask()
+					{
+						@Override
+						public void updateTaskStarted(Interrupter interrupter)
+						{
+							createSnackbar(R.string.mesg_communicating)
+									.show();
+						}
+
+						@Override
+						public void updateTaskStopped()
+						{
+
+						}
+					}, networkDevice, -1, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+					{
+						@Override
+						public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+						{
+							doCommunicate(device, connection);
+						}
+					});
+				} else if (connection == null)
+					showChooserDialog(networkDevice);
+				else
+					doCommunicate(networkDevice, connection);
+
+				return true;
+			}
+
+			@Override
+			public boolean isListenerEffective()
+			{
+				return true;
+			}
+		});
 	}
 
 	protected void showChooserDialog(final NetworkDevice device)
@@ -747,6 +769,13 @@ public class ShareActivity extends Activity
 			mSelected = selected;
 			return true;
 		}
+	}
+
+	enum UiType
+	{
+		TEXT,
+		FILE,
+		DEVICE_ADDITION
 	}
 }
 

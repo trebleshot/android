@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,21 +16,28 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -38,7 +46,15 @@ public class TransactionListFragment
 		implements TitleSupport
 {
 	public static final String TAG = "TransactionListFragment";
+
+	public static final String ARG_GROUP_ID = "argGroupId";
+	public static final String ARG_PATH = "path";
+
+	public static final int JOB_FILE_FIX = 1;
 	public static final int TASK_REMOVE_TRANSFER_OBJECTS = 0;
+	public static final int REQUEST_CHOOSE_FOLDER = 1;
+
+	private TransferGroup mHeldGroup;
 
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
@@ -46,7 +62,8 @@ public class TransactionListFragment
 		public void onReceive(Context context, Intent intent)
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
+					&& (AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
+					|| AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))))
 				refreshList();
 		}
 	};
@@ -68,6 +85,11 @@ public class TransactionListFragment
 		super.onViewCreated(view, savedInstanceState);
 
 		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
+
+		Bundle args = getArguments();
+
+		if (args != null && args.containsKey(ARG_GROUP_ID))
+			goPath(args.getLong(ARG_GROUP_ID), args.getString(ARG_PATH));
 	}
 
 	@Override
@@ -169,7 +191,14 @@ public class TransactionListFragment
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
 
-			if (transferObject instanceof TransactionListAdapter.TransferFolder) {
+			if (transferObject instanceof TransactionListAdapter.HomeStatusItem) {
+				TransactionListAdapter.HomeStatusItem statusItem = (TransactionListAdapter.HomeStatusItem) transferObject;
+
+				startActivityForResult(new Intent(getActivity(), FilePickerActivity.class)
+						.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
+						.putExtra(FilePickerActivity.EXTRA_START_PATH, statusItem.directory)
+						.putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)), REQUEST_CHOOSE_FOLDER);
+			} else if (transferObject instanceof TransactionListAdapter.TransferFolder) {
 				getAdapter().setPath(transferObject.directory);
 				refreshList();
 
@@ -261,5 +290,149 @@ public class TransactionListFragment
 
 			return true;
 		}
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		super.onActivityResult(requestCode, resultCode, data);
+
+		if (data != null) {
+			if (resultCode == Activity.RESULT_OK) {
+				switch (requestCode) {
+					case REQUEST_CHOOSE_FOLDER:
+						if (data.hasExtra(FilePickerActivity.EXTRA_CHOSEN_PATH)) {
+							final Uri selectedPath = data.getParcelableExtra(FilePickerActivity.EXTRA_CHOSEN_PATH);
+
+							if (selectedPath.toString().equals(getTransferGroup().savePath)) {
+								createSnackbar(R.string.mesg_pathSameError).show();
+							} else {
+								AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+								builder.setTitle(R.string.ques_checkOldFiles);
+								builder.setMessage(R.string.text_checkOldFiles);
+
+								builder.setNeutralButton(R.string.butn_cancel, null);
+								builder.setNegativeButton(R.string.butn_reject, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialogInterface, int i)
+									{
+										updateSavePath(selectedPath.toString());
+									}
+								});
+
+								builder.setPositiveButton(R.string.butn_accept, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialogInterface, int i)
+									{
+										WorkerService.run(getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_FIX)
+										{
+											@Override
+											public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
+											{
+												switch (updateType) {
+													case Started:
+														dynamicNotification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp)
+																.setContentText(getString(R.string.mesg_organizingFiles));
+														break;
+													case Done:
+														dynamicNotification.setContentText(getString(R.string.text_movedCacheFiles));
+														break;
+												}
+											}
+
+											@Override
+											public void onRun()
+											{
+												ArrayList<TransferObject> checkList = AppUtils.getDatabase(getContext()).
+														castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+																.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+																				+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
+																				+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
+																		String.valueOf(getTransferGroup().groupId), TransferObject.Type.INCOMING.toString(), TransferObject.Flag.PENDING.toString()), TransferObject.class);
+
+												TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().groupId);
+
+												try {
+													// Illustrate new change to build the structure accordingly
+													AppUtils.getDatabase(getContext()).reconstruct(pseudoGroup);
+													pseudoGroup.savePath = selectedPath.toString();
+
+													for (TransferObject transferObject : checkList) {
+														if (getInterrupter().interrupted())
+															break;
+
+														try {
+															DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, getTransferGroup(), false);
+															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, pseudoGroup, true);
+
+															if (file.canRead())
+																FileUtils.move(getContext(), file, pseudoFile, getInterrupter());
+
+															file.delete();
+														} catch (IOException e) {
+															e.printStackTrace();
+														}
+													}
+
+													updateSavePath(selectedPath.toString());
+												} catch (Exception e) {
+													e.printStackTrace();
+												}
+											}
+										});
+									}
+								});
+
+								builder.show();
+							}
+						}
+
+						break;
+				}
+			}
+		}
+	}
+
+	public TransferGroup getTransferGroup()
+	{
+		if (mHeldGroup == null) {
+			mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
+
+			try {
+				AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
+		return mHeldGroup;
+	}
+
+	public void goPath(long groupId, String path)
+	{
+		getAdapter().setGroupId(groupId);
+		getAdapter().setPath(path);
+
+		refreshList();
+	}
+
+	public void updateSavePath(String selectedPath)
+	{
+		TransferGroup group = getTransferGroup();
+
+		group.savePath = selectedPath;
+		AppUtils.getDatabase(getContext()).publish(group);
+
+		getActivity().runOnUiThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				createSnackbar(R.string.mesg_pathSaved).show();
+			}
+		});
 	}
 }

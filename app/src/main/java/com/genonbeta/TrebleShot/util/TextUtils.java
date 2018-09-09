@@ -6,6 +6,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferObject;
 
+import java.text.NumberFormat;
 import java.util.HashMap;
 
 /**
@@ -62,6 +63,18 @@ public class TextUtils
 		return stringBuilder.toString().toUpperCase();
 	}
 
+	public static String getTransactionFlagString(Context context, TransferObject transferObject, NumberFormat percentFormat)
+	{
+		switch (transferObject.flag) {
+			case IN_PROGRESS:
+				return percentFormat.format(transferObject.fileSize == 0 || transferObject.flag.getBytesValue() == 0
+						? 0
+						: Long.valueOf(transferObject.flag.getBytesValue()).doubleValue() / Long.valueOf(transferObject.fileSize).doubleValue());
+			default:
+				return context.getString(getTransactionFlagString(transferObject.flag));
+		}
+	}
+
 	public static int getTransactionFlagString(TransferObject.Flag flag)
 	{
 		switch (flag) {
@@ -71,9 +84,9 @@ public class TextUtils
 				return R.string.text_taskCompleted;
 			case INTERRUPTED:
 				return R.string.text_flagInterrupted;
-				/*
-			case RUNNING:
+			case IN_PROGRESS:
 				return R.string.text_flagRunning;
+				/*
 			case RESUME:
 				return R.string.text_flagResume; */
 			case REMOVED:

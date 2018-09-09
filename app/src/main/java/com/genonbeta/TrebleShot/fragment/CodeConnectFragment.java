@@ -25,17 +25,19 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.android.framework.app.FragmentImpl;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -53,12 +55,13 @@ import java.util.List;
  */
 public class CodeConnectFragment
 		extends com.genonbeta.android.framework.app.Fragment
-		implements TitleSupport, UITask, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+		implements TitleSupport, UITask, SnackbarSupport, FragmentImpl, SmartFragmentPagerAdapter.ShowingChangeListener
 {
 	public static final String TAG = "CodeConnectFragment";
 
 	public static final int REQUEST_PERMISSION_CAMERA = 1;
 
+	private SmartFragmentPagerAdapter.TabSelectionOracle mTabSelectionOracle = new SmartFragmentPagerAdapter.TabSelectionOracle(this);
 	private BarcodeView mBarcodeView;
 	private UIConnectionUtils mConnectionUtils;
 	private TextView mConductText;
@@ -196,8 +199,8 @@ public class CodeConnectFragment
 	public void onResume()
 	{
 		super.onResume();
-		updateState();
 
+		mTabSelectionOracle.cycle(true);
 		getContext().registerReceiver(mReceiver, mIntentFilter);
 	}
 
@@ -205,8 +208,8 @@ public class CodeConnectFragment
 	public void onPause()
 	{
 		super.onPause();
-		mBarcodeView.pauseAndWait();
 
+		mTabSelectionOracle.cycle(false);
 		getContext().unregisterReceiver(mReceiver);
 	}
 
@@ -223,6 +226,21 @@ public class CodeConnectFragment
 					mPermissionRequested = false;
 				}
 			}
+	}
+
+	@Override
+	public void onNotifyShowingChange()
+	{
+		if (mTabSelectionOracle.isResuming())
+			updateState();
+		else
+			mBarcodeView.pauseAndWait();
+	}
+
+	@Override
+	public SmartFragmentPagerAdapter.TabSelectionOracle getTabSelectionOracle()
+	{
+		return mTabSelectionOracle;
 	}
 
 	@Override

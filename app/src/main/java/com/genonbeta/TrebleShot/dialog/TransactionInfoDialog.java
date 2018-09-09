@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -22,6 +23,9 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.StreamInfo;
+
+import org.w3c.dom.Document;
 
 import java.io.IOException;
 
@@ -108,7 +112,8 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
 				incomingDetailsLayout.setVisibility(View.VISIBLE);
 
-				if (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)) {
+				if (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
+						|| TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag)) {
 					setNeutralButton(R.string.butn_resume, new DialogInterface.OnClickListener()
 					{
 						@Override
@@ -174,6 +179,26 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 							}
 						});
 					}
+				}
+			} else if (TransferObject.Type.OUTGOING.equals(transferObject.type)) {
+				try {
+					final DocumentFile sharedFile = FileUtils.fromUri(getContext(), Uri.parse(transferObject.file));
+					final Intent startIntent = new Intent(FileUtils.applySecureOpenIntent(getContext(), sharedFile, new Intent(Intent.ACTION_VIEW)));
+
+					setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							try {
+								getContext().startActivity(startIntent);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
+						}
+					});
+				} catch (Exception e) {
+
 				}
 			}
 		} catch (Exception e) {

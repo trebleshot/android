@@ -110,7 +110,7 @@ public class FileExplorerFragment
 		goPath(null);
 
 		if (mRequestedPath != null)
-			goPath(mRequestedPath);
+			requestPath(mRequestedPath);
 	}
 
 	@Override
@@ -226,6 +226,18 @@ public class FileExplorerFragment
 		return parent.canRead()
 				? parent
 				: getReadableFolder(parent);
+	}
+
+	public void requestPath(DocumentFile file)
+	{
+		if (!isAdded()) {
+			mRequestedPath = file;
+			return;
+		}
+
+		mRequestedPath = null;
+
+		goPath(file);
 	}
 
 	private class FilePathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<DocumentFile>

@@ -30,7 +30,7 @@ public class AccessDatabase extends SQLiteDatabase
 	 * 		below version 6 and the other which is new generation 7
 	 */
 
-	public static final int DATABASE_VERSION = 7;
+	public static final int DATABASE_VERSION = 8;
 
 	public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -120,19 +120,23 @@ public class AccessDatabase extends SQLiteDatabase
 				db.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
 			SQLQuery.createTables(db, sqlValues);
-		}
+		} else {
+			if (old <= 6) {
+				SQLValues.Table groupTable = sqlValues.getTables().get(TABLE_TRANSFERGROUP);
+				SQLValues.Table devicesTable = sqlValues.getTables().get(TABLE_DEVICES);
+				SQLValues.Table targetDevicesTable = sqlValues.getTables().get(TABLE_TRANSFERASSIGNEE);
 
-		if (old == 6) {
-			SQLValues.Table groupTable = sqlValues.getTables().get(TABLE_TRANSFERGROUP);
-			SQLValues.Table devicesTable = sqlValues.getTables().get(TABLE_DEVICES);
-			SQLValues.Table targetDevicesTable = sqlValues.getTables().get(TABLE_TRANSFERASSIGNEE);
+				db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
+				db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
 
-			db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
-			db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
+				SQLQuery.createTable(db, groupTable);
+				SQLQuery.createTable(db, devicesTable);
+				SQLQuery.createTable(db, targetDevicesTable);
+			}
 
-			SQLQuery.createTable(db, groupTable);
-			SQLQuery.createTable(db, devicesTable);
-			SQLQuery.createTable(db, targetDevicesTable);
+			if (old <= 7) {
+				// Is there any??
+			}
 		}
 	}
 
@@ -159,15 +163,24 @@ public class AccessDatabase extends SQLiteDatabase
 				indexObject.incoming += transferObject.fileSize;
 				indexObject.incomingCount++;
 
-				if (TransferObject.Flag.DONE.equals(transferObject.flag))
+				if (TransferObject.Flag.DONE.equals(transferObject.flag)) {
 					indexObject.incomingCountCompleted++;
+					indexObject.incomingCompleted += transferObject.fileSize;
+				} else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag))
+					indexObject.incomingCompleted += transferObject.flag.getBytesValue();
 			} else {
 				indexObject.outgoing += transferObject.fileSize;
 				indexObject.outgoingCount++;
 
-				if (TransferObject.Flag.DONE.equals(transferObject.flag))
+				if (TransferObject.Flag.DONE.equals(transferObject.flag)) {
 					indexObject.outgoingCountCompleted++;
+					indexObject.outgoingCompleted += transferObject.fileSize;
+				} else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag))
+					indexObject.outgoingCompleted += transferObject.flag.getBytesValue();
 			}
+
+			if (!indexObject.hasIssues && TransferObject.Flag.INTERRUPTED.equals(transferObject.flag))
+				indexObject.hasIssues = true;
 		}
 
 		indexObject.calculated = true;

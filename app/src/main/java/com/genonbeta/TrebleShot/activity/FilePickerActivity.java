@@ -1,15 +1,14 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowInsets;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
@@ -17,6 +16,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -30,7 +30,11 @@ public class FilePickerActivity extends Activity
 	public static final String ACTION_CHOOSE_DIRECTORY = "com.genonbeta.intent.action.CHOOSE_DIRECTORY";
 	public static final String ACTION_CHOOSE_FILE = "com.genonbeta.intent.action.CHOOSE_FILE";
 
+	public static final String EXTRA_ACTIVITY_TITLE = "activityTitle";
+	public static final String EXTRA_START_PATH = "startPath";
+	// belongs to returned result intent
 	public static final String EXTRA_CHOSEN_PATH = "chosenPath";
+
 
 	private FileExplorerFragment mFileExplorerFragment;
 	private FloatingActionButton mFAB;
@@ -43,6 +47,7 @@ public class FilePickerActivity extends Activity
 
 		mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
 		mFAB = findViewById(R.id.content_fab);
+
 	}
 
 	@Override
@@ -51,8 +56,19 @@ public class FilePickerActivity extends Activity
 		super.onStart();
 
 		if (getIntent() != null) {
+			boolean hasTitlesDefined = false;
+
+			if (getIntent() != null && getSupportActionBar() != null) {
+				getSupportActionBar().setHomeAsUpIndicator(R.drawable.genfw_close_white_24dp);
+				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+				if (hasTitlesDefined = getIntent().hasExtra(EXTRA_ACTIVITY_TITLE))
+					getSupportActionBar().setTitle(getIntent().getStringExtra(EXTRA_ACTIVITY_TITLE));
+			}
+
 			if (ACTION_CHOOSE_DIRECTORY.equals(getIntent().getAction())) {
-				getSupportActionBar().setTitle(R.string.text_chooseFolder);
+				if (!hasTitlesDefined)
+					getSupportActionBar().setTitle(R.string.text_chooseFolder);
 
 				mFileExplorerFragment
 						.getAdapter()
@@ -63,12 +79,11 @@ public class FilePickerActivity extends Activity
 				RecyclerView recyclerView = mFileExplorerFragment
 						.getListView();
 
-				recyclerView.setPadding(0,0,0, 200);
+				recyclerView.setPadding(0, 0, 0, 200);
 
 				recyclerView.setClipToPadding(false);
 
 				mFAB.show();
-
 				mFAB.setOnClickListener(new View.OnClickListener()
 				{
 					@Override
@@ -83,7 +98,8 @@ public class FilePickerActivity extends Activity
 					}
 				});
 			} else if (ACTION_CHOOSE_FILE.equals(getIntent().getAction())) {
-				getSupportActionBar().setTitle(R.string.text_chooseFile);
+				if (!hasTitlesDefined)
+					getSupportActionBar().setTitle(R.string.text_chooseFile);
 
 				mFileExplorerFragment.setLayoutClickListener(new EditableListFragment.LayoutClickListener<GroupEditableListAdapter.GroupViewHolder>()
 				{
@@ -111,8 +127,31 @@ public class FilePickerActivity extends Activity
 				});
 			} else
 				finish();
+
+			if (!isFinishing())
+				if (getIntent().hasExtra(EXTRA_START_PATH)) {
+					try {
+						mFileExplorerFragment.goPath(FileUtils.fromUri(this, Uri.parse(getIntent().getStringExtra(EXTRA_START_PATH))));
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 		} else
 			finish();
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		// TODO: 9/8/18 Should we finish with result?
+		if (id == android.R.id.home)
+			finish();
+		else
+			return super.onOptionsItemSelected(item);
+
+		return true;
 	}
 
 	private void finishWithResult(DocumentFile file)

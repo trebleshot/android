@@ -1,26 +1,24 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+
+import java.util.ArrayList;
 
 /**
  * created by: veli
@@ -30,10 +28,27 @@ public class ConnectDevicesFragment
 		extends com.genonbeta.android.framework.app.Fragment
 		implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
+	public static final String EXTRA_CDF_FRAGMENT_NAMES_FRONT = "extraCdfFragmentNamesFront";
+	public static final String EXTRA_CDF_FRAGMENT_NAMES_BACK = "extraCdfFragmentNamesBack";
+
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
-	private DefaultFragmentPagerAdapter mPagerAdapter;
+	private SmartFragmentPagerAdapter mPagerAdapter;
 	private ViewPager mViewPager;
 	private TabLayout mTabLayout;
+
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState)
+	{
+		super.onCreate(savedInstanceState);
+
+		if (getActivity() instanceof Activity.OnPreloadArgumentWatcher)
+		{
+			if (getArguments()  == null)
+				setArguments(new Bundle());
+
+			getArguments().putAll(((Activity.OnPreloadArgumentWatcher) getActivity()).passPreloadingArguments());
+		}
+	}
 
 	@Nullable
 	@Override
@@ -77,99 +92,49 @@ public class ConnectDevicesFragment
 		};
 
 		mTabLayout = view.findViewById(R.id.activity_transaction_tab_layout);
-		mPagerAdapter = new DefaultFragmentPagerAdapter(getContext(), getChildFragmentManager())
+		mPagerAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager())
 		{
-			@NonNull
 			@Override
-			public Object instantiateItem(ViewGroup container, int position)
+			public void onItemInstantiated(StableItem item)
 			{
-				Fragment fragment = (Fragment) super.instantiateItem(container, position);
-
-				if (fragment instanceof NetworkDeviceListFragment)
-					((NetworkDeviceListFragment) fragment).setDeviceSelectedListener(selectionListenerDevices);
-				else if (fragment instanceof CodeConnectFragment)
-					((CodeConnectFragment) fragment).setDeviceSelectedListener(selectionListener);
-				else if (fragment instanceof NetworkStatusFragment)
-					((NetworkStatusFragment) fragment).setDeviceSelectedListener(selectionListener);
-
-				return fragment;
-			}
-
-			@Override
-			public long getItemId(int position)
-			{
-				return getItem(position).getClass().getName().hashCode();
-			}
-
-			@Override
-			public void notifyDataSetChanged()
-			{
-				super.notifyDataSetChanged();
-
-				getTabLayout().removeAllTabs();
-
-				for (Fragment fragment : getFragments()) {
-					if (fragment instanceof IconSupport) {
-						TabLayout.Tab thisTab = getTabLayout()
-								.newTab()
-								.setIcon(((IconSupport) fragment).getIconRes());
-
-						DrawableCompat.setTint(thisTab.getIcon(), ContextCompat.getColor(getContext(), R.color.layoutTintColor));
-
-						getTabLayout().addTab(thisTab);
-					} else if (fragment instanceof TitleSupport)
-						getTabLayout().addTab(getTabLayout()
-								.newTab()
-								.setText(((TitleSupport) fragment).getTitle(getContext())));
-				}
+				if (item.getInitiatedItem() instanceof NetworkDeviceListFragment)
+					((NetworkDeviceListFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListenerDevices);
+				else if (item.getInitiatedItem() instanceof CodeConnectFragment)
+					((CodeConnectFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListener);
+				else if (item.getInitiatedItem() instanceof NetworkStatusFragment)
+					((NetworkStatusFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListener);
 			}
 		};
 
-		NetworkDeviceListFragment deviceListFragment = new NetworkDeviceListFragment();
-		NetworkStatusFragment statusFragment = new NetworkStatusFragment();
-		CodeConnectFragment connectFragment = new CodeConnectFragment();
 
+		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_FRONT);
+
+		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, NetworkDeviceListFragment.class, null));
+		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, NetworkStatusFragment.class, null));
+		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, CodeConnectFragment.class, null));
+
+		mPagerAdapter.createTabs(mTabLayout);
 		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
 
-		mPagerAdapter.add(deviceListFragment);
-		mPagerAdapter.add(statusFragment);
-		mPagerAdapter.add(connectFragment);
+		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_BACK);
 
 		mViewPager.setAdapter(mPagerAdapter);
 		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
-		mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
+		mTabLayout.addOnTabSelectedListener(new SmartFragmentPagerAdapter.TabLayoutSelectedListener(mPagerAdapter)
 		{
 			@Override
 			public void onTabSelected(TabLayout.Tab tab)
 			{
+				super.onTabSelected(tab);
 				mViewPager.setCurrentItem(tab.getPosition());
-			}
-
-			@Override
-			public void onTabUnselected(final TabLayout.Tab tab)
-			{
-
-			}
-
-			@Override
-			public void onTabReselected(TabLayout.Tab tab)
-			{
-
 			}
 		});
 
 		return view;
 	}
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
-		mPagerAdapter.notifyDataSetChanged();
-	}
-
-	public DefaultFragmentPagerAdapter getPagerAdapter()
+	public SmartFragmentPagerAdapter getPagerAdapter()
 	{
 		return mPagerAdapter;
 	}
@@ -195,17 +160,36 @@ public class ConnectDevicesFragment
 		mDeviceSelectedListener = listener;
 	}
 
-	public void showDevices() {
+	public void loadIntoSmartPagerAdapterUsingKey(SmartFragmentPagerAdapter pagerAdapter, Bundle args, String key)
+	{
+		if (args == null || !args.containsKey(key))
+			return;
+
+		ArrayList<SmartFragmentPagerAdapter.StableItem> thisParcelables = args.getParcelableArrayList(key);
+
+		if (thisParcelables == null)
+			return;
+
+		for (SmartFragmentPagerAdapter.StableItem thisItem : thisParcelables)
+			pagerAdapter.add(thisItem);
+	}
+
+	public void showDevices()
+	{
+		showFragment(NetworkDeviceListFragment.class);
+	}
+
+	public void showFragment(Class clazz) {
 		synchronized (getPagerAdapter().getFragments()) {
 			int iterator = 0;
 
-			for (Fragment fragment : getPagerAdapter().getFragments()) {
-				if (fragment instanceof NetworkDeviceListFragment) {
+			for (SmartFragmentPagerAdapter.StableItem stableItem : getPagerAdapter().getFragments()) {
+				if (clazz.getName().equals(stableItem.clazzName)) {
 					mViewPager.setCurrentItem(iterator);
 					break;
 				}
 
-				iterator ++;
+				iterator++;
 			}
 		}
 	}

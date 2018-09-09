@@ -3,21 +3,19 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.DefaultFragmentPagerAdapter;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.app.EditableListFragmentModelImpl;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
+import com.genonbeta.TrebleShot.app.EditableListFragmentModelImpl;
 import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.ImageListFragment;
@@ -25,7 +23,6 @@ import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 /**
@@ -54,12 +51,6 @@ public class ContentSharingActivity extends Activity
 		final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
 		final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-		final EditableListFragment appFragment = new ApplicationListFragment();
-		final EditableListFragment filesFragment = new FileExplorerFragment();
-		final EditableListFragment musicFragment = new MusicListFragment();
-		final EditableListFragment photoFragment = new ImageListFragment();
-		final EditableListFragment videoFragment = new VideoListFragment();
-
 		mSelectionCallback = new SharingActionModeCallback(null);
 		final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
 
@@ -76,24 +67,20 @@ public class ContentSharingActivity extends Activity
 			}
 		};
 
-		final DefaultFragmentPagerAdapter pagerAdapter = new DefaultFragmentPagerAdapter(this, getSupportFragmentManager())
+		final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
 		{
-			@NonNull
 			@Override
-			public Object instantiateItem(ViewGroup container, int position)
+			public void onItemInstantiated(StableItem item)
 			{
-				Fragment fragment = (Fragment) super.instantiateItem(container, position);
-				EditableListFragmentImpl fragmentImpl = (EditableListFragmentImpl) fragment;
-				EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) fragment;
+				EditableListFragmentImpl fragmentImpl = (EditableListFragmentImpl) item.getInitiatedItem();
+				EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) item.getInitiatedItem();
 
 				fragmentImpl.setSelectionCallback(mSelectionCallback);
 				fragmentImpl.setSelectorConnection(selectorConnection);
 				fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
-				if (viewPager.getCurrentItem() == position)
+				if (viewPager.getCurrentItem() == item.getCurrentPosition())
 					mSelectionCallback.updateProvider(fragmentImpl);
-
-				return fragment;
 			}
 		};
 
@@ -102,13 +89,14 @@ public class ContentSharingActivity extends Activity
 		if (getSupportActionBar() != null)
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		pagerAdapter.add(appFragment, tabLayout);
-		pagerAdapter.add(filesFragment);
-		tabLayout.addTab(tabLayout.newTab().setText(R.string.text_files));
- 		pagerAdapter.add(musicFragment, tabLayout);
-		pagerAdapter.add(photoFragment, tabLayout);
-		pagerAdapter.add(videoFragment, tabLayout);
+		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
+		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null)
+				.setTitle(getString(R.string.text_files)));
+		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, MusicListFragment.class, null));
+		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, ImageListFragment.class, null));
+		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(4, VideoListFragment.class, null));
 
+		pagerAdapter.createTabs(tabLayout);
 		viewPager.setAdapter(pagerAdapter);
 		viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 

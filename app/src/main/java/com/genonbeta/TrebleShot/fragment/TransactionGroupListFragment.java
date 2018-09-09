@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -50,6 +51,12 @@ public class TransactionGroupListFragment
 					|| intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFER)
 			))
 				refreshList();
+
+			if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
+					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
+				getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING));
+				refreshList();
+			}
 		}
 	};
 
@@ -79,6 +86,7 @@ public class TransactionGroupListFragment
 		super.onActivityCreated(savedInstanceState);
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+		mFilter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
 
 		if (getSelect() == null)
 			setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
@@ -89,6 +97,9 @@ public class TransactionGroupListFragment
 	{
 		super.onResume();
 		getActivity().registerReceiver(mReceiver, mFilter);
+
+		AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
+				.setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
 	}
 
 	@Override

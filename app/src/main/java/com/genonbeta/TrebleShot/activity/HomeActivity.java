@@ -1,3 +1,4 @@
+
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
@@ -82,6 +83,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_main);
 
 		final Toolbar toolbar = findViewById(R.id.toolbar);
@@ -313,7 +315,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 		if (requestedFolder != null)
 			((FileExplorerFragment) mFragmentFileExplorer)
-					.goPath(requestedFolder);
+					.requestPath(requestedFolder);
 	}
 
 	private boolean restorePreviousFragment()

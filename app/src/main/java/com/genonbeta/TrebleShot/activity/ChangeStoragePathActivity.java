@@ -1,8 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 /**
  * Created by: veli
@@ -17,8 +21,14 @@ public class ChangeStoragePathActivity extends Activity
 	protected void onStart()
 	{
 		super.onStart();
+
+		DocumentFile currentSavePath = FileUtils.getApplicationDirectory(
+				getApplicationContext(),
+				AppUtils.getDefaultPreferences(getApplicationContext()));
+
 		startActivityForResult(new Intent(this, FilePickerActivity.class)
-				.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY), REQUEST_CHOOSE_FOLDER);
+				.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
+				.putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.getUri().toString()), REQUEST_CHOOSE_FOLDER);
 	}
 
 	@Override

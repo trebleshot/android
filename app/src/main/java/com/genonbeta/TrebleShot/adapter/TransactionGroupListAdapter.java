@@ -1,9 +1,11 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
+import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
 
 /**
  * created by: Veli
@@ -31,6 +34,7 @@ public class TransactionGroupListAdapter
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
 	private NumberFormat mPercentFormat;
+	private ArrayList<Long> mRunningTasks = new ArrayList<>();
 
 	public TransactionGroupListAdapter(Context context, AccessDatabase database)
 	{
@@ -45,6 +49,8 @@ public class TransactionGroupListAdapter
 	@Override
 	protected void onLoad(GroupLister<PreloadedGroup> lister)
 	{
+		ArrayList<Long> activeList = new ArrayList<>(mRunningTasks);
+
 		for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
 		{
 			@Override
@@ -67,20 +73,17 @@ public class TransactionGroupListAdapter
 		})) {
 			mDatabase.calculateTransactionSize(group.groupId, group.index);
 
+			group.isRunning = activeList.contains(group.groupId);
 			group.totalCount = group.index.incomingCount + group.index.outgoingCount;
 			group.totalBytes = group.index.incoming + group.index.outgoing;
+			group.totalBytesCompleted = group.index.incomingCompleted + group.index.outgoingCompleted;
 			group.totalCountCompleted = group.index.incomingCountCompleted + group.index.outgoingCountCompleted;
 
 			group.totalFiles = getContext().getResources().getQuantityString(R.plurals.text_files, group.totalCount, group.totalCount);
 			group.totalFilesCompleted = getContext().getResources().getQuantityString(R.plurals.text_files, group.totalCountCompleted, group.totalCountCompleted);
 			group.totalSize = FileUtils.sizeExpression(group.totalBytes, false);
-			group.totalPercent = group.totalCountCompleted == 0 || group.totalCount == 0
-					? 0.0 : Integer.valueOf(group.totalCountCompleted).doubleValue() / Integer.valueOf(group.totalCount).doubleValue();
-
-			Log.d(TransactionGroupListAdapter.class.getSimpleName(), "total completed: "
-					+ group.totalCountCompleted + "; inc comp: "
-					+ group.index.incomingCountCompleted + "; out comp: "
-					+ group.index.outgoingCountCompleted);
+			group.totalPercent = group.totalBytesCompleted == 0 || group.totalBytes == 0
+					? 0.0 : Long.valueOf(group.totalBytesCompleted).doubleValue() / Long.valueOf(group.totalBytes).doubleValue();
 
 			lister.offer(group);
 		}
@@ -123,6 +126,7 @@ public class TransactionGroupListAdapter
 
 			if (!holder.tryBinding(object)) {
 				final View parentView = holder.getView();
+				int appliedColorRes;
 
 				ImageView image = parentView.findViewById(R.id.image);
 				TextView text1 = parentView.findViewById(R.id.text);
@@ -131,25 +135,46 @@ public class TransactionGroupListAdapter
 
 				parentView.setSelected(object.isSelectableSelected());
 
-				if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
-						|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))
-					image.setImageResource(object.index.outgoingCount > 0
-							? R.drawable.ic_compare_arrows_white_24dp
-							: R.drawable.ic_error_white_24dp);
+				if (object.index.hasIssues)
+					appliedColorRes = R.color.errorTintColor;
 				else
-					image.setImageResource(object.index.outgoingCount > 0
-							? R.drawable.ic_file_upload_black_24dp
-							: R.drawable.ic_file_download_black_24dp);
+					appliedColorRes = object.totalCount == object.totalCountCompleted
+							? R.color.colorAccent : R.color.layoutTintLightColor;
 
-				text1.setTextColor(ContextCompat.getColor(getContext(), object.totalPercent == 1.0
-						? R.color.colorAccent
-						: R.color.layoutTintLightColor));
+				if (object.isRunning) {
+					image.setImageResource(R.drawable.ic_pause_white_24dp);
+				} else {
+					if ((object.index.outgoingCount == 0 && object.index.incomingCount == 0)
+							|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))
+						image.setImageResource(object.index.outgoingCount > 0
+								? R.drawable.ic_compare_arrows_white_24dp
+								: R.drawable.ic_error_white_24dp);
+					else
+						image.setImageResource(object.index.outgoingCount > 0
+								? R.drawable.ic_file_upload_black_24dp
+								: R.drawable.ic_file_download_black_24dp);
+				}
 
+				@ColorInt
+				int appliedColor = ContextCompat.getColor(getContext(), appliedColorRes);
+
+				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
+				text1.setTextColor(appliedColor);
 				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, object.totalSize));
 				text2.setText(mPercentFormat.format(object.totalPercent));
 				text3.setText(object.totalFiles);
 			}
 		} catch (Exception e) {
+		}
+	}
+
+	public void updateActiveList(long[] activeList)
+	{
+		synchronized (mRunningTasks) {
+			mRunningTasks.clear();
+
+			for (long groupId : activeList)
+				mRunningTasks.add(groupId);
 		}
 	}
 
@@ -169,7 +194,9 @@ public class TransactionGroupListAdapter
 		public int totalCount;
 		public int totalCountCompleted;
 		public long totalBytes;
+		public long totalBytesCompleted;
 		public double totalPercent;
+		public boolean isRunning;
 
 		public PreloadedGroup()
 		{
