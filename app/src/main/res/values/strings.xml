@@ -197,7 +197,7 @@
     <string name="text_permissionRequest">Permission request</string>
     <string name="text_requestPermissionStorage">Storage permission</string>
     <string name="text_requestPermissionReadPhoneState">Permission to read phone state</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">You need to grant TrebleShot access to your device\'s serial number to create a long-term identity number for your device, helping other TrebleShot devices recognize it.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot needs to access your device\'s serial number to create a long-term identity number, helping other devices recognize you</string>
     <string name="text_mediaDirectory">Media directory</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Not enough space</string>
