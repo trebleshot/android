@@ -188,7 +188,7 @@
     <string name="text_permissionRequest">Baimen eskaera</string>
     <string name="text_requestPermissionStorage">Biltegiratze baimena</string>
     <string name="text_requestPermissionReadPhoneState">Telefonoaren egoera irakurtzeko baimena</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">Baimena eman behar diozu TrebleShot-i zure telefonoaren serie zenbakia erabiltzeko du zure gailurako epe luzerako identitate zenbakia sor dezan, horrek TrebleShot-ek onartzen duen beste gailuek ezagutu dezaten laguntzen du.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot-ek zure telefonoaren serie zenbakia atzitu behar du zure gailurako epe luzerako identitate zenbaki bat sortzeko, besteek zu ezagutzea errazteko.</string>
     <string name="text_mediaDirectory">Multimediaren direktorioa</string>
     <string name="text_emulatedMediaDirectory">Emulatuta (%s)</string>
     <string name="mesg_notEnoughSpace">Ez dago leku nahikorik</string>
