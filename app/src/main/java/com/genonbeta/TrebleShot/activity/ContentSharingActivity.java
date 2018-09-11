@@ -87,8 +87,10 @@ public class ContentSharingActivity extends Activity
 
 		mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
 
-		if (getSupportActionBar() != null)
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
 		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null)
@@ -152,7 +154,7 @@ public class ContentSharingActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == android.R.id.home)
-			onBackPressed();
+			finish();
 		else
 			return super.onOptionsItemSelected(item);
 

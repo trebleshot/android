@@ -114,23 +114,13 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 
 				if (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
 						|| TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag)) {
-					setNeutralButton(R.string.butn_resume, new DialogInterface.OnClickListener()
+					setNeutralButton(R.string.butn_retry, new DialogInterface.OnClickListener()
 					{
 						@Override
 						public void onClick(DialogInterface dialogInterface, int i)
 						{
 							transferObject.flag = TransferObject.Flag.PENDING;
 							database.publish(transferObject);
-
-							CursorItem assigneeInstance = database.getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-									.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId)));
-
-							if (assigneeInstance != null) {
-								TransferGroup.Assignee assignee = new TransferGroup.Assignee();
-								assignee.reconstruct(assigneeInstance);
-
-								TransferUtils.resumeTransfer(getContext(), group, assignee);
-							}
 						}
 					});
 				} else if (fileExists && pseudoFile.getParentFile() != null) {

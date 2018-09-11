@@ -5,6 +5,7 @@
     <color name="windowBackground">#ffffff</color>
     <color name="navigationColor">#000000</color>
     <color name="colorAccent">#18b65f</color>
+    <color name="transparentLightBackground">#5000</color>
     <color name="whiteAccent">#fff</color>
     <color name="actionModeBackground">#f3009951</color>
     <color name="actionModeColorPrimary">#175040</color>

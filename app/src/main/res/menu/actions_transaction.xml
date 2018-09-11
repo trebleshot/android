@@ -10,9 +10,9 @@
         android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transaction_remove"
-        android:title="@string/butn_remove"
-        android:visible="true" />
+        android:id="@+id/actions_transaction_add_device"
+        android:title="@string/butn_addDevices"
+        android:visible="false"/>
 
     <item
         android:id="@+id/actions_transaction_show_files"
@@ -23,6 +23,11 @@
         android:id="@+id/actions_transaction_retry_all"
         android:title="@string/butn_retry_all"
         android:visible="false"/>
+
+    <item
+        android:id="@+id/actions_transaction_remove"
+        android:title="@string/butn_remove"
+        android:visible="true" />
 
 
 </menu>

@@ -374,4 +374,5 @@
     <string name="butn_donate">Donate</string>
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
+    <string name="butn_retry">Retry</string>
 </resources>

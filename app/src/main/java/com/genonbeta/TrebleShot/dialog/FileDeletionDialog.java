@@ -4,14 +4,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
-import android.widget.Button;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;
 
@@ -25,18 +23,16 @@ public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> ext
 	public static final String TAG = FileDeletionDialog.class.getSimpleName();
 	public static final int JOB_FILE_DELETION = 1;
 
-	public ArrayList<T> mItemList = new ArrayList<>();
-
 	public FileDeletionDialog(final Activity activity, final ArrayList<T> items, final Listener listener)
 	{
 		super(activity);
 
-		getItemList().addAll(items);
+		final ArrayList<T> copiedItems = new ArrayList<>(items);
 
 		setTitle(R.string.text_deleteConfirm);
-		setMessage(R.string.text_previewThenProceedNotice);
+		setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, copiedItems.size(), copiedItems.size()));
+
 		setNegativeButton(R.string.butn_cancel, null);
-		setNeutralButton(getContext().getString(R.string.butn_queueCounted, 0), null);
 		setPositiveButton(R.string.butn_delete, new DialogInterface.OnClickListener()
 				{
 					@Override
@@ -65,9 +61,8 @@ public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> ext
 							@Override
 							public void onRun()
 							{
-								for (T fileItem : getItemList())
-									if (fileItem.isSelectableSelected())
-										delete(fileItem.file);
+								for (T fileItem : copiedItems)
+									delete(fileItem.file);
 
 								if (listener != null)
 									listener.onCompleted(this, activity, totalDeletion);
@@ -109,59 +104,6 @@ public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> ext
 					}
 				}
 		);
-	}
-
-	public int countSelections()
-	{
-		int selectedCount = 0;
-
-		synchronized (getItemList()) {
-			for (T shareable : getItemList())
-				if (shareable.isSelectableSelected())
-					selectedCount++;
-		}
-
-		return selectedCount;
-	}
-
-	public ArrayList<T> getItemList()
-	{
-		return mItemList;
-	}
-
-	@Override
-	public AlertDialog show()
-	{
-		final AlertDialog alertDialog = super.show();
-		final Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-		final Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-
-		positiveButton.setVisibility(View.GONE);
-
-		neutralButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				new SelectionEditorDialog<>(getContext(), getItemList()).show().setOnDismissListener(new DialogInterface.OnDismissListener()
-				{
-					@Override
-					public void onDismiss(DialogInterface dialog)
-					{
-						int totalSelected = countSelections();
-
-						neutralButton.setText(getContext().getString(R.string.butn_queueCounted, totalSelected));
-						alertDialog.setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, totalSelected, totalSelected));
-
-						positiveButton.setVisibility(countSelections() > 0
-								? View.VISIBLE
-								: View.GONE);
-					}
-				});
-			}
-		});
-
-		return alertDialog;
 	}
 
 	public interface Listener

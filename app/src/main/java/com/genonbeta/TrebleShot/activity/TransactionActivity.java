@@ -63,8 +63,11 @@ public class TransactionActivity
 	public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
+	public static final int REQUEST_ADD_DEVICES = 5045;
+
 	private OnBackPressedListener mBackPressedListener;
 	private TransferGroup mGroup;
+
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -101,6 +104,7 @@ public class TransactionActivity
 	private MenuItem mStartMenu;
 	private MenuItem mRetryMenu;
 	private MenuItem mShowFiles;
+	private MenuItem mAddDevice;
 	private CrunchLatestDataTask mDataCruncher;
 
 	boolean mRunning = false;
@@ -225,8 +229,9 @@ public class TransactionActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
+		super.onCreateOptionsMenu(menu);
 		getMenuInflater().inflate(R.menu.actions_transaction, menu);
-		return super.onCreateOptionsMenu(menu);
+		return true;
 	}
 
 	@Override
@@ -235,6 +240,7 @@ public class TransactionActivity
 		mStartMenu = menu.findItem(R.id.actions_transaction_resume);
 		mRetryMenu = menu.findItem(R.id.actions_transaction_retry_all);
 		mShowFiles = menu.findItem(R.id.actions_transaction_show_files);
+		mAddDevice = menu.findItem(R.id.actions_transaction_add_device);
 
 		if (!getIndex().calculated)
 			updateCalculations();
@@ -290,6 +296,10 @@ public class TransactionActivity
 			startActivity(new Intent(this, HomeActivity.class)
 					.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
 					.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
+		} else if (id == R.id.actions_transaction_add_device) {
+			startActivityForResult(new Intent(this, ShareActivity.class)
+					.setAction(ShareActivity.ACTION_ADD_DEVICES)
+					.putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
 		} else
 			return super.onOptionsItemSelected(item);
 
@@ -352,6 +362,7 @@ public class TransactionActivity
 	private void showMenus()
 	{
 		boolean hasIncoming = getIndex().incomingCount > 0;
+		boolean hasOutgoing = getIndex().outgoingCount > 0;
 
 		if (mStartMenu == null || mRetryMenu == null || mShowFiles == null)
 			return;
@@ -359,6 +370,8 @@ public class TransactionActivity
 		mStartMenu.setTitle(mRunning ? R.string.butn_pause : R.string.butn_resume);
 		mStartMenu.setIcon(mRunning ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp);
 
+		// Only show when there
+		mAddDevice.setVisible(hasOutgoing);
 		mStartMenu.setVisible(hasIncoming || mRunning);
 		mRetryMenu.setVisible(hasIncoming);
 		mShowFiles.setVisible(hasIncoming);
@@ -371,9 +384,7 @@ public class TransactionActivity
 	private void toggleTask()
 	{
 		if (mRunning) {
-			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-					.setAction(CommunicationService.ACTION_CANCEL_JOB)
-					.putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
+			TransferUtils.pauseTransfer(this, mGroup, null);
 		} else {
 			SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
 					.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));

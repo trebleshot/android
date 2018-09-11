@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -41,6 +42,17 @@ public class TransferUtils
 				.setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
 				.putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId)
 				.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
+	}
+
+	public static void pauseTransfer(Context context, TransferGroup group, @Nullable  TransferGroup.Assignee assignee) {
+		Intent intent = new Intent(context, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_CANCEL_JOB)
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId);
+
+		if (assignee != null)
+			intent.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId);
+
+		AppUtils.startForegroundService(context, intent);
 	}
 
 	public interface ConnectionUpdatedListener

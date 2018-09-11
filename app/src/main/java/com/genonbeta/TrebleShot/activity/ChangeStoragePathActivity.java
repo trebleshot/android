@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -28,7 +29,8 @@ public class ChangeStoragePathActivity extends Activity
 
 		startActivityForResult(new Intent(this, FilePickerActivity.class)
 				.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
-				.putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.getUri().toString()), REQUEST_CHOOSE_FOLDER);
+				.putExtra(FilePickerActivity.EXTRA_START_PATH, currentSavePath.getUri().toString())
+				.putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.text_storagePath)), REQUEST_CHOOSE_FOLDER);
 	}
 
 	@Override

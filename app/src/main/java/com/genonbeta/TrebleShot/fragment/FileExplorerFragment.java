@@ -19,22 +19,19 @@ import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
-import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -125,9 +122,19 @@ public class FileExplorerFragment
 
 					if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
 						String pathString = pathUri.toString();
-						String title = pathString.substring(pathString.lastIndexOf(File.separator));
+						String title = null;
 
-						AppUtils.getDatabase(getContext()).publish(new WritablePathObject(title, pathUri));
+						try {
+							title = FileUtils.fromUri(getContext(), pathUri).getName();
+						} catch (FileNotFoundException e) {
+							e.printStackTrace();
+						}
+
+						if (title == null)
+							title = pathString.substring(pathString.lastIndexOf(File.separator) + 1);
+
+						AppUtils.getDatabase(getContext())
+								.publish(new WritablePathObject(title, pathUri));
 
 						if (getContext() != null)
 							getContext().getContentResolver().takePersistableUriPermission(pathUri,

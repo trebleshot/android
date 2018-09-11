@@ -5,8 +5,8 @@ buildscript {
     repositories {
         jcenter()
         google()
-        mavenLocal()
         maven { url 'https://maven.google.com' }
+        mavenLocal()
     }
     dependencies {
         // NOTE: Do not place your application dependencies here; they belong
@@ -33,7 +33,7 @@ allprojects {
     repositories {
         jcenter()
         google()
-        mavenLocal()
         maven { url "https://jitpack.io" }
+        mavenLocal()
     }
 }

@@ -496,8 +496,6 @@ public class CommunicationService extends Service
 				.putExtra(EXTRA_DEVICE_ID, deviceId);
 
 		sendBroadcast(intent);
-
-		notifyTaskRunningListChange();
 	}
 
 	public void notifyTaskRunningListChange()
@@ -884,9 +882,10 @@ public class CommunicationService extends Service
 				processHolder.assignee = transferInstance.getAssignee();
 				processHolder.activeConnection = activeConnection;
 
-				notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_ONGOING);
+				notifyTaskRunningListChange();
 
-				while (true) {
+				while (activeConnection.getSocket() != null
+						&& activeConnection.getSocket().isConnected()) {
 					ActiveConnection.Response currentResponse = activeConnection.receive();
 
 					if (currentResponse.response == null || currentResponse.totalLength < 1) {
@@ -1015,6 +1014,8 @@ public class CommunicationService extends Service
 
 					if (transferInstance != null)
 						notifyTaskStatusChange(transferInstance.getGroup().groupId, transferInstance.getAssignee().deviceId, TASK_STATUS_STOPPED);
+
+					notifyTaskRunningListChange();
 				}
 			}
 		}
@@ -1085,6 +1086,8 @@ public class CommunicationService extends Service
 				processHolder.group = mTransfer.getGroup();
 				processHolder.assignee = mTransfer.getAssignee();
 
+				notifyTaskRunningListChange();
+
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
 
@@ -1102,14 +1105,14 @@ public class CommunicationService extends Service
 
 						getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 								.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?" +
-										" AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
+												" AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 										String.valueOf(processHolder.group.groupId),
 										TransferObject.Flag.DONE.toString()), contentValues);
 					}
 
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
 				} else {
-					while (true) {
+					while (activeConnection.getSocket() != null && activeConnection.getSocket().isConnected()) {
 						try {
 							// Remove the previous object as it is completed.
 							CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
@@ -1188,6 +1191,7 @@ public class CommunicationService extends Service
 				synchronized (getActiveProcessList()) {
 					getActiveProcessList().remove(processHolder);
 					notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_STOPPED);
+					notifyTaskRunningListChange();
 				}
 			}
 
@@ -1200,8 +1204,20 @@ public class CommunicationService extends Service
 		@Override
 		public Flag onError(TransferHandler<ProcessHolder> handler, Exception error)
 		{
-			handleError(handler, error);
+			if (error != null)
+				error.printStackTrace();
+
+			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+			getNotificationHelper().notifyReceiveError(handler.getExtra().transferObject);
+
 			return Flag.CANCEL_ALL;
+		}
+
+		@Override
+		public void onDestroy(TransferHandler<ProcessHolder> handler)
+		{
+			if (handler.isInterrupted())
+				handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 		}
 
 		@Override
@@ -1217,51 +1233,40 @@ public class CommunicationService extends Service
 		}
 
 		@Override
-		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
-		{
-			handler.getExtra().transferObject.flag = TransferObject.Flag.DONE;
-			DocumentFile currentFile = handler.getExtra().currentFile;
-
-			if (currentFile.getParentFile() != null)
-				try {
-					handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transferObject);
-					handler.getExtra().transferObject.file = handler.getExtra().currentFile.getName();
-					Log.d(TAG, "Receive.onTransferCompleted(): Saved as: " + handler.getExtra().currentFile.getName());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-		}
-
-		@Override
-		public void onInterrupted(TransferHandler<ProcessHolder> handler)
-		{
-			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-		}
-
-		@Override
-		public Flag onCloseStreams(TransferHandler<ProcessHolder> handler)
+		public void onTaskEnd(TransferHandler<ProcessHolder> handler)
 		{
 			try {
 				handler.getExtra().currentFile.sync();
-
-				if (handler.getExtra().currentFile.length() == handler.getExtra().transferObject.fileSize)
-					return super.onCloseStreams(handler);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			handler.interrupt();
-			return Flag.CANCEL_ALL;
+			if (handler.getFileSize() == handler.getExtra().currentFile.length()) {
+				handler.getExtra().transferObject.flag = TransferObject.Flag.DONE;
+				DocumentFile currentFile = handler.getExtra().currentFile;
+
+				if (currentFile.getParentFile() != null)
+					try {
+						handler.getExtra().currentFile = FileUtils.saveReceivedFile(currentFile.getParentFile(), currentFile, handler.getExtra().transferObject);
+						handler.getExtra().transferObject.file = handler.getExtra().currentFile.getName();
+						Log.d(TAG, "Receive.onTransferCompleted(): Saved as: " + handler.getExtra().currentFile.getName());
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			} else {
+				handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+				handler.setFlag(Flag.CANCEL_CURRENT);
+			}
 		}
 
 		@Override
-		public Flag onSocketReady(TransferHandler<ProcessHolder> handler)
+		public Flag onTaskPrepareSocket(TransferHandler<ProcessHolder> handler)
 		{
 			return Flag.CONTINUE;
 		}
 
 		@Override
-		public Flag onSocketReady(final TransferHandler<ProcessHolder> handler, final ServerSocket serverSocket)
+		public Flag onTaskPrepareSocket(final TransferHandler<ProcessHolder> handler, final ServerSocket serverSocket)
 		{
 			try {
 				JSONObject jsonObject = new JSONObject();
@@ -1296,15 +1301,14 @@ public class CommunicationService extends Service
 					return Flag.CANCEL_CURRENT;
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				onError(handler, e);
+				return onError(handler, e);
 			}
 
-			return Flag.CANCEL_ALL;
+			return onError(handler, null);
 		}
 
 		@Override
-		public Flag onStart(TransferHandler<ProcessHolder> handler)
+		public Flag onPrepare(TransferHandler<ProcessHolder> handler)
 		{
 			// set transfer handler here
 			handler.linkTo(handler.getExtra().transferHandler);
@@ -1338,15 +1342,6 @@ public class CommunicationService extends Service
 							.putExtra(FileListFragment.EXTRA_FILE_NAME, currentFile.getName()));
 			}
 		}
-
-		protected void handleError(TransferHandler<ProcessHolder> handler, Exception error)
-		{
-			error.printStackTrace();
-
-			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-			getNotificationHelper().notifyReceiveError(handler.getExtra().transferObject);
-		}
-
 	}
 
 	public class Send extends CoolTransfer.Send<ProcessHolder>
@@ -1354,7 +1349,9 @@ public class CommunicationService extends Service
 		@Override
 		public Flag onError(TransferHandler<ProcessHolder> handler, Exception error)
 		{
-			error.printStackTrace();
+			if (error != null)
+				error.printStackTrace();
+
 			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 
 			return Flag.CANCEL_ALL;
@@ -1373,7 +1370,7 @@ public class CommunicationService extends Service
 		}
 
 		@Override
-		public void onTransferCompleted(TransferHandler<ProcessHolder> handler)
+		public void onTaskEnd(TransferHandler<ProcessHolder> handler)
 		{
 			handler.getExtra().transferObject.flag = handler.getTransferProgress().getCurrentTransferredByte() == handler.getFileSize()
 					? TransferObject.Flag.DONE
@@ -1381,19 +1378,20 @@ public class CommunicationService extends Service
 		}
 
 		@Override
-		public void onInterrupted(TransferHandler<ProcessHolder> handler)
+		public void onDestroy(TransferHandler<ProcessHolder> handler)
 		{
-			handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+			if (handler.isInterrupted())
+				handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
 		}
 
 		@Override
-		public Flag onSocketReady(TransferHandler<ProcessHolder> handler)
+		public Flag onTaskPrepareSocket(TransferHandler<ProcessHolder> handler)
 		{
 			return Flag.CONTINUE;
 		}
 
 		@Override
-		public Flag onStart(TransferHandler<ProcessHolder> handler)
+		public Flag onPrepare(TransferHandler<ProcessHolder> handler)
 		{
 			handler.linkTo(handler.getExtra().transferHandler);
 			handler.getExtra().transferHandler = handler;
@@ -1411,17 +1409,19 @@ public class CommunicationService extends Service
 
 
 		@Override
-		public void onOrientatingStreams(TransferHandler<ProcessHolder> handler, InputStream inputStream, OutputStream outputStream)
+		public Flag onTaskOrientateStreams(TransferHandler<ProcessHolder> handler, InputStream inputStream, OutputStream outputStream)
 		{
-			super.onOrientatingStreams(handler, inputStream, outputStream);
+			super.onTaskOrientateStreams(handler, inputStream, outputStream);
 
 			if (handler.getExtra().transferObject.skippedBytes > 0)
 				try {
 					handler.skipBytes(handler.getExtra().transferObject.skippedBytes);
 				} catch (IOException e) {
-					handler.interrupt();
 					e.printStackTrace();
+					return Flag.CONTINUE;
 				}
+
+			return Flag.CONTINUE;
 		}
 	}
 

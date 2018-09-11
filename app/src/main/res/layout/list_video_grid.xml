@@ -21,25 +21,25 @@
 
     <TextView
         android:id="@+id/text3"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/transparent_background_gradient_top"
+        android:gravity="center"
         android:padding="8dp"
-        android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/text2"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
+        android:background="@drawable/transparent_background_gradient_bottom"
+        android:gravity="center"
         android:padding="8dp"
-        android:shadowColor="@color/whiteTextShadowColor"
-        android:shadowRadius="5"
         android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
