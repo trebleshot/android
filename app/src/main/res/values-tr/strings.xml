@@ -174,8 +174,8 @@
     <string name="text_chooseFolder">Klasör seçin</string>
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
-    <string name="ques_checkOldFiles">Geçici dosyaları kontrol et?</string>
-    <string name="text_checkOldFiles">TrebleShot yarım kalmış aktarımların dosyalarını seçtiğiniz klasöre aktaracak ve bu biraz zaman alabilir yada \"reddet\" e basarak bu işlemi atlayabilirsiniz</string>
+    <string name="ques_checkOldFiles">Dosyaları taşı?</string>
+    <string name="text_checkOldFiles">"Boyutlarına göre zaman alacak  alakası bulunan yarım kalmış ve tamamlanmış dosyaları bu klasöre taşıyabilirsiniz"</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -213,7 +213,7 @@
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="text_requestPermissionStorage">Depolama izni</string>
     <string name="text_requestPermissionReadPhoneState">Telefon durumunu oku</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot diğer TrebleShot kullanan cihazlar tarafından tanınmasına yardımcı olan uzun süreli kimlik oluşturmak için cihazınızın seri numarası kullanır. Cihazınız Android Oreo sürümünde veya üstünde çalıştırmaktadır ve seri numarasının alınabilmesi için bu iznin sağlanması gerekmektedir. Reddetmik uygulamanın durmasına yol açacaktır.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">"TrebleShot\'un diğer cihazlar tarafından tanınmanızı sağlayan cihazınızın seri numarasına erişmesi gerekiyor "</string>
     <string name="text_mediaDirectory">Medya klasörü</string>
     <string name="text_emulatedMediaDirectory">Yansıma (%s)</string>
     <string name="mesg_notEnoughSpace">Yeterli alan yok</string>
@@ -316,7 +316,7 @@
     <string name="butn_exit">Çıkış</string>
     <string name="butn_queueCounted">Kuyruk (%d)</string>
     <string name="text_previewThenProceedNotice">Devam edebilmek için seçtiklerinizi \"Kuyruk\" tuşuna dokunurak kontrol edin</string>
-    <string name="mesg_updateDownloadComplete">Güncellemeyi yüklemek için dokunun</string>
+    <string name="mesg_updateDownloadComplete">Güncelleme başarıyla alındı ve alınan dosyalar klasörünüze kaydedildi</string>
     <string name="text_listEmptyFiles">Burada dosya yok</string>
     <string name="text_listEmptyImage">Burada fotoğraf yok</string>
     <string name="text_listEmptyApp">Burada uygulama yok</string>
@@ -382,11 +382,21 @@
     <string name="text_thirdPartyLibraries">Üçüncü parti kütüphaneler</string>
     <string name="text_killServiceAfterLeaving">Uygulamadan ayrılmak servisi durdurur</string>
     <string name="text_killServiceAfterLeavingSummary">Devam eden iş yoksa haberleşme sona erer</string>
-    <string name="text_donate">Bağış yap</string>
+    <string name="text_donate">Geliştirmeye yardımcı ol</string>
     <string name="mesg_donationSuccessful">Teşekkür ederiz!</string>
-    <string name="butn_donate">Bağış yap</string>
+    <string name="butn_donate">Geliştirmeye yardımcı ol</string>
 <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%2d dsyada %1d tmm</string>
     <string name="msg">Bağış yap</string>
 <string name="butn_open">Aç</string>
+<string name="butn_pause">Duraklat</string>
+    <string name="butn_retry">Yeniden dene</string>
+    <string name="mesg_noPendingTransferObjectExists">Durdurulmuş yada çoktan alınmış oldukları için bekleyen aktarım kalmadı.</string>
+    <string name="mesg_notSavingToChosenLocation">Dosyalar şu anda erişilemediği için belirtmiş olduğunuz klasöre kaydedilmeyecek
+\n
+\n%s</string>
+    <string name="butn_changelog">Değişiklik günlüğü</string>
+    <string name="text_changelog">Değişiklik günlüğü</string>
+    <string name="mesg_versionUpdatedChangelog">"TrebleShot\'u daha güncel bir sürüme yükselttiniz, bir önceki sürümü yüklemenizden bu yana nelerin değiştiğine göz atmak ister misiniz? "</string>
+    <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her zaman ulaşabilirsiniz</string>
 </resources>
