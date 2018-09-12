@@ -376,7 +376,9 @@
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
     <string name="mesg_noPendingTransferObjectExists">No pending transfer left since they are either interrupted or already completed.</string>
-    <string name="mesg_notSavingToChosenLocation">Files will not be saved your desired folder since it is accessible right now\n\n %s</string>
+    <string name="mesg_notSavingToChosenLocation">Files will not be saved your desired folder since it is not accessible right now
+\n
+\n %s</string>
     <string name="butn_changelog">Changelog</string>
     <string name="text_changelog">Changelog</string>
     <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
