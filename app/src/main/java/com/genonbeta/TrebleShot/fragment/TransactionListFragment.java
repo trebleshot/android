@@ -31,6 +31,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -213,6 +214,15 @@ public class TransactionListFragment
 		return true;
 	}
 
+	public void changeSavePath(String initialPath)
+	{
+		startActivityForResult(new Intent(getActivity(), FilePickerActivity.class)
+				.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
+				.putExtra(FilePickerActivity.EXTRA_START_PATH, initialPath)
+				.putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)), REQUEST_CHOOSE_FOLDER);
+	}
+
+
 	@Override
 	public CharSequence getTitle(Context context)
 	{
@@ -225,13 +235,28 @@ public class TransactionListFragment
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
 
-			if (transferObject instanceof TransactionListAdapter.HomeStatusItem) {
-				TransactionListAdapter.HomeStatusItem statusItem = (TransactionListAdapter.HomeStatusItem) transferObject;
+			if (transferObject instanceof TransactionListAdapter.StorageStatusItem) {
+				final TransactionListAdapter.StorageStatusItem statusItem = (TransactionListAdapter.StorageStatusItem) transferObject;
 
-				startActivityForResult(new Intent(getActivity(), FilePickerActivity.class)
-						.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)
-						.putExtra(FilePickerActivity.EXTRA_START_PATH, statusItem.directory)
-						.putExtra(FilePickerActivity.EXTRA_ACTIVITY_TITLE, getString(R.string.butn_saveTo)), REQUEST_CHOOSE_FOLDER);
+				if (statusItem.hasIssues) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+					builder.setMessage(getContext().getString(R.string.mesg_notEnoughSpace));
+					builder.setNegativeButton(R.string.butn_close, null);
+
+					builder.setPositiveButton(R.string.butn_saveTo, new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							changeSavePath(statusItem.directory);
+						}
+					});
+
+					builder.show();
+				} else
+					changeSavePath(statusItem.directory);
+
 			} else if (transferObject instanceof TransactionListAdapter.TransferFolder) {
 				getAdapter().setPath(transferObject.directory);
 				refreshList();
@@ -347,7 +372,7 @@ public class TransactionListFragment
 								builder.setMessage(R.string.text_checkOldFiles);
 
 								builder.setNeutralButton(R.string.butn_cancel, null);
-								builder.setNegativeButton(R.string.butn_reject, new DialogInterface.OnClickListener()
+								builder.setNegativeButton(R.string.butn_skip, new DialogInterface.OnClickListener()
 								{
 									@Override
 									public void onClick(DialogInterface dialogInterface, int i)
@@ -356,59 +381,53 @@ public class TransactionListFragment
 									}
 								});
 
-								builder.setPositiveButton(R.string.butn_accept, new DialogInterface.OnClickListener()
+								builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
 								{
 									@Override
 									public void onClick(DialogInterface dialogInterface, int i)
 									{
-										WorkerService.run(getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_FIX)
+										WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, JOB_FILE_FIX)
 										{
-											@Override
-											public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
-											{
-												switch (updateType) {
-													case Started:
-														dynamicNotification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp)
-																.setContentText(getString(R.string.mesg_organizingFiles));
-														break;
-													case Done:
-														dynamicNotification.setContentText(getString(R.string.text_movedCacheFiles));
-														break;
-												}
-											}
-
 											@Override
 											public void onRun()
 											{
-												ArrayList<TransferObject> checkList = AppUtils.getDatabase(getContext()).
+												publishStatusText(getService().getString(R.string.mesg_organizingFiles));
+												TransferUtils.pauseTransfer(getContext(), mHeldGroup, null);
+
+												ArrayList<TransferObject> checkList = AppUtils.getDatabase(getService()).
 														castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 																.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-																				+ AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
-																				+ AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-																		String.valueOf(getTransferGroup().groupId), TransferObject.Type.INCOMING.toString(), TransferObject.Flag.PENDING.toString()), TransferObject.class);
+																				+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+																		String.valueOf(getTransferGroup().groupId), TransferObject.Type.INCOMING.toString()), TransferObject.class);
 
 												TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().groupId);
 
 												try {
 													// Illustrate new change to build the structure accordingly
-													AppUtils.getDatabase(getContext()).reconstruct(pseudoGroup);
+													AppUtils.getDatabase(getService()).reconstruct(pseudoGroup);
 													pseudoGroup.savePath = selectedPath.toString();
 
 													for (TransferObject transferObject : checkList) {
 														if (getInterrupter().interrupted())
-															break;
+															throw new InterruptedException();
+
+														DocumentFile file = null;
+														DocumentFile pseudoFile = null;
 
 														try {
-															DocumentFile file = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, getTransferGroup(), false);
-															DocumentFile pseudoFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), transferObject, pseudoGroup, true);
-
-															if (file.canRead())
-																FileUtils.move(getContext(), file, pseudoFile, getInterrupter());
-
-															file.delete();
-														} catch (IOException e) {
-															e.printStackTrace();
+															file = FileUtils.getIncomingPseudoFile(getService(), AppUtils.getDefaultPreferences(getService()), transferObject, getTransferGroup(), false);
+															pseudoFile = FileUtils.getIncomingPseudoFile(getService(), AppUtils.getDefaultPreferences(getService()), transferObject, pseudoGroup, true);
+														} catch (Exception e) {
+															continue;
 														}
+
+														if (file != null && pseudoFile != null) {
+															if (file.canWrite())
+																FileUtils.move(getService(), file, pseudoFile, getInterrupter());
+															else
+																throw new IOException("Failed to access: " + file.getUri());
+														}
+
 													}
 
 													updateSavePath(selectedPath.toString());
@@ -460,13 +479,14 @@ public class TransactionListFragment
 		group.savePath = selectedPath;
 		AppUtils.getDatabase(getContext()).publish(group);
 
-		getActivity().runOnUiThread(new Runnable()
-		{
-			@Override
-			public void run()
+		if (getActivity() != null && isAdded())
+			getActivity().runOnUiThread(new Runnable()
 			{
-				createSnackbar(R.string.mesg_pathSaved).show();
-			}
-		});
+				@Override
+				public void run()
+				{
+					createSnackbar(R.string.mesg_pathSaved).show();
+				}
+			});
 	}
 }

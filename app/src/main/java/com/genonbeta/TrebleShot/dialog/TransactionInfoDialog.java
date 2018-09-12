@@ -19,13 +19,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.StreamInfo;
-
-import org.w3c.dom.Document;
 
 import java.io.IOException;
 
@@ -47,10 +41,14 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			database.reconstruct(transferObject);
 
 			DocumentFile attemptedFile = null;
+			boolean isIncoming = TransferObject.Type.INCOMING.equals(transferObject.type);
 
 			try {
-				// This file should also indicate the received file if it is 'done'
-				attemptedFile = FileUtils.getIncomingPseudoFile(getContext(), preferences, transferObject, group, false);
+				// If it is incoming than get the received or cache file
+				// If not then try to reach to the source file that is being send
+				attemptedFile = isIncoming
+						? FileUtils.getIncomingPseudoFile(getContext(), preferences, transferObject, group, false)
+						: FileUtils.fromUri(getContext(), Uri.parse(transferObject.file));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -83,7 +81,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 					: getContext().getString(R.string.text_unknown));
 
 			locationText.setText(fileExists
-					? pseudoFile.getUri().toString()
+					? FileUtils.getReadableUri(pseudoFile.getUri())
 					: getContext().getString(R.string.text_unknown));
 
 			setPositiveButton(R.string.butn_close, null);
@@ -109,7 +107,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 				}
 			});
 
-			if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
+			if (isIncoming) {
 				incomingDetailsLayout.setVisibility(View.VISIBLE);
 
 				if (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
@@ -171,24 +169,26 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 					}
 				}
 			} else if (TransferObject.Type.OUTGOING.equals(transferObject.type)) {
-				try {
-					final DocumentFile sharedFile = FileUtils.fromUri(getContext(), Uri.parse(transferObject.file));
-					final Intent startIntent = new Intent(FileUtils.applySecureOpenIntent(getContext(), sharedFile, new Intent(Intent.ACTION_VIEW)));
+				// Could make use of this statement later
+				if (fileExists) {
+					try {
+						final Intent startIntent = new Intent(FileUtils.applySecureOpenIntent(getContext(), attemptedFile, new Intent(Intent.ACTION_VIEW)));
 
-					setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialog, int which)
+						setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
 						{
-							try {
-								getContext().startActivity(startIntent);
-							} catch (Exception e) {
-								e.printStackTrace();
+							@Override
+							public void onClick(DialogInterface dialog, int which)
+							{
+								try {
+									getContext().startActivity(startIntent);
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							}
-						}
-					});
-				} catch (Exception e) {
+						});
+					} catch (Exception e) {
 
+					}
 				}
 			}
 		} catch (Exception e) {

@@ -233,8 +233,7 @@ public class NetworkDeviceListFragment
 
 	public void checkRefreshing()
 	{
-		mSwipeRefreshLayout.setRefreshing(!DeviceScannerService
-				.getDeviceScanner()
+		mSwipeRefreshLayout.setRefreshing(!DeviceScannerService.getDeviceScanner()
 				.isScannerAvailable());
 	}
 
@@ -261,16 +260,8 @@ public class NetworkDeviceListFragment
 	{
 		getConnectionUtils().getWifiManager().startScan();
 
-		if (DeviceScannerService.getDeviceScanner().isScannerAvailable())
-			getContext().startService(new Intent(getContext(), DeviceScannerService.class)
-					.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
-		else {
+		if (!AppUtils.toggleDeviceScanning(getContext()))
 			Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
-
-			DeviceScannerService
-					.getDeviceScanner()
-					.interrupt();
-		}
 	}
 
 	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

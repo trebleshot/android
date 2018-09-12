@@ -48,8 +48,8 @@ import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
@@ -319,10 +319,12 @@ public class CommunicationService extends Service
 									receiveHandler.getServerSocket().close();
 							}
 
-							if (processHolder.activeConnection.getSocket() != null)
+							if (processHolder.activeConnection != null
+									&& processHolder.activeConnection.getSocket() != null)
 								processHolder.activeConnection.getSocket().close();
 
-							if (processHolder.transferHandler.getSocket() != null)
+							if (processHolder.transferHandler != null
+									&& processHolder.transferHandler.getSocket() != null)
 								processHolder.transferHandler.getSocket().close();
 						} catch (IOException e) {
 							e.printStackTrace();
@@ -858,11 +860,11 @@ public class CommunicationService extends Service
 		{
 			ProcessHolder processHolder = new ProcessHolder();
 
+			processHolder.activeConnection = activeConnection;
+
 			synchronized (getActiveProcessList()) {
 				getActiveProcessList().add(processHolder);
 			}
-
-			TransferInstance transferInstance = null;
 
 			try {
 				ActiveConnection.Response mainRequest = activeConnection.receive();
@@ -872,16 +874,14 @@ public class CommunicationService extends Service
 
 				activeConnection.setId(groupId);
 
-				transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
-
-				notifyTaskStatusChange(transferInstance.getGroup().groupId, transferInstance.getAssignee().deviceId, TASK_STATUS_ONGOING);
-
-				activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
+				TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
 
 				processHolder.group = transferInstance.getGroup();
 				processHolder.assignee = transferInstance.getAssignee();
-				processHolder.activeConnection = activeConnection;
 
+				activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
+
+				notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_ONGOING);
 				notifyTaskRunningListChange();
 
 				while (activeConnection.getSocket() != null
@@ -1012,8 +1012,8 @@ public class CommunicationService extends Service
 				synchronized (getActiveProcessList()) {
 					getActiveProcessList().remove(processHolder);
 
-					if (transferInstance != null)
-						notifyTaskStatusChange(transferInstance.getGroup().groupId, transferInstance.getAssignee().deviceId, TASK_STATUS_STOPPED);
+					if (processHolder.group != null && processHolder.assignee != null)
+						notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_STOPPED);
 
 					notifyTaskRunningListChange();
 				}
@@ -1034,12 +1034,16 @@ public class CommunicationService extends Service
 		public void onConnect(CoolSocket.Client client)
 		{
 			ProcessHolder processHolder = new ProcessHolder();
-			CoolSocket.ActiveConnection activeConnection = null;
+
+			processHolder.group = mTransfer.getGroup();
+			processHolder.assignee = mTransfer.getAssignee();
 
 			synchronized (getActiveProcessList()) {
-				notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_ONGOING);
 				getActiveProcessList().add(processHolder);
 			}
+
+			notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_ONGOING);
+			notifyTaskRunningListChange();
 
 			try {
 				Boolean initialConnectionOkay = CommunicationBridge.connect(getDatabase(), Boolean.class, new CommunicationBridge.Client.ConnectionHandler()
@@ -1074,19 +1078,13 @@ public class CommunicationService extends Service
 					throw new Exception("Initial connection failed");
 				}
 
-				activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+				processHolder.activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
-				activeConnection.reply(new JSONObject()
+				processHolder.activeConnection.reply(new JSONObject()
 						.put(Keyword.TRANSFER_GROUP_ID, mTransfer.getGroup().groupId)
 						.toString());
 
-				CoolSocket.ActiveConnection.Response mainRequest = activeConnection.receive();
-
-				processHolder.activeConnection = activeConnection;
-				processHolder.group = mTransfer.getGroup();
-				processHolder.assignee = mTransfer.getAssignee();
-
-				notifyTaskRunningListChange();
+				CoolSocket.ActiveConnection.Response mainRequest = processHolder.activeConnection.receive();
 
 				JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
 				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
@@ -1112,26 +1110,22 @@ public class CommunicationService extends Service
 
 					getNotificationHelper().notifyConnectionError(mTransfer, errorCode);
 				} else {
-					while (activeConnection.getSocket() != null && activeConnection.getSocket().isConnected()) {
+					while (processHolder.activeConnection.getSocket() != null
+							&& processHolder.activeConnection.getSocket().isConnected()) {
 						try {
-							// Remove the previous object as it is completed.
-							CursorItem receiverInstance = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-									.setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND " + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
-											TransferObject.Type.INCOMING.toString(),
-											String.valueOf(processHolder.group.groupId),
-											TransferObject.Flag.PENDING.toString()));
+							TransferObject firstAvailableTransfer = TransferUtils.fetchValidIncomingTransfer(CommunicationService.this, processHolder.group.groupId);
 
-							if (receiverInstance == null) {
+							if (firstAvailableTransfer == null) {
 								Log.d(TAG, "SeamlessClientHandler(): Exiting because there is no pending file instance left");
 								break;
 							}
 
-							processHolder.transferObject = new TransferObject(receiverInstance);
+							processHolder.transferObject = firstAvailableTransfer;
+
 							processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, processHolder.group);
+							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
 							getNotificationHelper().notifyFileTransaction(processHolder);
-
-							StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
 							mReceive.receive(0, streamInfo.openOutputStream(), processHolder.transferObject.fileSize, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT, processHolder, true);
 
@@ -1159,7 +1153,7 @@ public class CommunicationService extends Service
 							.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND " + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
 									String.valueOf(processHolder.group.groupId), TransferObject.Flag.DONE.toString())) == null;
 
-					activeConnection.reply(new JSONObject()
+					processHolder.activeConnection.reply(new JSONObject()
 							.put(Keyword.RESULT, false)
 							.put(Keyword.TRANSFER_JOB_DONE, isJobDone && hasLeftFiles)
 							.toString());
@@ -1179,10 +1173,10 @@ public class CommunicationService extends Service
 				getNotificationHelper().notifyConnectionError(mTransfer, null);
 			} finally {
 				try {
-					if (activeConnection != null && !activeConnection.getSocket().isClosed()) {
-						activeConnection.getSocket().getOutputStream().close();
-						activeConnection.getSocket().getInputStream().close();
-						activeConnection.getSocket().close();
+					if (processHolder.activeConnection != null && !processHolder.activeConnection.getSocket().isClosed()) {
+						processHolder.activeConnection.getSocket().getOutputStream().close();
+						processHolder.activeConnection.getSocket().getInputStream().close();
+						processHolder.activeConnection.getSocket().close();
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -1190,9 +1184,10 @@ public class CommunicationService extends Service
 
 				synchronized (getActiveProcessList()) {
 					getActiveProcessList().remove(processHolder);
-					notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_STOPPED);
-					notifyTaskRunningListChange();
 				}
+
+				notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_STOPPED);
+				notifyTaskRunningListChange();
 			}
 
 			Log.d(TAG, "We have exited");
@@ -1319,7 +1314,7 @@ public class CommunicationService extends Service
 
 				getDatabase().calculateTransactionSize(handler.getExtra().transferObject.groupId, indexInstance);
 
-				handler.getTransferProgress().setTotalByte(indexInstance.incoming);
+				handler.getTransferProgress().setTotalByte(indexInstance.incoming - indexInstance.incomingCompleted);
 			}
 
 			return Flag.CONTINUE;
@@ -1401,7 +1396,7 @@ public class CommunicationService extends Service
 
 				getDatabase().calculateTransactionSize(handler.getExtra().transferObject.groupId, indexInstance);
 
-				handler.getTransferProgress().setTotalByte(indexInstance.outgoing);
+				handler.getTransferProgress().setTotalByte(indexInstance.outgoing - indexInstance.outgoingCompleted);
 			}
 
 			return Flag.CONTINUE;

@@ -72,7 +72,6 @@ public class CodeConnectFragment
 	private IntentFilter mIntentFilter = new IntentFilter();
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 	private boolean mPermissionRequested = false;
-	private boolean mHasTaskOngoing = false;
 
 	private Snackbar.Callback mWaitedSnackbarCallback = new Snackbar.Callback()
 	{
@@ -114,8 +113,6 @@ public class CodeConnectFragment
 
 		mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
-		mHasTaskOngoing = false;
 	}
 
 	@Nullable
@@ -235,9 +232,9 @@ public class CodeConnectFragment
 	public void onNotifyShowingChange()
 	{
 		if (mTabSelectionOracle.isResuming())
-			updateBarcodeView(true);
+			updateState();
 		else
-			updateBarcodeView(false);
+			mBarcodeView.pauseAndWait();
 	}
 
 	@Override
@@ -292,21 +289,10 @@ public class CodeConnectFragment
 		}
 	}
 
-	public void updateBarcodeView(boolean show)
-	{
-		if (show && !mHasTaskOngoing)
-			mBarcodeView.resume();
-		else
-			mBarcodeView.pauseAndWait();
-	}
-
 	@Override
 	public void updateTaskStarted(final Interrupter interrupter)
 	{
-		mHasTaskOngoing = true;
-
-		updateBarcodeView(false);
-
+		mBarcodeView.pauseAndWait();
 		mConductContainer.setVisibility(View.GONE);
 		mTaskContainer.setVisibility(View.VISIBLE);
 
@@ -323,11 +309,7 @@ public class CodeConnectFragment
 	@Override
 	public void updateTaskStopped()
 	{
-		mHasTaskOngoing = false;
-
-		if (mTabSelectionOracle.isResuming())
-			updateBarcodeView(true);
-
+		mBarcodeView.resume();
 		mConductContainer.setVisibility(View.VISIBLE);
 		mTaskContainer.setVisibility(View.GONE);
 

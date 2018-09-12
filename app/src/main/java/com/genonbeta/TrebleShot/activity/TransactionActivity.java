@@ -84,7 +84,6 @@ public class TransactionActivity
 			} else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)) {
 				long groupId = intent.getLongExtra(CommunicationService.EXTRA_GROUP_ID, -1);
-				String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
 
 				if (groupId == mGroup.groupId) {
 					if (intent.getIntExtra(CommunicationService.EXTRA_TASK_CHANGE_TYPE, -1) == CommunicationService.TASK_STATUS_ONGOING) {
@@ -416,7 +415,7 @@ public class TransactionActivity
 
 			try {
 				getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-				TransferUtils.resumeTransfer(getApplicationContext(), mGroup, assignee);
+				TransferUtils.resumeTransfer(this, mGroup, assignee);
 			} catch (Exception e) {
 				e.printStackTrace();
 

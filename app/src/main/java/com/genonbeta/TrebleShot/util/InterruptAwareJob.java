@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.framework.util.Interrupter;
 
 /**

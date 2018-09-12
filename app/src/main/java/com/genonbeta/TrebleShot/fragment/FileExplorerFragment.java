@@ -76,19 +76,6 @@ public class FileExplorerFragment
 			}
 		});
 
-		setOnPathChangedListener(new FileListFragment.OnPathChangedListener()
-		{
-			@Override
-			public void onPathChanged(DocumentFile file)
-			{
-				mPathAdapter.goTo(file);
-				mPathAdapter.notifyDataSetChanged();
-
-				if (mPathAdapter.getItemCount() > 0)
-					mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
-			}
-		});
-
 		LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
 		layoutManager.setStackFromEnd(true);
 
@@ -178,6 +165,18 @@ public class FileExplorerFragment
 	}
 
 	@Override
+	protected void onListRefreshed()
+	{
+		super.onListRefreshed();
+
+		mPathAdapter.goTo(getAdapter().getPath());
+		mPathAdapter.notifyDataSetChanged();
+
+		if (mPathAdapter.getItemCount() > 0)
+			mPathView.smoothScrollToPosition(mPathAdapter.getItemCount() - 1);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		int id = item.getItemId();
@@ -222,6 +221,7 @@ public class FileExplorerFragment
 	{
 		return context.getString(R.string.text_fileExplorer);
 	}
+
 
 	public static DocumentFile getReadableFolder(DocumentFile documentFile)
 	{

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
+import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -31,7 +32,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 			try {
 				DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path", null)));
 
-				if (savePath != null && savePath.isDirectory() && savePath.canWrite())
+				if (savePath.isDirectory() && savePath.canWrite())
 					return savePath;
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -39,6 +40,9 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 		}
 
 		File defaultFolder = new File(defaultPath);
+
+		if (defaultFolder.isFile())
+			defaultFolder.delete();
 
 		if (!defaultFolder.isDirectory())
 			defaultFolder.mkdirs();
@@ -61,8 +65,22 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 		return pseudoFile;
 	}
 
+	public static String getReadableUri(String uri) {
+		return getReadableUri(Uri.parse(uri), uri);
+	}
+
+	public static String getReadableUri(Uri uri) {
+		return getReadableUri(uri, uri.toString());
+	}
+
+	public static String getReadableUri(Uri uri, @Nullable String defaultValue) {
+		return uri.getPath() == null ? defaultValue : uri.getPath();
+	}
+
 	public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
 	{
+		DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context, preferences);
+
 		if (group.savePath != null) {
 			try {
 				DocumentFile savePath = fromUri(context, Uri.parse(group.savePath));
@@ -72,9 +90,12 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {
+			group.savePath = defaultFolder.getUri().toString();
+			AppUtils.getDatabase(context).publish(group);
 		}
 
-		return FileUtils.getApplicationDirectory(context, preferences);
+		return defaultFolder;
 	}
 
 	public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException

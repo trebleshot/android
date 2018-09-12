@@ -169,8 +169,8 @@
     <string name="text_chooseFolder">Choose folder</string>
     <string name="text_chooseFile">Choose file</string>
     <string name="mesg_pathSameError">You can not select the old folder</string>
-    <string name="ques_checkOldFiles">Check broken files?</string>
-    <string name="text_checkOldFiles">Please wait while partly received files are moved to the chosen folder or skip by tapping \"reject\"</string>
+    <string name="ques_checkOldFiles">Move files?</string>
+    <string name="text_checkOldFiles">You can move associated files that are complete and partly complete to this folder, which may take some time depending on their sizes</string>
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
     <string name="text_preparingFiles">Preparing files</string>
@@ -299,7 +299,7 @@
     <string name="butn_exit">Exit</string>
     <string name="butn_queueCounted">Queue (%d)</string>
     <string name="text_previewThenProceedNotice">Please check your selections by tapping \"Queue\" to continue</string>
-    <string name="mesg_updateDownloadComplete">Tap to install new version</string>
+    <string name="mesg_updateDownloadComplete">Update received successfully and saved to your received files</string>
     <string name="text_listEmptyFiles">No files here</string>
     <string name="text_listEmptyImage">No photos here</string>
     <string name="text_listEmptyApp">No apps here</string>
@@ -375,4 +375,10 @@
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
+    <string name="mesg_noPendingTransferObjectExists">No pending transfer left since they are either interrupted or already completed.</string>
+    <string name="mesg_notSavingToChosenLocation">Files will not be saved your desired folder since it is accessible right now\n\n %s</string>
+    <string name="butn_changelog">Changelog</string>
+    <string name="text_changelog">Changelog</string>
+    <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
 </resources>

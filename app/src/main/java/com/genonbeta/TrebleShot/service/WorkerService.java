@@ -11,12 +11,11 @@ import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.InterruptAwareJob;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -30,12 +29,23 @@ import java.util.concurrent.Executors;
 public class WorkerService extends Service
 {
 	public static final String ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL";
-
+	public static final String ACTION_KILL_ALL_SIGNAL = "com.genonbeta.intent.action.KILL_ALL_SIGNAL";
 	public static final String EXTRA_TASK_ID = "extraTaskId";
+
+	public static final int ID_NOTIFICATION_FOREGROUND = 1103;
 
 	private final ArrayList<RunningTask> mTaskList = new ArrayList<>();
 	private ExecutorService mExecutor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 	private LocalBinder mBinder = new LocalBinder();
+	private NotificationUtils mNotificationUtils;
+	private DynamicNotification mNotification;
+
+	@Override
+	public void onCreate()
+	{
+		super.onCreate();
+		mNotificationUtils = new NotificationUtils(this, getDatabase(), getDefaultPreferences());
+	}
 
 	@Nullable
 	@Override
@@ -61,9 +71,16 @@ public class WorkerService extends Service
 					runningTask.getInterrupter().interrupt();
 					runningTask.onInterrupted(taskId);
 				}
+			} else if (ACTION_KILL_ALL_SIGNAL.equals(intent.getAction())) {
+				synchronized (getTaskList()) {
+					for (RunningTask runningTask : getTaskList()) {
+						runningTask.getInterrupter().interrupt();
+						runningTask.onInterrupted(runningTask.getTaskId());
+					}
+				}
 			}
 
-		return START_NOT_STICKY;
+		return START_STICKY;
 	}
 
 	@Override
@@ -106,11 +123,52 @@ public class WorkerService extends Service
 		return mTaskList;
 	}
 
+	public void publishForegroundNotification()
+	{
+		if (mNotification == null) {
+			PendingIntent cancelIntent = PendingIntent.getService(
+					this,
+					0,
+					new Intent(this, WorkerService.class).setAction(ACTION_KILL_ALL_SIGNAL),
+					0);
+
+			mNotification = mNotificationUtils.buildDynamicNotification(ID_NOTIFICATION_FOREGROUND, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+			mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp)
+					.setContentTitle(getString(R.string.text_taskOngoing))
+					.addAction(R.drawable.ic_close_white_24dp, getString(R.string.butn_cancel), cancelIntent);
+		}
+
+		synchronized (getTaskList()) {
+			if (getTaskList().size() <= 0)
+				stopForeground(true);
+			else {
+				StringBuilder stringBuilder = new StringBuilder();
+
+				for (RunningTask task : getTaskList()) {
+					String statusText = task.getStatusText();
+
+					if (statusText == null || statusText.length() <= 0)
+						statusText = task.getClientTag();
+
+					statusText = statusText.replaceAll("\n", " ");
+
+					stringBuilder.append(statusText)
+							.append("\n");
+				}
+
+				mNotification.setContentText(stringBuilder.toString());
+				startForeground(ID_NOTIFICATION_FOREGROUND, mNotification.build());
+			}
+		}
+	}
+
 	protected synchronized void registerWork(RunningTask runningTask)
 	{
 		synchronized (getTaskList()) {
 			getTaskList().add(runningTask);
 		}
+
+		publishForegroundNotification();
 	}
 
 	public void run(final RunningTask runningTask)
@@ -120,53 +178,13 @@ public class WorkerService extends Service
 			@Override
 			public void run()
 			{
-				NotifiableRunningTask notifiableRunningWork = runningTask instanceof NotifiableRunningTask
-						? (NotifiableRunningTask) runningTask
-						: null;
-
-				if (notifiableRunningWork != null) {
-					DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-					Intent cancelIntent = new Intent(WorkerService.this, WorkerService.class)
-							.setAction(ACTION_KILL_SIGNAL)
-							.putExtra(EXTRA_TASK_ID, runningTask.getTaskId());
-
-					dynamicNotification
-							.setSmallIcon(R.drawable.ic_whatshot_white_24dp)
-							.setOngoing(true)
-							.setContentTitle(getString(R.string.text_taskOngoing))
-							.setProgress(0, 0, true)
-							.addAction(R.drawable.ic_clear_white_24dp, getString(R.string.butn_cancel),
-									PendingIntent.getService(WorkerService.this, AppUtils.getUniqueNumber(), cancelIntent, 0));
-
-					notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Started);
-					notifiableRunningWork.getHandle().insertNotification(dynamicNotification);
-
-					dynamicNotification.show();
-				}
+				runningTask.setService(WorkerService.this);
 
 				registerWork(runningTask);
 				runningTask.run();
 				unregisterWork(runningTask);
 
-				if (notifiableRunningWork != null) {
-					getNotificationUtils().getManager().cancel(runningTask.getTaskId());
-
-					if (!runningTask.getInterrupter().interrupted()
-							|| !runningTask.getInterrupter().interruptedByUser()) {
-						DynamicNotification dynamicNotification = getNotificationUtils().buildDynamicNotification(runningTask.getTaskId(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-
-						dynamicNotification.setSmallIcon(R.drawable.ic_check_white_24dp)
-								.setContentTitle(getString(R.string.text_taskCompleted));
-
-						notifiableRunningWork.onUpdateNotification(dynamicNotification, NotifiableRunningTask.UpdateType.Done);
-						notifiableRunningWork.getHandle().insertNotification(dynamicNotification);
-
-						dynamicNotification.show();
-					}
-
-					notifiableRunningWork.getHandle().exit();
-				}
+				runningTask.setService(null);
 			}
 		});
 	}
@@ -176,6 +194,8 @@ public class WorkerService extends Service
 		synchronized (getTaskList()) {
 			getTaskList().remove(runningTask);
 		}
+
+		publishForegroundNotification();
 	}
 
 	public static boolean run(final Context context, final RunningTask runningTask)
@@ -185,8 +205,9 @@ public class WorkerService extends Service
 			@Override
 			public void onServiceConnected(ComponentName name, IBinder service)
 			{
-				WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
+				AppUtils.startForegroundService(context, new Intent(context, WorkerService.class));
 
+				WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
 				workerService.run(runningTask);
 
 				context.unbindService(this);
@@ -212,10 +233,13 @@ public class WorkerService extends Service
 
 	public abstract static class RunningTask extends InterruptAwareJob
 	{
+		private WorkerService mService;
 		private Interrupter mInterrupter;
 		private String mTag;
 		private int mJobId;
 		private int mTaskId = AppUtils.getUniqueNumber();
+		private String mStatusText;
+		private long mLastNotified = 0;
 
 		public RunningTask(String clientTag, int jobId)
 		{
@@ -224,6 +248,7 @@ public class WorkerService extends Service
 		}
 
 		abstract protected void onRun();
+		//abstract protected String jobTitle(Context context);
 
 		public void onInterrupted(int taskId)
 		{
@@ -248,9 +273,30 @@ public class WorkerService extends Service
 			return mJobId;
 		}
 
+		@Nullable
+		public WorkerService getService()
+		{
+			return mService;
+		}
+
+		public String getStatusText()
+		{
+			return mStatusText;
+		}
+
 		public int getTaskId()
 		{
 			return mTaskId;
+		}
+
+		public void publishStatusText(String text)
+		{
+			mStatusText = text;
+
+			if (System.currentTimeMillis() - mLastNotified > 2000) {
+				mService.publishForegroundNotification();
+				mLastNotified = System.currentTimeMillis();
+			}
 		}
 
 		public void run()
@@ -263,81 +309,10 @@ public class WorkerService extends Service
 			mInterrupter = interrupter;
 			return this;
 		}
-	}
 
-	public abstract static class NotifiableRunningTask extends RunningTask
-	{
-		private AliveHandle mHandle = new AliveHandle();
-
-		public NotifiableRunningTask(String clientTag, int jobId)
+		public void setService(@Nullable WorkerService service)
 		{
-			super(clientTag, jobId);
-		}
-
-		abstract protected void onRun();
-
-		abstract public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType);
-
-		public AliveHandle getHandle()
-		{
-			return mHandle;
-		}
-
-		public void yell() throws ExitedException
-		{
-			mHandle.yell();
-		}
-
-		public enum UpdateType
-		{
-			Started,
-			Ongoing,
-			Done
-		}
-
-		public class AliveHandle
-		{
-			private long mLastNotified = 0;
-			private boolean mExited = false;
-			private DynamicNotification mNotification;
-
-			public AliveHandle()
-			{
-			}
-
-			public void exit()
-			{
-				mExited = true;
-			}
-
-			public void insertNotification(DynamicNotification notification)
-			{
-				mNotification = notification;
-			}
-
-			public DynamicNotification getNotification()
-			{
-				return mNotification;
-			}
-
-			public void yell() throws ExitedException
-			{
-				if (mExited)
-					throw new ExitedException();
-
-				if ((System.currentTimeMillis() - mLastNotified) > AppConfig.DEFAULT_NOTIFICATION_DELAY)
-					onUpdateNotification(mNotification, UpdateType.Ongoing);
-			}
-
-			public void yell(int jobPosition, int jobFinal) throws ExitedException
-			{
-				yell();
-				getNotification().updateProgress(jobFinal, jobPosition, false);
-			}
-		}
-
-		public class ExitedException extends Exception
-		{
+			mService = service;
 		}
 	}
 }

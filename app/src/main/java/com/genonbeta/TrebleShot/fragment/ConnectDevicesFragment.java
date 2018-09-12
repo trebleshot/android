@@ -46,7 +46,7 @@ public class ConnectDevicesFragment
 			if (getArguments()  == null)
 				setArguments(new Bundle());
 
-			getArguments().putAll(((Activity.OnPreloadArgumentWatcher) getActivity()).passPreloadingArguments());
+			getArguments().putAll(((Activity.OnPreloadArgumentWatcher) getActivity()).passPreLoadingArguments());
 		}
 	}
 
