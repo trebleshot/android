@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.android.framework.preference.SuperPreferences;
 
@@ -235,10 +236,44 @@ public class AppUtils
 		return mViewingPreferences;
 	}
 
+	public static boolean isLatestChangeLogSeen(Context context)
+	{
+		NetworkDevice device = getLocalDevice(context);
+		int lastSeenChangelog = getDefaultPreferences(context)
+				.getInt("changelog_seen_version", device.versionNumber);
+
+		return !getDefaultPreferences(context).contains("previously_migrated_version")
+				|| device.versionNumber == lastSeenChangelog;
+	}
+
+	public static void publishLatestChangelogSeen(Context context)
+	{
+		NetworkDevice device = getLocalDevice(context);
+
+		getDefaultPreferences(context).edit()
+				.putInt("changelog_seen_version", device.versionNumber)
+				.apply();
+	}
+
 	public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
 	{
 		quickActions.onQuickActions(clazz);
 		return clazz;
+	}
+
+	public static boolean toggleDeviceScanning(Context context)
+	{
+		if (DeviceScannerService.getDeviceScanner().isScannerAvailable()) {
+			context.startService(new Intent(context, DeviceScannerService.class)
+					.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
+
+			return true;
+		}
+
+		DeviceScannerService.getDeviceScanner()
+				.interrupt();
+
+		return false;
 	}
 
 	public static void startForegroundService(Context context, Intent intent)

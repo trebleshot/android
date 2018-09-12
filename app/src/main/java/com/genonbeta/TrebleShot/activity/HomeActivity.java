@@ -1,25 +1,24 @@
 
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,15 +29,11 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
-import com.genonbeta.TrebleShot.fragment.ImageListFragment;
-import com.genonbeta.TrebleShot.fragment.MusicListFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
-import com.genonbeta.TrebleShot.fragment.VideoListFragment;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -48,15 +43,18 @@ import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
+public class HomeActivity
+		extends Activity
+		implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
@@ -119,6 +117,43 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 		if (!checkRequestedFragment(getIntent()) && !restorePreviousFragment()) {
 			changeFragment(mFragmentConnectDevices);
 			mNavigationView.setCheckedItem(R.id.menu_activity_main_connect_devices);
+		}
+
+		if (!AppUtils.isLatestChangeLogSeen(this)) {
+			AlertDialog.Builder versionChangeDialog = new AlertDialog.Builder(this);
+
+			versionChangeDialog.setMessage(R.string.mesg_versionUpdatedChangelog);
+
+			versionChangeDialog.setPositiveButton(R.string.butn_show, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+					startActivity(new Intent(HomeActivity.this, ChangelogActivity.class));
+				}
+			});
+
+			versionChangeDialog.setNegativeButton(R.string.butn_cancel, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+					Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected, Toast.LENGTH_SHORT).show();
+				}
+			});
+
+			versionChangeDialog.show();
+		}
+
+
+		if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+			MenuItem donateItem = mNavigationView.getMenu()
+					.findItem(R.id.menu_activity_main_donate);
+
+			if (donateItem != null)
+				donateItem.setVisible(true);
 		}
 	}
 
@@ -189,6 +224,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			stopService(new Intent(this, WorkerService.class));
 
 			finish();
+		} else if (R.id.menu_activity_main_donate == item.getItemId()) {
+			try {
+				startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		} else
 			return false;
 

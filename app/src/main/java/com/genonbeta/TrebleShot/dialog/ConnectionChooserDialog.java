@@ -23,12 +23,13 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -53,13 +54,13 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 	private OnDeviceSelectedListener mDeviceSelectedListener;
 	private Activity mActivity;
 
-	public ConnectionChooserDialog(Activity activity, AccessDatabase database, NetworkDevice networkDevice, final OnDeviceSelectedListener listener, boolean refreshProvided)
+	public ConnectionChooserDialog(Activity activity, NetworkDevice networkDevice, final OnDeviceSelectedListener listener, boolean refreshProvided)
 	{
 		super(activity);
 
 		mAdapter = new ConnectionListAdapter();
 		mActivity = activity;
-		mDatabase = database;
+		mDatabase = AppUtils.getDatabase(getContext());
 		mNetworkDevice = networkDevice;
 		mDeviceSelectedListener = listener;
 
@@ -110,8 +111,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(View v)
 				{
-					getContext().startService(new Intent(getContext(), DeviceScannerService.class)
-							.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
+					AppUtils.toggleDeviceScanning(getContext());
 				}
 			});
 
@@ -266,8 +266,15 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 							if (previousState != (mConnections.size() > 0)) {
 								if (mDialog != null && mDialog.isShowing())
 									mDialog.cancel();
+
 								show();
 							}
+
+							Button refreshButton = mDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+
+							refreshButton.setText(DeviceScannerService.getDeviceScanner().isScannerAvailable()
+									? R.string.butn_refresh
+									: R.string.butn_pause);
 						}
 					});
 

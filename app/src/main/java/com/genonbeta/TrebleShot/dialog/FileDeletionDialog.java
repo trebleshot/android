@@ -1,18 +1,18 @@
 package com.genonbeta.TrebleShot.dialog;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
-import android.widget.Button;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
+import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 /**
@@ -20,80 +20,69 @@ import java.util.ArrayList;
  * Date: 5/21/17 2:21 AM
  */
 
-public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> extends AlertDialog.Builder
+public class FileDeletionDialog extends AlertDialog.Builder
 {
 	public static final String TAG = FileDeletionDialog.class.getSimpleName();
 	public static final int JOB_FILE_DELETION = 1;
 
-	public ArrayList<T> mItemList = new ArrayList<>();
-
-	public FileDeletionDialog(final Activity activity, final ArrayList<T> items, final Listener listener)
+	public FileDeletionDialog(final Context context, final ArrayList<FileListAdapter.GenericFileHolder> items, final Listener listener)
 	{
-		super(activity);
+		super(context);
 
-		getItemList().addAll(items);
+		final ArrayList<Uri> copiedItems = new ArrayList<>();
+
+		for (FileListAdapter.GenericFileHolder item : items)
+			if (item.file != null)
+				copiedItems.add(item.file.getUri());
 
 		setTitle(R.string.text_deleteConfirm);
-		setMessage(R.string.text_previewThenProceedNotice);
+		setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, copiedItems.size(), copiedItems.size()));
+
 		setNegativeButton(R.string.butn_cancel, null);
-		setNeutralButton(getContext().getString(R.string.butn_queueCounted, 0), null);
 		setPositiveButton(R.string.butn_delete, new DialogInterface.OnClickListener()
 				{
 					@Override
-					public void onClick(DialogInterface dailog, int p2)
+					public void onClick(DialogInterface dialog, int p2)
 					{
-						WorkerService.run(activity, new WorkerService.NotifiableRunningTask(TAG, JOB_FILE_DELETION)
+						WorkerService.run(context, new WorkerService.RunningTask(TAG, JOB_FILE_DELETION)
 						{
-							int totalDeletion = 0;
-
-							@Override
-							public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
-							{
-								switch (updateType) {
-									case Started:
-										dynamicNotification.setSmallIcon(R.drawable.ic_delete_white_24dp)
-												.setContentText(getContext().getString(R.string.text_deletingFilesOngoing));
-										break;
-									case Done:
-										dynamicNotification.setContentText(getContext()
-												.getResources()
-												.getQuantityString(R.plurals.text_fileDeletionCompleted, totalDeletion, totalDeletion));
-										break;
-								}
-							}
+							int mTotalDeletion = 0;
 
 							@Override
 							public void onRun()
 							{
-								for (T fileItem : getItemList())
-									if (fileItem.isSelectableSelected())
-										delete(fileItem.file);
+								publishStatusText(getService().getString(R.string.text_deletingFilesOngoing));
+
+								for (Uri currentUri : copiedItems) {
+									try {
+										DocumentFile file = FileUtils.fromUri(getService(), currentUri);
+
+										delete(file);
+									} catch (FileNotFoundException e) {
+										e.printStackTrace();
+									}
+								}
 
 								if (listener != null)
-									listener.onCompleted(this, activity, totalDeletion);
+									listener.onCompleted(this, getService(), mTotalDeletion);
 							}
 
 							private void delete(DocumentFile file)
 							{
-								try {
-									yell();
+								if (getInterrupter().interrupted())
+									return;
 
-									if (getInterrupter().interrupted())
-										return;
+								boolean isDirectory = file.isDirectory();
+								boolean isFile = file.isFile();
 
-									boolean isDirectory = file.isDirectory();
+								if (isDirectory)
+									deleteDirectory(file);
 
-									if (isDirectory)
-										deleteDirectory(file);
+								if (file.delete()) {
+									if (isFile)
+										mTotalDeletion++;
 
-									if (file.delete()) {
-										if (!isDirectory)
-											totalDeletion++;
-
-										listener.onFileDeletion(this, activity, file);
-									}
-								} catch (ExitedException e) {
-									e.printStackTrace();
+									listener.onFileDeletion(this, getContext(), file);
 								}
 							}
 
@@ -109,59 +98,6 @@ public class FileDeletionDialog<T extends FileListAdapter.GenericFileHolder> ext
 					}
 				}
 		);
-	}
-
-	public int countSelections()
-	{
-		int selectedCount = 0;
-
-		synchronized (getItemList()) {
-			for (T shareable : getItemList())
-				if (shareable.isSelectableSelected())
-					selectedCount++;
-		}
-
-		return selectedCount;
-	}
-
-	public ArrayList<T> getItemList()
-	{
-		return mItemList;
-	}
-
-	@Override
-	public AlertDialog show()
-	{
-		final AlertDialog alertDialog = super.show();
-		final Button neutralButton = alertDialog.getButton(DialogInterface.BUTTON_NEUTRAL);
-		final Button positiveButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
-
-		positiveButton.setVisibility(View.GONE);
-
-		neutralButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				new SelectionEditorDialog<>(getContext(), getItemList()).show().setOnDismissListener(new DialogInterface.OnDismissListener()
-				{
-					@Override
-					public void onDismiss(DialogInterface dialog)
-					{
-						int totalSelected = countSelections();
-
-						neutralButton.setText(getContext().getString(R.string.butn_queueCounted, totalSelected));
-						alertDialog.setMessage(getContext().getResources().getQuantityString(R.plurals.ques_deleteFile, totalSelected, totalSelected));
-
-						positiveButton.setVisibility(countSelections() > 0
-								? View.VISIBLE
-								: View.GONE);
-					}
-				});
-			}
-		});
-
-		return alertDialog;
 	}
 
 	public interface Listener

@@ -47,7 +47,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 				if (getItemList().size() == 1
 						&& renameFile(getItemList().get(0).file, renameTo, renameListener)) {
 					if (renameListener != null)
-						renameListener.onFileRenameCompleted();
+						renameListener.onFileRenameCompleted(getContext());
 					return true;
 				}
 
@@ -62,6 +62,8 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 					@Override
 					protected void onRun()
 					{
+						publishStatusText(getService().getString(R.string.text_renameMultipleItems));
+
 						int fileId = 0;
 
 						for (T fileHolder : getItemList()) {
@@ -70,7 +72,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 						}
 
 						if (renameListener != null)
-							renameListener.onFileRenameCompleted();
+							renameListener.onFileRenameCompleted(getService());
 					}
 				});
 			}
@@ -101,6 +103,6 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 	{
 		void onFileRename(DocumentFile file, String displayName);
 
-		void onFileRenameCompleted();
+		void onFileRenameCompleted(Context context);
 	}
 }

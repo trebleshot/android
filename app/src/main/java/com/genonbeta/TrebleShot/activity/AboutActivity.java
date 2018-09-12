@@ -61,6 +61,16 @@ public class AboutActivity extends Activity
 			}
 		});
 
+		findViewById(R.id.activity_about_changelog_layout).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				startActivity(new Intent(AboutActivity.this, ChangelogActivity.class));
+			}
+		});
+
+
 		findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(new View.OnClickListener()
 		{
 			@Override

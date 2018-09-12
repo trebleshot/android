@@ -134,7 +134,7 @@ public class TransactionListAdapter
 		}
 
 
-		HomeStatusItem homeItem = null;
+		StorageStatusItem storageItem = null;
 
 		if (currentPath == null
 				&& hasIncoming) {
@@ -143,20 +143,20 @@ public class TransactionListAdapter
 				mDatabase.reconstruct(group);
 				DocumentFile savePath = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), group);
 
-				homeItem = new HomeStatusItem();
-				homeItem.directory = savePath.getUri().toString();
-				homeItem.friendlyName = savePath.getName();
+				storageItem = new StorageStatusItem();
+				storageItem.directory = savePath.getUri().toString();
+				storageItem.friendlyName = savePath.getName();
 
 				if (savePath instanceof LocalDocumentFile) {
 					File saveFile = ((LocalDocumentFile) savePath).getFile();
-					homeItem.bytesTotal = saveFile.getTotalSpace();
-					homeItem.bytesReceived = saveFile.getTotalSpace() - saveFile.getFreeSpace(); // return used space
+					storageItem.bytesTotal = saveFile.getTotalSpace();
+					storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
 				} else {
-					homeItem.bytesTotal = -1;
-					homeItem.bytesReceived = -1;
+					storageItem.bytesTotal = -1;
+					storageItem.bytesFree = -1;
 				}
 
-				lister.offer(homeItem);
+				lister.offer(storageItem);
 			} catch (Exception e) {
 
 			}
@@ -202,9 +202,10 @@ public class TransactionListAdapter
 			lister.offer(file);
 		}
 
-		if (homeItem != null)
-			homeItem.hasIssues = homeItem.bytesTotal != -1
-					&& homeItem.bytesTotal < statusItem.bytesTotal - statusItem.bytesReceived;
+		if (storageItem != null) {
+			storageItem.bytesRequired = statusItem.bytesTotal - statusItem.bytesReceived;
+			storageItem.hasIssues = storageItem.bytesFree != -1 && storageItem.bytesFree < storageItem.bytesRequired;
+		}
 	}
 
 	@Override
@@ -328,18 +329,13 @@ public class TransactionListAdapter
 					TransferFolder transferFolder = (TransferFolder) object;
 
 					mainText.setText(object.friendlyName);
+					statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
 
-					if (transferFolder.bytesTotal == -1
-							|| transferFolder.bytesReceived == -1)
-						statusText.setText(getContext().getString(R.string.text_emptySymbol));
-					else
-						statusText.setText(mPercentFormat.format(transferFolder.getPercent()));
-
-					if (object instanceof HomeStatusItem) {
-						if (transferFolder.bytesReceived == -1)
+					if (object instanceof StorageStatusItem) {
+						if (((StorageStatusItem) object).bytesFree == -1)
 							sizeText.setText(getContext().getString(R.string.text_emptySymbol));
 						else
-							sizeText.setText(FileUtils.sizeExpression(transferFolder.bytesTotal - transferFolder.bytesReceived, false));
+							sizeText.setText(FileUtils.sizeExpression(((StorageStatusItem) object).bytesFree, false));
 					} else
 						sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
 
@@ -487,8 +483,9 @@ public class TransactionListAdapter
 
 		public double getPercent()
 		{
-			return bytesReceived == 0 || bytesTotal == 0
-					? 0 : Long.valueOf(bytesReceived).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
+			return bytesReceived <= 0 || bytesTotal <= 0
+					? 0
+					: Long.valueOf(bytesReceived).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
 		}
 
 		@Override
@@ -526,12 +523,23 @@ public class TransactionListAdapter
 		}
 	}
 
-	public static class HomeStatusItem extends StatusItem
+	public static class StorageStatusItem extends StatusItem
 	{
+		public long bytesFree = 0;
+		public long bytesRequired = 0;
+
 		@Override
 		public int getIconRes()
 		{
 			return R.drawable.ic_save_white_24dp;
+		}
+
+		@Override
+		public double getPercent()
+		{
+			return bytesTotal <= 0 || bytesFree <= 0
+					? 0
+					: Long.valueOf(bytesTotal - bytesFree).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
 		}
 	}
 

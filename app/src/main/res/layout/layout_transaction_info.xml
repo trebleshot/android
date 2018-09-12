@@ -98,24 +98,24 @@
                 android:layout_height="wrap_content"
                 android:text="@string/text_empty"/>
 
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="10dp"/>
-
-            <TextView
-                style="@style/marqueeText.primary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/text_pseudoLocation"/>
-
-            <TextView
-                android:id="@+id/transaction_info_pseudo_location"
-                style="@style/marqueeText.secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:maxLines="20"
-                android:text="@string/text_empty"/>
-
         </LinearLayout>
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="10dp"/>
+
+        <TextView
+            style="@style/marqueeText.primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_pseudoLocation"/>
+
+        <TextView
+            android:id="@+id/transaction_info_pseudo_location"
+            style="@style/marqueeText.secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="20"
+            android:text="@string/text_empty"/>
     </LinearLayout>
 </ScrollView>

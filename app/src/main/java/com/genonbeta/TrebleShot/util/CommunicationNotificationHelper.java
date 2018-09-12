@@ -314,14 +314,17 @@ public class CommunicationNotificationHelper
 		return notification.show();
 	}
 
-	public DynamicNotification notifyStuckThread(CommunicationService.ProcessHolder processHolder)
+	public DynamicNotification notifyStuckThread(CommunicationService.ProcessHolder processHolder) {
+		return notifyStuckThread(processHolder.group.groupId, processHolder.assignee.deviceId);
+	}
+
+	public DynamicNotification notifyStuckThread(long groupId, String deviceId)
 	{
-		DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+		DynamicNotification notification = getUtils().buildDynamicNotification(groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 		Intent killIntent = new Intent(getContext(), CommunicationService.class)
 				.setAction(CommunicationService.ACTION_CANCEL_KILL)
-				.putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.transferObject.requestId)
-				.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.transferObject.groupId)
-				.putExtra(CommunicationService.EXTRA_DEVICE_ID, processHolder.assignee.deviceId)
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
+				.putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
 				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
 		notification.setSmallIcon(R.drawable.ic_error_white_24dp)

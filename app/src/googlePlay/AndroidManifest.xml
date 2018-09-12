@@ -9,7 +9,7 @@
         <activity
             android:label="@string/text_donate"
             android:name=".activity.DonationActivity"
-            android:theme="@style/AppTheme.GreyStatusBar"/>
+            android:theme="@style/AppTheme.DonationTheme"/>
     </application>
 
 </manifest>

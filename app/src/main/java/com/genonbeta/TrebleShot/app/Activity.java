@@ -78,6 +78,6 @@ public abstract class Activity extends AppCompatActivity
 	}
 
 	public interface OnPreloadArgumentWatcher {
-		Bundle passPreloadingArguments();
+		Bundle passPreLoadingArguments();
 	}
 }

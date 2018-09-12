@@ -35,7 +35,6 @@ public class FilePickerActivity extends Activity
 	// belongs to returned result intent
 	public static final String EXTRA_CHOSEN_PATH = "chosenPath";
 
-
 	private FileExplorerFragment mFileExplorerFragment;
 	private FloatingActionButton mFAB;
 
@@ -47,7 +46,6 @@ public class FilePickerActivity extends Activity
 
 		mFileExplorerFragment = (FileExplorerFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_filepicker_fragment_files);
 		mFAB = findViewById(R.id.content_fab);
-
 	}
 
 	@Override
@@ -152,6 +150,14 @@ public class FilePickerActivity extends Activity
 			return super.onOptionsItemSelected(item);
 
 		return true;
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		if (mFileExplorerFragment == null
+				|| !mFileExplorerFragment.onBackPressed())
+		super.onBackPressed();
 	}
 
 	private void finishWithResult(DocumentFile file)

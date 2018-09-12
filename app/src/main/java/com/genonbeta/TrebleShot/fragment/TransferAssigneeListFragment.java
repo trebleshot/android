@@ -39,8 +39,6 @@ public class TransferAssigneeListFragment
 {
 	public static final String ARG_GROUP_ID = "groupId";
 
-	public static final int REQUEST_ADD_DEVICES = 0;
-
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
@@ -68,28 +66,6 @@ public class TransferAssigneeListFragment
 
 		setEmptyImage(R.drawable.ic_device_hub_white_24dp);
 		setEmptyText(getString(R.string.text_noDeviceForTransfer));
-	}
-
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-	{
-		super.onCreateOptionsMenu(menu, inflater);
-		inflater.inflate(R.menu.actions_transfer_assignee, menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.actions_transfer_assignee_send_another) {
-			startActivityForResult(new Intent(getActivity(), ShareActivity.class)
-					.setAction(ShareActivity.ACTION_ADD_DEVICES)
-					.putExtra(ShareActivity.EXTRA_GROUP_ID, getTransferGroup().groupId), REQUEST_ADD_DEVICES);
-		} else
-			return super.onOptionsItemSelected(item);
-
-		return true;
 	}
 
 	@Override

@@ -34,11 +34,77 @@
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
-    <fragment
-        android:id="@+id/activity_donation_fragment_list"
-        android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"/>
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_favorite_black_144dp"
+                    android:tint="@color/donateMenuTint"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"/>
+
+                <TextView
+                    style="@style/marqueeText.primary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/text_prefaceNickname"
+                    android:textSize="@dimen/font_size_big"
+                    android:textStyle="bold"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp"
+                    android:text="@string/text_prefaceDonation"
+                    app:fontFamily="monospace"/>
+
+                <View
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="400dp">
+
+                <fragment
+                    android:id="@+id/activity_donation_fragment_list"
+                    android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:tag="donationsFragment"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
 
 </android.support.design.widget.CoordinatorLayout>

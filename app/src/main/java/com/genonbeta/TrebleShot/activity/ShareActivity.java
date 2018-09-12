@@ -54,6 +54,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class ShareActivity extends Activity
 		implements SnackbarSupport, SelectionListFragment.ReadyLoadListener, TextViewerFragment.ReadyLoadListener, Activity.OnPreloadArgumentWatcher
@@ -83,7 +84,7 @@ public class ShareActivity extends Activity
 	private Interrupter mInterrupter = new Interrupter();
 	private WorkerService mWorkerService;
 	private WorkerConnection mWorkerConnection = new WorkerConnection();
-	private Bundle mPreloadingBundle = new Bundle();
+	private Bundle mPreLoadingBundle = new Bundle();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -198,6 +199,8 @@ public class ShareActivity extends Activity
 			@Override
 			public void onRun()
 			{
+				publishStatusText(getString(R.string.mesg_communicating));
+
 				CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
 				{
 					@Override
@@ -515,11 +518,14 @@ public class ShareActivity extends Activity
 			@Override
 			public void onRun()
 			{
+				publishStatusText(getString(R.string.mesg_organizingFiles));
+
 				for (int position = 0; position < fileUris.size(); position++) {
 					if (getDefaultInterrupter().interrupted())
 						break;
 
 					getProgressDialog().setProgress(getProgressDialog().getProgress() + 1);
+					publishStatusText(String.format(Locale.getDefault(), "%s - %d", getString(R.string.mesg_organizingFiles), getProgressDialog().getProgress()));
 
 					Uri fileUri = fileUris.get(position);
 					String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
@@ -557,7 +563,7 @@ public class ShareActivity extends Activity
 								String title;
 
 								if (mFiles.size() == 0)
-									title = getString(R.string.text_empty);
+									title = getString(R.string.text_migrateNotice49);
 								else
 									title = mFiles.size() == 1
 											? mFiles.get(0).getSelectableTitle()
@@ -574,9 +580,9 @@ public class ShareActivity extends Activity
 	}
 
 	@Override
-	public Bundle passPreloadingArguments()
+	public Bundle passPreLoadingArguments()
 	{
-		return mPreloadingBundle;
+		return mPreLoadingBundle;
 	}
 
 	protected ProgressDialog resetProgressItems()
@@ -628,7 +634,7 @@ public class ShareActivity extends Activity
 				break;
 		}
 
-		mPreloadingBundle.putParcelableArrayList(ConnectDevicesFragment.EXTRA_CDF_FRAGMENT_NAMES_FRONT, cdfArguments);
+		mPreLoadingBundle.putParcelableArrayList(ConnectDevicesFragment.EXTRA_CDF_FRAGMENT_NAMES_FRONT, cdfArguments);
 
 		setContentView(R.layout.activity_share);
 
@@ -691,7 +697,7 @@ public class ShareActivity extends Activity
 		device.isRestricted = false;
 		getDatabase().publish(device);
 
-		new ConnectionChooserDialog(ShareActivity.this, getDatabase(), device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+		new ConnectionChooserDialog(ShareActivity.this, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 		{
 			@Override
 			public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)

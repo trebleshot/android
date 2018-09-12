@@ -14,9 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.AnimationUtils;
 import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
@@ -26,14 +23,13 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.FileNotFoundException;
@@ -337,7 +333,8 @@ public class FileListFragment
 			FileListAdapter.GenericFileHolder fileHolder = getAdapter().getItem(holder.getAdapterPosition());
 
 			if ((fileHolder instanceof FileListAdapter.DirectoryHolder
-					|| fileHolder instanceof FileListAdapter.WritablePathHolder)
+					|| fileHolder instanceof FileListAdapter.WritablePathHolder
+			)
 					&& getSelectionConnection() != null
 					&& getSelectionConnection().setSelected(holder))
 				return true;
@@ -350,6 +347,7 @@ public class FileListFragment
 
 	public boolean scanFile(DocumentFile file)
 	{
+		// FIXME: 9/11/18 There should be insert, remove, update
 		if (!(file instanceof LocalDocumentFile) || !mMediaScanner.isConnected())
 			return false;
 
@@ -370,11 +368,12 @@ public class FileListFragment
 		final FileListAdapter adapter = fragment.getAdapter();
 
 		if (id == R.id.action_mode_file_delete && adapter.getPath() != null) {
-			new FileDeletionDialog<>(fragment.getActivity(), selectedItemList, new FileDeletionDialog.Listener()
+			new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
 			{
 				@Override
 				public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
 				{
+
 					fragment.scanFile(file);
 				}
 
@@ -386,7 +385,7 @@ public class FileListFragment
 				}
 			}).show();
 		} else if (id == R.id.action_mode_file_rename) {
-			new FileRenameDialog<>(fragment.getActivity(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
+			new FileRenameDialog<>(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
 			{
 				@Override
 				public void onFileRename(DocumentFile file, String displayName)
@@ -395,22 +394,17 @@ public class FileListFragment
 				}
 
 				@Override
-				public void onFileRenameCompleted()
+				public void onFileRenameCompleted(Context context)
 				{
-					fragment.refreshList();
+					context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+							.putExtra(EXTRA_FILE_PARENT, adapter.getPath().getUri()));
 				}
 			}).show();
 		} else if (id == R.id.action_mode_file_copy_here) {
-			WorkerService.run(fragment.getContext(), new WorkerService.NotifiableRunningTask(TAG, JOB_COPY_FILES)
+			WorkerService.run(fragment.getContext(), new WorkerService.RunningTask(TAG, JOB_COPY_FILES)
 			{
 				@Override
 				protected void onRun()
-				{
-
-				}
-
-				@Override
-				public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
 				{
 
 				}

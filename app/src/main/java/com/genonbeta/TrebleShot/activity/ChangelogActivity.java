@@ -2,35 +2,25 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment;
 
 /**
  * created by: veli
- * date: 7/12/18 10:32 PM
+ * date: 9/12/18 6:09 PM
  */
-public class DonationActivity extends Activity
+public class ChangelogActivity extends Activity
 {
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_donation);
-
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+		setContentView(R.layout.activity_changelog);
 
 		if (getSupportActionBar() != null)
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-		InAppDonationItemListFragment contributorsListFragment = (InAppDonationItemListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
-
-		if (contributorsListFragment != null)
-			contributorsListFragment.getListView().setNestedScrollingEnabled(false);
 	}
 
 	@Override
@@ -39,7 +29,7 @@ public class DonationActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == android.R.id.home)
-			onBackPressed();
+			finish();
 		else
 			return super.onOptionsItemSelected(item);
 

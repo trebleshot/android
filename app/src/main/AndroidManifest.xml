@@ -96,6 +96,9 @@
             android:name=".activity.ThirdPartyLibrariesActivity"
             android:label="@string/text_thirdPartyLibraries"/>
 
+        <activity android:name=".activity.ChangelogActivity"
+                  android:label="@string/text_changelog"/>
+
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"

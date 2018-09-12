@@ -52,6 +52,13 @@
         <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
     </style>
 
+    <style name="AppTheme.DonationTheme" parent="@style/AppTheme.NoActionBar">
+        <item name="colorPrimaryDark">@color/donateMenuTint</item>
+        <item name="colorPrimary">@color/donateMenuTint</item>
+        <item name="colorAccent">@color/donateMenuTint</item>
+        <item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
+    </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>

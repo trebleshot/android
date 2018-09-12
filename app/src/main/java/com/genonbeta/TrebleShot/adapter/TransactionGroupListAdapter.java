@@ -79,9 +79,6 @@ public class TransactionGroupListAdapter
 			group.totalBytesCompleted = group.index.incomingCompleted + group.index.outgoingCompleted;
 			group.totalCountCompleted = group.index.incomingCountCompleted + group.index.outgoingCountCompleted;
 
-			group.totalFiles = getContext().getResources().getQuantityString(R.plurals.text_files, group.totalCount, group.totalCount);
-			group.totalFilesCompleted = getContext().getResources().getQuantityString(R.plurals.text_files, group.totalCountCompleted, group.totalCountCompleted);
-			group.totalSize = FileUtils.sizeExpression(group.totalBytes, false);
 			group.totalPercent = group.totalBytesCompleted == 0 || group.totalBytes == 0
 					? 0.0 : Long.valueOf(group.totalBytesCompleted).doubleValue() / Long.valueOf(group.totalBytes).doubleValue();
 
@@ -160,9 +157,9 @@ public class TransactionGroupListAdapter
 
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 				text1.setTextColor(appliedColor);
-				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, object.totalSize));
+				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, FileUtils.sizeExpression(object.totalBytes, false)));
 				text2.setText(mPercentFormat.format(object.totalPercent));
-				text3.setText(object.totalFiles);
+				text3.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
 			}
 		} catch (Exception e) {
 		}
@@ -187,9 +184,6 @@ public class TransactionGroupListAdapter
 
 		public Index index = new Index();
 		public String assignees;
-		public String totalSize;
-		public String totalFiles;
-		public String totalFilesCompleted;
 
 		public int totalCount;
 		public int totalCountCompleted;
@@ -235,7 +229,7 @@ public class TransactionGroupListAdapter
 		@Override
 		public String getSelectableTitle()
 		{
-			return totalFiles + " (" + totalSize + ")";
+			return String.format("%s (%s)", assignees, FileUtils.sizeExpression(totalBytes, false));
 		}
 
 		@Override

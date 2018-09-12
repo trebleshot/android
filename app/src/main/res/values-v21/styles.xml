@@ -21,4 +21,14 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
+    <style name="AppTheme.DonationTheme">
+        <item name="windowActionBar">true</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimaryDark">@color/donateMenuTint</item>
+        <item name="colorPrimary">@color/donateMenuTint</item>
+        <item name="colorAccent">@color/whiteAccent</item>
+        <item name="android:statusBarColor">@color/donateMenuTint</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
 </resources>

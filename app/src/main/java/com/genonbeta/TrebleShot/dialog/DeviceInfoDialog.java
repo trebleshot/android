@@ -2,35 +2,31 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.PendingIntent;
-import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatButton;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.HomeActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import org.json.JSONObject;
 
@@ -60,9 +56,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 			TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
 			TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
-			TextView addressText = rootView.findViewById(R.id.device_info_ip_address);
 			TextView versionText = rootView.findViewById(R.id.device_info_version);
-			AppCompatButton getUpdateButton = rootView.findViewById(R.id.device_info_get_update_button);
+			AppCompatImageView getUpdateButton = rootView.findViewById(R.id.device_info_get_update_button);
 			SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
 			final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
 
@@ -74,58 +69,21 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 				@Override
 				public void onClick(View v)
 				{
-					new ConnectionChooserDialog(activity, database, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+					new ConnectionChooserDialog(activity, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
 					{
 						@Override
 						public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
 						{
-							WorkerService.run(activity, new WorkerService.NotifiableRunningTask(TAG, JOB_RECEIVE_UPDATE)
+							WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
 							{
-								private DocumentFile mReceivedFile = null;
-
-								@Override
-								public void onUpdateNotification(DynamicNotification dynamicNotification, UpdateType updateType)
-								{
-									switch (updateType) {
-										case Started:
-											dynamicNotification.setContentText(getContext().getString(R.string.mesg_ongoingUpdateDownload))
-													.setSmallIcon(android.R.drawable.stat_sys_download);
-											break;
-										case Done:
-											dynamicNotification.setChannelId(NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-
-											if (mReceivedFile != null) {
-												Intent openIntent = new Intent();
-
-												try {
-													openIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-															.setAction(Intent.ACTION_VIEW);
-
-													FileUtils.applySecureOpenIntent(getContext(), mReceivedFile, openIntent);
-												} catch (Exception e) {
-													e.printStackTrace();
-
-													openIntent.setComponent(new ComponentName(getContext(), HomeActivity.class))
-															.setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-															.putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getApplicationDirectory(getContext(), sharedPreferences).getUri());
-												}
-
-												dynamicNotification.setContentText(getContext().getString(R.string.mesg_updateDownloadComplete))
-														.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0))
-														.setAutoCancel(true);
-											} else {
-												dynamicNotification.setContentText(getContext().getString(R.string.mesg_somethingWentWrong))
-														.setSmallIcon(R.drawable.ic_error_white_24dp);
-											}
-											break;
-									}
-								}
-
 								@Override
 								public void onRun()
 								{
+									publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
+
 									try {
-										mReceivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+										final Context context = getContext();
+										final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
 										{
 											@Override
 											public void onConnectionReady(ServerSocket socket)
@@ -152,6 +110,17 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 												});
 											}
 										});
+
+										new Handler(Looper.getMainLooper()).post(new Runnable()
+										{
+											@Override
+											public void run()
+											{
+												Toast.makeText(context, receivedFile == null
+														? R.string.mesg_somethingWentWrong
+														: R.string.mesg_updateDownloadComplete, Toast.LENGTH_LONG).show();
+											}
+										});
 									} catch (Exception e) {
 										e.printStackTrace();
 									}
@@ -164,15 +133,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
 			modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
 			versionText.setText(device.versionName);
-
-			ArrayList<NetworkDevice.Connection> connections = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-					.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", device.deviceId), NetworkDevice.Connection.class);
-
-			if (connections.size() > 0)
-				addressText.setText(connections.size() > 1 ?
-						activity.getResources().getQuantityString(R.plurals.text_availableConnections,
-								connections.size(),
-								connections.size()) : connections.get(0).ipAddress);
 
 			accessSwitch.setChecked(!device.isRestricted);
 

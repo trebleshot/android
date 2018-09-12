@@ -82,19 +82,26 @@ public class App extends Application
 		PreferenceUtils.syncDefaults(getApplicationContext());
 
 		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-		int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
 
-		if (migratedVersion < localDevice.versionNumber) {
-			// migrating to a new version
+		if (defaultPreferences.contains("migrated_version")) {
+			int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
 
-			if (migratedVersion <= 67)
-				AppUtils.getViewingPreferences(getApplicationContext()).edit()
-						.clear()
+			if (migratedVersion < localDevice.versionNumber) {
+				// migrating to a new version
+
+				if (migratedVersion <= 67)
+					AppUtils.getViewingPreferences(getApplicationContext()).edit()
+							.clear()
+							.apply();
+
+				defaultPreferences.edit()
+						.putInt("migrated_version", localDevice.versionNumber)
+						.putInt("previously_migrated_version", migratedVersion)
 						.apply();
-
+			}
+		} else
 			defaultPreferences.edit()
 					.putInt("migrated_version", localDevice.versionNumber)
 					.apply();
-		}
 	}
 }

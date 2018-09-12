@@ -36,6 +36,7 @@ public class ContentSharingActivity extends Activity
 
 	private PowerfulActionMode mMode;
 	private SharingActionModeCallback mSelectionCallback;
+	private Activity.OnBackPressedListener mBackPressedListener;
 
 	@Override
 	protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -80,14 +81,16 @@ public class ContentSharingActivity extends Activity
 				fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
 				if (viewPager.getCurrentItem() == item.getCurrentPosition())
-					mSelectionCallback.updateProvider(fragmentImpl);
+					attachListeners(fragmentImpl);
 			}
 		};
 
 		mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
 
-		if (getSupportActionBar() != null)
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
 		pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null)
@@ -109,7 +112,7 @@ public class ContentSharingActivity extends Activity
 
 				final EditableListFragment fragment = (EditableListFragment) pagerAdapter.getItem(tab.getPosition());
 
-				mSelectionCallback.updateProvider(fragment);
+				attachListeners(fragment);
 
 				if (fragment.getAdapterImpl() != null)
 					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
@@ -151,7 +154,7 @@ public class ContentSharingActivity extends Activity
 		int id = item.getItemId();
 
 		if (id == android.R.id.home)
-			onBackPressed();
+			finish();
 		else
 			return super.onOptionsItemSelected(item);
 
@@ -161,11 +164,20 @@ public class ContentSharingActivity extends Activity
 	@Override
 	public void onBackPressed()
 	{
-		if (mMode != null
-				&& mSelectionCallback != null
-				&& mMode.hasActive(mSelectionCallback))
-			mMode.finish(mSelectionCallback);
-		else
-			super.onBackPressed();
+		if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
+			if (mMode != null
+					&& mSelectionCallback != null
+					&& mMode.hasActive(mSelectionCallback))
+				mMode.finish(mSelectionCallback);
+			else
+				super.onBackPressed();
+		}
+	}
+
+	public void attachListeners(EditableListFragmentImpl fragment) {
+		mSelectionCallback.updateProvider(fragment);
+		mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
+				? (OnBackPressedListener) fragment
+				: null;
 	}
 }
