@@ -7,6 +7,7 @@ import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment;
 
 /**
  * created by: veli
@@ -25,6 +26,11 @@ public class DonationActivity extends Activity
 
 		if (getSupportActionBar() != null)
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+		InAppDonationItemListFragment contributorsListFragment = (InAppDonationItemListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
+
+		if (contributorsListFragment != null)
+			contributorsListFragment.getListView().setNestedScrollingEnabled(false);
 	}
 
 	@Override

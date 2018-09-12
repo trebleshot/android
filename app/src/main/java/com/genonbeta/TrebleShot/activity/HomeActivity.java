@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
@@ -51,7 +52,9 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
+public class HomeActivity
+		extends Activity
+		implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
 	public static final String ACTION_OPEN_RECEIVED_FILES = "genonbeta.intent.action.OPEN_RECEIVED_FILES";
 	public static final String ACTION_OPEN_ONGOING_LIST = "genonbeta.intent.action.OPEN_ONGOING_LIST";
@@ -143,6 +146,15 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 
 			versionChangeDialog.show();
 		}
+
+
+		if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+			MenuItem donateItem = mNavigationView.getMenu()
+					.findItem(R.id.menu_activity_main_donate);
+
+			if (donateItem != null)
+				donateItem.setVisible(true);
+		}
 	}
 
 	@Override
@@ -212,6 +224,12 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
 			stopService(new Intent(this, WorkerService.class));
 
 			finish();
+		} else if (R.id.menu_activity_main_donate == item.getItemId()) {
+			try {
+				startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+			} catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		} else
 			return false;
 
