@@ -46,7 +46,7 @@ public class InAppDonationItemListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		mBillingProcessor = BillingProcessor.newBillingProcessor(getActivity(), AppConfig.KEY_GOOLE_PUBLIC, this);
+		mBillingProcessor = BillingProcessor.newBillingProcessor(getActivity(), AppConfig.KEY_GOOGLE_PUBLIC, this);
 		mBillingProcessor.initialize();
 	}
 

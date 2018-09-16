@@ -13,7 +13,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.util.ArrayMap;
@@ -494,7 +493,7 @@ public class CommunicationService extends Service
 		return findProcessById(groupId, deviceId) != null;
 	}
 
-	public void notifyTaskStatusChange(@NonNull long groupId, @Nullable String deviceId, int state)
+	public void notifyTaskStatusChange(long groupId, @Nullable String deviceId, int state)
 	{
 		Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
 				.putExtra(EXTRA_TASK_CHANGE_TYPE, state)
