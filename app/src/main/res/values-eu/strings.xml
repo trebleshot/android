@@ -160,8 +160,8 @@
     <string name="text_chooseFolder">Hautatu karpeta</string>
     <string name="text_chooseFile">Hautatu fitxategia</string>
     <string name="mesg_pathSameError">Ezin duzu karpeta zaharra hautatu</string>
-    <string name="ques_checkOldFiles">Egiaztatu apurtutako fitxategiak?</string>
-    <string name="text_checkOldFiles">Itxaron partzialki deskargatutako fitxategiak hautatutako karpetara kopiatu arte edo saltatu \"ukatu\" sakatuz</string>
+    <string name="ques_checkOldFiles">"Lekuz aldatu  fitxategiak?"</string>
+    <string name="text_checkOldFiles">Osaturik edo partzialki osaturik dauden erlazionatutako fitxategiak karpeta honetara ekarri ditzakezu, honek denbora bat behar lezake beraien tamainaren arabera</string>
     <string name="mesg_newFilesReceived">Fitxategi berriak jaso dira</string>
     <string name="butn_show">Erakutsi</string>
     <string name="text_preparingFiles">Fitxategiak prestatzen</string>
@@ -289,7 +289,7 @@
     <string name="butn_exit">Irten</string>
     <string name="butn_queueCounted">Ilara (%d)</string>
     <string name="text_previewThenProceedNotice">Markatu zure hautaketak \"Ilara\" sakatuz jarraitzeko</string>
-    <string name="mesg_updateDownloadComplete">Sakatu bertsio berria instalatzeko</string>
+    <string name="mesg_updateDownloadComplete">Eguneraketa ongi jaso da eta zure jasotako fitxategietan gorde da</string>
     <string name="text_listEmptyFiles">Ez dago fitxategirik hemen</string>
     <string name="text_listEmptyImage">Ez dago argazkirik hemen</string>
     <string name="text_listEmptyApp">Ez dago aplikaziorik hemen</string>
@@ -355,11 +355,22 @@
     <string name="text_thirdPartyLibraries">Hirugarrengoen liburutegiak</string>
     <string name="text_killServiceAfterLeavingSummary">Komunikazioa eteten du jarduerarik ez badago</string>
     <string name="text_killServiceAfterLeaving">Aplikaziotik irteteak zerbitzua eteten du</string>
-<string name="butn_donate">Dohaintza</string>
+<string name="butn_donate">Lagundu garapena</string>
 <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d / %2d</string>
-    <string name="text_donate">Dohaintza</string>
+    <string name="text_donate">Lagundu garapena</string>
     <string name="mesg_donationSuccessful">Eskerrik asko!</string>
     <string name="msg">Dohaintza</string>
 <string name="butn_open">Ireki</string>
+<string name="butn_pause">Pausatu</string>
+    <string name="butn_retry">Saiatu berriro</string>
+    <string name="mesg_noPendingTransferObjectExists">Ez dago transferentziarik egiteke denak eten edo burutu direlako.</string>
+    <string name="mesg_notSavingToChosenLocation">Fitxategiak ez dira gordeko aukeratu duzun karpeta ez dagoelako eskuragarri orain
+\n
+\n%s
+\n</string>
+    <string name="butn_changelog">Aldaketa-egunkaria</string>
+    <string name="text_changelog">Aldaketa-egunkaria</string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot bertsio berri batera eguneratu duzu, aurreko bertsiotik zer aldatu den ikusi nahi duzu?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu dezakezu</string>
 </resources>
