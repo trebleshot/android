@@ -72,7 +72,7 @@ dependencies {
     implementation 'com.android.support:recyclerview-v7:27.1.1'
     implementation 'com.genonbeta.android:framework:1.0.1'
     implementation 'com.genonbeta.android:gdatabase:1.0'
-    implementation 'com.genonbeta.coolsocket:main:1.0.1.6'
+    implementation 'com.genonbeta.coolsocket:main:1.0.1.6.local2'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.anjlab.android.iab.v3:library:1.0.44'
     implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'

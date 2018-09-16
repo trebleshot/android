@@ -82,7 +82,6 @@ public class CommunicationService extends Service
 	public static final String ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION";
 	public static final String ACTION_SEAMLESS_RECEIVE = "com.genonbeta.intent.action.SEAMLESS_START";
 	public static final String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
-	public static final String ACTION_CANCEL_KILL = "com.genonbeta.TrebleShot.transaction.action.CANCEL_KILL";
 	public static final String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
 	public static final String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
 	public static final String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
@@ -293,8 +292,7 @@ public class CommunicationService extends Service
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if (ACTION_CANCEL_JOB.equals(intent.getAction())
-					|| ACTION_CANCEL_KILL.equals(intent.getAction())) {
+			} else if (ACTION_CANCEL_JOB.equals(intent.getAction())) {
 				int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
 				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 				String deviceId = intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
@@ -306,11 +304,17 @@ public class CommunicationService extends Service
 				if (processHolder == null)
 					notifyTaskStatusChange(groupId, deviceId, TASK_STATUS_STOPPED);
 
-				if (processHolder == null || ACTION_CANCEL_KILL.equals(intent.getAction()))
+				if (processHolder == null)
 					getNotificationHelper().getUtils().cancel(notificationId);
+				else {
+					processHolder.notification = getNotificationHelper().notifyStuckThread(processHolder);
 
-				if (processHolder != null) {
-					if (ACTION_CANCEL_KILL.equals(intent.getAction())) {
+					if (processHolder.transferHandler != null
+							&& processHolder.hasLatestTransferHandler
+							&& !processHolder.transferHandler.isInterrupted()) {
+						if (processHolder.transferHandler != null)
+							processHolder.transferHandler.interrupt();
+					} else {
 						try {
 							if (processHolder.transferHandler instanceof CoolTransfer.Receive.Handler) {
 								CoolTransfer.Receive.Handler receiveHandler = ((CoolTransfer.Receive.Handler) processHolder.transferHandler);
@@ -318,22 +322,22 @@ public class CommunicationService extends Service
 								if (receiveHandler.getServerSocket() != null)
 									receiveHandler.getServerSocket().close();
 							}
+						} catch (Exception e) {
+						}
 
+						try {
 							if (processHolder.activeConnection != null
 									&& processHolder.activeConnection.getSocket() != null)
 								processHolder.activeConnection.getSocket().close();
+						} catch (IOException e) {
+						}
 
+						try {
 							if (processHolder.transferHandler != null
 									&& processHolder.transferHandler.getSocket() != null)
 								processHolder.transferHandler.getSocket().close();
 						} catch (IOException e) {
-							e.printStackTrace();
 						}
-					} else {
-						processHolder.notification = getNotificationHelper().notifyStuckThread(processHolder);
-
-						if (processHolder.transferHandler != null)
-							processHolder.transferHandler.interrupt();
 					}
 				}
 			} else if (ACTION_TOGGLE_SEAMLESS_MODE.equals(intent.getAction())) {
@@ -1037,6 +1041,7 @@ public class CommunicationService extends Service
 
 			processHolder.group = mTransfer.getGroup();
 			processHolder.assignee = mTransfer.getAssignee();
+			processHolder.activeConnection = new CoolSocket.ActiveConnection(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
 			synchronized (getActiveProcessList()) {
 				getActiveProcessList().add(processHolder);
@@ -1078,7 +1083,8 @@ public class CommunicationService extends Service
 					throw new Exception("Initial connection failed");
 				}
 
-				processHolder.activeConnection = client.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+				processHolder.activeConnection
+						.connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS));
 
 				processHolder.activeConnection.reply(new JSONObject()
 						.put(Keyword.TRANSFER_GROUP_ID, mTransfer.getGroup().groupId)
@@ -1213,6 +1219,8 @@ public class CommunicationService extends Service
 		{
 			if (handler.isInterrupted())
 				handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+
+			handler.getExtra().hasLatestTransferHandler = false;
 		}
 
 		@Override
@@ -1308,6 +1316,7 @@ public class CommunicationService extends Service
 			// set transfer handler here
 			handler.linkTo(handler.getExtra().transferHandler);
 			handler.getExtra().transferHandler = handler;
+			handler.getExtra().hasLatestTransferHandler = true;
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransferGroup.Index indexInstance = new TransferGroup.Index();
@@ -1377,6 +1386,8 @@ public class CommunicationService extends Service
 		{
 			if (handler.isInterrupted())
 				handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+
+			handler.getExtra().hasLatestTransferHandler = false;
 		}
 
 		@Override
@@ -1390,6 +1401,7 @@ public class CommunicationService extends Service
 		{
 			handler.linkTo(handler.getExtra().transferHandler);
 			handler.getExtra().transferHandler = handler;
+			handler.getExtra().hasLatestTransferHandler = true;
 
 			if (handler.getTransferProgress().getTotalByte() == 0) {
 				TransferGroup.Index indexInstance = new TransferGroup.Index();
@@ -1429,5 +1441,6 @@ public class CommunicationService extends Service
 		public TransferGroup group;
 		public TransferGroup.Assignee assignee;
 		public DocumentFile currentFile;
+		boolean hasLatestTransferHandler = false; // If the latest transfer handler is assigned
 	}
 }

@@ -322,7 +322,7 @@ public class CommunicationNotificationHelper
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 		Intent killIntent = new Intent(getContext(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_CANCEL_KILL)
+				.setAction(CommunicationService.ACTION_CANCEL_JOB)
 				.putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
 				.putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
 				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
