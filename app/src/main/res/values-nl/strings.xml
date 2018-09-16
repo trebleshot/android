@@ -184,8 +184,8 @@
     <string name="text_chooseFolder">Map kiezen</string>
     <string name="text_chooseFile">Bestand kiezen</string>
     <string name="mesg_pathSameError">Je kunt de oude map niet selecteren</string>
-    <string name="ques_checkOldFiles">Beschadigde bestanden zoeken?</string>
-    <string name="text_checkOldFiles">Even geduld; de deels ontvangen bestanden worden verplaatst naar de gekozen map. Sla dit over door te drukken op \"afwijzen\".</string>
+    <string name="ques_checkOldFiles">Bestanden verplaatsen?</string>
+    <string name="text_checkOldFiles">Je kunt toegewezen voltooide en deels voltooide bestanden verplaatsen naar deze map; dit kan, afhankelijk van de grootte, even duren</string>
     <string name="mesg_newFilesReceived">Nieuwe bestanden ontvangen</string>
     <string name="butn_show">Tonen</string>
     <string name="text_preparingFiles">Bezig met voorbereiden van bestanden</string>
@@ -223,7 +223,7 @@
     <string name="text_savePath">Opslagpad</string>
     <string name="text_transactionGroupDetails">Details van overdrachtsgroep</string>
     <string name="text_usedConnection">Gebruikte verbinding</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">Je moet TrebleShot toegang geven tot het serienummer van je apparaat, zodat er een langetermijnsnummer kan worden gecreëerd. Dit helpt andere TrebleShot-apparaten om jouw apparaat te herkennen.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot heeft toegang nodig tot het serienummer van je apparaat, zodat er een langetermijnsnummer kan worden gecreëerd. Dit helpt andere apparaten om jouw apparaat te herkennen.</string>
     <string name="text_flagRemoved">Verwijderd</string>
     <string name="butn_copyToClipboard">Kopiëren naar klembord</string>
     <string name="text_communicationServiceRunning">TrebleShot kan nu bestanden delen</string>
@@ -318,7 +318,7 @@
     <string name="butn_exit">Afsluiten</string>
     <string name="butn_queueCounted">Wachtrij (%d)</string>
     <string name="text_previewThenProceedNotice">Controleer je selecties door te drukken op de knop \"Wachtrij\" en ga daarna door</string>
-    <string name="mesg_updateDownloadComplete">Raak aan nieuwe versie te installeren</string>
+    <string name="mesg_updateDownloadComplete">Bijgewerkt bestand ontvangen en opgeslagen in je ontvangen bestanden</string>
     <string name="text_listEmptyFiles">Geen bestanden</string>
     <string name="text_listEmptyImage">Geen foto\'s</string>
     <string name="text_listEmptyApp">Geen apps</string>
@@ -384,11 +384,21 @@
 <string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
 <string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
     <string name="text_killServiceAfterLeaving">Dienst stoppen als app wordt afgesloten</string>
-<string name="butn_donate">Doneren</string>
+<string name="butn_donate">Steun de ontwikkeling</string>
 <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d van %2d</string>
-    <string name="text_donate">Doneren</string>
+    <string name="text_donate">Steun de ontwikkeling</string>
     <string name="mesg_donationSuccessful">Bedankt!</string>
     <string name="msg">Doneren</string>
 <string name="butn_open">Openen</string>
+<string name="butn_pause">Pauzeren</string>
+    <string name="butn_retry">Opnieuw</string>
+    <string name="mesg_noPendingTransferObjectExists">Alle overdrachten zijn reeds voltooid of onderbroken.</string>
+    <string name="mesg_notSavingToChosenLocation">Bestanden worden niet opgeslagen naar je voorkeursmap omdat deze niet toegankelijk is
+\n
+\n %s</string>
+    <string name="butn_changelog">Wijzigingslog</string>
+    <string name="text_changelog">Wijzigingslog</string>
+    <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt naar een nieuwere versie. Wil je de wijzigingen bekijken?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
 </resources>
