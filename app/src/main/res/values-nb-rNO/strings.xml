@@ -388,4 +388,14 @@
     <string name="mesg_donationSuccessful">Takk!</string>
     <string name="msg">Doner</string>
     <string name="butn_open">Åpne</string>
+<string name="butn_pause">Pause</string>
+    <string name="butn_retry">Prøv igjen</string>
+    <string name="mesg_noPendingTransferObjectExists">Ingen ventende overføring gjenstår, siden de enten ble forstyrret, eller allerede er overført.</string>
+    <string name="mesg_notSavingToChosenLocation">Filer vil ikke bli lagret i din ønskede mappe siden den ikke er tilgjengelig nå 
+\n 
+\n %s</string>
+    <string name="butn_changelog">Endringslogg</string>
+    <string name="text_changelog">Endringslogg</string>
+    <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva som har endret seg siden du installerte forrige versjon?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Du finner alltid endringsloggen i \"Om\"-delen</string>
 </resources>
