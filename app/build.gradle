@@ -32,8 +32,8 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 78
-        versionName "1.2.7"
+        versionCode 79
+        versionName "1.2.7.1"
     }
 
     lintOptions {
@@ -46,7 +46,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
-
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
     }
     flavorDimensions 'mode'
     productFlavors {
