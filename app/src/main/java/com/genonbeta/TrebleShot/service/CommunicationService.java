@@ -300,12 +300,10 @@ public class CommunicationService extends Service
 
 				ProcessHolder processHolder = findProcessById(groupId, deviceId);
 
-				if (processHolder == null)
+				if (processHolder == null) {
 					notifyTaskStatusChange(groupId, deviceId, TASK_STATUS_STOPPED);
-
-				if (processHolder == null)
 					getNotificationHelper().getUtils().cancel(notificationId);
-				else {
+				}else {
 					processHolder.notification = getNotificationHelper().notifyStuckThread(processHolder);
 
 					if (processHolder.transferHandler != null
