@@ -401,4 +401,5 @@
     <string name="text_changelog">Wijzigingslog</string>
     <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt naar een nieuwere versie. Wil je de wijzigingen bekijken?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
+<string name="mesg_noInternetConnection">Internetverbinding vereist</string>
 </resources>
