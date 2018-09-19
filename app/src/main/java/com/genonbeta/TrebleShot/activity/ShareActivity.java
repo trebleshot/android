@@ -643,7 +643,6 @@ public class ShareActivity extends Activity
 
 		setSupportActionBar(mToolbar);
 
-		mConnectDevicesFragment.showDevices();
 		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
 
 		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);

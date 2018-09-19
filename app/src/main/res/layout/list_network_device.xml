@@ -1,41 +1,41 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/network_device_list_layout"
-              style="@style/listContentLayoutStyle"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="?rectSelector"
-              android:gravity="center_vertical"
-              android:orientation="horizontal">
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/network_device_list_layout"
+	style="@style/listContentLayoutStyle"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:background="?rectSelector"
+	android:gravity="center_vertical"
+	android:orientation="horizontal">
 
-    <ImageView
-        android:id="@+id/network_device_list_device_image"
-        style="@style/listContentIconStyle"
-        android:contentDescription="@string/text_image"/>
+	<ImageView
+		android:id="@+id/network_device_list_device_image"
+		style="@style/listContentIconStyle"
+		android:contentDescription="@string/text_image" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+	<LinearLayout
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/network_device_list_user_text"
-            style="@style/marqueeText.primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/font_size_big"
-            app:fontFamily="sans-serif-condensed"/>
+		<TextView
+			android:id="@+id/network_device_list_user_text"
+			style="@style/marqueeText.primary"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="@dimen/font_size_big"
+			app:fontFamily="sans-serif-condensed" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
+		<View
+			android:layout_width="wrap_content"
+			android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
-        <TextView
-            android:id="@+id/network_device_list_device_text"
-            style="@style/marqueeText.secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/font_size_small"/>
+		<TextView
+			android:id="@+id/network_device_list_device_text"
+			style="@style/marqueeText.secondary"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="@dimen/font_size_small" />
 
-    </LinearLayout>
+	</LinearLayout>
 </LinearLayout>

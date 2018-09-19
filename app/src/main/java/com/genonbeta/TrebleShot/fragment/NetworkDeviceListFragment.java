@@ -165,7 +165,7 @@ public class NetworkDeviceListFragment
 			}
 		};
 
-		return new NetworkDeviceListAdapter(AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), getConnectionUtils())
+		return new NetworkDeviceListAdapter(getContext(), AppUtils.getDefaultPreferences(getContext()), getConnectionUtils())
 		{
 			@NonNull
 			@Override

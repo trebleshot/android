@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
@@ -25,19 +26,14 @@ import java.util.ArrayList;
 
 public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
 {
-	private AccessDatabase mDatabase;
-	private SharedPreferences mPreferences;
 	private ConnectionUtils mConnectionUtils;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
-	public NetworkDeviceListAdapter(AccessDatabase database, SharedPreferences preferences, ConnectionUtils connectionUtils)
+	public NetworkDeviceListAdapter(Context context, SharedPreferences preferences, ConnectionUtils connectionUtils)
 	{
-		super(database.getContext());
+		super(context);
 
-		mDatabase = database;
-		mPreferences = preferences;
 		mConnectionUtils = connectionUtils;
-
 		setHasStableIds(true);
 	}
 
@@ -75,10 +71,9 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 			list.add(hotspotNetwork);
 		}
 
-		for (NetworkDevice device : mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
+		for (NetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
 				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
-			if (device instanceof HotspotNetwork
-					|| !device.isLocalAddress || mPreferences.getBoolean("developer_mode", false))
+			if (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false))
 				list.add(device);
 
 		return list;
