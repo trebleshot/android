@@ -75,6 +75,8 @@ public class InAppDonationItemListFragment
 				refreshList();
 			}
 		});
+		setEmptyImage(R.drawable.ic_favorite_white_24dp);
+		setEmptyText(getString(R.string.mesg_noInternetConnection));
 	}
 
 	@Override
