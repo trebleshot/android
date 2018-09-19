@@ -383,4 +383,5 @@
     <string name="text_changelog">Changelog</string>
     <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
     <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
+	<string name="mesg_noInternetConnection">This requires internet connection</string>
 </resources>

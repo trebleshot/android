@@ -240,7 +240,7 @@ public class AppUtils
 	{
 		NetworkDevice device = getLocalDevice(context);
 		int lastSeenChangelog = getDefaultPreferences(context)
-				.getInt("changelog_seen_version", device.versionNumber);
+				.getInt("changelog_seen_version", -1);
 
 		return !getDefaultPreferences(context).contains("previously_migrated_version")
 				|| device.versionNumber == lastSeenChangelog;

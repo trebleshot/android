@@ -74,9 +74,9 @@ public class ShareActivity extends Activity
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_GROUP_ID = "extraGroupId";
 
+	private long mGroupId;
 	private Toolbar mToolbar;
 	private String mAction;
-	private long mGroupId;
 	private ConnectDevicesFragment mConnectDevicesFragment;
 	private ArrayList<SelectableStream> mFiles = new ArrayList<>();
 	private String mSharedText;
@@ -133,6 +133,8 @@ public class ShareActivity extends Activity
 			((SelectionListFragment) fragment).refreshList();
 		else if (fragment instanceof TextViewerFragment)
 			((TextViewerFragment) fragment).updateText();
+
+		mConnectDevicesFragment.showDevices();
 	}
 
 	@Override

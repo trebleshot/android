@@ -76,7 +76,7 @@ public class GitHubContributorsListFragment
 		super.onViewCreated(view, savedInstanceState);
 
 		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
-		setEmptyText(getString(R.string.mesg_somethingWentWrong));
+		setEmptyText(getString(R.string.mesg_noInternetConnection));
 
 		getEmptyImage().setOnLongClickListener(new View.OnLongClickListener()
 		{
