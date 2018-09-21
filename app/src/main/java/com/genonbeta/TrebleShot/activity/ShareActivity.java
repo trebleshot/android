@@ -565,7 +565,7 @@ public class ShareActivity extends Activity
 								String title;
 
 								if (mFiles.size() == 0)
-									title = getString(R.string.text_migrateNotice49);
+									title = getString(R.string.text_emptySymbol);
 								else
 									title = mFiles.size() == 1
 											? mFiles.get(0).getSelectableTitle()
