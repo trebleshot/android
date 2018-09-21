@@ -24,8 +24,6 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONObject;
 
-import static junit.framework.Assert.fail;
-
 /**
  * created by: veli
  * date: 15/04/18 18:37
@@ -270,7 +268,7 @@ public class ConnectionUtils
 							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
 						config.wepKeys[0] = hotspotNetwork.password;
 					} else {
-						fail("Please type hex pair for the password");
+						//fail("Please type hex pair for the password");
 					}
 					break;
 				case 2: // WEP128
@@ -283,7 +281,7 @@ public class ConnectionUtils
 							&& hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
 						config.wepKeys[0] = hotspotNetwork.password;
 					} else {
-						fail("Please type hex pair for the password");
+						//fail("Please type hex pair for the password");
 					}
 					break;
 				case 3: // WPA_TKIP
