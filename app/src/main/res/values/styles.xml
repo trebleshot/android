@@ -134,7 +134,7 @@
 	<style name="customListFragmentEmptyImageStyle">
 		<item name="android:background">@drawable/ripple_background_accent</item>
 		<item name="android:cropToPadding">true</item>
-		<item name="android:src">@drawable/ic_whatshot_white_24dp</item>
+		<item name="android:src">@drawable/ic_trebleshot_24dp</item>
 		<item name="android:tint">@color/whiteAccent</item>
 	</style>
 

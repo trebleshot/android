@@ -140,7 +140,7 @@
 
         <service
             android:name=".service.CommunicationToggleTile"
-            android:icon="@drawable/ic_whatshot_white_24dp"
+            android:icon="@drawable/ic_trebleshot_24dp"
             android:label="@string/text_shareFiles"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:process=":transfer">
