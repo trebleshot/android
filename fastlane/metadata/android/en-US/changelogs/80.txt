@@ -1,0 +1,3 @@
+NEW: New app icon & rounded app icon support
+FIXED: Rare - App crashes when no file selected to share
+MISC: Updated translations
