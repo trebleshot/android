@@ -1,0 +1,10 @@
+NEW: Better multitasking
+NEW: Ability to save received files to another directory
+NEW: See which files failed to transfer or did transfer successfully
+NEW: Directly share raw files in content sharing screen
+IMPROVED: File sharing screen 
+FIXED: Not showing info dialog window when a saved device was using older versions 
+FIXED: Crashing when tapping an item on list twice quickly 
+FIXED: Statistics of resumed tasks were being miscalculated
+MISC: Improved overall UX/UI & consistency
+MISC: Updated translations
