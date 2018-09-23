@@ -1,8 +1,8 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections without making any effort. Please read the wiki to learn more.
+Send and receive files over available connections without making any effort. Please read the wiki to learn more. If you have questions, this may help - [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
 
 [Join the discussion on Google+](https://plus.google.com/communities/102916752990309950243)
- 
+
 
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
@@ -13,7 +13,7 @@ Send and receive files over available connections without making any effort. Ple
 * No internet connection is required: Set up a hotspot and connect to it using a QR code
 * Share with multiple devices at the same time
 * Exchange texts of any kind and save them to TrebleShot
-* Share folders as they are for backup or any other purpose 
+* Share folders as they are for backup or any other purpose
 * Light UI: Works faster than its rivals on low-end devices
 * Speed-oriented: Minimal UI focusing on and optimized for speed
 * Professional features: Network change handling, choosing network after speed measurement
@@ -23,16 +23,18 @@ Send and receive files over available connections without making any effort. Ple
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
 [![Translation Status](https://hosted.weblate.org/widgets/TrebleShot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
-## Donate [<img src="https://bitcoin.org/img/icons/logotop.svg" width=90>](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
-![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
+## Donate
+If you value this work, you can help it. There is a too few methods that works in Turkey,
+you can use Bitcoin or install Google Play version to do so (In App Billing method) (taxes will apply).
 
-`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`
+[`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
+![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
 
 ## Build from source notes
 Even though it should be easy to compile the app by yourself, you may need to;
 * Select a debug build variant (Build Variants > app > fossReliantDebug)
 * When deploying signed packages, create "signing.properties" in which the required properties are defined
-* Run the gradle task "generateLicenceReport" to sync the licences for used packages which is shown in the About section 
+* Run the gradle task "generateLicenceReport" to sync the licences for used packages which is shown in the About section
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
