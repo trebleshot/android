@@ -399,4 +399,5 @@
     <string name="text_changelog">Değişiklik günlüğü</string>
     <string name="mesg_versionUpdatedChangelog">"TrebleShot\'u daha güncel bir sürüme yükselttiniz, bir önceki sürümü yüklemenizden bu yana nelerin değiştiğine göz atmak ister misiniz? "</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her zaman ulaşabilirsiniz</string>
+    <string name="mesg_noInternetConnection">Bu internet bağlantısı gerektirir</string>
 </resources>
