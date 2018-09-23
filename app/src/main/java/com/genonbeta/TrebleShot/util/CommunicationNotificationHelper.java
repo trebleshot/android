@@ -42,7 +42,7 @@ public class CommunicationNotificationHelper
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-		notification.setSmallIcon(R.drawable.ic_trebleshot_24dp)
+		notification.setSmallIcon(R.drawable.ic_trebleshot_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))
 				.setContentText(getContext().getString(R.string.text_communicationServiceStop))
 				.setAutoCancel(true)
