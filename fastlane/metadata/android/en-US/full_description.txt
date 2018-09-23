@@ -1,0 +1,30 @@
+TrebleShot is an open-source application that allows you to send and receive files without an internet connection
+
+MAIN FEATURES
+* Pause and resume transfers even when an error is given
+* Share large files
+* Share multiple content from your video, photo, music and application libraries
+* No internet connection is required: setup a hotspot and connect to it using QR code
+* Share with multiple devices at the same time
+* Exchange texts of any kind and save them to TrebleShot
+* Share folders as they are for backup and other purposes
+* Light UI: Works faster than its rivals on low-end devices
+* Speed-oriented: Minimal UI optimized for speed
+* Advanced features: network change handling, choosing network after speed measurement
+
+DISCOVERING DEVICES
+TrebleShot provides handful tools to help you send any file on any circumstance. When both the devices are on the same network, they will see each other automatically or you can directly scan the code over your phone's screen or at last start a deep scan over the network. If you don't want to struggle with none of that, you can setup a hotspot and then again you using the same method, scan the code in order to connect devices or send files. TrebleShot will handle preparing the network for you.
+
+CHOOSING WHAT TO SHARE
+You can send a directory using file explorer or you can share all of the songs in your music library.
+
+FEATURES THAT REQUIRE PERMISSION
+- Trebleshot hotspot (Android 6.0+): Writing system settings is required
+- Directly sending to TrebleShot hotspot (Android 6.0+): If you want to connect a network using TrebleShot itself, TrebleShot will need location permission and it should be on when TrebleShot scans them. If you connect your devices to the network manually (using Wi-Fi settings), this won't be required and when the network is ready, they will reach each other quickly.
+- Using QR Code to share (Android 6.0+): In order to scan QR codes, you will need to permit app to use camera permission.
+
+Translate TrebleShot:
+https://hosted.weblate.org/projects/trebleshot/
+
+Source code:
+http://github.com/genonbeta/TrebleShot
