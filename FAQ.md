@@ -66,6 +66,12 @@ Get to the list of files via the immediate above answer and click on your prefer
 Yes, you can share apps or files from TrebleShot to other apps like Whatsapp.
 Select the file you want to send, then click the dotted vertical line seen after the send icon, select *share with other apps*, and a list of apps would appear.
 
+##### What is TrustZone?
+
+When you don't want to prompted every time you receive a file from certain devices,
+you can turn it on and mark those devices as *TrustZone* device. You can find more
+tweak how it should act in the preferences.
+
 ##### I have more questions, need to contact the developer?
 Click on the menu button at the top left, and select *about* click the *mail* icon at the top right and send us a mail.
 

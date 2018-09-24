@@ -1,5 +1,5 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections without making any effort. Please read the wiki to learn more. If you have questions, this may help - [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
+Send and receive files over available connections without making any effort. Please read the wiki to learn more. If you have questions, this may also help - [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
 
 [Join the discussion on Google+](https://plus.google.com/communities/102916752990309950243)
 
@@ -34,7 +34,7 @@ you can use Bitcoin or install Google Play version to do so (In App Billing meth
 Even though it should be easy to compile the app by yourself, you may need to;
 * Select a debug build variant (Build Variants > app > fossReliantDebug)
 * When deploying signed packages, create "signing.properties" in which the required properties are defined
-* Run the gradle task "generateLicenceReport" to sync the licences for used packages which is shown in the About section
+* Run the gradle task "generateLicenceReport" to sync the report of used packages which is shown in the About section
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
@@ -61,6 +61,6 @@ Even though it should be easy to compile the app by yourself, you may need to;
 * Spanish
 * Turkish
 
-Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. Huge thanks to all language contributors. If you want to contribute to any language, please follow [this link](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG).
+Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. Huge thanks to all language contributors. If you want to contribute to any language for the first time, please read [this post](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG) first.
 
-This application is licenced under GPL-2.0+ and uses some components licenced under Apache License, Version 2.0
+This application is licensed under GPL-2.0+ and uses some components licensed under Apache License, Version 2.0
