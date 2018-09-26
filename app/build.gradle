@@ -75,10 +75,11 @@ dependencies {
     implementation 'com.genonbeta.android:gdatabase:1.0'
     implementation 'com.genonbeta.coolsocket:main:1.0.2'
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    implementation 'com.anjlab.android.iab.v3:library:1.0.44'
     implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
     implementation 'com.journeyapps:zxing-android-embedded:3.5.0'
     implementation 'com.github.bumptech.glide:glide:4.6.1'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
     implementation 'com.github.bumptech.glide:okhttp3-integration:4.4.0'
+
+    googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 }
