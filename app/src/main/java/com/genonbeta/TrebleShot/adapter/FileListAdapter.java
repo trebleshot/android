@@ -73,7 +73,7 @@ public class FileListAdapter
 			ArrayList<File> referencedDirectoryList = new ArrayList<>();
 			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-			lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_whatshot_white_24dp));
+			lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_white_24dp));
 			lister.offer(new DirectoryHolder(DocumentFile.fromFile(new File(".")),
 					mContext.getString(R.string.text_fileRoot),
 					mContext.getString(R.string.text_folder),

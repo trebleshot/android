@@ -188,7 +188,7 @@
     <string name="text_permissionRequest">Baimen eskaera</string>
     <string name="text_requestPermissionStorage">Biltegiratze baimena</string>
     <string name="text_requestPermissionReadPhoneState">Telefonoaren egoera irakurtzeko baimena</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot-ek zure telefonoaren serie zenbakia atzitu behar du zure gailurako epe luzerako identitate zenbaki bat sortzeko, besteek zu ezagutzea errazteko.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot-ek zure telefonoaren serie zenbakia atzitu behar du zure gailurako epe luzerako identitate zenbaki bat sortzeko, besteek zu ezagutzea errazteko</string>
     <string name="text_mediaDirectory">Multimediaren direktorioa</string>
     <string name="text_emulatedMediaDirectory">Emulatuta (%s)</string>
     <string name="mesg_notEnoughSpace">Ez dago leku nahikorik</string>
@@ -373,4 +373,5 @@
     <string name="text_changelog">Aldaketa-egunkaria</string>
     <string name="mesg_versionUpdatedChangelog">TrebleShot bertsio berri batera eguneratu duzu, aurreko bertsiotik zer aldatu den ikusi nahi duzu?</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu dezakezu</string>
+<string name="mesg_noInternetConnection">Honek Internetera konexioa behar du</string>
 </resources>
