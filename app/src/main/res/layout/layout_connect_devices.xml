@@ -18,7 +18,8 @@
             android:layout_gravity="center_horizontal"
             android:minHeight="?attr/actionBarSize"
             app:layout_scrollFlags="snap"
-            app:tabMode="scrollable"/>
+            app:tabMode="scrollable"
+            app:tabIconTint="@color/layoutTintColor"/>
 
     </FrameLayout>
 

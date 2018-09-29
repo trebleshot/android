@@ -61,12 +61,8 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 				Fragment fragment = getItem(iterator);
 				TabLayout.Tab tab = tabLayout.newTab();
 
-				if (fragment instanceof IconSupport) {
-					Drawable iconDrawable = DrawableCompat.wrap(ContextCompat.getDrawable(getContext(), ((IconSupport) fragment).getIconRes()));
-					DrawableCompat.setTint(iconDrawable.mutate(), ContextCompat.getColor(getContext(), R.color.layoutTintColor));
-
-					tab.setIcon(iconDrawable);
-				}
+				if (fragment instanceof IconSupport)
+					tab.setIcon(((IconSupport) fragment).getIconRes());
 
 				if (!(stableItem.iconOnly && fragment instanceof IconSupport))
 					if (stableItem.title != null && stableItem.title.length() > 0)
@@ -80,7 +76,7 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 
 	@NonNull
 	@Override
-	public Object instantiateItem(ViewGroup container, int position)
+	public Object instantiateItem(@NonNull ViewGroup container, int position)
 	{
 		Fragment fragment = (Fragment) super.instantiateItem(container, position);
 
