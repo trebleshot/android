@@ -1,6 +1,14 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources><plurals name="ques_deleteFile">
 	<item quantity="one">Souhaitez-vous supprimer %d fichiers ?</item>
-	<item quantity="other"></item>
+	<item quantity="other"/>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">%d fichier a été reçu</item>
+	<item quantity="other">%d fichiers ont été reçus</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">%d fichier est sélectionné</item>
+	<item quantity="other">%d fichiers ont été sélectionnés</item>
 </plurals>
     </resources>
