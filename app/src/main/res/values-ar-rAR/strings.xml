@@ -290,7 +290,7 @@
     <string name="butn_exit">خروج</string>
     <string name="butn_queueCounted">قائمة الانتظار (٪d)</string>
     <string name="text_previewThenProceedNotice">الرجاء التحقق من التحديدات الخاصة بك بالنقر فوق الزر \"قائمة انتظار\" ليتمكن من مواصلة</string>
-    <string name="mesg_updateDownloadComplete">انقر لتثبيت التحديث</string>
+    <string name="mesg_updateDownloadComplete">تم تلقي التحديث بنجاح و حفظه في الملفات الواردة</string>
     <string name="text_listEmptyFiles">لا توجد ملفات هنا</string>
     <string name="text_listEmptyImage">لا توجد صور هنا</string>
     <string name="text_listEmptyApp">لا توجد تطبيقات هنا</string>
@@ -365,4 +365,6 @@
     <string name="butn_changelog">سجل التغييرات</string>
     <string name="text_changelog">سجل التغييرات</string>
     <string name="mesg_noInternetConnection">ذلك يتطلب اتصالا بالإنترنت</string>
-</resources>
+<string name="text_emptySymbol">-</string>
+    <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في  قسم \'عن التطبيق\'"</string>
+	</resources>
