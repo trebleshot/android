@@ -1,0 +1,3 @@
+IMPROVED: Support for Android Pie (9)
+IMPROVED: UI
+FIXED: Some devices were not able to connect (Getaway address problem)
