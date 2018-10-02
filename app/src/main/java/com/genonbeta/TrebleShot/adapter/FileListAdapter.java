@@ -30,351 +30,355 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FileListAdapter
-		extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
-		implements GroupEditableListAdapter.GroupLister.CustomGroupListener<FileListAdapter.GenericFileHolder>
+        extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<FileListAdapter.GenericFileHolder>
 {
-	public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
+    public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
 
-	private boolean mShowDirectories = true;
-	private boolean mShowFiles = true;
-	private String mFileMatch;
-	private DocumentFile mPath;
-	private AccessDatabase mDatabase;
-	private SharedPreferences mPreferences;
+    private boolean mShowDirectories = true;
+    private boolean mShowFiles = true;
+    private String mFileMatch;
+    private DocumentFile mPath;
+    private AccessDatabase mDatabase;
+    private SharedPreferences mPreferences;
 
-	public FileListAdapter(Context context, AccessDatabase database, SharedPreferences sharedPreferences)
-	{
-		super(context, MODE_GROUP_BY_DEFAULT);
+    public FileListAdapter(Context context, AccessDatabase database, SharedPreferences sharedPreferences)
+    {
+        super(context, MODE_GROUP_BY_DEFAULT);
 
-		mDatabase = database;
-		mPreferences = sharedPreferences;
-	}
+        mDatabase = database;
+        mPreferences = sharedPreferences;
+    }
 
-	@Override
-	protected void onLoad(GroupLister<GenericFileHolder> lister)
-	{
-		DocumentFile path = getPath();
+    @Override
+    protected void onLoad(GroupLister<GenericFileHolder> lister)
+    {
+        DocumentFile path = getPath();
 
-		if (path != null) {
-			DocumentFile[] fileIndex = path.listFiles();
+        if (path != null) {
+            DocumentFile[] fileIndex = path.listFiles();
 
-			if (fileIndex != null && fileIndex.length > 0) {
-				for (DocumentFile file : fileIndex) {
-					if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
-						continue;
+            if (fileIndex != null && fileIndex.length > 0) {
+                for (DocumentFile file : fileIndex) {
+                    if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
+                        continue;
 
-					if (file.isDirectory() && mShowDirectories)
-						lister.offer(new DirectoryHolder(file, mContext.getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
-					else if (file.isFile() && mShowFiles)
-						lister.offer(new FileHolder(getContext(), file));
-				}
-			}
-		} else {
-			ArrayList<File> referencedDirectoryList = new ArrayList<>();
-			DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
+                    if (file.isDirectory() && mShowDirectories)
+                        lister.offer(new DirectoryHolder(file, mContext.getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
+                    else if (file.isFile() && mShowFiles)
+                        lister.offer(new FileHolder(getContext(), file));
+                }
+            }
+        } else {
+            ArrayList<File> referencedDirectoryList = new ArrayList<>();
+            DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-			lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_white_24dp));
-			lister.offer(new DirectoryHolder(DocumentFile.fromFile(new File(".")),
-					mContext.getString(R.string.text_fileRoot),
-					mContext.getString(R.string.text_folder),
-					R.drawable.ic_folder_white_24dp));
+            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_white_24dp));
 
-			if (Build.VERSION.SDK_INT >= 21)
-				referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
-			else if (Build.VERSION.SDK_INT >= 19)
-				referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalFilesDirs(null)));
-			else
-				referencedDirectoryList.add(Environment.getExternalStorageDirectory());
+            File fileSystemRoot = new File(".");
 
-			for (File mediaDir : referencedDirectoryList) {
-				if (mediaDir == null || !mediaDir.canWrite())
-					continue;
+            if (fileSystemRoot.canRead())
+                lister.offer(new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
+                        mContext.getString(R.string.text_fileRoot),
+                        mContext.getString(R.string.text_folder),
+                        R.drawable.ic_folder_white_24dp));
 
-				StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir), getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
-				String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
+            if (Build.VERSION.SDK_INT >= 21)
+                referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
+            else if (Build.VERSION.SDK_INT >= 19)
+                referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalFilesDirs(null)));
+            else
+                referencedDirectoryList.add(Environment.getExternalStorageDirectory());
 
-				if (splitPath.length >= 2 && splitPath[1].equals("storage")) {
-					if (splitPath.length >= 4 && splitPath[2].equals("emulated")) {
-						File file = new File(buildPath(splitPath, 4));
+            for (File mediaDir : referencedDirectoryList) {
+                if (mediaDir == null || !mediaDir.canWrite())
+                    continue;
 
-						if (file.canWrite()) {
-							fileHolder.file = DocumentFile.fromFile(file);
-							fileHolder.friendlyName = "0".equals(splitPath[3])
-									? getContext().getString(R.string.text_internalStorage)
-									: getContext().getString(R.string.text_emulatedMediaDirectory, splitPath[3]);
-						}
-					} else if (splitPath.length >= 3) {
-						File file = new File(buildPath(splitPath, 3));
+                StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir), getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
+                String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
-						if (!file.canWrite())
-							continue;
+                if (splitPath.length >= 2 && splitPath[1].equals("storage")) {
+                    if (splitPath.length >= 4 && splitPath[2].equals("emulated")) {
+                        File file = new File(buildPath(splitPath, 4));
 
-						fileHolder.friendlyName = splitPath[2];
-						fileHolder.file = DocumentFile.fromFile(file);
-					}
-				}
+                        if (file.canWrite()) {
+                            fileHolder.file = DocumentFile.fromFile(file);
+                            fileHolder.friendlyName = "0".equals(splitPath[3])
+                                    ? getContext().getString(R.string.text_internalStorage)
+                                    : getContext().getString(R.string.text_emulatedMediaDirectory, splitPath[3]);
+                        }
+                    } else if (splitPath.length >= 3) {
+                        File file = new File(buildPath(splitPath, 3));
 
-				lister.offer(fileHolder);
-			}
+                        if (!file.canWrite())
+                            continue;
 
-			ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+                        fileHolder.friendlyName = splitPath[2];
+                        fileHolder.file = DocumentFile.fromFile(file);
+                    }
+                }
 
-			if (Build.VERSION.SDK_INT >= 21) {
-				for (WritablePathObject pathObject : objectList)
-					try {
-						lister.offer(new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
-								pathObject,
-								getContext().getString(R.string.text_storage)));
-					} catch (FileNotFoundException e) {
-						e.printStackTrace();
-					}
-			}
-		}
-	}
+                lister.offer(fileHolder);
+            }
 
-	@Override
-	protected GenericFileHolder onGenerateRepresentative(String representativeText)
-	{
-		return new GenericFileHolder(representativeText);
-	}
+            ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
-	@Override
-	public boolean onCustomGroupListing(GroupLister<GenericFileHolder> lister, int mode, GenericFileHolder object)
-	{
-		if (mode == MODE_GROUP_BY_DEFAULT)
-			lister.offer(object, new FileHolderMerger(object));
-		else
-			return false;
+            if (Build.VERSION.SDK_INT >= 21) {
+                for (WritablePathObject pathObject : objectList)
+                    try {
+                        lister.offer(new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
+                                pathObject,
+                                getContext().getString(R.string.text_storage)));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+            }
+        }
+    }
 
-		return true;
-	}
+    @Override
+    protected GenericFileHolder onGenerateRepresentative(String representativeText)
+    {
+        return new GenericFileHolder(representativeText);
+    }
 
-	@NonNull
-	@Override
-	public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-	{
-		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+    @Override
+    public boolean onCustomGroupListing(GroupLister<GenericFileHolder> lister, int mode, GenericFileHolder object)
+    {
+        if (mode == MODE_GROUP_BY_DEFAULT)
+            lister.offer(object, new FileHolderMerger(object));
+        else
+            return false;
 
-		return new GroupViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
-	}
+        return true;
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull final GroupViewHolder holder, final int position)
-	{
-		try {
-			final GenericFileHolder object = getItem(position);
+    @NonNull
+    @Override
+    public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+        if (viewType == VIEW_TYPE_REPRESENTATIVE)
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-			if (!holder.tryBinding(object)) {
-				final View parentView = holder.getView();
+        return new GroupViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
+    }
 
-				ImageView image = parentView.findViewById(R.id.image);
-				TextView text1 = parentView.findViewById(R.id.text);
-				TextView text2 = parentView.findViewById(R.id.text2);
+    @Override
+    public void onBindViewHolder(@NonNull final GroupViewHolder holder, final int position)
+    {
+        try {
+            final GenericFileHolder object = getItem(position);
 
-				holder.getView().setSelected(object.isSelectableSelected());
+            if (!holder.tryBinding(object)) {
+                final View parentView = holder.getView();
 
-				text1.setText(object.friendlyName);
-				text2.setText(object.info);
-				image.setImageResource(object.iconRes);
-			}
-		} catch (NotReadyException e) {
-			e.printStackTrace();
-		}
-	}
+                ImageView image = parentView.findViewById(R.id.image);
+                TextView text1 = parentView.findViewById(R.id.text);
+                TextView text2 = parentView.findViewById(R.id.text2);
 
-	public String buildPath(String[] splitPath, int count)
-	{
-		StringBuilder stringBuilder = new StringBuilder();
+                holder.getView().setSelected(object.isSelectableSelected());
 
-		for (int i = 0; (i < count && i < splitPath.length); i++) {
-			stringBuilder.append(File.separator);
-			stringBuilder.append(splitPath[i]);
-		}
+                text1.setText(object.friendlyName);
+                text2.setText(object.info);
+                image.setImageResource(object.iconRes);
+            }
+        } catch (NotReadyException e) {
+            e.printStackTrace();
+        }
+    }
 
-		return stringBuilder.toString();
-	}
+    public String buildPath(String[] splitPath, int count)
+    {
+        StringBuilder stringBuilder = new StringBuilder();
 
-	public GroupLister<GenericFileHolder> createLister(ArrayList<GenericFileHolder> loadedList, int groupBy)
-	{
-		return super.createLister(loadedList, groupBy)
-				.setCustomLister(this);
-	}
+        for (int i = 0; (i < count && i < splitPath.length); i++) {
+            stringBuilder.append(File.separator);
+            stringBuilder.append(splitPath[i]);
+        }
 
-	public DocumentFile getPath()
-	{
-		return mPath;
-	}
+        return stringBuilder.toString();
+    }
 
-	public void goPath(File path)
-	{
-		goPath(DocumentFile.fromFile(path));
-	}
+    public GroupLister<GenericFileHolder> createLister(ArrayList<GenericFileHolder> loadedList, int groupBy)
+    {
+        return super.createLister(loadedList, groupBy)
+                .setCustomLister(this);
+    }
 
-	@Override
-	public String getRepresentativeText(Merger merger)
-	{
-		if (merger instanceof FileHolderMerger) {
-			switch (((FileHolderMerger) merger).getType()) {
-				case STORAGE:
-					return getContext().getString(R.string.text_storage);
-				case FOLDER:
-					return getContext().getString(R.string.text_folder);
-				default:
-					return getContext().getString(R.string.text_file);
-			}
-		}
+    public DocumentFile getPath()
+    {
+        return mPath;
+    }
 
-		return super.getRepresentativeText(merger);
-	}
+    public void goPath(File path)
+    {
+        goPath(DocumentFile.fromFile(path));
+    }
 
-	public void goPath(DocumentFile path)
-	{
-		mPath = path;
-	}
+    @Override
+    public String getRepresentativeText(Merger merger)
+    {
+        if (merger instanceof FileHolderMerger) {
+            switch (((FileHolderMerger) merger).getType()) {
+                case STORAGE:
+                    return getContext().getString(R.string.text_storage);
+                case FOLDER:
+                    return getContext().getString(R.string.text_folder);
+                default:
+                    return getContext().getString(R.string.text_file);
+            }
+        }
 
-	public void setConfiguration(boolean showDirectories, boolean showFiles, String fileMatch)
-	{
-		mShowDirectories = showDirectories;
-		mShowFiles = showFiles;
-		mFileMatch = fileMatch;
-	}
+        return super.getRepresentativeText(merger);
+    }
 
-	public static class GenericFileHolder extends GroupEditableListAdapter.GroupShareable
-	{
-		public DocumentFile file;
-		public String info;
-		public int iconRes;
+    public void goPath(DocumentFile path)
+    {
+        mPath = path;
+    }
 
-		public GenericFileHolder(String representativeText)
-		{
-			super(FileListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
-		}
+    public void setConfiguration(boolean showDirectories, boolean showFiles, String fileMatch)
+    {
+        mShowDirectories = showDirectories;
+        mShowFiles = showFiles;
+        mFileMatch = fileMatch;
+    }
 
-		public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
-		{
-			super(file.getUri().toString().hashCode(), friendlyName, friendlyName, file.getType(), date, size, uri);
+    public static class GenericFileHolder extends GroupEditableListAdapter.GroupShareable
+    {
+        public DocumentFile file;
+        public String info;
+        public int iconRes;
 
-			this.file = file;
-			this.info = info;
-			this.iconRes = iconRes;
-		}
-	}
+        public GenericFileHolder(String representativeText)
+        {
+            super(FileListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
+        }
 
-	public static class FileHolder extends GenericFileHolder
-	{
-		public FileHolder(Context context, DocumentFile file)
-		{
-			super(file,
-					file.getName(),
-					FileUtils.sizeExpression(file.length(), false),
-					R.drawable.ic_insert_drive_file_white_24dp,
-					file.lastModified(),
-					file.length(),
-					FileUtils.getSecureUriSilently(context, file));
-		}
-	}
+        public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
+        {
+            super(file.getUri().toString().hashCode(), friendlyName, friendlyName, file.getType(), date, size, uri);
 
-	public static class DirectoryHolder extends GenericFileHolder
-	{
-		public DirectoryHolder(DocumentFile file, String info, int iconRes)
-		{
-			this(file, file.getName(), info, iconRes);
-		}
+            this.file = file;
+            this.info = info;
+            this.iconRes = iconRes;
+        }
+    }
 
-		public DirectoryHolder(DocumentFile file, String friendlyName, String info, int iconRes)
-		{
-			super(file, friendlyName, info, iconRes, file.lastModified(), 0, file.getUri());
-		}
-	}
+    public static class FileHolder extends GenericFileHolder
+    {
+        public FileHolder(Context context, DocumentFile file)
+        {
+            super(file,
+                    file.getName(),
+                    FileUtils.sizeExpression(file.length(), false),
+                    R.drawable.ic_insert_drive_file_white_24dp,
+                    file.lastModified(),
+                    file.length(),
+                    FileUtils.getSecureUriSilently(context, file));
+        }
+    }
 
-	public static class StorageHolder
-			extends DirectoryHolder
-			implements StorageHolderImpl
-	{
-		public StorageHolder(DocumentFile file, String info, int iconRes)
-		{
-			super(file, file.getName(), info, iconRes);
-		}
+    public static class DirectoryHolder extends GenericFileHolder
+    {
+        public DirectoryHolder(DocumentFile file, String info, int iconRes)
+        {
+            this(file, file.getName(), info, iconRes);
+        }
 
-		public StorageHolder(DocumentFile file, String friendlyName, String info, int iconRes)
-		{
-			super(file, friendlyName, info, iconRes);
-		}
+        public DirectoryHolder(DocumentFile file, String friendlyName, String info, int iconRes)
+        {
+            super(file, friendlyName, info, iconRes, file.lastModified(), 0, file.getUri());
+        }
+    }
 
-		// Don't let these folders to be selected
-		@Override
-		public boolean setSelectableSelected(boolean selected)
-		{
-			return false;
-		}
-	}
+    public static class StorageHolder
+            extends DirectoryHolder
+            implements StorageHolderImpl
+    {
+        public StorageHolder(DocumentFile file, String info, int iconRes)
+        {
+            super(file, file.getName(), info, iconRes);
+        }
 
-	public static class WritablePathHolder
-			extends GenericFileHolder
-			implements StorageHolderImpl
-	{
-		public WritablePathObject pathObject;
+        public StorageHolder(DocumentFile file, String friendlyName, String info, int iconRes)
+        {
+            super(file, friendlyName, info, iconRes);
+        }
 
-		public WritablePathHolder(DocumentFile file, WritablePathObject object, String info)
-		{
-			super(file, file.getName() == null ? object.title : file.getName(), info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
+        // Don't let these folders to be selected
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return false;
+        }
+    }
 
-			this.pathObject = object;
-		}
+    public static class WritablePathHolder
+            extends GenericFileHolder
+            implements StorageHolderImpl
+    {
+        public WritablePathObject pathObject;
 
-		// Don't let these folders to be selected
-		@Override
-		public boolean setSelectableSelected(boolean selected)
-		{
-			return false;
-		}
-	}
+        public WritablePathHolder(DocumentFile file, WritablePathObject object, String info)
+        {
+            super(file, file.getName() == null ? object.title : file.getName(), info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
 
-	public interface StorageHolderImpl
-	{
-	}
+            this.pathObject = object;
+        }
 
-	public static class FileHolderMerger extends ComparableMerger<GenericFileHolder>
-	{
-		private Type mType;
+        // Don't let these folders to be selected
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return false;
+        }
+    }
 
-		public FileHolderMerger(GenericFileHolder holder)
-		{
-			if (holder instanceof StorageHolderImpl)
-				mType = Type.STORAGE;
-			else if (holder instanceof DirectoryHolder)
-				mType = Type.FOLDER;
-			else
-				mType = Type.FILE;
-		}
+    public interface StorageHolderImpl
+    {
+    }
 
-		@Override
-		public boolean equals(Object obj)
-		{
-			return obj instanceof FileHolderMerger
-					&& ((FileHolderMerger) obj).getType().equals(getType());
-		}
+    public static class FileHolderMerger extends ComparableMerger<GenericFileHolder>
+    {
+        private Type mType;
 
-		public Type getType()
-		{
-			return mType;
-		}
+        public FileHolderMerger(GenericFileHolder holder)
+        {
+            if (holder instanceof StorageHolderImpl)
+                mType = Type.STORAGE;
+            else if (holder instanceof DirectoryHolder)
+                mType = Type.FOLDER;
+            else
+                mType = Type.FILE;
+        }
 
-		@Override
-		public int compareTo(@NonNull ComparableMerger<GenericFileHolder> o)
-		{
-			if (o instanceof FileHolderMerger)
-				return MathUtils.compare(((FileHolderMerger) o).getType().ordinal(), getType().ordinal());
+        @Override
+        public boolean equals(Object obj)
+        {
+            return obj instanceof FileHolderMerger
+                    && ((FileHolderMerger) obj).getType().equals(getType());
+        }
 
-			return 1;
-		}
+        public Type getType()
+        {
+            return mType;
+        }
 
-		public enum Type
-		{
-			STORAGE,
-			FOLDER,
-			FILE
-		}
-	}
+        @Override
+        public int compareTo(@NonNull ComparableMerger<GenericFileHolder> o)
+        {
+            if (o instanceof FileHolderMerger)
+                return MathUtils.compare(((FileHolderMerger) o).getType().ordinal(), getType().ordinal());
+
+            return 1;
+        }
+
+        public enum Type
+        {
+            STORAGE,
+            FOLDER,
+            FILE
+        }
+    }
 }

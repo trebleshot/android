@@ -266,7 +266,7 @@ public class FileExplorerFragment
 
 				currentFile = currentFile.getParentFile();
 
-				if (currentFile == null && ".".equals(index.title))
+				if (currentFile == null)
 					index.title = getString(R.string.text_fileRoot);
 			}
 
