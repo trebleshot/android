@@ -53,6 +53,7 @@ Even though it should be easy to compile the app by yourself, you may need to;
 * Chinese (Simplified)
 * Dutch
 * English
+* French
 * German
 * Italian
 * Japanese
