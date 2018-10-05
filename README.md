@@ -1,18 +1,16 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections without making any effort. Please read the wiki to learn more. If you have questions, this may also help - [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
-
-[Join the discussion on Google+](https://plus.google.com/communities/102916752990309950243)
-
+Send and receive files over available connections with functionalities like
+being able to resume transfer when an error occurred. [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
 
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
 * Pause and resume transfers even when an error is given
-* Share multiple content from your video, photo, music and application library
+* Share multiple content from your video, photo, music and application libraries
 * No internet connection is required: Set up a hotspot and connect to it using a QR code
 * Share with multiple devices at the same time
-* Exchange texts of any kind and save them to TrebleShot
+* Share texts of any kind and save them to TrebleShot
 * Share folders as they are for backup or any other purpose
 * Light UI: Works faster than its rivals on low-end devices
 * Speed-oriented: Minimal UI focusing on and optimized for speed
@@ -27,14 +25,16 @@ Send and receive files over available connections without making any effort. Ple
 If you value this work, you can help it. There is a too few methods that works in Turkey,
 you can use Bitcoin or install Google Play version to do so (In App Billing method) (taxes will apply).
 
-[`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
+Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
+
 ![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
 
 ## Build from source notes
-Even though it should be easy to compile the app by yourself, you may need to;
-* Select a debug build variant (Build Variants > app > fossReliantDebug)
-* When deploying signed packages, create "signing.properties" in which the required properties are defined
-* Run the gradle task "generateLicenceReport" to sync the report of used packages which is shown in the About section
+Required tools;
+* Build tools: 28.0.3
+* Support library: 28.0.0
+* Gradle plugin: 3.2.0
+* Android Studio: 3.2.0
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
@@ -62,6 +62,6 @@ Even though it should be easy to compile the app by yourself, you may need to;
 * Spanish
 * Turkish
 
-Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. Huge thanks to all language contributors. If you want to contribute to any language for the first time, please read [this post](https://plus.google.com/106757789289468250718/posts/RkXh8nhckxG) first.
+Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution).
 
-This application is licensed under GPL-2.0+ and uses some components licensed under Apache License, Version 2.0
+This application is licensed under GPL-2.0+  
