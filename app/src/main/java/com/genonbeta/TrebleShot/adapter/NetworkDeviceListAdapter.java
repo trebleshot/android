@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
@@ -29,11 +30,16 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 	private ConnectionUtils mConnectionUtils;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
 
+	@ColorInt
+	private int mColorRippleBackground;
+
 	public NetworkDeviceListAdapter(Context context, SharedPreferences preferences, ConnectionUtils connectionUtils)
 	{
 		super(context);
 
 		mConnectionUtils = connectionUtils;
+		mColorRippleBackground = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+
 		setHasStableIds(true);
 	}
 
@@ -102,16 +108,16 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 		String firstLetters = TextUtils.getLetters(device.nickname, 0);
 		boolean hotspotNetwork = device instanceof HotspotNetwork;
 
-		TextView deviceText = parentView.findViewById(R.id.network_device_list_device_text);
-		TextView userText = parentView.findViewById(R.id.network_device_list_user_text);
-		ImageView userImage = parentView.findViewById(R.id.network_device_list_device_image);
+		TextView deviceText = parentView.findViewById(R.id.text2);
+		TextView userText = parentView.findViewById(R.id.text1);
+		ImageView userImage = parentView.findViewById(R.id.image);
 
 		userText.setText(device.nickname);
 		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
 
 		userImage.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
 				? firstLetters
-				: "?", ContextCompat.getColor(mContext, hotspotNetwork ? R.color.hotspotNetworkRipple : R.color.networkDeviceRipple), 100));
+				: "?", mColorRippleBackground, 100));
 	}
 
 	@Override

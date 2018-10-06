@@ -1,83 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
+	<style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
+	<style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar" />
 
-	<style name="AppTheme" parent="@style/Theme.AppCompat.Light">
-		<item name="actionBarStyle">@style/MyActionBar</item>
-		<item name="actionBarTheme">@style/MyApp.ActionBarTheme</item>
-		<item name="actionModeBackground">@color/actionModeBackground</item>
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
-		<item name="windowActionModeOverlay">true</item>
-		<item name="android:windowBackground">@color/windowBackground</item>
-		<item name="roundSelector">@drawable/round_selector</item>
-		<item name="rectSelector">@drawable/rect_selector</item>
-		<item name="genfw_customListFragmentEmptyImageStyle">
-			@style/customListFragmentEmptyImageStyle
-		</item>
-		<item name="genfw_customListFragmentEmptyTextStyle">
-			@style/customListFragmentEmptyTextStyle
-		</item>
-		<item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
-	</style>
-
-	<style name="AppTheme.NoActionBar" parent="@style/Theme.AppCompat.Light.NoActionBar">
-		<item name="actionBarStyle">@style/MyActionBar</item>
-		<item name="actionBarTheme">@style/MyApp.ActionBarTheme</item>
-		<item name="actionModeBackground">@color/actionModeBackground</item>
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-		<item name="colorAccent">@color/colorAccent</item>
-		<item name="windowActionModeOverlay">true</item>
-		<item name="windowActionBar">false</item>
-		<item name="windowNoTitle">true</item>
-		<item name="android:windowBackground">@color/windowBackground</item>
-		<item name="roundSelector">@drawable/round_selector</item>
-		<item name="rectSelector">@drawable/rect_selector</item>
-		<item name="genfw_customListFragmentEmptyImageStyle">
-			@style/customListFragmentEmptyImageStyle
-		</item>
-		<item name="genfw_customListFragmentEmptyTextStyle">
-			@style/customListFragmentEmptyTextStyle
-		</item>
-		<item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
-	</style>
-
-	<style name="AppTheme.NoActionBar.DefaultStatusBar" parent="AppTheme.NoActionBar" />
-
-	<style name="AppTheme.GreyStatusBar" parent="@style/AppTheme.NoActionBar">
-		<item name="colorPrimaryDark">@color/themeGreyDominant</item>
-		<item name="colorPrimary">@color/themeGreyDominant</item>
-		<item name="colorAccent">@color/themeGreyAccent</item>
-		<item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
-	</style>
-
-	<style name="AppTheme.DonationTheme" parent="@style/AppTheme.NoActionBar">
-		<item name="colorPrimaryDark">@color/donateMenuTint</item>
-		<item name="colorPrimary">@color/donateMenuTint</item>
-		<item name="colorAccent">@color/donateMenuTint</item>
-		<item name="actionBarStyle">@style/MyActionBar.ShareScreen</item>
-	</style>
-
-	<style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
-
-	<style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
-	<style name="MyApp.ActionBarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
-		<item name="colorControlNormal">#FFF</item>
-	</style>
-
-	<style name="MyActionBar.ShareScreen" parent="@style/MyActionBar">
-		<item name="elevation">0dp</item>
-	</style>
-
-	<style name="MyActionBar" parent="@style/Widget.AppCompat.ActionBar.Solid">
-		<item name="titleTextStyle">@style/MyTitleTextStyle</item>
-	</style>
-
-	<style name="MyTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-		<item name="android:textColor">#FFF</item>
-	</style>
+	<style name="Theme.TrebleShot.Dark" parent="Theme.TrebleShot.Dark.Base" />
+	<style name="Theme.TrebleShot.Dark.NoActionBar" parent="Theme.TrebleShot.Dark.Base.NoActionBar" />
+	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
 
 	<style name="marqueeText">
 		<item name="android:maxLines">1</item>
@@ -117,7 +46,7 @@
 		<item name="android:background">?attr/roundSelector</item>
 		<item name="android:focusableInTouchMode">false</item>
 		<item name="android:focusable">false</item>
-		<item name="tint">@color/layoutTintColor</item>
+		<item name="tint">@color/colorControlNormal</item>
 	</style>
 
 	<style name="listContentLayoutStyle">
@@ -134,8 +63,8 @@
 	<style name="customListFragmentEmptyImageStyle">
 		<item name="android:background">@drawable/ripple_background_accent</item>
 		<item name="android:cropToPadding">true</item>
-		<item name="android:src">@drawable/ic_trebleshot_white_24dp</item>
-		<item name="android:tint">@color/whiteAccent</item>
+		<item name="srcCompat">@drawable/ic_trebleshot_white_24dp</item>
+		<item name="android:tint"></item>
 	</style>
 
 	<style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">

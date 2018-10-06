@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/fragment_fileexplorer_pathresolver"
-        android:background="#eee"/>
+        android:background="?colorDivider"/>
 
     <FrameLayout
         android:id="@+id/fragment_fileexplorer_listViewContainer"

@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
@@ -12,11 +13,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -26,101 +28,106 @@ import java.util.ArrayList;
  */
 public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder>
 {
-	private ArrayList<ShowingAssignee> mList = new ArrayList<>();
-	private TransferGroup mGroup;
-	private AccessDatabase mDatabase;
+    private ArrayList<ShowingAssignee> mList = new ArrayList<>();
+    private TransferGroup mGroup;
+    private AccessDatabase mDatabase;
 
-	public TransferAssigneeListAdapter(Context context, AccessDatabase database)
-	{
-		super(context);
-		mDatabase = database;
-	}
+    @ColorInt
+    private int mColorRippleBackground;
 
-	@NonNull
-	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-	{
-		return new ViewHolder(getInflater().inflate(R.layout.list_assignee, parent, false));
-	}
+    public TransferAssigneeListAdapter(Context context, AccessDatabase database)
+    {
+        super(context);
+        mDatabase = database;
+        mColorRippleBackground = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+    }
 
-	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
-	{
-		ShowingAssignee assignee = getList().get(position);
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+        return new ViewHolder(getInflater().inflate(R.layout.list_assignee, parent, false));
+    }
 
-		String firstLetters = TextUtils.getLetters(assignee.device.nickname, 0);
-		ImageView image = holder.getView().findViewById(R.id.image);
-		TextView text1 = holder.getView().findViewById(R.id.text);
-		TextView text2 = holder.getView().findViewById(R.id.text2);
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    {
+        ShowingAssignee assignee = getList().get(position);
 
-		text1.setText(assignee.device.nickname);
-		text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
+        String firstLetters = TextUtils.getLetters(assignee.device.nickname, 0);
+        ImageView image = holder.getView().findViewById(R.id.image);
+        TextView text1 = holder.getView().findViewById(R.id.text);
+        TextView text2 = holder.getView().findViewById(R.id.text2);
 
-		image.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
-				? firstLetters
-				: "?", ContextCompat.getColor(mContext, R.color.networkDeviceRipple), 100));
-	}
+        text1.setText(assignee.device.nickname);
+        text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
 
-	@Override
-	public ArrayList<ShowingAssignee> onLoad()
-	{
-		return loadAssigneeList(mDatabase, mGroup.groupId);
-	}
+        image.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
+                ? firstLetters
+                : "?", mColorRippleBackground, 100));
+    }
 
-	@Override
-	public void onUpdate(ArrayList<ShowingAssignee> passedItem)
-	{
-		mList = passedItem;
-	}
+    @Override
+    public ArrayList<ShowingAssignee> onLoad()
+    {
+        return loadAssigneeList(mDatabase, mGroup.groupId);
+    }
 
-	@Override
-	public int getItemCount()
-	{
-		return mList.size();
-	}
+    @Override
+    public void onUpdate(ArrayList<ShowingAssignee> passedItem)
+    {
+        mList = passedItem;
+    }
 
-	@Override
-	public ArrayList<ShowingAssignee> getList()
-	{
-		return mList;
-	}
+    @Override
+    public int getItemCount()
+    {
+        return mList.size();
+    }
 
-	public TransferAssigneeListAdapter setGroup(TransferGroup group)
-	{
-		mGroup = group;
-		return this;
-	}
+    @Override
+    public ArrayList<ShowingAssignee> getList()
+    {
+        return mList;
+    }
 
-	public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId) {
-		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+    public TransferAssigneeListAdapter setGroup(TransferGroup group)
+    {
+        mGroup = group;
+        return this;
+    }
 
-		return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-		{
-			@Override
-			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-			{
-				object.device = new NetworkDevice(object.deviceId);
-				object.connection = new NetworkDevice.Connection(object);
+    public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
+    {
+        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
-				try {
-					db.reconstruct(object.device);
-					db.reconstruct(object.connection);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+        return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+        {
+            @Override
+            public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+            {
+                object.device = new NetworkDevice(object.deviceId);
+                object.connection = new NetworkDevice.Connection(object);
 
-	public static class ShowingAssignee extends TransferGroup.Assignee
-	{
-		public NetworkDevice device;
-		public NetworkDevice.Connection connection;
+                try {
+                    db.reconstruct(object.device);
+                    db.reconstruct(object.connection);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-		public ShowingAssignee()
-		{
+    public static class ShowingAssignee extends TransferGroup.Assignee
+    {
+        public NetworkDevice device;
+        public NetworkDevice.Connection connection;
 
-		}
-	}
+        public ShowingAssignee()
+        {
+
+        }
+    }
 }

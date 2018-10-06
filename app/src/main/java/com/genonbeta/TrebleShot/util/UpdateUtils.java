@@ -53,7 +53,7 @@ public class UpdateUtils
 
 	public static GitHubUpdater getDefaultUpdater(Context context)
 	{
-		return new GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.AppTheme, false);
+		return new GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.Theme_TrebleShot, false);
 	}
 
 	public static long getLastTimeCheckedForUpdates(Context context)

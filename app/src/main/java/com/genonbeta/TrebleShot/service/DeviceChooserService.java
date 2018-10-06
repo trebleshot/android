@@ -9,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.chooser.ChooserTarget;
 import android.service.chooser.ChooserTargetService;
+import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 
@@ -32,39 +33,43 @@ import java.util.List;
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class DeviceChooserService extends ChooserTargetService
 {
-	@Override
-	public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
-	{
-		AccessDatabase database = AppUtils.getDatabase(getApplicationContext());
-		ArrayList<ChooserTarget> list = new ArrayList<>();
+    @Override
+    public List<ChooserTarget> onGetChooserTargets(ComponentName targetActivityName, IntentFilter matchedFilter)
+    {
+        AccessDatabase database = AppUtils.getDatabase(getApplicationContext());
+        ArrayList<ChooserTarget> list = new ArrayList<>();
 
-		for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
-			if (device.isLocalAddress)
-				continue;
+        // use default accent color for light theme
+        @ColorInt
+        int rippleColor = ContextCompat.getColor(getApplicationContext(), R.color.colorControlNormal);
 
-			Bundle bundle = new Bundle();
+        for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
+            if (device.isLocalAddress)
+                continue;
 
-			bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
+            Bundle bundle = new Bundle();
 
-			String firstLetters = TextUtils.getLetters(device.nickname, 1);
-			TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(this, R.color.networkDeviceRipple), 100);
-			Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-			Canvas canvas = new Canvas(bitmap);
+            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
 
-			textImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-			textImage.draw(canvas);
+            String firstLetters = TextUtils.getLetters(device.nickname, 1);
+            TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", rippleColor, 100);
+            Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+            Canvas canvas = new Canvas(bitmap);
 
-			float result = (float) device.lastUsageTime / (float) System.currentTimeMillis();
+            textImage.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            textImage.draw(canvas);
 
-			list.add(new ChooserTarget(
-					device.nickname,
-					Icon.createWithBitmap(bitmap),
-					result,
-					targetActivityName,
-					bundle
-			));
-		}
+            float result = (float) device.lastUsageTime / (float) System.currentTimeMillis();
 
-		return list;
-	}
+            list.add(new ChooserTarget(
+                    device.nickname,
+                    Icon.createWithBitmap(bitmap),
+                    result,
+                    targetActivityName,
+                    bundle
+            ));
+        }
+
+        return list;
+    }
 }

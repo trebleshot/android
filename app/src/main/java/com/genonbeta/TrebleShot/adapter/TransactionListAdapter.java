@@ -52,12 +52,20 @@ public class TransactionListAdapter
 	private PathChangedListener mListener;
 	private NumberFormat mPercentFormat;
 
+	@ColorInt
+	private int mColorPending;
+	private int mColorDone;
+	private int mColorError;
+
 	public TransactionListAdapter(Context context, AccessDatabase database)
 	{
 		super(context, MODE_GROUP_BY_DEFAULT);
 
 		mDatabase = database;
 		mPercentFormat = NumberFormat.getPercentInstance();
+		mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
+		mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+		mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
 
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER));
 	}
@@ -317,7 +325,8 @@ public class TransactionListAdapter
 			if (!holder.tryBinding(object)) {
 				final View parentView = holder.getView();
 
-				int appliedColorRes;
+				@ColorInt
+				int appliedColor;
 				ImageView image = parentView.findViewById(R.id.image);
 				TextView mainText = parentView.findViewById(R.id.text);
 				TextView statusText = parentView.findViewById(R.id.text2);
@@ -340,30 +349,28 @@ public class TransactionListAdapter
 						sizeText.setText(getContext().getString(R.string.text_transferStatusFiles, transferFolder.filesReceived, transferFolder.filesTotal));
 
 					if (transferFolder.hasIssues)
-						appliedColorRes = R.color.errorTintColor;
+						appliedColor = mColorError;
 					else
-						appliedColorRes = transferFolder.filesReceived == transferFolder.filesTotal
-								? R.color.colorAccent : R.color.layoutTintLightColor;
+						appliedColor = transferFolder.filesReceived == transferFolder.filesTotal
+								? mColorDone
+								: mColorPending;
 				} else {
 					switch (object.flag) {
 						case DONE:
-							appliedColorRes = R.color.colorAccent;
+							appliedColor = mColorDone;
 							break;
 						case REMOVED:
 						case INTERRUPTED:
-							appliedColorRes = R.color.errorTintColor;
+							appliedColor = mColorError;
 							break;
 						default:
-							appliedColorRes = R.color.layoutTintLightColor;
+							appliedColor = mColorPending;
 					}
 
 					mainText.setText(object.friendlyName);
 					statusText.setText(TextUtils.getTransactionFlagString(getContext(), object, mPercentFormat).toLowerCase());
 					sizeText.setText(FileUtils.sizeExpression(object.fileSize, false));
 				}
-
-				@ColorInt
-				int appliedColor = ContextCompat.getColor(getContext(), appliedColorRes);
 
 				image.setImageResource(object.getIconRes());
 				mainText.setTextColor(appliedColor);
@@ -402,7 +409,7 @@ public class TransactionListAdapter
 		{
 			return type.equals(TransferObject.Type.INCOMING)
 					? R.drawable.ic_file_download_white_24dp
-					: R.drawable.ic_file_upload_black_24dp;
+					: R.drawable.ic_file_upload_white_24dp;
 		}
 
 		@Override

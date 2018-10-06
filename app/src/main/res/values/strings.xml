@@ -313,7 +313,7 @@
     <string name="mesg_listRefreshSnoozed">The list will be refreshed whenever available</string>
     <string name="mesg_errorReadFolder">Can not access the \"%s\" folder</string>
     <string name="butn_mountDirectory">Mount folder</string>
-    <string name="mesg_mountDirectoryHelp">Select the folder you want to access to</string>
+    <string name="mesg_mountDirectoryHelp">Select the folder you want to access</string>
     <string name="butn_ejectDirectory">Unmount folder</string>
     <string name="text_movedCacheFiles">Cache files moved</string>
     <string name="mode_itemCounted" translatable="false">%s (%d)</string>
@@ -384,4 +384,6 @@
     <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
     <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
 	<string name="mesg_noInternetConnection">This requires internet connection</string>
+    <string name="text_applyDarkTheme">Dark theme</string>
+    <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
 </resources>

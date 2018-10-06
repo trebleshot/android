@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,14 +29,15 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 		mContext = context;
 	}
 
+	@NonNull
 	@Override
-	public Holder onCreateViewHolder(ViewGroup parent, int viewType)
+	public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		return new Holder(LayoutInflater.from(parent.getContext()).inflate(R.layout.list_pathresolver, null));
 	}
 
 	@Override
-	public void onBindViewHolder(final Holder holder, int position)
+	public void onBindViewHolder(@NonNull final Holder holder, int position)
 	{
 		holder.index = mList.get(position);
 		holder.text.setText(holder.index.title);
@@ -120,7 +122,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
 
 			public Index(String title, D object)
 			{
-				this(title, R.drawable.ic_keyboard_arrow_right_black_24dp, object);
+				this(title, R.drawable.ic_keyboard_arrow_right_white_24dp, object);
 			}
 		}
 	}

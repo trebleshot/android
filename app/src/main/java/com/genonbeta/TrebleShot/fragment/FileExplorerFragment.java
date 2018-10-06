@@ -195,10 +195,6 @@ public class FileExplorerFragment
 				Snackbar.make(getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
 		} else if (id == R.id.actions_file_explorer_mount_directory) {
 			startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
-					/*.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION
-							| Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-							| Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
-							| Intent.FLAG_GRANT_PREFIX_URI_PERMISSION), REQUEST_WRITE_ACCESS);*/
 			Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
 		} else
 			return super.onOptionsItemSelected(item);
@@ -266,13 +262,13 @@ public class FileExplorerFragment
 
 				currentFile = currentFile.getParentFile();
 
-				if (currentFile == null)
+				if (currentFile == null && ".".equals(index.title))
 					index.title = getString(R.string.text_fileRoot);
 			}
 
 			synchronized (getList()) {
 				getList().clear();
-				getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_black_24dp, (DocumentFile) null));
+				getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, (DocumentFile) null));
 
 				while (pathIndex.size() != 0) {
 					int currentStage = pathIndex.size() - 1;

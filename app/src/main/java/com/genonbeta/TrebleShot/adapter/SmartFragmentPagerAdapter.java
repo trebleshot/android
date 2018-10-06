@@ -9,12 +9,14 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
@@ -71,6 +73,29 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 						tab.setText(((TitleSupport) fragment).getTitle(getContext()));
 
 				tabLayout.addTab(tab);
+			}
+	}
+
+	public void createTabs(BottomNavigationView bottomNavigationView)
+	{
+		if (getCount() > 0)
+			for (int iterator = 0; iterator < getCount(); iterator++) {
+				StableItem stableItem = getStableItem(iterator);
+				Fragment fragment = getItem(iterator);
+				CharSequence menuTitle = null;
+
+				if (stableItem.title != null && stableItem.title.length() > 0)
+					menuTitle = stableItem.title;
+				else if (fragment instanceof TitleSupport)
+					menuTitle = ((TitleSupport) fragment).getTitle(getContext());
+				else
+					menuTitle = String.valueOf(iterator);
+
+				MenuItem menuItem = bottomNavigationView.getMenu()
+						.add(0, iterator, iterator, menuTitle);
+
+				if (fragment instanceof IconSupport)
+					menuItem.setIcon(((IconSupport) fragment).getIconRes());
 			}
 	}
 

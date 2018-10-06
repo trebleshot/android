@@ -5,9 +5,15 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:key="dark_theme"
+            android:summary="@string/text_applyDarkThemeSummary"
+            android:title="@string/text_applyDarkTheme" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
             android:key="scan_devices_auto"
             android:summary="@string/text_autoScanDevicesSummary"
-            android:title="@string/text_autoScanDevices"/>
+            android:title="@string/text_autoScanDevices" />
 
         <EditTextPreference
             android:dialogTitle="@string/text_deviceNameTitle"
@@ -15,31 +21,31 @@
             android:key="device_name"
             android:maxLength="32"
             android:summary="@string/text_deviceNameSummary"
-            android:title="@string/text_deviceName"/>
+            android:title="@string/text_deviceName" />
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="trust_always"
             android:summary="@string/text_trustZoneEnabledSummary"
-            android:title="@string/text_trustZoneEnabled"/>
+            android:title="@string/text_trustZoneEnabled" />
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="hotspot_trust"
             android:summary="@string/text_hotspotStartsTrustZoneSummary"
-            android:title="@string/text_hotspotStartsTrustZone"/>
+            android:title="@string/text_hotspotStartsTrustZone" />
 
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="qr_trust"
             android:summary="@string/text_qrAllowTrustZoneSummary"
-            android:title="@string/text_qrAllowTrustZone"/>
+            android:title="@string/text_qrAllowTrustZone" />
 
         <CheckBoxPreference
             android:defaultValue="false"
             android:key="kill_service_on_exit"
             android:summary="@string/text_killServiceAfterLeavingSummary"
-            android:title="@string/text_killServiceAfterLeaving"/>
+            android:title="@string/text_killServiceAfterLeaving" />
 
     </PreferenceCategory>
 

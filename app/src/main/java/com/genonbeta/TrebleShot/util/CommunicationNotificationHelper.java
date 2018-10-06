@@ -83,14 +83,14 @@ public class CommunicationNotificationHelper
 		PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent, 0);
 		PendingIntent negativeIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
+		notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_connectionPermission))
 				.setContentText(getContext().getString(R.string.ques_allowDeviceToConnect))
 				.setContentInfo(device.nickname)
 				.setContentIntent(PendingIntent.getBroadcast(getContext(), AppUtils.getUniqueNumber(), dialogIntent, 0))
 				.setDefaults(getUtils().getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(R.drawable.ic_check_white_24dp, getContext().getString(R.string.butn_accept), positiveIntent)
+				.addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
 				.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
 				.setTicker(getContext().getString(R.string.text_connectionPermission));
 
@@ -126,7 +126,7 @@ public class CommunicationNotificationHelper
 						.putExtra(TransactionActivity.EXTRA_GROUP_ID, transferObject.groupId), 0))
 				.setDefaults(getUtils().getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(R.drawable.ic_check_white_24dp, getContext().getString(R.string.butn_accept), positiveIntent)
+				.addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
 				.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
 				.setTicker(getContext().getString(R.string.ques_receiveFile))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -201,7 +201,7 @@ public class CommunicationNotificationHelper
 				.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), activityIntent, 0))
 				.setDefaults(getUtils().getNotificationSettings())
 				.setDeleteIntent(negativeIntent)
-				.addAction(R.drawable.ic_check_white_24dp, getContext().getString(R.string.butn_accept), positiveIntent)
+				.addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
 				.addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
 				.setTicker(getContext().getString(R.string.text_receivedTextSummary))
 				.setPriority(NotificationCompat.PRIORITY_HIGH);
@@ -251,7 +251,7 @@ public class CommunicationNotificationHelper
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.requestId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
-		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
+		notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_error))
 				.setContentText(getContext().getString(R.string.mesg_fileReceiveError, transferObject.friendlyName))
 				.setAutoCancel(true)
@@ -278,7 +278,7 @@ public class CommunicationNotificationHelper
 					errorMsg = getContext().getString(R.string.mesg_notValidTransfer);
 			}
 
-		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
+		notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
 				.setContentTitle(getContext().getString(R.string.text_error))
 				.setContentText(errorMsg)
 				.setAutoCancel(true)
@@ -327,7 +327,7 @@ public class CommunicationNotificationHelper
 				.putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
 				.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
-		notification.setSmallIcon(R.drawable.ic_error_white_24dp)
+		notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
 				.setOngoing(true)
 				.setContentTitle(getContext().getString(R.string.text_stopping))
 				.setContentText(getContext().getString(R.string.text_cancellingTransfer))

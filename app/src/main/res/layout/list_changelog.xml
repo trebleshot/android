@@ -15,10 +15,10 @@
             android:id="@+id/image_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tint="@color/colorAccent"
+            android:tint="?colorAccent"
             android:layout_marginRight="12dp"
             android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_check_white_24dp" />
+            app:srcCompat="@drawable/ic_check_white_24dp_static" />
 
         <TextView
             android:id="@+id/text1"
@@ -33,7 +33,7 @@
     <View
         android:layout_width="wrap_content"
 	    android:layout_marginTop="7dp"
-	    android:background="@color/separatorColor"
+	    android:background="?colorDivider"
 	    android:layout_marginBottom="7dp"
         android:layout_height="1dp"/>
 

@@ -1,16 +1,16 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/listContentLayoutStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?rectSelector"
-    style="@style/listContentLayoutStyle">
+    android:background="?rectSelector">
 
     <FrameLayout
         android:id="@+id/layout_image"
-        android:layout_alignParentLeft="true"
+        style="@style/listContentIconStyle"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true"
-        style="@style/listContentIconStyle">
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true">
 
         <ImageView
             android:id="@+id/image"
@@ -18,13 +18,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:src="@drawable/ic_file_upload_black_24dp"
-            android:tint="@color/colorAccent"/>
+            android:tint="?colorControlNormal"
+            app:srcCompat="@drawable/ic_github_circle_white_24dp" />
 
         <include
             layout="@layout/generic_view_selection_rounded"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 
@@ -40,11 +40,11 @@
             android:id="@+id/text"
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
+            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -56,14 +56,14 @@
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/text3"
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
         </LinearLayout>
 

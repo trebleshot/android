@@ -16,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/layout_transaction_explorer_recycler"
-        android:background="#eee"/>
+        android:background="?colorDivider"/>
 
     <RelativeLayout
         android:id="@+id/layout_transaction_explorer_details_layout"

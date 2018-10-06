@@ -1,7 +1,8 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -17,23 +18,23 @@
             android:layout_marginBottom="24dp"
             android:maxLines="5"
             android:text="@string/text_versionNotSupported"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_deviceModelInfo"/>
+            android:text="@string/text_deviceModelInfo" />
 
         <TextView
             android:id="@+id/device_info_brand_and_model"
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="10dp"/>
+            android:layout_height="10dp" />
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -47,35 +48,35 @@
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_marginLeft="12dp"
                 android:layout_marginStart="12dp"
+                android:layout_marginLeft="12dp"
                 android:background="?roundSelector"
                 android:padding="8dp"
-                android:src="@drawable/ic_file_download_white_24dp"
                 android:text="@string/butn_download"
-                android:tint="@color/colorAccent"/>
+                android:tint="?colorAccent"
+                app:srcCompat="@drawable/ic_file_download_white_24dp" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@id/device_info_get_update_button"
                 android:layout_toStartOf="@id/device_info_get_update_button"
+                android:layout_toLeftOf="@id/device_info_get_update_button"
                 android:orientation="vertical">
 
                 <TextView
                     style="@style/marqueeText.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/text_version"/>
+                    android:text="@string/text_version" />
 
                 <TextView
                     android:id="@+id/device_info_version"
                     style="@style/marqueeText.secondary"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content" />
 
             </LinearLayout>
 
@@ -83,25 +84,25 @@
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="10dp"/>
+            android:layout_height="10dp" />
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/device_info_access_switcher"
             style="@style/marqueeText.primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/text_allowToAccess"/>
+            android:text="@string/text_allowToAccess" />
 
         <TextView
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="10"
-            android:text="@string/text_allowingToConnectNotice"/>
+            android:text="@string/text_allowingToConnectNotice" />
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="10dp"/>
+            android:layout_height="10dp" />
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/device_info_trust_switcher"
@@ -109,14 +110,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/text_appName"
-            android:text="@string/butn_trustZoneDevice"/>
+            android:text="@string/butn_trustZoneDevice" />
 
         <TextView
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="10"
-            android:text="@string/text_trustZoneDeviceNotice"/>
+            android:text="@string/text_trustZoneDeviceNotice" />
 
     </LinearLayout>
 </ScrollView>

@@ -7,9 +7,13 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.annotation.AnyRes;
+import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.RawRes;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import android.util.TypedValue;
 
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
@@ -180,6 +184,37 @@ public class AppUtils
 				: deviceName;
 	}
 
+	public static NetworkDevice getLocalDevice(Context context)
+	{
+		NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
+
+		device.brand = Build.BRAND;
+		device.model = Build.MODEL;
+		device.nickname = AppUtils.getLocalDeviceName(context);
+		device.isRestricted = false;
+		device.isLocalAddress = true;
+
+		try {
+			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
+
+			device.versionNumber = packageInfo.versionCode;
+			device.versionName = packageInfo.versionName;
+		} catch (PackageManager.NameNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return device;
+	}
+
+	@AnyRes
+	public static int getReference(Context context, @AttrRes int refId)
+	{
+		TypedValue typedValue = new TypedValue();
+		context.getTheme().resolveAttribute(refId, typedValue, true);
+
+		return typedValue.resourceId;
+	}
+
 	public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
 	{
 		ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
@@ -204,28 +239,6 @@ public class AppUtils
 	public static int getUniqueNumber()
 	{
 		return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);
-	}
-
-	public static NetworkDevice getLocalDevice(Context context)
-	{
-		NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
-
-		device.brand = Build.BRAND;
-		device.model = Build.MODEL;
-		device.nickname = AppUtils.getLocalDeviceName(context);
-		device.isRestricted = false;
-		device.isLocalAddress = true;
-
-		try {
-			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
-
-			device.versionNumber = packageInfo.versionCode;
-			device.versionName = packageInfo.versionName;
-		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return device;
 	}
 
 	public static SuperPreferences getViewingPreferences(Context context)

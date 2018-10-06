@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/actions_abs_editable_multi_select"
-        android:icon="@drawable/ic_select"
+        android:icon="@drawable/ic_format_list_checks_white_24dp"
         android:orderInCategory="10"
         android:title="@string/butn_multiSelect"/>
 

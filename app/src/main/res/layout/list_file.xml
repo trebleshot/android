@@ -1,5 +1,5 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/listContentLayoutStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,13 +10,13 @@
         style="@style/overflowButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical"/>
+        android:layout_gravity="center_vertical" />
 
     <FrameLayout
         android:id="@+id/layout_image"
         style="@style/listContentIconStyle"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_centerVertical="true">
 
         <ImageView
@@ -25,13 +25,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:src="@drawable/ic_folder_white_24dp"
-            android:tint="@color/colorAccent"/>
+            android:tint="?colorAccent"
+            app:srcCompat="@drawable/ic_folder_white_24dp" />
 
         <include
             layout="@layout/generic_view_selection_rounded"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
 
     </FrameLayout>
 
@@ -39,10 +39,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toLeftOf="@id/menu"
-        android:layout_toRightOf="@id/layout_image"
         android:layout_toStartOf="@id/menu"
+        android:layout_toLeftOf="@id/menu"
+        android:layout_toEndOf="@id/layout_image"
+        android:layout_toRightOf="@id/layout_image"
         android:orientation="vertical">
 
         <TextView
@@ -50,17 +50,17 @@
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="3"/>
+            android:maxLines="3" />
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
+            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
         <TextView
             android:id="@+id/text2"
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

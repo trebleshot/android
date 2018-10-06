@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -73,8 +74,9 @@ public class HomeActivity
 
 	private Fragment mDelayedCommitFragment;
 
+	@ColorInt
+	private int mIconRippleColor;
 	private long mExitPressTime;
-
 	private boolean mIsStopped = false;
 
 	@Override
@@ -94,6 +96,7 @@ public class HomeActivity
 
 		mActionMode = findViewById(R.id.content_powerful_action_mode);
 		mNavigationView = findViewById(R.id.nav_view);
+		mIconRippleColor = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorAccent));
 
 		mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -174,7 +177,9 @@ public class HomeActivity
 			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
 			String firstLetters = TextUtils.getLetters(localDevice.nickname, 0);
-			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", ContextCompat.getColor(getApplicationContext(), R.color.networkDeviceRipple), 100);
+			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
+					? firstLetters :
+					"?", mIconRippleColor, 100);
 
 			imageView.setImageDrawable(drawable);
 			deviceNameText.setText(localDevice.nickname);

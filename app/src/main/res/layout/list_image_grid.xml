@@ -3,8 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="1dp"
-    android:background="@color/thumbnailColor">
+    android:layout_margin="1dp">
 
     <ImageView
         android:id="@+id/image"
@@ -29,9 +28,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:padding="8dp"
-        android:shadowColor="@color/whiteTextShadowColor"
         android:shadowRadius="5"
-        android:textColor="@color/whiteAccent"
         android:textSize="12sp"
         android:visibility="gone"/>
 
@@ -43,9 +40,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:padding="8dp"
-        android:shadowColor="@color/whiteTextShadowColor"
         android:shadowRadius="5"
-        android:textColor="@color/whiteAccent"
         android:textSize="12sp"
         android:visibility="gone"/>
 
@@ -56,9 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:shadowColor="@color/whiteTextShadowColor"
         android:shadowRadius="5"
-        android:textColor="@color/videoTextColor"
         android:visibility="gone"/>
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

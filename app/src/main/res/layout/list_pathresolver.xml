@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingBottom="10dp"
     android:paddingLeft="10dp"
+    android:paddingTop="10dp"
     android:paddingRight="10dp"
-    android:paddingTop="10dp">
+    android:paddingBottom="10dp">
 
     <View
         android:id="@+id/list_pathresolver_left_space"
-        android:layout_width="10dp"
+        android:layout_width="20dp"
         android:layout_height="0dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/list_pathresolver_image"
@@ -24,8 +23,8 @@
         android:layout_height="wrap_content"
         android:paddingEnd="20dp"
         android:paddingRight="20dp"
-        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
-        android:tint="@color/colorAccent"/>
+        android:tint="?colorAccent"
+        app:srcCompat="@drawable/ic_keyboard_arrow_right_white_24dp" />
 
     <TextView
         android:id="@+id/list_pathresolver_text"
@@ -33,12 +32,12 @@
         android:layout_height="wrap_content"
         android:textAllCaps="true"
         android:textColor="?android:textColorPrimary"
-        app:fontFamily="sans-serif-condensed"/>
+        app:fontFamily="sans-serif-condensed" />
 
     <View
         android:id="@+id/list_pathresolver_right_space"
-        android:layout_width="10dp"
+        android:layout_width="20dp"
         android:layout_height="0dp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </LinearLayout>

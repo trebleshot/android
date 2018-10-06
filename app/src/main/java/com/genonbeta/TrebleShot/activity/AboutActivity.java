@@ -122,7 +122,7 @@ public class AboutActivity extends Activity
 
 	private void highlightUpdater(TextView textView, String availableVersion)
 	{
-		textView.setTextColor(ContextCompat.getColor(getApplicationContext(), R.color.colorAccent));
+		textView.setTextColor(ContextCompat.getColor(getApplicationContext(), AppUtils.getReference(AboutActivity.this, R.attr.colorAccent)));
 		textView.setText(R.string.text_newVersionAvailable);
 	}
 }

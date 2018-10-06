@@ -61,4 +61,8 @@
         android:defaultValue="false"
         android:key="show_system_apps"/>
 
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="dark_theme"/>
+
 </PreferenceScreen>

@@ -1,5 +1,5 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_transaction_details_button_fourth"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,18 +12,18 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="35dp"
         android:layout_marginStart="15dp"
-        android:src="@drawable/ic_card_giftcard_black_24dp"
-        android:tint="@color/donateMenuTint"/>
+        android:layout_marginLeft="15dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginRight="35dp"
+        app:srcCompat="@drawable/ic_card_giftcard_black_24dp"
+        app:tint="@color/donateMenuTint" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/butn_donate"
         android:textColor="?android:textColorPrimary"
-        android:textStyle="bold"/>
+        android:textStyle="bold" />
 
 </LinearLayout>

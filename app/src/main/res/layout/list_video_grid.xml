@@ -3,8 +3,7 @@
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="1dp"
-    android:background="@color/thumbnailColor">
+    android:layout_margin="1dp">
 
     <ImageView
         android:id="@+id/image"
@@ -28,7 +27,6 @@
         android:background="@drawable/transparent_background_gradient_top"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
     <TextView
@@ -40,7 +38,6 @@
         android:background="@drawable/transparent_background_gradient_bottom"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="@color/whiteAccent"
         android:textSize="12sp"/>
 
     <TextView
@@ -50,9 +47,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:shadowColor="@color/whiteTextShadowColor"
         android:shadowRadius="5"
-        android:textColor="@color/videoTextColor"
         android:visibility="gone"/>
 
     <include layout="@layout/generic_view_selection"/>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,24 +9,23 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="wrap_content">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
+            style="?actionBarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+            android:theme="?actionBarTheme"
+            app:layout_scrollFlags="scroll|enterAlways|snap" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/activity_content_sharing_tab_layout"
             android:layout_width="wrap_content"
-            android:layout_gravity="center_horizontal"
             android:layout_height="wrap_content"
-            app:tabMode="scrollable"
-            android:minHeight="?attr/actionBarSize"/>
+            android:layout_gravity="center_horizontal"
+            android:minHeight="?attr/actionBarSize"
+            app:tabMode="scrollable" />
 
     </android.support.design.widget.AppBarLayout>
 
@@ -43,16 +41,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:theme="@style/AppTheme.AppBarOverlay"
             android:visibility="gone">
 
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
+                style="?actionBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/actionModeBackground"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                android:theme="?actionBarTheme" />
 
         </android.support.design.widget.AppBarLayout>
 
@@ -61,7 +57,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/activity_content_sharing_action_mode_layout"
-            android:layout_alignParentTop="true"/>
+            android:layout_alignParentTop="true" />
 
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

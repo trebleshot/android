@@ -34,6 +34,10 @@ android {
 		targetSdkVersion 28
 		versionCode 81
 		versionName "1.2.7.3"
+
+		vectorDrawables {
+			useSupportLibrary = true
+		}
 	}
 
 	lintOptions {

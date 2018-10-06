@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,8 +11,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/app_bar_height"
-        android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:fitsSystemWindows="true">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
@@ -28,8 +26,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:layout_collapseMode="pin"
-                app:popupTheme="@style/AppTheme.PopupOverlay"/>
+                app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -52,17 +49,17 @@
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"/>
+                    android:layout_height="48dp" />
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_favorite_black_144dp"
-                    android:tint="@color/donateMenuTint"/>
+                    android:tint="?colorDonation"
+                    app:srcCompat="@drawable/ic_favorite_white_144dp" />
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"/>
+                    android:layout_height="48dp" />
 
                 <TextView
                     style="@style/marqueeText.primary"
@@ -70,22 +67,22 @@
                     android:layout_height="wrap_content"
                     android:text="@string/text_prefaceNickname"
                     android:textSize="@dimen/font_size_big"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"/>
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
                     android:text="@string/text_prefaceDonation"
-                    app:fontFamily="monospace"/>
+                    app:fontFamily="monospace" />
 
                 <View
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"/>
+                    android:layout_height="48dp" />
 
             </LinearLayout>
 
@@ -99,7 +96,7 @@
                     android:name="com.genonbeta.TrebleShot.fragment.external.InAppDonationItemListFragment"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:tag="donationsFragment"/>
+                    android:tag="donationsFragment" />
 
             </LinearLayout>
 

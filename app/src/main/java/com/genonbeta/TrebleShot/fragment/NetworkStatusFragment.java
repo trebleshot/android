@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
-import android.net.DhcpInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -18,7 +17,6 @@ import android.support.design.widget.Snackbar;
 import android.support.transition.TransitionManager;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,13 +30,13 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -52,7 +50,7 @@ import org.json.JSONObject;
  */
 public class NetworkStatusFragment
 		extends com.genonbeta.android.framework.app.Fragment
-		implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+		implements TitleSupport	, IconSupport
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -151,6 +149,13 @@ public class NetworkStatusFragment
 		return getUIConnectionUtils().getConnectionUtils();
 	}
 
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_wifi_tethering_white_24dp;
+	}
+
+
 	public UIConnectionUtils getUIConnectionUtils()
 	{
 		if (mConnectionUtils == null)
@@ -178,7 +183,7 @@ public class NetworkStatusFragment
 	// for connection addressing purpose
 	public void updateViews(String networkName, String ipAddress, String bssid)
 	{
-		mTextIcon2.setImageResource(R.drawable.ic_wifi_black_24dp);
+		mTextIcon2.setImageResource(R.drawable.ic_wifi_white_24dp);
 		mTextIcon3.setImageResource(R.drawable.ic_device_hub_white_24dp);
 
 		try {
@@ -196,7 +201,7 @@ public class NetworkStatusFragment
 	public void updateViews(String networkName, String password, int keyManagement)
 	{
 		mTextIcon2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp);
-		mTextIcon3.setImageResource(R.drawable.ic_vpn_key_black_24dp);
+		mTextIcon3.setImageResource(R.drawable.ic_vpn_key_white_24dp);
 
 		try {
 			JSONObject object = new JSONObject()

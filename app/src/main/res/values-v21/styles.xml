@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base">
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowSharedElementsUseOverlay">true</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.DefaultStatusBar">
+    <style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowSharedElementsUseOverlay">true</item>
+    </style>
+
+    <style name="Theme.TrebleShot.NoActionBar.StaticStatusBar">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
     </style>
-
-    <style name="AppTheme.GreyStatusBar">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorPrimaryDark">@color/themeGreyDominant</item>
-        <item name="colorPrimary">@color/themeGreyDominant</item>
-        <item name="colorAccent">@color/themeGreyAccent</item>
-        <item name="android:statusBarColor">@color/themeGreyDominant</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-    </style>
-
-    <style name="AppTheme.DonationTheme">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">true</item>
-        <item name="colorPrimaryDark">@color/donateMenuTint</item>
-        <item name="colorPrimary">@color/donateMenuTint</item>
-        <item name="colorAccent">@color/whiteAccent</item>
-        <item name="android:statusBarColor">@color/donateMenuTint</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-    </style>
-
 </resources>

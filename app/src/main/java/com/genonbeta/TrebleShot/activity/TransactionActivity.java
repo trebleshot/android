@@ -477,7 +477,7 @@ public class TransactionActivity
 
 			StringBuilder mergedPath = new StringBuilder();
 
-			getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_black_24dp, (String) null));
+			getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, (String) null));
 
 			if (paths != null)
 				for (String path : paths) {

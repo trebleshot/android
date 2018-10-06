@@ -57,7 +57,7 @@ public class FilePickerActivity extends Activity
 			boolean hasTitlesDefined = false;
 
 			if (getIntent() != null && getSupportActionBar() != null) {
-				getSupportActionBar().setHomeAsUpIndicator(R.drawable.genfw_close_white_24dp);
+				getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 				getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 				if (hasTitlesDefined = getIntent().hasExtra(EXTRA_ACTIVITY_TITLE))

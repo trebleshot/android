@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -39,7 +40,7 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 public class NetworkDeviceListFragment
 		extends DynamicRecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
-		implements TitleSupport, DetachListener
+		implements TitleSupport, DetachListener, IconSupport
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -71,8 +72,10 @@ public class NetworkDeviceListFragment
 
 		mSwipeRefreshLayout = new SwipeRefreshLayout(context);
 
-		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(context, R.color.colorPrimary),
-				ContextCompat.getColor(context, R.color.colorAccent));
+
+
+		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat
+				.getColor(context, AppUtils.getReference(getActivity(), R.attr.colorControlNormal)));
 
 		mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
@@ -240,6 +243,12 @@ public class NetworkDeviceListFragment
 	public ConnectionUtils getConnectionUtils()
 	{
 		return getUIConnectionUtils().getConnectionUtils();
+	}
+
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_devices_white_24dp;
 	}
 
 	public UIConnectionUtils getUIConnectionUtils()

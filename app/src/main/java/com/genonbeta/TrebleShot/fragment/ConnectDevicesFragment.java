@@ -4,9 +4,11 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,7 +36,7 @@ public class ConnectDevicesFragment
 	private NetworkDeviceSelectedListener mDeviceSelectedListener;
 	private SmartFragmentPagerAdapter mPagerAdapter;
 	private ViewPager mViewPager;
-	private TabLayout mTabLayout;
+	private BottomNavigationView mBottomNavigationView;
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState)
@@ -55,7 +57,7 @@ public class ConnectDevicesFragment
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
 		final View view = inflater.inflate(R.layout.layout_connect_devices, container, false);
-		mViewPager = view.findViewById(R.id.activity_transaction_view_pager);
+		mViewPager = view.findViewById(R.id.layout_connect_devices_view_pager);
 
 		final NetworkDeviceSelectedListener selectionListenerDevices = new NetworkDeviceSelectedListener()
 		{
@@ -91,7 +93,7 @@ public class ConnectDevicesFragment
 			}
 		};
 
-		mTabLayout = view.findViewById(R.id.activity_transaction_tab_layout);
+		mBottomNavigationView = view.findViewById(R.id.layout_connect_devices_bottom_navigation_view);
 		mPagerAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager())
 		{
 			@Override
@@ -106,28 +108,46 @@ public class ConnectDevicesFragment
 			}
 		};
 
-
 		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_FRONT);
 
 		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, NetworkDeviceListFragment.class, null));
 		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, NetworkStatusFragment.class, null));
 		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, CodeConnectFragment.class, null));
 
-		mPagerAdapter.createTabs(mTabLayout);
-		mTabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
+		mPagerAdapter.createTabs(mBottomNavigationView);
 
 		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_BACK);
 
 		mViewPager.setAdapter(mPagerAdapter);
-		mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
 
-		mTabLayout.addOnTabSelectedListener(new SmartFragmentPagerAdapter.TabLayoutSelectedListener(mPagerAdapter)
+		mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
 		{
 			@Override
-			public void onTabSelected(TabLayout.Tab tab)
+			public void onPageScrolled(int i, float v, int i1)
 			{
-				super.onTabSelected(tab);
-				mViewPager.setCurrentItem(tab.getPosition());
+
+			}
+
+			@Override
+			public void onPageSelected(int i)
+			{
+				mBottomNavigationView.setSelectedItemId(i);
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int i)
+			{
+
+			}
+		});
+
+		mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
+		{
+			@Override
+			public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+			{
+				mViewPager.setCurrentItem(menuItem.getOrder());
+				return true;
 			}
 		});
 
@@ -139,9 +159,9 @@ public class ConnectDevicesFragment
 		return mPagerAdapter;
 	}
 
-	public TabLayout getTabLayout()
+	public BottomNavigationView getBottomNavigationView()
 	{
-		return mTabLayout;
+		return mBottomNavigationView;
 	}
 
 	@Override

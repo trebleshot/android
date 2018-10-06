@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
@@ -31,10 +32,16 @@ import java.util.ArrayList;
 public class TransactionGroupListAdapter
 		extends GroupEditableListAdapter<TransactionGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder>
 {
+	final private ArrayList<Long> mRunningTasks = new ArrayList<>();
+
 	private AccessDatabase mDatabase;
 	private SQLQuery.Select mSelect;
 	private NumberFormat mPercentFormat;
-	private ArrayList<Long> mRunningTasks = new ArrayList<>();
+
+	@ColorInt
+	private int mColorPending;
+	private int mColorDone;
+	private int mColorError;
 
 	public TransactionGroupListAdapter(Context context, AccessDatabase database)
 	{
@@ -42,6 +49,9 @@ public class TransactionGroupListAdapter
 
 		mDatabase = database;
 		mPercentFormat = NumberFormat.getPercentInstance();
+		mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
+		mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+		mColorError = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorError));
 
 		setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
 	}
@@ -123,7 +133,8 @@ public class TransactionGroupListAdapter
 
 			if (!holder.tryBinding(object)) {
 				final View parentView = holder.getView();
-				int appliedColorRes;
+				@ColorInt
+				int appliedColor;
 
 				ImageView image = parentView.findViewById(R.id.image);
 				TextView text1 = parentView.findViewById(R.id.text);
@@ -133,10 +144,11 @@ public class TransactionGroupListAdapter
 				parentView.setSelected(object.isSelectableSelected());
 
 				if (object.index.hasIssues)
-					appliedColorRes = R.color.errorTintColor;
+					appliedColor = mColorError;
 				else
-					appliedColorRes = object.totalCount == object.totalCountCompleted
-							? R.color.colorAccent : R.color.layoutTintLightColor;
+					appliedColor = object.totalCount == object.totalCountCompleted
+							? mColorDone
+							: mColorPending;
 
 				if (object.isRunning) {
 					image.setImageResource(R.drawable.ic_pause_white_24dp);
@@ -145,15 +157,12 @@ public class TransactionGroupListAdapter
 							|| (object.index.outgoingCount > 0 && object.index.incomingCount > 0))
 						image.setImageResource(object.index.outgoingCount > 0
 								? R.drawable.ic_compare_arrows_white_24dp
-								: R.drawable.ic_error_white_24dp);
+								: R.drawable.ic_error_outline_white_24dp);
 					else
 						image.setImageResource(object.index.outgoingCount > 0
-								? R.drawable.ic_file_upload_black_24dp
-								: R.drawable.ic_file_download_black_24dp);
+								? R.drawable.ic_file_upload_white_24dp
+								: R.drawable.ic_file_download_white_24dp);
 				}
-
-				@ColorInt
-				int appliedColor = ContextCompat.getColor(getContext(), appliedColorRes);
 
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 				text1.setTextColor(appliedColor);
