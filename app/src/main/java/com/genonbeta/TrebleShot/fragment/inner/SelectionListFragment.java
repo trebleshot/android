@@ -30,10 +30,9 @@ import java.util.ArrayList;
  */
 public class SelectionListFragment
 		extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder, SelectionListFragment.MyAdapter>
-		implements IconSupport, TitleSupport, SmartFragmentPagerAdapter.ShowingChangeListener
+		implements IconSupport, TitleSupport
 {
 	private WeakReference<ReadyLoadListener> mListener;
-	private SmartFragmentPagerAdapter.TabSelectionOracle mTabSelectionOracle = new SmartFragmentPagerAdapter.TabSelectionOracle(this);
 
 	@Override
 	public MyAdapter onAdapter()
@@ -92,21 +91,7 @@ public class SelectionListFragment
 	public void onResume()
 	{
 		super.onResume();
-		mTabSelectionOracle.cycle(true);
-	}
-
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		mTabSelectionOracle.cycle(false);
-	}
-
-	@Override
-	public void onNotifyShowingChange()
-	{
-		if (mTabSelectionOracle.isResuming())
-			refreshList();
+		refreshList();
 	}
 
 	@DrawableRes
@@ -117,15 +102,9 @@ public class SelectionListFragment
 	}
 
 	@Override
-	public SmartFragmentPagerAdapter.TabSelectionOracle getTabSelectionOracle()
-	{
-		return mTabSelectionOracle;
-	}
-
-	@Override
 	public CharSequence getTitle(Context context)
 	{
-		return context.getString(R.string.butn_previewSelections);
+		return context.getString(R.string.text_files);
 	}
 
 	protected boolean loadIfReady()

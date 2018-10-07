@@ -32,8 +32,10 @@
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
+                style="?actionBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:theme="?actionBarTheme"
                 app:layout_collapseMode="pin" />
 
         </android.support.design.widget.CollapsingToolbarLayout>
@@ -47,6 +49,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusableInTouchMode="true"
             android:orientation="vertical">
 
             <View
@@ -77,9 +80,9 @@
                             android:id="@+id/orgIcon"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:padding="15dp"
                             android:layout_marginBottom="15dp"
                             android:background="?roundSelector"
+                            android:padding="15dp"
                             app:srcCompat="@drawable/ic_genonbeta_white_36dp"
                             app:tint="?colorAccent" />
 
@@ -103,10 +106,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
                             android:layout_marginStart="15dp"
-                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_marginEnd="30dp"
+                            android:layout_marginRight="30dp"
                             app:srcCompat="@drawable/ic_github_circle_white_24dp"
                             app:tint="?colorControlNormal" />
 
@@ -131,10 +134,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
                             android:layout_marginStart="15dp"
-                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_marginEnd="30dp"
+                            android:layout_marginRight="30dp"
                             app:srcCompat="@drawable/ic_translate_white_24dp" />
 
                         <TextView
@@ -158,10 +161,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
                             android:layout_marginStart="15dp"
-                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_marginEnd="30dp"
+                            android:layout_marginRight="30dp"
                             app:srcCompat="@drawable/ic_copyright_white_24dp" />
 
                         <TextView
@@ -186,10 +189,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="15dp"
                             android:layout_marginStart="15dp"
-                            android:layout_marginRight="30dp"
+                            android:layout_marginLeft="15dp"
                             android:layout_marginEnd="30dp"
+                            android:layout_marginRight="30dp"
                             app:srcCompat="@drawable/ic_autorenew_white_24dp" />
 
                         <TextView

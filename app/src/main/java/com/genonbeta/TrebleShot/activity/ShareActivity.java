@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -113,7 +114,20 @@ public class ShareActivity extends Activity
 		}
 	}
 
-	protected void onRequestReady()
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == android.R.id.home) {
+			finish();
+		} else
+			return super.onOptionsItemSelected(item);
+
+		return true;
+	}
+
+		protected void onRequestReady()
 	{
 		if (getIntent().hasExtra(EXTRA_DEVICE_ID)) {
 			String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
@@ -646,6 +660,11 @@ public class ShareActivity extends Activity
 		setSupportActionBar(mToolbar);
 
 		mToolbar.setTitle(R.string.text_shareWithTrebleshot);
+
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
 

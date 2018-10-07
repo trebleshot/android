@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
@@ -18,6 +19,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +29,6 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -56,13 +57,12 @@ import java.util.List;
  */
 public class CodeConnectFragment
         extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, UITask, IconSupport, SmartFragmentPagerAdapter.ShowingChangeListener
+        implements TitleSupport, UITask, IconSupport
 {
     public static final String TAG = "CodeConnectFragment";
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
 
-    private SmartFragmentPagerAdapter.TabSelectionOracle mTabSelectionOracle = new SmartFragmentPagerAdapter.TabSelectionOracle(this);
     private BarcodeView mBarcodeView;
     private UIConnectionUtils mConnectionUtils;
     private TextView mConductText;
@@ -76,6 +76,9 @@ public class CodeConnectFragment
 
     @ColorInt
     int mColorWindowBackground;
+
+    @ColorInt
+    int mColorControlNormal;
 
     private Snackbar.Callback mWaitedSnackbarCallback = new Snackbar.Callback()
     {
@@ -115,6 +118,7 @@ public class CodeConnectFragment
 
         mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
         mColorWindowBackground = ContextCompat.getColor(getContext(), AppUtils.getReference(getActivity(), android.R.attr.windowBackground));
+        mColorControlNormal = ContextCompat.getColor(getContext(), AppUtils.getReference(getActivity(), R.attr.colorControlNormal));
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -205,8 +209,8 @@ public class CodeConnectFragment
     {
         super.onResume();
 
-        mTabSelectionOracle.cycle(true);
         getContext().registerReceiver(mReceiver, mIntentFilter);
+        updateState();
     }
 
     @Override
@@ -214,8 +218,8 @@ public class CodeConnectFragment
     {
         super.onPause();
 
-        mTabSelectionOracle.cycle(false);
         getContext().unregisterReceiver(mReceiver);
+        mBarcodeView.pauseAndWait();
     }
 
     @Override
@@ -234,25 +238,9 @@ public class CodeConnectFragment
     }
 
     @Override
-    public void onNotifyShowingChange()
-    {
-        if (mTabSelectionOracle.isResuming())
-            updateState();
-        else
-            mBarcodeView.pauseAndWait();
-    }
-
-    @Override
     public int getIconRes()
     {
         return R.drawable.ic_qrcode_white_24dp;
-    }
-
-
-    @Override
-    public SmartFragmentPagerAdapter.TabSelectionOracle getTabSelectionOracle()
-    {
-        return mTabSelectionOracle;
     }
 
     @Override
@@ -269,40 +257,37 @@ public class CodeConnectFragment
     public void updateState()
     {
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
+        final boolean hasPermissions = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+        final boolean state = wifiEnabled && hasPermissions;
 
-        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
-            mConductText.setText(R.string.text_cameraPermissionRequired);
+        if (!state) {
+            mBarcodeView.pauseAndWait();
+
+            mConductText.setTextColor(mColorControlNormal);
             mConductContainer.setBackgroundColor(mColorWindowBackground);
+            ImageViewCompat.setImageTintList(mConductImage, ColorStateList.valueOf(mColorControlNormal));
 
-            if (!mPermissionRequested)
-                ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+            if (!hasPermissions) {
+                mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
+                mConductText.setText(R.string.text_cameraPermissionRequired);
 
-            mPermissionRequested = true;
+                if (!mPermissionRequested)
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+
+                mPermissionRequested = true;
+            } else if (!wifiEnabled) {
+                mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
+                mConductText.setText(R.string.text_scanQRWifiRequired);
+            }
         } else {
-            mConductImage.setImageResource(wifiEnabled
-                    ? R.drawable.ic_crop_free_white_144dp
-                    : R.drawable.ic_signal_wifi_off_white_144dp);
+            mConductImage.setImageResource(R.drawable.ic_crop_free_white_144dp);
+            mConductContainer.setBackgroundColor(Color.TRANSPARENT);
+            mConductText.setText(R.string.text_scanQRCodeHelp);
+            mConductText.setTextColor(Color.WHITE);
+            ImageViewCompat.setImageTintList(mConductImage, ColorStateList.valueOf(Color.WHITE));
 
-            mConductContainer.setBackgroundColor(wifiEnabled
-                    ? Color.TRANSPARENT
-                    : mColorWindowBackground);
-
-            mConductText.setText(wifiEnabled
-                    ? R.string.text_scanQRCodeHelp
-                    : R.string.text_scanQRWifiRequired);
-
-            new Handler().postDelayed(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    if (wifiEnabled)
-                        mBarcodeView.resume();
-                    else
-                        mBarcodeView.pauseAndWait();
-                }
-            }, 300);
+            mBarcodeView.resume();
         }
     }
 

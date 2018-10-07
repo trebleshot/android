@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 
@@ -109,10 +110,6 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 		stableItem.mInitiatedItem = fragment;
 		stableItem.mCurrentPosition = position;
 
-		if (fragment instanceof ShowingChangeListener)
-			((ShowingChangeListener) fragment).getTabSelectionOracle()
-					.setTabContext(true);
-
 		onItemInstantiated(stableItem);
 
 		return fragment;
@@ -168,62 +165,6 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 	public StableItem getStableItem(int position)
 	{
 		return mItems.get(position);
-	}
-
-	public void notifyShowingChanges(final TabLayout.Tab tab, final boolean showing)
-	{
-		final StableItem item = getStableItem(tab.getPosition());
-
-		if (item.getInitiatedItem() != null
-				&& item.getInitiatedItem() instanceof ShowingChangeListener)
-			new Handler(Looper.myLooper()).postDelayed(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					if (item.getInitiatedItem().isAdded()) {
-						ShowingChangeListener changeListener = (ShowingChangeListener) item.getInitiatedItem();
-
-						changeListener.getTabSelectionOracle()
-								.showing(showing);
-					}
-				}
-			}, 400);
-	}
-
-	public interface ShowingChangeListener
-	{
-		TabSelectionOracle getTabSelectionOracle();
-
-		void onNotifyShowingChange();
-	}
-
-	public static class TabLayoutSelectedListener implements TabLayout.OnTabSelectedListener
-	{
-		private SmartFragmentPagerAdapter mAdapter;
-
-		public TabLayoutSelectedListener(SmartFragmentPagerAdapter adapter)
-		{
-			mAdapter = adapter;
-		}
-
-		@Override
-		public void onTabSelected(TabLayout.Tab tab)
-		{
-			mAdapter.notifyShowingChanges(tab, true);
-		}
-
-		@Override
-		public void onTabUnselected(TabLayout.Tab tab)
-		{
-			mAdapter.notifyShowingChanges(tab, false);
-		}
-
-		@Override
-		public void onTabReselected(TabLayout.Tab tab)
-		{
-
-		}
 	}
 
 	public static class StableItem implements Parcelable
@@ -308,63 +249,6 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 			dest.writeBundle(arguments);
 			dest.writeString(title);
 			dest.writeInt(iconOnly ? 1 : 0);
-		}
-	}
-
-	public static class TabSelectionOracle
-	{
-		private boolean mShowing = false;
-		private boolean mTabContext = false;
-		private boolean mInCycle = false;
-		private ShowingChangeListener mListener;
-
-		public TabSelectionOracle(@NonNull ShowingChangeListener listener)
-		{
-			mListener = listener;
-		}
-
-		public boolean isInCycle()
-		{
-			return mInCycle;
-		}
-
-		public boolean isResuming()
-		{
-			return isInCycle() && (isShowing() || !isTabContext());
-		}
-
-		public boolean isShowing()
-		{
-			return mShowing;
-		}
-
-		public boolean isTabContext()
-		{
-			return mTabContext;
-		}
-
-		public TabSelectionOracle cycle(boolean inCycle)
-		{
-			mInCycle = inCycle;
-
-			if (!isTabContext() || isShowing())
-				mListener.onNotifyShowingChange();
-
-			return this;
-		}
-
-		public TabSelectionOracle showing(boolean showing)
-		{
-			mShowing = showing;
-			mListener.onNotifyShowingChange();
-
-			return this;
-		}
-
-		public TabSelectionOracle setTabContext(boolean tabContext)
-		{
-			mTabContext = tabContext;
-			return this;
 		}
 	}
 }
