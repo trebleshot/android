@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -27,6 +28,11 @@ public class AboutActivity extends Activity
 
 		Toolbar toolbar = findViewById(R.id.toolbar);
 		setSupportActionBar(toolbar);
+
+		if (getSupportActionBar() != null) {
+			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		}
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()
 		{
@@ -118,6 +124,19 @@ public class AboutActivity extends Activity
 
 		if (contributorsListFragment != null)
 			contributorsListFragment.getListView().setNestedScrollingEnabled(false);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		int id = item.getItemId();
+
+		if (id == android.R.id.home) {
+			finish();
+		} else
+			return super.onOptionsItemSelected(item);
+
+		return true;
 	}
 
 	private void highlightUpdater(TextView textView, String availableVersion)

@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -47,6 +48,9 @@ public class ChangeStoragePathActivity extends Activity
 									.edit()
 									.putString("storage_path", data.getParcelableExtra(FilePickerActivity.EXTRA_CHOSEN_PATH).toString())
 									.apply();
+
+							// TODO: 10/7/18 Yeah show emoji
+							Toast.makeText(this, "\uD83D\uDC4D", Toast.LENGTH_SHORT).show();
 						}
 						break;
 				}

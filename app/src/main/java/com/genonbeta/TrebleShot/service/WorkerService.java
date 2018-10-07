@@ -133,9 +133,9 @@ public class WorkerService extends Service
 					0);
 
 			mNotification = mNotificationUtils.buildDynamicNotification(ID_NOTIFICATION_FOREGROUND, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
-			mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp)
+			mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp_static)
 					.setContentTitle(getString(R.string.text_taskOngoing))
-					.addAction(R.drawable.ic_close_white_24dp, getString(R.string.butn_cancel), cancelIntent);
+					.addAction(R.drawable.ic_close_white_24dp_static, getString(R.string.butn_cancel), cancelIntent);
 		}
 
 		synchronized (getTaskList()) {

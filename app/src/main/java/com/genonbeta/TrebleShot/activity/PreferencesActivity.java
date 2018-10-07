@@ -42,9 +42,13 @@ public class PreferencesActivity extends Activity
 				@Override
 				public void onClick(DialogInterface dialog, int which)
 				{
-					SharedPreferences sharedPreferences = getDefaultPreferences();
 
-					sharedPreferences.edit()
+					// TODO: 10/7/18 This will cause two seperate sync operations to start
+					AppUtils.getDefaultPreferences(getApplicationContext()).edit()
+							.clear()
+							.apply();
+
+					AppUtils.getDefaultLocalPreferences(getApplicationContext()).edit()
 							.clear()
 							.apply();
 

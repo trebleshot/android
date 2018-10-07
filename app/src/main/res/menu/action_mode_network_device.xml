@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_mode_network_device_toggle_connection"
+        android:title="@string/butn_connect"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/action_mode_network_device_toggle_access"
+        android:title="@string/butn_allow"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/action_mode_network_device_remove"
+        android:title="@string/butn_remove"
+        android:visible="false"/>
+
+</menu>

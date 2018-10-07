@@ -43,7 +43,7 @@
 	</style>
 
 	<style name="overflowButton">
-		<item name="srcCompat">@drawable/ic_more_vert_grey_24dp</item>
+		<item name="srcCompat">@drawable/ic_more_vert_white_24dp</item>
 		<item name="android:layout_width">48dp</item>
 		<item name="android:layout_height">48dp</item>
 		<item name="android:scaleType">center</item>

@@ -43,14 +43,11 @@ public class CommunicationNotificationHelper
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
-        VectorDrawableCompat iconApp = VectorDrawableCompat.create(getContext().getResources(), R.drawable.ic_trebleshot_white_24dp_static, null);
-        VectorDrawableCompat iconCompareArrows = VectorDrawableCompat.create(getContext().getResources(), R.drawable.ic_compare_arrows_white_24dp, null);
-
         notification.setSmallIcon(R.drawable.ic_trebleshot_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))
                 .setContentText(getContext().getString(R.string.text_communicationServiceStop))
                 .setAutoCancel(true)
-                .addAction(R.drawable.ic_compare_arrows_white_24dp, getContext().getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),
+                .addAction(R.drawable.ic_compare_arrows_white_24dp_static, getContext().getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),
                         PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE), PendingIntent.FLAG_CANCEL_CURRENT))
                 .setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class)
                         .setAction(CommunicationService.ACTION_END_SESSION), 0));
@@ -87,7 +84,7 @@ public class CommunicationNotificationHelper
         PendingIntent positiveIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), acceptIntent, 0);
         PendingIntent negativeIntent = PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), rejectIntent, 0);
 
-        notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
+        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_connectionPermission))
                 .setContentText(getContext().getString(R.string.ques_allowDeviceToConnect))
                 .setContentInfo(device.nickname)
@@ -95,7 +92,7 @@ public class CommunicationNotificationHelper
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
                 .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
-                .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_reject), negativeIntent)
                 .setTicker(getContext().getString(R.string.text_connectionPermission));
 
         return notification.show();
@@ -131,7 +128,7 @@ public class CommunicationNotificationHelper
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
                 .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
-                .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_reject), negativeIntent)
                 .setTicker(getContext().getString(R.string.ques_receiveFile))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -162,7 +159,7 @@ public class CommunicationNotificationHelper
                             .setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
                             .putExtra(TransactionActivity.EXTRA_GROUP_ID, processHolder.transferObject.groupId), 0))
                     .setOngoing(true)
-                    .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
+                    .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
         }
 
         processHolder.notification.setContentTitle(processHolder.transferObject.friendlyName);
@@ -206,7 +203,7 @@ public class CommunicationNotificationHelper
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
                 .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
-                .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_reject), negativeIntent)
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_reject), negativeIntent)
                 .setTicker(getContext().getString(R.string.text_receivedTextSummary))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
@@ -242,7 +239,7 @@ public class CommunicationNotificationHelper
 
             notification
                     .setContentTitle(processHolder.transferObject.friendlyName)
-                    .addAction(R.drawable.ic_folder_white_24dp, getContext().getString(R.string.butn_showFiles),
+                    .addAction(R.drawable.ic_folder_white_24dp_static, getContext().getString(R.string.butn_showFiles),
                             PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), HomeActivity.class)
                                     .setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
                                     .putExtra(HomeActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
@@ -255,7 +252,7 @@ public class CommunicationNotificationHelper
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.requestId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
-        notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
+        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
                 .setContentText(getContext().getString(R.string.mesg_fileReceiveError, transferObject.friendlyName))
                 .setAutoCancel(true)
@@ -282,7 +279,7 @@ public class CommunicationNotificationHelper
                     errorMsg = getContext().getString(R.string.mesg_notValidTransfer);
             }
 
-        notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
+        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
                 .setContentText(errorMsg)
                 .setAutoCancel(true)
@@ -310,7 +307,7 @@ public class CommunicationNotificationHelper
                 .setContentTitle(getContext().getString(R.string.text_preparingFiles))
                 .setContentText(getContext().getString(R.string.text_savingDetails))
                 .setAutoCancel(false)
-                .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_cancel), negativeIntent)
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_cancel), negativeIntent)
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), TransactionActivity.class)
                         .setAction(TransactionActivity.ACTION_LIST_TRANSFERS)
                         .putExtra(TransactionActivity.EXTRA_GROUP_ID, group.groupId), 0));
@@ -332,12 +329,12 @@ public class CommunicationNotificationHelper
                 .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
-        notification.setSmallIcon(R.drawable.ic_error_outline_white_24dp)
+        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setOngoing(true)
                 .setContentTitle(getContext().getString(R.string.text_stopping))
                 .setContentText(getContext().getString(R.string.text_cancellingTransfer))
                 .setProgress(0, 0, true)
-                .addAction(R.drawable.ic_clear_white_24dp, getContext().getString(R.string.butn_killNow),
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_killNow),
                         PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), killIntent, 0));
 
         return notification.show();

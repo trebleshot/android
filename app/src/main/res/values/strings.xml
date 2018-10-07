@@ -386,4 +386,5 @@
 	<string name="mesg_noInternetConnection">This requires internet connection</string>
     <string name="text_applyDarkTheme">Dark theme</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
+    <string name="butn_allow">Allow</string>
 </resources>
