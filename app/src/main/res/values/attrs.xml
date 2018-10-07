@@ -5,6 +5,7 @@
     <attr name="colorSelection" format="reference" />
     <attr name="colorShadowBeginning" format="reference" />
     <attr name="colorShadowEnd" format="reference" />
+    <attr name="contentShowingBackground" format="reference" />
     <attr name="rectSelector" format="reference" />
     <attr name="rippleBackground" format="reference" />
     <attr name="roundSelector" format="reference" />

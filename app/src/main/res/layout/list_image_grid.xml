@@ -1,48 +1,48 @@
-<com.genonbeta.TrebleShot.view.SquareRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.genonbeta.TrebleShot.view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="1dp">
+    android:layout_margin="1dp"
+    android:background="?contentShowingBackground">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/text_image"/>
+        android:contentDescription="@string/text_image" />
 
-    <include layout="@layout/generic_view_selection"/>
+    <include layout="@layout/generic_view_selection" />
 
     <View
         android:id="@+id/clickable_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?rectSelector"/>
+        android:background="?rectSelector" />
 
     <TextView
         android:id="@+id/text3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:padding="8dp"
         android:shadowRadius="5"
         android:textSize="12sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
         android:padding="8dp"
         android:shadowRadius="5"
         android:textSize="12sp"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/text"
@@ -52,6 +52,6 @@
         android:layout_alignParentBottom="true"
         android:padding="10dp"
         android:shadowRadius="5"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

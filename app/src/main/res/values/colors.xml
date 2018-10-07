@@ -12,6 +12,7 @@
     <color name="colorSelection">#2000</color>
     <color name="colorShadowBeginning">#0000</color>
     <color name="colorShadowEnd">#7000</color>
+    <color name="contentShowingBackground">#cfcfcf</color>
 
 
     <!-- SEPERATOR -->
@@ -29,4 +30,5 @@
     <color name="dark_colorSelection">#229e9e9e</color>
     <color name="dark_colorShadowBeginning">#0000</color>
     <color name="dark_colorShadowEnd">#7000</color>
+    <color name="dark_contentShowingBackground">#616161</color>
 </resources>

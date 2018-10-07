@@ -209,11 +209,17 @@
         },
         {
             "moduleName": "com.android.support:support-media-compat",
-            "moduleVersion": "25.1.0"
+            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+            "moduleVersion": "28.0.0",
+            "moduleLicense": "The Apache Software License, Version 2.0",
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.support:support-v4",
-            "moduleVersion": "25.1.0"
+            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+            "moduleVersion": "28.0.0",
+            "moduleLicense": "The Apache Software License, Version 2.0",
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.support:support-vector-drawable",
@@ -463,7 +469,7 @@
         {
             "moduleName": "com.genonbeta.android:framework",
             "moduleUrl": "https://github.com/genonbeta/framework-android",
-            "moduleVersion": "1.0.2",
+            "moduleVersion": "1.0.2.1",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
@@ -591,10 +597,6 @@
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
-            "moduleName": "com.journeyapps:zxing-android-embedded",
-            "moduleVersion": "3.5.0"
-        },
-        {
             "moduleName": "com.squareup.okhttp3:okhttp",
             "moduleVersion": "3.9.0",
             "moduleLicense": "Apache 2.0",
@@ -632,6 +634,13 @@
             "moduleVersion": "1.2.13",
             "moduleLicense": "Apache License, Version 2.0",
             "moduleLicenseUrl": "http://www.opensource.org/licenses/apache2.0.php"
+        },
+        {
+            "moduleName": "com.velitasali.tools.android:zxing",
+            "moduleUrl": "https://github.com/velitasali/ZXingIncremented",
+            "moduleVersion": "3.6.1",
+            "moduleLicense": "General Public Licence, Version 3.0",
+            "moduleLicenseUrl": "https://www.gnu.org/licenses/gpl.html"
         },
         {
             "moduleName": "commons-codec:commons-codec",

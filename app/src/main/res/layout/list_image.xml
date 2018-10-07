@@ -1,5 +1,4 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
     style="@style/listContentLayoutStyle"
     android:layout_width="match_parent"
@@ -9,18 +8,19 @@
     <FrameLayout
         android:id="@+id/layout_image"
         style="@style/listContentIconStyle"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_centerVertical="true">
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:background="?contentShowingBackground">
 
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:contentDescription="@string/text_image"/>
+            android:contentDescription="@string/text_image" />
 
-        <include layout="@layout/generic_view_selection"/>
+        <include layout="@layout/generic_view_selection" />
 
     </FrameLayout>
 
@@ -37,17 +37,17 @@
             style="@style/marqueeText.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="3"/>
+            android:maxLines="3" />
 
         <View
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height"/>
+            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
         <TextView
             android:id="@+id/text2"
             style="@style/marqueeText.secondary"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
