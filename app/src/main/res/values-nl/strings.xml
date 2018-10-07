@@ -332,7 +332,7 @@
     <string name="mesg_listRefreshSnoozed">De lijst zal worden ververst zodra deze beschikbaar is</string>
     <string name="mesg_errorReadFolder">Geen toegang tot de map \"%s\"</string>
     <string name="butn_mountDirectory">Map aankoppelen</string>
-    <string name="mesg_mountDirectoryHelp">Selecteer de te verkennen map</string>
+    <string name="mesg_mountDirectoryHelp">Kies de te verkennen map</string>
     <string name="butn_ejectDirectory">Map afkoppelen</string>
     <string name="text_movedCacheFiles">Cachebestanden verplaatst</string>
     <string name="mesg_wifiEnableRequired">Schakel Wi-Fi in om te kunnen verbinden</string>
@@ -402,4 +402,7 @@
     <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt naar een nieuwere versie. Wil je de wijzigingen bekijken?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
 <string name="mesg_noInternetConnection">Internetverbinding vereist</string>
+<string name="text_applyDarkTheme">Donker thema</string>
+    <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
+    <string name="butn_allow">Toestaan</string>
 </resources>

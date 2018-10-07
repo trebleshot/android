@@ -399,4 +399,7 @@
     <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva som har endret seg siden du installerte forrige versjon?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Du finner alltid endringsloggen i \"Om\"-delen</string>
 <string name="mesg_noInternetConnection">Dette krever internettilknytning</string>
+<string name="text_applyDarkTheme">Mørk drakt</string>
+    <string name="text_applyDarkThemeSummary">Bruk mørkt stilsett</string>
+    <string name="butn_allow">Tillat</string>
 </resources>
