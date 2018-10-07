@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            android:tint="?colorAccent"
+            app:tint="?colorAccent"
             app:srcCompat="@drawable/ic_folder_white_24dp" />
 
         <include

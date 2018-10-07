@@ -15,6 +15,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.transition.TransitionManager;
+import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
@@ -60,6 +61,7 @@ public class NetworkStatusFragment
 
 	private ViewGroup mContainerQRImage;
 	private ViewGroup mContainerInfo;
+	private ViewGroup mContainerHelperQRImage;
 	private View mContainerText1;
 	private View mContainerText2;
 	private View mContainerText3;
@@ -94,6 +96,7 @@ public class NetworkStatusFragment
 
 		mContainerQRImage = view.findViewById(R.id.layout_hotspot_status_qr_image_container);
 		mContainerInfo = view.findViewById(R.id.layout_hotspot_status_info_container);
+		mContainerHelperQRImage = view.findViewById(R.id.layout_hotspot_status_helper_container);
 		mCodeView = view.findViewById(R.id.layout_hotspot_status_qr_image);
 		mContainerText1 = view.findViewById(R.id.layout_hotspot_status_info_container_text1_container);
 		mContainerText2 = view.findViewById(R.id.layout_hotspot_status_info_container_text2_container);
@@ -231,7 +234,9 @@ public class NetworkStatusFragment
 			MultiFormatWriter formatWriter = new MultiFormatWriter();
 			String codeString = codeIndex == null ? null : codeIndex.toString();
 
-			if (codeString != null && getContext() != null) {
+			boolean showQRCode = codeString != null && getContext() != null;
+
+			if (showQRCode) {
 				BitMatrix bitMatrix = formatWriter.encode(codeString, BarcodeFormat.QR_CODE, 400, 400);
 				BarcodeEncoder encoder = new BarcodeEncoder();
 				Bitmap bitmap = encoder.createBitmap(bitMatrix);
@@ -242,6 +247,9 @@ public class NetworkStatusFragment
 			} else
 				mCodeView.setImageBitmap(null);
 
+			mCodeView.setVisibility(showQRCode ? View.VISIBLE : View.GONE);
+			mContainerHelperQRImage.setVisibility(!showQRCode ? View.VISIBLE : View.GONE);
+
 			mContainerText1.setVisibility(text1 == null ? View.GONE : View.VISIBLE);
 			mContainerText2.setVisibility(text2 == null ? View.GONE : View.VISIBLE);
 			mContainerText3.setVisibility(text3 == null ? View.GONE : View.VISIBLE);
@@ -249,9 +257,6 @@ public class NetworkStatusFragment
 			mText1.setText(text1);
 			mText2.setText(text2);
 			mText3.setText(text3);
-
-			TransitionManager.beginDelayedTransition(mContainerQRImage);
-			TransitionManager.beginDelayedTransition(mContainerInfo);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

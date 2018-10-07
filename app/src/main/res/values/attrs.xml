@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <attr name="colorDonation" format="reference" />
     <attr name="colorDivider" format="reference" />
     <attr name="colorSelection" format="reference" />
+    <attr name="colorShadowBeginning" format="reference" />
+    <attr name="colorShadowEnd" format="reference" />
     <attr name="rectSelector" format="reference" />
+    <attr name="rippleBackground" format="reference" />
     <attr name="roundSelector" format="reference" />
+    <attr name="selectableItemBackground" format="reference" />
+    <attr name="stateSelectedImage" format="reference" />
+    <attr name="stateSelectedImageRounded" format="reference" />
 </resources>

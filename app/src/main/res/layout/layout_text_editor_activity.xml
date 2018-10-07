@@ -13,7 +13,7 @@
             android:id="@+id/layout_text_editor_activity_text_text_box"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#0000"
+            android:background="@android:color/transparent"
             android:ellipsize="end"
             android:hint="@string/text_typeText"
             android:inputType="textMultiLine"

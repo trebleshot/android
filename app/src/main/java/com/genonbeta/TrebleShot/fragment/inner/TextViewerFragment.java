@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.fragment.inner;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.app.Fragment;
 
 /**
@@ -22,7 +24,7 @@ import com.genonbeta.android.framework.app.Fragment;
  */
 public class TextViewerFragment
 		extends Fragment
-		implements IconSupport
+		implements IconSupport, TitleSupport
 {
 	private TextView mMainText;
 
@@ -80,6 +82,12 @@ public class TextViewerFragment
 	public int getIconRes()
 	{
 		return R.drawable.ic_forum_white_24dp;
+	}
+
+	@Override
+	public CharSequence getTitle(Context context)
+	{
+		return context.getString(R.string.text_shareTextShort);
 	}
 
 	public boolean updateText()

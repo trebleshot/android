@@ -1,25 +1,27 @@
-<LinearLayout
-    android:id="@+id/layout_hotspot_status_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <include
-        layout="@layout/layout_network_status_image_container"
+    <LinearLayout
+        android:id="@+id/layout_hotspot_status_container"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?colorDivider"/>
+        <include
+            layout="@layout/layout_network_status_image_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
-    <include
-        layout="@layout/layout_network_status_info_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"/>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?colorDivider" />
 
-</LinearLayout>
+        <include
+            layout="@layout/layout_network_status_info_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+</ScrollView>

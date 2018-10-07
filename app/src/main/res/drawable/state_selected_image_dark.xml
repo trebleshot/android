@@ -3,7 +3,7 @@
     <item android:state_selected="true">
         <layer-list>
             <item>
-                <color android:color="@color/colorSelection" />
+                <color android:color="@color/dark_colorSelection" />
             </item>
             <item android:gravity="center">
                 <bitmap

@@ -24,8 +24,6 @@ public abstract class Activity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-
         if (getDefaultPreferences().getBoolean("dark_theme", false)) {
             try {
                 @StyleRes
@@ -64,13 +62,7 @@ public abstract class Activity extends AppCompatActivity
             }
         }
 
-		/*
-		@StyleRes
-		int themeId = 0;
-
-		if (applyDarkTheme)
-			getResources().getSt
-			setTheme(R.style.Theme_TrebleShot_Dark_NoActionBar);*/
+        super.onCreate(savedInstanceState);
     }
 
     @Override

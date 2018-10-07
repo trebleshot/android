@@ -4,4 +4,4 @@
     android:layout_width="24dp"
     android:layout_height="24dp"
     android:layout_gravity="center"
-    android:background="@drawable/state_selected_image_rounded"/>
+    android:background="?stateSelectedImageRounded"/>

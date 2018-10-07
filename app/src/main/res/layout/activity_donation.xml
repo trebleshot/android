@@ -54,7 +54,7 @@
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:tint="?colorDonation"
+                    app:tint="?colorDonation"
                     app:srcCompat="@drawable/ic_favorite_white_144dp" />
 
                 <View

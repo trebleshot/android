@@ -72,10 +72,8 @@ public class NetworkDeviceListFragment
 
 		mSwipeRefreshLayout = new SwipeRefreshLayout(context);
 
-
-
 		mSwipeRefreshLayout.setColorSchemeColors(ContextCompat
-				.getColor(context, AppUtils.getReference(getActivity(), R.attr.colorControlNormal)));
+				.getColor(context, AppUtils.getReference(getActivity(), R.attr.colorAccent)));
 
 		mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 

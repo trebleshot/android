@@ -29,8 +29,6 @@
             android:layout_below="@id/layout_code_connect_conduct_image"
             android:layout_marginTop="15dp"
             android:gravity="center_horizontal"
-            android:shadowColor="?colorControlNormal"
-            android:shadowRadius="5"
             android:text="@string/text_scanQRCodeHelp"
             android:textColor="?colorControlNormal" />
 
@@ -40,7 +38,7 @@
         android:id="@+id/container_task"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#a000"
+        android:background="?colorShadowEnd"
         android:visibility="gone">
 
         <ProgressBar

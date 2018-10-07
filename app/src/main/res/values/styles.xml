@@ -8,6 +8,10 @@
 	<style name="Theme.TrebleShot.Dark.NoActionBar" parent="Theme.TrebleShot.Dark.Base.NoActionBar" />
 	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
 
+	<style name="NavigationView">
+		<item name="colorPrimary">?colorAccent</item>
+	</style>
+
 	<style name="marqueeText">
 		<item name="android:maxLines">1</item>
 		<item name="android:ellipsize">end</item>
@@ -43,10 +47,9 @@
 		<item name="android:layout_width">48dp</item>
 		<item name="android:layout_height">48dp</item>
 		<item name="android:scaleType">center</item>
-		<item name="android:background">?attr/roundSelector</item>
+		<item name="android:background">?roundSelector</item>
 		<item name="android:focusableInTouchMode">false</item>
 		<item name="android:focusable">false</item>
-		<item name="tint">@color/colorControlNormal</item>
 	</style>
 
 	<style name="listContentLayoutStyle">
@@ -61,10 +64,10 @@
 	</style>
 
 	<style name="customListFragmentEmptyImageStyle">
-		<item name="android:background">@drawable/ripple_background_accent</item>
+		<item name="android:background">?rippleBackground</item>
 		<item name="android:cropToPadding">true</item>
-		<item name="srcCompat">@drawable/ic_trebleshot_white_24dp</item>
-		<item name="android:tint"></item>
+		<item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
+		<item name="tint">?colorControlNormal</item>
 	</style>
 
 	<style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">

@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -72,6 +74,9 @@ public class CodeConnectFragment
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private boolean mPermissionRequested = false;
 
+    @ColorInt
+    int mColorWindowBackground;
+
     private Snackbar.Callback mWaitedSnackbarCallback = new Snackbar.Callback()
     {
         @Override
@@ -109,6 +114,7 @@ public class CodeConnectFragment
         super.onCreate(savedInstanceState);
 
         mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
+        mColorWindowBackground = ContextCompat.getColor(getContext(), AppUtils.getReference(getActivity(), android.R.attr.windowBackground));
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -267,6 +273,7 @@ public class CodeConnectFragment
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
             mConductText.setText(R.string.text_cameraPermissionRequired);
+            mConductContainer.setBackgroundColor(mColorWindowBackground);
 
             if (!mPermissionRequested)
                 ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
@@ -276,6 +283,10 @@ public class CodeConnectFragment
             mConductImage.setImageResource(wifiEnabled
                     ? R.drawable.ic_crop_free_white_144dp
                     : R.drawable.ic_signal_wifi_off_white_144dp);
+
+            mConductContainer.setBackgroundColor(wifiEnabled
+                    ? Color.TRANSPARENT
+                    : mColorWindowBackground);
 
             mConductText.setText(wifiEnabled
                     ? R.string.text_scanQRCodeHelp

@@ -1,5 +1,4 @@
-<com.genonbeta.TrebleShot.view.SquareRelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.genonbeta.TrebleShot.view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -10,13 +9,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:contentDescription="@string/text_image"/>
+        android:contentDescription="@string/text_image" />
 
     <View
         android:id="@+id/clickable_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?rectSelector"/>
+        android:background="?rectSelector" />
 
     <TextView
         android:id="@+id/text3"
@@ -24,10 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/transparent_background_gradient_top"
+        android:background="@drawable/background_gradient_top"
         android:gravity="center"
         android:padding="8dp"
-        android:textSize="12sp"/>
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/text2"
@@ -35,10 +35,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/transparent_background_gradient_bottom"
+        android:background="@drawable/background_gradient_bottom"
         android:gravity="center"
         android:padding="8dp"
-        android:textSize="12sp"/>
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/text"
@@ -47,9 +48,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
-        android:shadowRadius="5"
-        android:visibility="gone"/>
+        android:visibility="gone" />
 
-    <include layout="@layout/generic_view_selection"/>
+    <include layout="@layout/generic_view_selection" />
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

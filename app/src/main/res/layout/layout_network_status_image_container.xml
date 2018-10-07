@@ -1,20 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout_hotspot_status_qr_image_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:paddingLeft="25dp"
+    android:paddingRight="25dp">
 
-    <ImageView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/layout_hotspot_status_helper_container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        app:srcCompat="@drawable/ic_qrcode_white_24dp" />
+        android:paddingTop="75dp"
+        android:paddingBottom="75dp">
+
+        <ImageView
+            android:id="@+id/layout_hotspot_status_helper_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/text_about"
+            app:srcCompat="@drawable/ic_qrcode_white_128dp" />
+
+    </RelativeLayout>
 
     <ImageView
         android:id="@+id/layout_hotspot_status_qr_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true" />
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/butn_qrScanToSend" />
 
-</RelativeLayout>
+</FrameLayout>

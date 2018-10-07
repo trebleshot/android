@@ -12,8 +12,14 @@
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorError">@color/colorError</item>
         <item name="colorSelection">@color/colorSelection</item>
-        <item name="roundSelector">@drawable/round_selector</item>
+        <item name="colorShadowBeginning">@color/colorShadowBeginning</item>
+        <item name="colorShadowEnd">@color/colorShadowEnd</item>
         <item name="rectSelector">@drawable/rect_selector</item>
+        <item name="rippleBackground">@drawable/ripple_background</item>
+        <item name="roundSelector">@drawable/round_selector</item>
+        <item name="selectableItemBackground">@drawable/selectable_item_background</item>
+        <item name="stateSelectedImage">@drawable/state_selected_image</item>
+        <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded</item>
 
         <!--styling framework-->
         <item name="genfw_customListFragmentEmptyImageStyle">
@@ -42,8 +48,14 @@
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorError">@color/dark_colorError</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
-        <item name="roundSelector">@drawable/round_selector</item>
-        <item name="rectSelector">@drawable/rect_selector</item>
+        <item name="colorShadowBeginning">@color/dark_colorShadowBeginning</item>
+        <item name="colorShadowEnd">@color/dark_colorShadowEnd</item>
+        <item name="rectSelector">@drawable/rect_selector_dark</item>
+        <item name="rippleBackground">@drawable/ripple_background_dark</item>
+        <item name="roundSelector">@drawable/round_selector_dark</item>
+        <item name="selectableItemBackground">@drawable/selectable_item_background_dark</item>
+        <item name="stateSelectedImage">@drawable/state_selected_image_dark</item>
+        <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded_dark</item>
 
         <!--styling framework-->
         <item name="genfw_customListFragmentEmptyImageStyle">

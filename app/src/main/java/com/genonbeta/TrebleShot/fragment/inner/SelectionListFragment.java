@@ -75,8 +75,8 @@ public class SelectionListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		getEmptyImage().setImageResource(R.drawable.ic_insert_drive_file_white_24dp);
-		getEmptyText().setTextColor(R.string.text_listEmpty);
+		setEmptyImage(R.drawable.ic_insert_drive_file_white_24dp);
+		setEmptyText(getString(R.string.text_listEmpty));
 
 		useEmptyActionButton(getString(R.string.butn_refresh), new View.OnClickListener()
 		{

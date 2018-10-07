@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="15dp"
         android:layout_marginRight="15dp"
-        android:tint="?colorAccent"
+        app:tint="?colorAccent"
         app:srcCompat="@drawable/ic_system_update_white_24dp" />
 
     <TextView

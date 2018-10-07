@@ -53,7 +53,7 @@
                 android:background="?roundSelector"
                 android:padding="8dp"
                 android:text="@string/butn_download"
-                android:tint="?colorAccent"
+                app:tint="?colorAccent"
                 app:srcCompat="@drawable/ic_file_download_white_24dp" />
 
             <LinearLayout

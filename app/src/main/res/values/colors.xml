@@ -1,36 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorAccent">#00bcd4</color>
-    <color name="colorControlActivated">@color/colorAccent</color>
-    <color name="colorControlHighlight">@color/colorAccent</color>
     <color name="colorControlNormal">#555</color>
     <color name="colorPrimary">#fff</color>
-    <color name="colorPrimaryDark">#fff</color>
-    <color name="navigationColor">#000000</color>
+    <color name="colorPrimaryDark">#ccc</color>
     <color name="windowBackground">#ffffff</color>
-
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
-    <color name="colorError">#ffeb3b</color>
     <color name="colorDivider">#eeeeee</color>
+    <color name="colorError">#afb42b</color>
     <color name="colorSelection">#2000</color>
+    <color name="colorShadowBeginning">#0000</color>
+    <color name="colorShadowEnd">#7000</color>
 
 
-    <!-- dark theme -->
+    <!-- SEPERATOR -->
 
 
-    <color name="dark_colorAccent">#006064</color>
-    <color name="dark_colorControlActivated">?colorAccent</color>
-    <color name="dark_colorControlHighlight">?colorAccent</color>
+    <color name="dark_colorAccent">#00bcd4</color>
     <color name="dark_colorControlNormal">#f5f5f5</color>
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">#263238</color>
-    <color name="dark_navigationColor">#263238</color>
     <color name="dark_windowBackground">#263238</color>
-
     <!-- local coloring-->
     <color name="dark_colorDonation">#f44336</color>
-    <color name="dark_colorError">#ffeb3b</color>
     <color name="dark_colorDivider">#37474f</color>
+    <color name="dark_colorError">#ffeb3b</color>
     <color name="dark_colorSelection">#229e9e9e</color>
+    <color name="dark_colorShadowBeginning">#0000</color>
+    <color name="dark_colorShadowEnd">#7000</color>
 </resources>

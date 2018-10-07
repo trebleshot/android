@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              style="@style/listContentLayoutStyle"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/listContentLayoutStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -15,10 +15,10 @@
             android:id="@+id/image_check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:tint="?colorAccent"
-            android:layout_marginRight="12dp"
             android:layout_marginEnd="12dp"
-            app:srcCompat="@drawable/ic_check_white_24dp_static" />
+            android:layout_marginRight="12dp"
+            app:srcCompat="@drawable/ic_check_white_24dp_static"
+            app:tint="?colorAccent" />
 
         <TextView
             android:id="@+id/text1"
@@ -26,16 +26,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size_big"
-            app:fontFamily="sans-serif-condensed"/>
+            app:fontFamily="sans-serif-condensed" />
 
     </LinearLayout>
 
     <View
         android:layout_width="wrap_content"
-	    android:layout_marginTop="7dp"
-	    android:background="?colorDivider"
-	    android:layout_marginBottom="7dp"
-        android:layout_height="1dp"/>
+        android:layout_height="1dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginBottom="7dp"
+        android:background="?colorDivider" />
 
     <TextView
         android:id="@+id/text2"
@@ -43,6 +43,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:lineSpacingExtra="1dp"
-        android:maxLines="30"/>
+        android:maxLines="30" />
 
 </LinearLayout>

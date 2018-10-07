@@ -14,7 +14,7 @@
             android:id="@+id/layout_connect_devices_bottom_navigation_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="?bottomNavigationStyle" />
+            android:theme="@style/NavigationView" />
 
     </FrameLayout>
 

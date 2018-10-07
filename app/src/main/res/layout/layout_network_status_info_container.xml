@@ -1,121 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_hotspot_status_info_container"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:layout_height="wrap_content">
 
-    <ScrollView
+    <android.support.v7.widget.AppCompatButton
+        android:id="@+id/layout_hotspot_status_info_toggle_button"
+        style="?buttonBarPositiveButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/butn_startHotspot" />
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_hotspot_status_info_toggle_button"
+        android:layout_marginStart="25dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginBottom="15dp">
 
-        <RelativeLayout
-            android:id="@+id/layout_hotspot_status_info_container"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="25dp"
-            android:paddingTop="15dp"
-            android:paddingRight="25dp">
-
-            <android.support.v7.widget.AppCompatButton
-                android:id="@+id/layout_hotspot_status_info_toggle_button"
-                style="?buttonBarPositiveButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:text="@string/butn_startHotspot" />
+            android:orientation="vertical">
 
             <LinearLayout
+                android:id="@+id/layout_hotspot_status_info_container_text1_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layout_hotspot_status_info_toggle_button"
-                android:orientation="vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="15dp">
 
-                <LinearLayout
-                    android:id="@+id/layout_hotspot_status_info_container_text1_container"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/layout_hotspot_status_info_container_text1_icon"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp">
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    app:srcCompat="@drawable/ic_info_white_24dp" />
 
-                    <ImageView
-                        android:id="@+id/layout_hotspot_status_info_container_text1_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="25dp"
-                        android:layout_marginRight="25dp"
-                        android:tint="?colorControlNormal"
-                        app:srcCompat="@drawable/ic_info_white_24dp" />
-
-                    <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_text1"
-                        style="@style/marqueeText.secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="5"
-                        android:text="@string/text_qrCodeHotspotDisabledHelp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_hotspot_status_info_container_text2_container"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/layout_hotspot_status_info_container_text1"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp">
-
-                    <ImageView
-                        android:id="@+id/layout_hotspot_status_info_container_text2_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="25dp"
-                        android:layout_marginRight="25dp"
-                        android:tint="?colorControlNormal"
-                        app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
-
-                    <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_text2"
-                        style="@style/marqueeText.secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:text="@string/text_unknown" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/layout_hotspot_status_info_container_text3_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="14dp"
-                    android:paddingBottom="14dp">
-
-                    <ImageView
-                        android:id="@+id/layout_hotspot_status_info_container_text3_icon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="25dp"
-                        android:layout_marginRight="25dp"
-                        android:tint="?colorControlNormal"
-                        app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
-
-                    <TextView
-                        android:id="@+id/layout_hotspot_status_info_container_text3"
-                        style="@style/marqueeText.secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:maxLines="1"
-                        android:text="@string/text_unknown" />
-
-                </LinearLayout>
+                    android:maxLines="5"
+                    android:text="@string/text_qrCodeHotspotDisabledHelp" />
 
             </LinearLayout>
-        </RelativeLayout>
-    </ScrollView>
-</LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_hotspot_status_info_container_text2_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="15dp">
+
+                <ImageView
+                    android:id="@+id/layout_hotspot_status_info_container_text2_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
+
+                <TextView
+                    android:id="@+id/layout_hotspot_status_info_container_text2"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/text_unknown" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_hotspot_status_info_container_text3_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="15dp">
+
+                <ImageView
+                    android:id="@+id/layout_hotspot_status_info_container_text3_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginRight="15dp"
+                    app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
+
+                <TextView
+                    android:id="@+id/layout_hotspot_status_info_container_text3"
+                    style="@style/marqueeText.secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:text="@string/text_unknown" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+</RelativeLayout>
