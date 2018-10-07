@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
@@ -33,6 +34,15 @@ public class AboutActivity extends Activity
 			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
 			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		}
+
+		findViewById(R.id.orgIcon).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_ORG)));
+            }
+        });
 
 		findViewById(R.id.fab).setOnClickListener(new View.OnClickListener()
 		{
@@ -137,6 +147,20 @@ public class AboutActivity extends Activity
 			return super.onOptionsItemSelected(item);
 
 		return true;
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		findViewById(R.id.logo).setAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		findViewById(R.id.logo).setAnimation(null);
 	}
 
 	private void highlightUpdater(TextView textView, String availableVersion)

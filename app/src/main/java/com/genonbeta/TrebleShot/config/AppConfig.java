@@ -20,6 +20,7 @@ public class AppConfig
 			URI_REPO_APP_UPDATE = "https://api.github.com/repos/genonbeta/TrebleShot/releases",
 			URI_REPO_APP_CONTRIBUTORS = "https://api.github.com/repos/genonbeta/TrebleShot/contributors",
 			URI_REPO_APP = "http://github.com/genonbeta/TrebleShot",
+			URI_REPO_ORG = "http://github.com/genonbeta",
 			URI_GITHUB_PROFILE = "https://github.com/%s",
 			URI_TRANSLATE = "https://hosted.weblate.org/engage/TrebleShot/",
 			PREFIX_ACCESS_POINT = "TS_",

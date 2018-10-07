@@ -23,11 +23,12 @@
             app:toolbarId="@+id/toolbar">
 
             <ImageView
+                android:id="@+id/logo"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                app:tint="?colorAccent"
-                app:srcCompat="@drawable/ic_trebleshot_white_128dp_static" />
+                app:srcCompat="@drawable/ic_trebleshot_original_white_128dp"
+                app:tint="?colorAccent" />
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -50,35 +51,7 @@
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="15dp" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="25dp"
-                android:paddingLeft="25dp"
-                android:paddingEnd="25dp"
-                android:paddingRight="25dp">
-
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    app:srcCompat="@drawable/ic_genonbeta_white_24dp_static"
-                    app:tint="?colorAccent" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/text_aboutSummary" />
-
-            </LinearLayout>
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="15dp" />
+                android:layout_height="50dp" />
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -94,6 +67,31 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="15dp">
+
+                        <ImageView
+                            android:id="@+id/orgIcon"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:background="?roundSelector"
+                            app:srcCompat="@drawable/ic_genonbeta_white_36dp"
+                            app:tint="?colorAccent" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/text_aboutSummary" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:id="@+id/activity_about_see_source_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -105,8 +103,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
                             app:srcCompat="@drawable/ic_github_circle_white_24dp"
                             app:tint="?colorControlNormal" />
 
@@ -131,8 +131,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
                             app:srcCompat="@drawable/ic_translate_white_24dp" />
 
                         <TextView
@@ -156,8 +158,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
                             app:srcCompat="@drawable/ic_copyright_white_24dp" />
 
                         <TextView
@@ -182,8 +186,10 @@
                         <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginEnd="15dp"
-                            android:layout_marginRight="15dp"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginEnd="30dp"
                             app:srcCompat="@drawable/ic_autorenew_white_24dp" />
 
                         <TextView
