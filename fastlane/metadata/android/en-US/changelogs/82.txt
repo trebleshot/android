@@ -1,0 +1,4 @@
+NEW: Theme update & dark theme
+FIXED: QR code scanner won't close camera when leaving the app
+IMPROVED: Minor bug fixes
+IMPROVED: Updated translations
