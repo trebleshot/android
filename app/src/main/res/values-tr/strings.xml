@@ -400,4 +400,7 @@
     <string name="mesg_versionUpdatedChangelog">"TrebleShot\'u daha güncel bir sürüme yükselttiniz, bir önceki sürümü yüklemenizden bu yana nelerin değiştiğine göz atmak ister misiniz? "</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her zaman ulaşabilirsiniz</string>
     <string name="mesg_noInternetConnection">Bu internet bağlantısı gerektirir</string>
+    <string name="text_applyDarkTheme">Koyu tema</string>
+    <string name="butn_allow">İzin ver</string>
+    <string name="text_applyDarkThemeSummary">Koyu biçimli temayı kullan</string>
 </resources>
