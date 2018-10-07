@@ -309,4 +309,13 @@
     <string name="mesg_versionUpdatedChangelog">Vous avez mis à jour TrebleShot vers une version plus récente, aimeriez-vous découvrir ce qui a changé par rapport à la version précédente ?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Vous pouvez toujours trouver le « Changelog » dans la section « À propos »</string>
 	<string name="mesg_noInternetConnection">Cela nécessite une connexion Internet</string>
-</resources>
+<string name="mesg_stillScanning">En cours de balayage</string>
+    <string name="text_allowToAccess">Permettre la connexion</string>
+    <string name="ques_allowDeviceToConnect">Laisser cet appareil se connecter \?</string>
+    <string name="mesg_stopping">Arrêt en cours</string>
+    <string name="text_useLights">Lumières</string>
+    <string name="text_useLightSummary">Utiliser les lumières</string>
+    <string name="text_autoStartSummary">Permettre la communication lors de la détection d\'une connexion</string>
+    <string name="butn_multiSelect">Sélection multiple</string>
+    <string name="text_removeCertainPendingTransfersSummary">Cela va supprimer tous les transferts en attente affichés ici</string>
+    </resources>
