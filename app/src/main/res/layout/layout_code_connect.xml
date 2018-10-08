@@ -54,10 +54,8 @@
             android:layout_below="@id/task_progress_bar"
             android:layout_marginTop="15dp"
             android:gravity="center_horizontal"
-            android:shadowColor="?colorControlNormal"
-            android:shadowRadius="5"
             android:text="@string/mesg_completing"
-            android:textColor="?colorControlNormal" />
+            android:textColor="?colorAccent" />
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/task_interrupter_button"
