@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+	<!-- generalization start -->
 	<style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
 	<style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
 	<style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar" />
@@ -7,6 +8,7 @@
 	<style name="Theme.TrebleShot.Dark" parent="Theme.TrebleShot.Dark.Base" />
 	<style name="Theme.TrebleShot.Dark.NoActionBar" parent="Theme.TrebleShot.Dark.Base.NoActionBar" />
 	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
+	<!-- generalization end -->
 
 	<style name="NavigationView">
 		<item name="colorPrimary">?colorAccent</item>

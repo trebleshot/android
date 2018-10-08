@@ -6,21 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatButton;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +40,7 @@ import com.genonbeta.android.framework.util.Interrupter;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
-import com.journeyapps.barcodescanner.BarcodeView;
+import com.journeyapps.barcodescanner.DecoratedBarcodeView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -63,7 +59,7 @@ public class CodeConnectFragment
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
 
-    private BarcodeView mBarcodeView;
+    private DecoratedBarcodeView mBarcodeView;
     private UIConnectionUtils mConnectionUtils;
     private TextView mConductText;
     private ImageView mConductImage;
@@ -73,12 +69,6 @@ public class CodeConnectFragment
     private IntentFilter mIntentFilter = new IntentFilter();
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private boolean mPermissionRequested = false;
-
-    @ColorInt
-    int mColorWindowBackground;
-
-    @ColorInt
-    int mColorControlNormal;
 
     private Snackbar.Callback mWaitedSnackbarCallback = new Snackbar.Callback()
     {
@@ -117,8 +107,6 @@ public class CodeConnectFragment
         super.onCreate(savedInstanceState);
 
         mConnectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getContext()), this);
-        mColorWindowBackground = ContextCompat.getColor(getContext(), AppUtils.getReference(getActivity(), android.R.attr.windowBackground));
-        mColorControlNormal = ContextCompat.getColor(getContext(), AppUtils.getReference(getActivity(), R.attr.colorControlNormal));
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
@@ -144,6 +132,12 @@ public class CodeConnectFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
+
+        TextView guideText = mBarcodeView.getStatusView();
+
+        guideText.setText(R.string.text_scanQRCodeHelp);
+        guideText.setPadding(0, 20, 20, 30); // Add padding to the bottom
+        guideText.setGravity(Gravity.CENTER);
 
         mBarcodeView.decodeContinuous(new BarcodeCallback()
         {
@@ -254,6 +248,29 @@ public class CodeConnectFragment
         mDeviceSelectedListener = listener;
     }
 
+    public void updateState(boolean isConnecting, final Interrupter interrupter)
+    {
+        if (isConnecting) {
+            // Keep showing barcode view
+            mBarcodeView.pauseAndWait();
+            mConductContainer.setVisibility(View.GONE);
+        } else {
+            mBarcodeView.resume();
+            updateState();
+        }
+
+        mTaskContainer.setVisibility(isConnecting ? View.VISIBLE : View.GONE);
+
+        mTaskInterruptButton.setOnClickListener(isConnecting ? new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                interrupter.interrupt();
+            }
+        } : null);
+    }
+
     public void updateState()
     {
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
@@ -264,10 +281,6 @@ public class CodeConnectFragment
         if (!state) {
             mBarcodeView.pauseAndWait();
 
-            mConductText.setTextColor(mColorControlNormal);
-            mConductContainer.setBackgroundColor(mColorWindowBackground);
-            ImageViewCompat.setImageTintList(mConductImage, ColorStateList.valueOf(mColorControlNormal));
-
             if (!hasPermissions) {
                 mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
                 mConductText.setText(R.string.text_cameraPermissionRequired);
@@ -276,45 +289,26 @@ public class CodeConnectFragment
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
 
                 mPermissionRequested = true;
-            } else if (!wifiEnabled) {
+            } else {
                 mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
                 mConductText.setText(R.string.text_scanQRWifiRequired);
             }
-        } else {
-            mConductImage.setImageResource(R.drawable.ic_crop_free_white_144dp);
-            mConductContainer.setBackgroundColor(Color.TRANSPARENT);
-            mConductText.setText(R.string.text_scanQRCodeHelp);
-            mConductText.setTextColor(Color.WHITE);
-            ImageViewCompat.setImageTintList(mConductImage, ColorStateList.valueOf(Color.WHITE));
-
+        } else
             mBarcodeView.resume();
-        }
+
+        mConductContainer.setVisibility(state ? View.GONE : View.VISIBLE);
+        mBarcodeView.setVisibility(state ? View.VISIBLE : View.GONE);
     }
 
     @Override
-    public void updateTaskStarted(final Interrupter interrupter)
+    public void updateTaskStarted(Interrupter interrupter)
     {
-        mBarcodeView.pauseAndWait();
-        mConductContainer.setVisibility(View.GONE);
-        mTaskContainer.setVisibility(View.VISIBLE);
-
-        mTaskInterruptButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                interrupter.interrupt();
-            }
-        });
+        updateState(true, interrupter);
     }
 
     @Override
     public void updateTaskStopped()
     {
-        mBarcodeView.resume();
-        mConductContainer.setVisibility(View.VISIBLE);
-        mTaskContainer.setVisibility(View.GONE);
-
-        mTaskInterruptButton.setOnClickListener(null);
+        updateState(false, null);
     }
 }

@@ -4,6 +4,7 @@
     <color name="colorControlNormal">#555</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
+    <color name="colorPrimaryDark23">#ffff</color>
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
@@ -23,6 +24,7 @@
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">#263238</color>
     <color name="dark_windowBackground">#263238</color>
+    <color name="dark_colorPrimaryDark23">#263238</color>
     <!-- local coloring-->
     <color name="dark_colorDonation">#f44336</color>
     <color name="dark_colorDivider">#37474f</color>

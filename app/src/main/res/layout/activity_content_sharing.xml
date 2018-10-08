@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="false">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"
@@ -16,8 +16,7 @@
             style="?actionBarStyle"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:theme="?actionBarTheme"
-            app:layout_scrollFlags="scroll|enterAlways|snap" />
+            android:theme="?actionBarTheme" />
 
         <android.support.design.widget.TabLayout
             android:id="@+id/activity_content_sharing_tab_layout"
@@ -43,6 +42,11 @@
             android:layout_alignParentBottom="true"
             android:visibility="gone">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?colorDivider" />
+
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
                 style="?actionBarStyle"
@@ -52,12 +56,17 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/activity_content_sharing_view_pager"
+        <android.support.design.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/activity_content_sharing_action_mode_layout"
-            android:layout_alignParentTop="true" />
+            android:layout_alignParentTop="true">
 
+            <android.support.v4.view.ViewPager
+                android:id="@+id/activity_content_sharing_view_pager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </android.support.design.widget.CoordinatorLayout>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

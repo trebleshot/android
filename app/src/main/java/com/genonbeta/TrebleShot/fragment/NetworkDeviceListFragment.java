@@ -185,7 +185,7 @@ public class NetworkDeviceListFragment
 
                         if (isHotspotInstance) {
                             menu.findItem(R.id.action_mode_network_device_toggle_connection)
-                                    .setTitle(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_connect : R.string.butn_disconnect);
+                                    .setTitle(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect);
                         } else {
                             menu.findItem(R.id.action_mode_network_device_toggle_access)
                                     .setTitle(device.isRestricted ? R.string.butn_allow : R.string.butn_block);

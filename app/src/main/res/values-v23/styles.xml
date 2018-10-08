@@ -2,19 +2,23 @@
 <resources>
     <!-- generalization start -->
     <style name="Theme.TrebleShot.Base" parent="Theme.Prototype.TrebleShot.Base">
+        <item name="colorPrimaryDark">?colorPrimaryDark23</item>
         <item name="android:statusBarColor">?statusBarColor</item>
+        <item name="android:windowLightStatusBar">?useLightStatusBar</item>
     </style>
 
     <style name="Theme.TrebleShot.Dark.Base" parent="Theme.Prototype.TrebleShot.Dark.Base">
+        <item name="colorPrimaryDark">?colorPrimaryDark23</item>
         <item name="android:statusBarColor">?statusBarColor</item>
+        <item name="android:windowLightStatusBar">?useLightStatusBar</item>
     </style>
     <!-- generalization end -->
 
     <style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base">
-        <item name="statusBarColor">?colorPrimaryDark</item>
+        <item name="statusBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar">
-        <item name="statusBarColor">?colorPrimaryDark</item>
+        <item name="statusBarColor">@android:color/transparent</item>
     </style>
 </resources>

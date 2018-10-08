@@ -59,8 +59,6 @@ public class NetworkStatusFragment
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private UIConnectionUtils mConnectionUtils;
 
-	private ViewGroup mContainerQRImage;
-	private ViewGroup mContainerInfo;
 	private ViewGroup mContainerHelperQRImage;
 	private View mContainerText1;
 	private View mContainerText2;
@@ -94,8 +92,6 @@ public class NetworkStatusFragment
 	{
 		View view = getLayoutInflater().inflate(R.layout.layout_hotspot_status, container, false);
 
-		mContainerQRImage = view.findViewById(R.id.layout_hotspot_status_qr_image_container);
-		mContainerInfo = view.findViewById(R.id.layout_hotspot_status_info_container);
 		mContainerHelperQRImage = view.findViewById(R.id.layout_hotspot_status_helper_container);
 		mCodeView = view.findViewById(R.id.layout_hotspot_status_qr_image);
 		mContainerText1 = view.findViewById(R.id.layout_hotspot_status_info_container_text1_container);
@@ -220,6 +216,9 @@ public class NetworkStatusFragment
 
 	public void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1, @Nullable String text2, @Nullable String text3)
 	{
+		String codeString = codeIndex == null ? null : codeIndex.toString();
+		boolean showQRCode = codeString != null && getContext() != null;
+
 		try {
 			if (codeIndex != null) {
 				int networkPin = AppUtils.getUniqueNumber();
@@ -232,23 +231,24 @@ public class NetworkStatusFragment
 			}
 
 			MultiFormatWriter formatWriter = new MultiFormatWriter();
-			String codeString = codeIndex == null ? null : codeIndex.toString();
-
-			boolean showQRCode = codeString != null && getContext() != null;
 
 			if (showQRCode) {
 				BitMatrix bitMatrix = formatWriter.encode(codeString, BarcodeFormat.QR_CODE, 400, 400);
 				BarcodeEncoder encoder = new BarcodeEncoder();
+
 				Bitmap bitmap = encoder.createBitmap(bitMatrix);
+
 
 				GlideApp.with(getContext())
 						.load(bitmap)
 						.into(mCodeView);
 			} else
 				mCodeView.setImageBitmap(null);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
 			mCodeView.setVisibility(showQRCode ? View.VISIBLE : View.GONE);
-			mContainerHelperQRImage.setVisibility(!showQRCode ? View.VISIBLE : View.GONE);
+			mContainerHelperQRImage.setVisibility(showQRCode ? View.GONE : View.VISIBLE);
 
 			mContainerText1.setVisibility(text1 == null ? View.GONE : View.VISIBLE);
 			mContainerText2.setVisibility(text2 == null ? View.GONE : View.VISIBLE);
@@ -257,8 +257,6 @@ public class NetworkStatusFragment
 			mText1.setText(text1);
 			mText2.setText(text2);
 			mText3.setText(text3);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

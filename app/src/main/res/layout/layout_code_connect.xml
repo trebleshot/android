@@ -5,10 +5,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.journeyapps.barcodescanner.BarcodeView
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/layout_code_connect_barcode_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:zxing_preview_scaling_strategy="centerCrop"
+        app:zxing_use_texture_view="false"/>
 
     <RelativeLayout
         android:id="@+id/container_conduct"
@@ -29,7 +31,6 @@
             android:layout_below="@id/layout_code_connect_conduct_image"
             android:layout_marginTop="15dp"
             android:gravity="center_horizontal"
-            android:text="@string/text_scanQRCodeHelp"
             android:textColor="?colorControlNormal" />
 
     </RelativeLayout>

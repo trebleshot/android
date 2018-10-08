@@ -2,6 +2,7 @@
 <resources>
     <attr name="colorDonation" format="reference" />
     <attr name="colorDivider" format="reference" />
+    <attr name="colorPrimaryDark23" format="reference" /> <!-- Marshmallow devices use dark tint color -->
     <attr name="colorSelection" format="reference" />
     <attr name="colorShadowBeginning" format="reference" />
     <attr name="colorShadowEnd" format="reference" />
@@ -12,4 +13,6 @@
     <attr name="selectableItemBackground" format="reference" />
     <attr name="stateSelectedImage" format="reference" />
     <attr name="stateSelectedImageRounded" format="reference" />
+    <attr name="statusBarColor" format="reference" />
+    <attr name="useLightStatusBar" format="boolean" />
 </resources>
