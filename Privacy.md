@@ -1,14 +1,15 @@
 # TrebleShot Privacy Policy
-This is the developer's policy on how your personal information may be collected, used, disclosed and secured. These policies are stated to ensure you know what personal details you may or may not disclose when the software is being utilized and the choices you have associated with that data. If you decide to continue using this software, it means you accept all terms and conditions stated by the developer in this policy. Kindly note that this privacy policy is restricted only to TrebleShot software and the developer is not and will not be liable to be held in account for the privacy practices of any third-party tools or services that may be contained in the software. <hr>
+This is the developer's policy which is created to give details and informs you if your personal information is collected, used, disclosed and secured by the developer. These policies are stated to ensure you know what personal details you may or may not disclose when the software is being utilized and the choices you have associated with that data. If you decide to continue using this software, it means you accept all terms and conditions stated by the developer in this policy. <hr>
 
 ## Permission and Access
 
-TrebleShot software requires quite a lot of permissions to function effectively and efficiently. Without some of the permissions enabled, you might have some issues and difficulties while using the software.
+TrebleShot software requires some permissions to function effectively and efficiently. Without some of these permissions enabled, you might be unable to perform certain operations with the software.
 TrebleShot requires the enablement of the following permissions;
 - camera
 - location
 - storage
 - telephone
+The main permission required to get TrebleShot functioning is the storage permission, the rest permission are sometimes required to perform some operations but they are optional and can be enabled and disabled anytime at will when not in use.
 
 TrebleShot have some other capabilities which are functions the software can remotely effect on its own.
 
@@ -30,7 +31,7 @@ TrebleShot have some other capabilities which are functions the software can rem
 
 ## Information and data collection
 
-The developer does not externally collect any information or data when the services of TrebleShot are utilized. When performing some activities with the software, information and usage data may be collected, but the developer has no means of getting that information as they are locally stored on your device. Information might be shared between paired devices during an operation but not in any way linked to the developer. 
+The developer does not externally collect any information or data when the services of TrebleShot are utilized. When performing some activities with the software, personal data is not collected by the because developer all the information are locally stored on your device. Information contained in a file might be shared between paired devices during an operation but not in any way linked to the developer. 
 <hr>
 
 ## Crash reports sending
