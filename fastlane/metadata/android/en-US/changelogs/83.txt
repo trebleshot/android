@@ -1,0 +1,4 @@
+IMPROVED: General look of the app
+IMPROVED: Look of QR scanner
+FIXED: Wrong text was appearing on the list of option for hotspot networks
+MISC: Updated translations
