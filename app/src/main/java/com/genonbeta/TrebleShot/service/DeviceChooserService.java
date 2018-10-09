@@ -9,14 +9,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.chooser.ChooserTarget;
 import android.service.chooser.ChooserTargetService;
-import android.support.annotation.ColorInt;
 import android.support.annotation.RequiresApi;
-import android.support.v4.content.ContextCompat;
 
-import com.amulyakhare.textdrawable.TextDrawable;
-import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -40,8 +37,7 @@ public class DeviceChooserService extends ChooserTargetService
         ArrayList<ChooserTarget> list = new ArrayList<>();
 
         // use default accent color for light theme
-        @ColorInt
-        int rippleColor = ContextCompat.getColor(getApplicationContext(), R.color.colorControlNormal);
+        TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
         for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
             if (device.isLocalAddress)
@@ -51,8 +47,7 @@ public class DeviceChooserService extends ChooserTargetService
 
             bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
 
-            String firstLetters = TextUtils.getLetters(device.nickname, 1);
-            TextDrawable textImage = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0 ? firstLetters : "?", rippleColor, 100);
+            TextDrawable textImage = iconBuilder.buildRound(device.nickname);
             Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
 

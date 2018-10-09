@@ -27,7 +27,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -35,6 +34,7 @@ import com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.fragment.TransactionGroupListFragment;
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -170,18 +170,14 @@ public class HomeActivity
 		View headerView = mNavigationView.getHeaderView(0);
 
 		if (headerView != null) {
+			TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(this);
 			NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
 			ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
 			TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
 			TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 
-			String firstLetters = TextUtils.getLetters(localDevice.nickname, 0);
-			TextDrawable drawable = TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
-					? firstLetters :
-					"?", mIconRippleColor, 100);
-
-			imageView.setImageDrawable(drawable);
+			imageView.setImageDrawable(iconBuilder.buildRound(localDevice.nickname));
 			deviceNameText.setText(localDevice.nickname);
 			versionText.setText(localDevice.versionName);
 		}

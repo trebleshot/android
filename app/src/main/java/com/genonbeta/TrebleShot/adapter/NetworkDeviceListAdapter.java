@@ -12,10 +12,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -29,16 +29,14 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 {
 	private ConnectionUtils mConnectionUtils;
 	private ArrayList<NetworkDevice> mList = new ArrayList<>();
-
-	@ColorInt
-	private int mColorRippleBackground;
+	private TextDrawable.IShapeBuilder mIconBuilder;
 
 	public NetworkDeviceListAdapter(Context context, SharedPreferences preferences, ConnectionUtils connectionUtils)
 	{
 		super(context);
 
 		mConnectionUtils = connectionUtils;
-		mColorRippleBackground = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+		mIconBuilder = AppUtils.getDefaultIconBuilder(context);
 
 		setHasStableIds(true);
 	}
@@ -105,7 +103,6 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 		View parentView = holder.getView();
 		NetworkDevice device = getList().get(position);
 
-		String firstLetters = TextUtils.getLetters(device.nickname, 0);
 		boolean hotspotNetwork = device instanceof HotspotNetwork;
 
 		TextView deviceText = parentView.findViewById(R.id.text2);
@@ -115,9 +112,7 @@ public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice,
 		userText.setText(device.nickname);
 		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
 
-		userImage.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
-				? firstLetters
-				: "?", mColorRippleBackground, 100));
+		userImage.setImageDrawable(mIconBuilder.buildRound(device.nickname));
 	}
 
 	@Override

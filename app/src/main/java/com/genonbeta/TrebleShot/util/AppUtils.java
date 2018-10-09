@@ -5,13 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.AnyRes;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
-import android.support.annotation.RawRes;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -22,6 +23,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
@@ -34,271 +36,292 @@ import java.util.ArrayList;
 
 public class AppUtils
 {
-	public static final String TAG = AppUtils.class.getSimpleName();
+    public static final String TAG = AppUtils.class.getSimpleName();
 
-	private static int mUniqueNumber = 0;
-	private static AccessDatabase mDatabase;
-	private static SuperPreferences mDefaultPreferences;
-	private static SuperPreferences mDefaultLocalPreferences;
-	private static SuperPreferences mViewingPreferences;
+    private static int mUniqueNumber = 0;
+    private static AccessDatabase mDatabase;
+    private static SuperPreferences mDefaultPreferences;
+    private static SuperPreferences mDefaultLocalPreferences;
+    private static SuperPreferences mViewingPreferences;
 
-	public static void applyAdapterName(NetworkDevice.Connection connection)
-	{
-		if (connection.ipAddress == null) {
-			Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");
-			return;
-		}
+    public static void applyAdapterName(NetworkDevice.Connection connection)
+    {
+        if (connection.ipAddress == null) {
+            Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");
+            return;
+        }
 
-		ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+        ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-		for (AddressedInterface addressedInterface : interfaceList) {
-			if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
-					.equals(NetworkUtils.getAddressPrefix(connection.ipAddress))) {
-				connection.adapterName = addressedInterface.getNetworkInterface().getDisplayName();
-				return;
-			}
-		}
+        for (AddressedInterface addressedInterface : interfaceList) {
+            if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
+                    .equals(NetworkUtils.getAddressPrefix(connection.ipAddress))) {
+                connection.adapterName = addressedInterface.getNetworkInterface().getDisplayName();
+                return;
+            }
+        }
 
-		connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
-	}
+        connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
+    }
 
-	public static void applyDeviceToJSON(NetworkDevice device, JSONObject object) throws JSONException
-	{
-		JSONObject deviceInformation = new JSONObject();
-		JSONObject appInfo = new JSONObject();
+    public static void applyDeviceToJSON(NetworkDevice device, JSONObject object) throws JSONException
+    {
+        JSONObject deviceInformation = new JSONObject();
+        JSONObject appInfo = new JSONObject();
 
-		deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, device.deviceId);
-		deviceInformation.put(Keyword.DEVICE_INFO_BRAND, device.brand);
-		deviceInformation.put(Keyword.DEVICE_INFO_MODEL, device.model);
-		deviceInformation.put(Keyword.DEVICE_INFO_USER, device.nickname);
+        deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, device.deviceId);
+        deviceInformation.put(Keyword.DEVICE_INFO_BRAND, device.brand);
+        deviceInformation.put(Keyword.DEVICE_INFO_MODEL, device.model);
+        deviceInformation.put(Keyword.DEVICE_INFO_USER, device.nickname);
 
-		appInfo.put(Keyword.APP_INFO_VERSION_CODE, device.versionNumber);
-		appInfo.put(Keyword.APP_INFO_VERSION_NAME, device.versionName);
+        appInfo.put(Keyword.APP_INFO_VERSION_CODE, device.versionNumber);
+        appInfo.put(Keyword.APP_INFO_VERSION_NAME, device.versionName);
 
-		object.put(Keyword.APP_INFO, appInfo);
-		object.put(Keyword.DEVICE_INFO, deviceInformation);
-	}
+        object.put(Keyword.APP_INFO, appInfo);
+        object.put(Keyword.DEVICE_INFO, deviceInformation);
+    }
 
-	public static boolean checkRunningConditions(Context context)
-	{
-		for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
-			if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
-				return false;
+    public static boolean checkRunningConditions(Context context)
+    {
+        for (RationalePermissionRequest.PermissionRequest request : getRequiredPermissions(context))
+            if (ActivityCompat.checkSelfPermission(context, request.permission) != PackageManager.PERMISSION_GRANTED)
+                return false;
 
-		return true;
-	}
+        return true;
+    }
 
-	public static AccessDatabase getDatabase(Context context)
-	{
-		if (mDatabase == null)
-			mDatabase = new AccessDatabase(context);
+    public static TextDrawable.IShapeBuilder getDefaultIconBuilder(Context context)
+    {
+        TextDrawable.IShapeBuilder builder = TextDrawable.builder();
 
-		return mDatabase;
-	}
+        builder.beginConfig()
+                .firstLettersOnly(true)
+                .textMaxLength(1)
+                .textColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal)))
+                .shapeColor(ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent)));
 
-	public static Keyword.Flavor getBuildFlavor()
-	{
-		try {
-			return Keyword.Flavor.valueOf(BuildConfig.FLAVOR);
-		} catch (Exception e) {
-			Log.e(TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
-					"the vocab. Is this a custom build?");
-			return Keyword.Flavor.unknown;
-		}
-	}
+        return builder;
+    }
 
-	public static SuperPreferences getDefaultPreferences(final Context context)
-	{
-		if (mDefaultPreferences == null) {
-			DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
-					.setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
-					{
-						@Override
-						public void onCommitComplete()
-						{
-							context.sendBroadcast(new Intent(App.ACTION_REQUEST_PREFERENCES_SYNC));
-						}
-					});
+    public static AccessDatabase getDatabase(Context context)
+    {
+        if (mDatabase == null)
+            mDatabase = new AccessDatabase(context);
 
-			mDefaultPreferences = new SuperPreferences(databasePreferences);
-			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
-			{
-				@Override
-				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
-				{
-					PreferenceUtils.syncPreferences(superPreferences, getDefaultLocalPreferences(context).getWeakManager());
-				}
-			});
-		}
+        return mDatabase;
+    }
 
-		return mDefaultPreferences;
-	}
+    public static Keyword.Flavor getBuildFlavor()
+    {
+        try {
+            return Keyword.Flavor.valueOf(BuildConfig.FLAVOR);
+        } catch (Exception e) {
+            Log.e(TAG, "Current build flavor " + BuildConfig.FLAVOR + " is not specified in " +
+                    "the vocab. Is this a custom build?");
+            return Keyword.Flavor.unknown;
+        }
+    }
 
-	public static SuperPreferences getDefaultLocalPreferences(final Context context)
-	{
-		if (mDefaultLocalPreferences == null) {
-			mDefaultLocalPreferences = new SuperPreferences(PreferenceManager.getDefaultSharedPreferences(context));
+    public static SuperPreferences getDefaultPreferences(final Context context)
+    {
+        if (mDefaultPreferences == null) {
+            DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
+                    .setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
+                    {
+                        @Override
+                        public void onCommitComplete()
+                        {
+                            context.sendBroadcast(new Intent(App.ACTION_REQUEST_PREFERENCES_SYNC));
+                        }
+                    });
 
-			mDefaultLocalPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
-			{
-				@Override
-				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
-				{
-					PreferenceUtils.syncPreferences(superPreferences, getDefaultPreferences(context).getWeakManager());
-				}
-			});
-		}
+            mDefaultPreferences = new SuperPreferences(databasePreferences);
+            mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+            {
+                @Override
+                public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+                {
+                    PreferenceUtils.syncPreferences(superPreferences, getDefaultLocalPreferences(context).getWeakManager());
+                }
+            });
+        }
 
-		return mDefaultLocalPreferences;
-	}
+        return mDefaultPreferences;
+    }
 
-	public static String getDeviceSerial(Context context)
-	{
-		return Build.VERSION.SDK_INT < 26
-				? Build.SERIAL
-				: (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
-	}
+    public static SuperPreferences getDefaultLocalPreferences(final Context context)
+    {
+        if (mDefaultLocalPreferences == null) {
+            mDefaultLocalPreferences = new SuperPreferences(PreferenceManager.getDefaultSharedPreferences(context));
 
-	public static String getFriendlySSID(String ssid)
-	{
-		return ssid
-				.replace("\"", "")
-				.substring(AppConfig.PREFIX_ACCESS_POINT.length())
-				.replace("_", " ");
-	}
+            mDefaultLocalPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
+            {
+                @Override
+                public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
+                {
+                    PreferenceUtils.syncPreferences(superPreferences, getDefaultPreferences(context).getWeakManager());
+                }
+            });
+        }
 
-	@NonNull
-	public static String getHotspotName(Context context)
-	{
-		return AppConfig.PREFIX_ACCESS_POINT + AppUtils.getLocalDeviceName(context)
-				.replaceAll(" ", "_");
-	}
+        return mDefaultLocalPreferences;
+    }
 
-	public static String getLocalDeviceName(Context context)
-	{
-		String deviceName = getDefaultPreferences(context)
-				.getString("device_name", null);
+    public static String getDeviceSerial(Context context)
+    {
+        return Build.VERSION.SDK_INT < 26
+                ? Build.SERIAL
+                : (ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED ? Build.getSerial() : null);
+    }
 
-		return deviceName == null || deviceName.length() == 0
-				? Build.MODEL.toUpperCase()
-				: deviceName;
-	}
+    public static String getFriendlySSID(String ssid)
+    {
+        return ssid
+                .replace("\"", "")
+                .substring(AppConfig.PREFIX_ACCESS_POINT.length())
+                .replace("_", " ");
+    }
 
-	public static NetworkDevice getLocalDevice(Context context)
-	{
-		NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
+    @NonNull
+    public static String getHotspotName(Context context)
+    {
+        return AppConfig.PREFIX_ACCESS_POINT + AppUtils.getLocalDeviceName(context)
+                .replaceAll(" ", "_");
+    }
 
-		device.brand = Build.BRAND;
-		device.model = Build.MODEL;
-		device.nickname = AppUtils.getLocalDeviceName(context);
-		device.isRestricted = false;
-		device.isLocalAddress = true;
+    public static String getLocalDeviceName(Context context)
+    {
+        String deviceName = getDefaultPreferences(context)
+                .getString("device_name", null);
 
-		try {
-			PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
+        return deviceName == null || deviceName.length() == 0
+                ? Build.MODEL.toUpperCase()
+                : deviceName;
+    }
 
-			device.versionNumber = packageInfo.versionCode;
-			device.versionName = packageInfo.versionName;
-		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
-		}
+    public static NetworkDevice getLocalDevice(Context context)
+    {
+        NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
 
-		return device;
-	}
+        device.brand = Build.BRAND;
+        device.model = Build.MODEL;
+        device.nickname = AppUtils.getLocalDeviceName(context);
+        device.isRestricted = false;
+        device.isLocalAddress = true;
 
-	@AnyRes
-	public static int getReference(Context context, @AttrRes int refId)
-	{
-		TypedValue typedValue = new TypedValue();
-		context.getTheme().resolveAttribute(refId, typedValue, true);
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getApplicationInfo().packageName, 0);
 
-		return typedValue.resourceId;
-	}
+            device.versionNumber = packageInfo.versionCode;
+            device.versionName = packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
 
-	public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
-	{
-		ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
+        return device;
+    }
 
-		if (Build.VERSION.SDK_INT >= 16) {
-			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
-					Manifest.permission.WRITE_EXTERNAL_STORAGE,
-					R.string.text_requestPermissionStorage,
-					R.string.text_requestPermissionStorageSummary));
-		}
+    @AnyRes
+    public static int getReference(Context context, @AttrRes int refId)
+    {
+        TypedValue typedValue = new TypedValue();
 
-		if (Build.VERSION.SDK_INT >= 26) {
-			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
-					Manifest.permission.READ_PHONE_STATE,
-					R.string.text_requestPermissionReadPhoneState,
-					R.string.text_requestPermissionReadPhoneStateSummary));
-		}
+        if (!context.getTheme().resolveAttribute(refId, typedValue, true)) {
+            TypedArray values = context.getTheme().obtainStyledAttributes(context.getApplicationInfo().theme,
+                    new int[]{refId});
 
-		return permissionRequests;
-	}
+            return values.length() > 0
+                    ? values.getResourceId(0, 0)
+                    : 0;
+        }
 
-	public static int getUniqueNumber()
-	{
-		return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);
-	}
+        return typedValue.resourceId;
+    }
 
-	public static SuperPreferences getViewingPreferences(Context context)
-	{
-		if (mViewingPreferences == null)
-			mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE));
+    public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
+    {
+        ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
 
-		return mViewingPreferences;
-	}
+        if (Build.VERSION.SDK_INT >= 16) {
+            permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    R.string.text_requestPermissionStorage,
+                    R.string.text_requestPermissionStorageSummary));
+        }
 
-	public static boolean isLatestChangeLogSeen(Context context)
-	{
-		NetworkDevice device = getLocalDevice(context);
-		int lastSeenChangelog = getDefaultPreferences(context)
-				.getInt("changelog_seen_version", -1);
+        if (Build.VERSION.SDK_INT >= 26) {
+            permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
+                    Manifest.permission.READ_PHONE_STATE,
+                    R.string.text_requestPermissionReadPhoneState,
+                    R.string.text_requestPermissionReadPhoneStateSummary));
+        }
 
-		return !getDefaultPreferences(context).contains("previously_migrated_version")
-				|| device.versionNumber == lastSeenChangelog;
-	}
+        return permissionRequests;
+    }
 
-	public static void publishLatestChangelogSeen(Context context)
-	{
-		NetworkDevice device = getLocalDevice(context);
+    public static int getUniqueNumber()
+    {
+        return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);
+    }
 
-		getDefaultPreferences(context).edit()
-				.putInt("changelog_seen_version", device.versionNumber)
-				.apply();
-	}
+    public static SuperPreferences getViewingPreferences(Context context)
+    {
+        if (mViewingPreferences == null)
+            mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE));
 
-	public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
-	{
-		quickActions.onQuickActions(clazz);
-		return clazz;
-	}
+        return mViewingPreferences;
+    }
 
-	public static boolean toggleDeviceScanning(Context context)
-	{
-		if (DeviceScannerService.getDeviceScanner().isScannerAvailable()) {
-			context.startService(new Intent(context, DeviceScannerService.class)
-					.setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
+    public static boolean isLatestChangeLogSeen(Context context)
+    {
+        NetworkDevice device = getLocalDevice(context);
+        int lastSeenChangelog = getDefaultPreferences(context)
+                .getInt("changelog_seen_version", -1);
 
-			return true;
-		}
+        return !getDefaultPreferences(context).contains("previously_migrated_version")
+                || device.versionNumber == lastSeenChangelog;
+    }
 
-		DeviceScannerService.getDeviceScanner()
-				.interrupt();
+    public static void publishLatestChangelogSeen(Context context)
+    {
+        NetworkDevice device = getLocalDevice(context);
 
-		return false;
-	}
+        getDefaultPreferences(context).edit()
+                .putInt("changelog_seen_version", device.versionNumber)
+                .apply();
+    }
 
-	public static void startForegroundService(Context context, Intent intent)
-	{
-		if (Build.VERSION.SDK_INT >= 26)
-			context.startForegroundService(intent);
-		else
-			context.startService(intent);
-	}
+    public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
+    {
+        quickActions.onQuickActions(clazz);
+        return clazz;
+    }
 
-	public interface QuickActions<T>
-	{
-		void onQuickActions(T clazz);
-	}
+    public static boolean toggleDeviceScanning(Context context)
+    {
+        if (DeviceScannerService.getDeviceScanner().isScannerAvailable()) {
+            context.startService(new Intent(context, DeviceScannerService.class)
+                    .setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
+
+            return true;
+        }
+
+        DeviceScannerService.getDeviceScanner()
+                .interrupt();
+
+        return false;
+    }
+
+    public static void startForegroundService(Context context, Intent intent)
+    {
+        if (Build.VERSION.SDK_INT >= 26)
+            context.startForegroundService(intent);
+        else
+            context.startService(intent);
+    }
+
+    public interface QuickActions<T>
+    {
+        void onQuickActions(T clazz);
+    }
 }

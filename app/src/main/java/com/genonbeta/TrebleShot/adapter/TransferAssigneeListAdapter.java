@@ -1,16 +1,14 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.amulyakhare.textdrawable.TextDrawable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -31,15 +29,13 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
     private ArrayList<ShowingAssignee> mList = new ArrayList<>();
     private TransferGroup mGroup;
     private AccessDatabase mDatabase;
-
-    @ColorInt
-    private int mColorRippleBackground;
+    private TextDrawable.IShapeBuilder mIconBuilder;
 
     public TransferAssigneeListAdapter(Context context, AccessDatabase database)
     {
         super(context);
         mDatabase = database;
-        mColorRippleBackground = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
+        mIconBuilder = AppUtils.getDefaultIconBuilder(context);
     }
 
     @NonNull
@@ -54,17 +50,13 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
     {
         ShowingAssignee assignee = getList().get(position);
 
-        String firstLetters = TextUtils.getLetters(assignee.device.nickname, 0);
         ImageView image = holder.getView().findViewById(R.id.image);
         TextView text1 = holder.getView().findViewById(R.id.text);
         TextView text2 = holder.getView().findViewById(R.id.text2);
 
         text1.setText(assignee.device.nickname);
         text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
-
-        image.setImageDrawable(TextDrawable.builder().buildRoundRect(firstLetters.length() > 0
-                ? firstLetters
-                : "?", mColorRippleBackground, 100));
+        image.setImageDrawable(mIconBuilder.buildRound(assignee.device.nickname));
     }
 
     @Override

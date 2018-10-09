@@ -43,11 +43,12 @@ public class TextUtils
 		return context.getString(adapterNameResource);
 	}
 
-	public static String getLetters(String text, int breakAfter)
+	public static String getLetters(String text, int length)
 	{
 		if (text == null || text.length() == 0)
 			text = "?";
 
+		int breakAfter = --length;
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (String letter : text.split(" ")) {

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">#00bcd4</color>
+    <color name="colorAccent">#36bf6f</color>
     <color name="colorControlNormal">#555</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
@@ -19,7 +19,7 @@
     <!-- SEPERATOR -->
 
 
-    <color name="dark_colorAccent">#00bcd4</color>
+    <color name="dark_colorAccent">#36bf6f</color>
     <color name="dark_colorControlNormal">#f5f5f5</color>
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">#263238</color>
