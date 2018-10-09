@@ -86,6 +86,16 @@ public class AboutActivity extends Activity
 			}
 		});
 
+		findViewById(R.id.activity_about_telegram_layout).setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View view)
+			{
+				startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)));
+			}
+		});
+
+
 
 		findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(new View.OnClickListener()
 		{

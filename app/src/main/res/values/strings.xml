@@ -387,4 +387,5 @@
     <string name="text_applyDarkTheme">Dark theme</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
+    <string name="butn_telegram_channel">Telegram channel</string>
 </resources>
