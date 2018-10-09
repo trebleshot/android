@@ -150,12 +150,14 @@ public class FileListFragment
 						{
 							final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
 							boolean canWrite = fileHolder.file.canWrite();
+							boolean canRead = fileHolder.file.canRead() && fileHolder.file.isFile();
 
 							PopupMenu popupMenu = new PopupMenu(getContext(), v);
 							Menu menuItself = popupMenu.getMenu(); // Like the song Life Itself from Glass Animals, you got it?
 
 							popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
+							menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead);
 							menuItself.findItem(R.id.action_mode_file_rename).setVisible(canWrite);
 							menuItself.findItem(R.id.action_mode_file_delete).setVisible(canWrite);
 
@@ -172,7 +174,9 @@ public class FileListFragment
 									ArrayList<FileListAdapter.GenericFileHolder> generateSelectionList = new ArrayList<>();
 									generateSelectionList.add(fileHolder);
 
-									if (id == R.id.action_mode_file_eject_directory
+									if (id == R.id.action_mode_file_open) {
+										performLayoutClickOpenUri(clazz);
+									} else if (id == R.id.action_mode_file_eject_directory
 											&& fileHolder instanceof FileListAdapter.WritablePathHolder) {
 										AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
 									} else if (handleEditingAction(id, FileListFragment.this, generateSelectionList))

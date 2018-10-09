@@ -67,7 +67,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 						int fileId = 0;
 
 						for (T fileHolder : getItemList()) {
-							renameFile(fileHolder.file, String.format(renameTo, fileId) + FileUtils.getFileExtension(fileHolder.file.getName()), renameListener);
+							renameFile(fileHolder.file, String.format(renameTo, fileId) + FileUtils.getFileFormat(fileHolder.file.getName()), renameListener);
 							fileId++;
 						}
 

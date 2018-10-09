@@ -18,99 +18,112 @@ import java.io.IOException;
 
 public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 {
-	public static void copy(Context context, DocumentFile source, DocumentFile destination,
-							Interrupter interrupter) throws Exception
-	{
-		copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
-	}
+    public static void copy(Context context, DocumentFile source, DocumentFile destination,
+                            Interrupter interrupter) throws Exception
+    {
+        copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
+    }
 
-	public static DocumentFile getApplicationDirectory(Context context, SharedPreferences defaultPreferences)
-	{
-		String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
+    public static DocumentFile getApplicationDirectory(Context context, SharedPreferences defaultPreferences)
+    {
+        String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
 
-		if (defaultPreferences.contains("storage_path")) {
-			try {
-				DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path", null)));
+        if (defaultPreferences.contains("storage_path")) {
+            try {
+                DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path", null)));
 
-				if (savePath.isDirectory() && savePath.canWrite())
-					return savePath;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+                if (savePath.isDirectory() && savePath.canWrite())
+                    return savePath;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
-		File defaultFolder = new File(defaultPath);
+        File defaultFolder = new File(defaultPath);
 
-		if (defaultFolder.isFile())
-			defaultFolder.delete();
+        if (defaultFolder.isFile())
+            defaultFolder.delete();
 
-		if (!defaultFolder.isDirectory())
-			defaultFolder.mkdirs();
+        if (!defaultFolder.isDirectory())
+            defaultFolder.mkdirs();
 
-		return DocumentFile.fromFile(defaultFolder);
-	}
+        return DocumentFile.fromFile(defaultFolder);
+    }
 
-	public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
-	{
-		return fetchFile(getSavePath(context, preferences, group), transferObject.directory, transferObject.file, createIfNotExists);
-	}
+    public static String getFileFormat(String fileName)
+    {
+        final int lastDot = fileName.lastIndexOf('.');
 
-	public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group) throws IOException
-	{
-		DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transferObject, group, true);
+        if (lastDot >= 0)
+            return fileName.substring(lastDot + 1).toLowerCase();
 
-		if (!pseudoFile.canWrite())
-			throw new IOException("File cannot be created or you don't have permission write on it");
+        return null;
+    }
 
-		return pseudoFile;
-	}
+    public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
+    {
+        return fetchFile(getSavePath(context, preferences, group), transferObject.directory, transferObject.file, createIfNotExists);
+    }
 
-	public static String getReadableUri(String uri) {
-		return getReadableUri(Uri.parse(uri), uri);
-	}
+    public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group) throws IOException
+    {
+        DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transferObject, group, true);
 
-	public static String getReadableUri(Uri uri) {
-		return getReadableUri(uri, uri.toString());
-	}
+        if (!pseudoFile.canWrite())
+            throw new IOException("File cannot be created or you don't have permission write on it");
 
-	public static String getReadableUri(Uri uri, @Nullable String defaultValue) {
-		return uri.getPath() == null ? defaultValue : uri.getPath();
-	}
+        return pseudoFile;
+    }
 
-	public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
-	{
-		DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context, preferences);
+    public static String getReadableUri(String uri)
+    {
+        return getReadableUri(Uri.parse(uri), uri);
+    }
 
-		if (group.savePath != null) {
-			try {
-				DocumentFile savePath = fromUri(context, Uri.parse(group.savePath));
+    public static String getReadableUri(Uri uri)
+    {
+        return getReadableUri(uri, uri.toString());
+    }
 
-				if (savePath.isDirectory() && savePath.canWrite())
-					return savePath;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		} else {
-			group.savePath = defaultFolder.getUri().toString();
-			AppUtils.getDatabase(context).publish(group);
-		}
+    public static String getReadableUri(Uri uri, @Nullable String defaultValue)
+    {
+        return uri.getPath() == null ? defaultValue : uri.getPath();
+    }
 
-		return defaultFolder;
-	}
+    public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
+    {
+        DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context, preferences);
 
-	public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
-	{
-		String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.friendlyName, true);
+        if (group.savePath != null) {
+            try {
+                DocumentFile savePath = fromUri(context, Uri.parse(group.savePath));
 
-		if (!currentFile.renameTo(uniqueName))
-			throw new IOException("Failed to rename object: " + currentFile);
+                if (savePath.isDirectory() && savePath.canWrite())
+                    return savePath;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            group.savePath = defaultFolder.getUri().toString();
+            AppUtils.getDatabase(context).publish(group);
+        }
 
-		return savePath.findFile(uniqueName);
-	}
+        return defaultFolder;
+    }
 
-	public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
-							   Interrupter interrupter) throws Exception
-	{
-		return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
-	}
+    public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
+    {
+        String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.friendlyName, true);
+
+        if (!currentFile.renameTo(uniqueName))
+            throw new IOException("Failed to rename object: " + currentFile);
+
+        return savePath.findFile(uniqueName);
+    }
+
+    public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
+                               Interrupter interrupter) throws Exception
+    {
+        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
+    }
 }

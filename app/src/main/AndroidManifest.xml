@@ -3,20 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.genonbeta.TrebleShot">
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".App"
@@ -24,6 +24,7 @@
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/text_appName"
+        android:supportsRtl="true"
         android:theme="@style/Theme.TrebleShot"
         tools:ignore="GoogleAppIndexingWarning">
 
@@ -33,114 +34,132 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activity.ShareActivity"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"
-            android:label="@string/text_appName">
+            android:label="@string/text_appName"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT"/>
-                <action android:name="android.intent.action.SEND"/>
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND"/>
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE"/>
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND" />
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="*/*"/>
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
             </intent-filter>
 
             <meta-data
                 android:name="android.service.chooser.chooser_target_service"
-                android:value=".service.DeviceChooserService"/>
+                android:value=".service.DeviceChooserService" />
         </activity>
 
         <activity
             android:name=".activity.ContentSharingActivity"
             android:label="@string/text_shareFiles"
             android:launchMode="singleTask"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"/>
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
             android:name=".activity.FilePickerActivity"
-            android:label="@string/text_fileExplorer"/>
+            android:label="@string/text_fileExplorer" />
 
         <activity
             android:name=".activity.TransactionActivity"
             android:label="@string/text_transactionViewer"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar"/>
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:scheme="file"
+                    android:mimeType="application/*"
+                    android:pathPattern=".*\\.tshare"
+                    tools:ignore="AppLinkUrlError" />
+
+                <data
+                    android:scheme="content"
+                    android:mimeType="application/*"
+                    android:pathPattern=".*\\.tshare" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".activity.PreferencesActivity"
-            android:label="@string/text_preferences"/>
+            android:label="@string/text_preferences" />
         <activity
             android:name=".activity.TextEditorActivity"
-            android:label="@string/text_textEditor"/>
+            android:label="@string/text_textEditor" />
 
         <activity
             android:name=".activity.ChangeStoragePathActivity"
             android:theme="@style/Base.Theme.AppCompat.Dialog">
             <intent-filter>
-                <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <activity
             android:name=".activity.AboutActivity"
             android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar"/>
+            android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
         <activity
             android:name=".activity.ThirdPartyLibrariesActivity"
-            android:label="@string/text_thirdPartyLibraries"/>
+            android:label="@string/text_thirdPartyLibraries" />
 
-        <activity android:name=".activity.ChangelogActivity"
-                  android:label="@string/text_changelog"/>
+        <activity
+            android:name=".activity.ChangelogActivity"
+            android:label="@string/text_changelog" />
 
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"
             android:label="@string/text_communicationService"
-            android:process=":transfer"/>
+            android:process=":transfer" />
         <service
             android:name=".service.DeviceChooserService"
             android:label="@string/text_chooserTargetService"
             android:permission="android.permission.BIND_CHOOSER_TARGET_SERVICE">
             <intent-filter>
-                <action android:name="android.service.chooser.ChooserTargetService"/>
+                <action android:name="android.service.chooser.ChooserTargetService" />
             </intent-filter>
         </service>
         <service android:name=".service.DeviceScannerService">
             <intent-filter>
-                <action android:name="genonbeta.intent.action.SCAN_DEVICES"/>
-                <action android:name="genonbeta.intent.action.ADD_IP"/>
+                <action android:name="genonbeta.intent.action.SCAN_DEVICES" />
+                <action android:name="genonbeta.intent.action.ADD_IP" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
         <service
             android:name=".service.WorkerService"
-            android:label="@string/text_workerService"/>
+            android:label="@string/text_workerService" />
 
         <receiver
             android:name=".receiver.NetworkStatusReceiver"
             android:process=":transfer">
             <intent-filter>
-                <action android:name="android.net.wifi.WIFI_STATE_CHANGED"/>
-                <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED"/>
-                <action android:name="android.net.wifi.STATE_CHANGE"/>
-                <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE"/>
+                <action android:name="android.net.wifi.WIFI_STATE_CHANGED" />
+                <action android:name="android.net.wifi.WIFI_AP_STATE_CHANGED" />
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.net.wifi.p2p.CONNECTION_STATE_CHANGE" />
             </intent-filter>
         </receiver>
         <receiver
             android:name=".receiver.DialogEventReceiver"
-            android:process=":transfer"/>
+            android:process=":transfer" />
 
         <service
             android:name=".service.CommunicationToggleTile"
@@ -149,7 +168,7 @@
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
             android:process=":transfer">
             <intent-filter>
-                <action android:name="android.service.quicksettings.action.QS_TILE"/>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
 
@@ -160,7 +179,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
     </application>
 </manifest>

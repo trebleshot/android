@@ -6,6 +6,17 @@
     android:layout_height="wrap_content"
     android:background="?rectSelector">
 
+    <ImageView
+        android:id="@+id/visitImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="?roundSelector"
+        android:padding="10dp"
+        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+
     <FrameLayout
         android:id="@+id/layout_image"
         style="@style/listContentIconStyle"
@@ -29,6 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/visitImage"
+        android:layout_toLeftOf="@+id/visitImage"
         android:layout_toEndOf="@id/layout_image"
         android:layout_toRightOf="@id/layout_image"
         android:orientation="vertical">
@@ -53,15 +66,16 @@
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
 
             <TextView
                 android:id="@+id/text3"
                 style="@style/marqueeText.secondary"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="1" />
         </LinearLayout>
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -1,12 +1,17 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
@@ -77,8 +82,36 @@ public class MusicListFragment
 			@Override
 			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				if (!clazz.isRepresentative())
+				if (!clazz.isRepresentative()) {
 					registerLayoutViewClicks(clazz);
+
+					clazz.getView().findViewById(R.id.visitImage)
+							.setOnClickListener(new View.OnClickListener()
+							{
+								long lastClick = 0;
+
+								@Override
+								public void onClick(final View v)
+								{
+									if (System.currentTimeMillis() - lastClick < 2000)
+										performLayoutClickOpenUri(clazz);
+									else {
+										lastClick = System.currentTimeMillis();
+
+										v.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.pulse));
+
+										new Handler().postDelayed(new Runnable()
+										{
+											@Override
+											public void run()
+											{
+												v.setAnimation(null);
+											}
+										}, 2000);
+									}
+								}
+							});
+				}
 			}
 		};
 

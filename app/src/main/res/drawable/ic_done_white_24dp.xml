@@ -4,7 +4,12 @@
     android:tint="?colorControlNormal"
     android:viewportWidth="24.0"
     android:viewportHeight="24.0">
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="M9,16.2L4.8,12l-1.4,1.4L9,19 21,7l-1.4,-1.4L9,16.2z" />
+
+    <group
+        android:pivotX="12"
+        android:scaleX="@dimen/direction_scale_factor">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="M9,16.2L4.8,12l-1.4,1.4L9,19 21,7l-1.4,-1.4L9,16.2z" />
+    </group>
 </vector>

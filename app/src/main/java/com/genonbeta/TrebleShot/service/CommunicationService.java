@@ -737,7 +737,7 @@ public class CommunicationService extends Service
 																requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
 																groupId,
 																requestIndex.getString(Keyword.INDEX_FILE_NAME),
-																"." + UUID.randomUUID() + ".tshare",
+																"." + UUID.randomUUID() + "." + AppConfig.EXT_FILE_PART,
 																requestIndex.getString(Keyword.INDEX_FILE_MIME),
 																requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
 																TransferObject.Type.INCOMING);

@@ -17,6 +17,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -30,15 +31,15 @@ import java.io.IOException;
 
 public class TransactionInfoDialog extends AlertDialog.Builder
 {
-	public TransactionInfoDialog(@NonNull final Context context, final AccessDatabase database, SharedPreferences preferences, final TransferObject transferObject)
+	public TransactionInfoDialog(@NonNull final Context context, final TransferObject transferObject)
 	{
 		super(context);
 
 		final TransferGroup group = new TransferGroup(transferObject.groupId);
 
 		try {
-			database.reconstruct(group);
-			database.reconstruct(transferObject);
+			AppUtils.getDatabase(context).reconstruct(group);
+			AppUtils.getDatabase(context).reconstruct(transferObject);
 
 			DocumentFile attemptedFile = null;
 			boolean isIncoming = TransferObject.Type.INCOMING.equals(transferObject.type);
@@ -47,7 +48,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 				// If it is incoming than get the received or cache file
 				// If not then try to reach to the source file that is being send
 				attemptedFile = isIncoming
-						? FileUtils.getIncomingPseudoFile(getContext(), preferences, transferObject, group, false)
+						? FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(context), transferObject, group, false)
 						: FileUtils.fromUri(getContext(), Uri.parse(transferObject.file));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -101,7 +102,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 						@Override
 						public void onClick(DialogInterface dialog, int which)
 						{
-							database.remove(transferObject);
+							AppUtils.getDatabase(context).remove(transferObject);
 						}
 					}).show();
 				}
@@ -118,7 +119,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 						public void onClick(DialogInterface dialogInterface, int i)
 						{
 							transferObject.flag = TransferObject.Flag.PENDING;
-							database.publish(transferObject);
+							AppUtils.getDatabase(context).publish(transferObject);
 						}
 					});
 				} else if (fileExists && pseudoFile.getParentFile() != null) {
@@ -141,7 +142,7 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 										try {
 											FileUtils.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, transferObject);
 
-											database.remove(transferObject);
+											AppUtils.getDatabase(context).remove(transferObject);
 
 											Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
 										} catch (IOException e) {

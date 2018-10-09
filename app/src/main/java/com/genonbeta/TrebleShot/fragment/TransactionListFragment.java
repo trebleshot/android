@@ -164,8 +164,7 @@ public class TransactionListFragment
 	{
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
-			new TransactionInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), transferObject)
-					.show();
+			new TransactionInfoDialog(getActivity(), transferObject).show();
 
 			return true;
 		} catch (Exception e) {

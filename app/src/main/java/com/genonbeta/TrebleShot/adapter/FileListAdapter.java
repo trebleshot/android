@@ -12,11 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
@@ -64,8 +68,24 @@ public class FileListAdapter
 
                     if (file.isDirectory() && mShowDirectories)
                         lister.offer(new DirectoryHolder(file, mContext.getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
-                    else if (file.isFile() && mShowFiles)
-                        lister.offer(new FileHolder(getContext(), file));
+                    else if (file.isFile() && mShowFiles) {
+                        if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
+                            TransferObject existingObject = null;
+
+                            try {
+                                CursorItem cursorItem = AppUtils.getDatabase(getContext())
+                                        .getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                                                .setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=?", file.getName()));
+
+                                if (cursorItem != null)
+                                    existingObject = new TransferObject(cursorItem);
+                            } catch (Exception e) {
+                            }
+
+                            lister.offer(new ReceivedFileHolder(getContext(), file, existingObject));
+                        } else
+                            lister.offer(new FileHolder(getContext(), file));
+                    }
                 }
             }
         } else {
@@ -223,6 +243,8 @@ public class FileListAdapter
                     return getContext().getString(R.string.text_storage);
                 case FOLDER:
                     return getContext().getString(R.string.text_folder);
+                case FILE_PART:
+                    return getContext().getString(R.string.text_pendingTransfers);
                 default:
                     return getContext().getString(R.string.text_file);
             }
@@ -275,6 +297,26 @@ public class FileListAdapter
                     file.lastModified(),
                     file.length(),
                     FileUtils.getSecureUriSilently(context, file));
+        }
+    }
+
+    public static class ReceivedFileHolder extends FileHolder
+    {
+        public ReceivedFileHolder(Context context, DocumentFile file, TransferObject transferObject)
+        {
+            super(context, file);
+
+            this.info = transferObject == null
+                    ? context.getString(R.string.mesg_notValidTransfer)
+                    : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
+                    FileUtils.sizeExpression(transferObject.fileSize, false));
+
+            this.iconRes = transferObject == null
+                    ? R.drawable.ic_block_white_24dp
+                    : R.drawable.ic_file_download_white_24dp;
+
+            if (transferObject != null)
+                this.friendlyName = transferObject.friendlyName;
         }
     }
 
@@ -348,6 +390,8 @@ public class FileListAdapter
                 mType = Type.STORAGE;
             else if (holder instanceof DirectoryHolder)
                 mType = Type.FOLDER;
+            else if (holder instanceof ReceivedFileHolder)
+                mType = Type.FILE_PART;
             else
                 mType = Type.FILE;
         }
@@ -377,6 +421,7 @@ public class FileListAdapter
         {
             STORAGE,
             FOLDER,
+            FILE_PART,
             FILE
         }
     }
