@@ -17,6 +17,7 @@
         <item name="colorShadowBeginning">@color/colorShadowBeginning</item>
         <item name="colorShadowEnd">@color/colorShadowEnd</item>
         <item name="contentShowingBackground">@color/contentShowingBackground</item>
+        <item name="fastScrollBackground">@drawable/fastscroll_default_bubble</item>
         <item name="rectSelector">@drawable/rect_selector</item>
         <item name="rippleBackground">@drawable/ripple_background</item>
         <item name="roundSelector">@drawable/round_selector</item>
@@ -52,6 +53,7 @@
         <item name="colorShadowBeginning">@color/dark_colorShadowBeginning</item>
         <item name="colorShadowEnd">@color/dark_colorShadowEnd</item>
         <item name="contentShowingBackground">@color/dark_contentShowingBackground</item>
+        <item name="fastScrollBackground">@drawable/fastscroll_default_bubble_dark</item>
         <item name="rectSelector">@drawable/rect_selector_dark</item>
         <item name="rippleBackground">@drawable/ripple_background_dark</item>
         <item name="roundSelector">@drawable/round_selector_dark</item>

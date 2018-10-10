@@ -1,20 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    style="@style/marqueeText.primary"
     android:layout_width="140dp"
     android:layout_height="wrap_content"
     android:layout_margin="1dp"
-    android:background="@drawable/fastscroll__default_bubble"
+    android:background="?fastScrollBackground"
     android:elevation="2dp"
     android:gravity="center"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp"
     android:paddingLeft="8dp"
+    android:paddingTop="4dp"
     android:paddingRight="8dp"
-    android:textSize="14sp"
+    android:paddingBottom="4dp"
     android:visibility="invisible"
-    android:maxLines="1"
-    android:ellipsize="end"
     tools:text="A"
-    tools:visibility="visible"/>
+    tools:visibility="visible" />
