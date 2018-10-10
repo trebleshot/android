@@ -405,4 +405,5 @@
 <string name="text_applyDarkTheme">Donker thema</string>
     <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
     <string name="butn_allow">Toestaan</string>
+<string name="butn_telegram_channel">Telegram-kanaal</string>
 </resources>
