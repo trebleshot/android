@@ -14,8 +14,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.transition.TransitionManager;
-import android.support.v4.widget.ImageViewCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
@@ -59,7 +57,6 @@ public class NetworkStatusFragment
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 	private UIConnectionUtils mConnectionUtils;
 
-	private ViewGroup mContainerHelperQRImage;
 	private View mContainerText1;
 	private View mContainerText2;
 	private View mContainerText3;
@@ -90,9 +87,8 @@ public class NetworkStatusFragment
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
 	{
-		View view = getLayoutInflater().inflate(R.layout.layout_hotspot_status, container, false);
+		View view = getLayoutInflater().inflate(R.layout.layout_network_status, container, false);
 
-		mContainerHelperQRImage = view.findViewById(R.id.layout_hotspot_status_helper_container);
 		mCodeView = view.findViewById(R.id.layout_hotspot_status_qr_image);
 		mContainerText1 = view.findViewById(R.id.layout_hotspot_status_info_container_text1_container);
 		mContainerText2 = view.findViewById(R.id.layout_hotspot_status_info_container_text2_container);
@@ -238,18 +234,14 @@ public class NetworkStatusFragment
 
 				Bitmap bitmap = encoder.createBitmap(bitMatrix);
 
-
 				GlideApp.with(getContext())
 						.load(bitmap)
 						.into(mCodeView);
 			} else
-				mCodeView.setImageBitmap(null);
+				mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			mCodeView.setVisibility(showQRCode ? View.VISIBLE : View.GONE);
-			mContainerHelperQRImage.setVisibility(showQRCode ? View.GONE : View.VISIBLE);
-
 			mContainerText1.setVisibility(text1 == null ? View.GONE : View.VISIBLE);
 			mContainerText2.setVisibility(text2 == null ? View.GONE : View.VISIBLE);
 			mContainerText3.setVisibility(text3 == null ? View.GONE : View.VISIBLE);

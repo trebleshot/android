@@ -15,4 +15,7 @@
     <attr name="stateSelectedImageRounded" format="reference" />
     <attr name="statusBarColor" format="reference" />
     <attr name="useLightStatusBar" format="boolean" />
+
+    <!-- xml attr -->
+    <attr name="baseOnSmallerLength" format="boolean" />
 </resources>

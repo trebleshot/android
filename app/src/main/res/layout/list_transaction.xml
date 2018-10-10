@@ -19,8 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            app:tint="?colorAccent"
-            app:srcCompat="@drawable/ic_github_circle_white_24dp" />
+            app:srcCompat="@drawable/ic_compare_arrows_white_24dp" />
 
         <include
             layout="@layout/generic_view_selection_rounded"
@@ -44,9 +43,11 @@
             android:layout_height="wrap_content"
             android:maxLines="3" />
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
 
         <LinearLayout
             android:layout_width="match_parent"

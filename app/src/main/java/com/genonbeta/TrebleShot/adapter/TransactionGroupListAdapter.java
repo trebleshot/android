@@ -5,10 +5,12 @@ import android.content.res.ColorStateList;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
@@ -136,6 +138,7 @@ public class TransactionGroupListAdapter
 				@ColorInt
 				int appliedColor;
 
+				ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
 				ImageView image = parentView.findViewById(R.id.image);
 				TextView text1 = parentView.findViewById(R.id.text);
 				TextView text2 = parentView.findViewById(R.id.text2);
@@ -164,11 +167,13 @@ public class TransactionGroupListAdapter
 								: R.drawable.ic_file_download_white_24dp);
 				}
 
-				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
-				text1.setTextColor(appliedColor);
 				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, FileUtils.sizeExpression(object.totalBytes, false)));
 				text2.setText(mPercentFormat.format(object.totalPercent));
 				text3.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
+				progressBar.setMax(object.totalCount);
+				progressBar.setProgress(object.totalCountCompleted);
+				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
+				DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
 			}
 		} catch (Exception e) {
 		}

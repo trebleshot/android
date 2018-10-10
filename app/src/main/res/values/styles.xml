@@ -29,6 +29,10 @@
 		<item name="android:textSize">@dimen/font_size_big</item>
 	</style>
 
+	<style name="marqueeText.primary.normal" parent="@style/marqueeText.primary">
+		<item name="android:textSize">@dimen/font_size_primary_normal</item>
+	</style>
+
 	<style name="marqueeText.primary.small" parent="@style/marqueeText.primary">
 		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
@@ -37,6 +41,14 @@
 		<item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
 		<item name="android:textSize">@dimen/font_size_secondary</item>
 		<item name="android:textColor">?android:textColorSecondary</item>
+	</style>
+
+	<style name="marqueeText.secondary.big" parent="@style/marqueeText.secondary">
+		<item name="android:textSize">@dimen/font_size_big</item>
+	</style>
+
+	<style name="marqueeText.secondary.small" parent="@style/marqueeText.secondary">
+		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
 
 	<style name="condensedCapsTextStyle" parent="@style/marqueeText.secondary">

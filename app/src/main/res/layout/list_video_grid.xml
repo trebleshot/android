@@ -20,6 +20,7 @@
 
     <TextView
         android:id="@+id/text3"
+        style="@style/marqueeText.primary.small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -27,11 +28,11 @@
         android:background="@drawable/background_gradient_top"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp" />
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/text2"
+        style="@style/marqueeText.primary.small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -39,16 +40,16 @@
         android:background="@drawable/background_gradient_bottom"
         android:gravity="center"
         android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:textSize="12sp" />
+        android:textColor="@android:color/white" />
 
     <TextView
         android:id="@+id/text"
-        style="@style/marqueeText.primary"
+        style="@style/marqueeText.primary.small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="10dp"
+        android:textColor="@android:color/white"
         android:visibility="gone" />
 
     <include layout="@layout/generic_view_selection" />

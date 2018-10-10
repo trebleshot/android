@@ -45,6 +45,12 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

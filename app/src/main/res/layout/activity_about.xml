@@ -61,13 +61,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginLeft="25dp"
-                android:layout_marginEnd="25dp"
-                android:layout_marginRight="25dp">
+                android:layout_marginEnd="25dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:paddingBottom="15dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -114,11 +114,10 @@
                             app:tint="?colorControlNormal" />
 
                         <TextView
+                            style="@style/marqueeText.primary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/butn_seeSourceCode"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/font_size_secondary" />
+                            android:text="@string/butn_seeSourceCode" />
 
                     </LinearLayout>
 
@@ -141,11 +140,10 @@
                             app:srcCompat="@drawable/ic_translate_white_24dp" />
 
                         <TextView
+                            style="@style/marqueeText.primary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_translateTrebleshot"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/font_size_secondary" />
+                            android:text="@string/text_translateTrebleshot" />
 
                     </LinearLayout>
 
@@ -169,11 +167,10 @@
 
                         <TextView
                             android:id="@+id/activity_about_third_party_libraries_text"
+                            style="@style/marqueeText.primary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_thirdPartyLibraries"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/font_size_secondary" />
+                            android:text="@string/text_thirdPartyLibraries" />
 
                     </LinearLayout>
 
@@ -196,11 +193,10 @@
                             app:srcCompat="@drawable/ic_autorenew_white_24dp" />
 
                         <TextView
+                            style="@style/marqueeText.primary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/butn_changelog"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/font_size_secondary" />
+                            android:text="@string/butn_changelog" />
 
                     </LinearLayout>
 
@@ -223,11 +219,10 @@
                             app:srcCompat="@drawable/ic_telegram_white_24dp" />
 
                         <TextView
+                            style="@style/marqueeText.primary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/butn_telegram_channel"
-                            android:textColor="?android:textColorPrimary"
-                            android:textSize="@dimen/font_size_secondary" />
+                            android:text="@string/butn_telegram_channel" />
 
                     </LinearLayout>
 

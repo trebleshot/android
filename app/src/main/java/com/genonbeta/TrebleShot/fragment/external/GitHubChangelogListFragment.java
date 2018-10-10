@@ -26,127 +26,146 @@ import java.util.ArrayList;
  * date: 9/12/18 5:51 PM
  */
 public class GitHubChangelogListFragment
-		extends DynamicRecyclerViewFragment<GitHubChangelogListFragment.VersionObject, RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter> {
-	@Override
-	public VersionListAdapter onAdapter() {
-		return new VersionListAdapter(getContext());
-	}
+        extends DynamicRecyclerViewFragment<GitHubChangelogListFragment.VersionObject, RecyclerViewAdapter.ViewHolder, GitHubChangelogListFragment.VersionListAdapter>
+{
+    @Override
+    public VersionListAdapter onAdapter()
+    {
+        return new VersionListAdapter(getContext());
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		AppUtils.publishLatestChangelogSeen(getActivity());
-	}
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        AppUtils.publishLatestChangelogSeen(getActivity());
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
-		setEmptyText(getString(R.string.mesg_noInternetConnection));
+        setEmptyImage(R.drawable.ic_github_circle_white_24dp);
+        setEmptyText(getString(R.string.mesg_noInternetConnection));
 
-		useEmptyActionButton(true);
-		getEmptyActionButton().setText(R.string.butn_refresh);
-		getEmptyActionButton().setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				refreshList();
-			}
-		});
-	}
+        useEmptyActionButton(true);
+        getEmptyActionButton().setText(R.string.butn_refresh);
+        getEmptyActionButton().setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                refreshList();
+            }
+        });
 
-	public static class VersionObject {
-		public String tag;
-		public String name;
-		public String changes;
+        onEnsureList();
+    }
 
-		public VersionObject(String tag, String name, String changes) {
-			this.tag = tag;
-			this.name = name;
-			this.changes = changes;
-		}
-	}
+    public static class VersionObject
+    {
+        public String tag;
+        public String name;
+        public String changes;
 
-	public static class VersionListAdapter extends RecyclerViewAdapter<VersionObject, RecyclerViewAdapter.ViewHolder> {
-		private ArrayList<VersionObject> mList = new ArrayList<>();
-		private String mCurrentVersion;
+        public VersionObject(String tag, String name, String changes)
+        {
+            this.tag = tag;
+            this.name = name;
+            this.changes = changes;
+        }
+    }
 
-		public VersionListAdapter(Context context) {
-			super(context);
-			mCurrentVersion = AppUtils.getLocalDevice(context).versionName;
-		}
+    public static class VersionListAdapter extends RecyclerViewAdapter<VersionObject, RecyclerViewAdapter.ViewHolder>
+    {
+        private ArrayList<VersionObject> mList = new ArrayList<>();
+        private String mCurrentVersion;
 
-		@NonNull
-		@Override
-		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-			return new ViewHolder(getInflater().inflate(R.layout.list_changelog, parent, false));
-		}
+        public VersionListAdapter(Context context)
+        {
+            super(context);
+            mCurrentVersion = AppUtils.getLocalDevice(context).versionName;
+        }
 
-		@Override
-		public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-			final VersionObject versionObject = getList().get(position);
-			ImageView imageCheck = holder.getView().findViewById(R.id.image_check);
-			TextView text1 = holder.getView().findViewById(R.id.text1);
-			TextView text2 = holder.getView().findViewById(R.id.text2);
+        @NonNull
+        @Override
+        public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+        {
+            return new ViewHolder(getInflater().inflate(R.layout.list_changelog, parent, false));
+        }
 
-			text1.setText(versionObject.name);
-			text2.setText(versionObject.changes);
+        @Override
+        public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+        {
+            final VersionObject versionObject = getList().get(position);
+            ImageView imageCheck = holder.getView().findViewById(R.id.image_check);
+            TextView text1 = holder.getView().findViewById(R.id.text1);
+            TextView text2 = holder.getView().findViewById(R.id.text2);
 
-			imageCheck.setVisibility(mCurrentVersion.equals(versionObject.tag)
-					? View.VISIBLE
-					: View.GONE);
-		}
+            text1.setText(versionObject.name);
+            text2.setText(versionObject.changes);
 
-		@Override
-		public ArrayList<VersionObject> onLoad() {
-			ArrayList<VersionObject> versionObjects = new ArrayList<>();
-			RemoteServer server = new RemoteServer(AppConfig.URI_REPO_APP_UPDATE);
+            imageCheck.setVisibility(mCurrentVersion.equals(versionObject.tag)
+                    ? View.VISIBLE
+                    : View.GONE);
+        }
 
-			try {
-				String result = server.connect(null, null);
+        @Override
+        public ArrayList<VersionObject> onLoad()
+        {
+            ArrayList<VersionObject> versionObjects = new ArrayList<>();
+            RemoteServer server = new RemoteServer(AppConfig.URI_REPO_APP_UPDATE);
 
-				JSONArray releases = new JSONArray(result);
+            try {
+                String result = server.connect(null, null);
 
-				if (releases.length() > 0) {
-					for (int iterator = 0; iterator < releases.length(); iterator++) {
-						JSONObject currentObject = releases.getJSONObject(iterator);
+                JSONArray releases = new JSONArray(result);
 
-						versionObjects.add(new VersionObject(
-								currentObject.getString("tag_name"),
-								currentObject.getString("name"),
-								currentObject.getString("body")
-						));
-					}
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+                if (releases.length() > 0) {
+                    for (int iterator = 0; iterator < releases.length(); iterator++) {
+                        JSONObject currentObject = releases.getJSONObject(iterator);
 
-			return versionObjects;
-		}
+                        versionObjects.add(new VersionObject(
+                                currentObject.getString("tag_name"),
+                                currentObject.getString("name"),
+                                currentObject.getString("body")
+                        ));
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-		@Override
-		public void onUpdate(ArrayList<VersionObject> passedItem) {
-			synchronized (getList()) {
-				getList().clear();
-				getList().addAll(passedItem);
-			}
-		}
+            return versionObjects;
+        }
 
-		@Override
-		public long getItemId(int i) {
-			return 0;
-		}
+        @Override
+        public void onUpdate(ArrayList<VersionObject> passedItem)
+        {
+            synchronized (getList()) {
+                getList().clear();
+                getList().addAll(passedItem);
+            }
+        }
 
-		@Override
-		public int getItemCount() {
-			return getList().size();
-		}
+        @Override
+        public long getItemId(int i)
+        {
+            return 0;
+        }
 
-		@Override
-		public ArrayList<VersionObject> getList() {
-			return mList;
-		}
-	}
+        @Override
+        public int getItemCount()
+        {
+            return getList().size();
+        }
+
+        @Override
+        public ArrayList<VersionObject> getList()
+        {
+            return mList;
+        }
+    }
 }
 

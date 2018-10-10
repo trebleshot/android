@@ -8,7 +8,7 @@
 
                     <padding android:bottom="1dp" android:left="1dp" android:right="1dp" android:top="1dp" />
 
-                    <solid android:color="@color/dark_colorSelection" />
+                    <solid android:color="@android:color/darker_gray" />
                 </shape>
             </item>
             <item android:gravity="center">

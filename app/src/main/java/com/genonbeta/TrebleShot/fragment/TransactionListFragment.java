@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public class TransactionListFragment
-		extends GroupEditableListFragment<TransactionListAdapter.GroupEditableTransferObject, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
+		extends GroupEditableListFragment<TransactionListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
 		implements TitleSupport, Activity.OnBackPressedListener
 {
 	public static final String TAG = "TransactionListFragment";
@@ -236,7 +236,7 @@ public class TransactionListFragment
 			if (transferObject instanceof TransactionListAdapter.StorageStatusItem) {
 				final TransactionListAdapter.StorageStatusItem statusItem = (TransactionListAdapter.StorageStatusItem) transferObject;
 
-				if (statusItem.hasIssues) {
+				if (statusItem.hasIssues()) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
 					builder.setMessage(getContext().getString(R.string.mesg_notEnoughSpace));
@@ -284,7 +284,7 @@ public class TransactionListFragment
 		return false;
 	}
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionListAdapter.GroupEditableTransferObject>
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionListAdapter.AbstractGenericItem>
 	{
 		private TransactionListAdapter mAdapter;
 
@@ -307,7 +307,7 @@ public class TransactionListFragment
 		{
 			int id = item.getItemId();
 
-			final ArrayList<TransactionListAdapter.GroupEditableTransferObject> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+			final ArrayList<TransactionListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
 			if (id == R.id.action_mode_transaction_delete) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
@@ -325,7 +325,7 @@ public class TransactionListFragment
 							@Override
 							protected void onRun()
 							{
-								for (TransactionListAdapter.GroupEditableTransferObject transferObject : selectionList)
+								for (TransactionListAdapter.AbstractGenericItem transferObject : selectionList)
 									if (transferObject instanceof TransactionListAdapter.TransferFolder) {
 										AppUtils.getDatabase(getFragment().getContext()).delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 												.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("

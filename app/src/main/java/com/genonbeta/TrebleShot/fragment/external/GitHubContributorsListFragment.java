@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.fragment.external;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
@@ -75,9 +77,6 @@ public class GitHubContributorsListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
-		setEmptyText(getString(R.string.mesg_noInternetConnection));
-
 		getEmptyImage().setOnLongClickListener(new View.OnLongClickListener()
 		{
 			@Override
@@ -101,6 +100,9 @@ public class GitHubContributorsListFragment
 				refreshList();
 			}
 		});
+
+		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
+		setEmptyText(getString(R.string.mesg_noInternetConnection));
 	}
 
 	public static class ContributorObject

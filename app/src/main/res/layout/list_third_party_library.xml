@@ -24,11 +24,10 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/marqueeText.primary.small"
+            style="@style/marqueeText.primary.normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="3"
-            android:textSize="14sp"/>
+            android:maxLines="3" />
 
         <View
             android:layout_width="wrap_content"
@@ -36,10 +35,9 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/marqueeText.secondary"
+            style="@style/marqueeText.secondary.small"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"/>
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

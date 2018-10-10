@@ -95,8 +95,6 @@ public class AboutActivity extends Activity
 			}
 		});
 
-
-
 		findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(new View.OnClickListener()
 		{
 			@Override
@@ -122,24 +120,6 @@ public class AboutActivity extends Activity
 			}
 		});
 
-		if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
-			final GitHubUpdater updater = UpdateUtils.getDefaultUpdater(this);
-			final TextView updateText = findViewById(R.id.activity_about_option_fourth_text);
-
-			if (UpdateUtils.hasNewVersion(getApplicationContext()))
-				highlightUpdater(updateText, UpdateUtils.getAvailableVersion(getApplicationContext()));
-			else
-				UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, new GitHubUpdater.OnInfoAvailableListener()
-				{
-					@Override
-					public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
-					{
-						if (newVersion)
-							highlightUpdater(updateText, versionName);
-					}
-				});
-		}
-
 		GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
 
 		if (contributorsListFragment != null)
@@ -164,6 +144,12 @@ public class AboutActivity extends Activity
 	{
 		super.onResume();
 		findViewById(R.id.logo).setAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate));
+
+		// calling this in the onCreate sequence causes theming issues
+		if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
+				&& UpdateUtils.hasNewVersion(getApplicationContext()))
+			highlightUpdater((TextView) findViewById(R.id.activity_about_option_fourth_text),
+					UpdateUtils.getAvailableVersion(getApplicationContext()));
 	}
 
 	@Override
