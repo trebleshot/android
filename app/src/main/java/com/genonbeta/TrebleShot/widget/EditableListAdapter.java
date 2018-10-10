@@ -16,6 +16,7 @@ import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
+import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
 
@@ -77,6 +78,18 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		if (mGeneratedComparator == null)
 			mGeneratedComparator = new Comparator<T>()
 			{
+				Collator mCollator;
+
+				public Collator getCollator()
+				{
+					if (mCollator == null) {
+						mCollator = Collator.getInstance();
+						mCollator.setStrength(Collator.TERTIARY);
+					}
+
+					return mCollator;
+				}
+
 				@Override
 				public int compare(T toCompare, T compareTo)
 				{
@@ -91,7 +104,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 						case MODE_SORT_BY_SIZE:
 							return MathUtils.compare(objectFirst.getComparableSize(), objectSecond.getComparableSize());
 						case MODE_SORT_BY_NAME:
-							return objectFirst.getComparableName().compareToIgnoreCase(objectSecond.getComparableName());
+							return getCollator().compare(objectFirst.getComparableName(), objectSecond.getComparableName());
 						default:
 							return compareItems(getSortingCriteria(), getSortingOrder(), objectFirst, objectSecond);
 					}
