@@ -1,0 +1,8 @@
+NEW: Enable right to left layout support (esp. for Arabic)
+NEW: Show which .tshare file belongs to which transfer in file explorer
+NEW: Open .tshare files from an external application
+NEW: Show progress bar for transfers
+FIXED: QR code won't appear - #64
+FIXED: Styling issues
+IMPROVED: Sort items with multi-language support
+MISC: Updated translations
