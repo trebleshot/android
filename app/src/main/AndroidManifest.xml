@@ -78,19 +78,18 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:scheme="file"
-                    android:mimeType="application/*"
-                    android:pathPattern=".*\\.tshare"
-                    tools:ignore="AppLinkUrlError" />
+                <data android:scheme="file" />
+                <data android:scheme="content" />
+                <data android:mimeType="*/*" />
 
-                <data
-                    android:scheme="content"
-                    android:mimeType="application/*"
-                    android:pathPattern=".*\\.tshare" />
+                <data android:host="*" />
+                <!-- expected file name pattern .5435-4543-4354-ewrw.tshare -->
+                <data android:pathPattern=".*\\.tshare" />
+                <data android:pathPattern=".*\\..*\\.tshare" />
             </intent-filter>
         </activity>
         <activity

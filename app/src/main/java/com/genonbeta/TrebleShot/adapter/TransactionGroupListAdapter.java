@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -173,7 +175,14 @@ public class TransactionGroupListAdapter
 				progressBar.setMax(object.totalCount);
 				progressBar.setProgress(object.totalCountCompleted);
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
-				DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
+
+				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+					Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
+					DrawableCompat.setTint(wrapDrawable, appliedColor);
+					progressBar.setProgressDrawable(DrawableCompat.unwrap(wrapDrawable));
+				} else {
+					DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
+				}
 			}
 		} catch (Exception e) {
 		}

@@ -179,7 +179,9 @@ public class AccessDatabase extends SQLiteDatabase
 					indexObject.outgoingCompleted += transferObject.flag.getBytesValue();
 			}
 
-			if (!indexObject.hasIssues && TransferObject.Flag.INTERRUPTED.equals(transferObject.flag))
+			if (!indexObject.hasIssues &&
+					(TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
+					|| TransferObject.Flag.REMOVED.equals(transferObject.flag)))
 				indexObject.hasIssues = true;
 		}
 

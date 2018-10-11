@@ -117,7 +117,6 @@ public class FileListFragment
 
 		mMediaScanner = new MediaScannerConnection(getActivity(), null);
 
-		mMediaScanner.connect();
 		mIntentFilter.addAction(ACTION_FILE_LIST_CHANGED);
 		mIntentFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 	}
@@ -224,6 +223,7 @@ public class FileListFragment
 	{
 		super.onResume();
 		getActivity().registerReceiver(mReceiver, mIntentFilter);
+		mMediaScanner.connect();
 	}
 
 	@Override
@@ -231,12 +231,6 @@ public class FileListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mReceiver);
-	}
-
-	@Override
-	public void onDestroy()
-	{
-		super.onDestroy();
 		mMediaScanner.disconnect();
 	}
 

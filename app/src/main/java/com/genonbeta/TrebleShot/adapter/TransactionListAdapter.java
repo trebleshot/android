@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -77,7 +79,7 @@ public class TransactionListAdapter
     {
         boolean hasIncoming = false;
         ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
-        ArrayList<GenericItem> files = new ArrayList<>();
+        ArrayList<GenericTransferItem> files = new ArrayList<>();
         String currentPath = getPath();
         currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
@@ -91,10 +93,10 @@ public class TransactionListAdapter
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroupId), currentPath, currentPath + File.separator + "%");
 
-        ArrayList<GenericItem> derivedList = mDatabase.castQuery(sqlSelect, GenericItem.class);
+        ArrayList<GenericTransferItem> derivedList = mDatabase.castQuery(sqlSelect, GenericTransferItem.class);
 
         // we first get the default files
-        for (GenericItem object : derivedList) {
+        for (GenericTransferItem object : derivedList) {
             object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
             if (currentPath != null && object.directory == null)
@@ -125,12 +127,12 @@ public class TransactionListAdapter
                     folders.put(cleanedPath, transferFolder);
                 }
 
-                if (TransferObject.Flag.DONE.equals(object.flag)) {
+                if (object.isComplete()) {
                     transferFolder.filesReceived++;
                     transferFolder.bytesReceived += object.fileSize;
                 } else if (TransferObject.Flag.IN_PROGRESS.equals(object.flag)) {
                     transferFolder.bytesReceived += object.flag.getBytesValue();
-                } else if (TransferObject.Flag.INTERRUPTED.equals(object.flag)) {
+                } else if (object.hasIssues()) {
                     transferFolder.setHasIssues(true);
                 }
 
@@ -195,13 +197,13 @@ public class TransactionListAdapter
             lister.offer(folder);
         }
 
-        for (GenericItem file : files) {
-            if (TransferObject.Flag.DONE.equals(file.flag)) {
+        for (GenericTransferItem file : files) {
+            if (file.isComplete()) {
                 statusItem.filesReceived++;
                 statusItem.bytesReceived += file.fileSize;
             } else if (TransferObject.Flag.IN_PROGRESS.equals(file.flag)) {
                 statusItem.bytesReceived += file.flag.getBytesValue();
-            } else if (TransferObject.Flag.INTERRUPTED.equals(file.flag)) {
+            } else if (file.hasIssues()) {
                 statusItem.setHasIssues(true);
             }
 
@@ -216,9 +218,9 @@ public class TransactionListAdapter
     }
 
     @Override
-    protected GenericItem onGenerateRepresentative(String representativeText)
+    protected GenericTransferItem onGenerateRepresentative(String representativeText)
     {
-        return new GenericItem(representativeText);
+        return new GenericTransferItem(representativeText);
     }
 
     @Override
@@ -353,7 +355,14 @@ public class TransactionListAdapter
                 progressBar.setMax(100);
                 progressBar.setProgress((int) (object.getPercent() * 100));
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
-                DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
+
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+                    Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
+                    DrawableCompat.setTint(wrapDrawable, appliedColor);
+                    progressBar.setProgressDrawable(DrawableCompat.unwrap(wrapDrawable));
+                } else {
+                    DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
+                }
             }
         } catch (Exception e) {
 
@@ -444,13 +453,13 @@ public class TransactionListAdapter
         }
     }
 
-    public static class GenericItem extends AbstractGenericItem
+    public static class GenericTransferItem extends AbstractGenericItem
     {
-        public GenericItem()
+        public GenericTransferItem()
         {
         }
 
-        public GenericItem(String representativeText)
+        public GenericTransferItem(String representativeText)
         {
             this.viewType = VIEW_TYPE_REPRESENTATIVE;
             setRepresentativeText(representativeText);
