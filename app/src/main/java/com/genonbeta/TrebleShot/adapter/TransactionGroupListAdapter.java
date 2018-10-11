@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.widget.ImageViewCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -148,6 +149,15 @@ public class TransactionGroupListAdapter
 
 				parentView.setSelected(object.isSelectableSelected());
 
+				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
+						String.format("Total percent: %1$,.2f", object.totalPercent));
+
+				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
+						String.format("Total count completed: %d", object.totalCountCompleted));
+
+				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
+						String.format("Total bytes completed: %d", object.totalBytesCompleted));
+
 				if (object.index.hasIssues)
 					appliedColor = mColorError;
 				else
@@ -172,8 +182,8 @@ public class TransactionGroupListAdapter
 				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, FileUtils.sizeExpression(object.totalBytes, false)));
 				text2.setText(mPercentFormat.format(object.totalPercent));
 				text3.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
-				progressBar.setMax(object.totalCount);
-				progressBar.setProgress(object.totalCountCompleted);
+				progressBar.setMax(100);
+				progressBar.setProgress((int) (object.totalPercent * 100));
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

@@ -385,7 +385,8 @@ public class TransactionActivity
     public void reconstructGroup()
     {
         try {
-            getDatabase().reconstruct(mGroup);
+            if (mGroup != null)
+                getDatabase().reconstruct(mGroup);
         } catch (Exception e) {
             e.printStackTrace();
             finish();
@@ -394,9 +395,10 @@ public class TransactionActivity
 
     private void requestTaskStateUpdate()
     {
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_REQUEST_TASK_STATUS_CHANGE)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
+        if (mGroup != null)
+            AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+                    .setAction(CommunicationService.ACTION_REQUEST_TASK_STATUS_CHANGE)
+                    .putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
     }
 
     private void showMenus()
@@ -491,8 +493,7 @@ public class TransactionActivity
                 {
                     showMenus();
 
-                    if (mTransferObject != null)
-                    {
+                    if (mTransferObject != null) {
                         new TransactionInfoDialog(TransactionActivity.this, mTransferObject).show();
                         mTransferObject = null;
                     }
