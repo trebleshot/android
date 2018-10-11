@@ -184,8 +184,8 @@
     <string name="text_chooseFolder">Velg mappe</string>
     <string name="text_chooseFile">Velg fil</string>
     <string name="mesg_pathSameError">Du kan ikke velge den gamle mappen</string>
-    <string name="ques_checkOldFiles">Sjekk ødelagte filer?</string>
-    <string name="text_checkOldFiles">Vent mens delvis mottatte filer flyttes til valgt mappe, hopp over ved å trykke \"Avslå\"</string>
+    <string name="ques_checkOldFiles">Flytt filer\?</string>
+    <string name="text_checkOldFiles">Du kan flytte tilknyttede filer som er fullførte, og delvis fullførte til denne mappen, som kan ta litt tid avhengig av størrelsen.</string>
     <string name="mesg_newFilesReceived">Nye filer mottatt</string>
     <string name="butn_show">Vis</string>
     <string name="text_preparingFiles">Forbereder filer</string>
@@ -214,7 +214,7 @@
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
     <string name="text_requestPermissionStorage">Lagringstilgang</string>
     <string name="text_requestPermissionReadPhoneState">Tilgang til lesing av telefontilstand</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot bruker din telefons serienummer til å opprette et identitetsnummer på lang sikt for deg, noe som hjelper andre enehter som kjører TrebleShot å gjenkjenne enheten din. Din enhet kjører Oreo eller høyere og TrebleShot krever tilgang til innhenting av serienummeret. Å avslå vil føre til at TrebleShot stopper.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot trenger tilgang til din telefons serienummer til å opprette et identitetsnummer på lang sikt for deg, noe som hjelper andre enehter som kjører TrebleShot å gjenkjenne enheten din.</string>
     <string name="text_mediaDirectory">Mediamappe</string>
     <string name="text_emulatedMediaDirectory">Emulert (%s)</string>
     <string name="mesg_notEnoughSpace">Ikke nok plass</string>
@@ -315,7 +315,7 @@
     <string name="butn_exit">Avslutt</string>
     <string name="butn_queueCounted">Kø (%d)</string>
     <string name="text_previewThenProceedNotice">Sjekk utvalgene dine ved å trykke på \"Kø\"-knappen for å fortsette</string>
-    <string name="mesg_updateDownloadComplete">Trykk for å installere ny versjon</string>
+    <string name="mesg_updateDownloadComplete">Oppdatering lastet ned og lagret i mottatte filer</string>
     <string name="text_listEmptyFiles">Ingen filer her</string>
     <string name="text_listEmptyImage">Ingen bilder her</string>
     <string name="text_listEmptyApp">Ingen programmer her</string>
@@ -329,7 +329,7 @@
     <string name="mesg_listRefreshSnoozed">Listen vil bli gjenoppfrisket når tilgjengelig</string>
     <string name="mesg_errorReadFolder">Får ikke tilgang til \"%s\"-mappen</string>
     <string name="butn_mountDirectory">Avmonter mappe</string>
-    <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker tilgang til</string>
+    <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker å åpne</string>
     <string name="butn_ejectDirectory">Avmonter mappe</string>
     <string name="text_movedCacheFiles">Hurtiglagrede filer flyttet</string>
     <string name="mesg_wifiEnableRequired">Skru på Wi-Fi for å koble til</string>
@@ -381,10 +381,10 @@
 <string name="text_scanQRWifiRequired">For å koble til enheter må trådløskommunikasjon være påslått</string>
     <string name="text_killServiceAfterLeavingSummary">Stopper kommunikasjon hvis ingen oppgave er underveis</string>
     <string name="text_killServiceAfterLeaving">Å forlate programmet stopper tjenesten</string>
-<string name="butn_donate">Doner</string>
+<string name="butn_donate">Hjelp utviklingen</string>
 <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d av %2d</string>
-    <string name="text_donate">Doner</string>
+    <string name="text_donate">Hjelp utviklingen</string>
     <string name="mesg_donationSuccessful">Takk!</string>
     <string name="msg">Doner</string>
     <string name="butn_open">Åpne</string>
@@ -402,4 +402,5 @@
 <string name="text_applyDarkTheme">Mørk drakt</string>
     <string name="text_applyDarkThemeSummary">Bruk mørkt stilsett</string>
     <string name="butn_allow">Tillat</string>
+<string name="butn_telegram_channel">Telegram-kanal</string>
 </resources>

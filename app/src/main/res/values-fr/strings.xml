@@ -40,14 +40,14 @@
     <string name="butn_cancel">Annuler</string>
     <string name="text_refresh">Actualiser</string>
     <string name="butn_refresh">Actualiser</string>
-    <string name="butn_shareTrebleshot">Partager cette application</string>
+    <string name="butn_shareTrebleshot">Partager TrebleShot</string>
     <string name="text_about">À propos</string>
     <string name="butn_close">Fermer</string>
     <string name="text_deviceModelInfo">Nom du périphérique</string>
     <string name="butn_clearQueue">Effacer la file d\'attente</string>
     <string name="text_pendingTransfersOfDevice">File d\'attente - %s</string>
     <string name="butn_pendingTransfers">File d\'attente</string>
-    <string name="butn_shareWithTrebleshot">Partager avec TrebleShot</string>
+    <string name="butn_shareWithTrebleshot">Partager via TrebleShot</string>
     <string name="mesg_somethingWentWrong">Oups ! Quelque chose s\'est mal passé</string>
     <string name="text_findDevicesHint">Aucun appareil familier</string>
     <string name="text_autoScanDevices">Balayage automatique des périphériques</string>
@@ -58,7 +58,7 @@
     <string name="mesg_pathUnavailable">%s est actuellement indisponible</string>
     <string name="text_ipAddress">Adresse IP</string>
     <string name="text_connectionPermission">Autorisation de connexion</string>
-    <string name="text_notification">Notification</string>
+    <string name="text_notification">Notifications</string>
     <string name="text_useSounds">Sons</string>
     <string name="text_useSoundsSummary">Utiliser les sons</string>
     <string name="mesg_scanCompleted">Balayage terminé</string>
@@ -123,7 +123,7 @@
     <string name="mesg_currentPathUnavailable">Ce dossier ne peut pas être utilisé</string>
     <string name="text_defaultFolder">Dossier par défaut</string>
     <string name="text_storage">Stockage</string>
-    <string name="text_shareFiles">Partager des fichiers</string>
+    <string name="text_shareFiles">Partage de fichiers</string>
     <string name="mesg_pathSaved">Le répertoire a été sauvegardé</string>
     <string name="butn_search">Rechercher</string>
     <string name="text_fileName">Nom du fichier</string>
@@ -169,7 +169,7 @@
     <string name="text_savePath">Enregistrer le chemin</string>
     <string name="text_usedConnection">Connexion utilisée</string>
     <string name="text_flagRemoved">Supprimé</string>
-    <string name="butn_copyToClipboard">Copier dans le presse-papiers</string>
+    <string name="butn_copyToClipboard">Copier vers le presse-papiers</string>
     <string name="text_communicationServiceRunning">TrebleShot peut maintenant partager des fichiers</string>
     <string name="text_communicationServiceStop">Appuyez sur pour mettre fin à la session</string>
     <string name="text_remainingTime">ETA %s</string>
@@ -255,12 +255,12 @@
     <string name="butn_ejectDirectory">Démonter le dossier</string>
     <string name="mesg_wifiEnableRequired">Veuillez activer le Wi-Fi pour se connecter</string>
     <string name="text_hotspotStartsTrustZone">Le point d’accès active également la TrustZone</string>
-    <string name="text_qrCodeAvailableHelp">Scannez ce code pour partager et connecter des appareils</string>
+    <string name="text_qrCodeAvailableHelp">Scannez ce code pour pouvoir partager et se connecter à d’autres appareils</string>
     <string name="text_qrCodeHotspotDisabledHelp">Démarrez le point d’accès TrebleShot ou connectez-vous à un réseau pour faciliter la découverte</string>
     <string name="text_scanQRCodeHelp">Scannez le code QR figurant sur l\'écran de l’appareil hôte</string>
     <string name="butn_qrToggle">Activer/désactiver la visibilité du code QR</string>
-    <string name="text_notificationSettingsSummary">Ouvrir les paramètres de notification</string>
-    <string name="text_notificationSettings">Paramètres de notification</string>
+    <string name="text_notificationSettingsSummary">Ouvrir les paramètres des notifications</string>
+    <string name="text_notificationSettings">Paramètres des notifications</string>
     <string name="text_renameMultipleItems">Renommer plusieurs éléments</string>
     <string name="text_rename">Renommer</string>
     <string name="butn_rename">Renommer</string>
@@ -284,8 +284,8 @@
     <string name="text_connectDevices">Connecter les appareils</string>
     <string name="text_network">Réseau</string>
     <string name="text_connect">Connecter</string>
-    <string name="butn_shareWithOtherApps">Partager avec d\'autres applications</string>
-    <string name="butn_startHotspot">Mettre en place point d’accès</string>
+    <string name="butn_shareWithOtherApps">Partager via d\'autres applications</string>
+    <string name="butn_startHotspot">Mettre en place un point d’accès</string>
     <string name="butn_stopHotspot">Arrêter le point d’accès</string>
     <string name="text_easyDiscoveryHelp">Scannez ceci si les deux appareils sont sur le même réseau</string>
     <string name="text_scanQRWifiRequired">Pour se connecter à des appareils, le Wi-Fi doit être activé</string>
@@ -318,4 +318,8 @@
     <string name="text_autoStartSummary">Permettre la communication lors de la détection d\'une connexion</string>
     <string name="butn_multiSelect">Sélection multiple</string>
     <string name="text_removeCertainPendingTransfersSummary">Cela va supprimer tous les transferts en attente affichés ici</string>
+    <string name="text_requestPermissionStorageSummary">Cette autorisation permet à TrebleShot l\'accès en lecture et écriture vers l’unité de stockage de votre appareil afin de recevoir et partager des fichiers.</string>
+    <string name="mesg_textShareLimit">Vous ne pouvez partager qu’un seul texte à la fois</string>
+    <string name="mesg_hotspotCreatedInfo">Connectez-vous à «%s» via votre Wi-Fi ou envoyez des fichiers via \"%s\" dans TrebleShot</string>
+    <string name="butn_qrScanToSend">Scannez le QR code à envoyer</string>
     </resources>
