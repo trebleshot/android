@@ -161,7 +161,7 @@
     <string name="text_chooseFolder">选择文件夹</string>
     <string name="text_chooseFile">选择文件</string>
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
-    <string name="ques_checkOldFiles">检查破损的文件？</string>
+    <string name="ques_checkOldFiles">移动文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
 <string name="ques_resetToDefault">重置为默认值？</string>
     <string name="butn_refresh">刷新</string>
@@ -191,7 +191,7 @@
     <string name="text_permissionRequest">权限申请</string>
     <string name="text_requestPermissionStorage">存储权限</string>
     <string name="text_requestPermissionReadPhoneState">读取手机状态权限</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot读取您的设备id来创建一个长期使用的ID号码，这可以帮助其他运行TrebleShot的设备发现你。</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot需要获取您的设备串号来建立一个长期使用的ID号码，以帮助其他设备识别你</string>
     <string name="text_mediaDirectory">媒体文件夹</string>
     <string name="mesg_notEnoughSpace">存储空间不足</string>
     <string name="text_totalIncomingSize">传入文件的总大小</string>
@@ -289,13 +289,13 @@
     <string name="butn_saveAnyway">仍然保存</string>
     <string name="text_taskOngoing">正在进行的任务</string>
     <string name="butn_queueCounted">队列 (%d)</string>
-    <string name="mesg_updateDownloadComplete">轻触以安装新版本</string>
+    <string name="mesg_updateDownloadComplete">更新接收完毕并已保存至已收到的文件</string>
     <string name="text_listEmptyFiles">此处无文件</string>
     <string name="text_listEmptyImage">此处无图片</string>
     <string name="text_listEmptyApp">此处无应用</string>
     <string name="butn_goUp">向上</string>
     <string name="text_chooserTargetService">设备选择提供方</string>
-    <string name="text_checkOldFiles">当部分被接收的文件被移至给定的文件夹时请等待一段时间，或直接轻触“拒绝”以跳过</string>
+    <string name="text_checkOldFiles">你可以移动相关的部分完成或全部完成传输的文件至这个文件夹，花费的时间取决于它的大小</string>
     <string name="text_emulatedMediaDirectory">模拟的 (%s)</string>
     <string name="mesg_clipboardUpdateNotice">更改文本或再按一次以退出</string>
     <string name="mesg_providerNotAllowedError">默认文件夹无法被其他应用访问</string>
@@ -365,9 +365,24 @@
     <string name="text_killServiceAfterLeaving">关闭应用时停止服务</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">"已传输 %1d  共 %2d"</string>
-    <string name="text_donate">捐赠</string>
+    <string name="text_donate">帮助开发</string>
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
-    <string name="butn_donate">捐赠</string>
+    <string name="butn_donate">帮助开发</string>
     <string name="msg">捐赠</string>
 <string name="butn_open">打开</string>
+<string name="butn_pause">暂停</string>
+    <string name="butn_retry">重试</string>
+    <string name="mesg_noPendingTransferObjectExists">无正在等待的传输，因为它们已经被中断或者已经完成了。</string>
+    <string name="mesg_notSavingToChosenLocation">文件不会保存至你想要保存的文件夹内，因为现在它无法被访问
+\n
+\n %s</string>
+    <string name="butn_changelog">更新日志</string>
+    <string name="text_changelog">更新日志</string>
+    <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看自上次安装的版本之后的更新内容吗？</string>
+    <string name="mesg_versionUpdatedChangelogRejected">你可以在“关于”部分找到“更新日志”</string>
+	<string name="mesg_noInternetConnection">这需要网络连接</string>
+    <string name="text_applyDarkTheme">暗黑主题</string>
+    <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
+    <string name="butn_allow">允许</string>
+    <string name="butn_telegram_channel">Telegram频道</string>
 </resources>
