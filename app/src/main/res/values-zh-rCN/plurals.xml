@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <resources><plurals name="ques_deleteFile">
-	<item quantity="other">您想要删除 %d 文件吗？</item>
+	<item quantity="other">您想要删除 %d 个文件吗？</item>
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
 	<item quantity="other">已接收 %d 个文件</item>
