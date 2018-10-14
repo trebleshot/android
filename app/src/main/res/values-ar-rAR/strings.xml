@@ -367,4 +367,7 @@
     <string name="mesg_noInternetConnection">ذلك يتطلب اتصالا بالإنترنت</string>
 <string name="text_emptySymbol">-</string>
     <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في  قسم \'عن التطبيق\'"</string>
-	</resources>
+	<string name="text_applyDarkTheme">سمة داكنة</string>
+    <string name="butn_allow">السماح</string>
+    <string name="butn_telegram_channel">قناة تلغرام</string>
+</resources>
