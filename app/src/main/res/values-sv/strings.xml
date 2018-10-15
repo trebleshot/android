@@ -308,7 +308,7 @@
     <string name="butn_shareWithOtherApps">Dela med andra appar</string>
     <string name="butn_startHotspot">Ställ in hotspot</string>
     <string name="butn_stopHotspot">Stoppa hotspot</string>
-    <string name="text_scanQRWifiRequired">För att kunna ansluta till enheter måste WiFi vara aktiverat</string>
+    <string name="text_scanQRWifiRequired">För att kunna ansluta till enheter måste Wi-Fi vara aktiverat</string>
     <string name="mesg_errorNotSameNetwork">Enheterna är inte i samma nätverk</string>
     <string name="text_file">Fil</string>
     <string name="text_thirdPartyLibraries">Tredjepartsbibliotek</string>
