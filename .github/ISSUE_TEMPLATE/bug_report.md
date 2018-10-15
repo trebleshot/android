@@ -20,7 +20,7 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-** Environment (please complete the following information):**
+**Environment (please complete the following information):**
  - Android version: [e.g. Android Marshmallow or 6 / Stock or Custom LineageOS]
  - Language: [e.g. Turkish]
  - App version [e.g. 1.2.7.6]
