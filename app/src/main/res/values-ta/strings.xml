@@ -1,2 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><string name="text_deviceListEmpty">சாதனங்கள் இல்லை</string>
+    <string name="butn_accept">ஏற்றுக்கொள்</string>
+    <string name="butn_reject">நிராகரி</string>
+    <string name="butn_stopService">நிறுத்து</string>
+    <string name="text_sending">அனுப்பபடுகிறது</string>
+    </resources>
