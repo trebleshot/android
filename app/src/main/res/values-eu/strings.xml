@@ -374,4 +374,8 @@
     <string name="mesg_versionUpdatedChangelog">TrebleShot bertsio berri batera eguneratu duzu, aurreko bertsiotik zer aldatu den ikusi nahi duzu?</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu dezakezu</string>
 <string name="mesg_noInternetConnection">Honek Internetera konexioa behar du</string>
+<string name="text_applyDarkTheme">Gai iluna</string>
+    <string name="text_applyDarkThemeSummary">Erabili gai iluna estiloa</string>
+    <string name="butn_allow">Baimendu</string>
+    <string name="butn_telegram_channel">Telegram kanala</string>
 </resources>
