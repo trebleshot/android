@@ -327,5 +327,5 @@
     <string name="text_applyDarkTheme">Mörkt tema</string>
     <string name="text_applyDarkThemeSummary">Använd det mörka temat</string>
     <string name="butn_allow">Tillåt</string>
-    <string name="mesg_noNetwork">Det finns ingen WiFi-anslutning för att hitta närliggande enheter</string>
+    <string name="mesg_noNetwork">Det finns ingen Wi-Fi-anslutning för att hitta närliggande enheter</string>
     </resources>
