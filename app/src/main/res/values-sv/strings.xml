@@ -328,4 +328,38 @@
     <string name="text_applyDarkThemeSummary">Använd det mörka temat</string>
     <string name="butn_allow">Tillåt</string>
     <string name="mesg_noNetwork">Det finns ingen Wi-Fi-anslutning för att hitta närliggande enheter</string>
-    </resources>
+    <string name="text_notAllowedHelp">Kontrollera om du är tillåten på %1$s 
+\n
+\nEnheter &gt; %2$s &gt; Tillåter anslutning &gt; (kontrollera det)</string>
+    <string name="butn_selectThis">Markera detta</string>
+    <string name="text_checkOldFiles">Du kan flytta tillhörande filer som är klara och delvis klara till den här mappen, vilket kan ta tid beroende på deras storlek</string>
+    <string name="mesg_errorHotspotPermission">TrebleShot behöver tillåtelse att sätta upp en hotspot</string>
+    <string name="mesg_locationDisabledSelfHotspot">Aktivera platstjänsten för att se sökresultat och skapa hotspot</string>
+    <string name="mesg_hotspotCreatedInfo">Anslut till \"%s\" i \"WiFi-inställningarna\" eller skicka filerna via \"%s\" från TrebleShot</string>
+    <string name="mesg_deviceConnectionError">Anslutning med \"%s\" över \"%s\" misslyckades</string>
+    <string name="mesg_retryAllInfo">TrebleShot kommer att försöka ta emot avbrutna överföringar</string>
+    <string name="mesg_transferConnectionNotSetUpFix">Välj anslutningsmetod först</string>
+    <string name="butn_setUp">Ställ in</string>
+    <string name="text_trustZoneDeviceNotice">Låt den här enheten skicka filer till dig utan att du behöver bekräfta något när TrustZone är på</string>
+    <string name="text_allowingToConnectNotice">Markerad kan den här enheten ansluta till dig</string>
+    <string name="text_workerService">Worker-tjänst</string>
+    <string name="text_receivedTransfer">Mottagna %s i %s</string>
+    <string name="text_previewThenProceedNotice">Kontrollera dina val genom att trycka på \"Kö\" för att fortsätta</string>
+    <string name="text_restrictedAccessStorage">%s (begränsad åtkomst)</string>
+    <string name="text_emptySearchResult">Inget resultat för \"%s\"</string>
+    <string name="mesg_listRefreshSnoozed">Den här listan kommer att uppdateras när den blir tillgänglig</string>
+    <string name="mesg_errorReadFolder">Kommer inte åt mappen \"%s\"</string>
+    <string name="butn_mountDirectory">Montera mapp</string>
+    <string name="mesg_mountDirectoryHelp">Välj mappen du vill ha åtkomst till</string>
+    <string name="butn_ejectDirectory">Avmontera mapp</string>
+    <string name="text_movedCacheFiles">Cache-filer flyttade</string>
+    <string name="mesg_wifiEnableRequired">Aktivera WiFi för att ansluta</string>
+    <string name="text_qrAllowTrustZone">TrustZone för QR-kod</string>
+    <string name="text_qrAllowTrustZoneSummary">Tillåt TrustZone att göra QR-kodanslutningar</string>
+    <string name="mesg_completing">Slutför</string>
+    <string name="text_cameraPermissionRequired">Kameratillstånd krävs</string>
+    <string name="text_addDevicesToTransfer">Lägg till enheter för att överföra</string>
+    <string name="text_killServiceAfterLeaving">Tjänsten stannar när du stänger appen</string>
+    <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som har ändrats sen förra versionen\?</string>
+    <string name="butn_telegram_channel">Telegramkanal</string>
+</resources>
