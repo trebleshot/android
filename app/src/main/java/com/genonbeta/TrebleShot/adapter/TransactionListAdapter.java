@@ -117,12 +117,9 @@ public class TransactionListAdapter
                 TransferFolder transferFolder = folders.get(cleanedPath);
 
                 if (transferFolder == null) {
-                    transferFolder = new TransferFolder();
-
-                    transferFolder.friendlyName = cleanedPath;
-                    transferFolder.directory = currentPath != null
+                    transferFolder = new TransferFolder(mGroupId, cleanedPath, currentPath != null
                             ? currentPath + File.separator + cleanedPath
-                            : cleanedPath;
+                            : cleanedPath);
 
                     folders.put(cleanedPath, transferFolder);
                 }
@@ -173,15 +170,9 @@ public class TransactionListAdapter
             }
         }
 
-        DetailsTransferFolder statusItem = new DetailsTransferFolder();
-        statusItem.directory = currentPath;
-
-        if (currentPath == null)
-            statusItem.friendlyName = getContext().getString(R.string.text_home);
-        else
-            statusItem.friendlyName = currentPath.contains(File.separator)
-                    ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
-                    : currentPath;
+        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroupId, currentPath == null
+                ? getContext().getString(R.string.text_home)
+                : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
         lister.offer(statusItem);
 
@@ -519,6 +510,13 @@ public class TransactionListAdapter
         public long bytesTotal = 0;
         public long bytesReceived = 0;
 
+        public TransferFolder(long groupId, String friendlyName, String directory)
+        {
+            this.groupId = groupId;
+            this.friendlyName = friendlyName;
+            this.directory = directory;
+        }
+
         @Override
         public boolean hasIssues()
         {
@@ -558,6 +556,18 @@ public class TransactionListAdapter
         }
 
         @Override
+        public SQLQuery.Select getWhere()
+        {
+            return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
+                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
+                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
+                            String.valueOf(this.groupId),
+                            this.directory + File.separator + "%",
+                            this.directory);
+        }
+
+        @Override
         public boolean equals(Object obj)
         {
             return obj instanceof TransferFolder
@@ -586,6 +596,11 @@ public class TransactionListAdapter
 
     public static class DetailsTransferFolder extends TransferFolder implements StatusItem
     {
+        public DetailsTransferFolder(long groupId, String friendlyName, String directory)
+        {
+            super(groupId, friendlyName, directory);
+        }
+
         @Override
         public boolean isSelectableSelected()
         {

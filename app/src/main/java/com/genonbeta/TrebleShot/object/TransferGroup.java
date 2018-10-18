@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -212,7 +213,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 		@Override
 		public void onRemoveObject(SQLiteDatabase database)
 		{
-
+			database.delete(TransferUtils.createTransferSelection(groupId,deviceId));
 		}
 	}
 }

@@ -96,7 +96,10 @@ public class TransferAssigneeListFragment
 						final TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
 						PopupMenu popupMenu = new PopupMenu(getContext(), v);
-						popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, popupMenu.getMenu());
+						Menu menu = popupMenu.getMenu();
+
+						popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
+						menu.findItem(R.id.popup_remove).setEnabled(assignee.isClone);
 
 						popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
 						{
