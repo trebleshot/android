@@ -140,7 +140,7 @@ public class TransactionListFragment
 			}
 		};
 
-		return new TransactionListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+		return new TransactionListAdapter(getActivity())
 		{
 			@NonNull
 			@Override

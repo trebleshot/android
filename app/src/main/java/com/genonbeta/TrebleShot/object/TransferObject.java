@@ -59,10 +59,11 @@ public class TransferObject
         this.type = type;
     }
 
-    public TransferObject(long requestId, String deviceId)
+    public TransferObject(long requestId, String deviceId, Type type)
     {
         this.requestId = requestId;
         this.deviceId = deviceId;
+        this.type = type;
     }
 
     public TransferObject(CursorItem item)
@@ -73,7 +74,14 @@ public class TransferObject
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof TransferObject && ((TransferObject) obj).requestId == requestId;
+        if (!(obj instanceof TransferObject))
+            return super.equals(obj);
+
+        TransferObject otherObject = (TransferObject) obj;
+
+        return otherObject.requestId == requestId
+                && type.equals(otherObject.type)
+                && ((deviceId == null && otherObject.deviceId == null) || (deviceId != null && deviceId.equals(otherObject.deviceId)));
     }
 
     @Override
@@ -81,7 +89,8 @@ public class TransferObject
     {
         return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                 .setWhere(AccessDatabase.FIELD_TRANSFER_ID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=?", String.valueOf(requestId), deviceId);
+                        + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
+                        + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(requestId), deviceId, type.toString());
     }
 
     @Override

@@ -143,7 +143,6 @@ public class FilePickerActivity extends Activity
 	{
 		int id = item.getItemId();
 
-		// TODO: 9/8/18 Should we finish with result?
 		if (id == android.R.id.home)
 			finish();
 		else

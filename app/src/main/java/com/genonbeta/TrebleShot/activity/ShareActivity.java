@@ -328,6 +328,9 @@ public class ShareActivity extends Activity
 										getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
 
 										transferObject.deviceId = assignee.deviceId; // We will clone the file index with new deviceId
+										transferObject.flag = TransferObject.Flag.PENDING;
+										transferObject.accessPort = 0;
+										transferObject.skippedBytes = 0;
 										JSONObject thisJson = new JSONObject();
 
 										try {

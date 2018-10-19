@@ -66,6 +66,14 @@
 		<item name="android:focusable">false</item>
 	</style>
 
+	<style name="textSeparatorMiddleDot">
+		<item name="android:layout_width">wrap_content</item>
+		<item name="android:layout_height">wrap_content</item>
+		<item name="android:paddingLeft">10dp</item>
+		<item name="android:paddingRight">10dp</item>
+		<item name="android:text">@string/mode_middleDot</item>
+	</style>
+
 	<style name="listContentLayoutStyle">
 		<item name="android:padding">@dimen/padding_list_content_parent_layout</item>
 	</style>

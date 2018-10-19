@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,6 +48,12 @@ public class TransferUtils
                     listener.onConnectionUpdated(connection, assignee);
             }
         }, false).show();
+    }
+
+    @SuppressLint("DefaultLocale")
+    public static long createUniqueTransferId(long groupId, String deviceId, TransferObject.Type type)
+    {
+        return String.format("%d_%s_%s", groupId, deviceId, type).hashCode();
     }
 
     public static SQLQuery.Select createTransferSelection(long groupId, String deviceId)
@@ -103,14 +110,16 @@ public class TransferUtils
                 : new TransferObject(receiverInstance);
     }
 
-    public static void pauseTransfer(Context context, TransferGroup group, @Nullable TransferGroup.Assignee assignee)
+    public static void pauseTransfer(Context context, TransferGroup group, @Nullable TransferGroup.Assignee assignee) {
+        pauseTransfer(context, group.groupId, assignee == null ? null : assignee.deviceId);
+    }
+
+    public static void pauseTransfer(Context context, long groupId, @Nullable String deviceId)
     {
         Intent intent = new Intent(context, CommunicationService.class)
                 .setAction(CommunicationService.ACTION_CANCEL_JOB)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId);
-
-        if (assignee != null)
-            intent.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId);
+                .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
+                .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId);
 
         AppUtils.startForegroundService(context, intent);
     }

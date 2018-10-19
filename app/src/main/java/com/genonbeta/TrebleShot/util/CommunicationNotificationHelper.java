@@ -100,7 +100,9 @@ public class CommunicationNotificationHelper
 
     public DynamicNotification notifyTransferRequest(TransferObject transferObject, NetworkDevice device, int numberOfFiles)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(transferObject.groupId, device.deviceId, transferObject.type),
+                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transferObject.friendlyName;
 
         Intent acceptIntent = new Intent(getContext(), CommunicationService.class);
@@ -143,7 +145,9 @@ public class CommunicationNotificationHelper
 
             boolean isIncoming = TransferObject.Type.INCOMING.equals(processHolder.transferObject.type);
 
-            processHolder.notification = getUtils().buildDynamicNotification(processHolder.transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+            processHolder.notification = getUtils().buildDynamicNotification(
+                    TransferUtils.createUniqueTransferId(processHolder.group.groupId, device.deviceId, processHolder.transferObject.type),
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
             Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
 
             cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
@@ -212,7 +216,9 @@ public class CommunicationNotificationHelper
 
     public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, DocumentFile savePath)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(processHolder.transferObject.groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(processHolder.group.groupId, device.deviceId, processHolder.transferObject.type),
+                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
         CoolTransfer.TransferProgress progress = transferHandler.getTransferProgress();
 
@@ -250,7 +256,7 @@ public class CommunicationNotificationHelper
 
     public DynamicNotification notifyReceiveError(TransferObject transferObject)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.requestId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.getId(), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
 
         notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
                 .setContentTitle(getContext().getString(R.string.text_error))
@@ -265,9 +271,11 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyConnectionError(TransferInstance transferInstance, @Nullable String errorKey)
+    public DynamicNotification notifyConnectionError(TransferInstance transferInstance, TransferObject.Type type, @Nullable String errorKey)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(transferInstance.getGroup().groupId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(transferInstance.getGroup().groupId, transferInstance.getDevice().deviceId, type),
+                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         String errorMsg = getContext().getString(R.string.mesg_deviceConnectionError, transferInstance.getDevice().nickname, TextUtils.getAdapterName(getContext(), transferInstance.getConnection()));
 
         if (errorKey != null)
@@ -292,9 +300,11 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyPrepareFiles(TransferGroup group)
+    public DynamicNotification notifyPrepareFiles(TransferGroup group, NetworkDevice device)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(group.groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(group.groupId, device.deviceId, TransferObject.Type.INCOMING),
+                NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
         Intent cancelIntent = new Intent(getContext(), CommunicationService.class)
                 .setAction(CommunicationService.ACTION_CANCEL_INDEXING)
@@ -317,12 +327,12 @@ public class CommunicationNotificationHelper
 
     public DynamicNotification notifyStuckThread(CommunicationService.ProcessHolder processHolder)
     {
-        return notifyStuckThread(processHolder.group.groupId, processHolder.assignee.deviceId);
+        return notifyStuckThread(processHolder.group.groupId, processHolder.assignee.deviceId, processHolder.notification.getNotificationId());
     }
 
-    public DynamicNotification notifyStuckThread(long groupId, String deviceId)
+    public DynamicNotification notifyStuckThread(long groupId, String deviceId, int notificationId)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(groupId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+        DynamicNotification notification = getUtils().buildDynamicNotification(notificationId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
         Intent killIntent = new Intent(getContext(), CommunicationService.class)
                 .setAction(CommunicationService.ACTION_CANCEL_JOB)
                 .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
