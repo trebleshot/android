@@ -9,80 +9,112 @@ def useLocalSigning = localPropertiesFile.exists()
 Properties localProperties = null
 
 if (useLocalSigning) {
-	localProperties = new Properties()
-	localProperties.load(localPropertiesFile.newDataInputStream())
+    localProperties = new Properties()
+    localProperties.load(localPropertiesFile.newDataInputStream())
 }
 
 android {
-	compileSdkVersion 28
-	buildToolsVersion '28.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
-	signingConfigs {
-		gbDistribution {
-			if (useLocalSigning) {
-				storeFile file(localProperties.getProperty('signing.storeFile'))
-				keyAlias localProperties.getProperty('signing.keyAlias')
-				storePassword localProperties.getProperty('signing.storePassword')
-				keyPassword localProperties.getProperty('signing.keyPassword')
-			}
-		}
-	}
+    signingConfigs {
+        gbDistribution {
+            if (useLocalSigning) {
+                storeFile file(localProperties.getProperty('signing.storeFile'))
+                keyAlias localProperties.getProperty('signing.keyAlias')
+                storePassword localProperties.getProperty('signing.storePassword')
+                keyPassword localProperties.getProperty('signing.keyPassword')
+            }
+        }
+    }
 
-	defaultConfig {
-		applicationId "com.genonbeta.TrebleShot"
-		minSdkVersion 14
-		targetSdkVersion 28
-		versionCode 84
-		versionName "1.2.7.6"
+    defaultConfig {
+        applicationId "com.genonbeta.TrebleShot"
+        minSdkVersion 14
+        targetSdkVersion 28
+        versionCode 84
+        versionName "1.2.7.6"
 
-		vectorDrawables {
-			useSupportLibrary = true
-		}
-	}
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
 
-	lintOptions {
-		checkReleaseBuilds false
-		abortOnError false
-	}
-	buildTypes {
-		release {
-			minifyEnabled false
-			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-		}
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
 
-		debug {
-			applicationIdSuffix '.debug'
-			versionNameSuffix '-DEBUG'
-		}
-	}
-	flavorDimensions 'mode'
-	productFlavors {
-		fossReliant {
-			dimension 'mode'
-			signingConfig signingConfigs.gbDistribution
-		}
-		googlePlay {
-			dimension 'mode'
-			signingConfig signingConfigs.gbDistribution
-		}
-	}
+        debug {
+            applicationIdSuffix '.debug'
+            versionNameSuffix '-DEBUG'
+        }
+    }
+    flavorDimensions 'mode'
+    productFlavors {
+        fossReliant {
+            dimension 'mode'
+            signingConfig signingConfigs.gbDistribution
+        }
+        googlePlay {
+            dimension 'mode'
+            signingConfig signingConfigs.gbDistribution
+        }
+    }
 }
 
-dependencies {
-	testImplementation 'junit:junit:4.12'
-	implementation fileTree(include: ['*.jar'], dir: 'libs')
-	implementation 'com.android.support:appcompat-v7:28.0.0'
-	implementation 'com.android.support:cardview-v7:28.0.0'
-	implementation 'com.android.support:design:28.0.0'
-	implementation 'com.android.support:recyclerview-v7:28.0.0'
-	implementation 'com.genonbeta.android:framework:1.0.2.1'
-	implementation 'com.genonbeta.android:gdatabase:1.0.2.3'
-	implementation 'com.genonbeta.coolsocket:main:1.0.2'
-	implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
-	implementation 'com.velitasali.tools.android:zxing:3.6.1'
-	implementation 'com.github.bumptech.glide:glide:4.6.1'
-	annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
-	implementation 'com.github.bumptech.glide:okhttp3-integration:4.4.0'
+task copyHebrewResources(type: Copy) {
+    // this task copies Hebrew related resources to a folder with iw alias
+    // If it is causing issues, removing will only affect Hebrew resources
+    // https://github.com/genonbeta/TrebleShot/issues/67 #67
 
-	googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
+    File mergedResourcesDir = new File("${buildDir}/mergedResources")
+
+    if (!mergedResourcesDir.isDirectory())
+        mergedResourcesDir.mkdirs()
+
+    for (String resEach : android.sourceSets.main.res.srcDirs)
+    {
+        File currentFolder = new File(resEach)
+
+        for (File folderContents : currentFolder.listFiles())
+        {
+            if (folderContents.name.endsWith("-he")) {
+                String iwNamedFolder = "${folderContents.name.substring(0, folderContents.name.lastIndexOf("-he"))}-iw"
+
+                from folderContents.path
+                into "${mergedResourcesDir.path}/${iwNamedFolder}"
+                println("Copying resource ${folderContents.path}")
+            }
+        }
+    }
+
+    println("Adding merge resource directories to resource dir ${mergedResourcesDir.path}")
+    android.sourceSets.main.res.srcDirs += mergedResourcesDir.path
+}
+
+preBuild.dependsOn copyHebrewResources
+
+dependencies {
+    testImplementation 'junit:junit:4.12'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.genonbeta.android:framework:1.0.2.1'
+    implementation 'com.genonbeta.android:gdatabase:1.0.2.3'
+    implementation 'com.genonbeta.coolsocket:main:1.0.2'
+    implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
+    implementation 'com.velitasali.tools.android:zxing:3.6.1'
+    implementation 'com.github.bumptech.glide:glide:4.6.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.4.0'
+
+    googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 }
