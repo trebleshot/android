@@ -53,6 +53,7 @@ public class App extends Application
 	{
 		super.onCreate();
 
+		AppUtils.getDatabase(getApplicationContext()); // make updates seamless and more issue free, maybe
 		initializeSettings();
 		getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_REQUEST_PREFERENCES_SYNC));
 
