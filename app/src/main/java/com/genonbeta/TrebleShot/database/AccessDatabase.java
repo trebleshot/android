@@ -149,19 +149,8 @@ public class AccessDatabase extends SQLiteDatabase
 
                 try {
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
-                    SQLValues.Column fieldDeviceIdTransfer = tableTransfer.getColumn(FIELD_TRANSFER_DEVICEID);
-                    String alterForTransferDeviceIdSql = "ALTER TABLE `%s` ADD %s";
-                    boolean fieldDeviceIdNullable = fieldDeviceIdTransfer.isNullable();
-
-                    fieldDeviceIdTransfer.setNullable(true);
-
-                    db.execSQL(String.format(alterForTransferDeviceIdSql,
-                            tableTransfer.getName(),
-                            fieldDeviceIdTransfer.toString()));
-
                     ArrayMap<Long, String> mapDist = new ArrayMap<>();
-                    List<TransferObject> listToRemove = new ArrayList<>();
-                    List<TransferObject> listToUpdate = new ArrayList<>();
+                    List<TransferObject> supportedItems = new ArrayList<>();
 
                     for (TransferGroup.Assignee assignee : castQuery(new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class))
                         if (!mapDist.containsKey(assignee.groupId))
@@ -170,20 +159,13 @@ public class AccessDatabase extends SQLiteDatabase
                     for (TransferObject transferObject : castQuery(new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class)) {
                         transferObject.deviceId = mapDist.get(transferObject.groupId);
 
-                        if (transferObject.deviceId == null)
-                            listToRemove.add(transferObject);
-                        else
-                            listToUpdate.add(transferObject);
+                        if (transferObject.deviceId != null)
+                            supportedItems.add(transferObject);
                     }
 
-                    remove(listToRemove);
-                    update(listToUpdate);
-
-                    fieldDeviceIdTransfer.setNullable(fieldDeviceIdNullable);
-
-                    db.execSQL(String.format(alterForTransferDeviceIdSql,
-                            tableTransfer.getName(),
-                            fieldDeviceIdTransfer.toString()));
+                    db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
+                    SQLQuery.createTable(db, tableTransfer);
+                    insert(supportedItems);
                 } catch (Exception e) {
 
                 }

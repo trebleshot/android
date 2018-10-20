@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.os.Build;
+import android.os.LocaleList;
 import android.preference.PreferenceManager;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -17,6 +20,8 @@ import com.genonbeta.TrebleShot.util.PreferenceUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
+
+import java.util.Locale;
 
 /**
  * created by: Veli
