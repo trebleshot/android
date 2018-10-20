@@ -103,10 +103,10 @@ public class TransferGroup implements DatabaseObject, Selectable
 	@Override
 	public void onRemoveObject(SQLiteDatabase database)
 	{
-		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+		database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
 
-		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+		database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
 				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
 	}
 
@@ -213,7 +213,7 @@ public class TransferGroup implements DatabaseObject, Selectable
 		@Override
 		public void onRemoveObject(SQLiteDatabase database)
 		{
-			database.delete(TransferUtils.createTransferSelection(groupId,deviceId));
+			database.remove(TransferUtils.createTransferSelection(groupId,deviceId));
 		}
 	}
 }

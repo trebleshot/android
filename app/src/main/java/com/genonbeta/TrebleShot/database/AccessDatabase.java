@@ -111,7 +111,7 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void onUpgrade(android.database.sqlite.SQLiteDatabase db, int old, int current)
+    public void onUpgrade(android.database.sqlite.SQLiteDatabase database, int old, int current)
     {
         /*
          * Version 6 was until version 1.2.5.12 and we don't have any new changes compared to version
@@ -122,21 +122,21 @@ public class AccessDatabase extends SQLiteDatabase
 
         if (old <= 5) {
             for (String tableName : getDatabaseTables().getTables().keySet())
-                db.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
+                database.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
-            SQLQuery.createTables(db, databaseTables);
+            SQLQuery.createTables(database, databaseTables);
         } else {
             if (old <= 6) {
                 SQLValues.Table groupTable = databaseTables.getTables().get(TABLE_TRANSFERGROUP);
                 SQLValues.Table devicesTable = databaseTables.getTables().get(TABLE_DEVICES);
                 SQLValues.Table targetDevicesTable = databaseTables.getTables().get(TABLE_TRANSFERASSIGNEE);
 
-                db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", groupTable.getName()));
-                db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", devicesTable.getName()));
+                database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", groupTable.getName()));
+                database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", devicesTable.getName()));
 
-                SQLQuery.createTable(db, groupTable);
-                SQLQuery.createTable(db, devicesTable);
-                SQLQuery.createTable(db, targetDevicesTable);
+                SQLQuery.createTable(database, groupTable);
+                SQLQuery.createTable(database, devicesTable);
+                SQLQuery.createTable(database, targetDevicesTable);
             }
 
             if (old <= 7) {
@@ -151,23 +151,24 @@ public class AccessDatabase extends SQLiteDatabase
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
                     ArrayMap<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
-                    List<TransferGroup.Assignee> availableAssignees = castQuery(new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class);
+                    List<TransferGroup.Assignee> availableAssignees = castQuery(database, new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class, null);
+                    List<TransferObject> availableTransfers = castQuery(database, new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class, null);
 
                     for (TransferGroup.Assignee assignee : availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId))
                             mapDist.put(assignee.groupId, assignee.deviceId);
                     }
 
-                    for (TransferObject transferObject : castQuery(new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class)) {
+                    for (TransferObject transferObject : availableTransfers) {
                         transferObject.deviceId = mapDist.get(transferObject.groupId);
 
                         if (transferObject.deviceId != null)
                             supportedItems.add(transferObject);
                     }
 
-                    db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
-                    SQLQuery.createTable(db, tableTransfer);
-                    insert(supportedItems);
+                    database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
+                    SQLQuery.createTable(database, tableTransfer);
+                    insert(database, supportedItems, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -175,12 +176,12 @@ public class AccessDatabase extends SQLiteDatabase
         }
     }
 
-    protected void broadcast(SQLQuery.Select select, String type)
+    protected void broadcast(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, String type)
     {
         getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
                 .putExtra(EXTRA_TABLE_NAME, select.tableName)
                 .putExtra(EXTRA_CHANGE_TYPE, type)
-                .putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount()));
+                .putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount(database)));
     }
 
     public void calculateTransactionSize(long groupId, TransferGroup.Index indexObject)
@@ -223,24 +224,23 @@ public class AccessDatabase extends SQLiteDatabase
         indexObject.calculated = true;
     }
 
-
     @Override
-    public int delete(SQLQuery.Select select)
+    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
     {
-        int returnedItems = super.delete(select);
+        int returnedItems = super.remove(database, select);
 
-        broadcast(select, TYPE_REMOVE);
+        broadcast(database, select, TYPE_REMOVE);
 
         return returnedItems;
     }
 
-    public long getAffectedRowCount()
+    public long getAffectedRowCount(android.database.sqlite.SQLiteDatabase database)
     {
         Cursor cursor = null;
         long returnCount = 0;
 
         try {
-            cursor = getReadableDatabase().rawQuery("SELECT changes() AS affected_row_count", null);
+            cursor = database.rawQuery("SELECT changes() AS affected_row_count", null);
 
             if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
                 returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
@@ -315,55 +315,55 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public long insert(String tableName, String nullColumnHack, ContentValues contentValues)
+    public long insert(android.database.sqlite.SQLiteDatabase database, String tableName, String nullColumnHack, ContentValues contentValues)
     {
-        long returnedItems = super.insert(tableName, nullColumnHack, contentValues);
+        long returnedItems = super.insert(database, tableName, nullColumnHack, contentValues);
 
-        broadcast(new SQLQuery.Select(tableName), TYPE_INSERT);
+        broadcast(database, new SQLQuery.Select(tableName), TYPE_INSERT);
 
         return returnedItems;
     }
 
     @Override
-    public void insert(List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public void insert(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
     {
-        super.insert(objects, updater);
+        super.insert(database, objects, updater);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(new SQLQuery.Select(tableName), TYPE_INSERT);
+            broadcast(database, new SQLQuery.Select(tableName), TYPE_INSERT);
     }
 
     @Override
-    public void remove(List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public void remove(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
     {
-        super.remove(objects, updater);
+        super.remove(database, objects, updater);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(new SQLQuery.Select(tableName), TYPE_REMOVE);
+            broadcast(database, new SQLQuery.Select(tableName), TYPE_REMOVE);
     }
 
     @Override
-    public int update(SQLQuery.Select select, ContentValues values)
+    public int update(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, ContentValues values)
     {
-        int returnedItems = super.update(select, values);
+        int returnedItems = super.update(database, select, values);
 
-        broadcast(select, TYPE_UPDATE);
+        broadcast(database, select, TYPE_UPDATE);
 
         return returnedItems;
     }
 
     @Override
-    public void update(List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public void update(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
     {
-        super.update(objects, updater);
+        super.update(database, objects, updater);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(new SQLQuery.Select(tableName), TYPE_UPDATE);
+            broadcast(database, new SQLQuery.Select(tableName), TYPE_UPDATE);
     }
 }

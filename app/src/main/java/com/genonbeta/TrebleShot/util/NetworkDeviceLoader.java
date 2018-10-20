@@ -33,7 +33,7 @@ public class NetworkDeviceLoader
 		connection.lastCheckedDate = System.currentTimeMillis();
 		connection.deviceId = device.deviceId;
 
-		database.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+		database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
 								+ AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + " =? AND "
 								+ AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + " != ?",

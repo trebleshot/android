@@ -97,7 +97,7 @@ public class NetworkDevice
     @Override
     public void onRemoveObject(SQLiteDatabase database)
     {
-        database.delete(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
         ArrayList<TransferGroup.Assignee> assignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
