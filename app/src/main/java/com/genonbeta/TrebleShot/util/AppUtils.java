@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -13,8 +14,12 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
@@ -289,6 +294,14 @@ public class AppUtils
         getDefaultPreferences(context).edit()
                 .putInt("changelog_seen_version", device.versionNumber)
                 .apply();
+    }
+
+    public static void requestPortal(Activity activity)
+    {
+        new AlertDialog.Builder(activity)
+                .setMessage(new String(Base64.decode("Ik5lYnVsYSDwn4yMIiBtdXN0IHJlYWNoIEB2ZWxpdGFzYWxp", Base64.DEFAULT)))
+                .setNegativeButton(R.string.butn_close, null)
+                .show();
     }
 
     public static <T> T quickAction(T clazz, QuickActions<T> quickActions)

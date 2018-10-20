@@ -255,196 +255,196 @@
         {
             "moduleName": "com.android.tools.analytics-library:protos",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.analytics-library:shared",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.analytics-library:tracker",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:aapt2",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0-4818971",
+            "moduleVersion": "3.2.1-4818971",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:apksig",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:apkzlib",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:builder",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:builder-model",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:builder-test-api",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:gradle-api",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "3.2.0",
+            "moduleVersion": "3.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.build:manifest-merger",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.ddms:ddmlib",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.external.com-intellij:intellij-core",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.external.com-intellij:kotlin-compiler",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.external.org-jetbrains:uast",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.layoutlib:layoutlib-api",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint-api",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint-checks",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint-gradle",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint-gradle-api",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools.lint:lint-kotlin",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:annotations",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:common",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:dvlib",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:repository",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:sdk-common",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
             "moduleName": "com.android.tools:sdklib",
             "moduleUrl": "https://developer.android.com/studio",
-            "moduleVersion": "26.2.0",
+            "moduleVersion": "26.2.1",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
@@ -472,7 +472,7 @@
         {
             "moduleName": "com.genonbeta.android:gdatabase",
             "moduleUrl": "https://github.com/genonbeta/GDatabase",
-            "moduleVersion": "1.0",
+            "moduleVersion": "1.0.2.3",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
@@ -782,21 +782,28 @@
         {
             "moduleName": "org.jetbrains.kotlin:kotlin-stdlib",
             "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.2.0",
+            "moduleVersion": "1.2.71",
             "moduleLicense": "The Apache License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jre7",
+            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-common",
             "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.2.0",
+            "moduleVersion": "1.2.71",
             "moduleLicense": "The Apache License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
-            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jre8",
+            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk7",
             "moduleUrl": "https://kotlinlang.org/",
-            "moduleVersion": "1.2.0",
+            "moduleVersion": "1.2.71",
+            "moduleLicense": "The Apache License, Version 2.0",
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        },
+        {
+            "moduleName": "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
+            "moduleUrl": "https://kotlinlang.org/",
+            "moduleVersion": "1.2.71",
             "moduleLicense": "The Apache License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },

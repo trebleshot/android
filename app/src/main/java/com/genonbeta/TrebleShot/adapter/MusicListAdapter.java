@@ -124,6 +124,7 @@ public class MusicListAdapter
 				TextView text1 = parentView.findViewById(R.id.text);
 				TextView text2 = parentView.findViewById(R.id.text2);
 				TextView text3 = parentView.findViewById(R.id.text3);
+				TextView textSeparator1 = parentView.findViewById(R.id.textSeparator1);
 
 				parentView.setSelected(object.isSelectableSelected());
 
@@ -136,10 +137,12 @@ public class MusicListAdapter
 							: object.albumHolder.title);
 
 					text3.setVisibility(View.GONE);
+					textSeparator1.setVisibility(View.GONE);
 				} else {
 					text2.setText(object.artist);
 					text3.setText(object.albumHolder.title);
 					text3.setVisibility(View.VISIBLE);
+					textSeparator1.setVisibility(View.VISIBLE);
 				}
 
 				GlideApp.with(getContext())

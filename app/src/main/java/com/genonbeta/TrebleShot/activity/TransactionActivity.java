@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
@@ -52,6 +53,7 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by: veli
@@ -87,15 +89,41 @@ public class TransactionActivity
                     updateCalculations();
                 }
             } else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
-                    && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)) {
+                    && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)
+                    && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)) {
                 long groupId = intent.getLongExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 
                 if (groupId == mGroup.groupId) {
-                    if (intent.getIntExtra(CommunicationService.EXTRA_TASK_CHANGE_TYPE, -1) == CommunicationService.TASK_STATUS_ONGOING) {
-                        mRunning = true;
-                        showMenus();
-                    } else {
-                        mRunning = false;
+                    String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
+                    int taskChange = intent.getIntExtra(CommunicationService.EXTRA_TASK_CHANGE_TYPE, -1);
+
+                    synchronized (mActiveProcesses) {
+                        if (taskChange == CommunicationService.TASK_STATUS_ONGOING)
+                                mActiveProcesses.add(deviceId);
+                        else
+                            mActiveProcesses.remove(deviceId);
+                    }
+
+                    showMenus();
+                }
+            } else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
+                long[] groupIds = intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING);
+                ArrayList<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST_RUNNING);
+
+                if (groupIds != null && deviceIds != null
+                        && groupIds.length == deviceIds.size()) {
+                    int iterator = 0;
+
+                    synchronized (mActiveProcesses) {
+                        mActiveProcesses.clear();
+
+                        for (long groupId : groupIds) {
+                            String deviceId = deviceIds.get(iterator++);
+
+                            if (groupId == mGroup.groupId)
+                                mActiveProcesses.add(deviceId);
+                        }
+
                         showMenus();
                     }
                 }
@@ -103,15 +131,15 @@ public class TransactionActivity
         }
     };
 
-    private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
+    final private List<String> mActiveProcesses = new ArrayList<>();
+    final private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
+
     private PowerfulActionMode mMode;
     private MenuItem mStartMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFiles;
     private MenuItem mAddDevice;
     private CrunchLatestDataTask mDataCruncher;
-
-    boolean mRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -252,6 +280,7 @@ public class TransactionActivity
 
         filter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
         filter.addAction(CommunicationService.ACTION_TASK_STATUS_CHANGE);
+        filter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
 
         registerReceiver(mReceiver, filter);
         reconstructGroup();
@@ -397,24 +426,24 @@ public class TransactionActivity
     {
         if (mGroup != null)
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                    .setAction(CommunicationService.ACTION_REQUEST_TASK_STATUS_CHANGE)
-                    .putExtra(CommunicationService.EXTRA_GROUP_ID, mGroup.groupId));
+                    .setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
     }
 
     private void showMenus()
     {
         boolean hasIncoming = getIndex().incomingCount > 0;
         boolean hasOutgoing = getIndex().outgoingCount > 0;
+        boolean hasRunning = mActiveProcesses.size() > 0;
 
         if (mStartMenu == null || mRetryMenu == null || mShowFiles == null)
             return;
 
-        mStartMenu.setTitle(mRunning ? R.string.butn_pause : R.string.butn_resume);
-        mStartMenu.setIcon(mRunning ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp);
+        mStartMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_resume);
+        mStartMenu.setIcon(hasRunning ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp);
 
         // Only show when there
         mAddDevice.setVisible(hasOutgoing);
-        mStartMenu.setVisible(hasIncoming || mRunning);
+        mStartMenu.setVisible(hasIncoming || hasRunning);
         mRetryMenu.setVisible(hasIncoming);
         mShowFiles.setVisible(hasIncoming);
 
@@ -425,13 +454,18 @@ public class TransactionActivity
 
     private void toggleTask()
     {
-        if (mRunning) {
-            TransferUtils.pauseTransfer(this, mGroup, null);
+        if (mActiveProcesses.size() > 0) {
+            if (mActiveProcesses.size() == 1)
+                TransferUtils.pauseTransfer(this, mGroup.groupId, mActiveProcesses.get(0));
+            else
+                new PauseMultipleTransferDialog(TransactionActivity.this, mGroup, mActiveProcesses)
+                        .show();
         } else {
             SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                     .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));
 
-            ArrayList<TransferAssigneeListAdapter.ShowingAssignee> assignees = getDatabase().castQuery(select, TransferAssigneeListAdapter.ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<TransferAssigneeListAdapter.ShowingAssignee>()
+            ArrayList<TransferAssigneeListAdapter.ShowingAssignee> assignees = getDatabase()
+                    .castQuery(select, TransferAssigneeListAdapter.ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<TransferAssigneeListAdapter.ShowingAssignee>()
             {
                 @Override
                 public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, TransferAssigneeListAdapter.ShowingAssignee object)

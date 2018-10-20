@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -49,7 +50,6 @@ public class TransactionListAdapter
     public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
 
-    private AccessDatabase mDatabase;
     private SQLQuery.Select mSelect;
     private String mPath;
     private long mGroupId;
@@ -61,11 +61,10 @@ public class TransactionListAdapter
     private int mColorDone;
     private int mColorError;
 
-    public TransactionListAdapter(Context context, AccessDatabase database)
+    public TransactionListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_DEFAULT);
 
-        mDatabase = database;
         mPercentFormat = NumberFormat.getPercentInstance();
         mColorPending = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorControlNormal));
         mColorDone = ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorAccent));
@@ -93,14 +92,35 @@ public class TransactionListAdapter
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroupId), currentPath, currentPath + File.separator + "%");
 
-        ArrayList<GenericTransferItem> derivedList = mDatabase.castQuery(sqlSelect, GenericTransferItem.class);
+        ArrayList<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
+        ArrayMap<String, NetworkDevice> networkDevices = new ArrayMap<>();
+        ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
+                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroupId)), TransferGroup.Assignee.class);
+
+
+        for (TransferGroup.Assignee assignee : assignees)
+            try {
+                NetworkDevice device = new NetworkDevice(assignee.deviceId);
+
+                AppUtils.getDatabase(getContext()).reconstruct(device);
+                networkDevices.put(device.deviceId, device);
+            } catch (Exception e) {
+            }
 
         // we first get the default files
         for (GenericTransferItem object : derivedList) {
+            NetworkDevice device = networkDevices.get(object.deviceId);
+
+            if (device == null)
+                continue;
+
             object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
             if (currentPath != null && object.directory == null)
                 continue;
+
+            object.setDeviceName(device.nickname);
 
             if ((currentPath == null && object.directory == null)
                     || object.directory.equals(currentPath)) {
@@ -117,12 +137,9 @@ public class TransactionListAdapter
                 TransferFolder transferFolder = folders.get(cleanedPath);
 
                 if (transferFolder == null) {
-                    transferFolder = new TransferFolder();
-
-                    transferFolder.friendlyName = cleanedPath;
-                    transferFolder.directory = currentPath != null
+                    transferFolder = new TransferFolder(mGroupId, cleanedPath, currentPath != null
                             ? currentPath + File.separator + cleanedPath
-                            : cleanedPath;
+                            : cleanedPath);
 
                     folders.put(cleanedPath, transferFolder);
                 }
@@ -151,7 +168,7 @@ public class TransactionListAdapter
                 && hasIncoming) {
             try {
                 TransferGroup group = new TransferGroup(mGroupId);
-                mDatabase.reconstruct(group);
+                AppUtils.getDatabase(getContext()).reconstruct(group);
                 DocumentFile savePath = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), group);
 
                 storageItem = new StorageStatusItem();
@@ -173,15 +190,9 @@ public class TransactionListAdapter
             }
         }
 
-        DetailsTransferFolder statusItem = new DetailsTransferFolder();
-        statusItem.directory = currentPath;
-
-        if (currentPath == null)
-            statusItem.friendlyName = getContext().getString(R.string.text_home);
-        else
-            statusItem.friendlyName = currentPath.contains(File.separator)
-                    ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
-                    : currentPath;
+        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroupId, currentPath == null
+                ? getContext().getString(R.string.text_home)
+                : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
         lister.offer(statusItem);
 
@@ -338,6 +349,7 @@ public class TransactionListAdapter
                 TextView titleText = parentView.findViewById(R.id.text);
                 TextView firstText = parentView.findViewById(R.id.text2);
                 TextView secondText = parentView.findViewById(R.id.text3);
+                TextView thirdText = parentView.findViewById(R.id.text4);
 
                 parentView.setSelected(object.isSelectableSelected());
 
@@ -351,6 +363,7 @@ public class TransactionListAdapter
                 titleText.setText(object.friendlyName);
                 firstText.setText(object.getFirstText(this));
                 secondText.setText(object.getSecondText(this));
+                thirdText.setText(object.getThirdText(this));
                 image.setImageResource(object.getIconRes());
                 progressBar.setMax(100);
                 progressBar.setProgress((int) (object.getPercent() * 100));
@@ -410,6 +423,8 @@ public class TransactionListAdapter
 
         abstract public String getSecondText(TransactionListAdapter adapter);
 
+        abstract public String getThirdText(TransactionListAdapter adapter);
+
         @Override
         public int getViewType()
         {
@@ -455,6 +470,8 @@ public class TransactionListAdapter
 
     public static class GenericTransferItem extends AbstractGenericItem
     {
+        private String mDeviceName;
+
         public GenericTransferItem()
         {
         }
@@ -500,13 +517,24 @@ public class TransactionListAdapter
         @Override
         public String getFirstText(TransactionListAdapter adapter)
         {
-            return TextUtils.getTransactionFlagString(adapter.getContext(), this, adapter.getPercentFormat()).toLowerCase();
+            return mDeviceName;
         }
 
         @Override
         public String getSecondText(TransactionListAdapter adapter)
         {
             return FileUtils.sizeExpression(fileSize, false);
+        }
+
+        @Override
+        public String getThirdText(TransactionListAdapter adapter)
+        {
+            return TextUtils.getTransactionFlagString(adapter.getContext(), this, adapter.getPercentFormat());
+        }
+
+        public void setDeviceName(String deviceName)
+        {
+            mDeviceName = deviceName;
         }
     }
 
@@ -518,6 +546,13 @@ public class TransactionListAdapter
         public int filesReceived = 0;
         public long bytesTotal = 0;
         public long bytesReceived = 0;
+
+        public TransferFolder(long groupId, String friendlyName, String directory)
+        {
+            this.groupId = groupId;
+            this.friendlyName = friendlyName;
+            this.directory = directory;
+        }
 
         @Override
         public boolean hasIssues()
@@ -537,12 +572,6 @@ public class TransactionListAdapter
             return R.drawable.ic_folder_white_24dp;
         }
 
-        @Override
-        public String getFirstText(TransactionListAdapter adapter)
-        {
-            return adapter.getPercentFormat().format(getPercent());
-        }
-
         public double getPercent()
         {
             return bytesReceived <= 0 || bytesTotal <= 0
@@ -551,10 +580,34 @@ public class TransactionListAdapter
         }
 
         @Override
+        public String getFirstText(TransactionListAdapter adapter)
+        {
+            return FileUtils.sizeExpression(bytesTotal, false);
+        }
+
+        @Override
         public String getSecondText(TransactionListAdapter adapter)
         {
             return adapter.getContext()
                     .getString(R.string.text_transferStatusFiles, filesReceived, filesTotal);
+        }
+
+        @Override
+        public String getThirdText(TransactionListAdapter adapter)
+        {
+            return adapter.getPercentFormat().format(getPercent());
+        }
+
+        @Override
+        public SQLQuery.Select getWhere()
+        {
+            return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
+                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
+                                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
+                            String.valueOf(this.groupId),
+                            this.directory + File.separator + "%",
+                            this.directory);
         }
 
         @Override
@@ -586,6 +639,11 @@ public class TransactionListAdapter
 
     public static class DetailsTransferFolder extends TransferFolder implements StatusItem
     {
+        public DetailsTransferFolder(long groupId, String friendlyName, String directory)
+        {
+            super(groupId, friendlyName, directory);
+        }
+
         @Override
         public boolean isSelectableSelected()
         {
@@ -648,12 +706,6 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getFirstText(TransactionListAdapter adapter)
-        {
-            return adapter.getPercentFormat().format(getPercent());
-        }
-
-        @Override
         public double getPercent()
         {
             return bytesTotal <= 0 || bytesFree <= 0
@@ -662,11 +714,23 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getSecondText(TransactionListAdapter adapter)
+        public String getFirstText(TransactionListAdapter adapter)
         {
             return bytesFree == -1
-                    ? adapter.getContext().getString(R.string.text_emptySymbol)
+                    ? adapter.getContext().getString(R.string.text_unknown)
                     : FileUtils.sizeExpression(bytesFree, false);
+        }
+
+        @Override
+        public String getSecondText(TransactionListAdapter adapter)
+        {
+            return adapter.getContext().getString(R.string.text_savePath);
+        }
+
+        @Override
+        public String getThirdText(TransactionListAdapter adapter)
+        {
+            return adapter.getPercentFormat().format(getPercent());
         }
 
         @Override

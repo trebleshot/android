@@ -140,7 +140,7 @@ public class TransactionListFragment
 			}
 		};
 
-		return new TransactionListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+		return new TransactionListAdapter(getActivity())
 		{
 			@NonNull
 			@Override
@@ -325,17 +325,8 @@ public class TransactionListFragment
 							@Override
 							protected void onRun()
 							{
-								for (TransactionListAdapter.AbstractGenericItem transferObject : selectionList)
-									if (transferObject instanceof TransactionListAdapter.TransferFolder) {
-										AppUtils.getDatabase(getFragment().getContext()).delete(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-												.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
-																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ? OR "
-																+ AccessDatabase.FIELD_TRANSFER_DIRECTORY + " = ?)",
-														String.valueOf(mAdapter.getGroupId()),
-														transferObject.directory + File.separator + "%",
-														transferObject.directory));
-									} else
-										AppUtils.getDatabase(getFragment().getContext()).remove(transferObject);
+								AppUtils.getDatabase(getFragment().getContext())
+										.remove(selectionList);
 							}
 						});
 					}

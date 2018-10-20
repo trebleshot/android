@@ -146,17 +146,9 @@ public class TransactionGroupListAdapter
 				TextView text1 = parentView.findViewById(R.id.text);
 				TextView text2 = parentView.findViewById(R.id.text2);
 				TextView text3 = parentView.findViewById(R.id.text3);
+				TextView text4 = parentView.findViewById(R.id.text4);
 
 				parentView.setSelected(object.isSelectableSelected());
-
-				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
-						String.format("Total percent: %1$,.2f", object.totalPercent));
-
-				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
-						String.format("Total count completed: %d", object.totalCountCompleted));
-
-				Log.d(TransactionGroupListAdapter.class.getSimpleName(),
-						String.format("Total bytes completed: %d", object.totalBytesCompleted));
 
 				if (object.index.hasIssues)
 					appliedColor = mColorError;
@@ -179,9 +171,10 @@ public class TransactionGroupListAdapter
 								: R.drawable.ic_file_download_white_24dp);
 				}
 
-				text1.setText(getContext().getString(R.string.mode_itemCountedDetailed, object.assignees, FileUtils.sizeExpression(object.totalBytes, false)));
-				text2.setText(mPercentFormat.format(object.totalPercent));
-				text3.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
+				text1.setText(object.assignees);
+				text2.setText(FileUtils.sizeExpression(object.totalBytes, false));
+				text3.setText(mPercentFormat.format(object.totalPercent));
+				text4.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
 				progressBar.setMax(100);
 				progressBar.setProgress((int) (object.totalPercent * 100));
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));

@@ -79,7 +79,8 @@ public class ConnectionUtils
         // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
         // And it is the case that then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork()
-                && getWifiManager().disconnect() && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
+                && getWifiManager().disconnect()
+                && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
     }
 
     @WorkerThread

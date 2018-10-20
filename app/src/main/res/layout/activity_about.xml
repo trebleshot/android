@@ -27,6 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
+                android:onClick="requestPortal"
                 app:srcCompat="@drawable/ic_trebleshot_original_white_128dp"
                 app:tint="?colorAccent" />
 
@@ -61,6 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="25dp"
                 android:layout_marginLeft="25dp"
+                android:layout_marginRight="25dp"
                 android:layout_marginEnd="25dp">
 
                 <LinearLayout

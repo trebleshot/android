@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.object;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -25,210 +26,226 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 
 public class TransferObject
-		implements DatabaseObject, Editable
+        implements DatabaseObject, Editable
 {
-	public String friendlyName;
-	public String file;
-	public String fileMimeType;
-	public String directory;
-	public long requestId;
-	public long groupId;
-	public long skippedBytes;
-	public long fileSize = 0;
-	public int accessPort;
-	public Type type = Type.INCOMING;
-	public Flag flag = Flag.PENDING;
+    public String friendlyName;
+    public String file;
+    public String fileMimeType;
+    public String directory;
+    public String deviceId;
+    public long requestId;
+    public long groupId;
+    public long skippedBytes;
+    public long fileSize = 0;
+    public int accessPort;
+    public Type type = Type.INCOMING;
+    public Flag flag = Flag.PENDING;
 
-	private boolean mIsSelected = false;
+    private boolean mIsSelected = false;
 
-	public TransferObject()
-	{
-	}
+    public TransferObject()
+    {
+    }
 
-	public TransferObject(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
-	{
-		this.friendlyName = friendlyName;
-		this.file = file;
-		this.fileSize = fileSize;
-		this.fileMimeType = fileMime;
-		this.requestId = requestId;
-		this.groupId = groupId;
-		this.type = type;
-	}
+    public TransferObject(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+    {
+        this.friendlyName = friendlyName;
+        this.file = file;
+        this.fileSize = fileSize;
+        this.fileMimeType = fileMime;
+        this.deviceId = deviceId;
+        this.requestId = requestId;
+        this.groupId = groupId;
+        this.type = type;
+    }
 
-	public TransferObject(long requestId)
-	{
-		this.requestId = requestId;
-	}
+    public TransferObject(long requestId, String deviceId, Type type)
+    {
+        this.requestId = requestId;
+        this.deviceId = deviceId;
+        this.type = type;
+    }
 
-	public TransferObject(CursorItem item)
-	{
-		reconstruct(item);
-	}
+    public TransferObject(CursorItem item)
+    {
+        reconstruct(item);
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		return obj instanceof TransferObject && ((TransferObject) obj).requestId == requestId;
-	}
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof TransferObject))
+            return super.equals(obj);
 
-	@Override
-	public SQLQuery.Select getWhere()
-	{
-		return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-				.setWhere(AccessDatabase.FIELD_TRANSFER_ID + "=?", String.valueOf(requestId));
-	}
+        TransferObject otherObject = (TransferObject) obj;
 
-	@Override
-	public ContentValues getValues()
-	{
-		ContentValues values = new ContentValues();
+        return otherObject.requestId == requestId
+                && type.equals(otherObject.type)
+                && ((deviceId == null && otherObject.deviceId == null) || (deviceId != null && deviceId.equals(otherObject.deviceId)));
+    }
 
-		values.put(AccessDatabase.FIELD_TRANSFER_ID, requestId);
-		values.put(AccessDatabase.FIELD_TRANSFER_GROUPID, groupId);
-		values.put(AccessDatabase.FIELD_TRANSFER_NAME, friendlyName);
-		values.put(AccessDatabase.FIELD_TRANSFER_SIZE, fileSize);
-		values.put(AccessDatabase.FIELD_TRANSFER_MIME, fileMimeType);
-		values.put(AccessDatabase.FIELD_TRANSFER_FLAG, flag.toString());
-		values.put(AccessDatabase.FIELD_TRANSFER_TYPE, type.toString());
-		values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
-		values.put(AccessDatabase.FIELD_TRANSFER_ACCESSPORT, accessPort);
-		values.put(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
-		values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
+    @Override
+    public SQLQuery.Select getWhere()
+    {
+        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_ID + "=? AND "
+                        + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
+                        + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(requestId), deviceId, type.toString());
+    }
 
-		return values;
-	}
+    @Override
+    public ContentValues getValues()
+    {
+        ContentValues values = new ContentValues();
 
-	@Override
-	public void reconstruct(CursorItem item)
-	{
-		this.friendlyName = item.getString(AccessDatabase.FIELD_TRANSFER_NAME);
-		this.file = item.getString(AccessDatabase.FIELD_TRANSFER_FILE);
-		this.fileSize = item.getLong(AccessDatabase.FIELD_TRANSFER_SIZE);
-		this.fileMimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
-		this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
-		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
-		this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
+        values.put(AccessDatabase.FIELD_TRANSFER_ID, requestId);
+        values.put(AccessDatabase.FIELD_TRANSFER_GROUPID, groupId);
+        values.put(AccessDatabase.FIELD_TRANSFER_DEVICEID, deviceId);
+        values.put(AccessDatabase.FIELD_TRANSFER_NAME, friendlyName);
+        values.put(AccessDatabase.FIELD_TRANSFER_SIZE, fileSize);
+        values.put(AccessDatabase.FIELD_TRANSFER_MIME, fileMimeType);
+        values.put(AccessDatabase.FIELD_TRANSFER_FLAG, flag.toString());
+        values.put(AccessDatabase.FIELD_TRANSFER_TYPE, type.toString());
+        values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
+        values.put(AccessDatabase.FIELD_TRANSFER_ACCESSPORT, accessPort);
+        values.put(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
+        values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
 
-		// We may  have put long in that field indicating that the file was / is progress so generate
-		try {
-			this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
-		} catch (Exception e) {
-			this.flag = Flag.IN_PROGRESS;
-			this.flag.setBytesValue(item.getLong(AccessDatabase.FIELD_TRANSFER_FLAG));
-		}
+        return values;
+    }
 
-		this.accessPort = item.getInt(AccessDatabase.FIELD_TRANSFER_ACCESSPORT);
-		this.skippedBytes = item.getLong(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
-		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
-	}
+    @Override
+    public void reconstruct(CursorItem item)
+    {
+        this.friendlyName = item.getString(AccessDatabase.FIELD_TRANSFER_NAME);
+        this.file = item.getString(AccessDatabase.FIELD_TRANSFER_FILE);
+        this.fileSize = item.getLong(AccessDatabase.FIELD_TRANSFER_SIZE);
+        this.fileMimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
+        this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
+        this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
+        this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFER_DEVICEID);
+        this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
 
-	@Override
-	public void onCreateObject(SQLiteDatabase database)
-	{
+        // We may  have put long in that field indicating that the file was / is progress so generate
+        try {
+            this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
+        } catch (Exception e) {
+            this.flag = Flag.IN_PROGRESS;
+            this.flag.setBytesValue(item.getLong(AccessDatabase.FIELD_TRANSFER_FLAG));
+        }
 
-	}
+        this.accessPort = item.getInt(AccessDatabase.FIELD_TRANSFER_ACCESSPORT);
+        this.skippedBytes = item.getLong(AccessDatabase.FIELD_TRANSFER_SKIPPEDBYTES);
+        this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
+    }
 
-	@Override
-	public void onUpdateObject(SQLiteDatabase database)
-	{
+    @Override
+    public void onCreateObject(SQLiteDatabase database)
+    {
 
-	}
+    }
 
-	@Override
-	public void onRemoveObject(SQLiteDatabase database)
-	{
+    @Override
+    public void onUpdateObject(SQLiteDatabase database)
+    {
 
-	}
+    }
 
-	@Override
-	public String getComparableName()
-	{
-		return getSelectableTitle();
-	}
+    @Override
+    public void onRemoveObject(SQLiteDatabase database)
+    {
 
-	@Override
-	public long getComparableDate()
-	{
-		return requestId;
-	}
+    }
 
-	@Override
-	public long getComparableSize()
-	{
-		return fileSize;
-	}
+    @Override
+    public String getComparableName()
+    {
+        return getSelectableTitle();
+    }
 
-	@Override
-	public long getId()
-	{
-		return (requestId * 10) + type.ordinal();
-	}
+    @Override
+    public long getComparableDate()
+    {
+        return requestId;
+    }
 
-	@Override
-	public String getSelectableTitle()
-	{
-		return friendlyName;
-	}
+    @Override
+    public long getComparableSize()
+    {
+        return fileSize;
+    }
 
-	@Override
-	public boolean isSelectableSelected()
-	{
-		return mIsSelected;
-	}
+    @SuppressLint("DefaultLocale")
+    @Override
+    public long getId()
+    {
+        return String.format("%d_%d_%s", requestId, type.ordinal(), deviceId).hashCode();
+    }
 
-	@Override
-	public void setId(long id)
-	{
-		// it will && should be effective on representative text items
-		this.requestId = id;
-	}
+    @Override
+    public String getSelectableTitle()
+    {
+        return friendlyName;
+    }
 
-	@Override
-	public boolean setSelectableSelected(boolean selected)
-	{
-		mIsSelected = selected;
-		return true;
-	}
+    @Override
+    public boolean isSelectableSelected()
+    {
+        return mIsSelected;
+    }
 
-	public enum Type
-	{
-		INCOMING,
-		OUTGOING
-	}
+    @Override
+    public void setId(long id)
+    {
+        // it will && should be effective on representative text items
+        this.requestId = id;
+    }
 
-	public enum Flag
-	{
-		INTERRUPTED,
-		PENDING,
-		REMOVED,
-		IN_PROGRESS,
-		DONE;
+    @Override
+    public boolean setSelectableSelected(boolean selected)
+    {
+        mIsSelected = selected;
+        return true;
+    }
 
-		private long bytesValue;
+    public enum Type
+    {
+        INCOMING,
+        OUTGOING
+    }
 
-		public long getBytesValue()
-		{
-			return bytesValue;
-		}
+    public enum Flag
+    {
+        INTERRUPTED,
+        PENDING,
+        REMOVED,
+        IN_PROGRESS,
+        DONE;
 
-		public void setBytesValue(long bytesValue)
-		{
-			this.bytesValue = bytesValue;
-		}
+        private long bytesValue;
 
-		@Override
-		public String toString()
-		{
-			return getBytesValue() > 0
-					? String.valueOf(getBytesValue())
-					: super.toString();
-		}
-	}
+        public long getBytesValue()
+        {
+            return bytesValue;
+        }
 
-	@Retention(CLASS)
-	@Target({METHOD, PARAMETER, FIELD, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE})
-	public @interface Virtual
-	{
-	}
+        public void setBytesValue(long bytesValue)
+        {
+            this.bytesValue = bytesValue;
+        }
+
+        @Override
+        public String toString()
+        {
+            return getBytesValue() > 0
+                    ? String.valueOf(getBytesValue())
+                    : super.toString();
+        }
+    }
+
+    @Retention(CLASS)
+    @Target({METHOD, PARAMETER, FIELD, LOCAL_VARIABLE, ANNOTATION_TYPE, PACKAGE})
+    public @interface Virtual
+    {
+    }
 }

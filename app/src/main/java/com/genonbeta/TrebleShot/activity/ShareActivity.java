@@ -42,7 +42,9 @@ import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -261,6 +263,7 @@ public class ShareActivity extends Activity
 
 											TransferObject transferObject = new TransferObject(requestId,
 													groupInstance.groupId,
+													assignee.deviceId,
 													selectableStream.getSelectableTitle(),
 													selectableStream.getDocumentFile().getUri().toString(),
 													selectableStream.getDocumentFile().getType(),
@@ -294,31 +297,40 @@ public class ShareActivity extends Activity
 									break;
 								case ACTION_ADD_DEVICES:
 									TransferGroup existingGroup = new TransferGroup(mGroupId);
+
 									getDatabase().reconstruct(existingGroup);
+
+									TransferGroup.Assignee directorAssignee = TransferUtils.getDefaultAssignee(ShareActivity.this, existingGroup.groupId);
 
 									jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
 									jsonRequest.put(Keyword.TRANSFER_GROUP_ID, existingGroup.groupId);
 
-									ArrayList<TransferObject> pendingTransfers = getDatabase()
+									pendingRegistry.addAll(getDatabase()
 											.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 													.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+																	+ AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
 																	+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
 															String.valueOf(existingGroup.groupId),
-															TransferObject.Type.OUTGOING.toString()), TransferObject.class);
+															directorAssignee.deviceId,
+															TransferObject.Type.OUTGOING.toString()), TransferObject.class));
 
-									if (pendingTransfers.size() == 0)
+									if (pendingRegistry.size() == 0)
 										throw new Exception("Empty share holder id: " + existingGroup.groupId);
 
 									JSONArray filesArray = new JSONArray();
 
-									getProgressDialog().setMax(pendingTransfers.size());
+									getProgressDialog().setMax(pendingRegistry.size());
 
-									for (TransferObject transferObject : pendingTransfers) {
+									for (TransferObject transferObject : pendingRegistry) {
 										if (getDefaultInterrupter().interrupted())
 											throw new InterruptedException("Interrupted by user");
 
 										getProgressDialog().setSecondaryProgress(getProgressDialog().getSecondaryProgress() + 1);
 
+										transferObject.deviceId = assignee.deviceId; // We will clone the file index with new deviceId
+										transferObject.flag = TransferObject.Flag.PENDING;
+										transferObject.accessPort = 0;
+										transferObject.skippedBytes = 0;
 										JSONObject thisJson = new JSONObject();
 
 										try {
@@ -376,7 +388,27 @@ public class ShareActivity extends Activity
 							if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
 								switch (mAction) {
 									case ACTION_ADD_DEVICES:
-										getDatabase().publish(assignee);
+										try {
+											getDatabase().reconstruct(assignee);
+										} catch (Exception e) {
+											getDatabase().insert(assignee);
+											getProgressDialog().setMax(pendingRegistry.size());
+
+											getDatabase().insert(pendingRegistry, new SQLiteDatabase.ProgressUpdater()
+											{
+												@Override
+												public void onProgressChange(int total, int current)
+												{
+													getProgressDialog().setProgress(current);
+												}
+
+												@Override
+												public boolean onProgressState()
+												{
+													return !getDefaultInterrupter().interrupted();
+												}
+											});
+										}
 
 										setResult(RESULT_OK, new Intent()
 												.putExtra(EXTRA_DEVICE_ID, assignee.deviceId)
@@ -388,6 +420,7 @@ public class ShareActivity extends Activity
 										if (pendingRegistry.size() > 0) {
 											getDatabase().insert(groupInstance);
 											getDatabase().insert(assignee);
+											getProgressDialog().setMax(pendingRegistry.size());
 
 											getDefaultInterrupter().addCloser(new Interrupter.Closer()
 											{
@@ -398,13 +431,20 @@ public class ShareActivity extends Activity
 												}
 											});
 
-											for (TransferObject transferObject : pendingRegistry) {
-												if (getDefaultInterrupter().interrupted())
-													throw new InterruptedException("Interrupted by user");
+											getDatabase().insert(pendingRegistry, new AccessDatabase.ProgressUpdater()
+											{
+												@Override
+												public void onProgressChange(int total, int current)
+												{
+													getProgressDialog().setProgress(current);
+												}
 
-												getProgressDialog().setProgress(mProgressDialog.getProgress() + 1);
-												getDatabase().insert(transferObject);
-											}
+												@Override
+												public boolean onProgressState()
+												{
+													return !getDefaultInterrupter().interrupted();
+												}
+											});
 
 											TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 										}

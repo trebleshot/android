@@ -47,7 +47,7 @@
     <string name="text_deviceModelInfo">设备名</string>
     <string name="butn_clearQueue">清空队列</string>
     <string name="butn_pendingTransfers">队列</string>
-    <string name="butn_shareWithTrebleshot">用TrebleShow分享</string>
+    <string name="butn_shareWithTrebleshot">用TrebleShot分享</string>
     <string name="mesg_somethingWentWrong">出错了</string>
     <string name="text_findDevicesHint">没有熟悉的设备</string>
     <string name="text_autoScanDevices">自动扫描设备</string>
@@ -118,7 +118,7 @@
     <string name="text_createFolder">创建文件夹</string>
     <string name="mesg_fileAlreadyExists">文件已存在</string>
     <string name="mesg_folderCreateError">无法创建文件夹</string>
-    <string name="text_requestPermissionStorageSummary">这个许可允许TrebleShot读写你设备的存储以接收和发送文件。</string>
+    <string name="text_requestPermissionStorageSummary">这个权限允许TrebleShot读写你设备的存储以接收和发送文件。</string>
     <string name="butn_settings">设置</string>
     <string name="butn_selectThis">选择这个</string>
     <string name="butn_newFile">新文件</string>
@@ -140,7 +140,7 @@
     <string name="text_empty">(空)</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">正在等待的传输</string>
-    <string name="butn_proceed">已完成</string>
+    <string name="butn_proceed">确认继续</string>
     <string name="text_removeCertainPendingTransfersSummary">这将会移除这里可见的所有等待的传输</string>
     <string name="text_availableNetworks">选择网络 - %s</string>
     <string name="text_noNetworkAvailable">无可用的网络</string>
@@ -202,7 +202,7 @@
     <string name="text_connect">连接</string>
     <string name="butn_startHotspot">建立热点</string>
     <string name="butn_stopHotspot">停止热点</string>
-    <string name="text_easyDiscoveryHelp">当两个设备在同一个网络时扫描它</string>
+    <string name="text_easyDiscoveryHelp">如果两个设备在同一网络时扫描它</string>
     <string name="mesg_completing">正在完成</string>
     <string name="mesg_errorNotSameNetwork">设备不在同一网络下</string>
     <string name="text_cameraPermissionRequired">需要相机权限</string>
@@ -259,7 +259,7 @@
     <string name="text_networkServiceDiscoverySummary">NSD将会改进可发现性</string>
     <string name="text_notificationChannelHigh">重要的通知</string>
     <string name="text_notificationChannelLow">低优先级通知</string>
-    <string name="text_receivedTransfer">已在 %s 接收 %s</string>
+    <string name="text_receivedTransfer">接收 %s 花费了 %s</string>
     <string name="butn_exit">退出</string>
     <string name="text_transactionGroupDetails">任务组详细信息</string>
     <string name="butn_typeNewEntry">输入新条目</string>
@@ -312,7 +312,7 @@
     <string name="text_secondCountShort">%d 秒</string>
     <string name="text_previewThenProceedNotice">请检查您的已选项后轻触\"加入队列\"以继续</string>
     <string name="text_listEmptyVideo">此处无视频文件</string>
-    <string name="text_listEmptyPendingTransfer">等待的传输将在此出现</string>
+    <string name="text_listEmptyPendingTransfer">等待的传输将在此处出现</string>
     <string name="text_listEmptyTextStream">文本将在此出现</string>
     <string name="text_listEmptyMusic">此处无歌曲文件</string>
     <string name="text_internalStorage">内置存储</string>
@@ -381,7 +381,7 @@
     <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看自上次安装的版本之后的更新内容吗？</string>
     <string name="mesg_versionUpdatedChangelogRejected">你可以在“关于”部分找到“更新日志”</string>
 	<string name="mesg_noInternetConnection">这需要网络连接</string>
-    <string name="text_applyDarkTheme">暗黑主题</string>
+    <string name="text_applyDarkTheme">黑色主题</string>
     <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
     <string name="butn_allow">允许</string>
     <string name="butn_telegram_channel">Telegram频道</string>

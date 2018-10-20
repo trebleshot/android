@@ -168,7 +168,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 				loadedDevice.lastUsageTime = System.currentTimeMillis();
 
 				mDatabase.publish(loadedDevice);
-				mDevice = loadedDevice;
+				setDevice(loadedDevice);
 			}
 
 			return loadedDevice;

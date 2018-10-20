@@ -356,7 +356,7 @@
     <string name="butn_shareWithOtherApps">Share with other apps</string>
     <string name="butn_startHotspot">Set up hotspot</string>
     <string name="butn_stopHotspot">Stop hotspot</string>
-    <string name="text_easyDiscoveryHelp">Scan this if the both devices are on the same network</string>
+    <string name="text_easyDiscoveryHelp">Scan this if both devices are on the same network</string>
     <string name="text_scanQRWifiRequired">To connect to devices Wi-Fi should be turned on</string>
     <string name="mesg_completing">Completing</string>
     <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
@@ -388,4 +388,5 @@
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
     <string name="butn_telegram_channel">Telegram channel</string>
+    <string name="mode_middleDot" translatable="false"> · </string>
 </resources>

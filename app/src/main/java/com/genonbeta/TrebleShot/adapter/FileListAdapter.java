@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -92,7 +93,7 @@ public class FileListAdapter
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_original_white_24dp));
+            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_white_24dp_static));
 
             File fileSystemRoot = new File(".");
 
@@ -224,6 +225,7 @@ public class FileListAdapter
                 .setCustomLister(this);
     }
 
+    @Nullable
     public DocumentFile getPath()
     {
         return mPath;
