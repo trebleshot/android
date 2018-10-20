@@ -22,7 +22,7 @@ being able to resume transfer when an error occurred. [FAQ](https://github.com/g
 [![Translation Status](https://hosted.weblate.org/widgets/TrebleShot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
 ## Donate
-If you value this work, you can help it. There is a too few methods that works in Turkey,
+If you value this work, you can help it. There are only a few methods that work in Turkey,
 you can use Bitcoin or install Google Play version to do so (In App Billing method) (taxes will apply).
 
 Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
@@ -55,13 +55,15 @@ Required tools;
 * English
 * French
 * German
+* Hebrew
 * Italian
 * Japanese
 * Norwegian Bokmål
 * Russian
 * Spanish
+* Swedish
 * Turkish
 
-Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution).
+Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution). Languages are included here once they pass 87.5% translation threshold.
 
 This application is licensed under GPL-2.0+  

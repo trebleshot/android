@@ -4,6 +4,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -31,6 +34,20 @@ public class DonationActivity extends Activity
 
 		if (contributorsListFragment != null)
 			contributorsListFragment.getListView().setNestedScrollingEnabled(false);
+	}
+
+	@Override
+	protected void onResume()
+	{
+		super.onResume();
+		findViewById(R.id.bigHeart).setAnimation(AnimationUtils.loadAnimation(this, R.anim.pulse));
+	}
+
+	@Override
+	protected void onPause()
+	{
+		super.onPause();
+		findViewById(R.id.bigHeart).setAnimation(null);
 	}
 
 	@Override

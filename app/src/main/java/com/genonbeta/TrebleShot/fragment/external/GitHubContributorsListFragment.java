@@ -82,10 +82,7 @@ public class GitHubContributorsListFragment
 			@Override
 			public boolean onLongClick(View v)
 			{
-				// Here we leave a message to those who are concerned
-				String ultimateMessage = new String(Base64.decode("Ik5lYnVsYSDwn4yMIiBtdXN0IHJlYWNoIEB2ZWxpdGFzYWxp", Base64.DEFAULT));
-				Toast.makeText(getContext(), ultimateMessage, Toast.LENGTH_SHORT).show();
-
+				AppUtils.requestPortal(getActivity());
 				return true;
 			}
 		});

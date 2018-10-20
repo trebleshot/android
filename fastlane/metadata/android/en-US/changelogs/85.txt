@@ -1,0 +1,8 @@
+NEW: Hebrew and Swedish language support
+FIXED: Sender won't show when transfer ends - #65
+IMPROVED: Indexes files faster
+IMPROVED: Same files to more devices works better
+IMPROVED: You can share files with yourself in developer mode (suggst. for fragile environments)
+IMPROVED: Multitasking
+MISC: Minor bug fixes
+MISC: Updated translations

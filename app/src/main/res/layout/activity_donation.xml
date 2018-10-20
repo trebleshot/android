@@ -55,6 +55,7 @@
                     android:layout_height="48dp" />
 
                 <ImageView
+                    android:id="@+id/bigHeart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:srcCompat="@drawable/ic_favorite_white_144dp"

@@ -1057,41 +1057,27 @@ public class CommunicationService extends Service
                 getActiveProcessList().add(processHolder);
             }
 
-            notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_ONGOING);
+            notifyTaskStatusChange(processHolder.groupId, processHolder.deviceId, TASK_STATUS_ONGOING);
             notifyTaskRunningListChange();
 
             try {
-                Boolean initialConnectionOkay = CommunicationBridge.connect(getDatabase(), Boolean.class, new CommunicationBridge.Client.ConnectionHandler()
-                {
-                    @Override
-                    public void onConnect(CommunicationBridge.Client client)
-                    {
-                        client.setDevice(mTransfer.getDevice());
+                CommunicationBridge.Client handshakeClient = new CommunicationBridge.Client(getDatabase());
 
-                        try {
-                            CoolSocket.ActiveConnection initialConnection = client.communicate(mTransfer.getDevice(), mTransfer.getConnection());
+                handshakeClient.setDevice(mTransfer.getDevice());
 
-                            initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_HANDSHAKE).toString());
+                CoolSocket.ActiveConnection initialConnection = handshakeClient.communicate(mTransfer.getDevice(), mTransfer.getConnection());
 
-                            JSONObject resultObject = new JSONObject(initialConnection.receive().response);
+                // Client says to Server that it will pay a visit
+                initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_HANDSHAKE).toString());
 
-                            Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection response: " + resultObject.toString());
+                // Server with not indirect speech answers the request
+                JSONObject resultObject = new JSONObject(initialConnection.receive().response);
 
-                            client.setReturn(resultObject.getBoolean(Keyword.RESULT));
+                // Developer tells a friend
+                Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection response: " + resultObject.toString());
 
-                            return;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-
-                        client.setReturn(false);
-                    }
-                });
-
-                if (initialConnectionOkay == null || !initialConnectionOkay) {
-                    Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection failed.");
-                    throw new Exception("Initial connection failed");
-                }
+                if (!resultObject.getBoolean(Keyword.RESULT))
+                    throw new Exception("Server rejected the request");
 
                 processHolder.activeConnection
                         .connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS));
