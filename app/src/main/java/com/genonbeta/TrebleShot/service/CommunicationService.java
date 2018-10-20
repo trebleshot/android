@@ -441,9 +441,8 @@ public class CommunicationService extends Service
     {
         synchronized (getActiveProcessList()) {
             for (ProcessHolder processHolder : getActiveProcessList())
-                if (processHolder.group != null
-                        && processHolder.group.groupId == groupId
-                        && deviceId.equals(processHolder.assignee.deviceId))
+                if (processHolder.groupId == groupId
+                        && deviceId.equals(processHolder.deviceId))
                     return processHolder;
         }
 
@@ -507,10 +506,10 @@ public class CommunicationService extends Service
 
         synchronized (getActiveProcessList()) {
             for (ProcessHolder processHolder : getActiveProcessList()) {
-                if (processHolder.group != null
-                        && processHolder.assignee != null) {
-                    taskList.add(processHolder.group.groupId);
-                    deviceList.add(processHolder.assignee.deviceId);
+                if (processHolder.groupId != 0
+                        && processHolder.deviceId != null) {
+                    taskList.add(processHolder.groupId);
+                    deviceList.add(processHolder.deviceId);
                 }
             }
         }
@@ -881,6 +880,7 @@ public class CommunicationService extends Service
             ProcessHolder processHolder = new ProcessHolder();
 
             processHolder.activeConnection = activeConnection;
+            processHolder.type = TransferObject.Type.OUTGOING;
 
             synchronized (getActiveProcessList()) {
                 getActiveProcessList().add(processHolder);
@@ -896,12 +896,12 @@ public class CommunicationService extends Service
 
                 TransferInstance transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
 
-                processHolder.group = transferInstance.getGroup();
-                processHolder.assignee = transferInstance.getAssignee();
+                processHolder.groupId = transferInstance.getGroup().groupId;
+                processHolder.deviceId = transferInstance.getAssignee().deviceId;
 
                 activeConnection.reply(new JSONObject().put(Keyword.RESULT, true).toString());
 
-                notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_ONGOING);
+                notifyTaskStatusChange(processHolder.groupId, processHolder.deviceId, TASK_STATUS_ONGOING);
                 notifyTaskRunningListChange();
 
                 while (activeConnection.getSocket() != null
@@ -919,7 +919,7 @@ public class CommunicationService extends Service
                     if (currentRequest.has(Keyword.RESULT) && !currentRequest.getBoolean(Keyword.RESULT)) {
                         // the assignee for this transfer has received the files. We can remove it
                         if (!currentRequest.has(Keyword.TRANSFER_JOB_DONE) || currentRequest.getBoolean(Keyword.TRANSFER_JOB_DONE))
-                            Log.d(TAG, "SeamlessServer.onConnected(): Receiver notified us that it has received all the pending transfers: " + processHolder.assignee.deviceId);
+                            Log.d(TAG, "SeamlessServer.onConnected(): Receiver notified us that it has received all the pending transfers: " + processHolder.deviceId);
 
                         break;
                     }
@@ -929,8 +929,8 @@ public class CommunicationService extends Service
                     try {
                         processHolder.transferObject = new TransferObject(
                                 currentRequest.getInt(Keyword.TRANSFER_REQUEST_ID),
-                                processHolder.assignee.deviceId,
-                                TransferObject.Type.OUTGOING);
+                                processHolder.deviceId,
+                                processHolder.type);
 
                         getDatabase().reconstruct(processHolder.transferObject);
 
@@ -1025,8 +1025,8 @@ public class CommunicationService extends Service
                 synchronized (getActiveProcessList()) {
                     getActiveProcessList().remove(processHolder);
 
-                    if (processHolder.group != null && processHolder.assignee != null)
-                        notifyTaskStatusChange(processHolder.group.groupId, processHolder.assignee.deviceId, TASK_STATUS_STOPPED);
+                    if (processHolder.groupId != 0 && processHolder.deviceId != null)
+                        notifyTaskStatusChange(processHolder.groupId, processHolder.deviceId, TASK_STATUS_STOPPED);
 
                     notifyTaskRunningListChange();
                 }
@@ -1048,8 +1048,9 @@ public class CommunicationService extends Service
         {
             ProcessHolder processHolder = new ProcessHolder();
 
-            processHolder.group = mTransfer.getGroup();
-            processHolder.assignee = mTransfer.getAssignee();
+            processHolder.type = TransferObject.Type.INCOMING;
+            processHolder.groupId = mTransfer.getGroup().groupId;
+            processHolder.deviceId = mTransfer.getAssignee().deviceId;
             processHolder.activeConnection = new CoolSocket.ActiveConnection(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
             synchronized (getActiveProcessList()) {
@@ -1096,13 +1097,13 @@ public class CommunicationService extends Service
                         .connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS));
 
                 processHolder.activeConnection.reply(new JSONObject()
-                        .put(Keyword.TRANSFER_GROUP_ID, mTransfer.getGroup().groupId)
+                        .put(Keyword.TRANSFER_GROUP_ID, processHolder.groupId)
                         .toString());
 
                 CoolSocket.ActiveConnection.Response mainRequest = processHolder.activeConnection.receive();
 
                 JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
-                DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), processHolder.group);
+                DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
 
                 if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
                     Log.d(TAG, "SeamlessClientHandler.onConnect(): false result, it will exit.");
@@ -1117,8 +1118,8 @@ public class CommunicationService extends Service
                         contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
 
                         getDatabase().update(TransferUtils.createTransferSelection(
-                                processHolder.group.groupId,
-                                processHolder.assignee.deviceId,
+                                processHolder.groupId,
+                                processHolder.deviceId,
                                 TransferObject.Flag.DONE,
                                 false), contentValues);
                     }
@@ -1130,8 +1131,8 @@ public class CommunicationService extends Service
                         try {
                             TransferObject firstAvailableTransfer = TransferUtils
                                     .fetchValidIncomingTransfer(CommunicationService.this,
-                                            processHolder.group.groupId,
-                                            processHolder.assignee.deviceId);
+                                            processHolder.groupId,
+                                            processHolder.deviceId);
 
                             if (firstAvailableTransfer == null) {
                                 Log.d(TAG, "SeamlessClientHandler(): Exiting because there is no pending file instance left");
@@ -1140,7 +1141,7 @@ public class CommunicationService extends Service
 
                             processHolder.transferObject = firstAvailableTransfer;
 
-                            processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, processHolder.group);
+                            processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, mTransfer.getGroup());
                             StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
                             getNotificationHelper().notifyFileTransaction(processHolder);
@@ -1165,12 +1166,11 @@ public class CommunicationService extends Service
                         }
                     }
 
-
                     // Check if all the pending files are flagged with Flag.DONE
                     boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.transferHandler.getFlag());
                     boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
-                            processHolder.group.groupId,
-                            processHolder.assignee.deviceId,
+                            processHolder.groupId,
+                            processHolder.deviceId,
                             TransferObject.Flag.DONE,
                             false)) == null;
 
@@ -1451,11 +1451,12 @@ public class CommunicationService extends Service
     {
         public CoolTransfer.TransferHandler<ProcessHolder> transferHandler;
         public CoolSocket.ActiveConnection activeConnection;
-        public TransferObject transferObject;
         public DynamicNotification notification;
-        public TransferGroup group;
-        public TransferGroup.Assignee assignee;
+        public TransferObject transferObject;
         public DocumentFile currentFile;
-        boolean hasLatestTransferHandler = false; // If the latest transfer handler is assigned
+        public TransferObject.Type type;
+        public String deviceId;
+        public long groupId;
+        public boolean hasLatestTransferHandler = false; // If the latest transfer handler is assigned
     }
 }

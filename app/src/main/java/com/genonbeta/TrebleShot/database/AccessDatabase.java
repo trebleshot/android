@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
+import android.support.v4.util.ArrayMap;
 
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -117,21 +118,21 @@ public class AccessDatabase extends SQLiteDatabase
          * 6, so we only included version 5 which we did not note the changes
          */
 
-        SQLValues sqlValues = getDatabaseTables();
+        SQLValues databaseTables = getDatabaseTables();
 
         if (old <= 5) {
             for (String tableName : getDatabaseTables().getTables().keySet())
                 db.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
-            SQLQuery.createTables(db, sqlValues);
+            SQLQuery.createTables(db, databaseTables);
         } else {
             if (old <= 6) {
-                SQLValues.Table groupTable = sqlValues.getTables().get(TABLE_TRANSFERGROUP);
-                SQLValues.Table devicesTable = sqlValues.getTables().get(TABLE_DEVICES);
-                SQLValues.Table targetDevicesTable = sqlValues.getTables().get(TABLE_TRANSFERASSIGNEE);
+                SQLValues.Table groupTable = databaseTables.getTables().get(TABLE_TRANSFERGROUP);
+                SQLValues.Table devicesTable = databaseTables.getTables().get(TABLE_DEVICES);
+                SQLValues.Table targetDevicesTable = databaseTables.getTables().get(TABLE_TRANSFERASSIGNEE);
 
-                db.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
-                db.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
+                db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", groupTable.getName()));
+                db.execSQL(String.format("DROP TABLE IF EXISTS `%s`", devicesTable.getName()));
 
                 SQLQuery.createTable(db, groupTable);
                 SQLQuery.createTable(db, devicesTable);
@@ -143,7 +144,49 @@ public class AccessDatabase extends SQLiteDatabase
             }
 
             if (old <= 8) {
-                // TODO: 10/19/18 Add device id for transfer
+                // With version 9, I added deviceId column to the transfer table
+                // to allow users distinguish individual transfer file
+
+                try {
+                    SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
+                    SQLValues.Column fieldDeviceIdTransfer = tableTransfer.getColumn(FIELD_TRANSFER_DEVICEID);
+                    String alterForTransferDeviceIdSql = "ALTER TABLE `%s` ADD %s";
+                    boolean fieldDeviceIdNullable = fieldDeviceIdTransfer.isNullable();
+
+                    fieldDeviceIdTransfer.setNullable(true);
+
+                    db.execSQL(String.format(alterForTransferDeviceIdSql,
+                            tableTransfer.getName(),
+                            fieldDeviceIdTransfer.toString()));
+
+                    ArrayMap<Long, String> mapDist = new ArrayMap<>();
+                    List<TransferObject> listToRemove = new ArrayList<>();
+                    List<TransferObject> listToUpdate = new ArrayList<>();
+
+                    for (TransferGroup.Assignee assignee : castQuery(new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class))
+                        if (!mapDist.containsKey(assignee.groupId))
+                            mapDist.put(assignee.groupId, assignee.deviceId);
+
+                    for (TransferObject transferObject : castQuery(new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class)) {
+                        transferObject.deviceId = mapDist.get(transferObject.groupId);
+
+                        if (transferObject.deviceId == null)
+                            listToRemove.add(transferObject);
+                        else
+                            listToUpdate.add(transferObject);
+                    }
+
+                    remove(listToRemove);
+                    update(listToUpdate);
+
+                    fieldDeviceIdTransfer.setNullable(fieldDeviceIdNullable);
+
+                    db.execSQL(String.format(alterForTransferDeviceIdSql,
+                            tableTransfer.getName(),
+                            fieldDeviceIdTransfer.toString()));
+                } catch (Exception e) {
+
+                }
             }
         }
     }

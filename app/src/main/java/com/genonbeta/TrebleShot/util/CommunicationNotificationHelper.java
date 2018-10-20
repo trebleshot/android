@@ -140,20 +140,20 @@ public class CommunicationNotificationHelper
     public DynamicNotification notifyFileTransaction(CommunicationService.ProcessHolder processHolder) throws Exception
     {
         if (processHolder.notification == null) {
-            NetworkDevice device = new NetworkDevice(processHolder.assignee.deviceId);
+            NetworkDevice device = new NetworkDevice(processHolder.deviceId);
             getUtils().getDatabase().reconstruct(device);
 
             boolean isIncoming = TransferObject.Type.INCOMING.equals(processHolder.transferObject.type);
 
             processHolder.notification = getUtils().buildDynamicNotification(
-                    TransferUtils.createUniqueTransferId(processHolder.group.groupId, device.deviceId, processHolder.transferObject.type),
+                    TransferUtils.createUniqueTransferId(processHolder.groupId, device.deviceId, processHolder.transferObject.type),
                     NotificationUtils.NOTIFICATION_CHANNEL_LOW);
             Intent cancelIntent = new Intent(getContext(), CommunicationService.class);
 
             cancelIntent.setAction(CommunicationService.ACTION_CANCEL_JOB);
             cancelIntent.putExtra(CommunicationService.EXTRA_REQUEST_ID, processHolder.transferObject.requestId);
-            cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.transferObject.groupId);
-            cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_ID, processHolder.assignee.deviceId);
+            cancelIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, processHolder.groupId);
+            cancelIntent.putExtra(CommunicationService.EXTRA_DEVICE_ID, processHolder.deviceId);
             cancelIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, processHolder.notification.getNotificationId());
 
             processHolder.notification.setSmallIcon(isIncoming ? android.R.drawable.stat_sys_download : android.R.drawable.stat_sys_upload)
@@ -217,7 +217,7 @@ public class CommunicationNotificationHelper
     public DynamicNotification notifyFileReceived(CommunicationService.ProcessHolder processHolder, NetworkDevice device, DocumentFile savePath)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(
-                TransferUtils.createUniqueTransferId(processHolder.group.groupId, device.deviceId, processHolder.transferObject.type),
+                TransferUtils.createUniqueTransferId(processHolder.groupId, device.deviceId, processHolder.transferObject.type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
         CoolTransfer.TransferProgress progress = transferHandler.getTransferProgress();
@@ -327,12 +327,15 @@ public class CommunicationNotificationHelper
 
     public DynamicNotification notifyStuckThread(CommunicationService.ProcessHolder processHolder)
     {
-        return notifyStuckThread(processHolder.group.groupId, processHolder.assignee.deviceId, processHolder.notification.getNotificationId());
+        return notifyStuckThread(processHolder.groupId, processHolder.deviceId, processHolder.type);
     }
 
-    public DynamicNotification notifyStuckThread(long groupId, String deviceId, int notificationId)
+    public DynamicNotification notifyStuckThread(long groupId, String deviceId, TransferObject.Type type)
     {
-        DynamicNotification notification = getUtils().buildDynamicNotification(notificationId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(groupId, deviceId, type),
+                NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
         Intent killIntent = new Intent(getContext(), CommunicationService.class)
                 .setAction(CommunicationService.ACTION_CANCEL_JOB)
                 .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
