@@ -151,10 +151,12 @@ public class AccessDatabase extends SQLiteDatabase
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
                     ArrayMap<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
+                    List<TransferGroup.Assignee> availableAssignees = castQuery(new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class);
 
-                    for (TransferGroup.Assignee assignee : castQuery(new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class))
+                    for (TransferGroup.Assignee assignee : availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId))
                             mapDist.put(assignee.groupId, assignee.deviceId);
+                    }
 
                     for (TransferObject transferObject : castQuery(new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class)) {
                         transferObject.deviceId = mapDist.get(transferObject.groupId);
@@ -167,7 +169,7 @@ public class AccessDatabase extends SQLiteDatabase
                     SQLQuery.createTable(db, tableTransfer);
                     insert(supportedItems);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
         }
