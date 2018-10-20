@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">Vill du ta bort filen\?</item>
+	<item quantity="other">Vill du ta bort %d filer\?</item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">%d fil har mottagits</item>
+	<item quantity="other">%d filer har mottagits</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">%d fil är markerad</item>
+	<item quantity="other">%d filer är markerade</item>
+</plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="one">Denna avvaktande överföringen kommer att tas bort</item>
+	<item quantity="other">%d avvaktande överföringar kommer att tas bort</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="one">%d anslutning</item>
+	<item quantity="other">%d anslutningar</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">Ta emot filen\?</item>
+	<item quantity="other">Ta emot %d filer\?</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="one">%d fil</item>
+	<item quantity="other">%d filer</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">En sekund sedan</item>
+	<item quantity="other">%d sekunder sedan</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="one">En minut sedan</item>
+	<item quantity="other">%d minuter sedan</item>
+</plurals>
+    <plurals name="text_fileDeletionCompleted">
+	<item quantity="one">%d fil har tagits bort</item>
+	<item quantity="other">%d filer har tagits bort</item>
+</plurals>
+    <plurals name="text_gridRow">
+	<item quantity="one">En rad</item>
+	<item quantity="other">%d rader</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">En delning</item>
+	<item quantity="other">Delar med %d enheter</item>
+</plurals>
+</resources>

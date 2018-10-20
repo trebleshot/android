@@ -251,7 +251,7 @@
     <string name="text_emptySearchResult">Aucun résultat pour \"%s\"</string>
     <string name="mesg_errorReadFolder">Impossible d\'accéder au dossier \"%s\"</string>
     <string name="butn_mountDirectory">Monter le dossier</string>
-    <string name="mesg_mountDirectoryHelp">Sélectionnez le dossier auquel vous voulez accéder</string>
+    <string name="mesg_mountDirectoryHelp">Sélectionnez le dossier auquel vous désirez accéder</string>
     <string name="butn_ejectDirectory">Démonter le dossier</string>
     <string name="mesg_wifiEnableRequired">Veuillez activer le Wi-Fi pour se connecter</string>
     <string name="text_hotspotStartsTrustZone">Le point d’accès active également la TrustZone</string>

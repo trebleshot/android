@@ -1,0 +1,74 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">למחוק את הקובץ הזה\?</item>
+	<item quantity="two">למחוק את %d הקבצים האלה\?</item>
+	<item quantity="many">למחוק את %d הקבצים האלה\?</item>
+	<item quantity="other">למחוק את %d הקבצים האלה\?</item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">קובץ אחד התקבל</item>
+	<item quantity="two">%d קבצים התקבלו</item>
+	<item quantity="many">%d קבצים התקבלו</item>
+	<item quantity="other">%d קבצים התקבלו</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">קובץ אחד נבחר</item>
+	<item quantity="two">%d קבצים נבחרו</item>
+	<item quantity="many">%d קבצים נבחרו</item>
+	<item quantity="other">%d קבצים נבחרו</item>
+</plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="one">ההעברה הממתינה הזאת תוסר</item>
+	<item quantity="two">%s ההעברות הממתינות האלו תוסרנה</item>
+	<item quantity="many">%s ההעברות הממתינות האלו תוסרנה</item>
+	<item quantity="other">%s ההעברות הממתינות האלו תוסרנה</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="one">חיבור אחד</item>
+	<item quantity="two">%s חיבורים</item>
+	<item quantity="many">%s חיבורים</item>
+	<item quantity="other">%s חיבורים</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">לקבל את הקובץ הזה\?</item>
+	<item quantity="two">לקבל את %d הקבצים האלו\?</item>
+	<item quantity="many">לקבל את %d הקבצים האלו\?</item>
+	<item quantity="other">לקבל את %d הקבצים האלו\?</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="one">קובץ אחד</item>
+	<item quantity="two">%d קבצים</item>
+	<item quantity="many">%d קבצים</item>
+	<item quantity="other">%d קבצים</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">לפני שנייה</item>
+	<item quantity="two">לפני %d שניות</item>
+	<item quantity="many">לפני %d שניות</item>
+	<item quantity="other">לפני %d שניות</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="one">לפני דקה</item>
+	<item quantity="two">לפני %d דקות</item>
+	<item quantity="many">לפני %d דקות</item>
+	<item quantity="other">לפני %d דקות</item>
+</plurals>
+    <plurals name="text_fileDeletionCompleted">
+	<item quantity="one">קובץ אחד נמחק</item>
+	<item quantity="two">%d קבצים נמחקו</item>
+	<item quantity="many">%d קבצים נמחקו</item>
+	<item quantity="other">%d קבצים נמחקו</item>
+</plurals>
+    <plurals name="text_gridRow">
+	<item quantity="one">שורה אחת</item>
+	<item quantity="two">%d שורות</item>
+	<item quantity="many">%d שורות</item>
+	<item quantity="other">%d שורות</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">שיתוף בודד</item>
+	<item quantity="two">שיתוף עם %d מכשירים</item>
+	<item quantity="many">שיתוף עם %d מכשירים</item>
+	<item quantity="other">שיתוף עם %d מכשירים</item>
+</plurals>
+</resources>
