@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Launcher related -->
+    <color name="ic_launcher_background">#47BF4B</color>
+    <!-- Launcher related end -->
+
     <color name="colorAccent">#36bf6f</color>
     <color name="colorControlNormal">#555</color>
     <color name="colorPrimary">#fff</color>

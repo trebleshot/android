@@ -12,7 +12,7 @@
 
         <TextView
             android:id="@+id/device_info_not_supported_text"
-            style="@style/marqueeText.secondary"
+            style="@style/textAppearance.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
@@ -21,14 +21,14 @@
             android:visibility="gone" />
 
         <TextView
-            style="@style/marqueeText.primary"
+            style="@style/textAppearance.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text_deviceModelInfo" />
 
         <TextView
             android:id="@+id/device_info_brand_and_model"
-            style="@style/marqueeText.secondary"
+            style="@style/textAppearance.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
@@ -67,14 +67,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    style="@style/marqueeText.primary"
+                    style="@style/textAppearance.primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_version" />
 
                 <TextView
                     android:id="@+id/device_info_version"
-                    style="@style/marqueeText.secondary"
+                    style="@style/textAppearance.secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -88,13 +88,13 @@
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/device_info_access_switcher"
-            style="@style/marqueeText.primary"
+            style="@style/textAppearance.primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/text_allowToAccess" />
 
         <TextView
-            style="@style/marqueeText.secondary"
+            style="@style/textAppearance.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="10"
@@ -106,14 +106,14 @@
 
         <android.support.v7.widget.SwitchCompat
             android:id="@+id/device_info_trust_switcher"
-            style="@style/marqueeText.primary"
+            style="@style/textAppearance.primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/text_appName"
             android:text="@string/butn_trustZoneDevice" />
 
         <TextView
-            style="@style/marqueeText.secondary"
+            style="@style/textAppearance.secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="10"

@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/marqueeText.primary.normal"
+            style="@style/textAppearance.primary.normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3" />
@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/marqueeText.secondary.small"
+            style="@style/textAppearance.secondary.small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

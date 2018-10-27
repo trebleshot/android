@@ -28,7 +28,7 @@
 
     <TextView
         android:id="@+id/list_pathresolver_text"
-        style="@style/marqueeText.primary.normal"
+        style="@style/textAppearance.primary.normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="true"

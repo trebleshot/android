@@ -14,46 +14,75 @@
 		<item name="colorPrimary">?colorAccent</item>
 	</style>
 
-	<style name="marqueeText">
-		<item name="android:maxLines">1</item>
-		<item name="android:ellipsize">end</item>
+	<style name="textAppearance">
+		<item name="android:textStyle">normal</item>
 	</style>
 
-	<style name="marqueeText.primary" parent="@style/marqueeText">
+	<style name="textAppearance.primary" parent="@style/textAppearance">
 		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
 		<item name="android:textSize">@dimen/font_size_primary</item>
 		<item name="android:textColor">?android:textColorPrimary</item>
 	</style>
 
-	<style name="marqueeText.primary.big" parent="@style/marqueeText.primary">
+	<style name="textAppearance.primary.singleLine" parent="@style/textAppearance.primary">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.primary.big" parent="@style/textAppearance.primary">
 		<item name="android:textSize">@dimen/font_size_big</item>
 	</style>
 
-	<style name="marqueeText.primary.normal" parent="@style/marqueeText.primary">
+	<style name="textAppearance.primary.big.singleLine" parent="@style/textAppearance.primary.big">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.primary.normal" parent="@style/textAppearance.primary">
 		<item name="android:textSize">@dimen/font_size_primary_normal</item>
 	</style>
 
-	<style name="marqueeText.primary.small" parent="@style/marqueeText.primary">
+	<style name="textAppearance.primary.normal.singleLine" parent="@style/textAppearance.primary.normal">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.primary.small" parent="@style/textAppearance.primary">
 		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
 
-	<style name="marqueeText.secondary" parent="@style/marqueeText">
+	<style name="textAppearance.primary.small.singleLine" parent="@style/textAppearance.primary.small">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.secondary" parent="@style/textAppearance">
 		<item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
 		<item name="android:textSize">@dimen/font_size_secondary</item>
 		<item name="android:textColor">?android:textColorSecondary</item>
 	</style>
 
-	<style name="marqueeText.secondary.big" parent="@style/marqueeText.secondary">
+	<style name="textAppearance.secondary.singleLine" parent="@style/textAppearance.secondary">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.secondary.big" parent="@style/textAppearance.secondary">
 		<item name="android:textSize">@dimen/font_size_big</item>
 	</style>
 
-	<style name="marqueeText.secondary.small" parent="@style/marqueeText.secondary">
+	<style name="textAppearance.secondary.big.singleLine" parent="@style/textAppearance.secondary.big">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
+	</style>
+
+	<style name="textAppearance.secondary.small" parent="@style/textAppearance.secondary">
 		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
 
-	<style name="condensedCapsTextStyle" parent="@style/marqueeText.secondary">
-		<item name="android:textStyle">bold</item>
-		<item name="android:textAllCaps">true</item>
+	<style name="textAppearance.secondary.small.singleLine" parent="@style/textAppearance.secondary.small">
+		<item name="android:ellipsize">end</item>
+		<item name="android:maxLines">1</item>
 	</style>
 
 	<style name="overflowButton">
@@ -94,7 +123,7 @@
 		<item name="tint">?colorControlNormal</item>
 	</style>
 
-	<style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">
+	<style name="customListFragmentEmptyTextStyle" parent="textAppearance.primary.big">
 		<item name="android:text">@string/text_listEmpty</item>
 		<item name="android:textColor">?android:textColorPrimary</item>
 	</style>

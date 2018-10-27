@@ -15,7 +15,7 @@
 
     <TextView
         android:id="@+id/text"
-        style="@style/marqueeText.primary"
+        style="@style/textAppearance.primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"

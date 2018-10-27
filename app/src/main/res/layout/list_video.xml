@@ -33,7 +33,7 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/marqueeText.primary"
+            style="@style/textAppearance.primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3" />
@@ -49,7 +49,7 @@
 
             <TextView
                 android:id="@+id/text2"
-                style="@style/marqueeText.secondary"
+                style="@style/textAppearance.secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -60,7 +60,7 @@
 
             <TextView
                 android:id="@+id/text3"
-                style="@style/marqueeText.secondary"
+                style="@style/textAppearance.secondary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

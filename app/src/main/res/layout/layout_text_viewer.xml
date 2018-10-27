@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="24dp"
-            style="@style/marqueeText.primary"/>
+            style="@style/textAppearance.primary"/>
 
     </LinearLayout>
 </ScrollView>
