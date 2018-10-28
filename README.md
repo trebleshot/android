@@ -48,21 +48,8 @@ Required tools;
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png)
 
 ## Supported languages
-* Arabic
-* Basque
-* Chinese (Simplified)
-* Dutch
-* English
-* French
-* German
-* Hebrew
-* Italian
-* Japanese
-* Norwegian Bokmål
-* Russian
-* Spanish
-* Swedish
-* Turkish
+Arabic, Basque, Chinese (Simplified), Chinese (Traditional), Dutch, English, French, German, Hebrew,
+Italian, Japanese, Norwegian Bokmål, Polish, Russian, Spanish, Swedish, Turkish
 
 Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution). Languages are included here once they pass 87.5% translation threshold.
 
