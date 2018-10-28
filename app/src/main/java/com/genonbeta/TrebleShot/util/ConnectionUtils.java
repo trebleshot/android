@@ -11,8 +11,6 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.annotation.WorkerThread;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -20,11 +18,13 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.fragment.NetworkStatusFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONObject;
+
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
 
 /**
  * created by: veli

@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.support.v4.util.ArrayMap;
 
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -18,6 +17,8 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import androidx.collection.ArrayMap;
 
 /**
  * Created by: veli

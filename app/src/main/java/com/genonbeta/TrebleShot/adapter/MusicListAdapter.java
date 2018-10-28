@@ -5,8 +5,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.util.ArrayMap;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,11 +13,14 @@ import android.widget.TextView;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.collection.ArrayMap;
 
 public class MusicListAdapter
 		extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>

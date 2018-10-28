@@ -1,6 +1,6 @@
 package com.genonbeta.TrebleShot.ui.callback;
 
-import android.support.annotation.DrawableRes;
+import androidx.annotation.DrawableRes;
 
 /**
  * created by: veli

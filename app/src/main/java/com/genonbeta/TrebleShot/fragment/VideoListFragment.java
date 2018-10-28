@@ -3,8 +3,6 @@ package com.genonbeta.TrebleShot.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -14,6 +12,9 @@ import com.genonbeta.TrebleShot.app.GalleryGroupEditableListFragment;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class VideoListFragment
 		extends GalleryGroupEditableListFragment<VideoListAdapter.VideoHolder, GroupEditableListAdapter.GroupViewHolder, VideoListAdapter>

@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.TextView;
 
@@ -20,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: Veli

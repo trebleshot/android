@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +12,9 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatCheckBox;
 
 /**
  * created by: Veli

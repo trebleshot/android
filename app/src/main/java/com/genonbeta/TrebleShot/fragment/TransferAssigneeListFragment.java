@@ -5,20 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
-import com.genonbeta.android.framework.app.RecyclerViewFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -27,7 +21,11 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli

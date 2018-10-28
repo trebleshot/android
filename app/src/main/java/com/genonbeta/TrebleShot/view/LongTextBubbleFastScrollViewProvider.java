@@ -1,23 +1,19 @@
 package com.genonbeta.TrebleShot.view;
 
-import android.graphics.drawable.InsetDrawable;
-import android.support.v4.content.ContextCompat;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
+/*
 import com.futuremind.recyclerviewfastscroll.Utils;
 import com.futuremind.recyclerviewfastscroll.viewprovider.DefaultBubbleBehavior;
 import com.futuremind.recyclerviewfastscroll.viewprovider.ScrollerViewProvider;
 import com.futuremind.recyclerviewfastscroll.viewprovider.ViewBehavior;
-import com.futuremind.recyclerviewfastscroll.viewprovider.VisibilityAnimationManager;
-import com.genonbeta.TrebleShot.R;
+import com.futuremind.recyclerviewfastscroll.viewprovider.VisibilityAnimationManager;*/
 
 /**
  * created by: veli
  * date: 10.04.2018 19:52
  */
+
+// FIXME: 10/28/18
+/*
 public class LongTextBubbleFastScrollViewProvider extends ScrollerViewProvider
 {
 	private View mBubble;
@@ -72,4 +68,4 @@ public class LongTextBubbleFastScrollViewProvider extends ScrollerViewProvider
 	{
 		return new DefaultBubbleBehavior(new VisibilityAnimationManager.Builder(mBubble).withPivotX(1f).withPivotY(1f).build());
 	}
-}
+}*/

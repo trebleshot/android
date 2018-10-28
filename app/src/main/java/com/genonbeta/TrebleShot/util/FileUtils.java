@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -15,6 +14,8 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.File;
 import java.io.IOException;
+
+import androidx.annotation.Nullable;
 
 public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 {

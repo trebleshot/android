@@ -1,24 +1,24 @@
 package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.View;
 
-import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: Veli
@@ -27,7 +27,7 @@ import java.util.Comparator;
 
 abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
 		extends RecyclerViewAdapter<T, V>
-		implements SectionTitleProvider, EditableListAdapterImpl<T>
+		implements EditableListAdapterImpl<T>
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -168,7 +168,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return getItemList();
 	}
 
-	@Override
+	// todo: belongs fast scroll smh
 	public String getSectionTitle(int position)
 	{
 		try {

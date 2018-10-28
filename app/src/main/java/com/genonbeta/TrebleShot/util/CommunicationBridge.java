@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -15,6 +14,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeoutException;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: Veli

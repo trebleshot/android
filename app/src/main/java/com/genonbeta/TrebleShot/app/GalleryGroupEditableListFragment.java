@@ -1,13 +1,14 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli

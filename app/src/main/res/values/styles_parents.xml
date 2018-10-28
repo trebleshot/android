@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- prototype start -->
-    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.AppCompat.Light">
+    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
+        <item name="colorError">@color/colorError</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/colorPrimaryDark23</item>
@@ -12,7 +13,6 @@
         <!-- app styling -->
         <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
-        <item name="colorError">@color/colorError</item>
         <item name="colorSelection">@color/colorSelection</item>
         <item name="colorShadowBeginning">@color/colorShadowBeginning</item>
         <item name="colorShadowEnd">@color/colorShadowEnd</item>
@@ -37,9 +37,10 @@
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
-    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.AppCompat">
+    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="colorControlNormal">@color/dark_colorControlNormal</item>
+        <item name="colorError">@color/dark_colorError</item>
         <item name="colorPrimary">@color/dark_colorPrimary</item>
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/dark_colorPrimaryDark23</item>
@@ -48,7 +49,6 @@
         <!-- app styling -->
         <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
-        <item name="colorError">@color/dark_colorError</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
         <item name="colorShadowBeginning">@color/dark_colorShadowBeginning</item>
         <item name="colorShadowEnd">@color/dark_colorShadowEnd</item>

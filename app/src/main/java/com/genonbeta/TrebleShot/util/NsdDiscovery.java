@@ -5,11 +5,12 @@ import android.content.SharedPreferences;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * created by: Veli

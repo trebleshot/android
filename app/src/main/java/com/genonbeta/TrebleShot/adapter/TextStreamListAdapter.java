@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +11,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: Veli

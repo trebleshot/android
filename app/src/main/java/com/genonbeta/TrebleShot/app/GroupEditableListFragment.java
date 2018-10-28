@@ -1,9 +1,6 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -13,6 +10,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 /**
  * created by: veli

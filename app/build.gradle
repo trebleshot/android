@@ -78,12 +78,10 @@ task copyHebrewResources(type: Copy) {
     if (!mergedResourcesDir.isDirectory())
         mergedResourcesDir.mkdirs()
 
-    for (String resEach : android.sourceSets.main.res.srcDirs)
-    {
+    for (String resEach : android.sourceSets.main.res.srcDirs) {
         File currentFolder = new File(resEach)
 
-        for (File folderContents : currentFolder.listFiles())
-        {
+        for (File folderContents : currentFolder.listFiles()) {
             if (folderContents.name.endsWith("-he")) {
                 String iwNamedFolder = "${folderContents.name.substring(0, folderContents.name.lastIndexOf("-he"))}-iw"
 
@@ -103,18 +101,24 @@ preBuild.dependsOn copyHebrewResources
 dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:28.0.0'
-    implementation 'com.android.support:cardview-v7:28.0.0'
-    implementation 'com.android.support:design:28.0.0'
-    implementation 'com.android.support:recyclerview-v7:28.0.0'
-    implementation 'com.genonbeta.android:framework:1.0.2.1'
+
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
+    implementation 'com.genonbeta.android:framework:1.0.2.2'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.3'
     implementation 'com.genonbeta.coolsocket:main:1.0.2'
-    implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
-    implementation 'com.velitasali.tools.android:zxing:3.6.1'
-    implementation 'com.github.bumptech.glide:glide:4.6.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.6.1'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:4.4.0'
+    implementation 'com.velitasali.tools.android:zxing:3.6.2'
+
+    // todo: an updated version would be a life saver
+    //implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
+
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'androidx.annotation:annotation:1.0.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.8.0'
 
     googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
 }

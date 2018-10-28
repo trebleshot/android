@@ -1,8 +1,8 @@
 package com.genonbeta.TrebleShot.ui.callback;
 
-import android.support.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli

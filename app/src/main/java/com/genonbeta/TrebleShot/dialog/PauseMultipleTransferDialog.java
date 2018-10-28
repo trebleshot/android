@@ -2,8 +2,6 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,9 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 public class PauseMultipleTransferDialog extends AlertDialog.Builder
 {

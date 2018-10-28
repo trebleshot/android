@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.SearchView;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,6 +12,9 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 
 public abstract class ShareableListFragment<T extends Shareable, V extends EditableListAdapter.EditableViewHolder, E extends EditableListAdapter<T, V>>
 		extends EditableListFragment<T, V, E>

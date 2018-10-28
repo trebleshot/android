@@ -58,7 +58,7 @@
             android:text="@string/mesg_completing"
             android:textColor="?colorAccent" />
 
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/task_interrupter_button"
             style="?buttonBarPositiveButtonStyle"
             android:layout_width="wrap_content"

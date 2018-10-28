@@ -10,11 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true">
 
-        <android.support.design.widget.BottomNavigationView
+        <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/layout_connect_devices_bottom_navigation_view"
+            style="?bottomNavigationStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/NavigationView" />
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 
@@ -26,16 +26,16 @@
         android:background="?colorDivider" />
 
     <!-- This will keep the snackbar in the right place -->
-    <android.support.design.widget.CoordinatorLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/layout_connect_devices_tab_layout_separator">
 
-        <android.support.v4.view.ViewPager
+        <androidx.viewpager.widget.ViewPager
             android:id="@+id/layout_connect_devices_view_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    </android.support.design.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

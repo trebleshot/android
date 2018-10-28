@@ -9,9 +9,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
@@ -20,11 +17,15 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.google.android.material.snackbar.Snackbar;
+
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * created by: veli

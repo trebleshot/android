@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,6 +18,8 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: veli

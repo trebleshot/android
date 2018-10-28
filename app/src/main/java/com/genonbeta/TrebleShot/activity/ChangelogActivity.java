@@ -1,11 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.view.MenuItem;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli

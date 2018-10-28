@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;

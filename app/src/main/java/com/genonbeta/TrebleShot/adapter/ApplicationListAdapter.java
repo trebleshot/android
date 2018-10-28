@@ -6,7 +6,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +20,8 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import androidx.annotation.NonNull;
 
 public class ApplicationListAdapter
 		extends EditableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>

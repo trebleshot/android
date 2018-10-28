@@ -3,11 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <!-- fixme -->
+    <!--
     <com.futuremind.recyclerviewfastscroll.FastScroller
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
         android:layout_width="wrap_content"
@@ -16,6 +18,6 @@
         android:layout_alignParentRight="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:orientation="vertical" />
+        android:orientation="vertical" />-->
 
 </RelativeLayout>

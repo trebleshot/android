@@ -1,17 +1,10 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.widget.ImageViewCompat;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
@@ -22,6 +15,9 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class MusicListFragment
 		extends GroupEditableListFragment<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder, MusicListAdapter>

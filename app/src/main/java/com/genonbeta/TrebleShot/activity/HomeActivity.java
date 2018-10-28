@@ -9,18 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.NavigationView;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -44,14 +32,25 @@ import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 public class HomeActivity
 		extends Activity
@@ -332,7 +331,7 @@ public class HomeActivity
 						: getString(R.string.text_appName));
 
 				if (commit) {
-					FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+					androidx.fragment.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 
 					ft.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 

@@ -3,17 +3,17 @@ package com.genonbeta.TrebleShot.dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by: veli

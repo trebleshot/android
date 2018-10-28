@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.fragment.external;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import org.json.JSONArray;
@@ -22,6 +21,8 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: veli

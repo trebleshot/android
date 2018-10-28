@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
-import android.support.v4.util.ArrayMap;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -68,6 +66,9 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
+
+import androidx.annotation.RequiresApi;
+import androidx.collection.ArrayMap;
 
 public class CommunicationService extends Service
 {

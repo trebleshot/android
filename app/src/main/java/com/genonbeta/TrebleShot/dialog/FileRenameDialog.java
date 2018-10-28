@@ -1,15 +1,16 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * created by: Veli

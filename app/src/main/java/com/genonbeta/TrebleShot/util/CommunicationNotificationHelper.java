@@ -3,9 +3,6 @@ package com.genonbeta.TrebleShot.util;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.Nullable;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolTransfer;
@@ -22,6 +19,9 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.android.framework.io.DocumentFile;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 /**
  * created by: Veli

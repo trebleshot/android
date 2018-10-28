@@ -32,9 +32,9 @@ Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1
 ## Build from source notes
 Required tools;
 * Build tools: 28.0.3
-* Support library: 28.0.0
-* Gradle plugin: 3.2.0
-* Android Studio: 3.2.0
+* Support library: 1.0.0 - androidx
+* Gradle plugin: 3.2.1
+* Android Studio: 3.2.1
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)

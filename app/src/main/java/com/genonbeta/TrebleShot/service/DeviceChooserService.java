@@ -9,18 +9,18 @@ import android.os.Build;
 import android.os.Bundle;
 import android.service.chooser.ChooserTarget;
 import android.service.chooser.ChooserTargetService;
-import android.support.annotation.RequiresApi;
 
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.RequiresApi;
 
 /**
  * Created by: veli
