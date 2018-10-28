@@ -1,2 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">Czy chcesz usunąć ten plik\?</item>
+	<item quantity="few">Czy chcesz usunąć pliki\?</item>
+	<item quantity="many">Czy chcesz usunąć %d plików\?</item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">%d plik został odebrany</item>
+	<item quantity="few">%d piki zostały odebrane</item>
+	<item quantity="many">%d pików zostało odebranych</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">%d plik jest zaznaczony</item>
+	<item quantity="few">%d pliki są zaznaczone</item>
+	<item quantity="many">%d plików jest zaznaczonych</item>
+</plurals>
+    </resources>
