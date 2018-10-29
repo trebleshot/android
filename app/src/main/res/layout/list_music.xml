@@ -21,7 +21,7 @@
             android:layout_gravity="center"
             app:srcCompat="@drawable/ic_music_note_white_24dp" />
 
-        <include layout="@layout/generic_view_selection" />
+        <include layout="@layout/generic_view_selection_square" />
 
     </FrameLayout>
 

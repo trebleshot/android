@@ -26,7 +26,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
-import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
+import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
@@ -560,7 +560,7 @@ public class CommunicationService extends Service
         }
     }
 
-    public void startFileReceiving(long groupId, String deviceId) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+    public void startFileReceiving(long groupId, String deviceId) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
     {
         // it should create its own devices
         startFileReceiving(new TransferInstance(getDatabase(), groupId, deviceId, true));
@@ -998,7 +998,7 @@ public class CommunicationService extends Service
 
                     currentReply.put(Keyword.RESULT, false);
 
-                    if (e instanceof TransactionGroupNotFoundException)
+                    if (e instanceof TransferGroupNotFoundException)
                         currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
                     else if (e instanceof DeviceNotFoundException)
                         currentReply.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);

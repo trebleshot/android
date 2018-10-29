@@ -4,7 +4,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
-import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
+import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 
 /**
  * created by: Veli
@@ -19,7 +19,7 @@ public class TransferInstance
 	private TransferGroup.Assignee mAssignee;
 
 	// false means "to find connection first"
-	public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+	public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
 		mGroup = buildGroup(database, groupId);
 
@@ -80,7 +80,7 @@ public class TransferInstance
 		}
 	}
 
-	protected TransferGroup buildGroup(AccessDatabase database, long groupId) throws TransactionGroupNotFoundException
+	protected TransferGroup buildGroup(AccessDatabase database, long groupId) throws TransferGroupNotFoundException
 	{
 		try {
 			TransferGroup group = new TransferGroup(groupId);
@@ -89,7 +89,7 @@ public class TransferInstance
 
 			return group;
 		} catch (Exception e) {
-			throw new TransactionGroupNotFoundException();
+			throw new TransferGroupNotFoundException();
 		}
 	}
 

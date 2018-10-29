@@ -10,9 +10,10 @@
     tools:context=".activity.HomeActivity"
     tools:showIn="@layout/toolbar_main">
 
-    <FrameLayout
-        android:id="@+id/content_frame"
+    <fragment
+        android:id="@+id/activitiy_home_fragment"
+        android:name="com.genonbeta.TrebleShot.fragment.HomeFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>

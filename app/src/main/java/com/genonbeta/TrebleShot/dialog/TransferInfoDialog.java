@@ -28,9 +28,9 @@ import androidx.appcompat.app.AlertDialog;
  * date: 10.11.2017 14:59
  */
 
-public class TransactionInfoDialog extends AlertDialog.Builder
+public class TransferInfoDialog extends AlertDialog.Builder
 {
-	public TransactionInfoDialog(@NonNull final Context context, final TransferObject transferObject)
+	public TransferInfoDialog(@NonNull final Context context, final TransferObject transferObject)
 	{
 		super(context);
 
@@ -57,16 +57,16 @@ public class TransactionInfoDialog extends AlertDialog.Builder
 			boolean fileExists = pseudoFile != null && pseudoFile.canRead();
 
 			@SuppressLint("InflateParams")
-			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_transaction_info, null);
+			View rootView = LayoutInflater.from(context).inflate(R.layout.layout_transfer_info, null);
 
-			TextView nameText = rootView.findViewById(R.id.transaction_info_file_name);
-			TextView sizeText = rootView.findViewById(R.id.transaction_info_file_size);
-			TextView typeText = rootView.findViewById(R.id.transaction_info_file_mime);
-			TextView flagText = rootView.findViewById(R.id.transaction_info_file_status);
+			TextView nameText = rootView.findViewById(R.id.transfer_info_file_name);
+			TextView sizeText = rootView.findViewById(R.id.transfer_info_file_size);
+			TextView typeText = rootView.findViewById(R.id.transfer_info_file_mime);
+			TextView flagText = rootView.findViewById(R.id.transfer_info_file_status);
 
-			View incomingDetailsLayout = rootView.findViewById(R.id.transaction_info_incoming_details_layout);
-			TextView receivedSizeText = rootView.findViewById(R.id.transaction_info_received_size);
-			TextView locationText = rootView.findViewById(R.id.transaction_info_pseudo_location);
+			View incomingDetailsLayout = rootView.findViewById(R.id.transfer_info_incoming_details_layout);
+			TextView receivedSizeText = rootView.findViewById(R.id.transfer_info_received_size);
+			TextView locationText = rootView.findViewById(R.id.transfer_info_pseudo_location);
 
 			setTitle(R.string.text_transactionDetails);
 			setView(rootView);

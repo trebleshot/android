@@ -22,8 +22,8 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
-import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
-import com.genonbeta.TrebleShot.fragment.TransactionListFragment;
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
+import com.genonbeta.TrebleShot.fragment.TransferListFragment;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -61,11 +61,11 @@ import androidx.viewpager.widget.ViewPager;
  * Date: 5/23/17 1:43 PM
  */
 
-public class TransactionActivity
+public class ViewTransferActivity
         extends Activity
         implements PowerfulActionModeSupport
 {
-    public static final String TAG = TransactionActivity.class.getSimpleName();
+    public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
     public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
@@ -147,7 +147,7 @@ public class TransactionActivity
     {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_transaction);
+        setContentView(R.layout.activity_view_transfer);
 
         mMode = findViewById(R.id.activity_transaction_action_mode);
 
@@ -227,12 +227,12 @@ public class TransactionActivity
             assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
 
             Bundle transactionFragmentArgs = new Bundle();
-            transactionFragmentArgs.putLong(TransactionExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
-            transactionFragmentArgs.putString(TransactionExplorerFragment.ARG_PATH,
+            transactionFragmentArgs.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
+            transactionFragmentArgs.putString(TransferFileExplorerFragment.ARG_PATH,
                     mTransferObject == null || mTransferObject.directory == null
                             ? null : mTransferObject.directory);
 
-            pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransactionExplorerFragment.class, transactionFragmentArgs));
+            pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferFileExplorerFragment.class, transactionFragmentArgs));
             pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, TransferAssigneeListFragment.class, assigneeFragmentArgs));
 
             pagerAdapter.createTabs(tabLayout);
@@ -300,17 +300,17 @@ public class TransactionActivity
     public boolean onCreateOptionsMenu(Menu menu)
     {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.actions_transaction, menu);
+        getMenuInflater().inflate(R.menu.actions_transfer, menu);
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        mStartMenu = menu.findItem(R.id.actions_transaction_resume);
-        mRetryMenu = menu.findItem(R.id.actions_transaction_retry_all);
-        mShowFiles = menu.findItem(R.id.actions_transaction_show_files);
-        mAddDevice = menu.findItem(R.id.actions_transaction_add_device);
+        mStartMenu = menu.findItem(R.id.actions_transfer_resume);
+        mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
+        mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
+        mAddDevice = menu.findItem(R.id.actions_transfer_add_device);
 
         if (!getIndex().calculated)
             updateCalculations();
@@ -329,9 +329,9 @@ public class TransactionActivity
 
         if (id == android.R.id.home) {
             finish();
-        } else if (id == R.id.actions_transaction_resume) {
+        } else if (id == R.id.actions_transfer_resume) {
             toggleTask();
-        } else if (id == R.id.actions_transaction_remove) {
+        } else if (id == R.id.actions_transfer_remove) {
             AlertDialog.Builder dialog = new AlertDialog.Builder(this);
 
             dialog.setTitle(R.string.ques_removeAll);
@@ -347,7 +347,7 @@ public class TransactionActivity
             });
 
             dialog.show();
-        } else if (id == R.id.actions_transaction_retry_all) {
+        } else if (id == R.id.actions_transfer_retry_all) {
             ContentValues contentValues = new ContentValues();
 
             contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
@@ -362,11 +362,10 @@ public class TransactionActivity
 
             createSnackbar(R.string.mesg_retryAllInfo)
                     .show();
-        } else if (id == R.id.actions_transaction_show_files) {
-            startActivity(new Intent(this, HomeActivity.class)
-                    .setAction(HomeActivity.ACTION_OPEN_RECEIVED_FILES)
-                    .putExtra(HomeActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
-        } else if (id == R.id.actions_transaction_add_device) {
+        } else if (id == R.id.actions_transfer_show_files) {
+            startActivity(new Intent(this, FileExplorerActivity.class)
+                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
+        } else if (id == R.id.actions_transfer_add_device) {
             startActivityForResult(new Intent(this, ShareActivity.class)
                     .setAction(ShareActivity.ACTION_ADD_DEVICES)
                     .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
@@ -459,7 +458,7 @@ public class TransactionActivity
             if (mActiveProcesses.size() == 1)
                 TransferUtils.pauseTransfer(this, mGroup.groupId, mActiveProcesses.get(0));
             else
-                new PauseMultipleTransferDialog(TransactionActivity.this, mGroup, mActiveProcesses)
+                new PauseMultipleTransferDialog(ViewTransferActivity.this, mGroup, mActiveProcesses)
                         .show();
         } else {
             SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
@@ -503,7 +502,7 @@ public class TransactionActivity
                             @Override
                             public void onClick(View v)
                             {
-                                TransferUtils.changeConnection(TransactionActivity.this, getDatabase(), mGroup, assignee.device, new TransferUtils.ConnectionUpdatedListener()
+                                TransferUtils.changeConnection(ViewTransferActivity.this, getDatabase(), mGroup, assignee.device, new TransferUtils.ConnectionUpdatedListener()
                                 {
                                     @Override
                                     public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
@@ -529,7 +528,7 @@ public class TransactionActivity
                     showMenus();
 
                     if (mTransferObject != null) {
-                        new TransactionInfoDialog(TransactionActivity.this, mTransferObject).show();
+                        new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();
                         mTransferObject = null;
                     }
                 }
@@ -541,15 +540,15 @@ public class TransactionActivity
 
     public static void startInstance(Context context, long groupId)
     {
-        context.startActivity(new Intent(context, TransactionActivity.class)
+        context.startActivity(new Intent(context, ViewTransferActivity.class)
                 .setAction(ACTION_LIST_TRANSFERS)
                 .putExtra(EXTRA_GROUP_ID, groupId)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
-    private static class TransactionPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
+    private static class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
     {
-        public TransactionPathResolverRecyclerAdapter(Context context)
+        public TransferPathResolverRecyclerAdapter(Context context)
         {
             super(context);
         }
@@ -577,21 +576,21 @@ public class TransactionActivity
         }
     }
 
-    public static class TransactionExplorerFragment
-            extends TransactionListFragment
+    public static class TransferFileExplorerFragment
+            extends TransferListFragment
             implements TitleSupport, SnackbarSupport
     {
         private RecyclerView mPathView;
-        private TransactionPathResolverRecyclerAdapter mPathAdapter;
+        private TransferPathResolverRecyclerAdapter mPathAdapter;
 
         @Override
         protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
         {
-            View adaptedView = getLayoutInflater().inflate(R.layout.layout_transaction_explorer, null, false);
+            View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_explorer, null, false);
             listViewContainer.addView(adaptedView);
 
-            mPathView = adaptedView.findViewById(R.id.layout_transaction_explorer_recycler);
-            mPathAdapter = new TransactionPathResolverRecyclerAdapter(getContext());
+            mPathView = adaptedView.findViewById(R.id.layout_transfer_explorer_recycler);
+            mPathAdapter = new TransferPathResolverRecyclerAdapter(getContext());
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
             layoutManager.setStackFromEnd(true);
@@ -609,7 +608,7 @@ public class TransactionActivity
                 }
             });
 
-            return super.onListView(mainContainer, (ViewGroup) adaptedView.findViewById(R.id.layout_transaction_explorer_fragment_content));
+            return super.onListView(mainContainer, (ViewGroup) adaptedView.findViewById(R.id.layout_transfer_explorer_fragment_content));
         }
 
         @Override
@@ -633,7 +632,7 @@ public class TransactionActivity
         }
     }
 
-    public static class CrunchLatestDataTask extends AsyncTask<TransactionActivity, Void, Void>
+    public static class CrunchLatestDataTask extends AsyncTask<ViewTransferActivity, Void, Void>
     {
         private PostExecuteListener mListener;
         private boolean mRestartRequested = false;
@@ -643,14 +642,14 @@ public class TransactionActivity
             mListener = listener;
         }
 
-        /* "possibility of having more than one TransactionActivity" < "sun turning into black hole" */
+        /* "possibility of having more than one ViewTransferActivity" < "sun turning into black hole" */
         @Override
-        protected Void doInBackground(TransactionActivity... activities)
+        protected Void doInBackground(ViewTransferActivity... activities)
         {
             do {
                 mRestartRequested = false;
 
-                for (TransactionActivity activity : activities) {
+                for (ViewTransferActivity activity : activities) {
                     if (activity.getGroup() != null)
                         activity.getDatabase()
                                 .calculateTransactionSize(activity.getGroup().groupId, activity.getIndex());

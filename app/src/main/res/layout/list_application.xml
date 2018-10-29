@@ -28,7 +28,7 @@
             android:contentDescription="@string/text_image"
             app:srcCompat="@drawable/ic_android_white_36dp" />
 
-        <include layout="@layout/generic_view_selection" />
+        <include layout="@layout/generic_view_selection_square" />
 
     </FrameLayout>
 

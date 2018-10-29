@@ -44,9 +44,9 @@ import androidx.core.widget.ImageViewCompat;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransactionListAdapter
-        extends GroupEditableListAdapter<TransactionListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<TransactionListAdapter.AbstractGenericItem>
+public class TransferListAdapter
+        extends GroupEditableListAdapter<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<TransferListAdapter.AbstractGenericItem>
 {
     public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
@@ -62,7 +62,7 @@ public class TransactionListAdapter
     private int mColorDone;
     private int mColorError;
 
-    public TransactionListAdapter(Context context)
+    public TransferListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_DEFAULT);
 
@@ -298,7 +298,7 @@ public class TransactionListAdapter
         return mSelect;
     }
 
-    public TransactionListAdapter setSelect(SQLQuery.Select select)
+    public TransferListAdapter setSelect(SQLQuery.Select select)
     {
         if (select != null)
             mSelect = select;
@@ -331,7 +331,7 @@ public class TransactionListAdapter
         if (viewType == VIEW_TYPE_REPRESENTATIVE)
             return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-        return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transaction, parent, false));
+        return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transfer, parent, false));
     }
 
     @Override
@@ -420,11 +420,11 @@ public class TransactionListAdapter
 
         abstract public double getPercent();
 
-        abstract public String getFirstText(TransactionListAdapter adapter);
+        abstract public String getFirstText(TransferListAdapter adapter);
 
-        abstract public String getSecondText(TransactionListAdapter adapter);
+        abstract public String getSecondText(TransferListAdapter adapter);
 
-        abstract public String getThirdText(TransactionListAdapter adapter);
+        abstract public String getThirdText(TransferListAdapter adapter);
 
         @Override
         public int getViewType()
@@ -516,19 +516,19 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getFirstText(TransactionListAdapter adapter)
+        public String getFirstText(TransferListAdapter adapter)
         {
             return mDeviceName;
         }
 
         @Override
-        public String getSecondText(TransactionListAdapter adapter)
+        public String getSecondText(TransferListAdapter adapter)
         {
             return FileUtils.sizeExpression(fileSize, false);
         }
 
         @Override
-        public String getThirdText(TransactionListAdapter adapter)
+        public String getThirdText(TransferListAdapter adapter)
         {
             return TextUtils.getTransactionFlagString(adapter.getContext(), this, adapter.getPercentFormat());
         }
@@ -581,20 +581,20 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getFirstText(TransactionListAdapter adapter)
+        public String getFirstText(TransferListAdapter adapter)
         {
             return FileUtils.sizeExpression(bytesTotal, false);
         }
 
         @Override
-        public String getSecondText(TransactionListAdapter adapter)
+        public String getSecondText(TransferListAdapter adapter)
         {
             return adapter.getContext()
                     .getString(R.string.text_transferStatusFiles, filesReceived, filesTotal);
         }
 
         @Override
-        public String getThirdText(TransactionListAdapter adapter)
+        public String getThirdText(TransferListAdapter adapter)
         {
             return adapter.getPercentFormat().format(getPercent());
         }
@@ -629,7 +629,7 @@ public class TransactionListAdapter
         public void setId(long id)
         {
             super.setId(id);
-            Log.d(TransactionListAdapter.class.getSimpleName(), "setId(): This method should not be invoked");
+            Log.d(TransferListAdapter.class.getSimpleName(), "setId(): This method should not be invoked");
         }
 
         public void setHasIssues(boolean hasIssues)
@@ -715,7 +715,7 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getFirstText(TransactionListAdapter adapter)
+        public String getFirstText(TransferListAdapter adapter)
         {
             return bytesFree == -1
                     ? adapter.getContext().getString(R.string.text_unknown)
@@ -723,13 +723,13 @@ public class TransactionListAdapter
         }
 
         @Override
-        public String getSecondText(TransactionListAdapter adapter)
+        public String getSecondText(TransferListAdapter adapter)
         {
             return adapter.getContext().getString(R.string.text_savePath);
         }
 
         @Override
-        public String getThirdText(TransactionListAdapter adapter)
+        public String getThirdText(TransferListAdapter adapter)
         {
             return adapter.getPercentFormat().format(getPercent());
         }

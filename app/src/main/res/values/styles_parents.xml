@@ -30,6 +30,7 @@
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
         <item name="stateSelectedImage">@drawable/state_selected_image</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded</item>
+        <item name="stateSelectedImageSquare">@drawable/state_selected_image_square</item>
         <item name="statusBarColor">@android:color/transparent</item>
         <item name="useLightStatusBar">true</item>
 
@@ -72,6 +73,7 @@
         <item name="selectableItemBackground">@drawable/selectable_item_background_dark</item>
         <item name="stateSelectedImage">@drawable/state_selected_image_dark</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded_dark</item>
+        <item name="stateSelectedImageSquare">@drawable/state_selected_image_square_dark</item>
         <item name="statusBarColor">@android:color/transparent</item>
         <item name="useLightStatusBar">false</item>
 

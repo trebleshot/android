@@ -5,6 +5,6 @@ package com.genonbeta.TrebleShot.exception;
  * date: 6.01.2018 22:26
  */
 
-public class TransactionNotFoundException extends NotFoundException
+public class TransferGroupNotFoundException extends NotFoundException
 {
 }

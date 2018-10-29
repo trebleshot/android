@@ -16,6 +16,7 @@
     <attr name="selectableItemBackground" format="reference" />
     <attr name="stateSelectedImage" format="reference" />
     <attr name="stateSelectedImageRounded" format="reference" />
+    <attr name="stateSelectedImageSquare" format="reference" />
     <attr name="statusBarColor" format="reference" />
     <attr name="useLightStatusBar" format="boolean" />
 

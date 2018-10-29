@@ -447,7 +447,7 @@ public class ShareActivity extends Activity
 												}
 											});
 
-											TransactionActivity.startInstance(getApplicationContext(), groupInstance.groupId);
+											ViewTransferActivity.startInstance(getApplicationContext(), groupInstance.groupId);
 										}
 								}
 							} else {

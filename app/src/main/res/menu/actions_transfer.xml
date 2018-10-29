@@ -3,29 +3,29 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/actions_transaction_resume"
+        android:id="@+id/actions_transfer_resume"
         android:icon="@drawable/ic_play_arrow_white_24dp"
         android:title="@string/butn_resume"
         app:showAsAction="always"
         android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transaction_add_device"
+        android:id="@+id/actions_transfer_add_device"
         android:title="@string/butn_addDevices"
         android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transaction_show_files"
+        android:id="@+id/actions_transfer_show_files"
         android:title="@string/butn_showFiles"
         android:visible="false" />
 
     <item
-        android:id="@+id/actions_transaction_retry_all"
+        android:id="@+id/actions_transfer_retry_all"
         android:title="@string/butn_retry_all"
         android:visible="false"/>
 
     <item
-        android:id="@+id/actions_transaction_remove"
+        android:id="@+id/actions_transfer_remove"
         android:title="@string/butn_remove"
         android:visible="true" />
 

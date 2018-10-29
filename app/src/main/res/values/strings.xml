@@ -95,6 +95,7 @@
     <string name="text_communicationProblem">Communication problem</string>
     <string name="butn_multiSelect">Multi selection</string>
     <string name="butn_receive">Receive</string>
+    <string name="text_receive" translatable="false">@string/butn_receive</string>
     <string name="butn_block">Block</string>
     <string name="text_aboutSummary">This software is developed by the Genonbeta Libre Software Org</string>
     <string name="butn_appLaunch">Launch</string>

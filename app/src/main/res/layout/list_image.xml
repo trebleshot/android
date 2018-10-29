@@ -20,7 +20,7 @@
             android:adjustViewBounds="true"
             android:contentDescription="@string/text_image" />
 
-        <include layout="@layout/generic_view_selection" />
+        <include layout="@layout/generic_view_selection_square" />
 
     </FrameLayout>
 

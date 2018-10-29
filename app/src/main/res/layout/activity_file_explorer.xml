@@ -7,6 +7,7 @@
     android:fitsSystemWindows="false">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -18,27 +19,27 @@
             android:theme="?actionBarTheme" />
 
         <com.genonbeta.android.framework.widget.PowerfulActionMode
-            android:id="@+id/activity_transaction_action_mode"
+            android:id="@+id/activity_file_explorer_action_mode"
             style="?actionBarStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:theme="?actionBarTheme"
             android:visibility="gone" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/activity_transaction_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/activity_transaction_view_pager"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.TransactionActivity"
-        tools:showIn="@layout/activity_transaction" />
+        tools:context=".activity.ContentSharingActivity"
+        tools:showIn="@layout/activity_content_sharing">
 
+        <fragment
+            android:id="@+id/activity_file_explorer_fragment_files"
+            android:name="com.genonbeta.TrebleShot.fragment.FileExplorerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

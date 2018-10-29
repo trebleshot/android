@@ -1,37 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    >
-    <group android:checkableBehavior="single">
-        <item
-            android:id="@+id/menu_activity_main_connect_devices"
-            android:icon="@drawable/ic_devices_white_24dp"
-            android:title="@string/text_connectDevices"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/nav_group_other">
 
         <item
             android:id="@+id/menu_activity_main_file_explorer"
             android:icon="@drawable/ic_folder_white_24dp"
+            android:orderInCategory="1"
             android:title="@string/text_fileExplorer"/>
-
-        <item
-            android:id="@+id/menu_activity_main_share_text"
-            android:icon="@drawable/ic_forum_white_24dp"
-            android:title="@string/text_textStream"/>
-
-        <item
-            android:id="@+id/menu_activity_main_ongoing_process"
-            android:icon="@drawable/ic_swap_vert_white_24dp"
-            android:title="@string/text_pendingTransfers"/>
-    </group>
-
-    <group android:id="@+id/nav_group_share">
-        <item
-            android:id="@+id/menu_activity_main_share"
-            android:icon="@drawable/ic_share_white_24dp"
-            android:orderInCategory="10"
-            android:title="@string/butn_share"/>
-    </group>
-
-    <group android:id="@+id/nav_group_other">
 
         <item
             android:id="@+id/menu_activity_main_send_application"

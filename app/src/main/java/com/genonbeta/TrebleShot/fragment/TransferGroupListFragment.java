@@ -11,13 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.TransactionActivity;
-import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
+import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -35,9 +36,9 @@ import androidx.annotation.Nullable;
  * date: 10.11.2017 00:15
  */
 
-public class TransactionGroupListFragment
-		extends GroupEditableListFragment<TransactionGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransactionGroupListAdapter>
-		implements TitleSupport
+public class TransferGroupListFragment
+		extends GroupEditableListFragment<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
+		implements IconSupport, TitleSupport
 {
 	public SQLQuery.Select mSelect;
 	public IntentFilter mFilter = new IntentFilter();
@@ -65,9 +66,9 @@ public class TransactionGroupListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingCriteria(TransactionGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(TransactionGroupListAdapter.MODE_SORT_BY_DATE);
-		setDefaultGroupingCriteria(TransactionGroupListAdapter.MODE_GROUP_BY_DATE);
+		setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
+		setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
 		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
@@ -112,27 +113,27 @@ public class TransactionGroupListFragment
 	@Override
 	public void onSortingOptions(Map<String, Integer> options)
 	{
-		options.put(getString(R.string.text_sortByDate), TransactionGroupListAdapter.MODE_SORT_BY_DATE);
-		options.put(getString(R.string.text_sortBySize), TransactionGroupListAdapter.MODE_SORT_BY_SIZE);
+		options.put(getString(R.string.text_sortByDate), TransferGroupListAdapter.MODE_SORT_BY_DATE);
+		options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
 	}
 
 	@Override
 	public void onGroupingOptions(Map<String, Integer> options)
 	{
-		options.put(getString(R.string.text_groupByNothing), TransactionGroupListAdapter.MODE_GROUP_BY_NOTHING);
-		options.put(getString(R.string.text_groupByDate), TransactionGroupListAdapter.MODE_GROUP_BY_DATE);
+		options.put(getString(R.string.text_groupByNothing), TransferGroupListAdapter.MODE_GROUP_BY_NOTHING);
+		options.put(getString(R.string.text_groupByDate), TransferGroupListAdapter.MODE_GROUP_BY_DATE);
 	}
 
 	@Override
 	public int onGridSpanSize(int viewType, int currentSpanSize)
 	{
-		return viewType == TransactionGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
+		return viewType == TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
 				? currentSpanSize
 				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
 
 	@Override
-	public TransactionGroupListAdapter onAdapter()
+	public TransferGroupListAdapter onAdapter()
 	{
 		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
@@ -155,7 +156,7 @@ public class TransactionGroupListFragment
 			}
 		};
 
-		return new TransactionGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+		return new TransferGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
 		{
 			@NonNull
 			@Override
@@ -170,12 +171,18 @@ public class TransactionGroupListFragment
 	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
 	{
 		try {
-			TransactionActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
+			ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
 			return true;
 		} catch (Exception e) {
 		}
 
 		return false;
+	}
+
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_swap_vert_white_24dp;
 	}
 
 	@Override
@@ -189,15 +196,15 @@ public class TransactionGroupListFragment
 		return mSelect;
 	}
 
-	public TransactionGroupListFragment setSelect(SQLQuery.Select select)
+	public TransferGroupListFragment setSelect(SQLQuery.Select select)
 	{
 		mSelect = select;
 		return this;
 	}
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionGroupListAdapter.PreloadedGroup>
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferGroupListAdapter.PreloadedGroup>
 	{
-		public SelectionCallback(EditableListFragmentImpl<TransactionGroupListAdapter.PreloadedGroup> fragment)
+		public SelectionCallback(EditableListFragmentImpl<TransferGroupListAdapter.PreloadedGroup> fragment)
 		{
 			super(fragment);
 		}
@@ -222,10 +229,10 @@ public class TransactionGroupListFragment
 		{
 			int id = item.getItemId();
 
-			ArrayList<TransactionGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+			ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
 
 			if (id == R.id.action_mode_group_delete) {
-				for (TransactionGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
+				for (TransferGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
 					AppUtils.getDatabase(getFragment().getContext()).remove(preloadedGroup);
 			} else
 				return super.onActionMenuItemSelected(context, actionMode, item);

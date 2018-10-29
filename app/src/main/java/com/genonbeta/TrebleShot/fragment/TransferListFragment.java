@@ -14,13 +14,13 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
-import com.genonbeta.TrebleShot.adapter.TransactionGroupListAdapter;
-import com.genonbeta.TrebleShot.adapter.TransactionListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
+import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.TransactionInfoDialog;
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -42,11 +42,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 
-public class TransactionListFragment
-		extends GroupEditableListFragment<TransactionListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransactionListAdapter>
+public class TransferListFragment
+		extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransferListAdapter>
 		implements TitleSupport, Activity.OnBackPressedListener
 {
-	public static final String TAG = "TransactionListFragment";
+	public static final String TAG = "TransferListFragment";
 
 	public static final String ARG_GROUP_ID = "argGroupId";
 	public static final String ARG_PATH = "path";
@@ -76,9 +76,9 @@ public class TransactionListFragment
 	{
 		super.onCreate(savedInstanceState);
 
-		setDefaultOrderingCriteria(TransactionListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(TransactionListAdapter.MODE_SORT_BY_DEFAULT);
-		setDefaultGroupingCriteria(TransactionListAdapter.MODE_GROUP_BY_DEFAULT);
+		setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_DESCENDING);
+		setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_DEFAULT);
+		setDefaultGroupingCriteria(TransferListAdapter.MODE_GROUP_BY_DEFAULT);
 		setDefaultSelectionCallback(new SelectionCallback(this));
 	}
 
@@ -112,13 +112,13 @@ public class TransactionListFragment
 	@Override
 	public void onSortingOptions(Map<String, Integer> options)
 	{
-		options.put(getString(R.string.text_default), TransactionListAdapter.MODE_SORT_BY_DEFAULT);
-		options.put(getString(R.string.text_sortByName), TransactionListAdapter.MODE_SORT_BY_NAME);
-		options.put(getString(R.string.text_sortBySize), TransactionGroupListAdapter.MODE_SORT_BY_SIZE);
+		options.put(getString(R.string.text_default), TransferListAdapter.MODE_SORT_BY_DEFAULT);
+		options.put(getString(R.string.text_sortByName), TransferListAdapter.MODE_SORT_BY_NAME);
+		options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
 	}
 
 	@Override
-	public TransactionListAdapter onAdapter()
+	public TransferListAdapter onAdapter()
 	{
 		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
 		{
@@ -141,7 +141,7 @@ public class TransactionListFragment
 			}
 		};
 
-		return new TransactionListAdapter(getActivity())
+		return new TransferListAdapter(getActivity())
 		{
 			@NonNull
 			@Override
@@ -155,7 +155,7 @@ public class TransactionListFragment
 	@Override
 	public int onGridSpanSize(int viewType, int currentSpanSize)
 	{
-		return viewType == TransactionListAdapter.VIEW_TYPE_REPRESENTATIVE
+		return viewType == TransferListAdapter.VIEW_TYPE_REPRESENTATIVE
 				? currentSpanSize
 				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
@@ -165,7 +165,7 @@ public class TransactionListFragment
 	{
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
-			new TransactionInfoDialog(getActivity(), transferObject).show();
+			new TransferInfoDialog(getActivity(), transferObject).show();
 
 			return true;
 		} catch (Exception e) {
@@ -234,8 +234,8 @@ public class TransactionListFragment
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
 
-			if (transferObject instanceof TransactionListAdapter.StorageStatusItem) {
-				final TransactionListAdapter.StorageStatusItem statusItem = (TransactionListAdapter.StorageStatusItem) transferObject;
+			if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
+				final TransferListAdapter.StorageStatusItem statusItem = (TransferListAdapter.StorageStatusItem) transferObject;
 
 				if (statusItem.hasIssues()) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
@@ -256,7 +256,7 @@ public class TransactionListFragment
 				} else
 					changeSavePath(statusItem.directory);
 
-			} else if (transferObject instanceof TransactionListAdapter.TransferFolder) {
+			} else if (transferObject instanceof TransferListAdapter.TransferFolder) {
 				getAdapter().setPath(transferObject.directory);
 				refreshList();
 
@@ -285,11 +285,11 @@ public class TransactionListFragment
 		return false;
 	}
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransactionListAdapter.AbstractGenericItem>
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>
 	{
-		private TransactionListAdapter mAdapter;
+		private TransferListAdapter mAdapter;
 
-		public SelectionCallback(TransactionListFragment fragment)
+		public SelectionCallback(TransferListFragment fragment)
 		{
 			super(fragment);
 			mAdapter = fragment.getAdapter();
@@ -299,7 +299,7 @@ public class TransactionListFragment
 		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
 		{
 			super.onCreateActionMenu(context, actionMode, menu);
-			actionMode.getMenuInflater().inflate(R.menu.action_mode_transaction, menu);
+			actionMode.getMenuInflater().inflate(R.menu.action_mode_transfer, menu);
 			return true;
 		}
 
@@ -308,9 +308,9 @@ public class TransactionListFragment
 		{
 			int id = item.getItemId();
 
-			final ArrayList<TransactionListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+			final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
-			if (id == R.id.action_mode_transaction_delete) {
+			if (id == R.id.action_mode_transfer_delete) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
 
 				builder.setTitle(R.string.ques_removeQueue);

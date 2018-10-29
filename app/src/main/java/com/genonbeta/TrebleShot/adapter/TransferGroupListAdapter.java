@@ -34,8 +34,8 @@ import androidx.core.widget.ImageViewCompat;
  * date: 9.11.2017 23:39
  */
 
-public class TransactionGroupListAdapter
-		extends GroupEditableListAdapter<TransactionGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder>
+public class TransferGroupListAdapter
+		extends GroupEditableListAdapter<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder>
 {
 	final private ArrayList<Long> mRunningTasks = new ArrayList<>();
 
@@ -48,7 +48,7 @@ public class TransactionGroupListAdapter
 	private int mColorDone;
 	private int mColorError;
 
-	public TransactionGroupListAdapter(Context context, AccessDatabase database)
+	public TransferGroupListAdapter(Context context, AccessDatabase database)
 	{
 		super(context, MODE_GROUP_BY_DATE);
 
@@ -112,7 +112,7 @@ public class TransactionGroupListAdapter
 		return mSelect;
 	}
 
-	public TransactionGroupListAdapter setSelect(SQLQuery.Select select)
+	public TransferGroupListAdapter setSelect(SQLQuery.Select select)
 	{
 		if (select != null)
 			mSelect = select;
@@ -127,7 +127,7 @@ public class TransactionGroupListAdapter
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
 			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-		return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transaction_group, parent, false));
+		return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transfer_group, parent, false));
 	}
 
 	@Override
@@ -224,7 +224,7 @@ public class TransactionGroupListAdapter
 
 		public PreloadedGroup(String representativeText)
 		{
-			this.viewType = TransactionGroupListAdapter.VIEW_TYPE_REPRESENTATIVE;
+			this.viewType = TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE;
 			this.representativeText = representativeText;
 		}
 

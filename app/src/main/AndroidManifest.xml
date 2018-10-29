@@ -39,10 +39,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".activity.ShareActivity"
@@ -65,6 +61,16 @@
         </activity>
 
         <activity
+            android:name=".activity.FileExplorerActivity"
+            android:label="@string/text_fileExplorer"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.ReceiveActivity"
+            android:label="@string/text_receive"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
             android:name=".activity.ContentSharingActivity"
             android:label="@string/text_shareFiles"
             android:launchMode="singleTask"
@@ -75,7 +81,7 @@
             android:label="@string/text_fileExplorer" />
 
         <activity
-            android:name=".activity.TransactionActivity"
+            android:name=".activity.ViewTransferActivity"
             android:label="@string/text_transactionViewer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
