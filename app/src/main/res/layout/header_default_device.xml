@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/header_default_device_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     android:paddingTop="40dp"
     android:paddingBottom="15dp">
 
     <ImageView
         android:id="@+id/header_default_device_image"
-        android:layout_marginTop="10dp"
         android:layout_width="@dimen/icon_size_list_normal"
         android:layout_height="@dimen/icon_size_list_normal"
-        android:layout_marginBottom="15dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="15dp" />
 
     <TextView
         android:id="@+id/header_default_device_name_text"
         style="@style/TextAppearance.Primary.Big.SingleLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/text_appName"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
+        android:text="@string/text_appName"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         android:textStyle="bold"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        app:fontFamily="sans-serif-condensed" />
 
     <TextView
         android:id="@+id/header_default_device_version_text"
         style="@style/TextAppearance.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
 </LinearLayout>

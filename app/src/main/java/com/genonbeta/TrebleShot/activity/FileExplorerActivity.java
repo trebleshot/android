@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.FileNotFoundException;
 

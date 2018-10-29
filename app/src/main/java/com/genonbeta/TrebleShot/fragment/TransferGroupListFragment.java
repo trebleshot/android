@@ -78,7 +78,7 @@ public class TransferGroupListFragment
 		super.onViewCreated(view, savedInstanceState);
 
 		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
-		setEmptyText(getString(R.string.text_listEmptyPendingTransfer));
+		setEmptyText(getString(R.string.text_listEmptyTransfer));
 	}
 
 	@Override
@@ -188,7 +188,7 @@ public class TransferGroupListFragment
 	@Override
 	public CharSequence getTitle(Context context)
 	{
-		return context.getString(R.string.text_pendingTransfers);
+		return context.getString(R.string.text_transfers);
 	}
 
 	public SQLQuery.Select getSelect()
