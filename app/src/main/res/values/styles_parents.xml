@@ -8,6 +8,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/colorPrimaryDark23</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
@@ -44,6 +45,7 @@
         <item name="colorPrimary">@color/dark_colorPrimary</item>
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/dark_colorPrimaryDark23</item>
+        <item name="colorSecondary">@color/dark_colorSecondary</item>
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->

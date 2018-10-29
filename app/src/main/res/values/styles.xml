@@ -10,10 +10,6 @@
 	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
 	<!-- generalization end -->
 
-	<style name="NavigationView">
-		<item name="colorPrimary">?colorAccent</item>
-	</style>
-
 	<style name="textAppearance">
 		<item name="android:textStyle">normal</item>
 	</style>

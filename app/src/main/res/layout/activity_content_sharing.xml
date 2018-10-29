@@ -20,11 +20,11 @@
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/activity_content_sharing_tab_layout"
+            style="?tabStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:minHeight="?attr/actionBarSize"
-            android:background="@android:color/transparent"
             app:tabMode="scrollable" />
 
     </com.google.android.material.appbar.AppBarLayout>
