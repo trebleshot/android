@@ -18,7 +18,7 @@
 
     <TextView
         android:id="@+id/header_default_device_name_text"
-        style="@style/TextAppearance.Primary.Big"
+        style="@style/TextAppearance.Primary.Big.SingleLine"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/text_appName"

@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/TextAppearance.Primary"
+            style="@style/TextAppearance.Primary.SingleLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3"/>
