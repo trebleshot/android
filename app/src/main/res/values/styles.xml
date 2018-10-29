@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 	<!-- generalization start -->
 	<style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
 	<style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
@@ -10,73 +10,89 @@
 	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
 	<!-- generalization end -->
 
-	<style name="textAppearance">
+	<style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+		<item name="itemTextColor">?attr/selectionAccentColor</item>
+		<item name="itemIconTint">?attr/selectionAccentColor</item>
+		<item name="android:elevation" tools:targetApi="21">5dp</item>
+	</style>
+
+	<style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
+		<item name="itemIconTint">?attr/selectionAccentColor</item>
+		<item name="itemTextColor">?attr/selectionAccentColor</item>
+	</style>
+
+	<style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+		<item name="tabTextColor">?selectionAccentColor</item>
+		<item name="android:background">@android:color/transparent</item>
+	</style>
+
+	<style name="TextAppearance">
 		<item name="android:textStyle">normal</item>
 	</style>
 
-	<style name="textAppearance.primary" parent="@style/textAppearance">
+	<style name="TextAppearance.Primary" parent="@style/TextAppearance">
 		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
 		<item name="android:textSize">@dimen/font_size_primary</item>
 		<item name="android:textColor">?android:textColorPrimary</item>
 	</style>
 
-	<style name="textAppearance.primary.singleLine" parent="@style/textAppearance.primary">
+	<style name="TextAppearance.Primary.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.primary.big" parent="@style/textAppearance.primary">
+	<style name="TextAppearance.Primary.Big">
 		<item name="android:textSize">@dimen/font_size_big</item>
 	</style>
 
-	<style name="textAppearance.primary.big.singleLine" parent="@style/textAppearance.primary.big">
+	<style name="TextAppearance.Primary.Big.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.primary.normal" parent="@style/textAppearance.primary">
+	<style name="TextAppearance.Primary.Normal">
 		<item name="android:textSize">@dimen/font_size_primary_normal</item>
 	</style>
 
-	<style name="textAppearance.primary.normal.singleLine" parent="@style/textAppearance.primary.normal">
+	<style name="TextAppearance.Primary.Normal.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.primary.small" parent="@style/textAppearance.primary">
+	<style name="TextAppearance.Primary.Small">
 		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
 
-	<style name="textAppearance.primary.small.singleLine" parent="@style/textAppearance.primary.small">
+	<style name="TextAppearance.Primary.Small.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.secondary" parent="@style/textAppearance">
+	<style name="TextAppearance.Secondary">
 		<item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
 		<item name="android:textSize">@dimen/font_size_secondary</item>
 		<item name="android:textColor">?android:textColorSecondary</item>
 	</style>
 
-	<style name="textAppearance.secondary.singleLine" parent="@style/textAppearance.secondary">
+	<style name="TextAppearance.Secondary.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.secondary.big" parent="@style/textAppearance.secondary">
+	<style name="TextAppearance.Secondary.Big">
 		<item name="android:textSize">@dimen/font_size_big</item>
 	</style>
 
-	<style name="textAppearance.secondary.big.singleLine" parent="@style/textAppearance.secondary.big">
+	<style name="TextAppearance.Secondary.Big.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
 
-	<style name="textAppearance.secondary.small" parent="@style/textAppearance.secondary">
+	<style name="TextAppearance.Secondary.Small">
 		<item name="android:textSize">@dimen/font_size_small</item>
 	</style>
 
-	<style name="textAppearance.secondary.small.singleLine" parent="@style/textAppearance.secondary.small">
+	<style name="TextAppearance.Secondary.Small.SingleLine">
 		<item name="android:ellipsize">end</item>
 		<item name="android:maxLines">1</item>
 	</style>
@@ -119,7 +135,7 @@
 		<item name="tint">?colorControlNormal</item>
 	</style>
 
-	<style name="customListFragmentEmptyTextStyle" parent="textAppearance.primary.big">
+	<style name="customListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
 		<item name="android:text">@string/text_listEmpty</item>
 		<item name="android:textColor">?android:textColorPrimary</item>
 	</style>

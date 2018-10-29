@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="24dp"
-            style="@style/textAppearance.primary"/>
+            style="@style/TextAppearance.Primary"/>
 
     </LinearLayout>
 </ScrollView>

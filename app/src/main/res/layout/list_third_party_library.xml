@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/textAppearance.primary.normal"
+            style="@style/TextAppearance.Primary.Normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3" />
@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/textAppearance.secondary.small"
+            style="@style/TextAppearance.Secondary.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

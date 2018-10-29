@@ -4,12 +4,12 @@
     <color name="ic_launcher_background">#47BF4B</color>
     <!-- Launcher related end -->
 
-    <color name="colorAccent">#36bf6f</color>
+    <color name="colorAccent">#66bb6a</color>
     <color name="colorControlNormal">#555</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffff</color>
-    <color name="colorSecondary">@color/colorAccent</color>
+    <color name="colorSecondary">#bbb</color>
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
@@ -28,7 +28,7 @@
     <color name="dark_colorControlNormal">#f5f5f5</color>
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">#263238</color>
-    <color name="dark_colorSecondary">@color/dark_colorAccent</color>
+    <color name="dark_colorSecondary">#546e7a</color>
     <color name="dark_windowBackground">#263238</color>
     <color name="dark_colorPrimaryDark23">#263238</color>
     <!-- local coloring-->

@@ -2,6 +2,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
+        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
         <item name="colorError">@color/colorError</item>
@@ -9,6 +10,8 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/colorPrimaryDark23</item>
         <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
+        <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
@@ -22,6 +25,8 @@
         <item name="rectSelector">@drawable/rect_selector</item>
         <item name="rippleBackground">@drawable/ripple_background</item>
         <item name="roundSelector">@drawable/round_selector</item>
+        <item name="selectionAccentColor">@color/selection_accent</item>
+        <item name="selectionColor">@color/selection</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
         <item name="stateSelectedImage">@drawable/state_selected_image</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded</item>
@@ -39,6 +44,7 @@
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
+        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="colorControlNormal">@color/dark_colorControlNormal</item>
         <item name="colorError">@color/dark_colorError</item>
@@ -46,6 +52,8 @@
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/dark_colorPrimaryDark23</item>
         <item name="colorSecondary">@color/dark_colorSecondary</item>
+        <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
+        <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
@@ -59,6 +67,8 @@
         <item name="rectSelector">@drawable/rect_selector_dark</item>
         <item name="rippleBackground">@drawable/ripple_background_dark</item>
         <item name="roundSelector">@drawable/round_selector_dark</item>
+        <item name="selectionAccentColor">@color/selection_accent_dark</item>
+        <item name="selectionColor">@color/selection_dark</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background_dark</item>
         <item name="stateSelectedImage">@drawable/state_selected_image_dark</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded_dark</item>

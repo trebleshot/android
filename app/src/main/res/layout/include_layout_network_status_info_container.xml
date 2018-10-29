@@ -46,7 +46,7 @@
 
                 <TextView
                     android:id="@+id/layout_hotspot_status_info_container_text1"
-                    style="@style/textAppearance.secondary"
+                    style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="5"
@@ -72,7 +72,7 @@
 
                 <TextView
                     android:id="@+id/layout_hotspot_status_info_container_text2"
-                    style="@style/textAppearance.secondary"
+                    style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"
@@ -98,7 +98,7 @@
 
                 <TextView
                     android:id="@+id/layout_hotspot_status_info_container_text3"
-                    style="@style/textAppearance.secondary"
+                    style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="1"

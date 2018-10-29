@@ -17,7 +17,7 @@
 
             <TextView
                 android:id="@+id/text3"
-                style="@style/textAppearance.primary.small"
+                style="@style/TextAppearance.Primary.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
@@ -34,7 +34,7 @@
 
                 <TextView
                     android:id="@+id/text"
-                    style="@style/textAppearance.primary"
+                    style="@style/TextAppearance.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -46,7 +46,7 @@
 
                 <TextView
                     android:id="@+id/text2"
-                    style="@style/textAppearance.secondary"
+                    style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="3" />
