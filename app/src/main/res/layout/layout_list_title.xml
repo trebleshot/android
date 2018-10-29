@@ -3,7 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="@dimen/padding_list_content_parent_layout">
+    android:paddingTop="@dimen/padding_list_content_parent_layout"
+    android:paddingLeft="@dimen/padding_list_content_parent_layout"
+    android:paddingRight="@dimen/padding_list_content_parent_layout"
+    android:paddingBottom="@dimen/padding_list_content_parent_layout_orientation">
 
     <TextView
         android:id="@+id/layout_list_title_text"

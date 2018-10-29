@@ -2,6 +2,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
+        <item name="android:textColorPrimary">@color/colorControlNormal</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
@@ -45,6 +46,7 @@
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
+        <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="colorControlNormal">@color/dark_colorControlNormal</item>

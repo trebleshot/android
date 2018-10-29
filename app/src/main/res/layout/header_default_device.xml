@@ -25,7 +25,6 @@
         android:paddingRight="10dp"
         android:text="@string/text_appName"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        android:textStyle="bold"
         app:fontFamily="sans-serif-condensed" />
 
     <TextView

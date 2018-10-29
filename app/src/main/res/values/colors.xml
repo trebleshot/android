@@ -5,7 +5,7 @@
     <!-- Launcher related end -->
 
     <color name="colorAccent">#66bb6a</color>
-    <color name="colorControlNormal">#555</color>
+    <color name="colorControlNormal">#333</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffff</color>

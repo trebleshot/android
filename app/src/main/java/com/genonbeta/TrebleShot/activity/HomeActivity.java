@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -23,11 +22,13 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.Interrupter;
+import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
@@ -41,12 +42,15 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 public class HomeActivity
         extends Activity
-        implements NavigationView.OnNavigationItemSelectedListener
+        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
     private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
+    private PowerfulActionMode mActionMode;
+
+    private long mExitPressTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -58,11 +62,23 @@ public class HomeActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mActionMode = findViewById(R.id.content_powerful_action_mode);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+        mActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
+        {
+            @Override
+            public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
+            {
+                toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
+            }
+        });
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
@@ -162,10 +178,19 @@ public class HomeActivity
     {
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
-        else
+        else if ((System.currentTimeMillis() - mExitPressTime) < 2000)
             super.onBackPressed();
+        else {
+            mExitPressTime = System.currentTimeMillis();
+            Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
+        }
     }
 
+    @Override
+    public PowerfulActionMode getPowerfulActionMode()
+    {
+        return mActionMode;
+    }
 
     private void highlightUpdater(String availableVersion)
     {

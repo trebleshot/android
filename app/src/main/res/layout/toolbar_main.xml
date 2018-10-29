@@ -18,6 +18,14 @@
             android:layout_height="?attr/actionBarSize"
             android:theme="?actionBarTheme" />
 
+        <com.genonbeta.android.framework.widget.PowerfulActionMode
+            android:id="@+id/content_powerful_action_mode"
+            style="?actionBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="?actionBarTheme"
+            android:visibility="gone" />
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_main" />
