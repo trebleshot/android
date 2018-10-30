@@ -14,4 +14,29 @@
 	<item quantity="few">%d pliki są zaznaczone</item>
 	<item quantity="many">%d plików jest zaznaczonych</item>
 </plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="one">Ten oczekujący przelew zostanie usunięty</item>
+	<item quantity="few">%d oczekujące przelewy zostaną usunięte</item>
+	<item quantity="many">%d oczekujących przelewów zostanie usuniętych</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="one">%d połączenie</item>
+	<item quantity="few">%d połączone</item>
+	<item quantity="many">%d połączonych</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">Odebrać ten plik\?</item>
+	<item quantity="few">Odebrać te pliki\?</item>
+	<item quantity="many">Odbierać %d plików\?</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="one">%d plik</item>
+	<item quantity="few">%d pliki</item>
+	<item quantity="many">%d plików</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">Sekund temu</item>
+	<item quantity="few">%d sekundy temu</item>
+	<item quantity="many">%d sekund temu</item>
+</plurals>
     </resources>
