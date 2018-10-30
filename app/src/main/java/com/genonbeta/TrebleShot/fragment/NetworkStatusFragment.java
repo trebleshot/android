@@ -31,6 +31,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -295,7 +296,7 @@ public class NetworkStatusFragment
 						}
 					});
 
-					snackbar.setDuration(Snackbar.LENGTH_INDEFINITE)
+					snackbar.setDuration(BaseTransientBottomBar.LENGTH_INDEFINITE)
 							.show();
 				}
 			}

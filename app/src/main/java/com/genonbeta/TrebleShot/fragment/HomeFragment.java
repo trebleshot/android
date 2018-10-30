@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ChooseConnectionMethodActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ReceiveActivity;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
@@ -55,7 +56,7 @@ public class HomeFragment
                 if (menuItem.getOrder() == 1)
                     startActivity(new Intent(getContext(), ContentSharingActivity.class));
                 else if (menuItem.getOrder() == 2)
-                    startActivity(new Intent(getContext(), ReceiveActivity.class));
+                    startActivity(new Intent(getContext(), ChooseConnectionMethodActivity.class));
 
                 return false;
             }

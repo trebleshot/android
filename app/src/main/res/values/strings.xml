@@ -390,6 +390,6 @@
     <string name="butn_allow">Allow</string>
     <string name="butn_telegram_channel">Telegram channel</string>
     <string name="mode_middleDot" translatable="false"> · </string>
-    <string name="text_listEmptyTransfer">Ongoing &amp; completed appear here></string>
+    <string name="text_listEmptyTransfer">Ongoing &amp; completed appear here</string>
     <string name="text_transfers">Transfers</string>
 </resources>

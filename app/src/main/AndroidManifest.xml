@@ -71,6 +71,11 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
+            android:name=".activity.ChooseConnectionMethodActivity"
+            android:label="@string/text_connectDevices"
+            android:theme="@style/Theme.TrebleShot" />
+
+        <activity
             android:name=".activity.ContentSharingActivity"
             android:label="@string/text_shareFiles"
             android:launchMode="singleTask"
