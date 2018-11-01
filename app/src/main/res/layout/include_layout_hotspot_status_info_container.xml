@@ -18,8 +18,15 @@
             android:paddingTop="15dp"
             android:paddingBottom="15dp">
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/layout_hotspot_manager_info_toggle_button"
+                style="?buttonBarPositiveButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/butn_startHotspot" />
+
             <LinearLayout
-                android:id="@+id/layout_network_manager_info_container_text1_container"
+                android:id="@+id/layout_hotspot_manager_info_container_text1_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -27,7 +34,7 @@
                 android:padding="15dp">
 
                 <ImageView
-                    android:id="@+id/layout_network_manager_info_container_text1_icon"
+                    android:id="@+id/layout_hotspot_manager_info_container_text1_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
@@ -37,7 +44,7 @@
                     app:srcCompat="@drawable/ic_info_white_24dp" />
 
                 <TextView
-                    android:id="@+id/layout_network_manager_info_container_text1"
+                    android:id="@+id/layout_hotspot_manager_info_container_text1"
                     style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -47,7 +54,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layout_network_manager_info_container_text2_container"
+                android:id="@+id/layout_hotspot_manager_info_container_text2_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -55,7 +62,7 @@
                 android:padding="15dp">
 
                 <ImageView
-                    android:id="@+id/layout_network_manager_info_container_text2_icon"
+                    android:id="@+id/layout_hotspot_manager_info_container_text2_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
@@ -65,7 +72,7 @@
                     app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
 
                 <TextView
-                    android:id="@+id/layout_network_manager_info_container_text2"
+                    android:id="@+id/layout_hotspot_manager_info_container_text2"
                     style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,7 +82,7 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/layout_network_manager_info_container_text3_container"
+                android:id="@+id/layout_hotspot_manager_info_container_text3_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -83,7 +90,7 @@
                 android:padding="15dp">
 
                 <ImageView
-                    android:id="@+id/layout_network_manager_info_container_text3_icon"
+                    android:id="@+id/layout_hotspot_manager_info_container_text3_icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="15dp"
@@ -93,7 +100,7 @@
                     app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
 
                 <TextView
-                    android:id="@+id/layout_network_manager_info_container_text3"
+                    android:id="@+id/layout_hotspot_manager_info_container_text3"
                     style="@style/TextAppearance.Secondary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

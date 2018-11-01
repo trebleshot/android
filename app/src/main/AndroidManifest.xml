@@ -71,9 +71,9 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ChooseConnectionMethodActivity"
+            android:name=".activity.ConnectionManagerActivity"
             android:label="@string/text_connectDevices"
-            android:theme="@style/Theme.TrebleShot" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
             android:name=".activity.ContentSharingActivity"

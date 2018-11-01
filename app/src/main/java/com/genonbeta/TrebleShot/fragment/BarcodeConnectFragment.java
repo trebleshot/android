@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -52,11 +53,11 @@ import androidx.core.content.ContextCompat;
  * created by: veli
  * date: 12/04/18 17:21
  */
-public class CodeConnectFragment
+public class BarcodeConnectFragment
         extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, UITask, IconSupport
+        implements TitleSupport, UITask, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
 {
-    public static final String TAG = "CodeConnectFragment";
+    public static final String TAG = "BarcodeConnectFragment";
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
 
@@ -117,11 +118,11 @@ public class CodeConnectFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        View view = inflater.inflate(R.layout.layout_code_connect, container, false);
+        View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
 
-        mBarcodeView = view.findViewById(R.id.layout_code_connect_barcode_view);
-        mConductText = view.findViewById(R.id.layout_code_connect_conduct_text);
-        mConductImage = view.findViewById(R.id.layout_code_connect_conduct_image);
+        mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
+        mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
+        mConductImage = view.findViewById(R.id.layout_barcode_connect_conduct_image);
         mConductContainer = view.findViewById(R.id.container_conduct);
         mTaskContainer = view.findViewById(R.id.container_task);
         mTaskInterruptButton = view.findViewById(R.id.task_interrupter_button);
@@ -136,7 +137,7 @@ public class CodeConnectFragment
 
         TextView guideText = mBarcodeView.getStatusView();
 
-        guideText.setText(R.string.text_scanQRCodeHelp);
+        guideText.setText(null);
         guideText.setPadding(0, 20, 20, 30); // Add padding to the bottom
         guideText.setGravity(Gravity.CENTER);
 
@@ -164,7 +165,7 @@ public class CodeConnectFragment
                             hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
                         }
 
-                        mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), CodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
+                        mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
                     } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
                         String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
                         String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
@@ -174,7 +175,7 @@ public class CodeConnectFragment
                         if (wifiInfo != null
                                 && wifiInfo.getBSSID() != null
                                 && wifiInfo.getBSSID().equals(bssid))
-                            mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), CodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
+                            mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
                         else {
                             mBarcodeView.pauseAndWait();
 

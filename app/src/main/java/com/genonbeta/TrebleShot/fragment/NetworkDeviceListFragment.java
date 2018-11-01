@@ -16,6 +16,7 @@ import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -42,7 +43,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class NetworkDeviceListFragment
         extends DynamicRecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
-        implements TitleSupport, DetachListener, IconSupport
+        implements TitleSupport, DetachListener, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 

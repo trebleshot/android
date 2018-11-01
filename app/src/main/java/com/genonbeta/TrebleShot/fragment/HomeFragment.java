@@ -10,9 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ChooseConnectionMethodActivity;
+import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
-import com.genonbeta.TrebleShot.activity.ReceiveActivity;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -30,10 +29,10 @@ public class HomeFragment
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
-        final View view = inflater.inflate(R.layout.layout_connect_devices, container, false);
+        final View view = inflater.inflate(R.layout.layout_home_fragment, container, false);
 
-        final ViewPager viewPager = view.findViewById(R.id.layout_connect_devices_view_pager);
-        final BottomNavigationView bottomNavigationView = view.findViewById(R.id.layout_connect_devices_bottom_navigation_view);
+        final ViewPager viewPager = view.findViewById(R.id.layout_home_view_pager);
+        final BottomNavigationView bottomNavigationView = view.findViewById(R.id.layout_home_bottom_navigation_view);
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
 
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class, null));
@@ -56,7 +55,7 @@ public class HomeFragment
                 if (menuItem.getOrder() == 1)
                     startActivity(new Intent(getContext(), ContentSharingActivity.class));
                 else if (menuItem.getOrder() == 2)
-                    startActivity(new Intent(getContext(), ChooseConnectionMethodActivity.class));
+                    startActivity(new Intent(getContext(), ConnectionManagerActivity.class));
 
                 return false;
             }

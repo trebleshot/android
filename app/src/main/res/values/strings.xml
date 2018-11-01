@@ -392,4 +392,9 @@
     <string name="mode_middleDot" translatable="false"> · </string>
     <string name="text_listEmptyTransfer">Ongoing &amp; completed appear here</string>
     <string name="text_transfers">Transfers</string>
+    <string name="butn_connectionDetails">Connections details</string>
+    <string name="butn_useKnownDevice">Use a known device</string>
+    <string name="butn_connectIpAddress">Connect using IP address</string>
+    <string name="butn_scanQrCode">Scan the QR Code</string>
+    <string name="butn_useExistingNetwork">Use an existing network</string>
 </resources>

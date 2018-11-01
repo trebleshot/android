@@ -4,20 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false">
+    android:fitsSystemWindows="false"
+    tools:context=".activity.ConnectionManagerActivity">
 
-    <RelativeLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="?attr/actionBarSize"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:showIn="@layout/layout_connect_devices">
+        tools:context=".activity.ConnectionManagerActivity"
+        tools:showIn="@layout/activity_connection_manager">
 
         <FrameLayout
-            android:id="@+id/layout_connect_devices_content_view"
+            android:id="@+id/activity_connection_establishing_content_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bar"
@@ -26,8 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         app:backgroundTint="@color/colorAccent"
-        app:fabCradleVerticalOffset="3dp"
-        app:navigationIcon="@drawable/ic_add_white_24dp" />
+        app:fabCradleVerticalOffset="3dp" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"

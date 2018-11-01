@@ -3,6 +3,7 @@
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
         <item name="android:textColorPrimary">@color/colorControlNormal</item>
+        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>

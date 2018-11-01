@@ -10,207 +10,204 @@ import android.view.ViewGroup;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.dialog.NavigationViewBottomSheetDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 /**
  * created by: veli
  * date: 11/04/18 20:52
  */
 public class ConnectDevicesFragment
-		extends com.genonbeta.android.framework.app.Fragment
-		implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+        extends com.genonbeta.android.framework.app.Fragment
+        implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
 {
-	public static final String EXTRA_CDF_FRAGMENT_NAMES_FRONT = "extraCdfFragmentNamesFront";
-	public static final String EXTRA_CDF_FRAGMENT_NAMES_BACK = "extraCdfFragmentNamesBack";
+    public static final String EXTRA_CDF_FRAGMENT_NAMES_FRONT = "extraCdfFragmentNamesFront";
+    public static final String EXTRA_CDF_FRAGMENT_NAMES_BACK = "extraCdfFragmentNamesBack";
 
-	private NetworkDeviceSelectedListener mDeviceSelectedListener;
-	private SmartFragmentPagerAdapter mPagerAdapter;
-	private ViewPager mViewPager;
-	private BottomNavigationView mBottomNavigationView;
+    private NetworkDeviceSelectedListener mDeviceSelectedListener;
+    private NavigationViewBottomSheetDialog mNavigationDialog;
+    private HotspotManagerFragment mHotspotManagerFragment;
+    private BarcodeConnectFragment mBarcodeConnectFragment;
+    private FloatingActionButton mFAB;
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    private final NetworkDeviceSelectedListener mDeviceSelectionListener = new NetworkDeviceSelectedListener()
+    {
+        @Override
+        public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
+        {
+            return mDeviceSelectedListener != null
+                    && mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
+        }
 
-		if (getActivity() instanceof Activity.OnPreloadArgumentWatcher)
-		{
-			if (getArguments()  == null)
-				setArguments(new Bundle());
+        @Override
+        public boolean isListenerEffective()
+        {
+            return mDeviceSelectedListener != null;
+        }
+    };
 
-			getArguments().putAll(((Activity.OnPreloadArgumentWatcher) getActivity()).passPreLoadingArguments());
-		}
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-	@Nullable
-	@Override
-	public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
-	{
-		final View view = inflater.inflate(R.layout.layout_connect_devices, container, false);
-		mViewPager = view.findViewById(R.id.layout_connect_devices_view_pager);
+        if (getActivity() instanceof Activity.OnPreloadArgumentWatcher) {
+            if (getArguments() == null)
+                setArguments(new Bundle());
 
-		final NetworkDeviceSelectedListener selectionListenerDevices = new NetworkDeviceSelectedListener()
-		{
-			@Override
-			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
-			{
-				return mDeviceSelectedListener != null
-						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
-			}
+            getArguments().putAll(((Activity.OnPreloadArgumentWatcher) getActivity()).passPreLoadingArguments());
+        }
+    }
 
-			@Override
-			public boolean isListenerEffective()
-			{
-				return mDeviceSelectedListener != null;
-			}
-		};
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    {
+        final View view = inflater.inflate(R.layout.layout_connect_devices, container, false);
 
-		final NetworkDeviceSelectedListener selectionListener = new NetworkDeviceSelectedListener()
-		{
-			@Override
-			public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection)
-			{
-				showDevices();
+        mFAB = view.findViewById(R.id.fab);
+        mFAB.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                showNavigationDialog();
+            }
+        });
 
-				return mDeviceSelectedListener != null
-						&& mDeviceSelectedListener.onNetworkDeviceSelected(networkDevice, connection);
-			}
+        return view;
+    }
 
-			@Override
-			public boolean isListenerEffective()
-			{
-				return true;
-			}
-		};
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        checkFragment();
+    }
 
-		mBottomNavigationView = view.findViewById(R.id.layout_connect_devices_bottom_navigation_view);
-		mPagerAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager())
-		{
-			@Override
-			public void onItemInstantiated(StableItem item)
-			{
-				if (item.getInitiatedItem() instanceof NetworkDeviceListFragment)
-					((NetworkDeviceListFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListenerDevices);
-				else if (item.getInitiatedItem() instanceof CodeConnectFragment)
-					((CodeConnectFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListener);
-				else if (item.getInitiatedItem() instanceof NetworkStatusFragment)
-					((NetworkStatusFragment) item.getInitiatedItem()).setDeviceSelectedListener(selectionListener);
-			}
-		};
+    private void checkFragment()
+    {
+        Fragment currentFragment = getShowingFragment();
 
-		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_FRONT);
+        if (currentFragment == null)
+            setFragment(0);
+        else
+            applyViewChanges(currentFragment);
+    }
 
-		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, NetworkDeviceListFragment.class, null));
-		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, NetworkStatusFragment.class, null));
-		mPagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, CodeConnectFragment.class, null));
+    public void applyViewChanges(Fragment fragment)
+    {
 
-		mPagerAdapter.createTabs(mBottomNavigationView);
+    }
 
-		loadIntoSmartPagerAdapterUsingKey(mPagerAdapter, getArguments(), EXTRA_CDF_FRAGMENT_NAMES_BACK);
+    @IdRes
+    public int getShowingFragmentId()
+    {
+        Fragment fragment = getShowingFragment();
 
-		mViewPager.setAdapter(mPagerAdapter);
+        if (fragment instanceof BarcodeConnectFragment)
+            return R.id.scan_qr_code;
+        else if (fragment instanceof HotspotManagerFragment)
+            return R.id.existing_network;
 
-		mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
-		{
-			@Override
-			public void onPageScrolled(int i, float v, int i1)
-			{
+        return 0;
+    }
 
-			}
+    @Nullable
+    public Fragment getShowingFragment()
+    {
+        return getChildFragmentManager().findFragmentById(R.id.layout_connect_devices_content_view);
+    }
 
-			@Override
-			public void onPageSelected(int i)
-			{
-				mBottomNavigationView.setSelectedItemId(i);
-			}
+    @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_connectDevices);
+    }
 
-			@Override
-			public void onPageScrollStateChanged(int i)
-			{
+    public void loadIntoSmartPagerAdapterUsingKey(SmartFragmentPagerAdapter pagerAdapter, Bundle args, String key)
+    {
+        if (args == null || !args.containsKey(key))
+            return;
 
-			}
-		});
+        ArrayList<SmartFragmentPagerAdapter.StableItem> thisParcelables = args.getParcelableArrayList(key);
 
-		mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
-		{
-			@Override
-			public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
-			{
-				mViewPager.setCurrentItem(menuItem.getOrder());
-				return true;
-			}
-		});
+        if (thisParcelables == null)
+            return;
 
-		return view;
-	}
+        for (SmartFragmentPagerAdapter.StableItem thisItem : thisParcelables)
+            pagerAdapter.add(thisItem);
+    }
 
-	public SmartFragmentPagerAdapter getPagerAdapter()
-	{
-		return mPagerAdapter;
-	}
+    public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
+    {
+        mDeviceSelectedListener = listener;
+    }
 
-	public BottomNavigationView getBottomNavigationView()
-	{
-		return mBottomNavigationView;
-	}
+    public void setFragment(@IdRes int menuId)
+    {
+        @Nullable
+        Fragment activeFragment = getShowingFragment();
+        Fragment fragmentCandidate = null;
 
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_connectDevices);
-	}
+        switch (menuId) {
+            case R.id.existing_network:
+                fragmentCandidate = mHotspotManagerFragment;
+                break;
+            case R.id.scan_qr_code:
+                fragmentCandidate = mBarcodeConnectFragment;
+                break;
+            default:
+                fragmentCandidate = mHotspotManagerFragment;
+        }
 
-	public ViewPager getViewPager()
-	{
-		return mViewPager;
-	}
+        if (activeFragment == null || fragmentCandidate != activeFragment) {
+            FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
 
-	public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
-	{
-		mDeviceSelectedListener = listener;
-	}
+            if (activeFragment != null)
+                transaction.remove(activeFragment);
 
-	public void loadIntoSmartPagerAdapterUsingKey(SmartFragmentPagerAdapter pagerAdapter, Bundle args, String key)
-	{
-		if (args == null || !args.containsKey(key))
-			return;
+            transaction.add(R.id.layout_connect_devices_content_view, fragmentCandidate);
+            transaction.commit();
 
-		ArrayList<SmartFragmentPagerAdapter.StableItem> thisParcelables = args.getParcelableArrayList(key);
+            applyViewChanges(fragmentCandidate);
+        }
+    }
 
-		if (thisParcelables == null)
-			return;
+    public void showNavigationDialog()
+    {
+        if (mNavigationDialog != null && mNavigationDialog.isShowing()) {
+            mNavigationDialog.cancel();
+            mNavigationDialog = null;
+        }
 
-		for (SmartFragmentPagerAdapter.StableItem thisItem : thisParcelables)
-			pagerAdapter.add(thisItem);
-	}
+        mNavigationDialog = new NavigationViewBottomSheetDialog(getActivity(),
+                R.menu.drawer_connect_devices,
+                getShowingFragmentId(),
+                new NavigationView.OnNavigationItemSelectedListener()
+                {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+                    {
+                        mNavigationDialog.cancel();
+                        setFragment(menuItem.getItemId());
+                        return true;
+                    }
+                });
 
-	public void showDevices()
-	{
-		showFragment(NetworkDeviceListFragment.class);
-	}
-
-	public void showFragment(Class clazz) {
-		synchronized (getPagerAdapter().getFragments()) {
-			int iterator = 0;
-
-			for (SmartFragmentPagerAdapter.StableItem stableItem : getPagerAdapter().getFragments()) {
-				if (clazz.getName().equals(stableItem.clazzName)) {
-					mViewPager.setCurrentItem(iterator);
-					break;
-				}
-
-				iterator++;
-			}
-		}
-	}
+        mNavigationDialog.show();
+    }
 }
