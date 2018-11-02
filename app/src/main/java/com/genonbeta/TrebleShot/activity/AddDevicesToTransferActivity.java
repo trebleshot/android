@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -58,7 +60,6 @@ public class AddDevicesToTransferActivity extends Activity
     public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
-    public static final String EXTRA_NOT_APPARENT = "extraNotApparent";
 
     private TransferGroup mGroup = null;
     private Interrupter mInterrupter = new Interrupter();
@@ -69,7 +70,6 @@ public class AddDevicesToTransferActivity extends Activity
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
     private TextView mTextMain;
-    private boolean mNotApparent = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -146,9 +146,18 @@ public class AddDevicesToTransferActivity extends Activity
             finish();
     }
 
-    public Snackbar createSnackbar(int resId, Object... objects)
+    public Snackbar createSnackbar(final int resId, final Object... objects)
     {
-        return Snackbar.make(getWindow().getDecorView(), getString(resId, objects), Snackbar.LENGTH_LONG);
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                Toast.makeText(AddDevicesToTransferActivity.this, getString(resId, objects), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
@@ -344,8 +353,9 @@ public class AddDevicesToTransferActivity extends Activity
                                     createSnackbar(R.string.mesg_somethingWentWrong).show();
                             }
                         } catch (Exception e) {
+                            e.printStackTrace();
+
                             if (!(e instanceof InterruptedException)) {
-                                e.printStackTrace();
                                 createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
                                         .show();
                             }
@@ -388,14 +398,6 @@ public class AddDevicesToTransferActivity extends Activity
         mActionButton = findViewById(R.id.actionButton);
 
         resetStatusViews();
-
-        if (getIntent() != null) {
-            if (getIntent().hasExtra(EXTRA_NOT_APPARENT))
-                mNotApparent = getIntent().getBooleanExtra(EXTRA_NOT_APPARENT, false);
-        }
-
-        if (mNotApparent)
-            startConnectionManagerActivity();
     }
 
     public boolean runOnWorkerService(WorkerService.RunningTask runningTask)
@@ -425,6 +427,8 @@ public class AddDevicesToTransferActivity extends Activity
         });
 
         getDefaultInterrupter().reset(true);
+
+        startConnectionManagerActivity();
     }
 
     protected void showChooserDialog(final NetworkDevice device)
@@ -462,11 +466,10 @@ public class AddDevicesToTransferActivity extends Activity
         });
     }
 
-    public static void startInstance(Context context, long groupId, boolean skipWelcomePage)
+    public static void startInstance(Context context, long groupId)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
                 .putExtra(EXTRA_GROUP_ID, groupId)
-                .putExtra(EXTRA_NOT_APPARENT, skipWelcomePage)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 

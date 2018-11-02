@@ -35,6 +35,7 @@ import com.google.android.material.snackbar.Snackbar;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -151,6 +152,9 @@ public class ConnectionManagerActivity
         BottomAppBar bar = findViewById(R.id.bar);
         setSupportActionBar(bar);
 
+        final Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -231,7 +235,7 @@ public class ConnectionManagerActivity
     @Override
     public Snackbar createSnackbar(int resId, Object... objects)
     {
-        return Snackbar.make(findViewById(R.id.inside_container), getString(resId, objects), Snackbar.LENGTH_LONG);
+        return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     @IdRes

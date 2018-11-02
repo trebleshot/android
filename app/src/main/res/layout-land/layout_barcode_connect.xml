@@ -1,29 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_margin="15dp">
 
     <LinearLayout
-        android:id="@+id/container_layout"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:padding="5dp">
-
-        <include layout="@layout/include_layout_barcode_connect_scanner" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/layout_barcode_connect_conduct_text"
-        style="@style/TextAppearance.Primary.Big"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:text="@string/text_scanQRCodeHelp" />
-</LinearLayout>
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/container_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <include layout="@layout/include_layout_barcode_connect_scanner" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/layout_barcode_connect_conduct_text"
+            style="@style/TextAppearance.Primary.Big"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="@string/text_scanQRCodeHelp" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

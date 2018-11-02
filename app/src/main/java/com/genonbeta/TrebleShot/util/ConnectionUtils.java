@@ -23,6 +23,8 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONObject;
 
+import java.net.InetAddress;
+
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 

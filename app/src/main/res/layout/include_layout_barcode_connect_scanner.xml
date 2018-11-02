@@ -6,81 +6,75 @@
     android:orientation="vertical"
     app:baseOnSmallerLength="@bool/genfw_screen_isLandscape">
 
-    <androidx.cardview.widget.CardView
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/layout_barcode_connect_barcode_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp">
+        app:zxing_preview_scaling_strategy="fitXY" />
 
-        <com.journeyapps.barcodescanner.DecoratedBarcodeView
-            android:id="@+id/layout_barcode_connect_barcode_view"
+    <RelativeLayout
+        android:id="@+id/container_conduct"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:id="@+id/layout_barcode_connect_conduct_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/ic_crop_free_white_144dp" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:zxing_preview_scaling_strategy="fitXY" />
+            android:layout_height="wrap_content"
+            android:layout_below="@id/layout_barcode_connect_conduct_image"
+            android:layout_alignParentBottom="true"
+            android:gravity="center">
 
-        <RelativeLayout
-            android:id="@+id/container_conduct"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ImageView
-                android:id="@+id/layout_barcode_connect_conduct_image"
+            <Button
+                android:id="@+id/layout_barcode_connect_conduct_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                app:srcCompat="@drawable/ic_crop_free_white_144dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/layout_barcode_connect_conduct_image"
-                android:layout_alignParentBottom="true"
-                android:gravity="center">
-
-                <Button
-                    android:id="@+id/layout_barcode_connect_conduct_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:text="@string/butn_enable" />
-
-            </LinearLayout>
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/container_task"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?colorShadowEnd"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/task_progress_bar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-
-            <TextView
-                android:id="@+id/task_help_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/task_progress_bar"
                 android:layout_marginTop="15dp"
-                android:gravity="center_horizontal"
-                android:text="@string/mesg_completing"
-                android:textColor="?colorAccent" />
+                android:text="@string/butn_enable" />
 
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/task_interrupter_button"
-                style="?buttonBarPositiveButtonStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/task_help_text"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
-                android:text="@string/butn_cancel" />
+        </LinearLayout>
 
-        </RelativeLayout>
+    </RelativeLayout>
 
-    </androidx.cardview.widget.CardView>
+    <RelativeLayout
+        android:id="@+id/container_task"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorShadowEnd"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/task_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <TextView
+            android:id="@+id/task_help_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_progress_bar"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:text="@string/mesg_completing"
+            android:textColor="?colorAccent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/task_interrupter_button"
+            style="?buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_help_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/butn_cancel" />
+
+    </RelativeLayout>
+
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

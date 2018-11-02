@@ -278,7 +278,7 @@ public class ShareActivity extends Activity
                     getDatabase().publish(localDevice);
 
                     ViewTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
-                    AddDevicesToTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId, true);
+                    AddDevicesToTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
 
                     finish();
                 }

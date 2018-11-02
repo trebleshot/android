@@ -120,8 +120,7 @@
 	</style>
 
 	<style name="listContentLayoutCardViewMetrics">
-		<item name="android:layout_marginTop">@dimen/padding_list_content_parent_layout_orientation</item>
-		<item name="android:layout_marginBottom">@dimen/padding_list_content_parent_layout_orientation</item>
+		<item name="android:layout_marginTop">@dimen/padding_list_content_parent_layout</item>
 		<item name="android:layout_marginLeft">@dimen/padding_list_content_parent_layout</item>
 		<item name="android:layout_marginRight">@dimen/padding_list_content_parent_layout</item>
 	</style>

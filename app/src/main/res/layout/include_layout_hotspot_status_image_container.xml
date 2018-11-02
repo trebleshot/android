@@ -6,18 +6,12 @@
     android:layout_height="match_parent"
     app:baseOnSmallerLength="@bool/genfw_screen_isLandscape">
 
-    <androidx.cardview.widget.CardView
+    <ImageView
+        android:id="@+id/layout_hotspot_manager_qr_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp">
+        android:layout_gravity="center"
+        android:contentDescription="@string/text_scanQRCodeHelp"
+        app:srcCompat="@drawable/ic_qrcode_white_128dp" />
 
-        <ImageView
-            android:id="@+id/layout_hotspot_manager_qr_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:contentDescription="@string/text_scanQRCodeHelp"
-            app:srcCompat="@drawable/ic_qrcode_white_128dp" />
-
-    </androidx.cardview.widget.CardView>
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>
