@@ -10,7 +10,7 @@ import androidx.annotation.Nullable;
  */
 public interface NetworkDeviceSelectedListener
 {
-	boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection);
+	boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection);
 
 	boolean isListenerEffective();
 }

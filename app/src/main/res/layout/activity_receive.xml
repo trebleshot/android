@@ -21,14 +21,4 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <fragment
-        android:id="@+id/content_fragment"
-        android:name="com.genonbeta.TrebleShot.fragment.ConnectDevicesFragment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:tag="mainFragment"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:context=".activity.ShareActivity"
-        tools:showIn="@layout/activity_receive"/>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

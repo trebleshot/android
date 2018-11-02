@@ -4,6 +4,7 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:layout_marginTop="15dp"
         android:id="@+id/container_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,11 +15,12 @@
     </LinearLayout>
 
     <TextView
+        android:id="@+id/layout_barcode_connect_conduct_text"
         style="@style/TextAppearance.Primary.Big"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_below="@id/container_layout"
+        android:layout_alignParentBottom="true"
         android:gravity="center"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"

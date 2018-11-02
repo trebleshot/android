@@ -32,8 +32,8 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 85
-        versionName "1.2.7.7"
+        versionCode 86
+        versionName "1.2.8"
 
         vectorDrawables {
             useSupportLibrary = true

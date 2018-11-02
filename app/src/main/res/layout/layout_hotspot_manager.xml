@@ -10,11 +10,6 @@
 
         <include layout="@layout/include_layout_hotspot_status_image_container" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?colorDivider" />
-
         <include
             layout="@layout/include_layout_hotspot_status_info_container"
             android:layout_width="match_parent"

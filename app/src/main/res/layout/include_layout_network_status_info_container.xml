@@ -62,7 +62,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
+                    app:srcCompat="@drawable/ic_wifi_white_24dp" />
 
                 <TextView
                     android:id="@+id/layout_network_manager_info_container_text2"
@@ -90,7 +90,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_marginEnd="30dp"
                     android:layout_marginRight="30dp"
-                    app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
+                    app:srcCompat="@drawable/ic_device_hub_white_24dp" />
 
                 <TextView
                     android:id="@+id/layout_network_manager_info_container_text3"

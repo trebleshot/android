@@ -55,9 +55,27 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
 
-            <meta-data
+            <!--<meta-data
                 android:name="android.service.chooser.chooser_target_service"
-                android:value=".service.DeviceChooserService" />
+                android:value=".service.DeviceChooserService" />-->
+        </activity>
+
+        <activity android:name=".activity.AddDevicesToTransferActivity"
+            android:label="@string/text_addDevicesToTransfer"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.ShareTextActivity"
+            android:label="@string/text_shareTextShort"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
+            <intent-filter>
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT" />
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/*" />
+            </intent-filter>
         </activity>
 
         <activity

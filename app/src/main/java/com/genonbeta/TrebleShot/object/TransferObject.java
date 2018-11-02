@@ -87,10 +87,13 @@ public class TransferObject
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_ID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(requestId), deviceId, type.toString());
+        SQLQuery.Select query = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
+        String nullDevice = String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE);
+        String withDevice = String.format("%s AND %s = ?", nullDevice, AccessDatabase.FIELD_TRANSFER_DEVICEID);
+
+        return deviceId == null
+                ? query.setWhere(nullDevice, String.valueOf(requestId), type.toString())
+                : query.setWhere(withDevice, String.valueOf(requestId), type.toString(), String.valueOf(deviceId));
     }
 
     @Override

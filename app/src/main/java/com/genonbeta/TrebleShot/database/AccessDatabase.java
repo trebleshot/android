@@ -8,6 +8,7 @@ import android.database.SQLException;
 
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
@@ -177,6 +178,16 @@ public class AccessDatabase extends SQLiteDatabase
         }
     }
 
+    public static CursorItem convertValues(ContentValues values)
+    {
+        CursorItem cursorItem = new CursorItem();
+
+        for (String key : values.keySet())
+            cursorItem.put(key, values.get(key));
+
+        return cursorItem;
+    }
+
     protected void broadcast(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, String type)
     {
         getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
@@ -223,16 +234,6 @@ public class AccessDatabase extends SQLiteDatabase
         }
 
         indexObject.calculated = true;
-    }
-
-    @Override
-    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
-    {
-        int returnedItems = super.remove(database, select);
-
-        broadcast(database, select, TYPE_REMOVE);
-
-        return returnedItems;
     }
 
     public long getAffectedRowCount(android.database.sqlite.SQLiteDatabase database)
@@ -334,6 +335,16 @@ public class AccessDatabase extends SQLiteDatabase
 
         for (String tableName : tableList)
             broadcast(database, new SQLQuery.Select(tableName), TYPE_INSERT);
+    }
+
+    @Override
+    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
+    {
+        int returnedItems = super.remove(database, select);
+
+        broadcast(database, select, TYPE_REMOVE);
+
+        return returnedItems;
     }
 
     @Override

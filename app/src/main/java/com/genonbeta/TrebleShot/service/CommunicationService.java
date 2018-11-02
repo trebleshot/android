@@ -92,6 +92,7 @@ public class CommunicationService extends Service
     public static final String ACTION_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE";
     public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
     public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
+    public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
 
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -789,6 +790,10 @@ public class CommunicationService extends Service
                                             if (interrupter.interrupted())
                                                 getDatabase().remove(group);
                                             else if (transferObject != null && pendingRegistry.size() > 0) {
+                                                sendBroadcast(new Intent(ACTION_INCOMING_TRANSFER_READY)
+                                                        .putExtra(EXTRA_GROUP_ID, groupId)
+                                                        .putExtra(EXTRA_DEVICE_ID, finalDevice.deviceId));
+
                                                 if (seamlessActive && finalDevice.isTrusted)
                                                     try {
                                                         startFileReceiving(group.groupId, finalDevice.deviceId);
@@ -797,7 +802,6 @@ public class CommunicationService extends Service
                                                     }
                                                 else
                                                     getNotificationHelper().notifyTransferRequest(transferObject, finalDevice, pendingRegistry.size());
-
                                             }
                                         }
                                     });

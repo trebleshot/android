@@ -54,7 +54,7 @@
         </RelativeLayout>
 
         <Button
-            android:id="@+id/cancelButton"
+            android:id="@+id/actionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"

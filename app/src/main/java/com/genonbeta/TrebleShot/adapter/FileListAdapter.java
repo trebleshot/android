@@ -94,7 +94,7 @@ public class FileListAdapter
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_white_24dp_static));
+            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_file_download_white_24dp));
 
             File fileSystemRoot = new File(".");
 

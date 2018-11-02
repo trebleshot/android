@@ -55,7 +55,8 @@ public class HomeFragment
                 if (menuItem.getOrder() == 1)
                     startActivity(new Intent(getContext(), ContentSharingActivity.class));
                 else if (menuItem.getOrder() == 2)
-                    startActivity(new Intent(getContext(), ConnectionManagerActivity.class));
+                    startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
+                    .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString()));
 
                 return false;
             }

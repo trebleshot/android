@@ -32,8 +32,6 @@ public class SelectionListFragment
 		extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder, SelectionListFragment.MyAdapter>
 		implements IconSupport, TitleSupport
 {
-	private WeakReference<ReadyLoadListener> mListener;
-
 	@Override
 	public MyAdapter onAdapter()
 	{
@@ -105,34 +103,6 @@ public class SelectionListFragment
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_files);
-	}
-
-	protected boolean loadIfReady()
-	{
-		if (getAdapter() != null) {
-			ReadyLoadListener listener = mListener != null && mListener.get() != null
-					? mListener.get()
-					: getActivity() != null && getActivity() instanceof ReadyLoadListener ? (ReadyLoadListener) getActivity() : null;
-
-			if (listener != null) {
-				getAdapter().load(listener.onSelectionReadyLoad());
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	public void refreshList()
-	{
-		if (loadIfReady())
-			super.refreshList();
-	}
-
-	public void setReadyLoadListener(ReadyLoadListener listener)
-	{
-		mListener = new WeakReference<>(listener);
 	}
 
 	public boolean updateSelection(boolean selectAll)
@@ -245,10 +215,5 @@ public class SelectionListFragment
 				mPendingList.addAll(selectableList);
 			}
 		}
-	}
-
-	public interface ReadyLoadListener
-	{
-		ArrayList<? extends Selectable> onSelectionReadyLoad();
 	}
 }

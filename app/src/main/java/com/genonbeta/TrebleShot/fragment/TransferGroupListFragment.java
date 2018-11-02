@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
@@ -79,6 +80,14 @@ public class TransferGroupListFragment
 
 		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTransfer));
+		useEmptyActionButton(getString(R.string.butn_share), new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				startActivity(new Intent(getActivity(), ContentSharingActivity.class));
+			}
+		});
 	}
 
 	@Override

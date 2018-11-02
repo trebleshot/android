@@ -14,6 +14,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -66,6 +67,7 @@ public class BarcodeConnectFragment
     private TextView mConductText;
     private ImageView mConductImage;
     private View mConductContainer;
+    private Button mConductButton;
     private View mTaskContainer;
     private AppCompatButton mTaskInterruptButton;
     private IntentFilter mIntentFilter = new IntentFilter();
@@ -120,6 +122,7 @@ public class BarcodeConnectFragment
     {
         View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
 
+        mConductButton = view.findViewById(R.id.layout_barcode_connect_conduct_button);
         mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
         mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
         mConductImage = view.findViewById(R.id.layout_barcode_connect_conduct_image);
@@ -286,6 +289,16 @@ public class BarcodeConnectFragment
             if (!hasPermissions) {
                 mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
                 mConductText.setText(R.string.text_cameraPermissionRequired);
+                mConductButton.setText(R.string.butn_ask);
+
+                mConductButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+                    }
+                });
 
                 if (!mPermissionRequested)
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
@@ -294,9 +307,24 @@ public class BarcodeConnectFragment
             } else {
                 mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
                 mConductText.setText(R.string.text_scanQRWifiRequired);
+                mConductButton.setText(R.string.butn_enable);
+
+                mConductButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        mConnectionUtils.getConnectionUtils().getWifiManager().setWifiEnabled(true);
+
+                        createSnackbar(R.string.mesg_completing)
+                                .show();
+                    }
+                });
             }
-        } else
+        } else {
             mBarcodeView.resume();
+            mConductText.setText(R.string.text_scanQRCodeHelp);
+        }
 
         mConductContainer.setVisibility(state ? View.GONE : View.VISIBLE);
         mBarcodeView.setVisibility(state ? View.VISIBLE : View.GONE);

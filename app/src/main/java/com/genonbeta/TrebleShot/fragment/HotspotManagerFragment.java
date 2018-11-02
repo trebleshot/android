@@ -9,6 +9,9 @@ import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,6 +29,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
@@ -73,6 +77,8 @@ public class HotspotManagerFragment
 
         mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
         mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
+
+        setHasOptionsMenu(true);
     }
 
     @Nullable
@@ -82,6 +88,7 @@ public class HotspotManagerFragment
         View view = getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
 
         mCodeView = view.findViewById(R.id.layout_hotspot_manager_qr_image);
+        mToggleButton = view.findViewById(R.id.layout_hotspot_manager_info_toggle_button);
         mContainerText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2_container);
         mContainerText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3_container);
@@ -91,7 +98,6 @@ public class HotspotManagerFragment
         mText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1);
         mText2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3);
-        mToggleButton = view.findViewById(R.id.layout_hotspot_manager_info_toggle_button);
 
         mToggleButton.setOnClickListener(new View.OnClickListener()
         {
@@ -165,9 +171,6 @@ public class HotspotManagerFragment
     // for hotspot
     private void updateViews(String networkName, String password, int keyManagement)
     {
-        mTextIcon2.setImageResource(R.drawable.ic_wifi_tethering_white_24dp);
-        mTextIcon3.setImageResource(R.drawable.ic_vpn_key_white_24dp);
-
         try {
             JSONObject object = new JSONObject()
                     .put(Keyword.NETWORK_NAME, networkName)

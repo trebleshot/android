@@ -39,9 +39,7 @@ public class SquareRelativeLayout extends RelativeLayout
 		final TypedArray typedAttributes = context.getTheme()
 				.obtainStyledAttributes(attrs, R.styleable.SquareRelativeLayout, defStyleAttr, 0);
 
-		Log.d("baseeee", "expected: " + R.attr.baseOnSmallerLength);
 		mBaseOnSmaller = typedAttributes.getBoolean(R.styleable.SquareRelativeLayout_baseOnSmallerLength, mBaseOnSmaller);
-		Log.d("baseeee", "dsd: " + mBaseOnSmaller);
 	}
 
 	@Override

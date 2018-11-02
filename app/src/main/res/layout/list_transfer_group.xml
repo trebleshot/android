@@ -1,90 +1,98 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/listContentLayoutStyle"
+    style="@style/listContentLayoutCardViewMetrics"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector">
 
-    <FrameLayout
-        android:id="@+id/layout_image"
-        style="@style/listContentIconStyle"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true">
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/text_image"
-            app:srcCompat="@drawable/ic_github_circle_white_24dp" />
-
-        <include
-            layout="@layout/generic_view_selection_rounded"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-    </FrameLayout>
-
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/container"
+        style="@style/listContentLayoutStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
-        android:orientation="vertical">
+        android:background="?rectSelector">
 
-        <TextView
-            android:id="@+id/text"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        <FrameLayout
+            android:id="@+id/layout_image"
+            style="@style/listContentIconStyle"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true">
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/text_image"
+                app:srcCompat="@drawable/ic_github_circle_white_24dp" />
+
+            <include
+                layout="@layout/generic_view_selection_rounded"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/layout_image"
+            android:layout_toRightOf="@id/layout_image"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Secondary"
+                android:id="@+id/text"
+                style="@style/TextAppearance.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <TextView
-                style="@style/textSeparatorMiddleDot"
+            <View
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
-            <TextView
-                android:id="@+id/text3"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-            <TextView
-                style="@style/textSeparatorMiddleDot"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/text2"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:id="@+id/text4"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
+                <TextView
+                    style="@style/textSeparatorMiddleDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/text3"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    style="@style/textSeparatorMiddleDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/text4"
+                    style="@style/TextAppearance.Secondary"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+            </LinearLayout>
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
-
-    </LinearLayout>
-</RelativeLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

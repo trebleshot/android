@@ -113,15 +113,12 @@ public class TransferListAdapter
         for (GenericTransferItem object : derivedList) {
             NetworkDevice device = networkDevices.get(object.deviceId);
 
-            if (device == null)
-                continue;
-
             object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
             if (currentPath != null && object.directory == null)
                 continue;
 
-            object.setDeviceName(device.nickname);
+            object.setDeviceName(device == null ? null : device.nickname);
 
             if ((currentPath == null && object.directory == null)
                     || object.directory.equals(currentPath)) {
@@ -518,7 +515,9 @@ public class TransferListAdapter
         @Override
         public String getFirstText(TransferListAdapter adapter)
         {
-            return mDeviceName;
+            return mDeviceName == null
+                    ? adapter.getContext().getString(R.string.text_unknown)
+                    : mDeviceName;
         }
 
         @Override
