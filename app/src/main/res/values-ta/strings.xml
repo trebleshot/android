@@ -9,4 +9,5 @@
     <string name="butn_cancelSending">அனுப்புதலை நிறுத்து</string>
     <string name="text_receiving">பெறுகிறது</string>
     <string name="butn_cancelReceiving">பெறுவதை நிறுத்து</string>
+    <string name="ques_receiveFile">கோப்பினை ஏற்க்கவா \?</string>
     </resources>
