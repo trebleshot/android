@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="text_prefaceNickname" translatable="false">\"Aecor\"</string>
+    <string name="text_prefaceNickname" translatable="false">\"!λ\"</string>
     <string name="text_prefaceDonation" translatable="false">
         \t\tThis hard-coded string, here, is
         just a little part which is apparent

@@ -66,7 +66,6 @@ public class BarcodeConnectFragment
     private UIConnectionUtils mConnectionUtils;
     private TextView mConductText;
     private ImageView mConductImage;
-    private View mConductContainer;
     private Button mConductButton;
     private View mTaskContainer;
     private AppCompatButton mTaskInterruptButton;
@@ -126,7 +125,6 @@ public class BarcodeConnectFragment
         mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
         mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
         mConductImage = view.findViewById(R.id.layout_barcode_connect_conduct_image);
-        mConductContainer = view.findViewById(R.id.container_conduct);
         mTaskContainer = view.findViewById(R.id.container_task);
         mTaskInterruptButton = view.findViewById(R.id.task_interrupter_button);
 
@@ -258,7 +256,7 @@ public class BarcodeConnectFragment
         if (isConnecting) {
             // Keep showing barcode view
             mBarcodeView.pauseAndWait();
-            mConductContainer.setVisibility(View.GONE);
+            setConductItemsShowing(false);
         } else {
             mBarcodeView.resume();
             updateState();
@@ -326,8 +324,14 @@ public class BarcodeConnectFragment
             mConductText.setText(R.string.text_scanQRCodeHelp);
         }
 
-        mConductContainer.setVisibility(state ? View.GONE : View.VISIBLE);
+        setConductItemsShowing(!state);
         mBarcodeView.setVisibility(state ? View.VISIBLE : View.GONE);
+    }
+
+    protected void setConductItemsShowing(boolean showing)
+    {
+        mConductImage.setVisibility(showing ? View.VISIBLE : View.GONE);
+        mConductButton.setVisibility(showing ? View.VISIBLE : View.GONE);
     }
 
     @Override

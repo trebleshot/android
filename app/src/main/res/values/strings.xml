@@ -397,4 +397,5 @@
     <string name="butn_connectIpAddress">Connect using IP address</string>
     <string name="butn_scanQrCode">Scan the QR Code</string>
     <string name="butn_useExistingNetwork">Use an existing network</string>
+    <string name="butn_feedbackContact"><![CDATA[Feedback & contact]]></string>
 </resources>

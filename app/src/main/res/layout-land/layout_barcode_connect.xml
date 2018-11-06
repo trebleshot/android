@@ -9,25 +9,16 @@
         android:layout_height="match_parent"
         android:orientation="horizontal">
 
-        <LinearLayout
+        <include
             android:id="@+id/container_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1">
+            layout="@layout/include_layout_barcode_connect_scanner"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-            <include layout="@layout/include_layout_barcode_connect_scanner" />
-
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/layout_barcode_connect_conduct_text"
-            style="@style/TextAppearance.Primary.Big"
+        <include
+            layout="@layout/include_layout_barcode_connect_conduct_view"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:paddingLeft="20dp"
-            android:paddingRight="20dp"
-            android:text="@string/text_scanQRCodeHelp" />
+            android:layout_weight="1" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

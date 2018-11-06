@@ -24,6 +24,8 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * created by: Veli
@@ -74,16 +76,6 @@ public class GitHubContributorsListFragment
 	{
 		super.onViewCreated(view, savedInstanceState);
 
-		getEmptyImage().setOnLongClickListener(new View.OnLongClickListener()
-		{
-			@Override
-			public boolean onLongClick(View v)
-			{
-				AppUtils.requestPortal(getActivity());
-				return true;
-			}
-		});
-
 		useEmptyActionButton(true);
 		getEmptyActionButton().setText(R.string.butn_refresh);
 		getEmptyActionButton().setOnClickListener(new View.OnClickListener()
@@ -97,6 +89,12 @@ public class GitHubContributorsListFragment
 
 		setEmptyImage(R.drawable.ic_github_circle_white_24dp);
 		setEmptyText(getString(R.string.mesg_noInternetConnection));
+	}
+
+	@Override
+	public RecyclerView.LayoutManager onLayoutManager()
+	{
+		return new GridLayoutManager(getContext(), 1);
 	}
 
 	public static class ContributorObject

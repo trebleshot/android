@@ -295,14 +295,6 @@ public class AppUtils
                 .apply();
     }
 
-    public static void requestPortal(Activity activity)
-    {
-        new AlertDialog.Builder(activity)
-                .setMessage(new String(Base64.decode("Ik5lYnVsYSDwn4yMIiBtdXN0IHJlYWNoIEB2ZWxpdGFzYWxp", Base64.DEFAULT)))
-                .setNegativeButton(R.string.butn_close, null)
-                .show();
-    }
-
     public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
     {
         quickActions.onQuickActions(clazz);

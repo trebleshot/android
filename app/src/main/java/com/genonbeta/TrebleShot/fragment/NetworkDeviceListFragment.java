@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
+import com.genonbeta.TrebleShot.widget.recyclerview.CardViewItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -113,6 +114,9 @@ public class NetworkDeviceListFragment
                 requestRefresh();
             }
         });
+
+        float padding = getResources().getDimension(R.dimen.padding_list_content_parent_layout);
+        getListView().addItemDecoration(new CardViewItemDecoration((int) padding));
     }
 
     @Override

@@ -353,12 +353,13 @@ public class AddDevicesToTransferActivity extends Activity
                                     createSnackbar(R.string.mesg_somethingWentWrong).show();
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
-
                             if (!(e instanceof InterruptedException)) {
+                                e.printStackTrace();
                                 createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
                                         .show();
                             }
+
+                            startConnectionManagerActivity();
                         } finally {
                             runOnUiThread(new Runnable()
                             {
@@ -398,6 +399,7 @@ public class AddDevicesToTransferActivity extends Activity
         mActionButton = findViewById(R.id.actionButton);
 
         resetStatusViews();
+        startConnectionManagerActivity();
     }
 
     public boolean runOnWorkerService(WorkerService.RunningTask runningTask)
@@ -427,8 +429,6 @@ public class AddDevicesToTransferActivity extends Activity
         });
 
         getDefaultInterrupter().reset(true);
-
-        startConnectionManagerActivity();
     }
 
     protected void showChooserDialog(final NetworkDevice device)

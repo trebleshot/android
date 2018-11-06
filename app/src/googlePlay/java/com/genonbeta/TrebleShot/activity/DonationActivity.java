@@ -36,20 +36,6 @@ public class DonationActivity extends Activity
 	}
 
 	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		findViewById(R.id.bigHeart).setAnimation(AnimationUtils.loadAnimation(this, R.anim.pulse));
-	}
-
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		findViewById(R.id.bigHeart).setAnimation(null);
-	}
-
-	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
 		int id = item.getItemId();

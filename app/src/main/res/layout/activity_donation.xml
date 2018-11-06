@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context=".activity.DonationActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -48,18 +48,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <View
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp" />
-
-                <ImageView
-                    android:id="@+id/bigHeart"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_favorite_white_144dp"
-                    app:tint="?colorDonation" />
+                android:orientation="vertical"
+                android:layout_marginLeft="@dimen/short_content_width_padding"
+                android:layout_marginRight="@dimen/short_content_width_padding">
 
                 <View
                     android:layout_width="wrap_content"
@@ -70,6 +61,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/text_prefaceNickname"
+                    android:textColor="?colorDonation"
                     android:textSize="@dimen/font_size_big"
                     android:textStyle="bold" />
 

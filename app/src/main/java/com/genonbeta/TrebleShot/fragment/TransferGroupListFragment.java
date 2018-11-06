@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+import com.genonbeta.TrebleShot.widget.recyclerview.CardViewItemDecoration;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
@@ -88,6 +89,9 @@ public class TransferGroupListFragment
 				startActivity(new Intent(getActivity(), ContentSharingActivity.class));
 			}
 		});
+
+		float padding = getResources().getDimension(R.dimen.padding_list_content_parent_layout);
+		getListView().addItemDecoration(new CardViewItemDecoration((int) padding));
 	}
 
 	@Override

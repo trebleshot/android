@@ -125,7 +125,7 @@ public class TransferGroupListAdapter
 	public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
 		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title_no_padding, parent, false), R.id.layout_list_title_text);
 
 		return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transfer_group, parent, false));
 	}
