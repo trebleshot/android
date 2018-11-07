@@ -362,4 +362,6 @@
     <string name="text_killServiceAfterLeaving">Tjänsten stannar när du stänger appen</string>
     <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som har ändrats sen förra versionen\?</string>
     <string name="butn_telegram_channel">Telegramkanal</string>
-</resources>
+<string name="text_transactionGroupDetails">Överföringsgruppsuppgifter</string>
+    <string name="mesg_providerNotAllowedError">Standardmappen är inte tillgänglig för andra appar</string>
+    </resources>
