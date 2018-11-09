@@ -226,6 +226,7 @@ public class HomeActivity
                         sendIntent
                                 .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
                                 .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(HomeActivity.this, cloneFile))
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 .setType(cloneFile.getType());
 
                         startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));

@@ -27,7 +27,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 
     public static DocumentFile getApplicationDirectory(Context context, SharedPreferences defaultPreferences)
     {
-        String defaultPath = Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + context.getString(R.string.text_appName);
+        String defaultPath = getDefaultApplicationDirectoryPath(context);
 
         if (defaultPreferences.contains("storage_path")) {
             try {
@@ -49,6 +49,12 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
             defaultFolder.mkdirs();
 
         return DocumentFile.fromFile(defaultFolder);
+    }
+
+    public static String getDefaultApplicationDirectoryPath(Context context) {
+        return Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator
+                + context.getString(R.string.text_appName);
     }
 
     public static String getFileFormat(String fileName)

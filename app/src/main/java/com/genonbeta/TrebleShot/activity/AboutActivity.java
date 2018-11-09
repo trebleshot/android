@@ -14,7 +14,9 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.external.GitHubContributorsListFragment;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -126,13 +128,24 @@ public class AboutActivity extends Activity
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.actions_about_feedback) {
-            Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setType("*/*");
-            intent.setData(Uri.parse("mailto:" + AppConfig.EMAIL_DEVELOPER));
-            intent.putExtra(Intent.EXTRA_EMAIL, AppConfig.EMAIL_DEVELOPER);
-            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.text_appName));
+            Intent intent = new Intent(Intent.ACTION_SEND)
+                    .setType("text/plain")
+                    .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
+                    .putExtra(Intent.EXTRA_SUBJECT, getString(R.string.text_appName));
 
-            startActivity(Intent.createChooser(intent, getString(R.string.text_application)));
+            DocumentFile logFile = AppUtils.createLog(AboutActivity.this);
+
+            if (logFile != null) {
+                try {
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(AboutActivity.this, logFile)));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            // fixme: Do not use hardcoded string
+            startActivity(Intent.createChooser(intent, "Choose an email application"));
         } else
             return super.onOptionsItemSelected(item);
 
