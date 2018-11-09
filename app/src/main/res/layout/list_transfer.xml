@@ -13,6 +13,12 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true">
 
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval.Bald"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <ImageView
             android:id="@+id/image"
             android:layout_width="wrap_content"
@@ -77,12 +83,5 @@
                 android:layout_height="wrap_content" />
 
         </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
-
 </RelativeLayout>

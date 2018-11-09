@@ -21,6 +21,20 @@
 		<item name="itemTextColor">?attr/selectionAccentColor</item>
 	</style>
 
+	<style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">
+		<item name="cardBackgroundColor">?cardBackgroundColor</item>
+		<item name="cardElevation">2dp</item>
+	</style>
+
+	<style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">
+		<item name="android:progressDrawable">?roundProgressBar</item>
+		<item name="android:background">?roundProgressBarShape</item>
+	</style>
+
+	<style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval.Bald">
+		<item name="android:background">@android:color/transparent</item>
+	</style>
+
 	<style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout">
 		<item name="tabTextColor">?selectionAccentColor</item>
 		<item name="android:background">@android:color/transparent</item>

@@ -282,6 +282,10 @@ public class TransferListAdapter
                     return getContext().getString(R.string.text_transactionDetails);
                 case FOLDER:
                     return getContext().getString(R.string.text_folder);
+                case FILE_ERROR:
+                    return getContext().getString(R.string.text_flagInterrupted);
+                case FILE_ONGOING:
+                    return getContext().getString(R.string.text_taskOngoing);
                 default:
                     return getContext().getString(R.string.text_file);
             }
@@ -678,7 +682,7 @@ public class TransferListAdapter
         @Override
         public boolean hasIssues()
         {
-            return bytesFree < bytesRequired;
+            return bytesFree < bytesRequired && bytesFree != -1;
         }
 
         @Override
@@ -750,8 +754,14 @@ public class TransferListAdapter
                 mType = Type.STATUS;
             else if (holder instanceof TransferFolder)
                 mType = Type.FOLDER;
-            else
-                mType = Type.FILE;
+            else {
+                if (holder.hasIssues())
+                    mType = Type.FILE_ERROR;
+                else if (TransferObject.Flag.IN_PROGRESS.equals(holder.flag))
+                    mType = Type.FILE_ONGOING;
+                else
+                    mType = Type.FILE;
+            }
         }
 
         @Override
@@ -779,7 +789,9 @@ public class TransferListAdapter
         {
             STATUS,
             FOLDER,
-            FILE
+            FILE_ONGOING,
+            FILE_ERROR,
+            FILE,
         }
     }
 }

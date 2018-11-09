@@ -5,6 +5,8 @@
         <item name="android:textColorPrimary">@color/colorControlNormal</item>
         <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
+        <item name="cardBackgroundColor">@color/cardViewBackground</item>
+        <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
         <item name="colorError">@color/colorError</item>
@@ -27,6 +29,8 @@
         <item name="rectSelector">@drawable/rect_selector</item>
         <item name="rippleBackground">@drawable/ripple_background</item>
         <item name="roundSelector">@drawable/round_selector</item>
+        <item name="roundProgressBar">@drawable/round_progress_bar</item>
+        <item name="roundProgressBarShape">@drawable/round_progress_bar_shape</item>
         <item name="selectionAccentColor">@color/selection_accent</item>
         <item name="selectionColor">@color/selection</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
@@ -49,6 +53,8 @@
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
         <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
+        <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
+        <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="colorControlNormal">@color/dark_colorControlNormal</item>
         <item name="colorError">@color/dark_colorError</item>
@@ -71,6 +77,8 @@
         <item name="rectSelector">@drawable/rect_selector_dark</item>
         <item name="rippleBackground">@drawable/ripple_background_dark</item>
         <item name="roundSelector">@drawable/round_selector_dark</item>
+        <item name="roundProgressBar">@drawable/round_progress_bar_dark</item>
+        <item name="roundProgressBarShape">@drawable/round_progress_bar_shape_dark</item>
         <item name="selectionAccentColor">@color/selection_accent_dark</item>
         <item name="selectionColor">@color/selection_dark</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background_dark</item>

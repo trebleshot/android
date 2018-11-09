@@ -11,6 +11,8 @@
     <attr name="rectSelector" format="reference" />
     <attr name="rippleBackground" format="reference" />
     <attr name="roundSelector" format="reference" />
+    <attr name="roundProgressBar" format="reference" />
+    <attr name="roundProgressBarShape" format="reference" />
     <attr name="selectionColor" format="reference" />
     <attr name="selectionAccentColor" format="reference" />
     <attr name="selectableItemBackground" format="reference" />
