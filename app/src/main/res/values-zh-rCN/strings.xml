@@ -7,9 +7,9 @@
     <string name="text_available">可用</string>
     <string name="text_notAvailable">不可用</string>
     <string name="text_deviceListEmpty">没有设备</string>
-    <string name="mesg_noNetwork">无连接，需要启用Wi-Fi 等连接来查找附近的设备</string>
+    <string name="mesg_noNetwork">没有可用的连接方式，请启用 Wi-Fi 等以便查找附近的设备</string>
     <string name="mesg_scanningDevices">正在寻找附近的设备</string>
-    <string name="ques_receiveFile">是否接收文件？</string>
+    <string name="ques_receiveFile">是否接收此文件？</string>
     <string name="butn_accept">接受</string>
     <string name="butn_reject">拒绝</string>
     <string name="butn_stopService">停止</string>
@@ -127,8 +127,8 @@
     <string name="text_storage">存储</string>
     <string name="text_shareFiles">分享文件</string>
     <string name="text_fileStatus">文件状态</string>
-    <string name="text_navigationDrawerOpen">打开导航面板</string>
-    <string name="text_navigationDrawerClose">关闭导航面板</string>
+    <string name="text_navigationDrawerOpen">打开导航抽屉</string>
+    <string name="text_navigationDrawerClose">关闭导航抽屉</string>
     <string name="mesg_fileReceived">%s 已接收</string>
     <string name="text_pendingTransfersOfDevice">等候队列 - %s</string>
     <string name="text_useVibration">震动与通知卡片</string>
