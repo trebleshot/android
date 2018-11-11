@@ -14,4 +14,6 @@
     <string name="text_developerMode">மேம்பாட்டாளர் முறை</string>
     <string name="text_deviceName">சாதனத்தின் பெயர்</string>
     <string name="text_deviceNameTitle">சாதனத்தின் பெயரை உள்ளிடு</string>
+    <string name="mesg_connectionFailure">இணைப்பு தோல்வியுற்றது</string>
+    <string name="text_fileReceived">கோப்பு பெற்றுகொள்ளப்பட்டது</string>
     </resources>
