@@ -364,7 +364,7 @@
     <string name="butn_pause">Wstrzymaj</string>
     <string name="butn_retry">Ponów próbę</string>
     <string name="mesg_noPendingTransferObjectExists">Nie przesłano żadnego oczekującego transferu, ponieważ zostały one przerwane lub już zakończone.</string>
-    <string name="mesg_notSavingToChosenLocation">Pliki nie zostaną zapisane w żądanym folderze, ponieważ nie jest on już dostępny 
+    <string name="mesg_notSavingToChosenLocation">Pliki nie zostaną zapisane w żądanym folderze, ponieważ nie jest on teraz dostępny. 
 \n 
 \n %s</string>
     <string name="butn_changelog">Lista zmian</string>
