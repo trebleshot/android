@@ -437,8 +437,7 @@ public class ViewTransferActivity
         if (mStartMenu == null || mRetryMenu == null || mShowFiles == null)
             return;
 
-        mStartMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_resume);
-        mStartMenu.setIcon(hasRunning ? R.drawable.ic_pause_white_24dp : R.drawable.ic_play_arrow_white_24dp);
+        mStartMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_start);
 
         // Only show when there
         mAddDevice.setVisible(hasOutgoing);

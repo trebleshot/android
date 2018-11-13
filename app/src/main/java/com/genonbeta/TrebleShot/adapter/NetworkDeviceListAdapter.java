@@ -10,12 +10,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
+import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -23,131 +26,167 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 
-public class NetworkDeviceListAdapter extends RecyclerViewAdapter<NetworkDevice, RecyclerViewAdapter.ViewHolder>
+public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
 {
-	private ConnectionUtils mConnectionUtils;
-	private ArrayList<NetworkDevice> mList = new ArrayList<>();
-	private TextDrawable.IShapeBuilder mIconBuilder;
+    private ConnectionUtils mConnectionUtils;
+    private TextDrawable.IShapeBuilder mIconBuilder;
 
-	public NetworkDeviceListAdapter(Context context, SharedPreferences preferences, ConnectionUtils connectionUtils)
-	{
-		super(context);
+    public NetworkDeviceListAdapter(Context context, ConnectionUtils connectionUtils)
+    {
+        super(context);
 
-		mConnectionUtils = connectionUtils;
-		mIconBuilder = AppUtils.getDefaultIconBuilder(context);
+        mConnectionUtils = connectionUtils;
+        mIconBuilder = AppUtils.getDefaultIconBuilder(context);
+    }
 
-		setHasStableIds(true);
-	}
+    @Override
+    public ArrayList<EditableNetworkDevice> onLoad()
+    {
+        ArrayList<EditableNetworkDevice> list = new ArrayList<>();
 
-	@Override
-	public ArrayList<NetworkDevice> onLoad()
-	{
-		ArrayList<NetworkDevice> list = new ArrayList<>();
+        if (mConnectionUtils.canReadScanResults()) {
+            for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {
+                if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
+                    continue;
 
-		if (mConnectionUtils.canReadScanResults()) {
-			for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {
-				if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
-					continue;
+                HotspotNetwork hotspotNetwork = new HotspotNetwork();
 
-				HotspotNetwork hotspotNetwork = new HotspotNetwork();
+                hotspotNetwork.lastUsageTime = System.currentTimeMillis();
+                hotspotNetwork.SSID = resultIndex.SSID;
+                hotspotNetwork.BSSID = resultIndex.BSSID;
+                hotspotNetwork.nickname = AppUtils.getFriendlySSID(resultIndex.SSID);
 
-				hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-				hotspotNetwork.SSID = resultIndex.SSID;
-				hotspotNetwork.BSSID = resultIndex.BSSID;
-				hotspotNetwork.nickname = AppUtils.getFriendlySSID(resultIndex.SSID);
+                list.add(hotspotNetwork);
+            }
+        }
 
-				list.add(hotspotNetwork);
-			}
-		}
+        if (list.size() == 0 && mConnectionUtils.isConnectionSelfNetwork()) {
+            WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
 
-		if (list.size() == 0 && mConnectionUtils.isConnectionSelfNetwork()) {
-			WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
+            HotspotNetwork hotspotNetwork = new HotspotNetwork();
 
-			HotspotNetwork hotspotNetwork = new HotspotNetwork();
+            hotspotNetwork.lastUsageTime = System.currentTimeMillis();
+            hotspotNetwork.SSID = wifiInfo.getSSID();
+            hotspotNetwork.BSSID = wifiInfo.getBSSID();
+            hotspotNetwork.nickname = AppUtils.getFriendlySSID(wifiInfo.getSSID());
 
-			hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-			hotspotNetwork.SSID = wifiInfo.getSSID();
-			hotspotNetwork.BSSID = wifiInfo.getBSSID();
-			hotspotNetwork.nickname = AppUtils.getFriendlySSID(wifiInfo.getSSID());
+            list.add(hotspotNetwork);
+        }
 
-			list.add(hotspotNetwork);
-		}
+        for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
+                .setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), EditableNetworkDevice.class))
+            if (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false))
+                list.add(device);
 
-		for (NetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-				.setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), NetworkDevice.class))
-			if (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false))
-				list.add(device);
+        return list;
+    }
 
-		return list;
-	}
+    @NonNull
+    @Override
+    public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    {
+        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_network_device, parent, false));
+    }
 
-	@Override
-	public void onUpdate(ArrayList<NetworkDevice> passedItem)
-	{
-		mList.clear();
-		mList.addAll(passedItem);
-	}
+    @Override
+    public void onBindViewHolder(@NonNull EditableListAdapter.EditableViewHolder holder, int position)
+    {
+        View parentView = holder.getView();
+        NetworkDevice device = getList().get(position);
 
-	@NonNull
-	@Override
-	public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-	{
-		return new ViewHolder(getInflater().inflate(R.layout.list_network_device, parent, false));
-	}
+        boolean hotspotNetwork = device instanceof HotspotNetwork;
 
-	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position)
-	{
-		View parentView = holder.getView();
-		NetworkDevice device = getList().get(position);
+        TextView deviceText = parentView.findViewById(R.id.text2);
+        TextView userText = parentView.findViewById(R.id.text1);
+        ImageView userImage = parentView.findViewById(R.id.image);
 
-		boolean hotspotNetwork = device instanceof HotspotNetwork;
+        userText.setText(device.nickname);
+        deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
 
-		TextView deviceText = parentView.findViewById(R.id.text2);
-		TextView userText = parentView.findViewById(R.id.text1);
-		ImageView userImage = parentView.findViewById(R.id.image);
+        userImage.setImageDrawable(mIconBuilder.buildRound(device.nickname));
+    }
 
-		userText.setText(device.nickname);
-		deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
+    public static class EditableNetworkDevice
+            extends NetworkDevice
+            implements Editable
+    {
+        private boolean mIsSelected = false;
 
-		userImage.setImageDrawable(mIconBuilder.buildRound(device.nickname));
-	}
+        public EditableNetworkDevice()
+        {
+            super();
+        }
 
-	@Override
-	public long getItemId(int position)
-	{
-		NetworkDevice device = getList().get(position);
+        @Override
+        public long getId()
+        {
+            return deviceId.hashCode();
+        }
 
-		return (device instanceof HotspotNetwork ? ((HotspotNetwork) device).SSID : device.deviceId)
-				.hashCode();
-	}
+        @Override
+        public void setId(long id)
+        {
 
-	@Override
-	public int getItemCount()
-	{
-		return mList.size();
-	}
+        }
 
-	@Override
-	public ArrayList<NetworkDevice> getList()
-	{
-		return mList;
-	}
+        @Override
+        public String getComparableName()
+        {
+            return nickname;
+        }
 
-	public static class HotspotNetwork extends NetworkDevice
-	{
-		public String SSID;
-		public String BSSID;
-		public String password;
-		public int keyManagement;
-		public boolean qrConnection;
+        @Override
+        public long getComparableDate()
+        {
+            return lastUsageTime;
+        }
 
-		public HotspotNetwork()
-		{
-			super();
+        @Override
+        public long getComparableSize()
+        {
+            return 0;
+        }
 
-			this.versionName = "stamp";
-			this.versionNumber = -1;
-		}
-	}
+        @Override
+        public String getSelectableTitle()
+        {
+            return nickname;
+        }
+
+        @Override
+        public boolean isSelectableSelected()
+        {
+            return mIsSelected;
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            mIsSelected = selected;
+            return true;
+        }
+    }
+
+    public static class HotspotNetwork extends EditableNetworkDevice
+    {
+        public String SSID;
+        public String BSSID;
+        public String password;
+        public int keyManagement;
+        public boolean qrConnection;
+
+        public HotspotNetwork()
+        {
+            super();
+
+            this.versionName = "stamp";
+            this.versionNumber = -1;
+        }
+
+        @Override
+        public long getId()
+        {
+            return SSID.hashCode();
+        }
+    }
 }

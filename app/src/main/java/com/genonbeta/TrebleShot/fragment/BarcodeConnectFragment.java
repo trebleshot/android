@@ -243,7 +243,7 @@ public class BarcodeConnectFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_connect);
+        return context.getString(R.string.text_scanQrCode);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

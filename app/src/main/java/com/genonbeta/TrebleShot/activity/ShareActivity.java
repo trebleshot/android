@@ -1,13 +1,9 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -16,7 +12,6 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -44,9 +39,6 @@ public class ShareActivity extends Activity
     public static final String TAG = "ShareActivity";
 
     public static final int WORKER_TASK_LOAD_ITEMS = 1;
-    public static final int WORKER_TASK_CONNECT_SERVER = 2;
-
-    public static final int REQUEST_CODE_EDIT_BOX = 1;
 
     public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
     public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
@@ -56,8 +48,6 @@ public class ShareActivity extends Activity
     public static final String EXTRA_GROUP_ID = "extraGroupId";
 
     private Interrupter mInterrupter = new Interrupter();
-    private WorkerService mWorkerService;
-    private WorkerConnection mWorkerConnection = new WorkerConnection();
     private Bundle mPreLoadingBundle = new Bundle();
     private Button mCancelButton;
     private ProgressBar mProgressBar;
@@ -69,16 +59,73 @@ public class ShareActivity extends Activity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
+        setContentView(R.layout.activity_share);
+
+        String action = getIntent() != null ? getIntent().getAction() : null;
+
+        if (ACTION_SEND.equals(action)
+                || ACTION_SEND_MULTIPLE.equals(action)
+                || Intent.ACTION_SEND.equals(action)
+                || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+            if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
+                startActivity(new Intent(ShareActivity.this, TextEditorActivity.class)
+                        .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+                        .putExtra(TextEditorActivity.EXTRA_TEXT_INDEX, getIntent().getStringExtra(Intent.EXTRA_TEXT)));
+                finish();
+            } else {
+                ArrayList<Uri> fileUris = new ArrayList<>();
+                ArrayList<CharSequence> fileNames = null;
+
+                if (ACTION_SEND_MULTIPLE.equals(action)
+                        || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+                    ArrayList<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
+
+                    fileUris.addAll(pendingFileUris);
+                } else {
+                    fileUris.add((Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
+
+                    if (getIntent().hasExtra(EXTRA_FILENAME_LIST)) {
+                        fileNames = new ArrayList<>();
+                        String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
+
+                        fileNames.add(fileName);
+                    }
+                }
+
+                if (fileUris.size() == 0) {
+                    Toast.makeText(this, R.string.text_listEmpty, Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    mProgressBar = findViewById(R.id.progressBar);
+                    mProgressTextLeft = findViewById(R.id.text1);
+                    mProgressTextRight = findViewById(R.id.text2);
+                    mTextMain = findViewById(R.id.textMain);
+                    mCancelButton = findViewById(R.id.cancelButton);
+
+                    mCancelButton.setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            getDefaultInterrupter().interrupt(true);
+                        }
+                    });
+
+                    organizeFiles(fileUris, fileNames);
+                }
+            }
+        } else {
+            Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     @Override
     protected void onDestroy()
     {
         super.onDestroy();
-
         getDefaultInterrupter().interrupt(false);
-        unbindService(mWorkerConnection);
     }
 
     protected void createFolderStructure(DocumentFile file, String folderName, ArrayList<SelectableStream> pendingObjects)
@@ -118,64 +165,6 @@ public class ShareActivity extends Activity
         return mInterrupter;
     }
 
-    private void initialize()
-    {
-        String action = getIntent() != null ? getIntent().getAction() : null;
-
-        if (action == null) {
-            Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
-            finish();
-        } else if (ACTION_SEND.equals(action)
-                || ACTION_SEND_MULTIPLE.equals(action)
-                || Intent.ACTION_SEND.equals(action)
-                || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-            ArrayList<Uri> fileUris = new ArrayList<>();
-            ArrayList<CharSequence> fileNames = null;
-
-            if (ACTION_SEND_MULTIPLE.equals(action)
-                    || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-                ArrayList<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
-
-                fileUris.addAll(pendingFileUris);
-            } else {
-                fileUris.add((Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
-
-                if (getIntent().hasExtra(EXTRA_FILENAME_LIST)) {
-                    fileNames = new ArrayList<>();
-                    String fileName = getIntent().getStringExtra(EXTRA_FILENAME_LIST);
-
-                    fileNames.add(fileName);
-                }
-            }
-
-
-            if (fileUris.size() == 0) {
-                Toast.makeText(this, R.string.text_listEmpty, Toast.LENGTH_SHORT).show();
-                finish();
-            } else {
-                setContentView(R.layout.activity_share);
-
-                mProgressBar = findViewById(R.id.progressBar);
-                mProgressTextLeft = findViewById(R.id.text1);
-                mProgressTextRight = findViewById(R.id.text2);
-                mTextMain = findViewById(R.id.textMain);
-                mCancelButton = findViewById(R.id.cancelButton);
-
-                mCancelButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        getDefaultInterrupter().interrupt(true);
-                    }
-                });
-
-                organizeFiles(fileUris, fileNames);
-            }
-        }
-    }
-
     protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
     {
         runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_LOAD_ITEMS)
@@ -183,9 +172,10 @@ public class ShareActivity extends Activity
             @Override
             public void onRun()
             {
+                final WorkerService.RunningTask thisTask = this;
                 mProgressBar.setMax(fileUris.size());
-                mTextMain.setText(R.string.mesg_organizingFiles);
-                publishStatusText(getString(R.string.mesg_organizingFiles));
+
+                updateText(thisTask, getString(R.string.mesg_organizingFiles));
 
                 final NetworkDevice localDevice = AppUtils.getLocalDevice(ShareActivity.this);
                 final ArrayList<SelectableStream> measuredObjects = new ArrayList<>();
@@ -197,8 +187,7 @@ public class ShareActivity extends Activity
                     if (getDefaultInterrupter().interrupted())
                         break;
 
-                    mProgressBar.setProgress(mProgressBar.getProgress() + 1);
-
+                    updateProgress(mProgressBar.getMax(), mProgressBar.getProgress() + 1);
                     publishStatusText(String.format(Locale.getDefault(), "%s - %d", getString(R.string.mesg_organizingFiles), pendingObjects.size()));
 
                     Uri fileUri = fileUris.get(position);
@@ -240,23 +229,14 @@ public class ShareActivity extends Activity
                     pendingObjects.add(transferObject);
                 }
 
-                runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        mTextMain.setText(R.string.mesg_completing);
-                    }
-                });
-
-                mProgressBar.setMax(pendingObjects.size());
+                updateText(thisTask, getString(R.string.mesg_completing));
 
                 getDatabase().insert(pendingObjects, new SQLiteDatabase.ProgressUpdater()
                 {
                     @Override
                     public void onProgressChange(int total, int current)
                     {
-                        mProgressBar.setProgress(current);
+                        updateProgress(total, current);
                     }
 
                     @Override
@@ -292,30 +272,46 @@ public class ShareActivity extends Activity
         return mPreLoadingBundle;
     }
 
-    public boolean runOnWorkerService(WorkerService.RunningTask runningTask)
+    public void runOnWorkerService(WorkerService.RunningTask runningTask)
     {
-        if (mWorkerService == null)
-            return false;
-
-        mWorkerService.run(runningTask.setInterrupter(getDefaultInterrupter()));
-
-        return true;
+        getDefaultInterrupter().reset(true);
+        WorkerService.run(ShareActivity.this, runningTask.setInterrupter(getDefaultInterrupter()));
     }
 
-    private class WorkerConnection implements ServiceConnection
+    public void updateProgress(final int total, final int current)
     {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
-            mWorkerService = ((WorkerService.LocalBinder) service).getService();
-            initialize();
-        }
+        if (isFinishing())
+            return;
 
-        @Override
-        public void onServiceDisconnected(ComponentName name)
+        runOnUiThread(new Runnable()
         {
-            finish();
-        }
+            @Override
+            public void run()
+            {
+                mProgressTextLeft.setText(String.valueOf(current));
+                mProgressTextRight.setText(String.valueOf(total));
+            }
+        });
+
+        mProgressBar.setProgress(current);
+        mProgressBar.setMax(total);
+    }
+
+    public void updateText(WorkerService.RunningTask runningTask, final String text)
+    {
+        if (isFinishing())
+            return;
+
+        runningTask.publishStatusText(text);
+
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mTextMain.setText(text);
+            }
+        });
     }
 
     private class SelectableStream implements Selectable

@@ -22,6 +22,7 @@ import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -46,6 +47,7 @@ public class ConnectionManagerActivity
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
     public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
+    public static final String EXTRA_ACTIVITY_SUBTITLE = "extraActivitySubtitle";
 
     private NavigationViewBottomSheetDialog mNavigationDialog;
     private HotspotManagerFragment mHotspotManagerFragment;
@@ -176,13 +178,18 @@ public class ConnectionManagerActivity
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
         mFilter.addAction(CommunicationService.ACTION_INCOMING_TRANSFER_READY);
 
-        if (getIntent() != null
-                && getIntent().hasExtra(EXTRA_REQUEST_TYPE))
-            try {
-                mRequestType = RequestType.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
-            } catch (Exception e) {
+        if (getIntent() != null) {
+            if (getIntent().hasExtra(EXTRA_REQUEST_TYPE))
+                try {
+                    mRequestType = RequestType.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
+                } catch (Exception e) {
 
-            }
+                }
+
+            if (getIntent().hasExtra(EXTRA_ACTIVITY_SUBTITLE)
+                    && getSupportActionBar() != null)
+                getSupportActionBar().setSubtitle(getIntent().getStringExtra(EXTRA_ACTIVITY_SUBTITLE));
+        }
     }
 
     @Override
@@ -220,6 +227,12 @@ public class ConnectionManagerActivity
 
         if (fragment instanceof IconSupport)
             mFAB.setImageResource(((IconSupport) fragment).getIconRes());
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(fragment instanceof TitleSupport
+                    ? ((TitleSupport) fragment).getTitle(ConnectionManagerActivity.this)
+                    : getString(R.string.text_connectDevices));
+        }
     }
 
     private void checkFragment()

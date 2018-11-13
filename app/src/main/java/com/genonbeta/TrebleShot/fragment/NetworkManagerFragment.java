@@ -141,7 +141,7 @@ public class NetworkManagerFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_network);
+        return context.getString(R.string.text_useExistingNetwork);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

@@ -72,6 +72,9 @@ public class VideoListAdapter
 
 				parentView.setSelected(object.isSelectableSelected());
 
+				int paddingActive = object.isSelectableSelected() ? 15 : 0;
+				image.setPadding(paddingActive, paddingActive, paddingActive, paddingActive);
+
 				GlideApp.with(getContext())
 						.load(object.uri)
 						.override(400)

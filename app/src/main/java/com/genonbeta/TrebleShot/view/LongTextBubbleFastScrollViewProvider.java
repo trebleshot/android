@@ -7,13 +7,28 @@ import com.futuremind.recyclerviewfastscroll.viewprovider.ScrollerViewProvider;
 import com.futuremind.recyclerviewfastscroll.viewprovider.ViewBehavior;
 import com.futuremind.recyclerviewfastscroll.viewprovider.VisibilityAnimationManager;*/
 
+import android.graphics.drawable.InsetDrawable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.DefaultBubbleBehavior;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ScrollerViewProvider;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.ViewBehavior;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.VisibilityAnimationManager;
+
+import androidx.core.content.ContextCompat;
+
+import static com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils.setBackground;
+
 /**
  * created by: veli
  * date: 10.04.2018 19:52
  */
 
-// FIXME: 10/28/18
-/*
 public class LongTextBubbleFastScrollViewProvider extends ScrollerViewProvider
 {
 	private View mBubble;
@@ -24,13 +39,13 @@ public class LongTextBubbleFastScrollViewProvider extends ScrollerViewProvider
 	{
 		mHandle = new View(getContext());
 
-		int verticalInset = getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_inset);
-		int horizontalInset = !getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_inset);
-		InsetDrawable handleBg = new InsetDrawable(ContextCompat.getDrawable(getContext(), com.futuremind.recyclerviewfastscroll.R.drawable.fastscroll__default_handle), horizontalInset, verticalInset, horizontalInset, verticalInset);
+		int verticalInset = getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_inset);
+		int horizontalInset = !getScroller().isVertical() ? 0 : getContext().getResources().getDimensionPixelSize(com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_inset);
+		InsetDrawable handleBg = new InsetDrawable(ContextCompat.getDrawable(getContext(), com.genonbeta.android.framework.R.drawable.genfw_fastscroll_default_handle), horizontalInset, verticalInset, horizontalInset, verticalInset);
 		Utils.setBackground(mHandle, handleBg);
 
-		int handleWidth = getContext().getResources().getDimensionPixelSize(getScroller().isVertical() ? com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_clickable_width : com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_height);
-		int handleHeight = getContext().getResources().getDimensionPixelSize(getScroller().isVertical() ? com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_height : com.futuremind.recyclerviewfastscroll.R.dimen.fastscroll__handle_clickable_width);
+		int handleWidth = getContext().getResources().getDimensionPixelSize(getScroller().isVertical() ? com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_clickable_width : com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_height);
+		int handleHeight = getContext().getResources().getDimensionPixelSize(getScroller().isVertical() ? com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_height : com.genonbeta.android.framework.R.dimen.genfw_fastscroll_handle_clickable_width);
 		ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(handleWidth, handleHeight);
 
 		mHandle.setLayoutParams(params);
@@ -68,4 +83,4 @@ public class LongTextBubbleFastScrollViewProvider extends ScrollerViewProvider
 	{
 		return new DefaultBubbleBehavior(new VisibilityAnimationManager.Builder(mBubble).withPivotX(1f).withPivotY(1f).build());
 	}
-}*/
+}

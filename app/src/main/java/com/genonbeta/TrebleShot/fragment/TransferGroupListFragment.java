@@ -23,7 +23,6 @@ import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.TrebleShot.widget.recyclerview.CardViewItemDecoration;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
@@ -42,9 +41,9 @@ public class TransferGroupListFragment
 		extends GroupEditableListFragment<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
 		implements IconSupport, TitleSupport
 {
-	public SQLQuery.Select mSelect;
-	public IntentFilter mFilter = new IntentFilter();
-	public BroadcastReceiver mReceiver = new BroadcastReceiver()
+	private SQLQuery.Select mSelect;
+	private IntentFilter mFilter = new IntentFilter();
+	private BroadcastReceiver mReceiver = new BroadcastReceiver()
 	{
 		@Override
 		public void onReceive(Context context, Intent intent)
@@ -72,6 +71,9 @@ public class TransferGroupListFragment
 		setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
 		setDefaultSelectionCallback(new SelectionCallback(this));
+		setUseDefaultPaddingDecoration(true);
+		setUseDefaultPaddingDecorationSpaceForEdges(true);
+		setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 	}
 
 	@Override
@@ -89,9 +91,6 @@ public class TransferGroupListFragment
 				startActivity(new Intent(getActivity(), ContentSharingActivity.class));
 			}
 		});
-
-		float padding = getResources().getDimension(R.dimen.padding_list_content_parent_layout);
-		getListView().addItemDecoration(new CardViewItemDecoration((int) padding));
 	}
 
 	@Override

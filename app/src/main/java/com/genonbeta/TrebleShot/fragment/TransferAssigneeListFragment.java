@@ -21,6 +21,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
@@ -64,6 +65,7 @@ public class TransferAssigneeListFragment
 
 		setEmptyImage(R.drawable.ic_device_hub_white_24dp);
 		setEmptyText(getString(R.string.text_noDeviceForTransfer));
+		getListView().addItemDecoration(new PaddingItemDecoration((int) getResources().getDimension(R.dimen.padding_list_content_parent_layout)));
 	}
 
 	@Override

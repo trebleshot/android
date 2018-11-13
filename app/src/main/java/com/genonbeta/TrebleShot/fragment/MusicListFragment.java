@@ -20,97 +20,108 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 public class MusicListFragment
-		extends GroupEditableListFragment<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder, MusicListAdapter>
-		implements TitleSupport
+        extends GroupEditableListFragment<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder, MusicListAdapter>
+        implements TitleSupport
 {
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setDefaultGroupingCriteria(MusicListAdapter.MODE_GROUP_BY_ALBUM);
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setDefaultGroupingCriteria(MusicListAdapter.MODE_GROUP_BY_ALBUM);
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_library_music_white_24dp);
-		setEmptyText(getString(R.string.text_listEmptyMusic));
-	}
+        setEmptyImage(R.drawable.ic_library_music_white_24dp);
+        setEmptyText(getString(R.string.text_listEmptyMusic));
+    }
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
+    @Override
+    public void onResume()
+    {
+        super.onResume();
 
-		getContext().getContentResolver()
-				.registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, getDefaultContentObserver());
-	}
+        getContext().getContentResolver()
+                .registerContentObserver(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, true, getDefaultContentObserver());
+    }
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
+    @Override
+    public void onPause()
+    {
+        super.onPause();
 
-		getContext()
-				.getContentResolver()
-				.unregisterContentObserver(getDefaultContentObserver());
-	}
+        getContext()
+                .getContentResolver()
+                .unregisterContentObserver(getDefaultContentObserver());
+    }
 
-	@Override
-	public void onGroupingOptions(Map<String, Integer> options)
-	{
-		super.onGroupingOptions(options);
+    @Override
+    public void onGroupingOptions(Map<String, Integer> options)
+    {
+        super.onGroupingOptions(options);
 
-		options.put(getString(R.string.text_groupByNothing), MusicListAdapter.MODE_GROUP_BY_NOTHING);
-		options.put(getString(R.string.text_groupByDate), MusicListAdapter.MODE_GROUP_BY_DATE);
-		options.put(getString(R.string.text_groupByAlbum), MusicListAdapter.MODE_GROUP_BY_ALBUM);
-		options.put(getString(R.string.text_groupByArtist), MusicListAdapter.MODE_GROUP_BY_ARTIST);
-		options.put(getString(R.string.text_groupByFolder), MusicListAdapter.MODE_GROUP_BY_FOLDER);
-	}
+        options.put(getString(R.string.text_groupByNothing), MusicListAdapter.MODE_GROUP_BY_NOTHING);
+        options.put(getString(R.string.text_groupByDate), MusicListAdapter.MODE_GROUP_BY_DATE);
+        options.put(getString(R.string.text_groupByAlbum), MusicListAdapter.MODE_GROUP_BY_ALBUM);
+        options.put(getString(R.string.text_groupByArtist), MusicListAdapter.MODE_GROUP_BY_ARTIST);
+        options.put(getString(R.string.text_groupByFolder), MusicListAdapter.MODE_GROUP_BY_FOLDER);
+    }
 
-	@Override
-	public MusicListAdapter onAdapter()
-	{
-		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
-		{
-			@Override
-			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
-			{
-				if (!clazz.isRepresentative())
-					registerLayoutViewClicks(clazz);
-			}
-		};
+    @Override
+    public MusicListAdapter onAdapter()
+    {
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
+        {
+            @Override
+            public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
+            {
+                if (!clazz.isRepresentative()) {
+                    registerLayoutViewClicks(clazz);
 
-		return new MusicListAdapter(getActivity())
-		{
-			@NonNull
-			@Override
-			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-			{
-				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-			}
-		};
-	}
+                    clazz.getView().findViewById(R.id.visitImage)
+                            .setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    performLayoutClickOpenUri(clazz);
+                                }
+                            });
+                }
+            }
+        };
 
-	@Override
-	public int onGridSpanSize(int viewType, int currentSpanSize)
-	{
-		return viewType == FileListAdapter.VIEW_TYPE_REPRESENTATIVE
-				? currentSpanSize
-				: super.onGridSpanSize(viewType, currentSpanSize);
-	}
+        return new MusicListAdapter(getActivity())
+        {
+            @NonNull
+            @Override
+            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+            }
+        };
+    }
 
-	@Override
-	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-	{
-		return performLayoutClickOpenUri(holder);
-	}
+    @Override
+    public int onGridSpanSize(int viewType, int currentSpanSize)
+    {
+        return viewType == FileListAdapter.VIEW_TYPE_REPRESENTATIVE
+                ? currentSpanSize
+                : super.onGridSpanSize(viewType, currentSpanSize);
+    }
 
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_music);
-	}
+    @Override
+    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        return performLayoutClickOpenUri(holder);
+    }
+
+    @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_music);
+    }
 }

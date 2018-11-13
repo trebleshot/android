@@ -144,8 +144,7 @@ public class AboutActivity extends Activity
                 }
             }
 
-            // fixme: Do not use hardcoded string
-            startActivity(Intent.createChooser(intent, "Choose an email application"));
+            startActivity(Intent.createChooser(intent, getString(R.string.butn_feedbackContact)));
         } else
             return super.onOptionsItemSelected(item);
 

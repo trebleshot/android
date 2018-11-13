@@ -127,8 +127,6 @@ public class MusicListAdapter
 				TextView text3 = parentView.findViewById(R.id.text3);
 				TextView textSeparator1 = parentView.findViewById(R.id.textSeparator1);
 
-				parentView.setSelected(object.isSelectableSelected());
-
 				text1.setText(object.song);
 
 				if (getGroupBy() == MODE_GROUP_BY_ALBUM
@@ -145,6 +143,8 @@ public class MusicListAdapter
 					text3.setVisibility(View.VISIBLE);
 					textSeparator1.setVisibility(View.VISIBLE);
 				}
+
+				parentView.setSelected(object.isSelectableSelected());
 
 				GlideApp.with(getContext())
 						.load(object.albumHolder.art)

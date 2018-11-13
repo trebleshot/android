@@ -25,11 +25,14 @@ import com.genonbeta.TrebleShot.ui.callback.DetachListener;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
+import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -58,16 +61,20 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private Snackbar mRefreshDelayedSnackbar;
     private boolean mRefreshRequested = false;
     private boolean mSortingSupported = true;
+    private boolean mUseDefaultPaddingDecoration = false;
+    private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
+    private float mDefaultPaddingDecorationSize = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
     private int mDefaultViewingGridSize = 1;
     private int mDefaultViewingGridSizeLandscape = 1;
-    // FIXME: 10/28/18
-    //private FastScroller mFastScroller;
+    private FastScroller mFastScroller;
     private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
     private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
+    @Nullable
+    private PaddingItemDecoration mDefaultPaddingItemDecoration;
 
     abstract public boolean onDefaultClickAction(V holder);
 
@@ -92,6 +99,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             setDefaultSelectionConnection(new PowerfulActionMode.SelectorConnection<>(getPowerfulActionMode(), getSelectionCallback()));
 
         setHasOptionsMenu(true);
+
+        if (mUseDefaultPaddingDecoration) {
+            float padding = mDefaultPaddingDecorationSize > -1
+                    ? mDefaultPaddingDecorationSize
+                    : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
+
+            getListView().addItemDecoration(mDefaultPaddingItemDecoration
+                    = new PaddingItemDecoration((int) padding, mUseDefaultPaddingDecorationSpaceForEdges));
+        }
     }
 
     @Override
@@ -102,9 +118,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
         getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 
-        // FIXME: 10/28/18
         // We have to recreate the provider class because old one loses its ground
-        //getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
+        getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
     }
 
     @Override
@@ -113,8 +128,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview, null, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_view);
-        // FIXME: 10/28/18
-        //mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
+        mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
 
         recyclerView.setLayoutManager(onLayoutManager());
 
@@ -127,8 +141,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public boolean onSetListAdapter(E adapter)
     {
         if (super.onSetListAdapter(adapter)) {
-            // FIXME: 10/28/18
-            //mFastScroller.setRecyclerView(getListView());
+            mFastScroller.setRecyclerView(getListView());
             return true;
         }
 
@@ -191,8 +204,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
         MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
 
-        if (getSelectionConnection() == null
-                && multiSelect != null)
+        if (multiSelect != null
+                && (getSelectionConnection() == null
+                || !getSelectionConnection().getMode().getEngineToolbar().isFinishAllowed()))
             multiSelect.setVisible(false);
 
         if (!getAdapter().isGridSupported())
@@ -405,13 +419,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return mObserver;
     }
 
-    // FIXME: 10/28/18
-	/*
-	public FastScroller getFastScroller()
-	{
-		return mFastScroller;
-	}
-*/
+    public FastScroller getFastScroller()
+    {
+        return mFastScroller;
+    }
+
     public int getOrderingCriteria()
     {
         return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria);
@@ -461,6 +473,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return isScreenLandscape()
                 ? getViewPreferences().getInt(getUniqueSettingKey("GridSizeLandscape"), mDefaultViewingGridSizeLandscape)
                 : getViewPreferences().getInt(getUniqueSettingKey("GridSize"), mDefaultViewingGridSize);
+    }
+
+    public int getActiveViewingGridSize()
+    {
+        return getListView().getLayoutManager() instanceof GridLayoutManager
+                ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount()
+                : 1;
     }
 
     public boolean isRefreshLocked()
@@ -578,6 +597,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         }
     }
 
+    public void setDefaultPaddingDecorationSize(float defaultPadding)
+    {
+        mDefaultPaddingDecorationSize = defaultPadding;
+    }
+
     public void setDefaultOrderingCriteria(int criteria)
     {
         mDefaultOrderingCriteria = criteria;
@@ -636,6 +660,16 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         mSelectionCallback = selectionCallback;
     }
 
+    public void setUseDefaultPaddingDecoration(boolean use)
+    {
+        mUseDefaultPaddingDecoration = use;
+    }
+
+    public void setUseDefaultPaddingDecorationSpaceForEdges(boolean use)
+    {
+        mUseDefaultPaddingDecorationSpaceForEdges = use;
+    }
+
     public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>
     {
         boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
@@ -671,6 +705,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         {
             return getAdapter().getList();
         }
+
 
         public boolean setItemSelected(int position)
         {

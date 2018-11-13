@@ -1,7 +1,8 @@
 <com.genonbeta.TrebleShot.view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:layout_margin="1dp"
     android:background="?contentShowingBackground">
 
@@ -53,5 +54,16 @@
         android:visibility="gone" />
 
     <include layout="@layout/generic_view_selection" />
+
+    <ImageView
+        android:id="@+id/visitImage"
+        style="@style/overflowButton"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:tint="@android:color/white"
+        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

@@ -102,6 +102,10 @@
                 android:maxLines="1"
                 android:text="@string/text_unknown" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_hotspot_manager_info_issue"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

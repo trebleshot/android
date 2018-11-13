@@ -4,8 +4,7 @@
 
     <item
         android:id="@+id/actions_transfer_resume"
-        android:icon="@drawable/ic_play_arrow_white_24dp"
-        android:title="@string/butn_resume"
+        android:title="@string/butn_start"
         app:showAsAction="always"
         android:visible="false"/>
 

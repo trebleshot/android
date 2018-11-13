@@ -15,6 +15,12 @@
         app:showAsAction="always"/>
 
     <item
+        android:icon="@drawable/ic_save_white_24dp"
+        android:id="@+id/menu_action_save"
+        android:title="@string/butn_save" />
+
+
+    <item
         android:icon="@drawable/ic_content_copy_white_24dp"
         android:id="@+id/menu_action_copy"
         android:title="@string/butn_copyToClipboard"/>

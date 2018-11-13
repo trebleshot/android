@@ -1,16 +1,12 @@
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.IBinder;
-import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -53,23 +49,20 @@ public class AddDevicesToTransferActivity extends Activity
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
     public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
-
-    public static final int WORKER_TASK_LOAD_ITEMS = 1;
     public static final int WORKER_TASK_CONNECT_SERVER = 2;
 
-    public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
 
     private TransferGroup mGroup = null;
     private Interrupter mInterrupter = new Interrupter();
-    private WorkerService mWorkerService;
-    private WorkerConnection mWorkerConnection = new WorkerConnection();
     private Button mActionButton;
     private ProgressBar mProgressBar;
+    private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
     private TextView mTextMain;
+    private TextView mTextInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,7 +81,7 @@ public class AddDevicesToTransferActivity extends Activity
                 throw new Exception(getString(R.string.mesg_notValidTransfer));
             }
 
-            bindService(new Intent(this, WorkerService.class), mWorkerConnection, Context.BIND_AUTO_CREATE);
+            initialize();
         } catch (Exception e) {
             Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
@@ -99,9 +92,7 @@ public class AddDevicesToTransferActivity extends Activity
     protected void onDestroy()
     {
         super.onDestroy();
-
         getDefaultInterrupter().interrupt(false);
-        unbindService(mWorkerConnection);
     }
 
     @Override
@@ -142,35 +133,25 @@ public class AddDevicesToTransferActivity extends Activity
                     Toast.makeText(AddDevicesToTransferActivity.this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
                 }
             }
-        } else
-            finish();
+        }
     }
 
     public Snackbar createSnackbar(final int resId, final Object... objects)
     {
-        new Handler(Looper.getMainLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                Toast.makeText(AddDevicesToTransferActivity.this, getString(resId, objects), Toast.LENGTH_LONG).show();
-            }
-        });
-
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
     {
         takeOnProcessMode();
-        mTextMain.setText(R.string.mesg_communicating);
 
         runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_SERVER)
         {
             @Override
             public void onRun()
             {
-                publishStatusText(getString(R.string.mesg_communicating));
+                final WorkerService.RunningTask thisTask = this;
+                updateText(thisTask, getString(R.string.mesg_communicating));
 
                 CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
                 {
@@ -192,7 +173,7 @@ public class AddDevicesToTransferActivity extends Activity
                                 @Override
                                 public void onProgressChange(int total, int current)
                                 {
-                                    mProgressBar.setProgress(current);
+                                    updateProgress(total, current);
                                 }
 
                                 @Override
@@ -299,12 +280,15 @@ public class AddDevicesToTransferActivity extends Activity
                             activeConnection.reply(jsonRequest.toString());
 
                             CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                            activeConnection.getSocket().close();
+
                             JSONObject clientResponse = new JSONObject(response.response);
 
                             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+                                updateText(thisTask, getString(R.string.mesg_organizingFiles));
+
                                 if (localDevice.deviceId.equals(ownerAssignee.deviceId)) {
-                                    mProgressBar.setProgress(0);
-                                    mProgressBar.setMax(existingRegistry.size());
+                                    updateText(thisTask, getString(R.string.mesg_removingOldInstances));
 
                                     getDatabase().remove(existingRegistry, progressUpdater);
                                     getDatabase().remove(ownerAssignee);
@@ -313,17 +297,16 @@ public class AddDevicesToTransferActivity extends Activity
                                 } else
                                     assignee.isClone = !ownerAssignee.deviceId.equals(assignee.deviceId);
 
+                                updateText(thisTask, getString(R.string.text_savingDetails));
+
                                 if (doPublish)
                                     getDatabase().publish(assignee);
                                 else
                                     getDatabase().insert(assignee);
 
-                                mProgressBar.setProgress(0);
-                                mProgressBar.setMax(pendingRegistry.size());
-
-                                if (doPublish)
+                                if (doPublish) {
                                     getDatabase().publish(TransferObject.class, pendingRegistry, progressUpdater);
-                                else
+                                } else
                                     getDatabase().insert(pendingRegistry, progressUpdater);
 
                                 setResult(RESULT_OK, new Intent()
@@ -358,8 +341,6 @@ public class AddDevicesToTransferActivity extends Activity
                                 createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
                                         .show();
                             }
-
-                            startConnectionManagerActivity();
                         } finally {
                             runOnUiThread(new Runnable()
                             {
@@ -396,20 +377,17 @@ public class AddDevicesToTransferActivity extends Activity
         mProgressTextLeft = findViewById(R.id.text1);
         mProgressTextRight = findViewById(R.id.text2);
         mTextMain = findViewById(R.id.textMain);
+        mTextInfo = findViewById(R.id.textInfo);
         mActionButton = findViewById(R.id.actionButton);
+        mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
 
         resetStatusViews();
         startConnectionManagerActivity();
     }
 
-    public boolean runOnWorkerService(WorkerService.RunningTask runningTask)
+    public void runOnWorkerService(WorkerService.RunningTask runningTask)
     {
-        if (mWorkerService == null)
-            return false;
-
-        mWorkerService.run(runningTask.setInterrupter(getDefaultInterrupter()));
-
-        return true;
+        WorkerService.run(AddDevicesToTransferActivity.this, runningTask.setInterrupter(getDefaultInterrupter()));
     }
 
     protected void resetStatusViews()
@@ -419,6 +397,8 @@ public class AddDevicesToTransferActivity extends Activity
 
         mTextMain.setText(R.string.text_addDevicesToTransfer);
         mActionButton.setText(R.string.butn_addDevices);
+        mTextInfo.setVisibility(View.VISIBLE);
+        mLayoutStatusContainer.setVisibility(View.GONE);
         mActionButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -448,13 +428,16 @@ public class AddDevicesToTransferActivity extends Activity
 
     private void startConnectionManagerActivity()
     {
-        startActivityForResult(new Intent(AddDevicesToTransferActivity.this, ConnectionManagerActivity.class), REQUEST_CODE_CHOOSE_DEVICE);
+        startActivityForResult(new Intent(AddDevicesToTransferActivity.this, ConnectionManagerActivity.class)
+                .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_addDevicesToTransfer)), REQUEST_CODE_CHOOSE_DEVICE);
     }
 
     public void takeOnProcessMode()
     {
         getDefaultInterrupter().reset(true);
 
+        mTextInfo.setVisibility(View.GONE);
+        mLayoutStatusContainer.setVisibility(View.VISIBLE);
         mActionButton.setText(R.string.butn_cancel);
         mActionButton.setOnClickListener(new View.OnClickListener()
         {
@@ -466,28 +449,47 @@ public class AddDevicesToTransferActivity extends Activity
         });
     }
 
+    public void updateProgress(final int total, final int current)
+    {
+        if (isFinishing())
+            return;
+
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mProgressTextLeft.setText(String.valueOf(current));
+                mProgressTextRight.setText(String.valueOf(total));
+            }
+        });
+
+        mProgressBar.setProgress(current);
+        mProgressBar.setMax(total);
+    }
+
+    public void updateText(WorkerService.RunningTask runningTask, final String text)
+    {
+        if (isFinishing())
+            return;
+
+        runningTask.publishStatusText(text);
+
+        runOnUiThread(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                mTextMain.setText(text);
+            }
+        });
+    }
+
     public static void startInstance(Context context, long groupId)
     {
         context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
                 .putExtra(EXTRA_GROUP_ID, groupId)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-    }
-
-
-    private class WorkerConnection implements ServiceConnection
-    {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service)
-        {
-            mWorkerService = ((WorkerService.LocalBinder) service).getService();
-            initialize();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name)
-        {
-            finish();
-        }
     }
 }
 

@@ -4,6 +4,7 @@
     <item
         android:id="@+id/action_mode_text_stream_delete"
         android:icon="@drawable/ic_delete_white_24dp"
-        android:title="@string/butn_delete"/>
+        android:showAsAction="always"
+        android:title="@string/butn_delete" />
 
 </menu>

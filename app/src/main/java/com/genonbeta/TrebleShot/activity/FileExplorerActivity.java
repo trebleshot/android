@@ -13,7 +13,6 @@ import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 
 import java.io.FileNotFoundException;
 
@@ -57,7 +56,7 @@ public class FileExplorerActivity
             }
         });
 
-        checkRequestedFragment(getIntent());
+        checkRequestedPath(getIntent());
     }
 
     @Override
@@ -76,8 +75,7 @@ public class FileExplorerActivity
     @Override
     public void onBackPressed()
     {
-        if (mFragmentFileExplorer == null
-                || !mFragmentFileExplorer.onBackPressed()) {
+        if (!mFragmentFileExplorer.onBackPressed()) {
             if (mActionMode.hasActive(mFragmentFileExplorer.getSelectionCallback()))
                 mActionMode.finish(mFragmentFileExplorer.getSelectionCallback());
             else
@@ -85,7 +83,7 @@ public class FileExplorerActivity
         }
     }
 
-    public void checkRequestedFragment(Intent intent)
+    public void checkRequestedPath(Intent intent)
     {
         if (intent == null)
             return;

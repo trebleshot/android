@@ -102,18 +102,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
 
-    implementation 'com.genonbeta.android:framework:1.0.2.2'
+    implementation 'com.genonbeta.android:framework:1.0.2.2-local18'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.3'
     implementation 'com.genonbeta.coolsocket:main:1.0.2'
     implementation 'com.velitasali.tools.android:zxing:3.6.2'
-
-    // todo: an updated version would be a life saver
-    //implementation 'com.futuremind.recyclerfastscroll:fastscroll:0.2.5'
 
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'androidx.annotation:annotation:1.0.0'

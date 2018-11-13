@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
@@ -33,9 +34,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
-import com.genonbeta.TrebleShot.widget.recyclerview.CardViewItemDecoration;
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import java.util.ArrayList;
 
@@ -46,7 +45,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class NetworkDeviceListFragment
-        extends DynamicRecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
+        extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
         implements TitleSupport, DetachListener, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
@@ -62,6 +61,10 @@ public class NetworkDeviceListFragment
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setUseDefaultPaddingDecoration(true);
+        setUseDefaultPaddingDecorationSpaceForEdges(true);
+        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
         mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
         mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
@@ -114,9 +117,6 @@ public class NetworkDeviceListFragment
                 requestRefresh();
             }
         });
-
-        float padding = getResources().getDimension(R.dimen.padding_list_content_parent_layout);
-        getListView().addItemDecoration(new CardViewItemDecoration((int) padding));
     }
 
     @Override
@@ -132,54 +132,12 @@ public class NetworkDeviceListFragment
     @Override
     public NetworkDeviceListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
+        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
         {
             @Override
-            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
+            public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
             {
-                clazz.getView().setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
-
-                        if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
-                            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
-                                createSnackbar(R.string.mesg_versionNotSupported).show();
-                            } else if (!(device instanceof NetworkDeviceListAdapter.HotspotNetwork))
-                                new ConnectionChooserDialog(getActivity(), device, new ConnectionChooserDialog.OnDeviceSelectedListener()
-                                {
-                                    @Override
-                                    public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
-                                    {
-                                        mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
-                                    }
-                                }, false).show();
-                        } else {
-                            if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-                                final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-                                builder.setTitle(hotspotNetwork.nickname);
-                                builder.setMessage(R.string.text_trebleshotHotspotDescription);
-                                builder.setNegativeButton(R.string.butn_close, null);
-                                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        getConnectionUtils().toggleConnection(hotspotNetwork);
-                                    }
-                                });
-
-                                builder.show();
-                            } else
-                                new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
-                        }
-                    }
-                });
+                registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
                 {
@@ -236,15 +194,58 @@ public class NetworkDeviceListFragment
             }
         };
 
-        return new NetworkDeviceListAdapter(getContext(), AppUtils.getDefaultPreferences(getContext()), getConnectionUtils())
+        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils())
         {
             @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
         };
+    }
+
+    @Override
+    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    {
+        final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
+
+        if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
+            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
+                createSnackbar(R.string.mesg_versionNotSupported).show();
+            } else if (!(device instanceof NetworkDeviceListAdapter.HotspotNetwork))
+                new ConnectionChooserDialog(getActivity(), device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+                {
+                    @Override
+                    public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                    {
+                        mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+                    }
+                }, false).show();
+        } else {
+            if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+                final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+                builder.setTitle(hotspotNetwork.nickname);
+                builder.setMessage(R.string.text_trebleshotHotspotDescription);
+                builder.setNegativeButton(R.string.butn_close, null);
+                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        getConnectionUtils().toggleConnection(hotspotNetwork);
+                    }
+                });
+
+                builder.show();
+            } else
+                new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
+        }
+
+        return true;
     }
 
     @Override
@@ -330,7 +331,7 @@ public class NetworkDeviceListFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_deviceList);
+        return context.getString(R.string.text_useKnownDevice);
     }
 
     public void requestRefresh()

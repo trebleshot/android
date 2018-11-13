@@ -22,7 +22,7 @@ public class AppConfig
             URI_REPO_APP = "http://github.com/genonbeta/TrebleShot",
             URI_REPO_ORG = "http://github.com/genonbeta",
             URI_GITHUB_PROFILE = "https://github.com/%s",
-            URI_TRANSLATE = "https://hosted.weblate.org/engage/TrebleShot/",
+            URI_TRANSLATE = "https://github.com/genonbeta/TrebleShot/wiki/Language-contribution",
             URI_TELEGRAM_CHANNEL = "https://t.me/trebleshot",
             PREFIX_ACCESS_POINT = "TS_",
             EXT_FILE_PART = "tshare",

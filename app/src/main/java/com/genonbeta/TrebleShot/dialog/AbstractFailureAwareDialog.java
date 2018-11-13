@@ -3,6 +3,8 @@ package com.genonbeta.TrebleShot.dialog;
 import android.content.Context;
 import android.view.View;
 
+import com.genonbeta.TrebleShot.R;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 

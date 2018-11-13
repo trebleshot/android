@@ -65,22 +65,12 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ShareTextActivity"
-            android:label="@string/text_shareTextShort"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
-            <intent-filter>
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND_TEXT" />
-                <action android:name="android.intent.action.SEND" />
-                <action android:name="genonbeta.intent.action.TREBLESHOT_SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <data android:mimeType="text/*" />
-            </intent-filter>
-        </activity>
-
-        <activity
             android:name=".activity.FileExplorerActivity"
             android:label="@string/text_fileExplorer"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity android:name=".activity.TextStreamActivity"
+            android:label="@string/text_textStream"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
@@ -142,7 +132,7 @@
         <activity
             android:name=".activity.AboutActivity"
             android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
             android:name=".activity.ThirdPartyLibrariesActivity"

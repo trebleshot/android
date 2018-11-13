@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.android.framework.util.MathUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTitleProvider;
 
 import java.text.Collator;
 import java.util.ArrayList;
@@ -27,7 +28,7 @@ import androidx.annotation.NonNull;
 
 abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
 		extends RecyclerViewAdapter<T, V>
-		implements EditableListAdapterImpl<T>
+		implements EditableListAdapterImpl<T>, SectionTitleProvider
 {
 	public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -168,7 +169,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 		return getItemList();
 	}
 
-	// todo: belongs fast scroll smh
+	@Override
 	public String getSectionTitle(int position)
 	{
 		try {

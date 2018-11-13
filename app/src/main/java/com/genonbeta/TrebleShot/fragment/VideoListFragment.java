@@ -28,6 +28,7 @@ public class VideoListFragment
 		setDefaultOrderingCriteria(VideoListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(VideoListAdapter.MODE_SORT_BY_DATE);
 		setDefaultViewingGridSize(2, 4);
+		setUseDefaultPaddingDecoration(false);
 	}
 
 	@Override
@@ -65,8 +66,19 @@ public class VideoListFragment
 			@Override
 			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
 			{
-				if (!clazz.isRepresentative())
+				if (!clazz.isRepresentative()){
 					registerLayoutViewClicks(clazz);
+
+					clazz.getView().findViewById(R.id.visitImage)
+							.setOnClickListener(new View.OnClickListener()
+							{
+								@Override
+								public void onClick(View v)
+								{
+									performLayoutClickOpenUri(clazz);
+								}
+							});
+				}
 			}
 		};
 

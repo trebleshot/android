@@ -16,6 +16,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.TextStreamListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -184,7 +185,7 @@ public class TextStreamListFragment
 		}
 	}
 
-	private static class SelectionCallback extends SharingActionModeCallback<TextStreamObject>
+	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
 	{
 		public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
 		{
@@ -207,8 +208,7 @@ public class TextStreamListFragment
 			ArrayList<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
 
 			if (id == R.id.action_mode_text_stream_delete) {
-				for (TextStreamObject textStreamObject : selectionList)
-					AppUtils.getDatabase(getFragment().getContext()).remove(textStreamObject);
+				AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
 			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
 				if (selectionList.size() == 1) {
 					TextStreamObject streamObject = selectionList.get(0);
