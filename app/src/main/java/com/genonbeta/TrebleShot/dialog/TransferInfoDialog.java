@@ -121,8 +121,9 @@ public class TransferInfoDialog extends AlertDialog.Builder
 							AppUtils.getDatabase(context).publish(transferObject);
 						}
 					});
-				} else if (fileExists && pseudoFile.getParentFile() != null) {
-					if (TransferObject.Flag.REMOVED.equals(transferObject.flag)) {
+				} else if (fileExists) {
+					if (TransferObject.Flag.REMOVED.equals(transferObject.flag)
+							&& pseudoFile.getParentFile() != null) {
 						setNeutralButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
 						{
 							@Override

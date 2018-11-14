@@ -14,6 +14,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -28,11 +29,14 @@ import com.genonbeta.android.framework.util.listing.Merger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -94,7 +98,21 @@ public class FileListAdapter
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_file_download_white_24dp));
+            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static)
+                    .setDenySelections(false));
+
+            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                    getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
+
+            if (Build.VERSION.SDK_INT >= 19)
+                lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                        getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
+
+            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
+
+            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                    getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
 
             File fileSystemRoot = new File(".");
 
@@ -102,7 +120,7 @@ public class FileListAdapter
                 lister.offer(new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
                         mContext.getString(R.string.text_fileRoot),
                         mContext.getString(R.string.text_folder),
-                        R.drawable.ic_folder_white_24dp));
+                        R.drawable.ic_folder_white_24dp).setDenySelections(false));
 
             if (Build.VERSION.SDK_INT >= 21)
                 referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
@@ -153,6 +171,45 @@ public class FileListAdapter
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+            }
+
+            ArrayList<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class);
+
+            ArrayMap<Long, TransferGroup> linkedGroups = new ArrayMap<>();
+
+            for (TransferGroup group : transferGroups)
+                linkedGroups.put(group.groupId, group);
+
+            ArrayList<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                            .setWhere(String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG, AccessDatabase.FIELD_TRANSFER_TYPE),
+                                    TransferObject.Flag.DONE.toString(), TransferObject.Type.INCOMING.toString()), TransferObject.class);
+
+            if (linkedGroups.size() > 0 && recentFiles.size() > 0) {
+                int iteratorAdded = 0;
+                Collections.reverse(recentFiles);
+
+                for (TransferObject recentFile : recentFiles) {
+                    if (iteratorAdded > 20)
+                        break;
+
+                    TransferGroup group = linkedGroups.get(recentFile.groupId);
+
+                    if (group == null)
+                        continue;
+
+                    try {
+                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), recentFile, group, false);
+
+                        if (documentFile.exists()) {
+                            lister.offer(new RecentFileHolder(getContext(), documentFile));
+                            iteratorAdded++;
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
@@ -244,8 +301,12 @@ public class FileListAdapter
             switch (((FileHolderMerger) merger).getType()) {
                 case STORAGE:
                     return getContext().getString(R.string.text_storage);
+                case PUBLIC_FOLDER:
+                    return getContext().getString(R.string.text_shortcuts);
                 case FOLDER:
                     return getContext().getString(R.string.text_folder);
+                case RECENT_FILE:
+                    return getContext().getString(R.string.text_recentFiles);
                 case FILE_PART:
                     return getContext().getString(R.string.text_pendingTransfers);
                 default:
@@ -303,6 +364,14 @@ public class FileListAdapter
         }
     }
 
+    public class RecentFileHolder extends FileHolder
+    {
+        public RecentFileHolder(Context context, DocumentFile file)
+        {
+            super(context, file);
+        }
+    }
+
     public static class ReceivedFileHolder extends FileHolder
     {
         public ReceivedFileHolder(Context context, DocumentFile file, TransferObject transferObject)
@@ -325,6 +394,8 @@ public class FileListAdapter
 
     public static class DirectoryHolder extends GenericFileHolder
     {
+        private boolean mDenySelections = false;
+
         public DirectoryHolder(DocumentFile file, String info, int iconRes)
         {
             this(file, file.getName(), info, iconRes);
@@ -333,6 +404,43 @@ public class FileListAdapter
         public DirectoryHolder(DocumentFile file, String friendlyName, String info, int iconRes)
         {
             super(file, friendlyName, info, iconRes, file.lastModified(), 0, file.getUri());
+        }
+
+        public DirectoryHolder setDenySelections(boolean deny)
+        {
+            mDenySelections = deny;
+            return this;
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return !mDenySelections && super.setSelectableSelected(selected);
+        }
+    }
+
+    public class PublicDirectoryHolder extends DirectoryHolder
+    {
+        public PublicDirectoryHolder(File file, String info, int iconRes)
+        {
+            this(DocumentFile.fromFile(file), info, iconRes);
+
+            String[] files = file.list();
+            int fileCount = files != null ? files.length : 0;
+
+            this.friendlyName = info;
+            this.info = getContext().getResources().getQuantityString(R.plurals.text_files, fileCount, fileCount);
+        }
+
+        public PublicDirectoryHolder(DocumentFile file, String info, int iconRes)
+        {
+            super(file, info, iconRes);
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return false;
         }
     }
 
@@ -391,8 +499,12 @@ public class FileListAdapter
         {
             if (holder instanceof StorageHolderImpl)
                 mType = Type.STORAGE;
+            else if (holder instanceof PublicDirectoryHolder)
+                mType = Type.PUBLIC_FOLDER;
             else if (holder instanceof DirectoryHolder)
                 mType = Type.FOLDER;
+            else if (holder instanceof RecentFileHolder)
+                mType = Type.RECENT_FILE;
             else if (holder instanceof ReceivedFileHolder)
                 mType = Type.FILE_PART;
             else
@@ -424,6 +536,8 @@ public class FileListAdapter
         {
             STORAGE,
             FOLDER,
+            PUBLIC_FOLDER,
+            RECENT_FILE,
             FILE_PART,
             FILE
         }
