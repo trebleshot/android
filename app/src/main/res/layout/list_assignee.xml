@@ -1,13 +1,13 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/container"
         style="@style/listContentLayoutStyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?rectSelector">
 
         <ImageView
             android:id="@+id/menu"

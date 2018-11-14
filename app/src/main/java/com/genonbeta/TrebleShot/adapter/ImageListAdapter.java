@@ -27,11 +27,13 @@ public class ImageListAdapter
         extends GalleryGroupEditableListAdapter<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder>
 {
     private ContentResolver mResolver;
+    private int mSelectedInset;
 
     public ImageListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_ALBUM);
         mResolver = context.getContentResolver();
+        mSelectedInset = (int) context.getResources().getDimension(R.dimen.space_list_grid);
     }
 
     @Override
@@ -94,6 +96,7 @@ public class ImageListAdapter
             final ImageHolder object = getItem(position);
 
             if (!holder.tryBinding(object)) {
+                ViewGroup container = parentView.findViewById(R.id.container);
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
@@ -103,8 +106,10 @@ public class ImageListAdapter
 
                 parentView.setSelected(object.isSelectableSelected());
 
-                int paddingActive = object.isSelectableSelected() ? 15 : 0;
-                image.setPadding(paddingActive, paddingActive, paddingActive, paddingActive);
+                if (isGridLayoutRequested() && container != null) {
+                    int paddingActive = object.isSelectableSelected() ? mSelectedInset : 0;
+                    container.setPadding(paddingActive, paddingActive, paddingActive, paddingActive);
+                }
 
                 GlideApp.with(getContext())
                         .load(object.uri)

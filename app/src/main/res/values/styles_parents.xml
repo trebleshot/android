@@ -19,11 +19,11 @@
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
+        <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
         <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorSelection">@color/colorSelection</item>
-        <item name="colorShadowBeginning">@color/colorShadowBeginning</item>
-        <item name="colorShadowEnd">@color/colorShadowEnd</item>
         <item name="contentShowingBackground">@color/contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble</item>
         <item name="rectSelector">@drawable/rect_selector</item>
@@ -67,11 +67,11 @@
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
+        <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>
         <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
-        <item name="colorShadowBeginning">@color/dark_colorShadowBeginning</item>
-        <item name="colorShadowEnd">@color/dark_colorShadowEnd</item>
         <item name="contentShowingBackground">@color/dark_contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble_dark</item>
         <item name="rectSelector">@drawable/rect_selector_dark</item>

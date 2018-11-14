@@ -685,8 +685,7 @@ public class CommunicationService extends Service
                         switch (responseJSON.getString(Keyword.REQUEST)) {
                             case (Keyword.REQUEST_TRANSFER):
                                 if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID) && getOngoingIndexList().size() < 1) {
-                                    String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
-                                    final JSONArray jsonArray = new JSONArray(jsonIndex);
+                                    final String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
                                     final long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
                                     final NetworkDevice finalDevice = device;
 
@@ -697,10 +696,23 @@ public class CommunicationService extends Service
                                         @Override
                                         public void run()
                                         {
+                                            final JSONArray jsonArray;
                                             final Interrupter interrupter = new Interrupter();
                                             TransferGroup group = new TransferGroup(groupId);
                                             TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, finalDevice, connection);
+                                            final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, finalDevice);
 
+                                            notification.setProgress(0, 0, true);
+
+                                            try {
+                                                jsonArray = new JSONArray(jsonIndex);
+                                            } catch (Exception e) {
+                                                notification.cancel();
+                                                e.printStackTrace();
+                                                return;
+                                            }
+
+                                            notification.setProgress(0, 0, false);
                                             boolean usePublishing = false;
 
                                             try {
@@ -719,7 +731,6 @@ public class CommunicationService extends Service
                                                 getOngoingIndexList().put(group.groupId, interrupter);
                                             }
 
-                                            final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, finalDevice);
                                             long uniqueId = System.currentTimeMillis(); // The uniqueIds
                                             List<TransferObject> pendingRegistry = new ArrayList<>();
 

@@ -129,7 +129,7 @@ public class CommunicationNotificationHelper
                         .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, transferObject.groupId), 0))
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
-                .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
+                .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_receive), positiveIntent)
                 .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_reject), negativeIntent)
                 .setTicker(getContext().getString(R.string.ques_receiveFile))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);

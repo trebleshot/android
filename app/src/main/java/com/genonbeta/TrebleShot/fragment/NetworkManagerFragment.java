@@ -44,7 +44,7 @@ import androidx.appcompat.widget.AppCompatTextView;
 
 public class NetworkManagerFragment
         extends Fragment
-        implements TitleSupport, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
+        implements TitleSupport, IconSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -62,7 +62,6 @@ public class NetworkManagerFragment
     private TextView mText2;
     private TextView mText3;
     private ImageView mCodeView;
-    private NetworkDeviceSelectedListener mDeviceSelectedListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -142,11 +141,6 @@ public class NetworkManagerFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_useExistingNetwork);
-    }
-
-    public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
-    {
-        mDeviceSelectedListener = listener;
     }
 
     public void updateViewsWithBlank()

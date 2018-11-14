@@ -6,66 +6,89 @@
     android:layout_margin="1dp"
     android:background="?contentShowingBackground">
 
-    <ImageView
-        android:id="@+id/image"
+    <RelativeLayout
+        android:id="@+id/container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:contentDescription="@string/text_image" />
+        android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/clickable_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="?rectSelector" />
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerInParent="true"
+            android:contentDescription="@string/text_image" />
 
-    <TextView
-        android:id="@+id/text3"
-        style="@style/TextAppearance.Primary.Small"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/background_gradient_top"
-        android:gravity="center"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:visibility="gone" />
+        <View
+            android:id="@+id/clickable_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?rectSelector" />
 
-    <TextView
-        android:id="@+id/text2"
-        style="@style/TextAppearance.Primary.Small"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:background="@drawable/background_gradient_bottom"
-        android:gravity="center"
-        android:padding="8dp"
-        android:textColor="@android:color/white"
-        android:visibility="gone" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:orientation="vertical"
+            android:paddingLeft="8dp"
+            android:paddingTop="3dp"
+            android:paddingRight="8dp"
+            android:paddingBottom="8dp">
 
-    <TextView
-        android:id="@+id/text"
-        style="@style/TextAppearance.Primary.Small"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:padding="10dp"
-        android:textColor="@android:color/white"
-        android:visibility="gone" />
+            <TextView
+                android:id="@+id/text3"
+                style="@style/TextAppearance.Primary.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:visibility="gone" />
 
-    <include layout="@layout/generic_view_selection" />
+            <TextView
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Primary.Small"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/visitImage"
-        style="@style/overflowButton"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:tint="@android:color/white"
-        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/text"
+            style="@style/TextAppearance.Primary.Small"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:padding="10dp"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="?backgroundGradientBottom"
+            android:gravity="end">
+
+            <ImageView
+                android:id="@+id/visitImage"
+                style="@style/overflowButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:tint="@android:color/white"
+                app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <include
+        layout="@layout/generic_view_selection_rounded"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="2dp" />
 
 </com.genonbeta.TrebleShot.view.SquareRelativeLayout>

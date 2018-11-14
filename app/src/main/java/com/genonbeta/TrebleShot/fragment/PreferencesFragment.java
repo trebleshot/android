@@ -6,13 +6,11 @@ import android.preference.PreferenceFragment;
 
 import com.genonbeta.TrebleShot.R;
 
-public class PreferencesFragment extends PreferenceFragment
+public class PreferencesFragment extends androidx.preference.PreferenceFragmentCompat
 {
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public void onCreatePreferences(Bundle savedInstanceState, String rootKey)
 	{
-		super.onCreate(savedInstanceState);
-
 		addPreferencesFromResource(R.xml.preferences_main_app);
 
 		if (Build.VERSION.SDK_INT < 26)

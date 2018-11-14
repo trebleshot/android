@@ -251,7 +251,7 @@ public class AddDevicesToTransferActivity extends Activity
                             }
 
                             // so that if the user rejects it won't be removed from the sender
-                            jsonRequest.put(Keyword.FILES_INDEX, filesArray);
+                            jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
                             getDefaultInterrupter().addCloser(new Interrupter.Closer()
                             {
