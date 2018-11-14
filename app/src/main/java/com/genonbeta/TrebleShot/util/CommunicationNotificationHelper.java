@@ -104,13 +104,10 @@ public class CommunicationNotificationHelper
                 TransferUtils.createUniqueTransferId(transferObject.groupId, device.deviceId, transferObject.type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
         String message = numberOfFiles > 1 ? getContext().getResources().getQuantityString(R.plurals.ques_receiveMultipleFiles, numberOfFiles, numberOfFiles) : transferObject.friendlyName;
-
-        Intent acceptIntent = new Intent(getContext(), CommunicationService.class);
-
-        acceptIntent.setAction(CommunicationService.ACTION_FILE_TRANSFER);
-        acceptIntent.putExtra(CommunicationService.EXTRA_DEVICE_ID, device.deviceId);
-        acceptIntent.putExtra(CommunicationService.EXTRA_GROUP_ID, transferObject.groupId);
-        acceptIntent.putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
+        Intent acceptIntent = new Intent(getContext(), CommunicationService.class)
+                .setAction(CommunicationService.ACTION_FILE_TRANSFER)
+                .putExtra(CommunicationService.EXTRA_DEVICE_ID, device.deviceId)
+                .putExtra(CommunicationService.EXTRA_GROUP_ID, transferObject.groupId).putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId());
 
         Intent rejectIntent = ((Intent) acceptIntent.clone());
 
@@ -219,8 +216,7 @@ public class CommunicationNotificationHelper
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(processHolder.groupId, device.deviceId, processHolder.transferObject.type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
-        CoolTransfer.TransferHandler transferHandler = processHolder.transferHandler;
-        CoolTransfer.TransferProgress progress = transferHandler.getTransferProgress();
+        CoolTransfer.TransferProgress progress = processHolder.builder.getTransferProgress();
 
         notification
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
