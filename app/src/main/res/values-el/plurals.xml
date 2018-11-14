@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources><plurals name="ques_deleteFile">
+	<item quantity="one">"Θέλετε να διαγράψετε αυτό το αρχείο\? "</item>
+	<item quantity="other">"Θέλετε να διαγράψετε %δ αρχεία\? "</item>
+</plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+	<item quantity="one">"λήφθηκε %δ αρχείο  "</item>
+	<item quantity="other">"λήφθηκαν %δ αρχεία  "</item>
+</plurals>
+    <plurals name="text_itemSelected">
+	<item quantity="one">"επιλέχθηκε %δ αρχείο "</item>
+	<item quantity="other">"επιλέχθηκαν %δ αρχεία "</item>
+</plurals>
+    <plurals name="text_removeQueueSummary">
+	<item quantity="one">η εκκρεμούσα μεταφορά θα ακυρωθή</item>
+	<item quantity="other">"οι %δ εκκρεμούσες μεταφορές θα ακυρωθούν "</item>
+</plurals>
+    <plurals name="text_availableConnections">
+	<item quantity="one">"%δ σύνδεση "</item>
+	<item quantity="other">"%δ συνδέσεις "</item>
+</plurals>
+    <plurals name="ques_receiveMultipleFiles">
+	<item quantity="one">"Λήψη αυτού του αρχείου\? "</item>
+	<item quantity="other">"Λήψη αυτών των αρχείων\? "</item>
+</plurals>
+    <plurals name="text_files">
+	<item quantity="one">"%δ αρχείο "</item>
+	<item quantity="other">"%δ αρχεία "</item>
+</plurals>
+    <plurals name="text_secondsAgo">
+	<item quantity="one">πρίν από ένα δευτερόλεπτο</item>
+	<item quantity="other">%δ δευτερόλεπτα πρίν</item>
+</plurals>
+    <plurals name="text_minutesAgo">
+	<item quantity="one">"πρίν από ένα λεπτό "</item>
+	<item quantity="other">"%δ λεπτά πρίν "</item>
+</plurals>
+    <plurals name="text_fileDeletionCompleted">
+	<item quantity="one">"%δ αρχείο διαγράφηκε "</item>
+	<item quantity="other">"%δ αρχεία διαγράφηκαν "</item>
+</plurals>
+    <plurals name="text_gridRow">
+	<item quantity="one">μονή σειρά</item>
+	<item quantity="other">%δ σειρές</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">μεμονομένη κοινή χρήση</item>
+	<item quantity="other">"κοινή χρήση με %δ συσκευές "</item>
+</plurals>
+</resources>
