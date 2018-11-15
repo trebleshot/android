@@ -25,16 +25,10 @@
             android:theme="?actionBarTheme"
             android:visibility="gone" />
 
-        <com.google.android.material.tabs.TabLayout
-            android:id="@+id/activity_transaction_tab_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="?attr/actionBarSize" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/activity_transaction_view_pager"
+    <FrameLayout
+        android:id="@+id/activity_transaction_content_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

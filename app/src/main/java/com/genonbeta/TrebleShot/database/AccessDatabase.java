@@ -36,7 +36,7 @@ public class AccessDatabase extends SQLiteDatabase
      * 		below version 6 and the other which is new generation 7
      */
 
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
 
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -48,6 +48,8 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String TYPE_INSERT = "typeInsert";
     public static final String TYPE_UPDATE = "typeUpdate";
 
+    // divisions are a separate containers for items not ready to use
+    public static final String DIVIS_TRANSFER = "divisionTransfer";
     public static final String TABLE_TRANSFER = "transfer";
     public static final String FIELD_TRANSFER_ID = "id";
     public static final String FIELD_TRANSFER_FILE = "file";
@@ -145,7 +147,7 @@ public class AccessDatabase extends SQLiteDatabase
                 // Is there any??
             }
 
-            if (old <= 8) {
+            if (old <= 10) {
                 // With version 9, I added deviceId column to the transfer table
                 // to allow users distinguish individual transfer file
 
@@ -201,10 +203,11 @@ public class AccessDatabase extends SQLiteDatabase
         indexObject.reset();
 
         ArrayList<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-                        String.valueOf(groupId),
-                        TransferObject.Flag.REMOVED.toString()), TransferObject.class);
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class);
+
+        if (transactionList.size() == 0)
+            transactionList.addAll(castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class));
 
         for (TransferObject transferObject : transactionList) {
             if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
@@ -263,7 +266,7 @@ public class AccessDatabase extends SQLiteDatabase
         sqlValues.defineTable(TABLE_TRANSFER)
                 .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
@@ -312,6 +315,11 @@ public class AccessDatabase extends SQLiteDatabase
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
+
+        SQLValues.Table divisionTransferTable = sqlValues.getTables().get(TABLE_TRANSFER);
+        divisionTransferTable.setName(DIVIS_TRANSFER);
+
+        sqlValues.getTables().put(divisionTransferTable.getName(), divisionTransferTable);
 
         return sqlValues;
     }

@@ -52,6 +52,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
@@ -152,27 +153,12 @@ public class ViewTransferActivity
         mMode = findViewById(R.id.activity_transaction_action_mode);
 
         final Toolbar toolbar = findViewById(R.id.toolbar);
-        final TabLayout tabLayout = findViewById(R.id.activity_transaction_tab_layout);
-        final ViewPager viewPager = findViewById(R.id.activity_transaction_view_pager);
-
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
-        {
-            @Override
-            public void onItemInstantiated(StableItem item)
-            {
-                super.onItemInstantiated(item);
-
-                if (viewPager.getCurrentItem() == item.getCurrentPosition())
-                    attachListeners(item.getInitiatedItem());
-            }
-        };
 
         if (Intent.ACTION_VIEW.equals(getIntent().getAction()) && getIntent().getData() != null) {
             try {
@@ -221,45 +207,26 @@ public class ViewTransferActivity
         if (mGroup == null)
             finish();
         else {
-            tabLayout.setTabGravity(TabLayout.GRAVITY_CENTER);
-
-            Bundle assigneeFragmentArgs = new Bundle();
-            assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
-
             Bundle transactionFragmentArgs = new Bundle();
             transactionFragmentArgs.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
             transactionFragmentArgs.putString(TransferFileExplorerFragment.ARG_PATH,
                     mTransferObject == null || mTransferObject.directory == null
                             ? null : mTransferObject.directory);
 
-            pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferFileExplorerFragment.class, transactionFragmentArgs));
-            pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, TransferAssigneeListFragment.class, assigneeFragmentArgs));
+            TransferFileExplorerFragment fragment = (TransferFileExplorerFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.activity_transaction_content_frame);
 
-            pagerAdapter.createTabs(tabLayout);
-            viewPager.setAdapter(pagerAdapter);
-            viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+            if (fragment == null) {
+                fragment = (TransferFileExplorerFragment) Fragment
+                        .instantiate(ViewTransferActivity.this, TransferFileExplorerFragment.class.getName(), transactionFragmentArgs);
 
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener()
-            {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab)
-                {
-                    viewPager.setCurrentItem(tab.getPosition());
-                    attachListeners(pagerAdapter.getItem(tab.getPosition()));
-                }
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-                @Override
-                public void onTabUnselected(final TabLayout.Tab tab)
-                {
+                transaction.add(R.id.activity_transaction_content_frame, fragment);
+                transaction.commit();
+            }
 
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab)
-                {
-
-                }
-            });
+            attachListeners(fragment);
 
             mMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
             {
@@ -287,6 +254,7 @@ public class ViewTransferActivity
         reconstructGroup();
 
         requestTaskStateUpdate();
+        updateCalculations();
     }
 
     @Override
@@ -301,24 +269,19 @@ public class ViewTransferActivity
     {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
+
+        mStartMenu = menu.findItem(R.id.actions_transfer_resume);
+        mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
+        mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
+        mAddDevice = menu.findItem(R.id.actions_transfer_add_device);
+
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        mStartMenu = menu.findItem(R.id.actions_transfer_resume);
-        mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
-        mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
-        mAddDevice = menu.findItem(R.id.actions_transfer_add_device);
-
-        if (!getIndex().calculated)
-            updateCalculations();
-        else
-            showMenus();
-
-        requestTaskStateUpdate();
-
+        showMenus();
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -390,7 +353,7 @@ public class ViewTransferActivity
 
     private Snackbar createSnackbar(int resId, Object... objects)
     {
-        return Snackbar.make(findViewById(R.id.activity_transaction_view_pager), getString(resId, objects), Snackbar.LENGTH_LONG);
+        return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     @Nullable

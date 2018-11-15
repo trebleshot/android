@@ -19,14 +19,13 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
+import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -42,6 +41,8 @@ import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 public class AddDevicesToTransferActivity extends Activity
         implements SnackbarSupport
@@ -63,29 +64,42 @@ public class AddDevicesToTransferActivity extends Activity
     private TextView mProgressTextRight;
     private TextView mTextMain;
     private TextView mTextInfo;
+    private TransferAssigneeListFragment mAssigneeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
-        try {
-            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP_ID))
-                throw new Exception(getString(R.string.text_empty));
+        setContentView(R.layout.activity_add_devices_to_transfer);
 
-            mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
+        if (!checkGroupIntegrity())
+            return;
 
-            try {
-                getDatabase().reconstruct(mGroup);
-            } catch (Exception e) {
-                throw new Exception(getString(R.string.mesg_notValidTransfer));
-            }
+        Bundle assigneeFragmentArgs = new Bundle();
+        assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
+        assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, true);
 
-            initialize();
-        } catch (Exception e) {
-            Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-            finish();
+        mProgressBar = findViewById(R.id.progressBar);
+        mProgressTextLeft = findViewById(R.id.text1);
+        mProgressTextRight = findViewById(R.id.text2);
+        mTextMain = findViewById(R.id.textMain);
+        mTextInfo = findViewById(R.id.textInfo);
+        mActionButton = findViewById(R.id.actionButton);
+        mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
+        mAssigneeFragment = (TransferAssigneeListFragment) getSupportFragmentManager().findFragmentById(R.id.assigneListFragment);
+
+        if (mAssigneeFragment == null) {
+            mAssigneeFragment = (TransferAssigneeListFragment) Fragment
+                    .instantiate(this, TransferAssigneeListFragment.class.getName(), assigneeFragmentArgs);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+            transaction.add(R.id.assigneListFragment, mAssigneeFragment);
+            transaction.commit();
         }
+
+        resetStatusViews();
     }
 
     @Override
@@ -136,6 +150,36 @@ public class AddDevicesToTransferActivity extends Activity
         }
     }
 
+
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+    }
+
+    public boolean checkGroupIntegrity()
+    {
+        try {
+            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP_ID))
+                throw new Exception(getString(R.string.text_empty));
+
+            mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
+
+            try {
+                getDatabase().reconstruct(mGroup);
+            } catch (Exception e) {
+                throw new Exception(getString(R.string.mesg_notValidTransfer));
+            }
+
+            return true;
+        } catch (Exception e) {
+            Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
+
+        return false;
+    }
+
     public Snackbar createSnackbar(final int resId, final Object... objects)
     {
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
@@ -162,12 +206,16 @@ public class AddDevicesToTransferActivity extends Activity
 
                         try {
                             boolean doPublish = false;
-                            final TransferGroup.Assignee ownerAssignee = TransferUtils.getDefaultAssignee(AddDevicesToTransferActivity.this, mGroup.groupId);
-                            final NetworkDevice localDevice = AppUtils.getLocalDevice(AddDevicesToTransferActivity.this);
                             final JSONObject jsonRequest = new JSONObject();
                             final TransferGroup.Assignee assignee = new TransferGroup.Assignee(mGroup, device, connection);
-                            final ArrayList<TransferObject> existingRegistry = new ArrayList<>();
                             final ArrayList<TransferObject> pendingRegistry = new ArrayList<>();
+
+                            final ArrayList<TransferObject> existingRegistry = new ArrayList<>(getDatabase()
+                                    .castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                                            .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                            + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                                                    String.valueOf(mGroup.groupId),
+                                                    TransferObject.Type.OUTGOING.toString()), TransferObject.class));
                             final SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
                             {
                                 @Override
@@ -197,33 +245,13 @@ public class AddDevicesToTransferActivity extends Activity
                             jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
                             jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.groupId);
 
-                            existingRegistry.addAll(getDatabase()
-                                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                            .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                            + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
-                                                            + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                    String.valueOf(mGroup.groupId),
-                                                    ownerAssignee.deviceId,
-                                                    TransferObject.Type.OUTGOING.toString()), TransferObject.class));
-
                             if (existingRegistry.size() == 0)
                                 throw new Exception("Empty share holder id: " + mGroup.groupId);
 
                             JSONArray filesArray = new JSONArray();
-                            String deviceId = null;
-                            boolean deviceChosen = false;
 
                             for (TransferObject transferObject : existingRegistry) {
                                 TransferObject copyObject = new TransferObject(AccessDatabase.convertValues(transferObject.getValues()));
-
-                                if (deviceChosen) {
-                                    if ((deviceId == null && copyObject.deviceId != null)
-                                            || (deviceId != null && !deviceId.equals(copyObject.deviceId)))
-                                        continue;
-                                } else {
-                                    deviceId = copyObject.deviceId;
-                                    deviceChosen = true;
-                                }
 
                                 if (getDefaultInterrupter().interrupted())
                                     throw new InterruptedException("Interrupted by user");
@@ -286,18 +314,6 @@ public class AddDevicesToTransferActivity extends Activity
 
                             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
                                 updateText(thisTask, getString(R.string.mesg_organizingFiles));
-
-                                if (localDevice.deviceId.equals(ownerAssignee.deviceId)) {
-                                    updateText(thisTask, getString(R.string.mesg_removingOldInstances));
-
-                                    getDatabase().remove(existingRegistry, progressUpdater);
-                                    getDatabase().remove(ownerAssignee);
-
-                                    assignee.isClone = false;
-                                } else
-                                    assignee.isClone = !ownerAssignee.deviceId.equals(assignee.deviceId);
-
-                                updateText(thisTask, getString(R.string.text_savingDetails));
 
                                 if (doPublish)
                                     getDatabase().publish(assignee);
@@ -366,23 +382,6 @@ public class AddDevicesToTransferActivity extends Activity
     public Interrupter getDefaultInterrupter()
     {
         return mInterrupter;
-    }
-
-    private void initialize()
-    {
-        final UIConnectionUtils connectionUtils = new UIConnectionUtils(ConnectionUtils.getInstance(getApplicationContext()), this);
-        setContentView(R.layout.activity_add_devices_to_transfer);
-
-        mProgressBar = findViewById(R.id.progressBar);
-        mProgressTextLeft = findViewById(R.id.text1);
-        mProgressTextRight = findViewById(R.id.text2);
-        mTextMain = findViewById(R.id.textMain);
-        mTextInfo = findViewById(R.id.textInfo);
-        mActionButton = findViewById(R.id.actionButton);
-        mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
-
-        resetStatusViews();
-        startConnectionManagerActivity();
     }
 
     public void runOnWorkerService(WorkerService.RunningTask runningTask)

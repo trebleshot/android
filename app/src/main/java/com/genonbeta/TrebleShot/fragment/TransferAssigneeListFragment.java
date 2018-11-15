@@ -33,149 +33,156 @@ import androidx.annotation.Nullable;
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment
-		extends DynamicRecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
-		implements TitleSupport
+        extends DynamicRecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
+        implements TitleSupport
 {
-	public static final String ARG_GROUP_ID = "groupId";
+    public static final String ARG_GROUP_ID = "groupId";
+    public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
 
-	private BroadcastReceiver mReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
-				refreshList();
-		}
-	};
+    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
+                    && AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
+                refreshList();
+        }
+    };
 
-	private TransferGroup mHeldGroup;
+    private TransferGroup mHeldGroup;
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setHasOptionsMenu(true);
-	}
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_device_hub_white_24dp);
-		setEmptyText(getString(R.string.text_noDeviceForTransfer));
-		getListView().addItemDecoration(new PaddingItemDecoration((int) getResources().getDimension(R.dimen.padding_list_content_parent_layout)));
-	}
+        setEmptyImage(R.drawable.ic_device_hub_white_24dp);
+        setEmptyText(getString(R.string.text_noDeviceForTransfer));
+        getListView().addItemDecoration(new PaddingItemDecoration((int) getResources().getDimension(R.dimen.padding_list_content_parent_layout), true, isHorizontalOrientation()));
+    }
 
-	@Override
-	public TransferAssigneeListAdapter onAdapter()
-	{
-		final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
-		{
-			@Override
-			public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
-			{
-				clazz.getView().setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
+    @Override
+    public TransferAssigneeListAdapter onAdapter()
+    {
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
+        {
+            @Override
+            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
+            {
+                clazz.getView().setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
-						new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), assignee.device)
-								.show();
-					}
-				});
+                        new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), assignee.device)
+                                .show();
+                    }
+                });
 
-				clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						final TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
+                clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        final TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
-						PopupMenu popupMenu = new PopupMenu(getContext(), v);
-						Menu menu = popupMenu.getMenu();
+                        PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                        Menu menu = popupMenu.getMenu();
 
-						popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
-						menu.findItem(R.id.popup_remove).setEnabled(assignee.isClone);
+                        popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
 
-						popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-						{
-							@Override
-							public boolean onMenuItemClick(MenuItem item)
-							{
-								int id = item.getItemId();
+                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                        {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item)
+                            {
+                                int id = item.getItemId();
 
-								if (id == R.id.popup_changeChangeConnection) {
-									TransferUtils.changeConnection(getActivity(), AppUtils.getDatabase(getContext()), getTransferGroup(), assignee.device, new TransferUtils.ConnectionUpdatedListener()
-									{
-										@Override
-										public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
-										{
-											createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getContext(), connection))
-													.show();
-										}
-									});
-								} else if (id == R.id.popup_remove) {
-									AppUtils.getDatabase(getContext()).remove(assignee);
-								} else
-									return false;
+                                if (id == R.id.popup_changeChangeConnection) {
+                                    TransferUtils.changeConnection(getActivity(), AppUtils.getDatabase(getContext()), getTransferGroup(), assignee.device, new TransferUtils.ConnectionUpdatedListener()
+                                    {
+                                        @Override
+                                        public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
+                                        {
+                                            createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getContext(), connection))
+                                                    .show();
+                                        }
+                                    });
+                                } else if (id == R.id.popup_remove) {
+                                    AppUtils.getDatabase(getContext()).remove(assignee);
+                                } else
+                                    return false;
 
-								return true;
-							}
-						});
+                                return true;
+                            }
+                        });
 
-						popupMenu.show();
-					}
-				});
-			}
-		};
+                        popupMenu.show();
+                    }
+                });
+            }
+        };
 
-		return new TransferAssigneeListAdapter(getContext(), AppUtils.getDatabase(getContext()))
-		{
-			@NonNull
-			@Override
-			public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-			{
-				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
-			}
-		}.setGroup(getTransferGroup());
-	}
+        return new TransferAssigneeListAdapter(getContext(), AppUtils.getDatabase(getContext()))
+        {
+            @NonNull
+            @Override
+            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
+            }
+        }.setGroup(getTransferGroup());
+    }
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		getActivity().registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
-	}
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        getActivity().registerReceiver(mReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
+    }
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		getActivity().unregisterReceiver(mReceiver);
-	}
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
+    }
 
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_deviceList);
-	}
+    @Override
+    public boolean isHorizontalOrientation()
+    {
+        return (getArguments() != null && getArguments().getBoolean(ARG_USE_HORIZONTAL_VIEW))
+                || super.isHorizontalOrientation();
+    }
 
-	public TransferGroup getTransferGroup()
-	{
-		if (mHeldGroup == null) {
-			mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
+    @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_deviceList);
+    }
 
-			try {
-				AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
+    public TransferGroup getTransferGroup()
+    {
+        if (mHeldGroup == null) {
+            mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
 
-		return mHeldGroup;
-	}
+            try {
+                AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        return mHeldGroup;
+    }
 }

@@ -76,23 +76,6 @@ public class TransferUtils
                         String.valueOf(groupId), deviceId, flag.toString());
     }
 
-    public static TransferGroup.Assignee getDefaultAssignee(Context context, long groupId) throws AssigneeNotFoundException
-    {
-        ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(context)
-                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID),
-                                String.valueOf(groupId)), TransferGroup.Assignee.class);
-
-        for (TransferGroup.Assignee assignee : assignees)
-            if (!assignee.isClone)
-                return assignee;
-
-        if (assignees.size() > 0)
-            return assignees.get(0);
-
-        throw new AssigneeNotFoundException();
-    }
-
     public static TransferObject fetchValidIncomingTransfer(Context context, long groupId, String deviceId)
     {
         CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(new SQLQuery

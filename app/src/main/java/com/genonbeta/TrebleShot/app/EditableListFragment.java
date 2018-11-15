@@ -106,7 +106,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                     : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
 
             getListView().addItemDecoration(mDefaultPaddingItemDecoration
-                    = new PaddingItemDecoration((int) padding, mUseDefaultPaddingDecorationSpaceForEdges));
+                    = new PaddingItemDecoration((int) padding, mUseDefaultPaddingDecorationSpaceForEdges, false));
         }
     }
 
@@ -811,8 +811,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         public void onFinish(Context context, PowerfulActionMode actionMode)
         {
             setSelection(false);
-            getFragment().getSelectionConnection().getSelectedItemList().clear();
 
+            mFragment.getSelectionConnection().getSelectedItemList().clear();
             mFragment.loadIfRequested();
         }
     }

@@ -19,7 +19,6 @@ import com.genonbeta.TrebleShot.fragment.VideoListFragment;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
-import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.Nullable;
@@ -56,8 +55,6 @@ public class ContentSharingActivity extends Activity
         mMode = findViewById(R.id.activity_content_sharing_action_mode);
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
-
-        mMode.getEngineToolbar().setFinishAllowed(false);
 
         mSelectionCallback = new SharingActionModeCallback(null);
         final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
@@ -157,8 +154,12 @@ public class ContentSharingActivity extends Activity
     @Override
     public void onBackPressed()
     {
-        if (mBackPressedListener == null || !mBackPressedListener.onBackPressed())
-            super.onBackPressed();
+        if (mBackPressedListener == null || !mBackPressedListener.onBackPressed()) {
+            if (mMode.hasActive(mSelectionCallback))
+                mMode.finish(mSelectionCallback);
+            else
+                super.onBackPressed();
+        }
     }
 
     public void attachListeners(EditableListFragmentImpl fragment)
@@ -167,8 +168,5 @@ public class ContentSharingActivity extends Activity
         mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
                 ? (OnBackPressedListener) fragment
                 : null;
-
-        if (!mMode.hasActive(mSelectionCallback))
-            mMode.start(mSelectionCallback);
     }
 }

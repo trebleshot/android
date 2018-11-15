@@ -404,7 +404,6 @@
     <string name="text_sendText">Send text</string>
     <string name="butn_start">Start</string>
     <string name="text_addDeviceHelp">Adding devices helps you share the same files with more devices. You will be taken back to the transfer when it is done.</string>
-    <string name="mesg_removingOldInstances">Removing old instances</string>
     <string name="text_downloads">Downloads</string>
     <string name="text_documents">Documents</string>
     <string name="text_shortcuts">Shortcuts</string>

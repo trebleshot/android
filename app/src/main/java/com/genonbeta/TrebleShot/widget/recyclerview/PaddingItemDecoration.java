@@ -18,15 +18,17 @@ public class PaddingItemDecoration extends RecyclerView.ItemDecoration
     private int mPadding;
     private boolean mActive = true;
     private boolean mEdgeSpace = true;
+    private boolean mHorizontalView = false;
 
     public PaddingItemDecoration(int padding)
     {
-        this(padding, true);
+        this(padding, true, false);
     }
 
-    public PaddingItemDecoration(int padding, boolean edgeSpace)
+    public PaddingItemDecoration(int padding, boolean edgeSpace, boolean horizontalView)
     {
         setPadding(padding);
+        setHorizontalView(horizontalView);
         setEdgeSpace(edgeSpace);
     }
 
@@ -51,25 +53,32 @@ public class PaddingItemDecoration extends RecyclerView.ItemDecoration
             spanCount = layoutSpanCount - layoutManager.getSpanSizeLookup().getSpanSize(position);
         }
 
+        Rect thisRect = new Rect();
+
         if (mPadding >= 2) {
             int paddingRect = mPadding / 2;
             int paddingNormal = mPadding;
 
             if (mEdgeSpace) {
-                outRect.left = spanIndex == 0 ? paddingNormal : paddingRect;
-                outRect.right = spanIndex == spanCount ? paddingNormal : paddingRect;
-                outRect.bottom = mPadding;
+                thisRect.left = spanIndex == 0 ? paddingNormal : paddingRect;
+                thisRect.right = spanIndex == spanCount ? paddingNormal : paddingRect;
+                thisRect.bottom = mPadding;
 
                 if (position == 0)
-                    outRect.top = mPadding;
+                    thisRect.top = mPadding;
             } else {
-                outRect.left = spanIndex == 0 ? 0 : paddingRect;
-                outRect.right = spanIndex == spanCount ? 0 : paddingRect;
+                thisRect.left = spanIndex == 0 ? 0 : paddingRect;
+                thisRect.right = spanIndex == spanCount ? 0 : paddingRect;
 
                 if (position > 0)
-                    outRect.top = mPadding;
+                    thisRect.top = mPadding;
             }
         }
+
+        outRect.left = mHorizontalView ? thisRect.top : thisRect.left;
+        outRect.right = mHorizontalView ? thisRect.bottom : thisRect.right;
+        outRect.top = mHorizontalView ? thisRect.left : thisRect.top;
+        outRect.bottom = mHorizontalView ? thisRect.right : thisRect.bottom;
     }
 
     public void setActive(boolean active)
@@ -80,6 +89,11 @@ public class PaddingItemDecoration extends RecyclerView.ItemDecoration
     public void setEdgeSpace(boolean edgeSpace)
     {
         mEdgeSpace = edgeSpace;
+    }
+
+    public void setHorizontalView(boolean isHorizontal)
+    {
+        mHorizontalView = isHorizontal;
     }
 
     public void setPadding(int padding)

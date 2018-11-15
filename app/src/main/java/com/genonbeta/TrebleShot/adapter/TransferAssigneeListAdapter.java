@@ -43,7 +43,9 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new ViewHolder(getInflater().inflate(R.layout.list_assignee, parent, false));
+        return new ViewHolder(isHorizontalOrientation()
+                ? getInflater().inflate(R.layout.list_assignee_grid, parent, false)
+                : getInflater().inflate(R.layout.list_assignee, parent, false));
     }
 
     @Override

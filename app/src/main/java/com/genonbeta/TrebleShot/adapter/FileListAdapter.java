@@ -73,7 +73,7 @@ public class FileListAdapter
                         continue;
 
                     if (file.isDirectory() && mShowDirectories)
-                        lister.offer(new DirectoryHolder(file, mContext.getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
+                        lister.offer(new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
                     else if (file.isFile() && mShowFiles) {
                         if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
                             TransferObject existingObject = null;
@@ -118,8 +118,8 @@ public class FileListAdapter
 
             if (fileSystemRoot.canRead())
                 lister.offer(new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
-                        mContext.getString(R.string.text_fileRoot),
-                        mContext.getString(R.string.text_folder),
+                        getContext().getString(R.string.text_fileRoot),
+                        getContext().getString(R.string.text_folder),
                         R.drawable.ic_folder_white_24dp).setDenySelections(false));
 
             if (Build.VERSION.SDK_INT >= 21)

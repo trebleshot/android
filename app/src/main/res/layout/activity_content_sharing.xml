@@ -36,17 +36,14 @@
         tools:context=".activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <androidx.cardview.widget.CardView
             android:id="@+id/activity_content_sharing_action_mode_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:visibility="gone">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?colorDivider" />
+            android:visibility="gone"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true">
 
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
@@ -55,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:theme="?actionBarTheme" />
 
-        </com.google.android.material.appbar.AppBarLayout>
+        </androidx.cardview.widget.CardView>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
@@ -69,5 +66,6 @@
                 android:layout_height="match_parent" />
 
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
     </RelativeLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

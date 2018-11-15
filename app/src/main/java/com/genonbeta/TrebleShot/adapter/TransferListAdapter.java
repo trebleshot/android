@@ -83,7 +83,23 @@ public class TransferListAdapter
         String currentPath = getPath();
         currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
-        SQLQuery.Select sqlSelect = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
+        ArrayMap<String, NetworkDevice> networkDevices = new ArrayMap<>();
+        ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
+                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroupId)), TransferGroup.Assignee.class);
+
+        for (TransferGroup.Assignee assignee : assignees)
+            try {
+                NetworkDevice device = new NetworkDevice(assignee.deviceId);
+
+                AppUtils.getDatabase(getContext()).reconstruct(device);
+                networkDevices.put(device.deviceId, device);
+            } catch (Exception e) {
+            }
+
+        SQLQuery.Select sqlSelect = new SQLQuery.Select(assignees.size() < 1
+                ? AccessDatabase.DIVIS_TRANSFER
+                : AccessDatabase.TABLE_TRANSFER);
 
         if (currentPath == null)
             sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroupId));
@@ -94,20 +110,6 @@ public class TransferListAdapter
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroupId), currentPath, currentPath + File.separator + "%");
 
         ArrayList<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
-        ArrayMap<String, NetworkDevice> networkDevices = new ArrayMap<>();
-        ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
-                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroupId)), TransferGroup.Assignee.class);
-
-
-        for (TransferGroup.Assignee assignee : assignees)
-            try {
-                NetworkDevice device = new NetworkDevice(assignee.deviceId);
-
-                AppUtils.getDatabase(getContext()).reconstruct(device);
-                networkDevices.put(device.deviceId, device);
-            } catch (Exception e) {
-            }
 
         // we first get the default files
         for (GenericTransferItem object : derivedList) {

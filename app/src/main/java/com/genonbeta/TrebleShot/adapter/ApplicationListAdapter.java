@@ -42,7 +42,7 @@ public class ApplicationListAdapter
     {
         ArrayList<PackageHolder> list = new ArrayList<>();
 
-        for (PackageInfo packageInfo : mContext.getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
+        for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
 
             if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || mPreferences.getBoolean("show_system_apps", false))

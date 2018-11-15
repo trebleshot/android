@@ -101,7 +101,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         ImageView userImage = parentView.findViewById(R.id.image);
 
         userText.setText(device.nickname);
-        deviceText.setText(hotspotNetwork ? mContext.getString(R.string.text_trebleshotHotspot) : device.model);
+        deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
 
         userImage.setImageDrawable(mIconBuilder.buildRound(device.nickname));
     }

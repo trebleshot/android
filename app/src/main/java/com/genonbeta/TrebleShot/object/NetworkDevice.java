@@ -107,24 +107,17 @@ public class NetworkDevice
         for (TransferGroup.Assignee assignee : assignees) {
             database.remove(assignee);
 
-            if (!assignee.isClone) {
-                try {
-                    TransferGroup transferGroup = new TransferGroup(assignee.groupId);
-                    database.reconstruct(transferGroup);
+            try {
+                TransferGroup transferGroup = new TransferGroup(assignee.groupId);
+                database.reconstruct(transferGroup);
 
-                    List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                            .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
+                List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
 
-                    if (relatedAssignees.size() == 0)
-                        database.remove(transferGroup);
-                    else {
-                        TransferGroup.Assignee candidateAssignee = relatedAssignees.get(0);
-                        candidateAssignee.isClone = false;
-                        database.update(candidateAssignee);
-                    }
-                } catch (Exception e) {
+                if (relatedAssignees.size() == 0)
+                    database.remove(transferGroup);
+            } catch (Exception e) {
 
-                }
             }
         }
     }

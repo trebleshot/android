@@ -30,12 +30,12 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:background="?backgroundGradientTop"
+            android:gravity="end"
             android:orientation="vertical"
-            android:paddingTop="3dp"
             android:paddingLeft="8dp"
+            android:paddingTop="3dp"
             android:paddingRight="8dp"
-            android:paddingBottom="8dp"
-            android:gravity="end">
+            android:paddingBottom="8dp">
 
             <TextView
                 android:id="@+id/text3"
@@ -43,7 +43,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text2"
@@ -52,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:gravity="center"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

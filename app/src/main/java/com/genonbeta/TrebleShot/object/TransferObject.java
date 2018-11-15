@@ -47,6 +47,11 @@ public class TransferObject
     {
     }
 
+    public TransferObject(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+    {
+        this(requestId, groupId, null, friendlyName, file, fileMime, fileSize, type);
+    }
+
     public TransferObject(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
     {
         this.friendlyName = friendlyName;
@@ -84,16 +89,21 @@ public class TransferObject
                 && ((deviceId == null && otherObject.deviceId == null) || (deviceId != null && deviceId.equals(otherObject.deviceId)));
     }
 
+    public boolean isDivisionObject()
+    {
+        return deviceId == null;
+    }
+
     @Override
     public SQLQuery.Select getWhere()
     {
-        SQLQuery.Select query = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
-        String nullDevice = String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE);
-        String withDevice = String.format("%s AND %s = ?", nullDevice, AccessDatabase.FIELD_TRANSFER_DEVICEID);
+        String whereClause = isDivisionObject()
+                ? String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE)
+                : String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE, AccessDatabase.FIELD_TRANSFER_DEVICEID);
 
-        return deviceId == null
-                ? query.setWhere(nullDevice, String.valueOf(requestId), type.toString())
-                : query.setWhere(withDevice, String.valueOf(requestId), type.toString(), String.valueOf(deviceId));
+        return isDivisionObject()
+                ? new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString())
+                : new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString(), deviceId);
     }
 
     @Override

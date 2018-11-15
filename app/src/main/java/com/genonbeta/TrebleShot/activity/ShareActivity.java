@@ -177,11 +177,9 @@ public class ShareActivity extends Activity
 
                 updateText(thisTask, getString(R.string.mesg_organizingFiles));
 
-                final NetworkDevice localDevice = AppUtils.getLocalDevice(ShareActivity.this);
                 final ArrayList<SelectableStream> measuredObjects = new ArrayList<>();
                 final ArrayList<TransferObject> pendingObjects = new ArrayList<>();
                 final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
-                final TransferGroup.Assignee assignee = new TransferGroup.Assignee(groupInstance.groupId, localDevice.deviceId, Keyword.Local.NETWORK_INTERFACE_UNKNOWN);
 
                 for (int position = 0; position < fileUris.size(); position++) {
                     if (getDefaultInterrupter().interrupted())
@@ -217,7 +215,6 @@ public class ShareActivity extends Activity
 
                     TransferObject transferObject = new TransferObject(requestId,
                             groupInstance.groupId,
-                            assignee.deviceId,
                             selectableStream.getSelectableTitle(),
                             selectableStream.getDocumentFile().getUri().toString(),
                             selectableStream.getDocumentFile().getType(),
@@ -254,8 +251,6 @@ public class ShareActivity extends Activity
                     finish();
                 } else {
                     getDatabase().insert(groupInstance);
-                    getDatabase().insert(assignee);
-                    getDatabase().publish(localDevice);
 
                     ViewTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
                     AddDevicesToTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
