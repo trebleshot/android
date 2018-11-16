@@ -179,6 +179,9 @@ public class AddDevicesToTransferActivity extends Activity
     {
         super.onResume();
         registerReceiver(mReceiver, mFilter);
+
+        if (!checkGroupIntegrity())
+            finish();
     }
 
     @Override

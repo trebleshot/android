@@ -100,8 +100,7 @@ public class FileListAdapter
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static)
-                    .setDenySelections(false));
+            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
             lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
                     getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
@@ -122,7 +121,7 @@ public class FileListAdapter
                 lister.offer(new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
                         getContext().getString(R.string.text_fileRoot),
                         getContext().getString(R.string.text_folder),
-                        R.drawable.ic_folder_white_24dp).setDenySelections(false));
+                        R.drawable.ic_folder_white_24dp));
 
             if (Build.VERSION.SDK_INT >= 21)
                 referencedDirectoryList.addAll(Arrays.asList(getContext().getExternalMediaDirs()));
@@ -351,11 +350,21 @@ public class FileListAdapter
 
         public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
         {
-            super(file.getUri().toString().hashCode(), friendlyName, friendlyName, file.getType(), date, size, uri);
+            // It will be generated in getId() method
+            super(0, friendlyName, friendlyName, file.getType(), date, size, uri);
 
             this.file = file;
             this.info = info;
             this.iconRes = iconRes;
+        }
+
+        @Override
+        public long getId()
+        {
+            if (super.getId() == 0)
+                setId(String.format("%s_%s", file.getUri().toString(), getClass().getName()).hashCode());
+
+            return super.getId();
         }
 
         public boolean loadThumbnail(ImageView imageView)
@@ -410,6 +419,7 @@ public class FileListAdapter
         {
             super(context, file);
         }
+
     }
 
     public static class ReceivedFileHolder extends FileHolder
@@ -434,8 +444,6 @@ public class FileListAdapter
 
     public static class DirectoryHolder extends GenericFileHolder
     {
-        private boolean mDenySelections = false;
-
         public DirectoryHolder(DocumentFile file, String info, int iconRes)
         {
             this(file, file.getName(), info, iconRes);
@@ -446,16 +454,10 @@ public class FileListAdapter
             super(file, friendlyName, info, iconRes, file.lastModified(), 0, file.getUri());
         }
 
-        public DirectoryHolder setDenySelections(boolean deny)
-        {
-            mDenySelections = deny;
-            return this;
-        }
-
         @Override
-        public boolean setSelectableSelected(boolean selected)
+        public long getId()
         {
-            return !mDenySelections && super.setSelectableSelected(selected);
+            return super.getId();
         }
     }
 

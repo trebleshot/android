@@ -135,6 +135,27 @@ public class TransferListAdapter
 
             if ((currentPath == null && object.directory == null)
                     || object.directory.equals(currentPath)) {
+
+                try {
+                    DocumentFile documentFile = null;
+
+                    if (TransferObject.Type.OUTGOING.equals(object.type))
+                        documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
+                    else if (TransferObject.Flag.DONE.equals(object.flag))
+                        documentFile = FileUtils.getIncomingPseudoFile(getContext(),
+                                AppUtils.getDefaultPreferences(getContext()), object, mGroup, false);
+
+                    if (documentFile != null && documentFile.exists()) {
+                        object.setFile(documentFile);
+
+                        String[] format = object.fileMimeType.split(File.separator);
+
+                        if (format.length > 0 && ("image".equals(format[0]) || "video".equals(format[0])))
+                            object.setSupportThumbnail(true);
+                    }
+                } catch (Exception e) {
+                }
+
                 files.add(object);
             } else if (currentPath == null
                     || (object.directory.startsWith(currentPath))) {
@@ -380,7 +401,6 @@ public class TransferListAdapter
                 firstText.setText(object.getFirstText(this));
                 secondText.setText(object.getSecondText(this));
                 thirdText.setText(object.getThirdText(this));
-                image.setImageResource(object.getIconRes());
                 progressBar.setMax(100);
                 progressBar.setProgress((int) (object.getPercent() * 100));
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
@@ -393,11 +413,18 @@ public class TransferListAdapter
                     DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
                 }
 
-                if (!object.loadThumbnail(mGroup, thumbnail)) {
+                boolean supportThumbnail = object.loadThumbnail(thumbnail);
+
+                progressBar.setVisibility(!supportThumbnail || !object.isComplete()
+                        ? View.VISIBLE
+                        : View.GONE);
+
+                if (supportThumbnail)
+                    image.setImageDrawable(null);
+                else {
                     image.setImageResource(object.getIconRes());
                     thumbnail.setImageDrawable(null);
-                } else
-                    image.setImageDrawable(null);
+                }
             }
         } catch (Exception e) {
 
@@ -441,7 +468,7 @@ public class TransferListAdapter
 
         abstract public double getPercent();
 
-        abstract public boolean loadThumbnail(TransferGroup group, ImageView imageView);
+        abstract public boolean loadThumbnail(ImageView imageView);
 
         abstract public String getFirstText(TransferListAdapter adapter);
 
@@ -495,6 +522,8 @@ public class TransferListAdapter
     public static class GenericTransferItem extends AbstractGenericItem
     {
         private String mDeviceName;
+        private DocumentFile mFile;
+        private boolean mSupportThumbnail;
 
         public GenericTransferItem()
         {
@@ -557,35 +586,17 @@ public class TransferListAdapter
         }
 
         @Override
-        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        public boolean loadThumbnail(ImageView imageView)
         {
-            DocumentFile documentFile = null;
+            if (mFile != null && mSupportThumbnail && mFile.exists()) {
+                GlideApp.with(imageView.getContext())
+                        .load(mFile.getUri())
+                        .error(getIconRes())
+                        .override(160)
+                        .centerCrop()
+                        .into(imageView);
 
-            try {
-                if (Type.OUTGOING.equals(type))
-                    documentFile = FileUtils.fromUri(imageView.getContext(), Uri.parse(file));
-                else if (Flag.DONE.equals(flag))
-                    documentFile = FileUtils.getIncomingPseudoFile(imageView.getContext(),
-                            AppUtils.getDefaultPreferences(imageView.getContext()), this, group, false);
-            } catch (Exception e) {
-                return false;
-            }
-
-            if (documentFile != null && documentFile.exists()) {
-                String[] format = fileMimeType.split(File.separator);
-
-                if (format.length > 0)
-                    if ("image".equals(format[0])
-                            || "video".equals(format[0])) {
-                        GlideApp.with(imageView.getContext())
-                                .load(documentFile.getUri())
-                                .error(getIconRes())
-                                .override(160)
-                                .centerCrop()
-                                .into(imageView);
-
-                        return true;
-                    }
+                return true;
             }
 
             return false;
@@ -594,6 +605,16 @@ public class TransferListAdapter
         public void setDeviceName(String deviceName)
         {
             mDeviceName = deviceName;
+        }
+
+        public void setFile(DocumentFile file)
+        {
+            mFile = file;
+        }
+
+        public void setSupportThumbnail(boolean support)
+        {
+            mSupportThumbnail = support;
         }
     }
 
@@ -684,7 +705,7 @@ public class TransferListAdapter
         }
 
         @Override
-        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        public boolean loadThumbnail(ImageView imageView)
         {
             return false;
         }
@@ -799,7 +820,7 @@ public class TransferListAdapter
         }
 
         @Override
-        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        public boolean loadThumbnail(ImageView imageView)
         {
             return false;
         }

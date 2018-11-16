@@ -408,4 +408,5 @@
     <string name="text_documents">Documents</string>
     <string name="text_shortcuts">Shortcuts</string>
     <string name="text_recentFiles">Recent files</string>
+    <string name="butn_changeSaveFolder">Change save folder</string>
 </resources>
