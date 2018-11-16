@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.adapter;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.util.Log;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -18,9 +20,11 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.MimeIconUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
@@ -53,7 +57,7 @@ public class TransferListAdapter
 
     private SQLQuery.Select mSelect;
     private String mPath;
-    private long mGroupId;
+    private TransferGroup mGroup = new TransferGroup();
     private PathChangedListener mListener;
     private NumberFormat mPercentFormat;
 
@@ -77,6 +81,13 @@ public class TransferListAdapter
     @Override
     protected void onLoad(GroupLister<AbstractGenericItem> lister)
     {
+        try {
+            AppUtils.getDatabase(getContext()).reconstruct(mGroup);
+        } catch (ReconstructionFailedException e) {
+            e.printStackTrace();
+            return;
+        }
+
         boolean hasIncoming = false;
         ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
         ArrayList<GenericTransferItem> files = new ArrayList<>();
@@ -86,7 +97,7 @@ public class TransferListAdapter
         ArrayMap<String, NetworkDevice> networkDevices = new ArrayMap<>();
         ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
                 .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroupId)), TransferGroup.Assignee.class);
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId)), TransferGroup.Assignee.class);
 
         for (TransferGroup.Assignee assignee : assignees)
             try {
@@ -102,12 +113,12 @@ public class TransferListAdapter
                 : AccessDatabase.TABLE_TRANSFER);
 
         if (currentPath == null)
-            sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroupId));
+            sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroup.groupId));
         else
             // Does the SQL do better job?
             sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
-                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroupId), currentPath, currentPath + File.separator + "%");
+                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroup.groupId), currentPath, currentPath + File.separator + "%");
 
         ArrayList<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
 
@@ -137,7 +148,7 @@ public class TransferListAdapter
                 TransferFolder transferFolder = folders.get(cleanedPath);
 
                 if (transferFolder == null) {
-                    transferFolder = new TransferFolder(mGroupId, cleanedPath, currentPath != null
+                    transferFolder = new TransferFolder(mGroup.groupId, cleanedPath, currentPath != null
                             ? currentPath + File.separator + cleanedPath
                             : cleanedPath);
 
@@ -167,7 +178,7 @@ public class TransferListAdapter
         if (currentPath == null
                 && hasIncoming) {
             try {
-                TransferGroup group = new TransferGroup(mGroupId);
+                TransferGroup group = new TransferGroup(mGroup.groupId);
                 AppUtils.getDatabase(getContext()).reconstruct(group);
                 DocumentFile savePath = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), group);
 
@@ -190,7 +201,7 @@ public class TransferListAdapter
             }
         }
 
-        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroupId, currentPath == null
+        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.groupId, currentPath == null
                 ? getContext().getString(R.string.text_home)
                 : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
@@ -262,7 +273,7 @@ public class TransferListAdapter
 
     public long getGroupId()
     {
-        return mGroupId;
+        return mGroup.groupId;
     }
 
     public String getPath()
@@ -311,7 +322,7 @@ public class TransferListAdapter
 
     public void setGroupId(long groupId)
     {
-        mGroupId = groupId;
+        mGroup.groupId = groupId;
     }
 
     public void setPath(String path)
@@ -349,6 +360,7 @@ public class TransferListAdapter
                 @ColorInt
                 int appliedColor;
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
+                ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView titleText = parentView.findViewById(R.id.text);
                 TextView firstText = parentView.findViewById(R.id.text2);
@@ -380,6 +392,12 @@ public class TransferListAdapter
                 } else {
                     DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
                 }
+
+                if (!object.loadThumbnail(mGroup, thumbnail)) {
+                    image.setImageResource(object.getIconRes());
+                    thumbnail.setImageDrawable(null);
+                } else
+                    image.setImageDrawable(null);
             }
         } catch (Exception e) {
 
@@ -422,6 +440,8 @@ public class TransferListAdapter
         abstract public int getIconRes();
 
         abstract public double getPercent();
+
+        abstract public boolean loadThumbnail(TransferGroup group, ImageView imageView);
 
         abstract public String getFirstText(TransferListAdapter adapter);
 
@@ -502,9 +522,7 @@ public class TransferListAdapter
         @Override
         public int getIconRes()
         {
-            return type.equals(TransferObject.Type.INCOMING)
-                    ? R.drawable.ic_file_download_white_24dp
-                    : R.drawable.ic_file_upload_white_24dp;
+            return MimeIconUtils.loadMimeIcon(fileMimeType);
         }
 
         @Override
@@ -521,9 +539,9 @@ public class TransferListAdapter
         @Override
         public String getFirstText(TransferListAdapter adapter)
         {
-            return mDeviceName == null
-                    ? adapter.getContext().getString(R.string.text_unknown)
-                    : mDeviceName;
+            return String.format("%s %s",
+                    Type.INCOMING.equals(type) ? "↓" : "↑",
+                    mDeviceName == null ? adapter.getContext().getString(R.string.text_unknown) : mDeviceName);
         }
 
         @Override
@@ -536,6 +554,41 @@ public class TransferListAdapter
         public String getThirdText(TransferListAdapter adapter)
         {
             return TextUtils.getTransactionFlagString(adapter.getContext(), this, adapter.getPercentFormat());
+        }
+
+        @Override
+        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        {
+            DocumentFile documentFile = null;
+
+            try {
+                if (Type.OUTGOING.equals(type))
+                    documentFile = FileUtils.fromUri(imageView.getContext(), Uri.parse(file));
+                else if (Flag.DONE.equals(flag))
+                    documentFile = FileUtils.getIncomingPseudoFile(imageView.getContext(),
+                            AppUtils.getDefaultPreferences(imageView.getContext()), this, group, false);
+            } catch (Exception e) {
+                return false;
+            }
+
+            if (documentFile != null && documentFile.exists()) {
+                String[] format = fileMimeType.split(File.separator);
+
+                if (format.length > 0)
+                    if ("image".equals(format[0])
+                            || "video".equals(format[0])) {
+                        GlideApp.with(imageView.getContext())
+                                .load(documentFile.getUri())
+                                .error(getIconRes())
+                                .override(160)
+                                .centerCrop()
+                                .into(imageView);
+
+                        return true;
+                    }
+            }
+
+            return false;
         }
 
         public void setDeviceName(String deviceName)
@@ -628,6 +681,12 @@ public class TransferListAdapter
         public long getId()
         {
             return directory.hashCode();
+        }
+
+        @Override
+        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        {
+            return false;
         }
 
         @Override
@@ -737,6 +796,12 @@ public class TransferListAdapter
         public String getThirdText(TransferListAdapter adapter)
         {
             return adapter.getPercentFormat().format(getPercent());
+        }
+
+        @Override
+        public boolean loadThumbnail(TransferGroup group, ImageView imageView)
+        {
+            return false;
         }
 
         @Override

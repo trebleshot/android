@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -19,6 +20,7 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.MimeIconUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -250,6 +252,7 @@ public class FileListAdapter
             if (!holder.tryBinding(object)) {
                 final View parentView = holder.getView();
 
+                ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
@@ -258,7 +261,13 @@ public class FileListAdapter
 
                 text1.setText(object.friendlyName);
                 text2.setText(object.info);
-                image.setImageResource(object.iconRes);
+
+                if (!object.loadThumbnail(thumbnail)) {
+                    image.setImageResource(object.iconRes);
+                    thumbnail.setImageDrawable(null);
+                } else
+                    image.setImageDrawable(null);
+
             }
         } catch (NotReadyException e) {
             e.printStackTrace();
@@ -348,6 +357,11 @@ public class FileListAdapter
             this.info = info;
             this.iconRes = iconRes;
         }
+
+        public boolean loadThumbnail(ImageView imageView)
+        {
+            return false;
+        }
     }
 
     public static class FileHolder extends GenericFileHolder
@@ -357,10 +371,36 @@ public class FileListAdapter
             super(file,
                     file.getName(),
                     FileUtils.sizeExpression(file.length(), false),
-                    R.drawable.ic_insert_drive_file_white_24dp,
+                    MimeIconUtils.loadMimeIcon(file.getType()),
                     file.lastModified(),
                     file.length(),
                     FileUtils.getSecureUriSilently(context, file));
+        }
+
+        @Override
+        public boolean loadThumbnail(ImageView imageView)
+        {
+            String type = file.getType();
+
+            if (type != null) {
+                String[] format = type.split(File.separator);
+
+                if (format.length > 0)
+
+                    if ("image".equals(format[0])
+                            || "video".equals(format[0])) {
+                        GlideApp.with(imageView.getContext())
+                                .load(file.getUri())
+                                .error(iconRes)
+                                .override(160)
+                                .centerCrop()
+                                .into(imageView);
+
+                        return true;
+                    }
+            }
+
+            return super.loadThumbnail(imageView);
         }
     }
 
@@ -385,7 +425,7 @@ public class FileListAdapter
 
             this.iconRes = transferObject == null
                     ? R.drawable.ic_block_white_24dp
-                    : R.drawable.ic_file_download_white_24dp;
+                    : MimeIconUtils.loadMimeIcon(transferObject.fileMimeType);
 
             if (transferObject != null)
                 this.friendlyName = transferObject.friendlyName;
