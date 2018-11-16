@@ -1,7 +1,9 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -64,6 +66,19 @@ public class AddDevicesToTransferActivity extends Activity
     private TextView mTextMain;
     private TextView mTextInfo;
     private TransferAssigneeListFragment mAssigneeFragment;
+    private IntentFilter mFilter = new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE);
+    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction()))
+                if (intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
+                        && AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
+                    if (!checkGroupIntegrity())
+                        finish();
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -111,13 +126,6 @@ public class AddDevicesToTransferActivity extends Activity
     }
 
     @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        getDefaultInterrupter().interrupt(false);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int id = item.getItemId();
@@ -158,11 +166,26 @@ public class AddDevicesToTransferActivity extends Activity
         }
     }
 
+    @Override
+    protected void onDestroy()
+    {
+        super.onDestroy();
+        getDefaultInterrupter().interrupt(false);
+    }
+
 
     @Override
     protected void onResume()
     {
         super.onResume();
+        registerReceiver(mReceiver, mFilter);
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        unregisterReceiver(mReceiver);
     }
 
     public boolean checkGroupIntegrity()

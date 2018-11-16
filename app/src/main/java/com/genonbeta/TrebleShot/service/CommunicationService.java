@@ -1107,6 +1107,8 @@ public class CommunicationService extends Service
         @Override
         public void onConnect(CoolSocket.Client client)
         {
+            boolean retry = false;
+
             ProcessHolder processHolder = new ProcessHolder();
 
             processHolder.type = TransferObject.Type.INCOMING;
@@ -1125,67 +1127,76 @@ public class CommunicationService extends Service
             notifyTaskRunningListChange();
 
             try {
+                // this will first connect to CommunicationService to make sure the connection
+                // is okay
                 CommunicationBridge.Client handshakeClient = new CommunicationBridge.Client(getDatabase());
-
                 handshakeClient.setDevice(mTransfer.getDevice());
-
                 CoolSocket.ActiveConnection initialConnection = handshakeClient.communicate(mTransfer.getDevice(), mTransfer.getConnection());
 
-                // Client says to Server that it will pay a visit
                 initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_HANDSHAKE).toString());
                 Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: empty");
 
-                // Server with not indirect speech answers the request
                 JSONObject resultObject = new JSONObject(initialConnection.receive().response);
-
-                // Developer tells a friend
                 Log.d(TAG, "SeamlessClientHandler.onConnect(): Initial connection response: " + resultObject.toString());
 
                 if (!resultObject.getBoolean(Keyword.RESULT))
                     throw new Exception("Server rejected the request");
+            } catch (Exception e) {
+                getNotificationHelper().notifyConnectionError(mTransfer, TransferObject.Type.INCOMING, null);
+                return;
+            }
 
+            try {
                 processHolder.activeConnection
                         .connect(new InetSocketAddress(mTransfer.getConnection().ipAddress, AppConfig.SERVER_PORT_SEAMLESS));
+            } catch (Exception e) {
+                getNotificationHelper().notifyConnectionError(mTransfer, TransferObject.Type.INCOMING, null);
+                return;
+            }
 
-                {
-                    processHolder.activeConnection.reply(new JSONObject()
-                            .put(Keyword.TRANSFER_GROUP_ID, processHolder.groupId)
-                            .toString());
-                    Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: empty");
+            try {
+                processHolder.activeConnection.reply(new JSONObject()
+                        .put(Keyword.TRANSFER_GROUP_ID, processHolder.groupId)
+                        .toString());
+                Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: empty");
 
-                    CoolSocket.ActiveConnection.Response mainRequest = processHolder.activeConnection.receive();
-                    JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
-                    Log.d(TAG, "SeamlessClientHandler.onConnect(): receive: " + mainRequest.response);
+                CoolSocket.ActiveConnection.Response response = processHolder.activeConnection.receive();
+                JSONObject request = new JSONObject(response.response);
+                Log.d(TAG, "SeamlessClientHandler.onConnect(): receive: " + response.response);
 
-                    if (!mainRequestJSON.getBoolean(Keyword.RESULT)) {
-                        Log.d(TAG, "SeamlessClientHandler.onConnect(): false result, it will exit.");
+                if (!request.getBoolean(Keyword.RESULT)) {
+                    Log.d(TAG, "SeamlessClientHandler.onConnect(): false result, it will exit.");
 
-                        String errorCode = mainRequestJSON.has(Keyword.ERROR)
-                                ? mainRequestJSON.getString(Keyword.ERROR)
-                                : null;
+                    String errorCode = request.has(Keyword.ERROR)
+                            ? request.getString(Keyword.ERROR)
+                            : null;
 
-                        if (Keyword.ERROR_NOT_FOUND.equals(errorCode)) {
-                            ContentValues contentValues = new ContentValues();
-                            contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
+                    if (Keyword.ERROR_NOT_FOUND.equals(errorCode)) {
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.REMOVED.toString());
 
-                            getDatabase().update(TransferUtils.createTransferSelection(
-                                    processHolder.groupId,
-                                    processHolder.deviceId,
-                                    TransferObject.Flag.DONE,
-                                    false), contentValues);
-                        }
-
-                        getNotificationHelper().notifyConnectionError(mTransfer, TransferObject.Type.INCOMING, errorCode);
-                        return;
+                        getDatabase().update(TransferUtils.createTransferSelection(
+                                processHolder.groupId,
+                                processHolder.deviceId,
+                                TransferObject.Flag.DONE,
+                                false), contentValues);
                     }
+
+                    getNotificationHelper().notifyConnectionError(mTransfer, TransferObject.Type.INCOMING, errorCode);
+                    return;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
 
-                DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
-
+            {
                 while (processHolder.activeConnection.getSocket() != null
                         && processHolder.activeConnection.getSocket().isConnected()) {
                     processHolder.builder.reset();
 
+                    // direct exiting will not be a problem because after this phase there will
+                    // be a reply for how the issue
                     if (processHolder.builder.getTransferProgress().isInterrupted())
                         break;
 
@@ -1210,22 +1221,73 @@ public class CommunicationService extends Service
                             Receive.Builder<ProcessHolder> receiveBuilder = (Receive.Builder<ProcessHolder>) processHolder.builder;
 
                             receiveBuilder.setOutputStream(streamInfo.openOutputStream())
+                                    .setServerSocket(new ServerSocket(0))
                                     .setTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT)
                                     .setBuffer(new byte[AppConfig.BUFFER_LENGTH_DEFAULT])
                                     .setFileSize(processHolder.transferObject.fileSize)
                                     .setExtra(processHolder);
 
-                            mReceive.receive(receiveBuilder, true);
-                        }
+                            Receive.Handler handler = mReceive.prepare(receiveBuilder);
+                            long currentSize = processHolder.currentFile.length();
 
-                        if (CoolTransfer.Flag.CANCEL_ALL.equals(processHolder.builder.getFlag())) {
-                            Log.d(TAG, "SeamlessClientHandler.onConnect(): Cancel is requested. Exiting.");
-                            break;
+                            {
+                                JSONObject jsonObject = new JSONObject();
+
+                                jsonObject.put(Keyword.TRANSFER_REQUEST_ID, processHolder.transferObject.requestId);
+                                jsonObject.put(Keyword.TRANSFER_GROUP_ID, processHolder.transferObject.groupId);
+                                jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, receiveBuilder.getServerSocket().getLocalPort());
+                                jsonObject.put(Keyword.RESULT, true);
+
+                                if (currentSize > 0) {
+                                    jsonObject.put(Keyword.SKIPPED_BYTES, currentSize);
+                                    handler.skipBytes(currentSize);
+                                }
+
+                                handler.getExtra().activeConnection.reply(jsonObject.toString());
+                                Log.d(TAG, "Receive.onTaskPrepareSocket(): reply: " + jsonObject.toString());
+                            }
+
+                            {
+                                JSONObject response = new JSONObject(handler.getExtra().activeConnection.receive().response);
+                                Log.d(TAG, "Receive.onTaskPrepareSocket(): receive: " + response.toString());
+
+                                if (!response.getBoolean(Keyword.RESULT)) {
+                                    if (response.has(Keyword.TRANSFER_JOB_DONE)
+                                            && !response.getBoolean(Keyword.TRANSFER_JOB_DONE)) {
+                                        handler.getTransferProgress().interrupt();
+                                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Transfer should be closed, babe!");
+                                        break;
+                                    } else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
+                                        if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
+                                            handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
+                                            Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says it does not have the file defined");
+                                        } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
+                                            handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+                                            Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says it can't open the file");
+                                        } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
+                                            handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+                                            Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says an unknown error occurred");
+                                        }
+                                    }
+                                } else {
+                                    if (!response.has(Keyword.SIZE_CHANGED) || currentSize == 0) {
+                                        mReceive.receive(handler, true);
+                                    } else {
+                                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says the file has a new size");
+                                        handler.getExtra().transferObject.fileSize = response.getLong(Keyword.SIZE_CHANGED);
+
+                                        if (currentSize > 0) {
+                                            Log.d(TAG, "Receive.onTaskPrepareSocket(): The change may broke the previous file which has a length. Interrupt for now");
+                                            handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
+                                        }
+                                    }
+                                }
+                            }
                         }
                     } catch (Exception e) {
-                        // Throw the error again. It is for making sure that the latest known instance
-                        // of the object is saved properly on any condition
-                        throw e;
+                        e.printStackTrace();
+                        retry = true;
+                        break;
                     } finally {
                         if (processHolder.transferObject != null) {
                             // We are now updating instances always at the end because it will be
@@ -1235,24 +1297,30 @@ public class CommunicationService extends Service
                         }
                     }
                 }
+            }
 
-                // Check if all the pending files are flagged with Flag.DONE
-                boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag());
-                boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
-                        processHolder.groupId,
-                        processHolder.deviceId,
-                        TransferObject.Flag.DONE,
-                        false)) == null;
+            // Check if all the pending files are flagged with Flag.DONE
+            try {
+                if (!processHolder.builder.getTransferProgress().isInterrupted()) {
+                    DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
+                    boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag());
+                    boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
+                            processHolder.groupId,
+                            processHolder.deviceId,
+                            TransferObject.Flag.DONE,
+                            false)) == null;
 
-                processHolder.activeConnection.reply(new JSONObject()
-                        .put(Keyword.RESULT, false)
-                        .put(Keyword.TRANSFER_JOB_DONE, isJobDone && hasLeftFiles)
-                        .toString());
-                Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: done ?? " + (isJobDone && hasLeftFiles));
+                    processHolder.activeConnection.reply(new JSONObject()
+                            .put(Keyword.RESULT, false)
+                            .put(Keyword.TRANSFER_JOB_DONE, isJobDone && hasLeftFiles)
+                            .toString());
+                    Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: done ?? " + (isJobDone && hasLeftFiles));
 
-                if (isJobDone) {
-                    getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
-                    Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+                    // If retry requested, don't show a notification because this method will loop
+                    if (isJobDone && !retry) {
+                        getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
+                        Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+                    }
                 } else {
                     // If there was an error it should be handled by showing another error notification
                     // most of which are seemingly potential headache in the future
@@ -1261,7 +1329,6 @@ public class CommunicationService extends Service
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                getNotificationHelper().notifyConnectionError(mTransfer, TransferObject.Type.INCOMING, null);
             } finally {
                 try {
                     if (processHolder.activeConnection != null && !processHolder.activeConnection.getSocket().isClosed())
@@ -1276,9 +1343,16 @@ public class CommunicationService extends Service
 
                 notifyTaskStatusChange(mTransfer.getGroup().groupId, mTransfer.getAssignee().deviceId, TASK_STATUS_STOPPED);
                 notifyTaskRunningListChange();
-            }
 
-            Log.d(TAG, "We have exited");
+                Log.d(TAG, "We have exited");
+
+                if (retry
+                        && processHolder.attemptsLeft > 0
+                        && !processHolder.builder.getTransferProgress().isInterrupted()) {
+                    onConnect(client);
+                    processHolder.attemptsLeft--;
+                }
+            }
         }
     }
 
@@ -1314,6 +1388,9 @@ public class CommunicationService extends Service
             handler.getExtra().transferObject.flag.setBytesValue(handler.getTransferProgress().getCurrentTransferredByte());
 
             getDatabase().update(handler.getExtra().transferObject);
+
+            // We have transferred bytes now, so reset the counter; cuz it works
+            handler.getExtra().attemptsLeft = 2;
         }
 
         @Override
@@ -1352,63 +1429,7 @@ public class CommunicationService extends Service
         @Override
         public Flag onTaskPrepareSocket(final TransferHandler<ProcessHolder> handler, final ServerSocket serverSocket)
         {
-            try {
-                JSONObject jsonObject = new JSONObject();
-
-                jsonObject.put(Keyword.TRANSFER_REQUEST_ID, handler.getExtra().transferObject.requestId);
-                jsonObject.put(Keyword.TRANSFER_GROUP_ID, handler.getExtra().transferObject.groupId);
-                jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, serverSocket.getLocalPort());
-                jsonObject.put(Keyword.RESULT, true);
-
-                long currentSize = handler.getExtra().currentFile.length();
-
-                if (currentSize > 0) {
-                    jsonObject.put(Keyword.SKIPPED_BYTES, currentSize);
-                    handler.skipBytes(currentSize);
-                }
-
-                handler.getExtra().activeConnection.reply(jsonObject.toString());
-                Log.d(TAG, "Receive.onTaskPrepareSocket(): reply: " + jsonObject.toString());
-
-                JSONObject response = new JSONObject(handler.getExtra().activeConnection.receive().response);
-                Log.d(TAG, "Receive.onTaskPrepareSocket(): receive: " + response.toString());
-
-                if (response.getBoolean(Keyword.RESULT)) {
-                    if (response.has(Keyword.SIZE_CHANGED)) {
-                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says the file has a new size");
-                        handler.getExtra().transferObject.fileSize = response.getLong(Keyword.SIZE_CHANGED);
-
-                        if (currentSize > 0) {
-                            Log.d(TAG, "Receive.onTaskPrepareSocket(): The change may broke the previous file which has a length. Interrupt for now");
-                            handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-                            return Flag.CANCEL_CURRENT;
-                        }
-                    }
-
-                    return Flag.CONTINUE;
-                } else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
-                    if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
-                        handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
-                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says it does not have the file defined");
-                    } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
-                        handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says it can't open the file");
-                    } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
-                        handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-                        Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says an unknown error occurred");
-                    }
-
-                    return Flag.CANCEL_CURRENT;
-                } else if (jsonObject.has(Keyword.TRANSFER_JOB_DONE)
-                        && !jsonObject.getBoolean(Keyword.TRANSFER_JOB_DONE)) {
-                    handler.getTransferProgress().interrupt();
-                    return Flag.CANCEL_ALL;
-                }
-            } catch (Exception e) {
-                return onError(handler, e);
-            }
-
-            return onError(handler, null);
+            return Flag.CONTINUE;
         }
 
         @Override
@@ -1532,5 +1553,6 @@ public class CommunicationService extends Service
         public TransferObject.Type type;
         public String deviceId;
         public long groupId;
+        public int attemptsLeft = 2;
     }
 }
