@@ -373,7 +373,7 @@
 <string name="butn_pause">暂停</string>
     <string name="butn_retry">重试</string>
     <string name="mesg_noPendingTransferObjectExists">无正在等待的传输，因为它们已经被中断或者已经完成了。</string>
-    <string name="mesg_notSavingToChosenLocation">文件不会保存至你想要保存的文件夹内，因为现在它无法被访问
+    <string name="mesg_notSavingToChosenLocation">文件不会保存至你想要保存的文件夹，因为现在它无法被访问
 \n
 \n %s</string>
     <string name="butn_changelog">更新日志</string>
