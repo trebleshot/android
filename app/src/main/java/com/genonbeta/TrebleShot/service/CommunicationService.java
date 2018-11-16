@@ -898,21 +898,21 @@ public class CommunicationService extends Service
         {
             ProcessHolder processHolder = new ProcessHolder();
 
+            TransferInstance transferInstance = null;
             processHolder.activeConnection = activeConnection;
             processHolder.type = TransferObject.Type.OUTGOING;
             processHolder.builder = new CoolTransfer.Send.Builder<>();
-
             processHolder.builder.setExtra(processHolder);
 
             synchronized (getActiveProcessList()) {
                 getActiveProcessList().add(processHolder);
             }
 
+
             try {
                 ActiveConnection.Response mainRequest = activeConnection.receive();
                 Log.d(TAG, "SeamlessServer.onConnected(): receive: " + mainRequest.response);
                 int groupId = new JSONObject(mainRequest.response).getInt(Keyword.TRANSFER_GROUP_ID);
-                TransferInstance transferInstance = null;
 
                 activeConnection.setId(groupId);
 
@@ -1065,10 +1065,6 @@ public class CommunicationService extends Service
                     // will allow us to gather information because the interruption may be requested
                     // while the transfer is going on meaning there was not a chance to gather the proper
                     // information.
-                    if (processHolder.builder.getFlag().equals(CoolTransfer.Flag.CANCEL_ALL)) {
-                        Log.d(TAG, "SeamlessServer.onConnected(): Cancelled all");
-                        break;
-                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -1080,7 +1076,11 @@ public class CommunicationService extends Service
                     e.printStackTrace();
                 }
 
-                if (processHolder.notification != null)
+                if (transferInstance != null
+                        && !CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag())
+                        && !processHolder.builder.getTransferProgress().isInterrupted())
+                    mNotificationHelper.notifyConnectionError(transferInstance, TransferObject.Type.OUTGOING, null);
+                else if (processHolder.notification != null)
                     processHolder.notification.cancel();
 
                 synchronized (getActiveProcessList()) {
@@ -1302,21 +1302,21 @@ public class CommunicationService extends Service
 
                 // Check if all the pending files are flagged with Flag.DONE
                 try {
+                    DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
+                    boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag());
+                    boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
+                            processHolder.groupId,
+                            processHolder.deviceId,
+                            TransferObject.Flag.DONE,
+                            false)) == null;
+
+                    processHolder.activeConnection.reply(new JSONObject()
+                            .put(Keyword.RESULT, false)
+                            .put(Keyword.TRANSFER_JOB_DONE, isJobDone && hasLeftFiles)
+                            .toString());
+                    Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: done ?? " + (isJobDone && hasLeftFiles));
+
                     if (!processHolder.builder.getTransferProgress().isInterrupted()) {
-                        DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
-                        boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag());
-                        boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
-                                processHolder.groupId,
-                                processHolder.deviceId,
-                                TransferObject.Flag.DONE,
-                                false)) == null;
-
-                        processHolder.activeConnection.reply(new JSONObject()
-                                .put(Keyword.RESULT, false)
-                                .put(Keyword.TRANSFER_JOB_DONE, isJobDone && hasLeftFiles)
-                                .toString());
-                        Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: done ?? " + (isJobDone && hasLeftFiles));
-
                         // If retry requested, don't show a notification because this method will loop
                         if (isJobDone && !retry) {
                             getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
@@ -1350,11 +1350,14 @@ public class CommunicationService extends Service
 
                 Log.d(TAG, "We have exited");
 
-                if (retry
-                        && processHolder.attemptsLeft > 0
+                if (retry && processHolder.attemptsLeft > 0
                         && !processHolder.builder.getTransferProgress().isInterrupted()) {
-                    onConnect(client);
-                    processHolder.attemptsLeft--;
+                    try {
+                        startFileReceiving(processHolder.groupId, processHolder.deviceId);
+                        processHolder.attemptsLeft--;
+                    } catch (Exception e) {
+                        Log.d(TAG, "SeamlessClientHandler.onConnect(): Restart is requested, but transfer instance failed to reconstruct");
+                    }
                 }
             }
         }

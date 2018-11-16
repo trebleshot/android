@@ -174,7 +174,7 @@
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
     <string name="text_preparingFiles">Preparing files</string>
-    <string name="text_savingDetails">Saving details before receiving</string>
+    <string name="text_savingDetails">Saving details</string>
     <string name="text_version">Version</string>
     <string name="text_flagPending">Pending</string>
     <string name="text_flagRunning">Running</string>
