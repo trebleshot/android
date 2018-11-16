@@ -1010,6 +1010,10 @@ public class CommunicationService extends Service
                                         .setFileSize(streamInfo.size)
                                         .setBuffer(new byte[AppConfig.BUFFER_LENGTH_DEFAULT])
                                         .setExtra(processHolder);
+                            } else if (processHolder.builder.getTransferProgress().isInterrupted()) {
+                                reply.put(Keyword.RESULT, false)
+                                        .put(Keyword.TRANSFER_JOB_DONE, false);
+                                return;
                             }
                         } catch (ReconstructionFailedException e) {
                             reply.put(Keyword.RESULT, false);
@@ -1046,12 +1050,6 @@ public class CommunicationService extends Service
 
                         if (reply.has(Keyword.RESULT) && reply.getBoolean(Keyword.RESULT))
                             mSend.send(sendBuilder, true);
-                        else if (processHolder.builder.getTransferProgress().isInterrupted()) {
-                            reply.put(Keyword.RESULT, false)
-                                    .put(Keyword.TRANSFER_JOB_DONE, false);
-                            activeConnection.reply(reply.toString());
-                            return;
-                        }
                     }
 
                     // We are now updating instances always at the end because it will be

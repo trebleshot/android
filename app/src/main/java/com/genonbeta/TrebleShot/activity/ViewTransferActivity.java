@@ -487,6 +487,10 @@ public class ViewTransferActivity
                 public void onPostExecute()
                 {
                     showMenus();
+                    findViewById(R.id.activity_transaction_no_devices_warning)
+                            .setVisibility(mTransactionIndex.assigneeCount > 0 ? View.GONE : View.VISIBLE);
+
+                    if (mTransactionIndex.assigneeCount == 0)
 
                     if (mTransferObject != null) {
                         new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();

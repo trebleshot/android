@@ -13,7 +13,8 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
             android:orientation="vertical"
             android:paddingLeft="15dp"
@@ -80,24 +81,33 @@
                 android:layout_marginTop="15dp"
                 android:text="@string/butn_cancel" />
 
+            <Button
+                android:id="@+id/returnButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="?borderlessButtonStyle"
+                android:layout_marginTop="8dp"
+                android:text="@string/butn_done" />
 
         </LinearLayout>
 
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="5dp"
-            android:layout_marginTop="15dp"
-            android:background="?backgroundGradientTop" />
-
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="5dp"
+                android:layout_marginTop="15dp"
+                android:background="?backgroundGradientTop" />
 
             <FrameLayout
+                android:id="@+id/assigneListFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/assigneListFragment" />
+                android:layout_height="match_parent"
+                android:minHeight="220dp" />
 
         </LinearLayout>
 

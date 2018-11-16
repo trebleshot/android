@@ -125,6 +125,7 @@ public class TransferGroup implements DatabaseObject, Selectable
         public int outgoingCount = 0;
         public int incomingCountCompleted;
         public int outgoingCountCompleted;
+        public int assigneeCount = 0;
 
         public void reset()
         {

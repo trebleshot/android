@@ -26,7 +26,6 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -88,6 +87,15 @@ public class AddDevicesToTransferActivity extends Activity
         mActionButton = findViewById(R.id.actionButton);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
         mAssigneeFragment = (TransferAssigneeListFragment) getSupportFragmentManager().findFragmentById(R.id.assigneListFragment);
+
+        findViewById(R.id.returnButton).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                finish();
+            }
+        });
 
         if (mAssigneeFragment == null) {
             mAssigneeFragment = (TransferAssigneeListFragment) Fragment
