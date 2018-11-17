@@ -9,7 +9,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -108,7 +107,7 @@ public class TransferUtils
         AppUtils.startForegroundService(context, intent);
     }
 
-    public static void resumeTransfer(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
+    public static void startTransfer(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
     {
         final Context context = activity.getApplicationContext();
 
@@ -152,7 +151,7 @@ public class TransferUtils
                                     @Override
                                     public void onClick(DialogInterface dialog, int which)
                                     {
-                                        resumeTransfer(activity.getApplicationContext(), group, assignee);
+                                        startTransfer(activity.getApplicationContext(), group, assignee);
                                     }
                                 });
 
@@ -160,13 +159,13 @@ public class TransferUtils
                             }
                         });
                     } else
-                        resumeTransfer(activity.getApplicationContext(), group, assignee);
+                        startTransfer(activity.getApplicationContext(), group, assignee);
                 }
             }
         });
     }
 
-    public static void resumeTransfer(Context context, TransferGroup group, TransferGroup.Assignee assignee)
+    public static void startTransfer(Context context, TransferGroup group, TransferGroup.Assignee assignee)
     {
         AppUtils.startForegroundService(context, new Intent(context, CommunicationService.class)
                 .setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)

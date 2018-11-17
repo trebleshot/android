@@ -862,6 +862,21 @@ public class CommunicationService extends Service
                             case (Keyword.REQUEST_HANDSHAKE):
                                 result = true;
                                 break;
+                            case (Keyword.REQUEST_START_TRANSFER):
+                                if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
+                                    int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
+
+                                    try {
+                                        ProcessHolder process = findProcessById(groupId, device.deviceId);
+
+                                        if (process == null) {
+                                            startFileReceiving(groupId, device.deviceId);
+                                            result = true;
+                                        }
+                                    } catch (Exception e) {
+                                    }
+                                }
+                                break;
                         }
                     }
                 }

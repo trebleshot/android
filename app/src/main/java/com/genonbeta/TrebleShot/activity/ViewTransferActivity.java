@@ -17,14 +17,12 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
-import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferListFragment;
-import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -42,7 +40,6 @@ import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +52,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 /**
  * Created by: veli
@@ -453,7 +449,7 @@ public class ViewTransferActivity
 
             try {
                 getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-                TransferUtils.resumeTransfer(this, mGroup, assignee);
+                TransferUtils.startTransfer(this, mGroup, assignee);
             } catch (Exception e) {
                 e.printStackTrace();
 
