@@ -176,7 +176,7 @@ public class FileListAdapter
                     }
 
                 lister.offer(new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
-                        R.drawable.ic_add_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
+                        R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
             }
 
             ArrayList<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
