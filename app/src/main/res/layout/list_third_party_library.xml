@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector"
-    style="@style/listContentLayoutStyle">
+    style="@style/ListContentLayoutStyle">
 
     <ImageView
         android:id="@+id/menu"
-        style="@style/overflowButton"
+        style="@style/OverflowButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_gravity="center_vertical"/>

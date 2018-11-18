@@ -280,6 +280,20 @@ public class AccessDatabase extends SQLiteDatabase
                 .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
 
+        sqlValues.defineTable(DIVIS_TRANSFER)
+                .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
+
         sqlValues.defineTable(TABLE_TRANSFERGROUP)
                 .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
@@ -318,11 +332,6 @@ public class AccessDatabase extends SQLiteDatabase
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
-
-        SQLValues.Table divisionTransferTable = sqlValues.getTables().get(TABLE_TRANSFER);
-        divisionTransferTable.setName(DIVIS_TRANSFER);
-
-        sqlValues.getTables().put(divisionTransferTable.getName(), divisionTransferTable);
 
         return sqlValues;
     }

@@ -183,6 +183,9 @@ public class ViewTransferActivity
                         .setAction(ACTION_LIST_TRANSFERS)
                         .putExtra(EXTRA_GROUP_ID, mGroup.groupId);
 
+                new TransferInfoDialog(ViewTransferActivity.this, transferObject)
+                        .show();
+
                 Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
                         "and changed to open intent");
             } catch (Exception e) {

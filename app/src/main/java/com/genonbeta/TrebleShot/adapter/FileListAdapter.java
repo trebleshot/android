@@ -414,7 +414,6 @@ public class FileListAdapter
                 String[] format = type.split(File.separator);
 
                 if (format.length > 0)
-
                     if ("image".equals(format[0])
                             || "video".equals(format[0])) {
                         GlideApp.with(imageView.getContext())

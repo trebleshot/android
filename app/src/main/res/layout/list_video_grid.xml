@@ -77,7 +77,7 @@
 
             <ImageView
                 android:id="@+id/visitImage"
-                style="@style/overflowButton"
+                style="@style/OverflowButton"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:tint="@android:color/white"

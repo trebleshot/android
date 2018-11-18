@@ -403,6 +403,7 @@ public class TransferListAdapter
                 thirdText.setText(object.getThirdText(this));
                 progressBar.setMax(100);
                 progressBar.setProgress((int) (object.getPercent() * 100));
+                thirdText.setTextColor(appliedColor);
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

@@ -450,13 +450,12 @@ public class FileListFragment
     {
         final FileListAdapter adapter = fragment.getAdapter();
 
-        if (id == R.id.action_mode_file_delete && adapter.getPath() != null) {
+        if (id == R.id.action_mode_file_delete) {
             new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
             {
                 @Override
                 public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
                 {
-
                     fragment.scanFile(file);
                 }
 

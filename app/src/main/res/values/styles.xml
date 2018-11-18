@@ -115,7 +115,7 @@
         <item name="android:maxLines">1</item>
     </style>
 
-    <style name="overflowButton">
+    <style name="OverflowButton">
         <item name="srcCompat">@drawable/ic_more_vert_white_24dp</item>
         <item name="android:layout_width">48dp</item>
         <item name="android:layout_height">48dp</item>
@@ -125,7 +125,7 @@
         <item name="android:focusable">false</item>
     </style>
 
-    <style name="textSeparatorMiddleDot">
+    <style name="TextSeparatorMiddleDot">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">10dp</item>
@@ -133,18 +133,31 @@
         <item name="android:text">@string/mode_middleDot</item>
     </style>
 
-    <style name="listContentLayoutStyle">
-        <item name="android:padding">@dimen/padding_list_content_parent_layout</item>
+    <style name="ListContentLayoutStyle">
+        <item name="android:paddingLeft">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingStart">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingRight">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingTop">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingBottom">@dimen/padding_list_content_parent_layout</item>
     </style>
 
-    <style name="listContentNarrowLayoutStyle">
-        <item name="android:paddingLeft">@dimen/padding_list_content_parent_layout</item>
-        <item name="android:paddingRight">@dimen/padding_list_content_parent_layout</item>
+    <style name="ListContentLayoutStyle.WithOverflowButton">
+        <item name="android:paddingRight">@dimen/padding_list_content_narrow_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_narrow_parent_layout</item>
+    </style>
+
+    <style name="ListContentLayoutStyle.Narrow">
         <item name="android:paddingTop">@dimen/padding_list_content_narrow_parent_layout</item>
         <item name="android:paddingBottom">@dimen/padding_list_content_narrow_parent_layout</item>
     </style>
 
-    <style name="listContentIconStyle">
+    <style name="ListContentLayoutStyle.Narrow.WithOverflowButton">
+        <item name="android:paddingRight">@dimen/padding_list_content_narrow_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_narrow_parent_layout</item>
+    </style>
+
+    <style name="ListContentIconStyle">
         <item name="android:layout_width">@dimen/icon_size_list_normal</item>
         <item name="android:layout_height">@dimen/icon_size_list_normal</item>
         <item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left
@@ -157,19 +170,19 @@
         </item>
     </style>
 
-    <style name="customListFragmentEmptyImageStyle">
+    <style name="CustomListFragmentEmptyImageStyle">
         <item name="android:background">?rippleBackground</item>
         <item name="android:cropToPadding">true</item>
         <item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
         <item name="tint">?colorAccent</item>
     </style>
 
-    <style name="customListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
+    <style name="CustomListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
         <item name="android:text">@string/text_listEmpty</item>
         <item name="android:textColor">?android:textColorPrimary</item>
     </style>
 
-    <style name="condensedTitleStyle">
+    <style name="CondensedTitleStyle">
         <item name="android:layout_gravity">center</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">?android:textColorPrimary</item>

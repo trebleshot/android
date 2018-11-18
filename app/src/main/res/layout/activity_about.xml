@@ -252,7 +252,7 @@
                         android:paddingBottom="25dp">
 
                         <TextView
-                            style="@style/condensedTitleStyle"
+                            style="@style/CondensedTitleStyle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/text_contributors" />

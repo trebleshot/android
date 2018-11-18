@@ -40,12 +40,8 @@
         <item name="useLightStatusBar">true</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">
-            @style/customListFragmentEmptyImageStyle
-        </item>
-        <item name="genfw_customListFragmentEmptyTextStyle">
-            @style/customListFragmentEmptyTextStyle
-        </item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
@@ -88,12 +84,8 @@
         <item name="useLightStatusBar">false</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">
-            @style/customListFragmentEmptyImageStyle
-        </item>
-        <item name="genfw_customListFragmentEmptyTextStyle">
-            @style/customListFragmentEmptyTextStyle
-        </item>
+        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
+        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
     <!-- prototype end -->
