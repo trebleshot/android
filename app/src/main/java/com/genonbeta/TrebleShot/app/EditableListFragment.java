@@ -73,8 +73,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
-    @Nullable
-    private PaddingItemDecoration mDefaultPaddingItemDecoration;
 
     abstract public boolean onDefaultClickAction(V holder);
 
@@ -105,8 +103,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                     ? mDefaultPaddingDecorationSize
                     : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
 
-            getListView().addItemDecoration(mDefaultPaddingItemDecoration
-                    = new PaddingItemDecoration((int) padding, mUseDefaultPaddingDecorationSpaceForEdges, false));
+            getListView().addItemDecoration(new PaddingItemDecoration((int) padding,
+                    mUseDefaultPaddingDecorationSpaceForEdges, false));
         }
     }
 

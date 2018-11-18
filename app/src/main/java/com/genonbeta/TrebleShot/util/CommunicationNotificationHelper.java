@@ -248,6 +248,24 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
+    public DynamicNotification notifyReceiveError(CommunicationService.ProcessHolder processHolder) {
+        DynamicNotification notification = getUtils().buildDynamicNotification(
+                TransferUtils.createUniqueTransferId(processHolder.groupId, processHolder.deviceId, processHolder.transferObject.type),
+                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+
+        notification.setSmallIcon(R.drawable.ic_alert_circle_outline_white_24dp_static)
+                .setContentTitle(getContext().getString(R.string.text_error))
+                .setContentText(getContext().getString(R.string.mesg_fileReceiveFilesLeftError))
+                .setAutoCancel(true)
+                .setDefaults(getUtils().getNotificationSettings())
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), ViewTransferActivity.class)
+                        .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
+                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, processHolder.groupId), 0));
+
+        return notification.show();
+    }
+
     public DynamicNotification notifyReceiveError(TransferObject transferObject)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(transferObject.getId(), NotificationUtils.NOTIFICATION_CHANNEL_HIGH);

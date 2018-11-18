@@ -23,8 +23,6 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONObject;
 
-import java.net.InetAddress;
-
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 
@@ -35,8 +33,6 @@ import androidx.core.content.ContextCompat;
 public class ConnectionUtils
 {
     public static final String TAG = ConnectionUtils.class.getSimpleName();
-
-    private static ConnectionUtils mInstance;
 
     private Context mContext;
     private WifiManager mWifiManager;
@@ -56,10 +52,7 @@ public class ConnectionUtils
 
     public static ConnectionUtils getInstance(Context context)
     {
-        if (mInstance == null)
-            mInstance = new ConnectionUtils(context);
-
-        return mInstance;
+        return new ConnectionUtils(context);
     }
 
     public static String getCleanNetworkName(String networkName)

@@ -931,9 +931,6 @@ public class CommunicationService extends Service
 
                 activeConnection.setId(groupId);
 
-                // This will throw an exception regarding what has failed to meet
-                // The process will then exit
-
                 {
                     JSONObject reply = new JSONObject()
                             .put(Keyword.RESULT, false);
@@ -1331,18 +1328,22 @@ public class CommunicationService extends Service
                             .toString());
                     Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: done ?? " + (isJobDone && hasLeftFiles));
 
-                    if (!processHolder.builder.getTransferProgress().isInterrupted()) {
-                        // If retry requested, don't show a notification because this method will loop
-                        if (isJobDone && !retry) {
-                            getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
-                            Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+                    if (!retry)
+                        if (!processHolder.builder.getTransferProgress().isInterrupted()) {
+                            // If retry requested, don't show a notification because this method will loop
+                            if (isJobDone) {
+                                getNotificationHelper().notifyFileReceived(processHolder, mTransfer.getDevice(), savePath);
+                                Log.d(TAG, "SeamlessClientHandler.onConnect(): Notify user");
+                            } else {
+                                getNotificationHelper().notifyReceiveError(processHolder);
+                                Log.d(TAG, "SeamlessClientHandler.onConnect(): Some files was not received");
+                            }
+                        } else {
+                            // If there was an error it should be handled by showing another error notification
+                            // most of which are seemingly potential headache in the future
+                            processHolder.notification.cancel();
+                            Log.d(TAG, "SeamlessClientHandler.onConnect(): Removing notification an error is already notified");
                         }
-                    } else {
-                        // If there was an error it should be handled by showing another error notification
-                        // most of which are seemingly potential headache in the future
-                        processHolder.notification.cancel();
-                        Log.d(TAG, "SeamlessClientHandler.onConnect(): Removing notification an error is already notified");
-                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
