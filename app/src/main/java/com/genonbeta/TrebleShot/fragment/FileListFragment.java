@@ -6,21 +6,26 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -31,6 +36,7 @@ import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
@@ -42,6 +48,7 @@ public class FileListFragment
 {
     public static final String TAG = FileListFragment.class.getSimpleName();
 
+    public final static int REQUEST_WRITE_ACCESS = 264;
     public static final int JOB_COPY_FILES = 0;
 
     public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
@@ -124,6 +131,68 @@ public class FileListFragment
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK)
+            switch (requestCode) {
+                case REQUEST_WRITE_ACCESS:
+                    Uri pathUri = data.getData();
+
+                    if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
+                        String pathString = pathUri.toString();
+                        String title = null;
+
+                        try {
+                            title = FileUtils.fromUri(getContext(), pathUri).getName();
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+                        if (title == null)
+                            title = pathString.substring(pathString.lastIndexOf(File.separator) + 1);
+
+                        AppUtils.getDatabase(getContext())
+                                .publish(new WritablePathObject(title, pathUri));
+
+                        if (getContext() != null)
+                            getContext().getContentResolver().takePersistableUriPermission(pathUri,
+                                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                        goPath(null);
+                    }
+                    break;
+            }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.actions_file_list, menu);
+
+        MenuItem mountDirectory = menu.findItem(R.id.actions_file_list_mount_directory);
+
+        if (Build.VERSION.SDK_INT >= 21
+                && mountDirectory != null)
+            mountDirectory.setVisible(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+
+        if (id == R.id.actions_file_list_mount_directory) {
+            requestMountStorage();
+        } else
+            return super.onOptionsItemSelected(item);
+
+        return true;
+    }
+
+    @Override
     public FileListAdapter onAdapter()
     {
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
@@ -186,8 +255,8 @@ public class FileListFragment
                                         AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
                                     } else if (id == R.id.action_mode_file_change_save_path) {
                                         startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
-                                    } else if (handleEditingAction(id, FileListFragment.this, generateSelectionList))
-                                        return false;
+                                    } else
+                                        return !handleEditingAction(id, FileListFragment.this, generateSelectionList);
 
                                     return true;
                                 }
@@ -206,17 +275,16 @@ public class FileListFragment
             @Override
             public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
-                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+                GroupViewHolder holder = super.onCreateViewHolder(parent, viewType);
+
+                if (viewType == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON) {
+                    registerLayoutViewClicks(holder);
+                    return holder;
+                }
+
+                return AppUtils.quickAction(holder, quickActions);
             }
         };
-    }
-
-    @Override
-    public int onGridSpanSize(int viewType, int currentSpanSize)
-    {
-        return viewType == FileListAdapter.VIEW_TYPE_REPRESENTATIVE
-                ? currentSpanSize
-                : super.onGridSpanSize(viewType, currentSpanSize);
     }
 
     @Override
@@ -296,13 +364,22 @@ public class FileListFragment
         mLastKnownPath = pathOnTrial;
     }
 
+    public void requestMountStorage()
+    {
+        startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
+        Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
+    }
+
     @Override
     public boolean performLayoutClick(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
             FileListAdapter.GenericFileHolder fileInfo = getAdapter().getItem(holder);
 
-            if (fileInfo instanceof FileListAdapter.FileHolder)
+            if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+                    && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
+                requestMountStorage();
+            else if (fileInfo instanceof FileListAdapter.FileHolder)
                 return super.performLayoutClick(holder);
             else if (fileInfo instanceof FileListAdapter.DirectoryHolder
                     || fileInfo instanceof FileListAdapter.WritablePathHolder) {

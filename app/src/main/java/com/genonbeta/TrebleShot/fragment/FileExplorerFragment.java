@@ -46,8 +46,6 @@ public class FileExplorerFragment
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
-	public final static int REQUEST_WRITE_ACCESS = 264;
-
 	private RecyclerView mPathView;
 	private FilePathResolverRecyclerAdapter mPathAdapter;
 	private DocumentFile mRequestedPath = null;
@@ -99,42 +97,6 @@ public class FileExplorerFragment
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == Activity.RESULT_OK)
-			switch (requestCode) {
-				case REQUEST_WRITE_ACCESS:
-					Uri pathUri = data.getData();
-
-					if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
-						String pathString = pathUri.toString();
-						String title = null;
-
-						try {
-							title = FileUtils.fromUri(getContext(), pathUri).getName();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-
-						if (title == null)
-							title = pathString.substring(pathString.lastIndexOf(File.separator) + 1);
-
-						AppUtils.getDatabase(getContext())
-								.publish(new WritablePathObject(title, pathUri));
-
-						if (getContext() != null)
-							getContext().getContentResolver().takePersistableUriPermission(pathUri,
-									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-						goPath(null);
-					}
-					break;
-			}
-	}
-
-	@Override
 	public boolean onBackPressed()
 	{
 		DocumentFile path = getAdapter().getPath();
@@ -157,12 +119,6 @@ public class FileExplorerFragment
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_file_explorer, menu);
-
-		MenuItem mountDirectory = menu.findItem(R.id.actions_file_explorer_mount_directory);
-
-		if (Build.VERSION.SDK_INT >= 21
-				&& mountDirectory != null)
-			mountDirectory.setVisible(true);
 	}
 
 	@Override
@@ -194,9 +150,6 @@ public class FileExplorerFragment
 				}).show();
 			else
 				Snackbar.make(getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
-		} else if (id == R.id.actions_file_explorer_mount_directory) {
-			startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
-			Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
 		} else
 			return super.onOptionsItemSelected(item);
 

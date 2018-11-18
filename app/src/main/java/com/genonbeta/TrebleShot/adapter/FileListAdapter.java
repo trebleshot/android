@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
@@ -45,6 +46,7 @@ public class FileListAdapter
         implements GroupEditableListAdapter.GroupLister.CustomGroupListener<FileListAdapter.GenericFileHolder>
 {
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
+    public static final int REQUEST_CODE_MOUNT_FOLDER = 1;
 
     private boolean mShowDirectories = true;
     private boolean mShowFiles = true;
@@ -172,6 +174,9 @@ public class FileListAdapter
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+
+                lister.offer(new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
+                        R.drawable.ic_add_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
             }
 
             ArrayList<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
@@ -238,6 +243,8 @@ public class FileListAdapter
     {
         if (viewType == VIEW_TYPE_REPRESENTATIVE)
             return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+        if (viewType == VIEW_TYPE_ACTION_BUTTON)
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_action_button, parent, false), R.id.text);
 
         return new GroupViewHolder(getInflater().inflate(R.layout.list_file, parent, false));
     }
@@ -266,8 +273,8 @@ public class FileListAdapter
                     thumbnail.setImageDrawable(null);
                 } else
                     image.setImageDrawable(null);
-
-            }
+            } else if (holder.getItemViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON)
+                ((ImageView) holder.getView().findViewById(R.id.icon)).setImageResource(object.iconRes);
         } catch (NotReadyException e) {
             e.printStackTrace();
         }
@@ -342,10 +349,16 @@ public class FileListAdapter
         public DocumentFile file;
         public String info;
         public int iconRes;
+        public int requestCode;
 
         public GenericFileHolder(String representativeText)
         {
-            super(FileListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
+            this(FileListAdapter.VIEW_TYPE_REPRESENTATIVE, representativeText);
+        }
+
+        public GenericFileHolder(int viewType, String representativeText)
+        {
+            super(viewType, representativeText);
         }
 
         public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
@@ -365,6 +378,12 @@ public class FileListAdapter
                 setId(String.format("%s_%s", file.getUri().toString(), getClass().getName()).hashCode());
 
             return super.getId();
+        }
+
+        @Override
+        public int getRequestCode()
+        {
+            return requestCode;
         }
 
         public boolean loadThumbnail(ImageView imageView)
@@ -514,11 +533,32 @@ public class FileListAdapter
     {
         public WritablePathObject pathObject;
 
+        public WritablePathHolder(int viewType, @DrawableRes int iconRes, String representativeText, int requestCode)
+        {
+            super(viewType, representativeText);
+            this.iconRes = iconRes;
+            this.requestCode = requestCode;
+        }
+
         public WritablePathHolder(DocumentFile file, WritablePathObject object, String info)
         {
             super(file, file.getName() == null ? object.title : file.getName(), info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
-
             this.pathObject = object;
+        }
+
+        @Override
+        public boolean comparisonSupported()
+        {
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+                    && super.comparisonSupported();
+        }
+
+        @Override
+        public long getId()
+        {
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
+                    ? super.getId()
+                    : String.format("%s_%s_%s", getClass().getName(), String.valueOf(iconRes), getRepresentativeText().hashCode()).hashCode();
         }
 
         // Don't let these folders to be selected

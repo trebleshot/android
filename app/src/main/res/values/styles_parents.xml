@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- prototype start -->
-    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
+    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.AppCompat.Light">
         <item name="android:textColorPrimary">@color/colorControlNormal</item>
-        <item name="bottomAppBarStyle">@style/Widget.MaterialComponents.BottomAppBar</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
@@ -50,7 +49,7 @@
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
-    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
+    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.AppCompat">
         <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>

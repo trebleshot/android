@@ -14,13 +14,13 @@
     <style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
     <!-- generalization end -->
 
-    <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView.Colored">
+    <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
     </style>
 
-    <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
+    <style name="Widget.TrebleShot.NavigationView" parent="Widget.Design.NavigationView">
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="itemTextColor">?attr/selectionAccentColor</item>
     </style>
@@ -39,7 +39,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout">
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.Design.TabLayout">
         <item name="tabTextColor">?selectionAccentColor</item>
         <item name="android:background">@android:color/transparent</item>
     </style>

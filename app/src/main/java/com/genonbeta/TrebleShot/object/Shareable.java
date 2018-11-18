@@ -37,6 +37,12 @@ public class Shareable implements Editable
 	}
 
 	@Override
+	public boolean comparisonSupported()
+	{
+		return true;
+	}
+
+	@Override
 	public boolean isSelectableSelected()
 	{
 		return isSelected;

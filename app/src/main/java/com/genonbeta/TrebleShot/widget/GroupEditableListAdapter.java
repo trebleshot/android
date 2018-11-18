@@ -30,6 +30,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 		extends EditableListAdapter<T, V>
 {
 	public static final int VIEW_TYPE_REPRESENTATIVE = 100;
+	public static final int VIEW_TYPE_ACTION_BUTTON = 110;
 
 	public static final int MODE_GROUP_BY_NOTHING = 100;
 	public static final int MODE_GROUP_BY_DATE = 110;
@@ -140,6 +141,8 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	{
 		int getViewType();
 
+		int getRequestCode();
+
 		String getRepresentativeText();
 
 		boolean isGroupRepresentative();
@@ -171,6 +174,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 		public GroupShareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
 		{
 			super(id, friendlyName, fileName, mimeType, date, size, uri);
+		}
+
+		@Override
+		public int getRequestCode()
+		{
+			return 0;
 		}
 
 		@Override
@@ -227,6 +236,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 	public static class GroupViewHolder extends EditableListAdapter.EditableViewHolder
 	{
 		private TextView mRepresentativeText;
+		private int mRequestCode;
 
 		public GroupViewHolder(View itemView, TextView representativeText)
 		{
@@ -249,9 +259,20 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 			return mRepresentativeText;
 		}
 
+		public int getRequestCode()
+		{
+			return mRequestCode;
+		}
+
 		public boolean isRepresentative()
 		{
 			return mRepresentativeText != null;
+		}
+
+		public GroupViewHolder setRequestCode(int requestCode)
+		{
+			mRequestCode = requestCode;
+			return this;
 		}
 
 		public boolean tryBinding(GroupEditable editable)
@@ -260,6 +281,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 				return false;
 
 			getRepresentativeText().setText(editable.getRepresentativeText());
+			setRequestCode(editable.getRequestCode());
 
 			return true;
 		}

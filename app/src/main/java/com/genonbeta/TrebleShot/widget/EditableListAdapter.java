@@ -99,6 +99,14 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 					T objectFirst = sortingAscending ? toCompare : compareTo;
 					T objectSecond = sortingAscending ? compareTo : toCompare;
 
+					if (objectFirst.comparisonSupported() == objectSecond.comparisonSupported()
+							&& !objectFirst.comparisonSupported())
+						return 1;
+					else if (!toCompare.comparisonSupported())
+						return 1;
+					else if (!compareTo.comparisonSupported())
+						return -1;
+
 					switch (getSortingCriteria()) {
 						case MODE_SORT_BY_DATE:
 							return MathUtils.compare(objectFirst.getComparableDate(), objectSecond.getComparableDate());

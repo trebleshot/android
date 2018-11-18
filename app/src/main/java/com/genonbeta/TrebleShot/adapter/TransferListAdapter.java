@@ -477,6 +477,12 @@ public class TransferListAdapter
         abstract public String getThirdText(TransferListAdapter adapter);
 
         @Override
+        public int getRequestCode()
+        {
+            return 0;
+        }
+
+        @Override
         public int getViewType()
         {
             return this.viewType;

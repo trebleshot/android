@@ -118,6 +118,12 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
 
         @Override
+        public boolean comparisonSupported()
+        {
+            return true;
+        }
+
+        @Override
         public long getId()
         {
             return deviceId.hashCode();

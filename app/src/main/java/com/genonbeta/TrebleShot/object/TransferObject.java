@@ -77,6 +77,12 @@ public class TransferObject
     }
 
     @Override
+    public boolean comparisonSupported()
+    {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof TransferObject))

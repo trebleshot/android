@@ -21,8 +21,8 @@
     <dimen name="padding_list_content_parent_layout">15dp</dimen>
     <dimen name="padding_list_content_narrow_parent_layout">10dp</dimen>
     <dimen name="padding_list_content_parent_layout_orientation">8dp</dimen>
-    <dimen name="padding_list_content_icon_main_margin_left">0dp</dimen>
-    <dimen name="padding_list_content_icon_main_margin_right">20dp</dimen> <!-- It was 29dp -->
+    <dimen name="padding_list_content_icon_main_margin_left">9dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_right">24dp</dimen> <!-- It was 29dp -->
     <dimen name="padding_list_content_two_lines_separation_height">2dp</dimen>
     <dimen name="space_list_default">2dp</dimen>
     <dimen name="space_list_grid">8dp</dimen>

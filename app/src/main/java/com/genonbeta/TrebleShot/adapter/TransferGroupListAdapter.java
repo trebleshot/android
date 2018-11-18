@@ -229,6 +229,12 @@ public class TransferGroupListAdapter
 		}
 
 		@Override
+		public boolean comparisonSupported()
+		{
+			return true;
+		}
+
+		@Override
 		public String getComparableName()
 		{
 			return getSelectableTitle();
@@ -256,6 +262,12 @@ public class TransferGroupListAdapter
 		public String getSelectableTitle()
 		{
 			return String.format("%s (%s)", assignees, FileUtils.sizeExpression(totalBytes, false));
+		}
+
+		@Override
+		public int getRequestCode()
+		{
+			return 0;
 		}
 
 		@Override

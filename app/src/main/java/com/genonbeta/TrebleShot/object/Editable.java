@@ -9,7 +9,7 @@ import com.genonbeta.android.framework.object.Selectable;
 
 public interface Editable extends Comparable, Selectable
 {
-	public long getId();
+	long getId();
 
-	public void setId(long id);
+	void setId(long id);
 }
