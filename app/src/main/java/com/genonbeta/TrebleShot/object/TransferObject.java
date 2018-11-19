@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -26,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 
 public class TransferObject
-        implements DatabaseObject, Editable
+        implements DatabaseObject<TransferGroup>, Editable
 {
     public String friendlyName;
     public String file;
@@ -159,21 +162,37 @@ public class TransferObject
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase database)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase database)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase database)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
+        if (Flag.DONE.equals(flag) || !Type.INCOMING.equals(type))
+            return;
 
+        try {
+            if (parent == null) {
+                parent = new TransferGroup(groupId);
+                database.reconstruct(parent);
+            }
+
+            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(),
+                    AppUtils.getDefaultPreferences(database.getContext()), this, parent, false);
+
+            if (file != null && file.isFile())
+                file.delete();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

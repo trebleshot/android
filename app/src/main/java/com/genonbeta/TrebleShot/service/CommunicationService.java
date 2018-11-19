@@ -787,7 +787,7 @@ public class CommunicationService extends Service
 
                                             if (pendingRegistry.size() > 0) {
                                                 if (usePublishing)
-                                                    getDatabase().publish(TransferObject.class, pendingRegistry, progressUpdater);
+                                                    getDatabase().publish(pendingRegistry, progressUpdater);
                                                 else
                                                     getDatabase().insert(pendingRegistry, progressUpdater);
                                             }

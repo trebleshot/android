@@ -14,7 +14,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  * date: 16.02.2018 12:56
  */
 
-public class WritablePathObject implements DatabaseObject
+public class WritablePathObject implements DatabaseObject<Object>
 {
 	public String title;
 	public Uri path;
@@ -60,19 +60,19 @@ public class WritablePathObject implements DatabaseObject
 	}
 
 	@Override
-	public void onCreateObject(SQLiteDatabase database)
+	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}
 
 	@Override
-	public void onUpdateObject(SQLiteDatabase database)
+	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}
 
 	@Override
-	public void onRemoveObject(SQLiteDatabase database)
+	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}

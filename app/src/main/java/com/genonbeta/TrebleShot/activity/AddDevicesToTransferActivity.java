@@ -354,9 +354,9 @@ public class AddDevicesToTransferActivity extends Activity
                                 else
                                     getDatabase().insert(assignee);
 
-                                if (doPublish) {
-                                    getDatabase().publish(TransferObject.class, pendingRegistry, progressUpdater);
-                                } else
+                                if (doPublish)
+                                    getDatabase().publish(pendingRegistry, progressUpdater);
+                                else
                                     getDatabase().insert(pendingRegistry, progressUpdater);
 
                                 setResult(RESULT_OK, new Intent()

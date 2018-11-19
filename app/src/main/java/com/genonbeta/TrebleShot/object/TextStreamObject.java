@@ -16,7 +16,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 public class TextStreamObject
 		extends GroupEditableListAdapter.GroupShareable
-		implements DatabaseObject, Editable
+		implements DatabaseObject<Object>, Editable
 {
 	public String text;
 
@@ -78,19 +78,19 @@ public class TextStreamObject
 	}
 
 	@Override
-	public void onCreateObject(SQLiteDatabase database)
+	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}
 
 	@Override
-	public void onUpdateObject(SQLiteDatabase database)
+	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}
 
 	@Override
-	public void onRemoveObject(SQLiteDatabase database)
+	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
 	{
 
 	}

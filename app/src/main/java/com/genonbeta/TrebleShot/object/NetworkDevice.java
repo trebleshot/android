@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkDevice
-        implements DatabaseObject
+        implements DatabaseObject<Object>
 {
     public String brand;
     public String model;
@@ -83,25 +83,25 @@ public class NetworkDevice
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase database)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase database)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase database)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-        ArrayList<TransferGroup.Assignee> assignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class);
+        ArrayList<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferGroup.Assignee assignee : assignees) {
@@ -109,7 +109,7 @@ public class NetworkDevice
 
             try {
                 TransferGroup transferGroup = new TransferGroup(assignee.groupId);
-                database.reconstruct(transferGroup);
+                database.reconstruct(dbInstance, transferGroup);
 
                 List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                         .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
@@ -122,7 +122,7 @@ public class NetworkDevice
         }
     }
 
-    public static class Connection implements DatabaseObject
+    public static class Connection implements DatabaseObject<NetworkDevice>
     {
         public String adapterName;
         public String ipAddress;
@@ -196,19 +196,19 @@ public class NetworkDevice
         }
 
         @Override
-        public void onCreateObject(SQLiteDatabase database)
+        public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onUpdateObject(SQLiteDatabase database)
+        public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onRemoveObject(SQLiteDatabase database)
+        public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }

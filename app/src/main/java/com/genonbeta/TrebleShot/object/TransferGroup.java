@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
@@ -10,11 +11,13 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.object.Selectable;
 
+import java.util.ArrayList;
+
 /**
  * created by: veli
  * date: 06.04.2018 09:37
  */
-public class TransferGroup implements DatabaseObject, Selectable
+public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 {
     public long groupId;
     public long dateCreated;
@@ -89,22 +92,25 @@ public class TransferGroup implements DatabaseObject, Selectable
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase database)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase database)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance,SQLiteDatabase database, NetworkDevice parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase database)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)));
+        ArrayList<TransferObject> transferList = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class, null);
+
+        for (TransferObject transferObject : transferList)
+            database.remove(dbInstance, transferObject, this);
 
         database.remove(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                 .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
@@ -139,7 +145,7 @@ public class TransferGroup implements DatabaseObject, Selectable
         }
     }
 
-    public static class Assignee implements DatabaseObject
+    public static class Assignee implements DatabaseObject<NetworkDevice>
     {
         public long groupId;
         public String deviceId;
@@ -201,19 +207,19 @@ public class TransferGroup implements DatabaseObject, Selectable
         }
 
         @Override
-        public void onCreateObject(SQLiteDatabase database)
+        public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onUpdateObject(SQLiteDatabase database)
+        public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onRemoveObject(SQLiteDatabase database)
+        public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
             database.remove(TransferUtils.createTransferSelection(groupId, deviceId));
         }

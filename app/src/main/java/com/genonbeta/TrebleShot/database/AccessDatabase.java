@@ -172,7 +172,7 @@ public class AccessDatabase extends SQLiteDatabase
 
                     database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
                     SQLQuery.createTable(database, tableTransfer);
-                    insert(database, supportedItems, null);
+                    insert(database, supportedItems, null, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -347,14 +347,14 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void insert(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public <T, V extends DatabaseObject<T>> void insert(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
     {
-        super.insert(database, objects, updater);
+        super.insert(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_INSERT);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_INSERT);
     }
 
     @Override
@@ -368,14 +368,14 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void remove(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public <T, V extends DatabaseObject<T>> void remove(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
     {
-        super.remove(database, objects, updater);
+        super.remove(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_REMOVE);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_REMOVE);
     }
 
     @Override
@@ -389,13 +389,14 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void update(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public <T, V extends DatabaseObject<T>> void update(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
     {
-        super.update(database, objects, updater);
+        super.update(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_UPDATE);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_UPDATE);
     }
 }
+
