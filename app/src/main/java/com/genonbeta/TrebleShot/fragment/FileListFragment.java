@@ -174,7 +174,7 @@ public class FileListFragment
 
         MenuItem mountDirectory = menu.findItem(R.id.actions_file_list_mount_directory);
 
-        if (Build.VERSION.SDK_INT >= 21
+        if (Build.VERSION.SDK_INT >= 23
                 && mountDirectory != null)
             mountDirectory.setVisible(true);
     }

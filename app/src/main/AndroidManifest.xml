@@ -85,7 +85,7 @@
 
         <activity
             android:name=".activity.ContentSharingActivity"
-            android:label="@string/text_shareFiles"
+            android:label="@string/text_send"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 

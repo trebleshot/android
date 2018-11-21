@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -42,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FileExplorerFragment
 		extends FileListFragment
-		implements Activity.OnBackPressedListener, DetachListener, TitleSupport, SnackbarSupport
+		implements Activity.OnBackPressedListener, DetachListener, IconSupport, TitleSupport, SnackbarSupport
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -156,6 +157,12 @@ public class FileExplorerFragment
 		return true;
 	}
 
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_folder_white_24dp;
+	}
+
 	public PathResolverRecyclerAdapter getPathAdapter()
 	{
 		return mPathAdapter;
@@ -165,6 +172,7 @@ public class FileExplorerFragment
 	{
 		return mPathView;
 	}
+
 
 	@Override
 	public CharSequence getTitle(Context context)

@@ -9,10 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
@@ -24,6 +26,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
@@ -31,6 +34,8 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * created by: Veli
@@ -77,20 +82,21 @@ public class TransferGroupListFragment
 	}
 
 	@Override
+	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+	{
+		View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null, false);
+		listViewContainer.addView(adaptedView);
+
+		return super.onListView(mainContainer, (FrameLayout) adaptedView.findViewById(R.id.fragmentContainer));
+	}
+
+	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 
 		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTransfer));
-		useEmptyActionButton(getString(R.string.butn_share), new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				startActivity(new Intent(getActivity(), ContentSharingActivity.class));
-			}
-		});
 	}
 
 	@Override

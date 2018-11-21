@@ -108,7 +108,7 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
 
-    implementation 'com.genonbeta.android:framework:1.0.2.2-local25'
+    implementation 'com.genonbeta.android:framework:1.0.2.2-local33'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.4-local7'
     implementation 'com.genonbeta.coolsocket:main:1.0.3.local10'
     implementation 'com.velitasali.tools.android:zxing:3.6.2'

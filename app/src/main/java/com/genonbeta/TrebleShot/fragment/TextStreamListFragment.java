@@ -21,6 +21,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -42,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class TextStreamListFragment
 		extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
-		implements TitleSupport
+		implements IconSupport, TitleSupport
 {
 	private StatusReceiver mStatusReceiver = new StatusReceiver();
 
@@ -165,6 +166,12 @@ public class TextStreamListFragment
 	{
 		super.onPause();
 		getActivity().unregisterReceiver(mStatusReceiver);
+	}
+
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_short_text_white_24dp;
 	}
 
 	@Override

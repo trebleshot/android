@@ -165,7 +165,7 @@ public class FileListAdapter
 
             ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
-            if (Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 for (WritablePathObject pathObject : objectList)
                     try {
                         lister.offer(new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
