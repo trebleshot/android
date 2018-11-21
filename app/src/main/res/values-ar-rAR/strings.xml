@@ -373,7 +373,7 @@
     <string name="butn_allow">السماح</string>
     <string name="butn_telegram_channel">قناة تلغرام</string>
 <string name="mesg_noPendingTransferObjectExists">لا نقل بالانتظار حيث أنه إما تمت مقاطعته أو اكتمل النقل بالفعل.</string>
-    <string name="mesg_notSavingToChosenLocation">الملفات لن يتم حفظها في المجلد المطلوب حيث يصعب الوصول له حاليا
+    <string name="mesg_notSavingToChosenLocation">لن يتم حفظ الملفات في المجلد المطلوب بسبب استحالة الوصول إليه حاليا
 \n
 \n%s</string>
     <string name="mesg_versionUpdatedChangelog">تم تحديث تريبلشوت لإصدار أحدث، هل تود استعراض التغييرات منذ قمت بتثبيت الإصدار السابق؟</string>
