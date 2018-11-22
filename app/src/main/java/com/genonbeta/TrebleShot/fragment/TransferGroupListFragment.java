@@ -9,12 +9,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
-import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
@@ -26,15 +27,14 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 /**
@@ -43,219 +43,274 @@ import androidx.recyclerview.widget.RecyclerView;
  */
 
 public class TransferGroupListFragment
-		extends GroupEditableListFragment<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
-		implements IconSupport, TitleSupport
+        extends GroupEditableListFragment<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
+        implements IconSupport, TitleSupport
 {
-	private SQLQuery.Select mSelect;
-	private IntentFilter mFilter = new IntentFilter();
-	private BroadcastReceiver mReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
-					&& (intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFERGROUP)
-					|| intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFER)
-			))
-				refreshList();
-			else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
-				getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING));
-				refreshList();
-			}
-		}
-	};
+    private SQLQuery.Select mSelect;
+    private IntentFilter mFilter = new IntentFilter();
+    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
+                    && intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)
+                    && (intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFERGROUP)
+                    || intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME).equals(AccessDatabase.TABLE_TRANSFER)
+            ))
+                refreshList();
+            else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
+                    && intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
+                getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING));
+                refreshList();
+            }
+        }
+    };
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-		setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
-		setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
-		setDefaultSelectionCallback(new SelectionCallback(this));
-		setUseDefaultPaddingDecoration(true);
-		setUseDefaultPaddingDecorationSpaceForEdges(true);
-		setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
-	}
+        setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
+        setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
+        setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
+        setDefaultSelectionCallback(new SelectionCallback(this));
+        setUseDefaultPaddingDecoration(true);
+        setUseDefaultPaddingDecorationSpaceForEdges(true);
+        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
+    }
 
-	@Override
-	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
-	{
-		View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null, false);
-		listViewContainer.addView(adaptedView);
+    @Override
+    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    {
+        View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null, false);
+        ((ViewGroup) mainContainer).addView(adaptedView);
 
-		return super.onListView(mainContainer, (FrameLayout) adaptedView.findViewById(R.id.fragmentContainer));
-	}
+        return super.onListView(mainContainer, (FrameLayout) adaptedView.findViewById(R.id.fragmentContainer));
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
-		setEmptyText(getString(R.string.text_listEmptyTransfer));
-	}
+        setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
+        setEmptyText(getString(R.string.text_listEmptyTransfer));
 
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState)
-	{
-		super.onActivityCreated(savedInstanceState);
+        final ViewGroup actionsContainer = view.findViewById(R.id.actionsContainer);
 
-		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
-		mFilter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
+        final FloatingActionButton fabShare = view.findViewById(R.id.shareFAB);
+        FloatingActionButton fabSend = view.findViewById(R.id.sendFAB);
+        FloatingActionButton fabReceive = view.findViewById(R.id.receiveFAB);
 
-		if (getSelect() == null)
-			setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
-	}
+        final View.OnClickListener toggleListener = new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                toggleSharingView(actionsContainer, fabShare);
+            }
+        };
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		getActivity().registerReceiver(mReceiver, mFilter);
+        actionsContainer.setOnClickListener(toggleListener);
+        fabShare.setOnClickListener(toggleListener);
 
-		AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
-	}
+        fabSend.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(getContext(), ContentSharingActivity.class));
+                toggleListener.onClick(v);
+            }
+        });
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		getActivity().unregisterReceiver(mReceiver);
-	}
+        fabReceive.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
+                        .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
+                        .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE));
 
-	@Override
-	public void onSortingOptions(Map<String, Integer> options)
-	{
-		options.put(getString(R.string.text_sortByDate), TransferGroupListAdapter.MODE_SORT_BY_DATE);
-		options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
-	}
+                toggleListener.onClick(v);
+            }
+        });
+    }
 
-	@Override
-	public void onGroupingOptions(Map<String, Integer> options)
-	{
-		options.put(getString(R.string.text_groupByNothing), TransferGroupListAdapter.MODE_GROUP_BY_NOTHING);
-		options.put(getString(R.string.text_groupByDate), TransferGroupListAdapter.MODE_GROUP_BY_DATE);
-	}
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
 
-	@Override
-	public int onGridSpanSize(int viewType, int currentSpanSize)
-	{
-		return viewType == TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
-				? currentSpanSize
-				: super.onGridSpanSize(viewType, currentSpanSize);
-	}
+        mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
+        mFilter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
 
-	@Override
-	public TransferGroupListAdapter onAdapter()
-	{
-		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
-		{
-			@Override
-			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
-			{
-				if (!clazz.isRepresentative()) {
-					registerLayoutViewClicks(clazz);
+        if (getSelect() == null)
+            setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
+    }
 
-					if (getSelectionConnection() != null)
-						clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								getSelectionConnection().setSelected(clazz.getAdapterPosition());
-							}
-						});
-				}
-			}
-		};
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+        getActivity().registerReceiver(mReceiver, mFilter);
 
-		return new TransferGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
-		{
-			@NonNull
-			@Override
-			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-			{
-				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-			}
-		}.setSelect(getSelect());
-	}
+        AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
+                .setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
+    }
 
-	@Override
-	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-	{
-		try {
-			ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
-			return true;
-		} catch (Exception e) {
-		}
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        getActivity().unregisterReceiver(mReceiver);
+    }
 
-		return false;
-	}
+    @Override
+    public void onSortingOptions(Map<String, Integer> options)
+    {
+        options.put(getString(R.string.text_sortByDate), TransferGroupListAdapter.MODE_SORT_BY_DATE);
+        options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
+    }
 
-	@Override
-	public int getIconRes()
-	{
-		return R.drawable.ic_swap_vert_white_24dp;
-	}
+    @Override
+    public void onGroupingOptions(Map<String, Integer> options)
+    {
+        options.put(getString(R.string.text_groupByNothing), TransferGroupListAdapter.MODE_GROUP_BY_NOTHING);
+        options.put(getString(R.string.text_groupByDate), TransferGroupListAdapter.MODE_GROUP_BY_DATE);
+    }
 
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_transfers);
-	}
+    @Override
+    public int onGridSpanSize(int viewType, int currentSpanSize)
+    {
+        return viewType == TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
+                ? currentSpanSize
+                : super.onGridSpanSize(viewType, currentSpanSize);
+    }
 
-	public SQLQuery.Select getSelect()
-	{
-		return mSelect;
-	}
+    @Override
+    public TransferGroupListAdapter onAdapter()
+    {
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
+        {
+            @Override
+            public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
+            {
+                if (!clazz.isRepresentative()) {
+                    registerLayoutViewClicks(clazz);
 
-	public TransferGroupListFragment setSelect(SQLQuery.Select select)
-	{
-		mSelect = select;
-		return this;
-	}
+                    if (getSelectionConnection() != null)
+                        clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(View v)
+                            {
+                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                            }
+                        });
+                }
+            }
+        };
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferGroupListAdapter.PreloadedGroup>
-	{
-		public SelectionCallback(EditableListFragmentImpl<TransferGroupListAdapter.PreloadedGroup> fragment)
-		{
-			super(fragment);
-		}
+        return new TransferGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+        {
+            @NonNull
+            @Override
+            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+            }
+        }.setSelect(getSelect());
+    }
 
-		@Override
-		public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
-		{
-			super.onPrepareActionMenu(context, actionMode);
-			return true;
-		}
+    @Override
+    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        try {
+            ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
+            return true;
+        } catch (Exception e) {
+        }
 
-		@Override
-		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-		{
-			super.onCreateActionMenu(context, actionMode, menu);
-			actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
-			return true;
-		}
+        return false;
+    }
 
-		@Override
-		public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-		{
-			int id = item.getItemId();
+    @Override
+    public int getIconRes()
+    {
+        return R.drawable.ic_swap_vert_white_24dp;
+    }
 
-			ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+    @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_transfers);
+    }
 
-			if (id == R.id.action_mode_group_delete) {
-				for (TransferGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
-					AppUtils.getDatabase(getFragment().getContext()).remove(preloadedGroup);
-			} else
-				return super.onActionMenuItemSelected(context, actionMode, item);
+    public SQLQuery.Select getSelect()
+    {
+        return mSelect;
+    }
 
-			return true;
-		}
-	}
+    public TransferGroupListFragment setSelect(SQLQuery.Select select)
+    {
+        mSelect = select;
+        return this;
+    }
+
+    public void toggleSharingView(View v, FloatingActionButton fab)
+    {
+        boolean currentState = v.getVisibility() == View.VISIBLE;
+        v.setVisibility(!currentState ? View.VISIBLE : View.GONE);
+
+        v.setAnimation(AnimationUtils.loadAnimation(getContext(), currentState
+                ? android.R.anim.fade_out
+                : android.R.anim.fade_in));
+
+        fab.setImageResource(currentState
+                ? R.drawable.ic_share_white_24dp
+                : R.drawable.ic_close_white_24dp);
+    }
+
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferGroupListAdapter.PreloadedGroup>
+    {
+        public SelectionCallback(EditableListFragmentImpl<TransferGroupListAdapter.PreloadedGroup> fragment)
+        {
+            super(fragment);
+        }
+
+        @Override
+        public boolean onPrepareActionMenu(Context context, PowerfulActionMode actionMode)
+        {
+            super.onPrepareActionMenu(context, actionMode);
+            return true;
+        }
+
+        @Override
+        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        {
+            super.onCreateActionMenu(context, actionMode, menu);
+            actionMode.getMenuInflater().inflate(R.menu.action_mode_group, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        {
+            int id = item.getItemId();
+
+            ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+
+            if (id == R.id.action_mode_group_delete) {
+                for (TransferGroupListAdapter.PreloadedGroup preloadedGroup : selectionList)
+                    AppUtils.getDatabase(getFragment().getContext()).remove(preloadedGroup);
+            } else
+                return super.onActionMenuItemSelected(context, actionMode, item);
+
+            return true;
+        }
+    }
 }

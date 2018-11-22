@@ -5,13 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.NavigationViewBottomSheetDialog;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
@@ -20,17 +21,15 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
-import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.ui.help.ConnectionSetUpAssistant;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.google.android.material.bottomappbar.BottomAppBar;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.IdRes;
@@ -44,17 +43,20 @@ public class ConnectionManagerActivity
         extends Activity
         implements SnackbarSupport
 {
+    public static final String ACTION_CHANGE_FRAGMENT = "com.genonbeta.intent.action.CONNECTION_MANAGER_CHANGE_FRAGMENT";
+    public static final String EXTRA_FRAGMENT_ENUM = "extraFragmentEnum";
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
     public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
     public static final String EXTRA_ACTIVITY_SUBTITLE = "extraActivitySubtitle";
 
-    private NavigationViewBottomSheetDialog mNavigationDialog;
+    private final IntentFilter mFilter = new IntentFilter();
     private HotspotManagerFragment mHotspotManagerFragment;
     private BarcodeConnectFragment mBarcodeConnectFragment;
     private NetworkManagerFragment mNetworkManagerFragment;
     private NetworkDeviceListFragment mDeviceListFragment;
-    private FloatingActionButton mFAB;
+    private OptionsFragment mOptionsFragment;
+    private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
     private final NetworkDeviceSelectedListener mDeviceSelectionListener = new NetworkDeviceSelectedListener()
@@ -110,13 +112,21 @@ public class ConnectionManagerActivity
         }
     };
 
-    private final IntentFilter mFilter = new IntentFilter();
     private final BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (mRequestType.equals(RequestType.RETURN_RESULT)) {
+            if (ACTION_CHANGE_FRAGMENT.equals(intent.getAction())
+                    && intent.hasExtra(EXTRA_FRAGMENT_ENUM)) {
+                String fragmentEnum = intent.getStringExtra(EXTRA_FRAGMENT_ENUM);
+
+                try {
+                    setFragment(AvailableFragment.valueOf(fragmentEnum));
+                } catch (Exception e) {
+
+                }
+            } else if (mRequestType.equals(RequestType.RETURN_RESULT)) {
                 if (CommunicationService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
                         && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
                         && intent.hasExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME)) {
@@ -160,21 +170,13 @@ public class ConnectionManagerActivity
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mOptionsFragment = (OptionsFragment) Fragment.instantiate(this, OptionsFragment.class.getName());
         mBarcodeConnectFragment = (BarcodeConnectFragment) Fragment.instantiate(this, BarcodeConnectFragment.class.getName());
         mHotspotManagerFragment = (HotspotManagerFragment) Fragment.instantiate(this, HotspotManagerFragment.class.getName());
         mNetworkManagerFragment = (NetworkManagerFragment) Fragment.instantiate(this, NetworkManagerFragment.class.getName());
         mDeviceListFragment = (NetworkDeviceListFragment) Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
 
-        mFAB = findViewById(R.id.fab);
-        mFAB.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                showNavigationDialog();
-            }
-        });
-
+        mFilter.addAction(ACTION_CHANGE_FRAGMENT);
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
         mFilter.addAction(CommunicationService.ACTION_INCOMING_TRANSFER_READY);
 
@@ -186,9 +188,8 @@ public class ConnectionManagerActivity
 
                 }
 
-            if (getIntent().hasExtra(EXTRA_ACTIVITY_SUBTITLE)
-                    && getSupportActionBar() != null)
-                getSupportActionBar().setSubtitle(getIntent().getStringExtra(EXTRA_ACTIVITY_SUBTITLE));
+            if (getIntent().hasExtra(EXTRA_ACTIVITY_SUBTITLE))
+                mTitleProvided = getIntent().getStringExtra(EXTRA_ACTIVITY_SUBTITLE);
         }
     }
 
@@ -208,30 +209,44 @@ public class ConnectionManagerActivity
     }
 
     @Override
+    public void onBackPressed()
+    {
+        if (getShowingFragment() instanceof OptionsFragment)
+            super.onBackPressed();
+        else
+            setFragment(AvailableFragment.Options);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int id = item.getItemId();
 
         if (id == android.R.id.home)
-            finish();
+            onBackPressed();
         else
             return super.onOptionsItemSelected(item);
 
         return true;
     }
 
-    public void applyViewChanges(Fragment fragment)
+    public void applyViewChanges(Fragment fragment, String mTitleProvided)
     {
         if (fragment instanceof DeviceSelectionSupport)
             ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(mDeviceSelectionListener);
 
-        if (fragment instanceof IconSupport)
-            mFAB.setImageResource(((IconSupport) fragment).getIconRes());
-
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(fragment instanceof TitleSupport
+            CharSequence titleCurrent = fragment instanceof TitleSupport
                     ? ((TitleSupport) fragment).getTitle(ConnectionManagerActivity.this)
-                    : getString(R.string.text_connectDevices));
+                    : getString(R.string.text_connectDevices);
+
+            if (fragment instanceof OptionsFragment) {
+                getSupportActionBar().setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
+                getSupportActionBar().setSubtitle(null);
+            } else {
+                getSupportActionBar().setTitle(titleCurrent);
+                getSupportActionBar().setSubtitle(mTitleProvided);
+            }
         }
     }
 
@@ -240,9 +255,9 @@ public class ConnectionManagerActivity
         Fragment currentFragment = getShowingFragment();
 
         if (currentFragment == null)
-            setFragment(0);
+            setFragment(AvailableFragment.Options);
         else
-            applyViewChanges(currentFragment);
+            applyViewChanges(currentFragment, mTitleProvided);
     }
 
     @Override
@@ -252,20 +267,21 @@ public class ConnectionManagerActivity
     }
 
     @IdRes
-    public int getShowingFragmentId()
+    public AvailableFragment getShowingFragmentId()
     {
         Fragment fragment = getShowingFragment();
 
         if (fragment instanceof BarcodeConnectFragment)
-            return R.id.scan_qr_code;
+            return AvailableFragment.ScanQrCode;
         else if (fragment instanceof HotspotManagerFragment)
-            return R.id.set_up_hotspot;
+            return AvailableFragment.CreateHotspot;
         else if (fragment instanceof NetworkManagerFragment)
-            return R.id.existing_network;
+            return AvailableFragment.UseExistingNetwork;
         else if (fragment instanceof NetworkDeviceListFragment)
-            return R.id.known_device;
+            return AvailableFragment.UseKnownDevice;
 
-        return 0;
+        // Probably OptionsFragment
+        return AvailableFragment.Options;
     }
 
     @Nullable
@@ -274,24 +290,28 @@ public class ConnectionManagerActivity
         return getSupportFragmentManager().findFragmentById(R.id.activity_connection_establishing_content_view);
     }
 
-    public void setFragment(@IdRes int menuId)
+    public void setFragment(AvailableFragment fragment)
     {
         @Nullable
         Fragment activeFragment = getShowingFragment();
         Fragment fragmentCandidate = null;
 
-        switch (menuId) {
-            case R.id.existing_network:
-                fragmentCandidate = mNetworkManagerFragment;
-                break;
-            case R.id.scan_qr_code:
+        // position should be alike getShowingFragmentId()
+        switch (fragment) {
+            case ScanQrCode:
                 fragmentCandidate = mBarcodeConnectFragment;
                 break;
-            case R.id.known_device:
+            case CreateHotspot:
+                fragmentCandidate = mHotspotManagerFragment;
+                break;
+            case UseExistingNetwork:
+                fragmentCandidate = mNetworkManagerFragment;
+                break;
+            case UseKnownDevice:
                 fragmentCandidate = mDeviceListFragment;
                 break;
             default:
-                fragmentCandidate = mHotspotManagerFragment;
+                fragmentCandidate = mOptionsFragment;
         }
 
         if (activeFragment == null || fragmentCandidate != activeFragment) {
@@ -300,35 +320,16 @@ public class ConnectionManagerActivity
             if (activeFragment != null)
                 transaction.remove(activeFragment);
 
+            if (activeFragment != null && fragmentCandidate instanceof OptionsFragment)
+                transaction.setCustomAnimations(R.anim.enter_from_left, R.anim.exit_to_right);
+            else
+                transaction.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left);
+
             transaction.add(R.id.activity_connection_establishing_content_view, fragmentCandidate);
             transaction.commit();
 
-            applyViewChanges(fragmentCandidate);
+            applyViewChanges(fragmentCandidate, mTitleProvided);
         }
-    }
-
-    public void showNavigationDialog()
-    {
-        if (mNavigationDialog != null && mNavigationDialog.isShowing()) {
-            mNavigationDialog.cancel();
-            mNavigationDialog = null;
-        }
-
-        mNavigationDialog = new NavigationViewBottomSheetDialog(this,
-                R.menu.drawer_connect_devices,
-                getShowingFragmentId(),
-                new NavigationView.OnNavigationItemSelectedListener()
-                {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
-                    {
-                        mNavigationDialog.cancel();
-                        setFragment(menuItem.getItemId());
-                        return true;
-                    }
-                });
-
-        mNavigationDialog.show();
     }
 
     public interface DeviceSelectionSupport
@@ -340,5 +341,68 @@ public class ConnectionManagerActivity
     {
         RETURN_RESULT,
         MAKE_ACQUAINTANCE
+    }
+
+    public enum AvailableFragment
+    {
+        Options,
+        UseExistingNetwork,
+        UseKnownDevice,
+        ScanQrCode,
+        CreateHotspot
+    }
+
+    public static class OptionsFragment extends com.genonbeta.android.framework.app.Fragment
+    {
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+        {
+            View view = inflater.inflate(R.layout.layout_connection_options_fragment, container, false);
+
+            View.OnClickListener listener = new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    switch (v.getId()) {
+                        case R.id.connection_option_devices:
+                            updateFragment(AvailableFragment.UseKnownDevice);
+                            break;
+                        case R.id.connection_option_hotspot:
+                            updateFragment(AvailableFragment.CreateHotspot);
+                            break;
+                        case R.id.connection_option_network:
+                            updateFragment(AvailableFragment.UseExistingNetwork);
+                            break;
+                        case R.id.connection_option_scan:
+                            updateFragment(AvailableFragment.ScanQrCode);
+                    }
+                }
+            };
+
+            view.findViewById(R.id.connection_option_devices).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
+
+            view.findViewById(R.id.connection_option_guide).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    new ConnectionSetUpAssistant(getActivity());
+                }
+            });
+
+            return view;
+        }
+
+        public void updateFragment(AvailableFragment fragment)
+        {
+            if (getContext() != null)
+                getContext().sendBroadcast(new Intent(ACTION_CHANGE_FRAGMENT)
+                        .putExtra(EXTRA_FRAGMENT_ENUM, fragment.toString()));
+        }
     }
 }

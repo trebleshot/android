@@ -12,7 +12,7 @@
 
     <item
         android:id="@+id/action_mode_file_change_save_path"
-        android:title="@string/butn_changeSaveFolder"
+        android:title="@string/butn_changeSavePath"
         android:visible="false"/>
 
     <item

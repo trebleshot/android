@@ -392,9 +392,9 @@
     <string name="text_listEmptyTransfer">All transfers appear here</string>
     <string name="text_transfers">Transfers</string>
     <string name="butn_connectionDetails">Connections details</string>
-    <string name="butn_useKnownDevice">Use a known device</string>
-    <string name="butn_scanQrCode">Scan the QR Code</string>
-    <string name="butn_useExistingNetwork">Use an existing network</string>
+    <string name="butn_useKnownDevice">Use known devices</string>
+    <string name="butn_scanQrCode">Scan QR Code</string>
+    <string name="butn_useExistingNetwork">Use existing networks</string>
     <string name="butn_feedbackContact"><![CDATA[Feedback & contact]]></string>
     <string name="text_startHotspot" translatable="false">@string/butn_startHotspot</string>
     <string name="text_useExistingNetwork" translatable="false">@string/butn_useExistingNetwork</string>
@@ -408,7 +408,18 @@
     <string name="text_documents">Documents</string>
     <string name="text_shortcuts">Shortcuts</string>
     <string name="text_recentFiles">Recent files</string>
-    <string name="butn_changeSaveFolder">Change save folder</string>
+    <string name="butn_changeSavePath">Change save path</string>
     <string name="mesg_fileReceiveFilesLeftError">Failed to receive some files</string>
     <string name="text_send">Send</string>
+    <string name="butn_send" translatable="false">@string/text_send</string>
+    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other device is showing a QR code, use Scan the QR code option</string>
+    <string name="ques_needHelp">Need a helping hand?</string>
+    <string name="text_connectionWizard">Connection wizard</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Have you just set things up on the other device?</string>
+    <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (or barcode) on its screen?</string>
+    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (also known as tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
+    <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
+    <string name="ques_connectionWizardUseKnownDevices">It seems you are running out of options! Do you want to access your previously contacted devices? Other than that I cannot help further.</string>
+    <string name="butn_yes">Yes</string>
+    <string name="butn_no">No</string>
 </resources>

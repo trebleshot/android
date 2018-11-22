@@ -98,7 +98,7 @@ public class ContentSharingActivity extends Activity
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, ImageListFragment.class, null));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(4, VideoListFragment.class, null));
 
-        pagerAdapter.createTabs(tabLayout);
+        pagerAdapter.createTabs(tabLayout, false, true);
         viewPager.setAdapter(pagerAdapter);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
 

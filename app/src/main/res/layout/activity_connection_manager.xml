@@ -1,39 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/container"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="false"
+    android:fitsSystemWindows="true"
     tools:context=".activity.ConnectionManagerActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="?actionBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="?actionBarTheme" />
+            android:layout_height="?attr/actionBarSize" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/activity_connection_establishing_content_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@id/app_bar"
+        android:layout_alignParentTop="true"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/fab_margin"
-        android:layout_gravity="bottom|center_horizontal"
-        app:srcCompat="@drawable/ic_qrcode_scan_white_24dp" />
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

@@ -50,7 +50,11 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 		mItems.add(position, fragment);
 	}
 
-	public void createTabs(TabLayout tabLayout)
+	public void createTabs(TabLayout tabLayout) {
+		createTabs(tabLayout, true, true);
+	}
+
+	public void createTabs(TabLayout tabLayout, boolean icons, boolean text)
 	{
 		if (getCount() > 0)
 			for (int iterator = 0; iterator < getCount(); iterator++) {
@@ -58,10 +62,10 @@ public class SmartFragmentPagerAdapter extends FragmentPagerAdapter
 				Fragment fragment = getItem(iterator);
 				TabLayout.Tab tab = tabLayout.newTab();
 
-				if (fragment instanceof IconSupport)
+				if (fragment instanceof IconSupport && icons)
 					tab.setIcon(((IconSupport) fragment).getIconRes());
 
-				if (!(stableItem.iconOnly && fragment instanceof IconSupport))
+				if (!stableItem.iconOnly && text)
 					if (stableItem.title != null && stableItem.title.length() > 0)
 						tab.setText(stableItem.title);
 					else if (fragment instanceof TitleSupport)
