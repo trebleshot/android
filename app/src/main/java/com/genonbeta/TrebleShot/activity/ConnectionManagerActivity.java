@@ -263,7 +263,7 @@ public class ConnectionManagerActivity
     @Override
     public Snackbar createSnackbar(int resId, Object... objects)
     {
-        return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
+        return Snackbar.make(findViewById(R.id.activity_connection_establishing_content_view), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
     @IdRes

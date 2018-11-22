@@ -419,7 +419,7 @@
     <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (or barcode) on its screen?</string>
     <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (also known as tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
     <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
-    <string name="ques_connectionWizardUseKnownDevices">It seems you are running out of options! Do you want to access your previously contacted devices? Other than that I cannot help further.</string>
+    <string name="ques_connectionWizardUseKnownDevices">No viable option left! Do you want to access your previously contacted devices? You can scan over any network there.</string>
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
 </resources>

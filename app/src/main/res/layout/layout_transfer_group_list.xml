@@ -35,7 +35,8 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp">
+                android:layout_margin="3dp"
+                app:cardBackgroundColor="?colorAccent">
 
                 <TextView
                     style="@style/TextAppearance.Primary.Normal.SingleLine"
@@ -66,7 +67,8 @@
             <androidx.cardview.widget.CardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="3dp">
+                android:layout_margin="3dp"
+                app:cardBackgroundColor="?colorAccent">
 
                 <TextView
                     style="@style/TextAppearance.Primary.Normal.SingleLine"

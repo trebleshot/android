@@ -133,7 +133,7 @@ public class TransferGroupListFragment
             {
                 startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
                         .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
-                        .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE));
+                        .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString()));
 
                 toggleListener.onClick(v);
             }
