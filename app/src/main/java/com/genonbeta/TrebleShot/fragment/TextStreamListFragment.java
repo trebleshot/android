@@ -86,6 +86,8 @@ public class TextStreamListFragment
 
 		setEmptyImage(R.drawable.ic_forum_white_24dp);
 		setEmptyText(getString(R.string.text_listEmptyTextStream));
+		getListView().setClipToPadding(false);
+		getListView().setPadding(0,0,0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
 	}
 
 	@Override

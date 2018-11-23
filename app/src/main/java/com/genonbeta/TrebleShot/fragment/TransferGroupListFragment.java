@@ -138,6 +138,9 @@ public class TransferGroupListFragment
                 toggleListener.onClick(v);
             }
         });
+
+        getListView().setClipToPadding(false);
+        getListView().setPadding(0,0,0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
     }
 
     @Override

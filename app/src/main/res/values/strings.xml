@@ -423,5 +423,5 @@
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
     <string name="text_loadThumbnails">Load thumbnails</string>
-    <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image &amp; Video sharing sections</string>
+    <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image and Video sharing sections</string>
 </resources>

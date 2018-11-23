@@ -17,8 +17,8 @@
     <color name="colorDivider">#eeeeee</color>
     <color name="colorError">#afb42b</color>
     <color name="colorSelection">#20000000</color>
-    <color name="colorShadowBeginning">#0000</color>
-    <color name="colorShadowEnd">#7000</color>
+    <color name="colorShadowBeginning">#0FFF</color>
+    <color name="colorShadowEnd">#9FFF</color>
     <color name="contentShowingBackground">#cfcfcf</color>
 
 

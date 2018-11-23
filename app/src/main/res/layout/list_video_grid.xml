@@ -43,7 +43,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
             <TextView
@@ -53,7 +52,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:gravity="center"
-                android:textColor="@android:color/white"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -65,7 +63,6 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:padding="10dp"
-            android:textColor="@android:color/white"
             android:visibility="gone" />
 
         <LinearLayout
@@ -80,7 +77,6 @@
                 style="@style/OverflowButton"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:tint="@android:color/white"
                 app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
 
         </LinearLayout>

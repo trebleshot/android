@@ -13,6 +13,7 @@
         android:id="@+id/actionsContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?backgroundGradient"
         android:gravity="center"
         android:orientation="horizontal"
         android:visibility="gone">
@@ -36,13 +37,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
-                app:cardBackgroundColor="?colorAccent">
+                app:cardBackgroundColor="?colorAccent"
+                app:cardCornerRadius="15dp">
 
                 <TextView
                     style="@style/TextAppearance.Primary.Normal.SingleLine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="3dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="3dp"
                     android:text="@string/butn_send" />
 
             </androidx.cardview.widget.CardView>
@@ -68,13 +73,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="3dp"
-                app:cardBackgroundColor="?colorAccent">
+                app:cardBackgroundColor="?colorAccent"
+                app:cardCornerRadius="15dp">
 
                 <TextView
                     style="@style/TextAppearance.Primary.Normal.SingleLine"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="3dp"
+                    android:paddingLeft="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="3dp"
                     android:text="@string/butn_receive" />
 
             </androidx.cardview.widget.CardView>

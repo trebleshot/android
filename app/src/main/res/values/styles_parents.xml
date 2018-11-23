@@ -18,6 +18,7 @@
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundGradient">@drawable/background_gradient</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
         <item name="colorDonation">@color/colorDonation</item>
@@ -62,6 +63,7 @@
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundGradient">@drawable/background_gradient_dark</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>
         <item name="colorDonation">@color/dark_colorDonation</item>

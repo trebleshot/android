@@ -21,11 +21,15 @@ import androidx.appcompat.app.AppCompatActivity;
 public abstract class Activity extends AppCompatActivity
 {
     private AlertDialog mOngoingRequest;
+    private boolean mDarkThemeRequested = false;
+    private boolean mThemeLoadingFailed = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
-        if (getDefaultPreferences().getBoolean("dark_theme", false)) {
+        mDarkThemeRequested = isDarkThemeRequested();
+
+        if (mDarkThemeRequested) {
             try {
                 @StyleRes
                 int currentThemeRes = getPackageManager().getActivityInfo(getComponentName(), 0).theme;
@@ -56,7 +60,9 @@ public abstract class Activity extends AppCompatActivity
                                 + "Dark theme won't be effective");
                 }
 
-                if (appliedRes != 0)
+                mThemeLoadingFailed = appliedRes == 0;
+
+                if (!mThemeLoadingFailed)
                     setTheme(appliedRes);
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
@@ -70,6 +76,9 @@ public abstract class Activity extends AppCompatActivity
     protected void onResume()
     {
         super.onResume();
+
+        if (mDarkThemeRequested != isDarkThemeRequested() && !mThemeLoadingFailed)
+            recreate();
 
         if (!AppUtils.checkRunningConditions(this))
             requestRequiredPermissions();
@@ -108,6 +117,11 @@ public abstract class Activity extends AppCompatActivity
     protected SharedPreferences getDefaultPreferences()
     {
         return AppUtils.getDefaultPreferences(this);
+    }
+
+    public boolean isDarkThemeRequested()
+    {
+        return getDefaultPreferences().getBoolean("dark_theme", false);
     }
 
     public boolean requestRequiredPermissions()

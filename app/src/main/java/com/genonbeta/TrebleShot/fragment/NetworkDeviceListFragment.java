@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
@@ -23,7 +22,6 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.dialog.RemoveDeviceDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -145,13 +143,15 @@ public class NetworkDeviceListFragment
                     @Override
                     public void onClick(View v)
                     {
-                        final PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                        openInfo(getAdapter().getList().get(clazz.getAdapterPosition()));
+
+                        /*
+                                                final PopupMenu popupMenu = new PopupMenu(getContext(), v);
                         final Menu menu = popupMenu.getMenu();
                         final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
                         final boolean isHotspotInstance = device instanceof NetworkDeviceListAdapter.HotspotNetwork;
                         final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = isHotspotInstance
                                 ? (NetworkDeviceListAdapter.HotspotNetwork) device : null;
-
                         popupMenu.getMenuInflater().inflate(R.menu.action_mode_network_device, menu);
 
                         menu.findItem(R.id.action_mode_network_device_toggle_connection).setVisible(isHotspotInstance);
@@ -190,6 +190,7 @@ public class NetworkDeviceListFragment
                         });
 
                         popupMenu.show();
+                        */
                     }
                 });
             }
@@ -246,29 +247,34 @@ public class NetworkDeviceListFragment
                 }, false).show();
 
         } else {
-            if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-                final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-                builder.setTitle(hotspotNetwork.nickname);
-                builder.setMessage(R.string.text_trebleshotHotspotDescription);
-                builder.setNegativeButton(R.string.butn_close, null);
-                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        getConnectionUtils().toggleConnection(hotspotNetwork);
-                    }
-                });
-
-                builder.show();
-            } else
-                new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
+            openInfo(device);
         }
 
         return true;
+    }
+
+    private void openInfo(NetworkDevice device)
+    {
+        if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+            final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+            builder.setTitle(hotspotNetwork.nickname);
+            builder.setMessage(R.string.text_trebleshotHotspotDescription);
+            builder.setNegativeButton(R.string.butn_close, null);
+            builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    getConnectionUtils().toggleConnection(hotspotNetwork);
+                }
+            });
+
+            builder.show();
+        } else
+            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
     }
 
     @Override

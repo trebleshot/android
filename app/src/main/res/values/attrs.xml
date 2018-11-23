@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="backgroundGradient" format="reference" />
     <attr name="backgroundGradientBottom" format="reference" />
     <attr name="backgroundGradientTop" format="reference" />
     <attr name="colorDonation" format="reference" />
