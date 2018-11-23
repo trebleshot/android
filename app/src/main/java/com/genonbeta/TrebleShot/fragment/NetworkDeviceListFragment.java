@@ -33,6 +33,7 @@ import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
@@ -211,9 +212,30 @@ public class NetworkDeviceListFragment
         final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
 
         if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
-            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
+            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 createSnackbar(R.string.mesg_versionNotSupported).show();
-            } else if (!(device instanceof NetworkDeviceListAdapter.HotspotNetwork))
+            else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
+                mConnectionUtils.makeAcquaintance(getContext(),
+                        AppUtils.getDatabase(getContext()),
+                        null,
+                        device,
+                        -1,
+                        new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
+                        {
+                            @Override
+                            public void onError(Exception error)
+                            {
+
+                            }
+
+                            @Override
+                            public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+                            {
+                                mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+                            }
+                        }
+                );
+            else
                 new ConnectionChooserDialog(getActivity(), device, new ConnectionChooserDialog.OnDeviceSelectedListener()
                 {
                     @Override
@@ -222,6 +244,7 @@ public class NetworkDeviceListFragment
                         mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
                     }
                 }, false).show();
+
         } else {
             if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
                 final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;

@@ -333,6 +333,12 @@ public class FileListFragment
         }
     }
 
+    @Override
+    public Snackbar createSnackbar(int resId, Object... objects)
+    {
+        return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_SHORT);
+    }
+
     public void goPath(DocumentFile file)
     {
         if (file != null && !file.canRead()) {

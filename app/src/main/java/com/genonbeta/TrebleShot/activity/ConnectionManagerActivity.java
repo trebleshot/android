@@ -296,7 +296,6 @@ public class ConnectionManagerActivity
         Fragment activeFragment = getShowingFragment();
         Fragment fragmentCandidate = null;
 
-        // position should be alike getShowingFragmentId()
         switch (fragment) {
             case ScanQrCode:
                 fragmentCandidate = mBarcodeConnectFragment;

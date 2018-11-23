@@ -55,9 +55,6 @@ public class NetworkManagerFragment
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
-    private ImageView mTextIcon1;
-    private ImageView mTextIcon2;
-    private ImageView mTextIcon3;
     private AppCompatTextView mText1;
     private TextView mText2;
     private TextView mText3;
@@ -82,9 +79,6 @@ public class NetworkManagerFragment
         mContainerText1 = view.findViewById(R.id.layout_network_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container);
         mContainerText3 = view.findViewById(R.id.layout_network_manager_info_container_text3_container);
-        mTextIcon1 = view.findViewById(R.id.layout_network_manager_info_container_text1_icon);
-        mTextIcon2 = view.findViewById(R.id.layout_network_manager_info_container_text2_icon);
-        mTextIcon3 = view.findViewById(R.id.layout_network_manager_info_container_text3_icon);
         mText1 = view.findViewById(R.id.layout_network_manager_info_container_text1);
         mText2 = view.findViewById(R.id.layout_network_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_network_manager_info_container_text3);
@@ -151,9 +145,6 @@ public class NetworkManagerFragment
     // for connection addressing purpose
     public void updateViews(String networkName, String ipAddress, String bssid)
     {
-        mTextIcon2.setImageResource(R.drawable.ic_wifi_white_24dp);
-        mTextIcon3.setImageResource(R.drawable.ic_device_hub_white_24dp);
-
         try {
             JSONObject object = new JSONObject()
                     .put(Keyword.NETWORK_ADDRESS_IP, ipAddress)

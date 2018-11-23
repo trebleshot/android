@@ -416,10 +416,12 @@
     <string name="ques_needHelp">Need a helping hand?</string>
     <string name="text_connectionWizard">Connection wizard</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Have you just set things up on the other device?</string>
-    <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (or barcode) on its screen?</string>
-    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (also known as tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
+    <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (barcode) on its screen?</string>
+    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
     <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
     <string name="ques_connectionWizardUseKnownDevices">No viable option left! Do you want to access your previously contacted devices? You can scan over any network there.</string>
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
+    <string name="text_loadThumbnails">Load thumbnails</string>
+    <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image &amp; Video sharing sections</string>
 </resources>

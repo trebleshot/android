@@ -39,8 +39,10 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -61,9 +63,6 @@ public class HotspotManagerFragment
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
-    private ImageView mTextIcon1;
-    private ImageView mTextIcon2;
-    private ImageView mTextIcon3;
     private AppCompatTextView mText1;
     private TextView mText2;
     private TextView mText3;
@@ -92,9 +91,6 @@ public class HotspotManagerFragment
         mContainerText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2_container);
         mContainerText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3_container);
-        mTextIcon1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_icon);
-        mTextIcon2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2_icon);
-        mTextIcon3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3_icon);
         mText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1);
         mText2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3);
@@ -165,7 +161,11 @@ public class HotspotManagerFragment
 
     private void updateViewsWithBlank()
     {
-        updateViews(null, getString(R.string.text_qrCodeHotspotDisabledHelp), null, null);
+        updateViews(null,
+                getString(R.string.text_qrCodeHotspotDisabledHelp),
+                null,
+                null,
+                R.string.text_startHotspot);
     }
 
     // for hotspot
@@ -177,13 +177,17 @@ public class HotspotManagerFragment
                     .put(Keyword.NETWORK_PASSWORD, password)
                     .put(Keyword.NETWORK_KEYMGMT, keyManagement);
 
-            updateViews(object, getString(R.string.text_qrCodeAvailableHelp), networkName, password);
+            updateViews(object, getString(R.string.text_qrCodeAvailableHelp), networkName, password, R.string.butn_stopHotspot);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1, @Nullable String text2, @Nullable String text3)
+    private void updateViews(@Nullable JSONObject codeIndex,
+                             @Nullable String text1,
+                             @Nullable String text2,
+                             @Nullable String text3,
+                             @StringRes int buttonText)
     {
         String codeString = codeIndex == null ? null : codeIndex.toString();
         boolean showQRCode = codeString != null && getContext() != null;
@@ -222,15 +226,13 @@ public class HotspotManagerFragment
             mText1.setText(text1);
             mText2.setText(text2);
             mText3.setText(text3);
+            mToggleButton.setText(buttonText);
         }
     }
 
     private void updateState()
     {
         boolean isEnabled = getUIConnectionUtils().getConnectionUtils().getHotspotUtils().isEnabled();
-
-        mToggleButton.setText(isEnabled ? R.string.butn_stopHotspot : R.string.butn_startHotspot);
-
         WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
 
         if (!isEnabled) {

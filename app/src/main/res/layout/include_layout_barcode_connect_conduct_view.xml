@@ -5,20 +5,21 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <Button
-        android:id="@+id/layout_barcode_connect_conduct_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/butn_enable" />
-
     <TextView
         android:id="@+id/layout_barcode_connect_conduct_text"
-        style="@style/TextAppearance.Secondary.Big"
+        style="@style/TextAppearance.Primary.Normal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="15dp"
         android:text="@string/text_scanQRCodeHelp" />
+
+    <Button
+        android:id="@+id/layout_barcode_connect_conduct_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="15dp"
+        android:text="@string/butn_enable" />
 
 </LinearLayout>

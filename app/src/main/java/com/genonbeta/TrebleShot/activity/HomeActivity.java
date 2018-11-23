@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -49,6 +50,7 @@ public class HomeActivity
     private NavigationView mNavigationView;
     private DrawerLayout mDrawerLayout;
     private PowerfulActionMode mActionMode;
+    private HomeFragment mHomeFragment;
 
     private long mExitPressTime;
 
@@ -62,6 +64,7 @@ public class HomeActivity
         final Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mHomeFragment = (HomeFragment) getSupportFragmentManager().findFragmentById(R.id.activitiy_home_fragment);
         mActionMode = findViewById(R.id.content_powerful_action_mode);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
@@ -178,6 +181,9 @@ public class HomeActivity
     @Override
     public void onBackPressed()
     {
+        if (mHomeFragment.onBackPressed())
+            return;
+
         if (mDrawerLayout != null && mDrawerLayout.isDrawerOpen(GravityCompat.START))
             mDrawerLayout.closeDrawer(GravityCompat.START);
         else if ((System.currentTimeMillis() - mExitPressTime) < 2000)

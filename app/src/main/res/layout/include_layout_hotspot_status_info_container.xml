@@ -13,13 +13,6 @@
         android:paddingTop="15dp"
         android:paddingBottom="15dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/layout_hotspot_manager_info_toggle_button"
-            style="?buttonBarPositiveButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/butn_startHotspot" />
-
         <LinearLayout
             android:id="@+id/layout_hotspot_manager_info_container_text1_container"
             android:layout_width="match_parent"
@@ -28,25 +21,23 @@
             android:orientation="horizontal"
             android:padding="15dp">
 
-            <ImageView
-                android:id="@+id/layout_hotspot_manager_info_container_text1_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_info_white_24dp" />
-
             <TextView
                 android:id="@+id/layout_hotspot_manager_info_container_text1"
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
+                style="@style/TextAppearance.Primary.Normal"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:maxLines="5"
                 android:text="@string/text_qrCodeHotspotDisabledHelp" />
 
         </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/layout_hotspot_manager_info_toggle_button"
+            style="?buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_startHotspot" />
 
         <LinearLayout
             android:id="@+id/layout_hotspot_manager_info_container_text2_container"
@@ -101,11 +92,6 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="@string/text_unknown" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/layout_hotspot_manager_info_issue"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

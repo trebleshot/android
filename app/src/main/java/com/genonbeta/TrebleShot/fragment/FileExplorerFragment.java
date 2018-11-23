@@ -43,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class FileExplorerFragment
 		extends FileListFragment
-		implements Activity.OnBackPressedListener, DetachListener, IconSupport, TitleSupport, SnackbarSupport
+		implements Activity.OnBackPressedListener, DetachListener, IconSupport, TitleSupport
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
 

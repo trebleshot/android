@@ -50,6 +50,7 @@ public class FileListAdapter
 
     private boolean mShowDirectories = true;
     private boolean mShowFiles = true;
+    private boolean mShowThumbnails = true;
     private String mFileMatch;
     private DocumentFile mPath;
     private AccessDatabase mDatabase;
@@ -66,6 +67,9 @@ public class FileListAdapter
     @Override
     protected void onLoad(GroupLister<GenericFileHolder> lister)
     {
+        mShowThumbnails = AppUtils.getDefaultPreferences(getContext())
+                .getBoolean("load_thumbnails", true);
+
         DocumentFile path = getPath();
 
         if (path != null) {
@@ -268,7 +272,7 @@ public class FileListAdapter
                 text1.setText(object.friendlyName);
                 text2.setText(object.info);
 
-                if (!object.loadThumbnail(thumbnail)) {
+                if (!mShowThumbnails || !object.loadThumbnail(thumbnail)) {
                     image.setImageResource(object.iconRes);
                     thumbnail.setImageDrawable(null);
                 } else

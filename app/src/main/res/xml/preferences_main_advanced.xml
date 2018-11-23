@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/text_advanced">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="load_thumbnails"
+            android:summary="@string/text_loadThumbnailsSummary"
+            android:title="@string/text_loadThumbnails"/>
 
         <CheckBoxPreference
             android:defaultValue="true"

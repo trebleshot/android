@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -19,26 +20,29 @@ import androidx.viewpager.widget.ViewPager;
 
 public class HomeFragment
         extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl
+        implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
 {
+    private ViewPager mViewPager;
+    private SmartFragmentPagerAdapter mAdapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
     {
         final View view = inflater.inflate(R.layout.layout_home_fragment, container, false);
 
-        final ViewPager viewPager = view.findViewById(R.id.layout_home_view_pager);
         final BottomNavigationView bottomNavigationView = view.findViewById(R.id.layout_home_bottom_navigation_view);
-        final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
+        mViewPager = view.findViewById(R.id.layout_home_view_pager);
+        mAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
 
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, TextStreamListFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, TextStreamListFragment.class, null));
 
-        pagerAdapter.createTabs(bottomNavigationView);
-        viewPager.setAdapter(pagerAdapter);
+        mAdapter.createTabs(bottomNavigationView);
+        mViewPager.setAdapter(mAdapter);
 
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener()
         {
             @Override
             public void onPageScrolled(int i, float v, int i1)
@@ -64,7 +68,7 @@ public class HomeFragment
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
             {
-                viewPager.setCurrentItem(menuItem.getOrder());
+                mViewPager.setCurrentItem(menuItem.getOrder());
                 return true;
             }
         });
@@ -76,5 +80,13 @@ public class HomeFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_home);
+    }
+
+    @Override
+    public boolean onBackPressed()
+    {
+        Object activeItem = mAdapter.getItem(mViewPager.getCurrentItem());
+        return activeItem instanceof Activity.OnBackPressedListener
+                && ((Activity.OnBackPressedListener) activeItem).onBackPressed();
     }
 }

@@ -17,11 +17,17 @@
         android:layout_below="@id/fragment_fileexplorer_pathresolver"
         android:background="?colorDivider" />
 
-    <FrameLayout
-        android:id="@+id/fragment_fileexplorer_listViewContainer"
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/fragment_fileexplorer_separator"
-        android:layout_alignParentBottom="true" />
+        android:layout_alignParentBottom="true">
 
+        <FrameLayout
+            android:id="@+id/fragment_fileexplorer_listViewContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

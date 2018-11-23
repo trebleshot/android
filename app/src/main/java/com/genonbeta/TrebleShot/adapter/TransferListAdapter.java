@@ -81,6 +81,9 @@ public class TransferListAdapter
     @Override
     protected void onLoad(GroupLister<AbstractGenericItem> lister)
     {
+        final boolean loadThumbnails = AppUtils.getDefaultPreferences(getContext())
+                .getBoolean("load_thumbnails", true);
+
         try {
             AppUtils.getDatabase(getContext()).reconstruct(mGroup);
         } catch (ReconstructionFailedException e) {
@@ -135,25 +138,28 @@ public class TransferListAdapter
 
             if ((currentPath == null && object.directory == null)
                     || object.directory.equals(currentPath)) {
-
                 try {
-                    String[] format = object.fileMimeType.split(File.separator);
-
-                    if (format.length > 0 && ("image".equals(format[0]) || "video".equals(format[0]))) {
-                        DocumentFile documentFile = null;
-
-                        if (TransferObject.Type.OUTGOING.equals(object.type))
-                            documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
-                        else if (TransferObject.Flag.DONE.equals(object.flag))
-                            documentFile = FileUtils.getIncomingPseudoFile(getContext(),
-                                    AppUtils.getDefaultPreferences(getContext()), object, mGroup, false);
-
-                        if (documentFile != null && documentFile.exists()) {
-                            object.setFile(documentFile);
-                            object.setSupportThumbnail(true);
-                        }
-                    } else
+                    if (!loadThumbnails)
                         object.setSupportThumbnail(false);
+                    else {
+                        String[] format = object.fileMimeType.split(File.separator);
+
+                        if (format.length > 0 && ("image".equals(format[0]) || "video".equals(format[0]))) {
+                            DocumentFile documentFile = null;
+
+                            if (TransferObject.Type.OUTGOING.equals(object.type))
+                                documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
+                            else if (TransferObject.Flag.DONE.equals(object.flag))
+                                documentFile = FileUtils.getIncomingPseudoFile(getContext(),
+                                        AppUtils.getDefaultPreferences(getContext()), object, mGroup, false);
+
+                            if (documentFile != null && documentFile.exists()) {
+                                object.setFile(documentFile);
+                                object.setSupportThumbnail(true);
+                            }
+                        } else
+                            object.setSupportThumbnail(false);
+                    }
                 } catch (Exception e) {
                 }
 
