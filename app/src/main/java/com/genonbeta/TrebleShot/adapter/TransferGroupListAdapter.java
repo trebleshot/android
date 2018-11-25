@@ -97,7 +97,7 @@ public class TransferGroupListAdapter
             group.totalPercent = group.totalBytesCompleted == 0 || group.totalBytes == 0
                     ? 0.0 : Long.valueOf(group.totalBytesCompleted).doubleValue() / Long.valueOf(group.totalBytes).doubleValue();
 
-            lister.offer(group);
+            lister.offerObliged(this, group);
         }
     }
 
