@@ -41,6 +41,19 @@ public class TextStreamObject
 	}
 
 	@Override
+	public boolean applyFilter(String[] filteringKeywords)
+	{
+		if (super.applyFilter(filteringKeywords))
+			return true;
+
+		for (String keyword : filteringKeywords)
+			if (text.toLowerCase().contains(keyword.toLowerCase()))
+				return true;
+
+		return false;
+	}
+
+	@Override
 	public boolean equals(Object obj)
 	{
 		return obj instanceof TextStreamObject && ((TextStreamObject) obj).id == id;

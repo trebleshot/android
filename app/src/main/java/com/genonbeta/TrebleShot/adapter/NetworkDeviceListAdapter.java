@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiInfo;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
@@ -20,7 +18,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
 
@@ -75,7 +72,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
                 .setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), EditableNetworkDevice.class))
-            if (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false))
+            if (filterItem(device) && (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
                 list.add(device);
 
         return list;
@@ -115,6 +112,16 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         public EditableNetworkDevice()
         {
             super();
+        }
+
+        @Override
+        public boolean applyFilter(String[] filteringKeywords)
+        {
+            for (String keyword : filteringKeywords)
+                if (nickname.toLowerCase().contains(keyword.toLowerCase()))
+                    return true;
+
+            return false;
         }
 
         @Override

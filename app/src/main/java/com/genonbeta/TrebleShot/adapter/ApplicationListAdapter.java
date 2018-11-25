@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import androidx.annotation.NonNull;
-import androidx.core.widget.ImageViewCompat;
 
 public class ApplicationListAdapter
         extends EditableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>
@@ -41,16 +40,22 @@ public class ApplicationListAdapter
     public ArrayList<PackageHolder> onLoad()
     {
         ArrayList<PackageHolder> list = new ArrayList<>();
+        boolean showSystemApps = mPreferences.getBoolean("show_system_apps", false);
 
         for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || mPreferences.getBoolean("show_system_apps", false))
-                list.add(new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || showSystemApps)
+            {
+                PackageHolder packageHolder = new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
                         appInfo,
                         packageInfo.versionName,
                         packageInfo.packageName,
-                        new File(appInfo.sourceDir)));
+                        new File(appInfo.sourceDir));
+
+                if (filterItem(packageHolder))
+                    list.add(packageHolder);
+            }
         }
 
         Collections.sort(list, getDefaultComparator());

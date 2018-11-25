@@ -60,7 +60,8 @@
                 android:value=".service.DeviceChooserService" />-->
         </activity>
 
-        <activity android:name=".activity.AddDevicesToTransferActivity"
+        <activity
+            android:name=".activity.AddDevicesToTransferActivity"
             android:label="@string/text_addDevicesToTransfer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
@@ -69,7 +70,8 @@
             android:label="@string/text_fileExplorer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
-        <activity android:name=".activity.TextStreamActivity"
+        <activity
+            android:name=".activity.TextStreamActivity"
             android:label="@string/text_textStream"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
@@ -113,9 +115,19 @@
                 <data android:pathPattern=".*\\..*\\.tshare" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activity.ManageDevicesActivity"
+            android:label="@string/text_manageDevices" />
+
+        <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/butn_search" />
+
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences" />
+
         <activity
             android:name=".activity.TextEditorActivity"
             android:label="@string/text_textEditor" />

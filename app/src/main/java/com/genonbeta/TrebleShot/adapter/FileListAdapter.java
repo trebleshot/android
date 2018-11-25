@@ -81,7 +81,7 @@ public class FileListAdapter
                         continue;
 
                     if (file.isDirectory() && mShowDirectories)
-                        lister.offer(new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
+                        lister.offerObliged(this,new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
                     else if (file.isFile() && mShowFiles) {
                         if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
                             TransferObject existingObject = null;
@@ -96,9 +96,9 @@ public class FileListAdapter
                             } catch (Exception e) {
                             }
 
-                            lister.offer(new ReceivedFileHolder(getContext(), file, existingObject));
+                            lister.offerObliged(this,new ReceivedFileHolder(getContext(), file, existingObject));
                         } else
-                            lister.offer(new FileHolder(getContext(), file));
+                            lister.offerObliged(this,new FileHolder(getContext(), file));
                     }
                 }
             }
@@ -106,25 +106,25 @@ public class FileListAdapter
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
 
-            lister.offer(new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
+            lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
-            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
                     getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
 
             if (Build.VERSION.SDK_INT >= 19)
-                lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                         getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
 
-            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            lister.offerObliged(this,new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
 
-            lister.offer(new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+            lister.offerObliged(this,new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
 
             File fileSystemRoot = new File(".");
 
             if (fileSystemRoot.canRead())
-                lister.offer(new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
+                lister.offerObliged(this,new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
                         getContext().getString(R.string.text_fileRoot),
                         getContext().getString(R.string.text_folder),
                         R.drawable.ic_folder_white_24dp));
@@ -164,7 +164,7 @@ public class FileListAdapter
                     }
                 }
 
-                lister.offer(fileHolder);
+                lister.offerObliged(this,fileHolder);
             }
 
             ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
@@ -172,14 +172,14 @@ public class FileListAdapter
             if (Build.VERSION.SDK_INT >= 23) {
                 for (WritablePathObject pathObject : objectList)
                     try {
-                        lister.offer(new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
+                        lister.offerObliged(this,new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
                                 pathObject,
                                 getContext().getString(R.string.text_storage)));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                lister.offer(new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
+                lister.offerObliged(this,new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
                         R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
             }
 
@@ -213,7 +213,7 @@ public class FileListAdapter
                         DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), recentFile, group, false);
 
                         if (documentFile.exists()) {
-                            lister.offer(new RecentFileHolder(getContext(), documentFile));
+                            lister.offerObliged(this,new RecentFileHolder(getContext(), documentFile));
                             iteratorAdded++;
                         }
                     } catch (IOException e) {

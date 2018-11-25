@@ -23,6 +23,8 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
 	EditableListAdapterImpl<T> getAdapterImpl();
 
+	EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
+
 	int getOrderingCriteria();
 
 	PowerfulActionMode.SelectorConnection<T> getSelectionConnection();
@@ -42,6 +44,8 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 	boolean loadIfRequested();
 
 	boolean openUri(Uri uri, String chooserText);
+
+	void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
 
 	void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection);
 

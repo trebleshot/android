@@ -118,7 +118,7 @@ public class VideoListAdapter
                             cursor.getLong(sizeIndex),
                             Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
-                    lister.offer(holder);
+                    lister.offerObliged(this, holder);
                 }
                 while (cursor.moveToNext());
             }

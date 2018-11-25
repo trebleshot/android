@@ -104,6 +104,7 @@ public class FileListFragment
     {
         super.onCreate(savedInstanceState);
 
+        setFilteringSupported(true);
         setDefaultOrderingCriteria(FileListAdapter.MODE_SORT_ORDER_ASCENDING);
         setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);

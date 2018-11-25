@@ -11,94 +11,104 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 
 public class Shareable implements Editable
 {
-	public long id;
-	public String friendlyName;
-	public String fileName;
-	public String mimeType;
-	public Uri uri;
-	public long date;
-	public long size;
+    public long id;
+    public String friendlyName;
+    public String fileName;
+    public String mimeType;
+    public Uri uri;
+    public long date;
+    public long size;
 
-	private boolean isSelected = false;
+    private boolean isSelected = false;
 
-	public Shareable()
-	{
-	}
+    public Shareable()
+    {
+    }
 
-	public Shareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
-	{
-		this.id = id;
-		this.friendlyName = friendlyName;
-		this.fileName = fileName;
-		this.mimeType = mimeType;
-		this.date = date;
-		this.size = size;
-		this.uri = uri;
-	}
+    public Shareable(long id, String friendlyName, String fileName, String mimeType, long date, long size, Uri uri)
+    {
+        this.id = id;
+        this.friendlyName = friendlyName;
+        this.fileName = fileName;
+        this.mimeType = mimeType;
+        this.date = date;
+        this.size = size;
+        this.uri = uri;
+    }
 
-	@Override
-	public boolean comparisonSupported()
-	{
-		return true;
-	}
+    @Override
+    public boolean applyFilter(String[] filteringKeywords)
+    {
+        for (String keyword : filteringKeywords)
+            if (friendlyName != null && friendlyName.toLowerCase().contains(keyword.toLowerCase()))
+                return true;
 
-	@Override
-	public boolean isSelectableSelected()
-	{
-		return isSelected;
-	}
+        return false;
+    }
 
-	@Override
-	public String getComparableName()
-	{
-		return getSelectableTitle();
-	}
+    @Override
+    public boolean comparisonSupported()
+    {
+        return true;
+    }
 
-	@Override
-	public long getComparableDate()
-	{
-		return this.date;
-	}
+    @Override
+    public boolean isSelectableSelected()
+    {
+        return isSelected;
+    }
 
-	@Override
-	public long getComparableSize()
-	{
-		return this.size;
-	}
+    @Override
+    public String getComparableName()
+    {
+        return getSelectableTitle();
+    }
 
-	@Override
-	public long getId()
-	{
-		return this.id;
-	}
+    @Override
+    public long getComparableDate()
+    {
+        return this.date;
+    }
 
-	@Override
-	public String getSelectableTitle()
-	{
-		return this.friendlyName;
-	}
+    @Override
+    public long getComparableSize()
+    {
+        return this.size;
+    }
 
-	@Override
-	public boolean equals(Object obj)
-	{
-		return obj instanceof Shareable ? ((Shareable) obj).uri.equals(uri) : super.equals(obj);
-	}
+    @Override
+    public long getId()
+    {
+        return this.id;
+    }
 
-	public boolean searchMatches(String searchWord)
-	{
-		return TextUtils.searchWord(this.friendlyName, searchWord);
-	}
+    @Override
+    public String getSelectableTitle()
+    {
+        return this.friendlyName;
+    }
 
-	@Override
-	public void setId(long id)
-	{
-		this.id = id;
-	}
+    @Override
+    public boolean equals(Object obj)
+    {
+        return obj instanceof Shareable ? ((Shareable) obj).uri.equals(uri) : super.equals(obj);
+    }
 
-	@Override
-	public boolean setSelectableSelected(boolean selected)
-	{
-		isSelected = selected;
-		return true;
-	}
+    public boolean searchMatches(String searchWord)
+    {
+        return TextUtils.searchWord(this.friendlyName, searchWord);
+    }
+
+    @Override
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    @Override
+    public boolean setSelectableSelected(boolean selected)
+    {
+        isSelected = selected;
+        return true;
+    }
 }

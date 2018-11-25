@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actions_abs_editable_filter"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:orderInCategory="80"
+        android:title="@string/butn_search"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
+        app:showAsAction="always"
+        android:visible="false"/>
 
     <item
         android:id="@+id/actions_abs_editable_multi_select"
         android:icon="@drawable/ic_format_list_checks_white_24dp"
         android:orderInCategory="10"
-        android:title="@string/butn_multiSelect"/>
+        android:title="@string/butn_multiSelect" />
 
     <item
         android:id="@+id/actions_abs_editable_grid_size"
         android:orderInCategory="90"
         android:title="@string/butn_gridSize">
-        <menu/>
+        <menu />
     </item>
 
     <item
@@ -24,7 +34,7 @@
                 android:id="@+id/actions_abs_editable_order_by"
                 android:orderInCategory="900"
                 android:title="@string/butn_sortOrder">
-                <menu/>
+                <menu />
             </item>
         </menu>
     </item>

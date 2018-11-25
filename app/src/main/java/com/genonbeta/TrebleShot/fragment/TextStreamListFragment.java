@@ -52,6 +52,7 @@ public class TextStreamListFragment
 	{
 		super.onCreate(savedInstanceState);
 
+		setFilteringSupported(true);
 		setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
 		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
 		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);

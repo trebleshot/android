@@ -4,40 +4,34 @@
     <group android:id="@+id/nav_group_other">
 
         <item
-            android:id="@+id/menu_activity_main_file_explorer"
-            android:icon="@drawable/ic_folder_white_24dp"
+            android:id="@+id/menu_activity_main_manage_devices"
+            android:icon="@drawable/ic_devices_white_24dp"
             android:orderInCategory="1"
-            android:title="@string/text_fileExplorer"/>
-
-        <item
-            android:id="@+id/menu_activity_main_text_stream"
-            android:icon="@drawable/ic_short_text_white_24dp"
-            android:orderInCategory="11"
-            android:title="@string/text_textStream"/>
+            android:title="@string/text_manageDevices" />
 
         <item
             android:id="@+id/menu_activity_main_send_application"
             android:icon="@drawable/ic_redo_white_24dp"
             android:orderInCategory="11"
-            android:title="@string/butn_shareTrebleshot"/>
+            android:title="@string/butn_shareTrebleshot" />
 
         <item
             android:id="@+id/menu_activity_main_preferences"
             android:icon="@drawable/ic_settings_white_24dp"
             android:orderInCategory="12"
-            android:title="@string/text_preferences"/>
+            android:title="@string/text_preferences" />
 
         <item
             android:id="@+id/menu_activity_main_about"
             android:icon="@drawable/ic_info_white_24dp"
             android:orderInCategory="13"
-            android:title="@string/text_about"/>
+            android:title="@string/text_about" />
 
         <item
             android:id="@+id/menu_activity_main_exit"
             android:icon="@drawable/ic_exit_to_app_white_24dp"
             android:orderInCategory="14"
-            android:title="@string/butn_exit"/>
+            android:title="@string/butn_exit" />
 
     </group>
 
@@ -47,6 +41,6 @@
             android:icon="@drawable/ic_favorite_white_24dp"
             android:orderInCategory="15"
             android:title="@string/butn_donate"
-            android:visible="false"/>
+            android:visible="false" />
     </group>
 </menu>

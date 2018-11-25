@@ -305,6 +305,12 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
 			mCustomLister = customList;
 		}
 
+		public void offerObliged(EditableListAdapterImpl<T> adapter, T object)
+		{
+			if (adapter.filterItem(object))
+				offer(object);
+		}
+
 		public void offer(T object)
 		{
 			if (mMode == MODE_GROUP_BY_DATE)

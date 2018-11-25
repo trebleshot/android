@@ -32,6 +32,7 @@ public class ImageListFragment
     {
         super.onCreate(savedInstanceState);
 
+        setFilteringSupported(true);
         setDefaultOrderingCriteria(ImageListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ImageListAdapter.MODE_SORT_BY_DATE);
         setDefaultViewingGridSize(2, 4);

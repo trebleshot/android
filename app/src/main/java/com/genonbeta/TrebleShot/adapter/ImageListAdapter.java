@@ -64,7 +64,7 @@ public class ImageListAdapter
 
                     holder.dateTakenString = String.valueOf(TimeUtils.formatDateTime(getContext(), holder.date));
 
-                    lister.offer(holder);
+                    lister.offerObliged(this, holder);
                 }
                 while (cursor.moveToNext());
             }

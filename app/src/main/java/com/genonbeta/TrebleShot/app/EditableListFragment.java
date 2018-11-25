@@ -41,6 +41,7 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
 import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -58,9 +59,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private SelectionCallback<T> mDefaultSelectionCallback;
     private PowerfulActionMode.SelectorConnection<T> mSelectionConnection;
     private PowerfulActionMode.SelectorConnection<T> mDefaultSelectionConnection;
+    private FilteringDelegate<T> mFilteringDelegate;
     private Snackbar mRefreshDelayedSnackbar;
     private boolean mRefreshRequested = false;
     private boolean mSortingSupported = true;
+    private boolean mFilteringSupported = false;
     private boolean mUseDefaultPaddingDecoration = false;
     private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
     private float mDefaultPaddingDecorationSize = -1;
@@ -73,6 +76,26 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
+    private String mSearchText;
+    private FilteringDelegate<T> mDefaultFilteringDelegate = new FilteringDelegate<T>()
+    {
+        @Override
+        public boolean changeFilteringKeyword(@Nullable String keyword)
+        {
+            mSearchText = keyword;
+            return true;
+        }
+
+        @Nullable
+        @Override
+        public String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment)
+        {
+            if (mSearchText != null && mSearchText.length() > 0)
+                return mSearchText.split(" ");
+
+            return null;
+        }
+    };
 
     abstract public boolean onDefaultClickAction(V holder);
 
@@ -159,6 +182,36 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.actions_abs_editable_list, menu);
 
+        MenuItem filterItem = menu.findItem(R.id.actions_abs_editable_filter);
+
+        if (filterItem != null) {
+            filterItem.setVisible(mFilteringSupported);
+
+            if (mFilteringSupported) {
+                View view = filterItem.getActionView();
+
+                if (view instanceof SearchView) {
+                    ((SearchView) view).setOnQueryTextListener(new SearchView.OnQueryTextListener()
+                    {
+                        @Override
+                        public boolean onQueryTextSubmit(String query)
+                        {
+                            refreshList();
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onQueryTextChange(String newText)
+                        {
+                            mSearchText = newText;
+                            refreshList();
+                            return true;
+                        }
+                    });
+                }
+            }
+        }
+
         MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
 
         if (gridSizeItem != null) {
@@ -213,13 +266,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
         MenuItem sortingItem = menu.findItem(R.id.actions_abs_editable_sort_by);
 
-        if (sortingItem != null && sortingItem.isVisible()) {
-            checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
+        if (sortingItem != null) {
+            sortingItem.setVisible(mSortingSupported);
 
-            MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
+            if (sortingItem.isVisible()) {
+                checkPreferredDynamicItem(sortingItem, getSortingCriteria(), mSortingOptions);
 
-            if (orderingItem != null)
-                checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+                MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
+
+                if (orderingItem != null)
+                    checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+            }
         }
 
         MenuItem gridSizeItem = menu.findItem(R.id.actions_abs_editable_grid_size);
@@ -415,6 +472,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             };
 
         return mObserver;
+    }
+
+    @Override
+    public FilteringDelegate<T> getFilteringDelegate()
+    {
+        return mFilteringDelegate == null
+                ? mDefaultFilteringDelegate
+                : mFilteringDelegate;
     }
 
     public FastScroller getFastScroller()
@@ -637,6 +702,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         mLayoutClickListener = clickListener;
     }
 
+    @Override
+    public void setFilteringDelegate(FilteringDelegate<T> delegate)
+    {
+        mFilteringDelegate = delegate;
+    }
+
+    public void setFilteringSupported(boolean supported)
+    {
+        mFilteringSupported = supported;
+    }
+
     public void setRefreshRequested(boolean requested)
     {
         mRefreshRequested = requested;
@@ -813,5 +889,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             mFragment.getSelectionConnection().getSelectedItemList().clear();
             mFragment.loadIfRequested();
         }
+    }
+
+    public interface FilteringDelegate<T extends Editable>
+    {
+        boolean changeFilteringKeyword(@Nullable String keyword);
+
+        @Nullable
+        String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 }

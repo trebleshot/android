@@ -80,6 +80,16 @@ public class TransferObject
     }
 
     @Override
+    public boolean applyFilter(String[] filteringKeywords)
+    {
+        for (String keyword : filteringKeywords)
+            if (friendlyName.contains(keyword))
+                return true;
+
+        return false;
+    }
+
+    @Override
     public boolean comparisonSupported()
     {
         return true;

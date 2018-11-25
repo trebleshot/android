@@ -72,6 +72,7 @@ public class TransferGroupListFragment
     {
         super.onCreate(savedInstanceState);
 
+        setFilteringSupported(true);
         setDefaultOrderingCriteria(TransferGroupListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(TransferGroupListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(TransferGroupListAdapter.MODE_GROUP_BY_DATE);
@@ -126,6 +127,15 @@ public class TransferGroupListFragment
             }
         });
 
+        useEmptyActionButton(getString(R.string.butn_share), new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                toggleListener.onClick(v);
+            }
+        });
+
         fabReceive.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -140,7 +150,7 @@ public class TransferGroupListFragment
         });
 
         getListView().setClipToPadding(false);
-        getListView().setPadding(0,0,0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
+        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
     }
 
     @Override

@@ -223,7 +223,7 @@ public class TransferListAdapter
                     storageItem.bytesFree = -1;
                 }
 
-                lister.offer(storageItem);
+                lister.offerObliged(this, storageItem);
             } catch (Exception e) {
 
             }
@@ -233,7 +233,7 @@ public class TransferListAdapter
                 ? getContext().getString(R.string.text_home)
                 : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
-        lister.offer(statusItem);
+        lister.offerObliged(this, statusItem);
 
         for (TransferFolder folder : folders.values()) {
             statusItem.filesTotal += folder.filesTotal;
@@ -244,7 +244,7 @@ public class TransferListAdapter
             if (folder.hasIssues())
                 statusItem.setHasIssues(true);
 
-            lister.offer(folder);
+            lister.offerObliged(this, folder);
         }
 
         for (GenericTransferItem file : files) {
@@ -260,7 +260,7 @@ public class TransferListAdapter
             statusItem.filesTotal++;
             statusItem.bytesTotal += file.fileSize;
 
-            lister.offer(file);
+            lister.offerObliged(this, file);
         }
 
         if (storageItem != null)
@@ -467,6 +467,16 @@ public class TransferListAdapter
             setRepresentativeText(representativeText);
         }
 
+        @Override
+        public boolean applyFilter(String[] filteringKeywords)
+        {
+            for (String keyword : filteringKeywords)
+                if (friendlyName != null && friendlyName.toLowerCase().contains(keyword.toLowerCase()))
+                    return true;
+
+            return false;
+        }
+
         abstract public boolean hasIssues();
 
         abstract public boolean isComplete();
@@ -547,6 +557,19 @@ public class TransferListAdapter
         {
             this.viewType = VIEW_TYPE_REPRESENTATIVE;
             setRepresentativeText(representativeText);
+        }
+
+        @Override
+        public boolean applyFilter(String[] filteringKeywords)
+        {
+            if (super.applyFilter(filteringKeywords))
+                return true;
+
+            for (String keyword : filteringKeywords)
+                if (fileMimeType.toLowerCase().contains(keyword.toLowerCase()))
+                    return true;
+
+            return false;
         }
 
         @Override

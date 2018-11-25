@@ -6,7 +6,7 @@
 
     <color name="cardViewBackground">#fff</color>
     <color name="colorAccent">#66bb6a</color>
-    <color name="colorControlNormal">#333</color>
+    <color name="colorControlNormal">#222</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffff</color>
@@ -17,8 +17,8 @@
     <color name="colorDivider">#eeeeee</color>
     <color name="colorError">#afb42b</color>
     <color name="colorSelection">#20000000</color>
-    <color name="colorShadowBeginning">#0FFF</color>
-    <color name="colorShadowEnd">#9FFF</color>
+    <color name="colorShadowBeginning">#0DDD</color>
+    <color name="colorShadowEnd">#7DDD</color>
     <color name="contentShowingBackground">#cfcfcf</color>
 
 

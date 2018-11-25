@@ -61,6 +61,8 @@ public class NetworkDeviceListFragment
     {
         super.onCreate(savedInstanceState);
 
+        setFilteringSupported(true);
+        setSortingSupported(false);
         setUseDefaultPaddingDecoration(true);
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));

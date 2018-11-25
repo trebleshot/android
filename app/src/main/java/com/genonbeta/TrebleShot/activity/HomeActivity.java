@@ -147,10 +147,8 @@ public class HomeActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
-        if (R.id.menu_activity_main_file_explorer == item.getItemId()) {
-            startActivity(new Intent(this, FileExplorerActivity.class));
-        } else if (R.id.menu_activity_main_text_stream == item.getItemId()) {
-            startActivity(new Intent(this, TextStreamActivity.class));
+        if (R.id.menu_activity_main_manage_devices == item.getItemId()) {
+            startActivity(new Intent(this, ManageDevicesActivity.class));
         } else if (R.id.menu_activity_main_about == item.getItemId()) {
             startActivity(new Intent(this, AboutActivity.class));
         } else if (R.id.menu_activity_main_send_application == item.getItemId()) {

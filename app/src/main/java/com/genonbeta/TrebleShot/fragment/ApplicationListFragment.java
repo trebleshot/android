@@ -30,6 +30,7 @@ public class ApplicationListFragment
     public void onActivityCreated(Bundle savedInstanceState)
     {
         super.onActivityCreated(savedInstanceState);
+        setFilteringSupported(true);
         setHasOptionsMenu(true);
     }
 
