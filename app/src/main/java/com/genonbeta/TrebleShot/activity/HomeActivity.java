@@ -217,7 +217,6 @@ public class HomeActivity
                     Interrupter interrupter = new Interrupter();
 
                     PackageManager pm = getPackageManager();
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
 
                     String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
@@ -229,7 +228,7 @@ public class HomeActivity
                     FileUtils.copy(HomeActivity.this, codeFile, cloneFile, interrupter);
 
                     try {
-                        sendIntent
+                        Intent sendIntent = new Intent(Intent.ACTION_SEND)
                                 .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
                                 .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(HomeActivity.this, cloneFile))
                                 .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

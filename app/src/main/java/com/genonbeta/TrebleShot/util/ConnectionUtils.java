@@ -81,7 +81,7 @@ public class ConnectionUtils
     @WorkerThread
     public String establishHotspotConnection(Interrupter interrupter, final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork, TimeoutListener timeoutListener)
     {
-        final long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         boolean connectionToggled = false;
         String remoteAddress = null;
 

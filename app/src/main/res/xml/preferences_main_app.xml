@@ -17,7 +17,7 @@
 
         <EditTextPreference
             android:dialogTitle="@string/text_deviceNameTitle"
-            android:inputType="textShortMessage"
+            android:inputType="text"
             android:key="device_name"
             android:maxLength="32"
             android:summary="@string/text_deviceNameSummary"

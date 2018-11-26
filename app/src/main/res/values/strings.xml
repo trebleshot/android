@@ -426,4 +426,5 @@
     <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image and Video sharing sections</string>
     <string name="text_manageDevices">Manage devices</string>
     <string name="text_search">Search</string>
+    <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
 </resources>

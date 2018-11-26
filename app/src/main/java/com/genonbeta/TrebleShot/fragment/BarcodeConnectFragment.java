@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.fragment;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -10,7 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.view.Gravity;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -64,6 +66,7 @@ public class BarcodeConnectFragment
 
     private DecoratedBarcodeView mBarcodeView;
     private UIConnectionUtils mConnectionUtils;
+    private ViewGroup mConductContainer;
     private TextView mConductText;
     private ImageView mConductImage;
     private Button mConductButton;
@@ -121,6 +124,7 @@ public class BarcodeConnectFragment
     {
         View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
 
+        mConductContainer = view.findViewById(R.id.layout_barcode_connect_conduct_container);
         mConductButton = view.findViewById(R.id.layout_barcode_connect_conduct_button);
         mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
         mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
@@ -135,12 +139,6 @@ public class BarcodeConnectFragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         super.onViewCreated(view, savedInstanceState);
-
-        TextView guideText = mBarcodeView.getStatusView();
-
-        guideText.setText(null);
-        guideText.setPadding(0, 20, 20, 30); // Add padding to the bottom
-        guideText.setGravity(Gravity.CENTER);
 
         mBarcodeView.decodeContinuous(new BarcodeCallback()
         {
@@ -312,10 +310,7 @@ public class BarcodeConnectFragment
                     @Override
                     public void onClick(View v)
                     {
-                        mConnectionUtils.getConnectionUtils().getWifiManager().setWifiEnabled(true);
-
-                        createSnackbar(R.string.mesg_completing)
-                                .show();
+                        mConnectionUtils.turnOnWiFi();
                     }
                 });
             }
@@ -330,8 +325,7 @@ public class BarcodeConnectFragment
 
     protected void setConductItemsShowing(boolean showing)
     {
-        mConductImage.setVisibility(showing ? View.VISIBLE : View.GONE);
-        mConductButton.setVisibility(showing ? View.VISIBLE : View.GONE);
+        mConductContainer.setVisibility(showing ? View.VISIBLE : View.GONE);
     }
 
     @Override

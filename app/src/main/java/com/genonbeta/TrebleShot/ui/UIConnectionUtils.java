@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -25,6 +26,7 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
 /**
@@ -103,7 +105,7 @@ public class UIConnectionUtils
                     }
 
                     if (!mConnected && !getInterrupter().interruptedByUser())
-                        mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
+                        getSnackbarSupport().createSnackbar(R.string.mesg_connectionFailure)
                                 .show();
                 } catch (Exception e) {
 
@@ -233,6 +235,28 @@ public class UIConnectionUtils
         mShowHotspotInfo = true;
 
         return true;
+    }
+
+    public boolean turnOnWiFi()
+    {
+        if (getConnectionUtils().getWifiManager().setWifiEnabled(true)) {
+            getSnackbarSupport().createSnackbar(R.string.mesg_completing).show();
+            return true;
+        } else
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_wifiEnableFailed)
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    })
+                    .show();
+
+        return false;
     }
 
     public boolean validateLocationPermission(final FragmentActivity activity, final int requestId)
