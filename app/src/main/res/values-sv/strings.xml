@@ -369,4 +369,5 @@
     <string name="mesg_notSavingToChosenLocation">Filerna sparas inte i önskad mapp eftersom den inte är tillgänglig just nu.
 \n
 \n%s</string>
+    <string name="text_requestPermissionStorageSummary">Denna behörighet tillåter att TrebleShot att läsa och skriva till enhetens lagringsutrymme för att kunna ta emot och dela ut filer.</string>
     </resources>

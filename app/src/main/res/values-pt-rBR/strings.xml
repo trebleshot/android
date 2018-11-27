@@ -120,4 +120,47 @@
     <string name="text_removePendingTransferSummary">Isto irá remover %s da fila</string>
     <string name="ques_removeAll">Remover todos\?</string>
     <string name="butn_telegram_channel">Canal do Telegram</string>
-</resources>
+<string name="text_removeCertainPendingTransfersSummary">Isso irá remover todas as transferências pendentes desta lista</string>
+    <string name="text_availableNetworks">Escolha a rede - %s</string>
+    <string name="text_noNetworkAvailable">Nenhuma rede disponível</string>
+    <string name="text_savedConnections">Conexões salvas</string>
+    <string name="text_newVersionAvailable">Nova versão disponível!</string>
+    <string name="butn_goUp">Ir para cima</string>
+    <string name="text_folder">Pasta</string>
+    <string name="mesg_organizingFiles">Organização dos seus arquivos</string>
+    <string name="mesg_communicating">Comunicação</string>
+    <string name="text_communicationService">Serviço de comunicação</string>
+    <string name="text_chooserTargetService">Provedor de escolha do dispositivo</string>
+    <string name="text_transactionViewer">Exibir transação</string>
+    <string name="text_error">Erro</string>
+    <string name="ques_why">Por quê\?</string>
+    <string name="text_notAllowedHelp">Verifica se você está autorizado em %1$s.
+\n
+\nDispositivos &gt; %2$s &gt; Permitir conexão &gt; (verificar)</string>
+    <string name="butn_saveTo">Salvar para</string>
+    <string name="mesg_secureExit">Pressione novamente para sair</string>
+    <string name="butn_create">Criar</string>
+    <string name="text_createFolder">Nova pasta</string>
+    <string name="mesg_fileAlreadyExists">Arquivo já existe</string>
+    <string name="mesg_folderCreateError">Pasta não pode ser criada</string>
+    <string name="text_requestPermissionStorageSummary">Isto permite que o TrebleShot tenha acesso de leitura e gravação em seu dispositivo de armazenamento, para poder receber e compartilhar arquivos.</string>
+    <string name="butn_settings">Configurações</string>
+    <string name="butn_selectThis">Selecionar isto</string>
+    <string name="butn_newFile">Novo arquivo</string>
+    <string name="mesg_currentPathUnavailable">Esta pasta não pode ser utilizada</string>
+    <string name="text_defaultFolder">Pasta padrão</string>
+    <string name="text_storage">Armazenamento</string>
+    <string name="text_shareFiles">Compartilhar arquivos</string>
+    <string name="mesg_pathSaved">A pasta foi salva</string>
+    <string name="butn_search">Procurar</string>
+    <string name="butn_changeConnection">Alterar conexão</string>
+    <string name="text_fileName">Nome do arquivo</string>
+    <string name="text_fileSize">Tamanho do arquivo</string>
+    <string name="text_fileMime">Tipo do arquivo</string>
+    <string name="text_fileStatus">Status do arquivo</string>
+    <string name="text_transactionDetails">Detalhes</string>
+    <string name="text_fileExplorer">Gerenciador de arquivos</string>
+    <string name="butn_createFolder">Criar pasta</string>
+    <string name="text_chooseFolder">Escolha a pasta</string>
+    <string name="text_chooseFile">Escolha o arquivo</string>
+    </resources>
