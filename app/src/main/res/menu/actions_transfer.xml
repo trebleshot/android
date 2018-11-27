@@ -9,6 +9,12 @@
         android:visible="false"/>
 
     <item
+        android:id="@+id/actions_transfer_send"
+        android:title="@string/butn_start"
+        app:showAsAction="always"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/actions_transfer_add_device"
         android:title="@string/butn_addDevices"
         android:visible="false"/>

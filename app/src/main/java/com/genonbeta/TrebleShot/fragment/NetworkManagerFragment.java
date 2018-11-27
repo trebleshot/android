@@ -8,11 +8,10 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -20,11 +19,9 @@ import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
-import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
@@ -39,6 +36,7 @@ import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -46,12 +44,13 @@ public class NetworkManagerFragment
         extends Fragment
         implements TitleSupport, IconSupport
 {
-    public static final int REQUEST_LOCATION_PERMISSION = 643;
+    private final int REQUEST_LOCATION_PERMISSION = 1;
 
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private UIConnectionUtils mConnectionUtils;
 
+    private AppCompatButton mActionButton;
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
@@ -59,6 +58,15 @@ public class NetworkManagerFragment
     private TextView mText2;
     private TextView mText3;
     private ImageView mCodeView;
+
+    private UIConnectionUtils.RequestWatcher mRequestWatcher = new UIConnectionUtils.RequestWatcher()
+    {
+        @Override
+        public void onResultReturned(boolean result, boolean shouldWait)
+        {
+
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -82,6 +90,19 @@ public class NetworkManagerFragment
         mText1 = view.findViewById(R.id.layout_network_manager_info_container_text1);
         mText2 = view.findViewById(R.id.layout_network_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_network_manager_info_container_text3);
+        mActionButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
+
+        mActionButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                if (!canReadWifiInfo())
+                    getUIConnectionUtils().validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION, mRequestWatcher);
+                else
+                    startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+            }
+        });
 
         return view;
     }
@@ -91,8 +112,8 @@ public class NetworkManagerFragment
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+        if (requestCode == REQUEST_LOCATION_PERMISSION)
+            updateState();
     }
 
     @Override
@@ -109,6 +130,12 @@ public class NetworkManagerFragment
     {
         super.onPause();
         getContext().unregisterReceiver(mStatusReceiver);
+    }
+
+    public boolean canReadWifiInfo()
+    {
+        return Build.VERSION.SDK_INT < 26
+                || (getConnectionUtils().hasLocationPermission(getContext()) && getConnectionUtils().isLocationServiceEnabled());
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -137,9 +164,14 @@ public class NetworkManagerFragment
         return context.getString(R.string.text_useExistingNetwork);
     }
 
+    public void updateViewsLocationDisabled()
+    {
+        updateViews(null, R.string.butn_setUp, getString(R.string.mesg_locationPermissionRequiredAny), null, null);
+    }
+
     public void updateViewsWithBlank()
     {
-        updateViews(null, getString(R.string.text_qrCodeHotspotDisabledHelp), null, null);
+        updateViews(null, R.string.butn_wifiSettings, getString(R.string.mesg_connectToWiFiNetworkHelp), null, null);
     }
 
     // for connection addressing purpose
@@ -150,13 +182,13 @@ public class NetworkManagerFragment
                     .put(Keyword.NETWORK_ADDRESS_IP, ipAddress)
                     .put(Keyword.NETWORK_ADDRESS_BSSID, bssid);
 
-            updateViews(object, getString(R.string.text_easyDiscoveryHelp), networkName, ipAddress);
+            updateViews(object, R.string.butn_wifiSettings, getString(R.string.text_easyDiscoveryHelp), networkName, ipAddress);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1, @Nullable String text2, @Nullable String text3)
+    public void updateViews(@Nullable JSONObject codeIndex, @StringRes int buttonText, @Nullable String text1, @Nullable String text2, @Nullable String text3)
     {
         String codeString = codeIndex == null ? null : codeIndex.toString();
         boolean showQRCode = codeString != null && getContext() != null;
@@ -192,6 +224,7 @@ public class NetworkManagerFragment
             mContainerText2.setVisibility(text2 == null ? View.GONE : View.VISIBLE);
             mContainerText3.setVisibility(text3 == null ? View.GONE : View.VISIBLE);
 
+            mActionButton.setText(buttonText);
             mText1.setText(text1);
             mText2.setText(text2);
             mText3.setText(text3);
@@ -202,7 +235,9 @@ public class NetworkManagerFragment
     {
         WifiInfo connectionInfo = getConnectionUtils().getWifiManager().getConnectionInfo();
 
-        if (!getConnectionUtils().isConnectedToAnyNetwork())
+        if (!canReadWifiInfo()) {
+            updateViewsLocationDisabled();
+        } else if (!getConnectionUtils().isConnectedToAnyNetwork())
             updateViewsWithBlank();
         else {
             updateViews(ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID()),

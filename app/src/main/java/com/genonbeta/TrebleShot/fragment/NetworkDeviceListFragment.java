@@ -55,6 +55,16 @@ public class NetworkDeviceListFragment
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
+    private boolean mWaitForWiFi = false;
+
+    private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
+    {
+        @Override
+        public void onResultReturned(boolean result, boolean shouldWait)
+        {
+            mWaitForWiFi = shouldWait;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -325,7 +335,7 @@ public class NetworkDeviceListFragment
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
     }
 
     @Override
@@ -408,7 +418,7 @@ public class NetworkDeviceListFragment
                                 })
                                 .show();
                 } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
             } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
                 createSnackbar(R.string.mesg_scanCompleted)
                         .show();

@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -63,6 +64,8 @@ public class ViewTransferActivity
         implements PowerfulActionModeSupport
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
+
+    public static final int TASK_REMOVE_GROUP = 1;
 
     public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
@@ -134,6 +137,7 @@ public class ViewTransferActivity
 
     private PowerfulActionMode mMode;
     private MenuItem mStartMenu;
+    private MenuItem mSendMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFiles;
     private MenuItem mAddDevice;
@@ -269,6 +273,7 @@ public class ViewTransferActivity
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
+        mSendMenu = menu.findItem(R.id.actions_transfer_send);
         mStartMenu = menu.findItem(R.id.actions_transfer_resume);
         mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
         mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
@@ -304,7 +309,15 @@ public class ViewTransferActivity
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    getDatabase().remove(mGroup);
+                    WorkerService.run(ViewTransferActivity.this, new WorkerService.RunningTask(TAG, TASK_REMOVE_GROUP)
+                    {
+                        @Override
+                        protected void onRun()
+                        {
+                            publishStatusText(getString(R.string.mesg_removing));
+                            getDatabase().remove(mGroup);
+                        }
+                    });
                 }
             });
 
@@ -388,6 +401,13 @@ public class ViewTransferActivity
         if (mGroup != null)
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
                     .setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
+    }
+
+    private void sendTask() {
+        if (mTransactionIndex.outgoingCount <=0)
+            return;
+
+        boolean hasAssignees = mTransactionIndex.assigneeCount > 0;
     }
 
     private void showMenus()

@@ -148,7 +148,7 @@ public class UIConnectionUtils
         return returnedState;
     }
 
-    public void showConnectionOptions(FragmentActivity activity, int locationPermRequestId)
+    public void showConnectionOptions(final FragmentActivity activity, final int locationPermRequestId, final RequestWatcher watcher)
     {
         if (!getConnectionUtils().getWifiManager().isWifiEnabled())
             getSnackbarSupport().createSnackbar(R.string.mesg_suggestSelfHotspot)
@@ -158,44 +158,64 @@ public class UIConnectionUtils
                         public void onClick(View view)
                         {
                             mWirelessEnableRequested = true;
-                            getConnectionUtils().getWifiManager().setWifiEnabled(true);
+                            turnOnWiFi(activity, locationPermRequestId, watcher);
                         }
                     })
                     .show();
-        else if (validateLocationPermission(activity, locationPermRequestId))
+        else if (validateLocationPermission(activity, locationPermRequestId, watcher)) {
+            watcher.onResultReturned(true, false);
+
             getSnackbarSupport().createSnackbar(R.string.mesg_scanningSelfHotspot)
                     .setAction(R.string.butn_wifiSettings, new View.OnClickListener()
                     {
                         @Override
                         public void onClick(View view)
                         {
-                            getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
                         }
                     })
                     .show();
+        }
+
+        watcher.onResultReturned(true, false);
     }
 
-    public boolean toggleHotspot(boolean conditional, final FragmentActivity activity, final int locationPermRequestId)
+    public boolean toggleHotspot(boolean conditional,
+                                 final FragmentActivity activity,
+                                 final int locationPermRequestId,
+                                 final RequestWatcher watcher)
     {
         if (!HotspotUtils.isSupported())
             return false;
 
+        DialogInterface.OnClickListener defaultNegativeListener = new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                watcher.onResultReturned(false, false);
+            }
+        };
+
         if (conditional) {
-            if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId))
+            if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId, watcher))
                 return false;
 
             if (Build.VERSION.SDK_INT >= 23
                     && !Settings.System.canWrite(getConnectionUtils().getContext())) {
-                getSnackbarSupport().createSnackbar(R.string.mesg_errorHotspotPermission)
-                        .setDuration(Snackbar.LENGTH_LONG)
-                        .setAction(R.string.butn_settings, new View.OnClickListener()
+                new AlertDialog.Builder(getConnectionUtils().getContext())
+                        .setMessage(R.string.mesg_errorHotspotPermission)
+                        .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                        .setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
                         {
                             @Override
-                            public void onClick(View v)
+                            public void onClick(DialogInterface dialog, int which)
                             {
-                                getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                                activity.startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
                                         .setData(Uri.parse("package:" + getConnectionUtils().getContext().getPackageName()))
-                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), locationPermRequestId);
+
+                                watcher.onResultReturned(false, true);
                             }
                         })
                         .show();
@@ -204,14 +224,16 @@ public class UIConnectionUtils
             } else if (Build.VERSION.SDK_INT < 26
                     && !getConnectionUtils().getHotspotUtils().isEnabled()
                     && getConnectionUtils().isMobileDataActive()) {
-                getSnackbarSupport().createSnackbar(R.string.mesg_warningHotspotMobileActive)
-                        .setDuration(Snackbar.LENGTH_LONG)
-                        .setAction(R.string.butn_skip, new View.OnClickListener()
+                new AlertDialog.Builder(getConnectionUtils().getContext())
+                        .setMessage(R.string.mesg_warningHotspotMobileActive)
+                        .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                        .setPositiveButton(R.string.butn_skip, new DialogInterface.OnClickListener()
                         {
                             @Override
-                            public void onClick(View v)
+                            public void onClick(DialogInterface dialog, int which)
                             {
-                                toggleHotspot(false, activity, locationPermRequestId);
+                                // no need to call watcher due to recycle
+                                toggleHotspot(false, activity, locationPermRequestId, watcher);
                             }
                         })
                         .show();
@@ -232,26 +254,37 @@ public class UIConnectionUtils
         AppUtils.startForegroundService(getConnectionUtils().getContext(), new Intent(getConnectionUtils().getContext(), CommunicationService.class)
                 .setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
 
+        watcher.onResultReturned(true, false);
+
         mShowHotspotInfo = true;
 
         return true;
     }
 
-    public boolean turnOnWiFi()
+    public boolean turnOnWiFi(final FragmentActivity activity, final int requestId, final RequestWatcher watcher)
     {
         if (getConnectionUtils().getWifiManager().setWifiEnabled(true)) {
-            getSnackbarSupport().createSnackbar(R.string.mesg_completing).show();
+            getSnackbarSupport().createSnackbar(R.string.mesg_turningWiFiOn).show();
+            watcher.onResultReturned(true, false);
             return true;
         } else
             new AlertDialog.Builder(getConnectionUtils().getContext())
                     .setMessage(R.string.mesg_wifiEnableFailed)
-                    .setNegativeButton(R.string.butn_close, null)
+                    .setNegativeButton(R.string.butn_close, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            watcher.onResultReturned(false, false);
+                        }
+                    })
                     .setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            activity.startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), requestId);
+                            watcher.onResultReturned(false, true);
                         }
                     })
                     .show();
@@ -259,19 +292,30 @@ public class UIConnectionUtils
         return false;
     }
 
-    public boolean validateLocationPermission(final FragmentActivity activity, final int requestId)
+    public boolean validateLocationPermission(final FragmentActivity activity, final int requestId, final RequestWatcher watcher)
     {
         if (Build.VERSION.SDK_INT < 23)
             return true;
 
+        final DialogInterface.OnClickListener defaultNegativeListener = new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                watcher.onResultReturned(false, false);
+            }
+        };
+
         if (!getConnectionUtils().hasLocationPermission(getConnectionUtils().getContext())) {
-            getSnackbarSupport().createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
-                    .setAction(R.string.butn_locationSettings, new View.OnClickListener()
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                    .setPositiveButton(R.string.butn_ask, new DialogInterface.OnClickListener()
                     {
-                        @RequiresApi(api = Build.VERSION_CODES.M)
                         @Override
-                        public void onClick(View view)
+                        public void onClick(DialogInterface dialog, int which)
                         {
+                            watcher.onResultReturned(false, true);
                             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
                         }
@@ -282,13 +326,16 @@ public class UIConnectionUtils
         }
 
         if (!getConnectionUtils().isLocationServiceEnabled()) {
-            getSnackbarSupport().createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
-                    .setAction(R.string.butn_locationSettings, new View.OnClickListener()
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_locationDisabledSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                    .setPositiveButton(R.string.butn_locationSettings, new DialogInterface.OnClickListener()
                     {
                         @Override
-                        public void onClick(View view)
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                            watcher.onResultReturned(false, true);
+                            activity.startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), requestId);
                         }
                     })
                     .show();
@@ -296,6 +343,12 @@ public class UIConnectionUtils
             return false;
         }
 
+        watcher.onResultReturned(true, false);
+
         return true;
+    }
+
+    public interface RequestWatcher {
+        void onResultReturned(boolean result, boolean shouldWait);
     }
 }

@@ -427,4 +427,9 @@
     <string name="text_manageDevices">Manage devices</string>
     <string name="text_search">Search</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
+    <string name="mesg_turningWiFiOn">Turning Wi-Fi on</string>
+    <string name="mesg_locationPermissionRequiredAny">Turn on location service first to continue</string>
+    <string name="mesg_connectToWiFiNetworkHelp">Connect to a Wi-Fi network to continue</string>
+    <string name="mesg_removing">Removing... May take long</string>
+    <string name="butn_help">Help</string>
 </resources>

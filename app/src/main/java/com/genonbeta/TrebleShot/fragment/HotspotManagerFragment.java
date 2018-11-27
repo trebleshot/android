@@ -9,9 +9,6 @@ import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,7 +26,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
@@ -39,7 +35,6 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -54,7 +49,7 @@ public class HotspotManagerFragment
         extends com.genonbeta.android.framework.app.Fragment
         implements TitleSupport, IconSupport
 {
-    public static final int REQUEST_LOCATION_PERMISSION = 643;
+    public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 643;
 
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
@@ -68,6 +63,26 @@ public class HotspotManagerFragment
     private TextView mText3;
     private ImageView mCodeView;
     private AppCompatButton mToggleButton;
+    private boolean mWaitForHotspot = false;
+    private boolean mWaitForWiFi = false;
+
+    private UIConnectionUtils.RequestWatcher mHotspotWatcher = new UIConnectionUtils.RequestWatcher()
+    {
+        @Override
+        public void onResultReturned(boolean result, boolean shouldWait)
+        {
+            mWaitForHotspot = shouldWait;
+        }
+    };
+
+    private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
+    {
+        @Override
+        public void onResultReturned(boolean result, boolean shouldWait)
+        {
+            mWaitForWiFi = shouldWait;
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -100,7 +115,7 @@ public class HotspotManagerFragment
             @Override
             public void onClick(View v)
             {
-                getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION);
+                toggleHotspot();
             }
         });
 
@@ -112,8 +127,8 @@ public class HotspotManagerFragment
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+        if (REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT == requestCode)
+            toggleHotspot();
     }
 
     @Override
@@ -123,6 +138,9 @@ public class HotspotManagerFragment
 
         getContext().registerReceiver(mStatusReceiver, mIntentFilter);
         updateState();
+
+        if (mWaitForHotspot)
+            toggleHotspot();
     }
 
     @Override
@@ -144,7 +162,6 @@ public class HotspotManagerFragment
         return R.drawable.ic_wifi_tethering_white_24dp;
     }
 
-
     public UIConnectionUtils getUIConnectionUtils()
     {
         if (mConnectionUtils == null)
@@ -157,6 +174,11 @@ public class HotspotManagerFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_startHotspot);
+    }
+
+    private void toggleHotspot()
+    {
+        getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT, mHotspotWatcher);
     }
 
     private void updateViewsWithBlank()

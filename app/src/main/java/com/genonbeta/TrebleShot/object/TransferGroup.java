@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -109,8 +110,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         ArrayList<TransferObject> transferList = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class, null);
 
-        for (TransferObject transferObject : transferList)
-            database.remove(dbInstance, transferObject, this);
+        database.remove(dbInstance, transferList, null, this);
 
         database.remove(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                 .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));

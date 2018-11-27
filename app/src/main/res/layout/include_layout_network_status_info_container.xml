@@ -32,6 +32,13 @@
 
         </LinearLayout>
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/layout_network_manager_info_toggle_button"
+            style="?buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_wifiSettings" />
+
         <LinearLayout
             android:id="@+id/layout_network_manager_info_container_text2_container"
             android:layout_width="match_parent"
