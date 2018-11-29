@@ -11,6 +11,8 @@ import java.util.ArrayList;
  */
 public interface EditableListAdapterImpl<T extends Editable> extends ListAdapterImpl<T>
 {
+	boolean filterItem(T item);
+
 	void notifyAllSelectionChanges();
 
 	void notifyItemChanged(int position);

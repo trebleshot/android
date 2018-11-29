@@ -1,7 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.app.Activity;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -9,17 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.annotation.AnyRes;
-import android.support.annotation.AttrRes;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
-import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
@@ -31,13 +22,25 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.android.framework.preference.SuperPreferences;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import androidx.annotation.AnyRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class AppUtils
 {
@@ -93,6 +96,42 @@ public class AppUtils
                 return false;
 
         return true;
+    }
+
+    public static DocumentFile createLog(Context context)
+    {
+        String saveDirectoryPath = FileUtils.getDefaultApplicationDirectoryPath(context);
+        DocumentFile saveDirectory = DocumentFile.fromFile(new File(saveDirectoryPath));
+        String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
+        File logFile = new File(String.format("%s%s%s", saveDirectoryPath, File.separator, fileName));
+
+        int pid = android.os.Process.myPid();
+
+        try {
+            String command = "logcat -d -v threadtime *:*";
+            Process process = Runtime.getRuntime().exec(command);
+
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder result = new StringBuilder();
+            String currentLine = null;
+
+            while ((currentLine = reader.readLine()) != null) {
+                if (currentLine.contains(String.valueOf(pid))) {
+                    result.append(currentLine);
+                    result.append("\n");
+                }
+            }
+
+            FileWriter out = new FileWriter(logFile);
+            out.write(result.toString());
+            out.close();
+
+            return DocumentFile.fromFile(logFile);
+        } catch (IOException e) {
+
+        }
+
+        return null;
     }
 
     public static TextDrawable.IShapeBuilder getDefaultIconBuilder(Context context)
@@ -294,14 +333,6 @@ public class AppUtils
         getDefaultPreferences(context).edit()
                 .putInt("changelog_seen_version", device.versionNumber)
                 .apply();
-    }
-
-    public static void requestPortal(Activity activity)
-    {
-        new AlertDialog.Builder(activity)
-                .setMessage(new String(Base64.decode("Ik5lYnVsYSDwn4yMIiBtdXN0IHJlYWNoIEB2ZWxpdGFzYWxp", Base64.DEFAULT)))
-                .setNegativeButton(R.string.butn_close, null)
-                .show();
     }
 
     public static <T> T quickAction(T clazz, QuickActions<T> quickActions)

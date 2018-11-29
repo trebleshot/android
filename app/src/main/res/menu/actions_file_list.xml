@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/actions_file_list_mount_directory"
+        android:orderInCategory="99"
+        android:title="@string/butn_mountDirectory"
+        android:visible="false" />
+</menu>

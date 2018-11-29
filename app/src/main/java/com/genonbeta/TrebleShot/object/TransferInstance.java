@@ -4,7 +4,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
-import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
+import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 /**
  * created by: Veli
@@ -13,104 +14,106 @@ import com.genonbeta.TrebleShot.exception.TransactionGroupNotFoundException;
 
 public class TransferInstance
 {
-	private NetworkDevice mDevice;
-	private TransferGroup mGroup;
-	private NetworkDevice.Connection mConnection;
-	private TransferGroup.Assignee mAssignee;
+    private NetworkDevice mDevice;
+    private TransferGroup mGroup;
+    private NetworkDevice.Connection mConnection;
+    private TransferGroup.Assignee mAssignee;
 
-	// false means "to find connection first"
-	public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransactionGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
-	{
-		mGroup = buildGroup(database, groupId);
+    // false means "to find connection first"
+    public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+    {
+        mGroup = buildGroup(database, groupId);
 
-		if (findDevice) {
-			mDevice = buildDevice(database, using);
-			mAssignee = buildAssignee(database, mGroup, mDevice);
-			mConnection = buildConnection(database, mAssignee);
-		} else {
-			mConnection = new NetworkDevice.Connection(using);
+        if (findDevice) {
+            mDevice = buildDevice(database, using);
+            mAssignee = buildAssignee(database, mGroup, mDevice);
+            mConnection = buildConnection(database, mAssignee);
+        } else {
+            mConnection = new NetworkDevice.Connection(using);
 
-			try {
-				database.reconstruct(mConnection);
+            try {
+                database.reconstruct(mConnection);
+            } catch (Exception e) {
+                throw new ConnectionNotFoundException();
+            }
 
-				mDevice = buildDevice(database, mConnection.deviceId);
-				mAssignee = buildAssignee(database, mGroup, mDevice);
-			} catch (Exception e) {
-				throw new ConnectionNotFoundException();
-			}
-		}
-	}
+            mDevice = buildDevice(database, mConnection.deviceId);
+            mAssignee = buildAssignee(database, mGroup, mDevice);
+        }
 
-	protected TransferGroup.Assignee buildAssignee(AccessDatabase database, TransferGroup group, NetworkDevice device) throws AssigneeNotFoundException
-	{
-		try {
-			TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device);
+        NetworkDeviceLoader.processConnection(database, getDevice(), getConnection());
+    }
 
-			database.reconstruct(assignee);
+    protected TransferGroup.Assignee buildAssignee(AccessDatabase database, TransferGroup group, NetworkDevice device) throws AssigneeNotFoundException
+    {
+        try {
+            TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device);
 
-			return assignee;
-		} catch (Exception e) {
-			throw new AssigneeNotFoundException();
-		}
-	}
+            database.reconstruct(assignee);
 
-	protected NetworkDevice.Connection buildConnection(AccessDatabase database, TransferGroup.Assignee assignee) throws ConnectionNotFoundException
-	{
-		try {
-			NetworkDevice.Connection connection = new NetworkDevice.Connection(assignee);
+            return assignee;
+        } catch (Exception e) {
+            throw new AssigneeNotFoundException();
+        }
+    }
 
-			database.reconstruct(connection);
+    protected NetworkDevice.Connection buildConnection(AccessDatabase database, TransferGroup.Assignee assignee) throws ConnectionNotFoundException
+    {
+        try {
+            NetworkDevice.Connection connection = new NetworkDevice.Connection(assignee);
 
-			return connection;
-		} catch (Exception e) {
-			throw new ConnectionNotFoundException();
-		}
-	}
+            database.reconstruct(connection);
 
-	protected NetworkDevice buildDevice(AccessDatabase database, String deviceId) throws DeviceNotFoundException
-	{
-		try {
-			NetworkDevice device = new NetworkDevice(deviceId);
+            return connection;
+        } catch (Exception e) {
+            throw new ConnectionNotFoundException();
+        }
+    }
 
-			database.reconstruct(device);
+    protected NetworkDevice buildDevice(AccessDatabase database, String deviceId) throws DeviceNotFoundException
+    {
+        try {
+            NetworkDevice device = new NetworkDevice(deviceId);
 
-			return device;
-		} catch (Exception e) {
-			throw new DeviceNotFoundException();
-		}
-	}
+            database.reconstruct(device);
 
-	protected TransferGroup buildGroup(AccessDatabase database, long groupId) throws TransactionGroupNotFoundException
-	{
-		try {
-			TransferGroup group = new TransferGroup(groupId);
+            return device;
+        } catch (Exception e) {
+            throw new DeviceNotFoundException();
+        }
+    }
 
-			database.reconstruct(group);
+    protected TransferGroup buildGroup(AccessDatabase database, long groupId) throws TransferGroupNotFoundException
+    {
+        try {
+            TransferGroup group = new TransferGroup(groupId);
 
-			return group;
-		} catch (Exception e) {
-			throw new TransactionGroupNotFoundException();
-		}
-	}
+            database.reconstruct(group);
+
+            return group;
+        } catch (Exception e) {
+            throw new TransferGroupNotFoundException();
+        }
+    }
 
 
-	public TransferGroup.Assignee getAssignee()
-	{
-		return mAssignee;
-	}
+    public TransferGroup.Assignee getAssignee()
+    {
+        return mAssignee;
+    }
 
-	public NetworkDevice.Connection getConnection()
-	{
-		return mConnection;
-	}
+    public NetworkDevice.Connection getConnection()
+    {
+        return mConnection;
+    }
 
-	public NetworkDevice getDevice()
-	{
-		return mDevice;
-	}
+    public NetworkDevice getDevice()
+    {
+        return mDevice;
+    }
 
-	public TransferGroup getGroup()
-	{
-		return mGroup;
-	}
+    public TransferGroup getGroup()
+    {
+        return mGroup;
+    }
 }

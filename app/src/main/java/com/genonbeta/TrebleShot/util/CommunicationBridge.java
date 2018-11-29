@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -13,8 +12,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeoutException;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: Veli
@@ -85,6 +87,11 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
 		public CoolSocket.ActiveConnection connect(String ipAddress) throws IOException
 		{
+			InetAddress inetAddress = InetAddress.getByName(ipAddress);
+
+			if (!inetAddress.isReachable(2000))
+				throw new IOException("Ping test before connection to the address has failed");
+
 			return connect(new InetSocketAddress(ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
 		}
 

@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.service;
 
 import android.content.Intent;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -16,6 +15,8 @@ import com.genonbeta.TrebleShot.util.NetworkUtils;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
+
+import androidx.annotation.Nullable;
 
 public class DeviceScannerService extends Service implements NetworkDeviceScanner.ScannerHandler
 {

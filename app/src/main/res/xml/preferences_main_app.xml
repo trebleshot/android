@@ -17,7 +17,7 @@
 
         <EditTextPreference
             android:dialogTitle="@string/text_deviceNameTitle"
-            android:inputType="textShortMessage"
+            android:inputType="text"
             android:key="device_name"
             android:maxLength="32"
             android:summary="@string/text_deviceNameSummary"
@@ -34,12 +34,6 @@
             android:key="hotspot_trust"
             android:summary="@string/text_hotspotStartsTrustZoneSummary"
             android:title="@string/text_hotspotStartsTrustZone" />
-
-        <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="qr_trust"
-            android:summary="@string/text_qrAllowTrustZoneSummary"
-            android:title="@string/text_qrAllowTrustZone" />
 
         <CheckBoxPreference
             android:defaultValue="false"

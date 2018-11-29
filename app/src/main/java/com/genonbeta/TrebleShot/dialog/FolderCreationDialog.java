@@ -1,11 +1,12 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.io.DocumentFile;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by: veli

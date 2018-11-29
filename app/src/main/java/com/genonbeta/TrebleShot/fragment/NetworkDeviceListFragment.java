@@ -7,25 +7,23 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
-import com.genonbeta.TrebleShot.dialog.RemoveDeviceDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -35,13 +33,21 @@ import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+
+import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class NetworkDeviceListFragment
-        extends DynamicRecyclerViewFragment<NetworkDevice, RecyclerViewAdapter.ViewHolder, NetworkDeviceListAdapter>
-        implements TitleSupport, DetachListener, IconSupport
+        extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
+        implements TitleSupport, DetachListener, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -51,11 +57,27 @@ public class NetworkDeviceListFragment
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
+    private boolean mWaitForWiFi = false;
+
+    private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
+    {
+        @Override
+        public void onResultReturned(boolean result, boolean shouldWait)
+        {
+            mWaitForWiFi = shouldWait;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
+        setFilteringSupported(true);
+        setSortingSupported(false);
+        setUseDefaultPaddingDecoration(true);
+        setUseDefaultPaddingDecorationSpaceForEdges(true);
+        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
         mIntentFilter.addAction(DeviceScannerService.ACTION_SCAN_STARTED);
         mIntentFilter.addAction(DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED);
@@ -71,7 +93,7 @@ public class NetworkDeviceListFragment
     {
         Context context = mainContainer.getContext();
 
-        mSwipeRefreshLayout = new SwipeRefreshLayout(context);
+        mSwipeRefreshLayout = new SwipeRefreshLayout(getActivity());
 
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat
                 .getColor(context, AppUtils.getReference(getActivity(), R.attr.colorAccent)));
@@ -123,60 +145,27 @@ public class NetworkDeviceListFragment
     @Override
     public NetworkDeviceListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
+        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
         {
             @Override
-            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
+            public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
             {
-                clazz.getView().setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
-
-                        if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
-                            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION) {
-                                createSnackbar(R.string.mesg_versionNotSupported).show();
-                            } else
-                                mDeviceSelectedListener.onNetworkDeviceSelected(device, null);
-                        } else {
-                            if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-                                final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
-
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-                                builder.setTitle(hotspotNetwork.nickname);
-                                builder.setMessage(R.string.text_trebleshotHotspotDescription);
-                                builder.setNegativeButton(R.string.butn_close, null);
-                                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        getConnectionUtils().toggleConnection(hotspotNetwork);
-                                    }
-                                });
-
-                                builder.show();
-                            } else
-                                new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
-                        }
-                    }
-                });
+                registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)
                     {
-                        final PopupMenu popupMenu = new PopupMenu(getContext(), v);
+                        openInfo(getAdapter().getList().get(clazz.getAdapterPosition()));
+
+                        /*
+                                                final PopupMenu popupMenu = new PopupMenu(getContext(), v);
                         final Menu menu = popupMenu.getMenu();
                         final NetworkDevice device = getAdapter().getList().get(clazz.getAdapterPosition());
                         final boolean isHotspotInstance = device instanceof NetworkDeviceListAdapter.HotspotNetwork;
                         final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = isHotspotInstance
                                 ? (NetworkDeviceListAdapter.HotspotNetwork) device : null;
-
                         popupMenu.getMenuInflater().inflate(R.menu.action_mode_network_device, menu);
 
                         menu.findItem(R.id.action_mode_network_device_toggle_connection).setVisible(isHotspotInstance);
@@ -215,20 +204,91 @@ public class NetworkDeviceListFragment
                         });
 
                         popupMenu.show();
+                        */
                     }
                 });
             }
         };
 
-        return new NetworkDeviceListAdapter(getContext(), AppUtils.getDefaultPreferences(getContext()), getConnectionUtils())
+        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils())
         {
             @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
         };
+    }
+
+    @Override
+    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    {
+        final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
+
+        if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
+            if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+                createSnackbar(R.string.mesg_versionNotSupported).show();
+            else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
+                mConnectionUtils.makeAcquaintance(getActivity(),
+                        AppUtils.getDatabase(getContext()),
+                        null,
+                        device,
+                        -1,
+                        new NetworkDeviceLoader.OnDeviceRegisteredErrorListener()
+                        {
+                            @Override
+                            public void onError(Exception error)
+                            {
+
+                            }
+
+                            @Override
+                            public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+                            {
+                                mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+                            }
+                        }
+                );
+            else
+                new EstablishConnectionDialog(getActivity(), device, new OnDeviceSelectedListener()
+                {
+                    @Override
+                    public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                    {
+                        mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
+                    }
+                }).show();
+
+        } else {
+            openInfo(device);
+        }
+
+        return true;
+    }
+
+    private void openInfo(NetworkDevice device)
+    {
+        if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+            final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+            builder.setTitle(hotspotNetwork.nickname);
+            builder.setMessage(R.string.text_trebleshotHotspotDescription);
+            builder.setNegativeButton(R.string.butn_close, null);
+            builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    getConnectionUtils().toggleConnection(hotspotNetwork);
+                }
+            });
+
+            builder.show();
+        } else
+            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
     }
 
     @Override
@@ -277,7 +337,7 @@ public class NetworkDeviceListFragment
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         if (REQUEST_LOCATION_PERMISSION == requestCode)
-            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+            getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
     }
 
     @Override
@@ -314,7 +374,7 @@ public class NetworkDeviceListFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_deviceList);
+        return context.getString(R.string.text_useKnownDevice);
     }
 
     public void requestRefresh()
@@ -360,7 +420,7 @@ public class NetworkDeviceListFragment
                                 })
                                 .show();
                 } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION);
+                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
             } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
                 createSnackbar(R.string.mesg_scanCompleted)
                         .show();

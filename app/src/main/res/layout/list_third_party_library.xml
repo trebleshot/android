@@ -3,11 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector"
-    style="@style/listContentLayoutStyle">
+    style="@style/ListContentLayoutStyle">
 
     <ImageView
         android:id="@+id/menu"
-        style="@style/overflowButton"
+        style="@style/OverflowButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_gravity="center_vertical"/>
@@ -24,7 +24,7 @@
 
         <TextView
             android:id="@+id/text"
-            style="@style/marqueeText.primary.normal"
+            style="@style/TextAppearance.Primary.Normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3" />
@@ -35,7 +35,7 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/marqueeText.secondary.small"
+            style="@style/TextAppearance.Secondary.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

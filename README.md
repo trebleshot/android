@@ -32,9 +32,9 @@ Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1
 ## Build from source notes
 Required tools;
 * Build tools: 28.0.3
-* Support library: 28.0.0
-* Gradle plugin: 3.2.0
-* Android Studio: 3.2.0
+* Support library: 1.0.0 - androidx
+* Gradle plugin: 3.2.1
+* Android Studio: 3.2.1
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)
@@ -48,21 +48,8 @@ Required tools;
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png)
 
 ## Supported languages
-* Arabic
-* Basque
-* Chinese (Simplified)
-* Dutch
-* English
-* French
-* German
-* Hebrew
-* Italian
-* Japanese
-* Norwegian Bokmål
-* Russian
-* Spanish
-* Swedish
-* Turkish
+Arabic, Basque, Chinese (Simplified), Chinese (Traditional), Dutch, English, French, German, Hebrew,
+Italian, Japanese, Norwegian Bokmål, Polish, Russian, Spanish, Swedish, Turkish
 
 Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution). Languages are included here once they pass 87.5% translation threshold.
 

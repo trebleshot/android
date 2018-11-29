@@ -16,7 +16,7 @@
 	<item quantity="other">%d trasferimenti in attesa verranno eliminati</item>
 </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">Un connessione</item>
+	<item quantity="one">Una connessione</item>
 	<item quantity="other">%d connessioni</item>
 </plurals>
     <plurals name="ques_receiveMultipleFiles">
@@ -38,5 +38,13 @@
     <plurals name="text_fileDeletionCompleted">
 	<item quantity="one">Un file è stato eliminato</item>
 	<item quantity="other">%d files sono stati eliminati</item>
+</plurals>
+<plurals name="text_gridRow">
+	<item quantity="one">Una riga</item>
+	<item quantity="other">%d righe</item>
+</plurals>
+    <plurals name="text_devicesShared">
+	<item quantity="one">Singola condivisione</item>
+	<item quantity="other">Condivisione con %d devices</item>
 </plurals>
 </resources>

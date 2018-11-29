@@ -4,10 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
@@ -26,7 +29,7 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
  */
 
 public class TransferObject
-        implements DatabaseObject, Editable
+        implements DatabaseObject<TransferGroup>, Editable
 {
     public String friendlyName;
     public String file;
@@ -45,6 +48,11 @@ public class TransferObject
 
     public TransferObject()
     {
+    }
+
+    public TransferObject(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+    {
+        this(requestId, groupId, null, friendlyName, file, fileMime, fileSize, type);
     }
 
     public TransferObject(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
@@ -72,6 +80,22 @@ public class TransferObject
     }
 
     @Override
+    public boolean applyFilter(String[] filteringKeywords)
+    {
+        for (String keyword : filteringKeywords)
+            if (friendlyName.contains(keyword))
+                return true;
+
+        return false;
+    }
+
+    @Override
+    public boolean comparisonSupported()
+    {
+        return true;
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (!(obj instanceof TransferObject))
@@ -84,13 +108,21 @@ public class TransferObject
                 && ((deviceId == null && otherObject.deviceId == null) || (deviceId != null && deviceId.equals(otherObject.deviceId)));
     }
 
+    public boolean isDivisionObject()
+    {
+        return deviceId == null;
+    }
+
     @Override
     public SQLQuery.Select getWhere()
     {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_ID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
-                        + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(requestId), deviceId, type.toString());
+        String whereClause = isDivisionObject()
+                ? String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE)
+                : String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE, AccessDatabase.FIELD_TRANSFER_DEVICEID);
+
+        return isDivisionObject()
+                ? new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString())
+                : new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString(), deviceId);
     }
 
     @Override
@@ -140,21 +172,37 @@ public class TransferObject
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase database)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase database)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase database)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
+        if (Flag.DONE.equals(flag) || !Type.INCOMING.equals(type))
+            return;
 
+        try {
+            if (parent == null) {
+                parent = new TransferGroup(groupId);
+                database.reconstruct(parent);
+            }
+
+            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(),
+                    AppUtils.getDefaultPreferences(database.getContext()), this, parent, false);
+
+            if (file != null && file.isFile())
+                file.delete();
+        } catch (Exception e) {
+
+        }
     }
 
     @Override

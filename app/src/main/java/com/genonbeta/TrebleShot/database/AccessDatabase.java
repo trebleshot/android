@@ -5,10 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.support.v4.util.ArrayMap;
 
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
@@ -18,6 +18,8 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import androidx.collection.ArrayMap;
 
 /**
  * Created by: veli
@@ -34,7 +36,7 @@ public class AccessDatabase extends SQLiteDatabase
      * 		below version 6 and the other which is new generation 7
      */
 
-    public static final int DATABASE_VERSION = 9;
+    public static final int DATABASE_VERSION = 10;
 
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -46,6 +48,8 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String TYPE_INSERT = "typeInsert";
     public static final String TYPE_UPDATE = "typeUpdate";
 
+    // divisions are a separate containers for items not ready to use
+    public static final String DIVIS_TRANSFER = "divisionTransfer";
     public static final String TABLE_TRANSFER = "transfer";
     public static final String FIELD_TRANSFER_ID = "id";
     public static final String FIELD_TRANSFER_FILE = "file";
@@ -143,12 +147,13 @@ public class AccessDatabase extends SQLiteDatabase
                 // Is there any??
             }
 
-            if (old <= 8) {
+            if (old <= 10) {
                 // With version 9, I added deviceId column to the transfer table
                 // to allow users distinguish individual transfer file
 
                 try {
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
+                    SQLValues.Table divisTransfer = databaseTables.getTables().get(DIVIS_TRANSFER);
                     ArrayMap<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
                     List<TransferGroup.Assignee> availableAssignees = castQuery(database, new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class, null);
@@ -168,12 +173,23 @@ public class AccessDatabase extends SQLiteDatabase
 
                     database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
                     SQLQuery.createTable(database, tableTransfer);
-                    insert(database, supportedItems, null);
+                    SQLQuery.createTable(database, divisTransfer);
+                    insert(database, supportedItems, null, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }
+    }
+
+    public static CursorItem convertValues(ContentValues values)
+    {
+        CursorItem cursorItem = new CursorItem();
+
+        for (String key : values.keySet())
+            cursorItem.put(key, values.get(key));
+
+        return cursorItem;
     }
 
     protected void broadcast(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, String type)
@@ -189,10 +205,14 @@ public class AccessDatabase extends SQLiteDatabase
         indexObject.reset();
 
         ArrayList<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_FLAG + " != ?",
-                        String.valueOf(groupId),
-                        TransferObject.Flag.REMOVED.toString()), TransferObject.class);
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class);
+
+        indexObject.assigneeCount = getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId))).size();
+
+        if (transactionList.size() == 0)
+            transactionList.addAll(castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class));
 
         for (TransferObject transferObject : transactionList) {
             if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
@@ -224,16 +244,6 @@ public class AccessDatabase extends SQLiteDatabase
         indexObject.calculated = true;
     }
 
-    @Override
-    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
-    {
-        int returnedItems = super.remove(database, select);
-
-        broadcast(database, select, TYPE_REMOVE);
-
-        return returnedItems;
-    }
-
     public long getAffectedRowCount(android.database.sqlite.SQLiteDatabase database)
     {
         Cursor cursor = null;
@@ -261,7 +271,21 @@ public class AccessDatabase extends SQLiteDatabase
         sqlValues.defineTable(TABLE_TRANSFER)
                 .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
+
+        sqlValues.defineTable(DIVIS_TRANSFER)
+                .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
@@ -325,25 +349,35 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void insert(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public <T, V extends DatabaseObject<T>> void insert(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
     {
-        super.insert(database, objects, updater);
+        super.insert(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_INSERT);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_INSERT);
     }
 
     @Override
-    public void remove(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
     {
-        super.remove(database, objects, updater);
+        int returnedItems = super.remove(database, select);
+
+        broadcast(database, select, TYPE_REMOVE);
+
+        return returnedItems;
+    }
+
+    @Override
+    public <T, V extends DatabaseObject<T>> void remove(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
+    {
+        super.remove(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_REMOVE);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_REMOVE);
     }
 
     @Override
@@ -357,13 +391,14 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public void update(android.database.sqlite.SQLiteDatabase database, List<? extends DatabaseObject> objects, ProgressUpdater updater)
+    public <T, V extends DatabaseObject<T>> void update(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
     {
-        super.update(database, objects, updater);
+        super.update(openDatabase, objects, updater, parent);
 
         Set<String> tableList = explodePerTable(objects).keySet();
 
         for (String tableName : tableList)
-            broadcast(database, new SQLQuery.Select(tableName), TYPE_UPDATE);
+            broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_UPDATE);
     }
 }
+

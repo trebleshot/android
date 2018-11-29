@@ -2,10 +2,6 @@ package com.genonbeta.TrebleShot.fragment.inner;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.AppCompatCheckBox;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -14,7 +10,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
@@ -24,6 +19,11 @@ import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.AppCompatCheckBox;
+
 /**
  * created by: veli
  * date: 9/3/18 10:17 PM
@@ -32,8 +32,6 @@ public class SelectionListFragment
 		extends DynamicRecyclerViewFragment<Selectable, RecyclerViewAdapter.ViewHolder, SelectionListFragment.MyAdapter>
 		implements IconSupport, TitleSupport
 {
-	private WeakReference<ReadyLoadListener> mListener;
-
 	@Override
 	public MyAdapter onAdapter()
 	{
@@ -105,34 +103,6 @@ public class SelectionListFragment
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_files);
-	}
-
-	protected boolean loadIfReady()
-	{
-		if (getAdapter() != null) {
-			ReadyLoadListener listener = mListener != null && mListener.get() != null
-					? mListener.get()
-					: getActivity() != null && getActivity() instanceof ReadyLoadListener ? (ReadyLoadListener) getActivity() : null;
-
-			if (listener != null) {
-				getAdapter().load(listener.onSelectionReadyLoad());
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	@Override
-	public void refreshList()
-	{
-		if (loadIfReady())
-			super.refreshList();
-	}
-
-	public void setReadyLoadListener(ReadyLoadListener listener)
-	{
-		mListener = new WeakReference<>(listener);
 	}
 
 	public boolean updateSelection(boolean selectAll)
@@ -245,10 +215,5 @@ public class SelectionListFragment
 				mPendingList.addAll(selectableList);
 			}
 		}
-	}
-
-	public interface ReadyLoadListener
-	{
-		ArrayList<? extends Selectable> onSelectionReadyLoad();
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/listContentLayoutStyle"
+    style="@style/ListContentLayoutStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -22,7 +22,7 @@
 
         <TextView
             android:id="@+id/text1"
-            style="@style/marqueeText.primary"
+            style="@style/TextAppearance.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size_big"
@@ -39,7 +39,7 @@
 
     <TextView
         android:id="@+id/text2"
-        style="@style/marqueeText.secondary"
+        style="@style/TextAppearance.Secondary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:lineSpacingExtra="1dp"

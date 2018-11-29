@@ -6,11 +6,12 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.RequiresApi;
 import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import androidx.annotation.RequiresApi;
 
 abstract public class HotspotUtils
 {

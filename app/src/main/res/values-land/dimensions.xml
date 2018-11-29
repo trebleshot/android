@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="short_content_width_padding">80dp</dimen>
+</resources>

@@ -364,9 +364,9 @@
     <string name="butn_pause">השהיה</string>
     <string name="butn_retry">ניסיון חוזר</string>
     <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות כיוון שהן נקטעו או הושלמו.</string>
-    <string name="mesg_notSavingToChosenLocation">"קבצים לא יישמרו לתיקייה שביקשת כיוון שאינה נגישה כרגע  
+    <string name="mesg_notSavingToChosenLocation">קבצים לא יישמרו לתיקייה שביקשת כיוון שאינה נגישה כרגע.
 \n 
-\n %s"</string>
+\n %s</string>
     <string name="butn_changelog">יומן שינויים</string>
     <string name="text_changelog">יומן שינויים</string>
     <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot לגרסה חדשה יותר, האם מעניין אותך לראות מה הם השינויים שחלו מאז הגרסה הקודמת שהתקנת\?</string>

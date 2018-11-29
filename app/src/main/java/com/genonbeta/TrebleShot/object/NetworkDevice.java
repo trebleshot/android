@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkDevice
-        implements DatabaseObject
+        implements DatabaseObject<Object>
 {
     public String brand;
     public String model;
@@ -83,53 +83,46 @@ public class NetworkDevice
     }
 
     @Override
-    public void onCreateObject(SQLiteDatabase database)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(SQLiteDatabase database)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(SQLiteDatabase database)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-        ArrayList<TransferGroup.Assignee> assignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class);
+        ArrayList<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferGroup.Assignee assignee : assignees) {
             database.remove(assignee);
 
-            if (!assignee.isClone) {
-                try {
-                    TransferGroup transferGroup = new TransferGroup(assignee.groupId);
-                    database.reconstruct(transferGroup);
+            try {
+                TransferGroup transferGroup = new TransferGroup(assignee.groupId);
+                database.reconstruct(dbInstance, transferGroup);
 
-                    List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                            .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
+                List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
 
-                    if (relatedAssignees.size() == 0)
-                        database.remove(transferGroup);
-                    else {
-                        TransferGroup.Assignee candidateAssignee = relatedAssignees.get(0);
-                        candidateAssignee.isClone = false;
-                        database.update(candidateAssignee);
-                    }
-                } catch (Exception e) {
+                if (relatedAssignees.size() == 0)
+                    database.remove(transferGroup);
+            } catch (Exception e) {
 
-                }
             }
         }
     }
 
-    public static class Connection implements DatabaseObject
+    public static class Connection implements DatabaseObject<NetworkDevice>
     {
         public String adapterName;
         public String ipAddress;
@@ -175,7 +168,8 @@ public class NetworkDevice
             SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION);
 
             return ipAddress == null
-                    ? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND " + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
+                    ? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
+                    + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
                     : select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
         }
 
@@ -202,19 +196,19 @@ public class NetworkDevice
         }
 
         @Override
-        public void onCreateObject(SQLiteDatabase database)
+        public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onUpdateObject(SQLiteDatabase database)
+        public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }
 
         @Override
-        public void onRemoveObject(SQLiteDatabase database)
+        public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
 
         }

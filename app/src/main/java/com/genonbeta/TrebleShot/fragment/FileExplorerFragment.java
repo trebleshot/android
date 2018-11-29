@@ -5,11 +5,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -24,15 +19,22 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.dialog.FolderCreationDialog;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.ui.callback.DetachListener;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by: veli
@@ -41,11 +43,9 @@ import java.util.ArrayList;
 
 public class FileExplorerFragment
 		extends FileListFragment
-		implements Activity.OnBackPressedListener, DetachListener, TitleSupport, SnackbarSupport
+		implements Activity.OnBackPressedListener, DetachListener, IconSupport, TitleSupport
 {
 	public static final String TAG = FileExplorerFragment.class.getSimpleName();
-
-	public final static int REQUEST_WRITE_ACCESS = 264;
 
 	private RecyclerView mPathView;
 	private FilePathResolverRecyclerAdapter mPathAdapter;
@@ -98,42 +98,6 @@ public class FileExplorerFragment
 	}
 
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data)
-	{
-		super.onActivityResult(requestCode, resultCode, data);
-
-		if (resultCode == Activity.RESULT_OK)
-			switch (requestCode) {
-				case REQUEST_WRITE_ACCESS:
-					Uri pathUri = data.getData();
-
-					if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
-						String pathString = pathUri.toString();
-						String title = null;
-
-						try {
-							title = FileUtils.fromUri(getContext(), pathUri).getName();
-						} catch (FileNotFoundException e) {
-							e.printStackTrace();
-						}
-
-						if (title == null)
-							title = pathString.substring(pathString.lastIndexOf(File.separator) + 1);
-
-						AppUtils.getDatabase(getContext())
-								.publish(new WritablePathObject(title, pathUri));
-
-						if (getContext() != null)
-							getContext().getContentResolver().takePersistableUriPermission(pathUri,
-									Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
-						goPath(null);
-					}
-					break;
-			}
-	}
-
-	@Override
 	public boolean onBackPressed()
 	{
 		DocumentFile path = getAdapter().getPath();
@@ -156,12 +120,6 @@ public class FileExplorerFragment
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_file_explorer, menu);
-
-		MenuItem mountDirectory = menu.findItem(R.id.actions_file_explorer_mount_directory);
-
-		if (Build.VERSION.SDK_INT >= 21
-				&& mountDirectory != null)
-			mountDirectory.setVisible(true);
 	}
 
 	@Override
@@ -193,13 +151,16 @@ public class FileExplorerFragment
 				}).show();
 			else
 				Snackbar.make(getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
-		} else if (id == R.id.actions_file_explorer_mount_directory) {
-			startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
-			Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
 		} else
 			return super.onOptionsItemSelected(item);
 
 		return true;
+	}
+
+	@Override
+	public int getIconRes()
+	{
+		return R.drawable.ic_folder_white_24dp;
 	}
 
 	public PathResolverRecyclerAdapter getPathAdapter()
@@ -211,6 +172,7 @@ public class FileExplorerFragment
 	{
 		return mPathView;
 	}
+
 
 	@Override
 	public CharSequence getTitle(Context context)

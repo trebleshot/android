@@ -2,9 +2,6 @@ package com.genonbeta.TrebleShot.fragment.inner;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +14,10 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.app.Fragment;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli
@@ -50,31 +51,10 @@ public class TextViewerFragment
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
-
-		if (id == R.id.actions_text_viewer_fragment_edit
-				&& getActivity() instanceof ReadyLoadListener)
-			((ReadyLoadListener) getActivity()).onTextViewerEditRequested();
-		else
-			return super.onOptionsItemSelected(item);
-
-		return true;
-	}
-
-	@Override
 	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
 	{
 		super.onViewCreated(view, savedInstanceState);
 		mMainText = view.findViewById(R.id.layout_text_viewer_text);
-	}
-
-	@Override
-	public void onResume()
-	{
-		super.onResume();
-		updateText();
 	}
 
 	@DrawableRes
@@ -88,23 +68,5 @@ public class TextViewerFragment
 	public CharSequence getTitle(Context context)
 	{
 		return context.getString(R.string.text_shareTextShort);
-	}
-
-	public boolean updateText()
-	{
-		if (mMainText != null
-				&& getActivity() instanceof ReadyLoadListener) {
-			mMainText.setText(((ReadyLoadListener) getActivity()).onTextViewerReadyLoad());
-			return true;
-		}
-
-		return false;
-	}
-
-	public interface ReadyLoadListener
-	{
-		CharSequence onTextViewerReadyLoad();
-
-		void onTextViewerEditRequested();
 	}
 }

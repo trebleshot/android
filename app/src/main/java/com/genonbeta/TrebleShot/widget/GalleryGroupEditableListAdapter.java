@@ -2,11 +2,12 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
 
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
 
 /**
  * created by: Veli

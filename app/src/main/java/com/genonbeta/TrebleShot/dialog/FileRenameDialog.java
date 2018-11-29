@@ -1,15 +1,16 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AlertDialog;
 
 /**
  * created by: Veli
@@ -67,7 +68,10 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
 						int fileId = 0;
 
 						for (T fileHolder : getItemList()) {
-							renameFile(fileHolder.file, String.format(renameTo, fileId) + FileUtils.getFileFormat(fileHolder.file.getName()), renameListener);
+							String ext = FileUtils.getFileFormat(fileHolder.file.getName());
+							ext = ext != null ? String.format(".%s", ext) : "";
+
+							renameFile(fileHolder.file, String.format("%s%s", String.format(renameTo, fileId), ext), renameListener);
 							fileId++;
 						}
 

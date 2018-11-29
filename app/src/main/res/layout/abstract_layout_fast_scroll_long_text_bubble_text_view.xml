@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/marqueeText.primary"
+    style="@style/TextAppearance.Primary.SingleLine"
     android:layout_width="140dp"
     android:layout_height="wrap_content"
     android:background="?fastScrollBackground"
-    android:elevation="2dp"
+    android:elevation="1dp"
     android:gravity="center"
     android:paddingLeft="8dp"
     android:paddingTop="4dp"

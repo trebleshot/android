@@ -1,18 +1,20 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 /**
  * created by: veli
@@ -30,6 +32,15 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
 	{
 		super.onViewCreated(view, savedInstanceState);
 		getAdapter().setGroupBy(getGroupingCriteria());
+	}
+
+	@Override
+	public int onGridSpanSize(int viewType, int currentSpanSize)
+	{
+		return viewType == ImageListAdapter.VIEW_TYPE_REPRESENTATIVE
+				|| viewType == ImageListAdapter.VIEW_TYPE_ACTION_BUTTON
+				? currentSpanSize
+				: super.onGridSpanSize(viewType, currentSpanSize);
 	}
 
 	@Override

@@ -365,9 +365,9 @@
 <string name="butn_pause">Pausatu</string>
     <string name="butn_retry">Saiatu berriro</string>
     <string name="mesg_noPendingTransferObjectExists">Ez dago transferentziarik egiteke denak eten edo burutu direlako.</string>
-    <string name="mesg_notSavingToChosenLocation">Fitxategiak ez dira gordeko aukeratu duzun karpeta ez dagoelako eskuragarri orain
-\n
-\n%s
+    <string name="mesg_notSavingToChosenLocation">Fitxategiak ez dira gordeko aukeratu duzun karpetan, ez dagoelako eskuragarri orain.
+\n 
+\n%s 
 \n</string>
     <string name="butn_changelog">Aldaketa-egunkaria</string>
     <string name="text_changelog">Aldaketa-egunkaria</string>

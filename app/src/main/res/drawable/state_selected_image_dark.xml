@@ -6,13 +6,11 @@
                 <color android:color="@color/dark_colorSelection" />
             </item>
             <item android:gravity="center">
-                <bitmap
-                    android:gravity="center"
-                    android:src="@drawable/ic_check_white_24dp_static"/>
+                <bitmap android:gravity="center" android:src="@drawable/ic_check_white_24dp_static" />
             </item>
         </layer-list>
     </item>
     <item>
-        <color android:color="@android:color/transparent"/>
+        <color android:color="@android:color/transparent" />
     </item>
 </selector>

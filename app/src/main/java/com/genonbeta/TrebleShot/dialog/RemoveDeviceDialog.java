@@ -2,12 +2,13 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 public class RemoveDeviceDialog extends AlertDialog.Builder
 {

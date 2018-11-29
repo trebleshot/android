@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!--
+<?xml version='1.0' encoding='UTF-8'?><!--
     Meanings of prefixes:
     butn_ : text indicates any kind of button like Button, MenuItem.title, possibly should be short
     ques_ : in that kind of text a question mark should exist
@@ -95,6 +94,7 @@
     <string name="text_communicationProblem">Communication problem</string>
     <string name="butn_multiSelect">Multi selection</string>
     <string name="butn_receive">Receive</string>
+    <string name="text_receive" translatable="false">@string/butn_receive</string>
     <string name="butn_block">Block</string>
     <string name="text_aboutSummary">This software is developed by the Genonbeta Libre Software Org</string>
     <string name="butn_appLaunch">Launch</string>
@@ -174,7 +174,7 @@
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
     <string name="text_preparingFiles">Preparing files</string>
-    <string name="text_savingDetails">Saving details before receiving</string>
+    <string name="text_savingDetails">Saving details</string>
     <string name="text_version">Version</string>
     <string name="text_flagPending">Pending</string>
     <string name="text_flagRunning">Running</string>
@@ -322,7 +322,7 @@
     <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
     <string name="text_qrCodeAvailableHelp">Scan this code to share and connect devices</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Start TrebleShot hotspot or connect to a network for easy discovery</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Start hotspot so that others can connect to you</string>
     <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
     <string name="butn_qrScanToSend">Scan QR code to send</string>
     <string name="butn_qrToggle">Toggle QR code visibility</string>
@@ -376,17 +376,63 @@
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
     <string name="mesg_noPendingTransferObjectExists">No pending transfer left since they are either interrupted or already completed.</string>
-    <string name="mesg_notSavingToChosenLocation">Files will not be saved your desired folder since it is not accessible right now
+    <string name="mesg_notSavingToChosenLocation">Files will not be saved in your desired folder since it is not accessible right now.
 \n
-\n %s</string>
+\n%s</string>
     <string name="butn_changelog">Changelog</string>
     <string name="text_changelog">Changelog</string>
     <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
     <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
-	<string name="mesg_noInternetConnection">This requires internet connection</string>
+    <string name="mesg_noInternetConnection">This requires internet connection</string>
     <string name="text_applyDarkTheme">Dark theme</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
     <string name="butn_telegram_channel">Telegram channel</string>
     <string name="mode_middleDot" translatable="false"> · </string>
+    <string name="text_listEmptyTransfer">All transfers appear here</string>
+    <string name="text_transfers">Transfers</string>
+    <string name="butn_connectionDetails">Connections details</string>
+    <string name="butn_useKnownDevice">Use known devices</string>
+    <string name="butn_scanQrCode">Scan QR Code</string>
+    <string name="butn_useExistingNetwork">Use existing networks</string>
+    <string name="butn_feedbackContact"><![CDATA[Feedback & contact]]></string>
+    <string name="text_startHotspot" translatable="false">@string/butn_startHotspot</string>
+    <string name="text_useExistingNetwork" translatable="false">@string/butn_useExistingNetwork</string>
+    <string name="text_scanQrCode" translatable="false">@string/butn_scanQrCode</string>
+    <string name="text_useKnownDevice" translatable="false">@string/butn_useKnownDevice</string>
+    <string name="mesg_sent">Sent</string>
+    <string name="text_sendText">Send text</string>
+    <string name="butn_start">Start</string>
+    <string name="text_addDeviceHelp">Adding devices helps you share the same files with more devices. You will be taken back to the transfer when it is done.</string>
+    <string name="text_downloads">Downloads</string>
+    <string name="text_documents">Documents</string>
+    <string name="text_shortcuts">Shortcuts</string>
+    <string name="text_recentFiles">Recent files</string>
+    <string name="butn_changeSavePath">Change save path</string>
+    <string name="mesg_fileReceiveFilesLeftError">Failed to receive some files</string>
+    <string name="text_send">Send</string>
+    <string name="butn_send" translatable="false">@string/text_send</string>
+    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other device is showing a QR code, use Scan the QR code option</string>
+    <string name="ques_needHelp">Need a helping hand?</string>
+    <string name="text_connectionWizard">Connection wizard</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Have you just set things up on the other device?</string>
+    <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (barcode) on its screen?</string>
+    <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
+    <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
+    <string name="ques_connectionWizardUseKnownDevices">No viable option left! Do you want to access your previously contacted devices? You can scan over any network there.</string>
+    <string name="butn_yes">Yes</string>
+    <string name="butn_no">No</string>
+    <string name="text_loadThumbnails">Load thumbnails</string>
+    <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image and Video sharing sections</string>
+    <string name="text_manageDevices">Manage devices</string>
+    <string name="text_search">Search</string>
+    <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
+    <string name="mesg_turningWiFiOn">Turning Wi-Fi on</string>
+    <string name="mesg_locationPermissionRequiredAny">Turn on location service first to continue</string>
+    <string name="mesg_connectToWiFiNetworkHelp">Connect to a Wi-Fi network to continue</string>
+    <string name="mesg_removing">Removing… May take long</string>
+    <string name="butn_help">Help</string>
+    <string name="butn_choose">Choose</string>
+    <string name="butn_fixConnection">Fix connection</string>
+    <string name="text_fixConnection">@string/butn_fixConnection</string>
 </resources>

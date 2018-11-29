@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="false">
 
-    <FrameLayout
-        android:id="@+id/layout_connect_devices_navigator_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true">
-
-        <android.support.design.widget.BottomNavigationView
-            android:id="@+id/layout_connect_devices_bottom_navigation_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/NavigationView" />
-
-    </FrameLayout>
-
-    <View
-        android:id="@+id/layout_connect_devices_tab_layout_separator"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_above="@id/layout_connect_devices_navigator_container"
-        android:background="?colorDivider" />
-
-    <!-- This will keep the snackbar in the right place -->
-    <android.support.design.widget.CoordinatorLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/layout_connect_devices_tab_layout_separator">
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:showIn="@layout/layout_connect_devices">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/layout_connect_devices_view_pager"
+        <FrameLayout
+            android:id="@+id/layout_connect_devices_content_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+            android:layout_height="match_parent" />
 
-    </android.support.design.widget.CoordinatorLayout>
-</RelativeLayout>
+    </RelativeLayout>
+
+    <com.google.android.material.bottomappbar.BottomAppBar
+        android:id="@+id/bar"
+        style="?bottomAppBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        app:backgroundTint="@color/colorAccent"
+        app:fabCradleVerticalOffset="3dp"
+        app:navigationIcon="@drawable/ic_add_white_24dp" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/bar"
+        app:srcCompat="@drawable/ic_qrcode_scan_white_24dp" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

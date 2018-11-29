@@ -2,17 +2,14 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceFragment;
 
 import com.genonbeta.TrebleShot.R;
 
-public class PreferencesFragment extends PreferenceFragment
+public class PreferencesFragment extends androidx.preference.PreferenceFragmentCompat
 {
 	@Override
-	public void onCreate(Bundle savedInstanceState)
+	public void onCreatePreferences(Bundle savedInstanceState, String rootKey)
 	{
-		super.onCreate(savedInstanceState);
-
 		addPreferencesFromResource(R.xml.preferences_main_app);
 
 		if (Build.VERSION.SDK_INT < 26)
@@ -20,6 +17,6 @@ public class PreferencesFragment extends PreferenceFragment
 		else
 			addPreferencesFromResource(R.xml.preferences_main_notification_oreo);
 
-		addPreferencesFromResource(R.xml.preferences_main_advaced);
+		addPreferencesFromResource(R.xml.preferences_main_advanced);
 	}
 }

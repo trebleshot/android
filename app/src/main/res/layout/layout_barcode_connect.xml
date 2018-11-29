@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/layout_barcode_connect_barcode_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:zxing_scanner_layout="@layout/external_layout_barcode_scanner"
+        app:zxing_preview_scaling_strategy="centerCrop" />
+
+    <RelativeLayout
+        android:id="@+id/container_task"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?contentShowingBackground"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/task_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+        <TextView
+            android:id="@+id/task_help_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_progress_bar"
+            android:layout_marginTop="15dp"
+            android:gravity="center_horizontal"
+            android:text="@string/mesg_completing"
+            android:textColor="?colorAccent" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/task_interrupter_button"
+            style="?buttonBarPositiveButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/task_help_text"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/butn_cancel" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:id="@+id/layout_barcode_connect_conduct_container"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/layout_barcode_connect_conduct_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/layout_barcode_connect_conduct_text"
+            style="@style/TextAppearance.Primary.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="15dp"
+            android:text="@string/text_scanQRCodeHelp" />
+
+        <Button
+            android:id="@+id/layout_barcode_connect_conduct_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="15dp"
+            android:text="@string/butn_enable" />
+
+    </LinearLayout>
+</FrameLayout>

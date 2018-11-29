@@ -1,28 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorAccent">#36bf6f</color>
-    <color name="colorControlNormal">#555</color>
+    <!-- Launcher related -->
+    <color name="ic_launcher_background">#47BF4B</color>
+    <!-- Launcher related end -->
+
+    <color name="cardViewBackground">#fff</color>
+    <color name="colorAccent">#66bb6a</color>
+    <color name="colorControlNormal">#222</color>
     <color name="colorPrimary">#fff</color>
     <color name="colorPrimaryDark">#ccc</color>
     <color name="colorPrimaryDark23">#ffff</color>
+    <color name="colorSecondary">#eeeeee</color>
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
     <color name="colorDivider">#eeeeee</color>
     <color name="colorError">#afb42b</color>
-    <color name="colorSelection">#2000</color>
-    <color name="colorShadowBeginning">#0000</color>
-    <color name="colorShadowEnd">#7000</color>
+    <color name="colorSelection">#20000000</color>
+    <color name="colorShadowBeginning">#00D0D0D0</color>
+    <color name="colorShadowEnd">#70D0D0D0</color>
     <color name="contentShowingBackground">#cfcfcf</color>
 
 
     <!-- SEPERATOR -->
 
 
+    <color name="dark_cardViewBackground">#37474f</color>
     <color name="dark_colorAccent">#36bf6f</color>
-    <color name="dark_colorControlNormal">#f5f5f5</color>
+    <color name="dark_colorControlNormal">#ffffff</color>
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">#263238</color>
+    <color name="dark_colorSecondary">#37474f</color>
     <color name="dark_windowBackground">#263238</color>
     <color name="dark_colorPrimaryDark23">#263238</color>
     <!-- local coloring-->
@@ -30,7 +38,7 @@
     <color name="dark_colorDivider">#37474f</color>
     <color name="dark_colorError">#ffeb3b</color>
     <color name="dark_colorSelection">#229e9e9e</color>
-    <color name="dark_colorShadowBeginning">#0000</color>
-    <color name="dark_colorShadowEnd">#7000</color>
+    <color name="dark_colorShadowBeginning">#0037474f</color>
+    <color name="dark_colorShadowEnd">#700E171A</color>
     <color name="dark_contentShowingBackground">#616161</color>
 </resources>

@@ -1,7 +1,8 @@
 package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
-import android.content.Context;
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
@@ -9,22 +10,29 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.view.View;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
 
 /**
  * created by: veli
@@ -32,242 +40,425 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
  */
 public class UIConnectionUtils
 {
-	public static final String TAG = "UIConnectionUtils";
-	public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
+    public static final String TAG = "UIConnectionUtils";
+    public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
 
-	private SnackbarSupport mSnackbarSupport;
-	private boolean mShowHotspotInfo = false;
-	private boolean mWirelessEnableRequested = false;
-	private ConnectionUtils mConnectionUtils;
+    private SnackbarSupport mSnackbarSupport;
+    private boolean mWirelessEnableRequested = false;
+    private ConnectionUtils mConnectionUtils;
 
-	public UIConnectionUtils(ConnectionUtils connectionUtils, SnackbarSupport snackbarSupport)
-	{
-		mConnectionUtils = connectionUtils;
-		mSnackbarSupport = snackbarSupport;
-	}
+    public UIConnectionUtils(ConnectionUtils connectionUtils, SnackbarSupport snackbarSupport)
+    {
+        mConnectionUtils = connectionUtils;
+        mSnackbarSupport = snackbarSupport;
+    }
 
-	public ConnectionUtils getConnectionUtils()
-	{
-		return mConnectionUtils;
-	}
+    public ConnectionUtils getConnectionUtils()
+    {
+        return mConnectionUtils;
+    }
 
-	public SnackbarSupport getSnackbarSupport()
-	{
-		return mSnackbarSupport;
-	}
+    public SnackbarSupport getSnackbarSupport()
+    {
+        return mSnackbarSupport;
+    }
 
-	public void makeAcquaintance(final Context context, final AccessDatabase database,
-								 final UITask task, final Object object, final int accessPin,
-								 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
-	{
-		WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
-		{
-			private boolean mConnected = false;
-			private String mRemoteAddress;
+    public void makeAcquaintance(final Activity activity, final AccessDatabase database,
+                                 final UITask task, final Object object, final int accessPin,
+                                 final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
+    {
+        WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
+        {
+            private boolean mConnected = false;
+            private String mRemoteAddress;
 
-			@Override
-			public void onRun()
-			{
-				try {
-					if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-						mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
-						{
-							@Override
-							public boolean onTimePassed(int delimiter, long timePassed)
-							{
-								return timePassed >= 20000;
-							}
-						});
-					} else if (object instanceof String)
-						mRemoteAddress = (String) object;
+            @Override
+            public void onRun()
+            {
+                final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        makeAcquaintance(activity, database, task, object, accessPin, registerListener);
+                    }
+                };
 
-					if (mRemoteAddress != null) {
-						mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
-						{
-							@Override
-							public void onDeviceRegistered(final AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
-							{
-								// we may be working with direct IP scan
-								new Handler(Looper.getMainLooper()).post(new Runnable()
-								{
-									@Override
-									public void run()
-									{
-										if (registerListener != null)
-											registerListener.onDeviceRegistered(database, device, connection);
-									}
-								});
-							}
-						}) != null;
-					}
+                try {
+                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
+                        mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
+                        {
+                            @Override
+                            public boolean onTimePassed(int delimiter, long timePassed)
+                            {
+                                return timePassed >= 20000;
+                            }
+                        });
+                    } else if (object instanceof String)
+                        mRemoteAddress = (String) object;
 
-					if (!mConnected && !getInterrupter().interruptedByUser())
-						mSnackbarSupport.createSnackbar(R.string.mesg_connectionFailure)
-								.show();
-				} catch (Exception e) {
+                    if (mRemoteAddress != null) {
+                        mConnected = setupConnection(activity, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+                        {
+                            @Override
+                            public void onDeviceRegistered(final AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+                            {
+                                // we may be working with direct IP scan
+                                new Handler(Looper.getMainLooper()).post(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        if (registerListener != null)
+                                            registerListener.onDeviceRegistered(database, device, connection);
+                                    }
+                                });
+                            }
+                        }, retryButtonListener) != null;
+                    }
 
-				} finally {
-					new Handler(Looper.getMainLooper()).post(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							task.updateTaskStopped();
-						}
-					});
-				}
-				// We can't add dialog outside of the else statement as it may close other dialogs as well
-			}
-		};
+                    if (!mConnected && !getInterrupter().interruptedByUser())
+                        new Handler(Looper.getMainLooper()).post(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                                        .setMessage(R.string.mesg_connectionFailure)
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, retryButtonListener);
 
-		task.updateTaskStarted(runningTask.getInterrupter());
-		WorkerService.run(context, runningTask);
-	}
+                                if (object instanceof NetworkDevice)
+                                    dialogBuilder.setTitle(((NetworkDevice) object).nickname);
 
-	public boolean notifyShowHotspotHandled()
-	{
-		boolean returnedState = mShowHotspotInfo;
+                                dialogBuilder.show();
+                            }
+                        });
+                } catch (Exception e) {
 
-		mShowHotspotInfo = false;
+                } finally {
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (task != null)
+                                task.updateTaskStopped();
+                        }
+                    });
+                }
+                // We can't add dialog outside of the else statement as it may close other dialogs as well
+            }
+        };
 
-		return returnedState;
-	}
+        if (task != null)
+            task.updateTaskStarted(runningTask.getInterrupter());
 
-	public boolean notifyWirelessRequestHandled()
-	{
-		boolean returnedState = mWirelessEnableRequested;
+        WorkerService.run(activity, runningTask);
+    }
 
-		mWirelessEnableRequested = false;
+    public boolean notifyWirelessRequestHandled()
+    {
+        boolean returnedState = mWirelessEnableRequested;
 
-		return returnedState;
-	}
+        mWirelessEnableRequested = false;
 
-	public void showConnectionOptions(FragmentActivity activity, int locationPermRequestId)
-	{
-		if (!getConnectionUtils().getWifiManager().isWifiEnabled())
-			getSnackbarSupport().createSnackbar(R.string.mesg_suggestSelfHotspot)
-					.setAction(R.string.butn_enable, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							mWirelessEnableRequested = true;
-							getConnectionUtils().getWifiManager().setWifiEnabled(true);
-						}
-					})
-					.show();
-		else if (validateLocationPermission(activity, locationPermRequestId))
-			getSnackbarSupport().createSnackbar(R.string.mesg_scanningSelfHotspot)
-					.setAction(R.string.butn_wifiSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-						}
-					})
-					.show();
-	}
+        return returnedState;
+    }
 
-	public boolean toggleHotspot(boolean conditional, final FragmentActivity activity, final int locationPermRequestId)
-	{
-		if (!HotspotUtils.isSupported())
-			return false;
+    @WorkerThread
+    public NetworkDevice setupConnection(final Activity activity,
+                                         final String ipAddress,
+                                         final int accessPin,
+                                         final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
+                                         final DialogInterface.OnClickListener retryButtonListener)
+    {
+        return CommunicationBridge.connect(AppUtils.getDatabase(activity), NetworkDevice.class, new CommunicationBridge.Client.ConnectionHandler()
+        {
+            @Override
+            public void onConnect(CommunicationBridge.Client client)
+            {
+                try {
+                    client.setSecureKey(accessPin);
 
-		if (conditional) {
-			if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId))
-				return false;
+                    CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
+                    NetworkDevice device = client.loadDevice(activeConnection);
 
-			if (Build.VERSION.SDK_INT >= 23
-					&& !Settings.System.canWrite(getConnectionUtils().getContext())) {
-				getSnackbarSupport().createSnackbar(R.string.mesg_errorHotspotPermission)
-						.setDuration(Snackbar.LENGTH_LONG)
-						.setAction(R.string.butn_settings, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
-										.setData(Uri.parse("package:" + getConnectionUtils().getContext().getPackageName()))
-										.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-							}
-						})
-						.show();
+                    activeConnection.reply(new JSONObject()
+                            .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
+                            .toString());
 
-				return false;
-			} else if (Build.VERSION.SDK_INT < 26
-					&& !getConnectionUtils().getHotspotUtils().isEnabled()
-					&& getConnectionUtils().isMobileDataActive()) {
-				getSnackbarSupport().createSnackbar(R.string.mesg_warningHotspotMobileActive)
-						.setDuration(Snackbar.LENGTH_LONG)
-						.setAction(R.string.butn_skip, new View.OnClickListener()
-						{
-							@Override
-							public void onClick(View v)
-							{
-								toggleHotspot(false, activity, locationPermRequestId);
-							}
-						})
-						.show();
+                    JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
-				return false;
-			}
-		}
+                    if (receivedReply.has(Keyword.RESULT)
+                            && receivedReply.getBoolean(Keyword.RESULT)
+                            && device.deviceId != null) {
+                        final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(AppUtils.getDatabase(activity), device, ipAddress);
 
-		WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
+                        device.lastUsageTime = System.currentTimeMillis();
+                        device.tmpSecureKey = accessPin;
+                        device.isRestricted = false;
+                        device.isTrusted = true;
 
-		if (!getConnectionUtils().getHotspotUtils().isEnabled()
-				|| (wifiConfiguration != null && AppUtils.getHotspotName(getConnectionUtils().getContext()).equals(wifiConfiguration.SSID)))
-			getSnackbarSupport().createSnackbar(getConnectionUtils().getHotspotUtils().isEnabled()
-					? R.string.mesg_stoppingSelfHotspot
-					: R.string.mesg_startingSelfHotspot)
-					.show();
+                        AppUtils.getDatabase(activity).publish(device);
 
-		AppUtils.startForegroundService(getConnectionUtils().getContext(), new Intent(getConnectionUtils().getContext(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
+                        if (listener != null)
+                            listener.onDeviceRegistered(AppUtils.getDatabase(activity), device, connection);
+                    } else
+                        showConnectionRejectionInformation(activity, device, receivedReply, retryButtonListener);
 
-		mShowHotspotInfo = true;
+                    client.setReturn(device);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
 
-		return true;
-	}
+    public static void showConnectionRejectionInformation(final Activity activity,
+                                                          final NetworkDevice device,
+                                                          final JSONObject clientResponse,
+                                                          final DialogInterface.OnClickListener retryButtonListener)
+    {
+        try {
+            if (clientResponse.has(Keyword.ERROR)) {
+                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.mesg_notAllowed)
+                                    .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
+                                    .setNegativeButton(R.string.butn_close, null)
+                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                    .show();
+                        }
+                    });
+            } else
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        new AlertDialog.Builder(activity)
+                                .setMessage(R.string.mesg_somethingWentWrong)
+                                .setNegativeButton(R.string.butn_close, null)
+                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                .show();
+                    }
+                });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public boolean validateLocationPermission(final FragmentActivity activity, final int requestId)
-	{
-		if (Build.VERSION.SDK_INT < 23)
-			return true;
+    public void showConnectionOptions(final Activity activity, final int locationPermRequestId, final RequestWatcher watcher)
+    {
+        if (!getConnectionUtils().getWifiManager().isWifiEnabled())
+            getSnackbarSupport().createSnackbar(R.string.mesg_suggestSelfHotspot)
+                    .setAction(R.string.butn_enable, new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            mWirelessEnableRequested = true;
+                            turnOnWiFi(activity, locationPermRequestId, watcher);
+                        }
+                    })
+                    .show();
+        else if (validateLocationPermission(activity, locationPermRequestId, watcher)) {
+            watcher.onResultReturned(true, false);
 
-		if (!getConnectionUtils().hasLocationPermission(getConnectionUtils().getContext())) {
-			getSnackbarSupport().createSnackbar(R.string.mesg_locationPermissionRequiredSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@RequiresApi(api = Build.VERSION_CODES.M)
-						@Override
-						public void onClick(View view)
-						{
-							activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
-									Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
-						}
-					})
-					.show();
+            getSnackbarSupport().createSnackbar(R.string.mesg_scanningSelfHotspot)
+                    .setAction(R.string.butn_wifiSettings, new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View view)
+                        {
+                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        }
+                    })
+                    .show();
+        }
 
-			return false;
-		}
+        watcher.onResultReturned(true, false);
+    }
 
-		if (!getConnectionUtils().isLocationServiceEnabled()) {
-			getSnackbarSupport().createSnackbar(R.string.mesg_locationDisabledSelfHotspot)
-					.setAction(R.string.butn_locationSettings, new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View view)
-						{
-							getConnectionUtils().getContext().startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-						}
-					})
-					.show();
+    public boolean toggleHotspot(boolean conditional,
+                                 final FragmentActivity activity,
+                                 final int locationPermRequestId,
+                                 final RequestWatcher watcher)
+    {
+        if (!HotspotUtils.isSupported())
+            return false;
 
-			return false;
-		}
+        DialogInterface.OnClickListener defaultNegativeListener = new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                watcher.onResultReturned(false, false);
+            }
+        };
 
-		return true;
-	}
+        if (conditional) {
+            if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId, watcher))
+                return false;
+
+            if (Build.VERSION.SDK_INT >= 23
+                    && !Settings.System.canWrite(getConnectionUtils().getContext())) {
+                new AlertDialog.Builder(getConnectionUtils().getContext())
+                        .setMessage(R.string.mesg_errorHotspotPermission)
+                        .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                        .setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                activity.startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                                        .setData(Uri.parse("package:" + getConnectionUtils().getContext().getPackageName()))
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+
+                                watcher.onResultReturned(false, true);
+                            }
+                        })
+                        .show();
+
+                return false;
+            } else if (Build.VERSION.SDK_INT < 26
+                    && !getConnectionUtils().getHotspotUtils().isEnabled()
+                    && getConnectionUtils().isMobileDataActive()) {
+                new AlertDialog.Builder(getConnectionUtils().getContext())
+                        .setMessage(R.string.mesg_warningHotspotMobileActive)
+                        .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                        .setPositiveButton(R.string.butn_skip, new DialogInterface.OnClickListener()
+                        {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which)
+                            {
+                                // no need to call watcher due to recycle
+                                toggleHotspot(false, activity, locationPermRequestId, watcher);
+                            }
+                        })
+                        .show();
+
+                return false;
+            }
+        }
+
+        WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
+
+        if (!getConnectionUtils().getHotspotUtils().isEnabled()
+                || (wifiConfiguration != null && AppUtils.getHotspotName(getConnectionUtils().getContext()).equals(wifiConfiguration.SSID)))
+            getSnackbarSupport().createSnackbar(getConnectionUtils().getHotspotUtils().isEnabled()
+                    ? R.string.mesg_stoppingSelfHotspot
+                    : R.string.mesg_startingSelfHotspot)
+                    .show();
+
+        AppUtils.startForegroundService(getConnectionUtils().getContext(), new Intent(getConnectionUtils().getContext(), CommunicationService.class)
+                .setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
+
+        watcher.onResultReturned(true, false);
+
+        return true;
+    }
+
+    public boolean turnOnWiFi(final Activity activity, final int requestId, final RequestWatcher watcher)
+    {
+        if (getConnectionUtils().getWifiManager().setWifiEnabled(true)) {
+            getSnackbarSupport().createSnackbar(R.string.mesg_turningWiFiOn).show();
+            watcher.onResultReturned(true, false);
+            return true;
+        } else
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_wifiEnableFailed)
+                    .setNegativeButton(R.string.butn_close, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            watcher.onResultReturned(false, false);
+                        }
+                    })
+                    .setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                            watcher.onResultReturned(false, true);
+                        }
+                    })
+                    .show();
+
+        return false;
+    }
+
+    public boolean validateLocationPermission(final Activity activity, final int requestId, final RequestWatcher watcher)
+    {
+        if (Build.VERSION.SDK_INT < 23)
+            return true;
+
+        final DialogInterface.OnClickListener defaultNegativeListener = new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                watcher.onResultReturned(false, false);
+            }
+        };
+
+        if (!getConnectionUtils().hasLocationPermission(getConnectionUtils().getContext())) {
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_locationPermissionRequiredSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                    .setPositiveButton(R.string.butn_ask, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            watcher.onResultReturned(false, true);
+                            // No, I am not going to add an if statement since when it is not needed
+                            // the main method returns true.
+                            activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
+                        }
+                    })
+                    .show();
+
+            return false;
+        }
+
+        if (!getConnectionUtils().isLocationServiceEnabled()) {
+            new AlertDialog.Builder(getConnectionUtils().getContext())
+                    .setMessage(R.string.mesg_locationDisabledSelfHotspot)
+                    .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
+                    .setPositiveButton(R.string.butn_locationSettings, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            watcher.onResultReturned(false, true);
+                            activity.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+                        }
+                    })
+                    .show();
+
+            return false;
+        }
+
+        watcher.onResultReturned(true, false);
+
+        return true;
+    }
+
+    public interface RequestWatcher
+    {
+        void onResultReturned(boolean result, boolean shouldWait);
+    }
 }

@@ -1,13 +1,22 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
-    style="@style/listContentLayoutStyle"
+    style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="?rectSelector">
 
+    <ImageView
+        android:id="@+id/visitImage"
+        style="@style/OverflowButton"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+
     <FrameLayout
         android:id="@+id/layout_image"
-        style="@style/listContentIconStyle"
+        style="@style/ListContentIconStyle"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
@@ -28,13 +37,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/visitImage"
+        android:layout_toLeftOf="@+id/visitImage"
         android:layout_toEndOf="@id/layout_image"
         android:layout_toRightOf="@id/layout_image"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/text"
-            style="@style/marqueeText.primary"
+            style="@style/TextAppearance.Primary.Normal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="3" />
@@ -45,7 +56,7 @@
 
         <TextView
             android:id="@+id/text2"
-            style="@style/marqueeText.secondary"
+            style="@style/TextAppearance.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

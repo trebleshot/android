@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -20,6 +19,8 @@ import com.genonbeta.android.framework.util.Interrupter;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: Veli

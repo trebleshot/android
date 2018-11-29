@@ -1,8 +1,8 @@
 package com.genonbeta.TrebleShot.ui.callback;
 
-import android.support.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli
@@ -10,7 +10,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
  */
 public interface NetworkDeviceSelectedListener
 {
-	boolean onNetworkDeviceSelected(NetworkDevice networkDevice, @Nullable NetworkDevice.Connection connection);
+	boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection);
 
 	boolean isListenerEffective();
 }

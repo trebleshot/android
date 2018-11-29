@@ -1,8 +1,6 @@
 package com.genonbeta.TrebleShot.fragment.inner;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +8,9 @@ import android.view.ViewGroup;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.app.Fragment;
 import com.genonbeta.android.framework.app.FragmentImpl;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli

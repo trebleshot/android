@@ -11,8 +11,6 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.support.annotation.WorkerThread;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -20,11 +18,13 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.fragment.NetworkStatusFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import org.json.JSONObject;
+
+import androidx.annotation.WorkerThread;
+import androidx.core.content.ContextCompat;
 
 /**
  * created by: veli
@@ -33,8 +33,6 @@ import org.json.JSONObject;
 public class ConnectionUtils
 {
     public static final String TAG = ConnectionUtils.class.getSimpleName();
-
-    private static ConnectionUtils mInstance;
 
     private Context mContext;
     private WifiManager mWifiManager;
@@ -54,10 +52,7 @@ public class ConnectionUtils
 
     public static ConnectionUtils getInstance(Context context)
     {
-        if (mInstance == null)
-            mInstance = new ConnectionUtils(context);
-
-        return mInstance;
+        return new ConnectionUtils(context);
     }
 
     public static String getCleanNetworkName(String networkName)
@@ -86,7 +81,7 @@ public class ConnectionUtils
     @WorkerThread
     public String establishHotspotConnection(Interrupter interrupter, final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork, TimeoutListener timeoutListener)
     {
-        final long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         boolean connectionToggled = false;
         String remoteAddress = null;
 
@@ -142,50 +137,6 @@ public class ConnectionUtils
         }
 
         return remoteAddress;
-    }
-
-    @WorkerThread
-    public NetworkDevice setupConnection(final AccessDatabase database, final String ipAddress, final int accessPin, final NetworkDeviceLoader.OnDeviceRegisteredListener listener)
-    {
-        return CommunicationBridge.connect(database, NetworkDevice.class, new CommunicationBridge.Client.ConnectionHandler()
-        {
-            @Override
-            public void onConnect(CommunicationBridge.Client client)
-            {
-                try {
-                    client.setSecureKey(accessPin);
-
-                    CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
-                    NetworkDevice device = client.loadDevice(activeConnection);
-
-                    activeConnection.reply(new JSONObject()
-                            .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-                            .toString());
-
-                    JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
-
-                    if (receivedReply.has(Keyword.RESULT)
-                            && receivedReply.getBoolean(Keyword.RESULT)
-                            && device.deviceId != null) {
-                        final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(database, device, ipAddress);
-
-                        device.lastUsageTime = System.currentTimeMillis();
-                        device.tmpSecureKey = accessPin;
-                        device.isRestricted = false;
-                        device.isTrusted = true;
-
-                        database.publish(device);
-
-                        if (listener != null)
-                            listener.onDeviceRegistered(database, device, connection);
-                    }
-
-                    client.setReturn(device);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public boolean hasLocationPermission(Context context)

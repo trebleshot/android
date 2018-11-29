@@ -3,7 +3,6 @@ package com.genonbeta.TrebleShot.ui.callback;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;

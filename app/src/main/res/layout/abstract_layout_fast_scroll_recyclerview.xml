@@ -3,12 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <com.futuremind.recyclerviewfastscroll.FastScroller
+
+    <com.genonbeta.android.framework.widget.recyclerview.FastScroller
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"

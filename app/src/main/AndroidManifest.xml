@@ -21,12 +21,14 @@
     <application
         android:name=".App"
         android:allowBackup="true"
+        android:appComponentFactory="@string/app_name"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/text_appName"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrebleShot"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:appComponentFactory">
 
         <activity
             android:name=".activity.HomeActivity"
@@ -36,10 +38,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="genonbeta.intent.action.OPEN_RECEIVED_FILES" />
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
@@ -57,14 +55,39 @@
                 <data android:mimeType="*/*" />
             </intent-filter>
 
-            <meta-data
+            <!--<meta-data
                 android:name="android.service.chooser.chooser_target_service"
-                android:value=".service.DeviceChooserService" />
+                android:value=".service.DeviceChooserService" />-->
         </activity>
 
         <activity
+            android:name=".activity.AddDevicesToTransferActivity"
+            android:label="@string/text_addDevicesToTransfer"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.FileExplorerActivity"
+            android:label="@string/text_fileExplorer"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.TextStreamActivity"
+            android:label="@string/text_textStream"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.ReceiveActivity"
+            android:label="@string/text_receive"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
+            android:name=".activity.ConnectionManagerActivity"
+            android:label="@string/text_connectDevices"
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+
+        <activity
             android:name=".activity.ContentSharingActivity"
-            android:label="@string/text_shareFiles"
+            android:label="@string/text_send"
             android:launchMode="singleTask"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
@@ -73,7 +96,7 @@
             android:label="@string/text_fileExplorer" />
 
         <activity
-            android:name=".activity.TransactionActivity"
+            android:name=".activity.ViewTransferActivity"
             android:label="@string/text_transactionViewer"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar">
             <intent-filter>
@@ -92,9 +115,19 @@
                 <data android:pathPattern=".*\\..*\\.tshare" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activity.ManageDevicesActivity"
+            android:label="@string/text_manageDevices" />
+
+        <activity
+            android:name=".activity.SearchActivity"
+            android:label="@string/butn_search" />
+
         <activity
             android:name=".activity.PreferencesActivity"
             android:label="@string/text_preferences" />
+
         <activity
             android:name=".activity.TextEditorActivity"
             android:label="@string/text_textEditor" />
@@ -111,7 +144,7 @@
         <activity
             android:name=".activity.AboutActivity"
             android:label="@string/text_about"
-            android:theme="@style/Theme.TrebleShot.NoActionBar" />
+            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
             android:name=".activity.ThirdPartyLibrariesActivity"
@@ -172,7 +205,7 @@
         </service>
 
         <provider
-            android:name="android.support.v4.content.FileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.provider"
             android:exported="false"
             android:grantUriPermissions="true">

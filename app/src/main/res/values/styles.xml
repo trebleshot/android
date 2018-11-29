@@ -1,109 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-	<!-- generalization start -->
-	<style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
-	<style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
-	<style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar" />
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- generalization start -->
+    <style name="Theme.TrebleShot" parent="Theme.TrebleShot.Base" />
 
-	<style name="Theme.TrebleShot.Dark" parent="Theme.TrebleShot.Dark.Base" />
-	<style name="Theme.TrebleShot.Dark.NoActionBar" parent="Theme.TrebleShot.Dark.Base.NoActionBar" />
-	<style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
-	<!-- generalization end -->
+    <style name="Theme.TrebleShot.NoActionBar" parent="Theme.TrebleShot.Base.NoActionBar" />
 
-	<style name="NavigationView">
-		<item name="colorPrimary">?colorAccent</item>
-	</style>
+    <style name="Theme.TrebleShot.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.NoActionBar" />
 
-	<style name="marqueeText">
-		<item name="android:maxLines">1</item>
-		<item name="android:ellipsize">end</item>
-	</style>
+    <style name="Theme.TrebleShot.Dark" parent="Theme.TrebleShot.Dark.Base" />
 
-	<style name="marqueeText.primary" parent="@style/marqueeText">
-		<item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
-		<item name="android:textSize">@dimen/font_size_primary</item>
-		<item name="android:textColor">?android:textColorPrimary</item>
-	</style>
+    <style name="Theme.TrebleShot.Dark.NoActionBar" parent="Theme.TrebleShot.Dark.Base.NoActionBar" />
 
-	<style name="marqueeText.primary.big" parent="@style/marqueeText.primary">
-		<item name="android:textSize">@dimen/font_size_big</item>
-	</style>
+    <style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
+    <!-- generalization end -->
 
-	<style name="marqueeText.primary.normal" parent="@style/marqueeText.primary">
-		<item name="android:textSize">@dimen/font_size_primary_normal</item>
-	</style>
+    <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+        <item name="itemTextColor">?attr/selectionAccentColor</item>
+        <item name="itemIconTint">?attr/selectionAccentColor</item>
+        <item name="android:elevation" tools:targetApi="21">5dp</item>
+    </style>
 
-	<style name="marqueeText.primary.small" parent="@style/marqueeText.primary">
-		<item name="android:textSize">@dimen/font_size_small</item>
-	</style>
+    <style name="Widget.TrebleShot.NavigationView" parent="Widget.Design.NavigationView">
+        <item name="itemIconTint">?attr/selectionAccentColor</item>
+        <item name="itemTextColor">?attr/selectionAccentColor</item>
+    </style>
 
-	<style name="marqueeText.secondary" parent="@style/marqueeText">
-		<item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-		<item name="android:textSize">@dimen/font_size_secondary</item>
-		<item name="android:textColor">?android:textColorSecondary</item>
-	</style>
+    <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardBackgroundColor">?cardBackgroundColor</item>
+        <item name="cardElevation">2dp</item>
+    </style>
 
-	<style name="marqueeText.secondary.big" parent="@style/marqueeText.secondary">
-		<item name="android:textSize">@dimen/font_size_big</item>
-	</style>
+    <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">?roundProgressBar</item>
+        <item name="android:background">?roundProgressBarShape</item>
+    </style>
 
-	<style name="marqueeText.secondary.small" parent="@style/marqueeText.secondary">
-		<item name="android:textSize">@dimen/font_size_small</item>
-	</style>
+    <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval.Bald">
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 
-	<style name="condensedCapsTextStyle" parent="@style/marqueeText.secondary">
-		<item name="android:textStyle">bold</item>
-		<item name="android:textAllCaps">true</item>
-	</style>
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextColor">?selectionAccentColor</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
 
-	<style name="overflowButton">
-		<item name="srcCompat">@drawable/ic_more_vert_white_24dp</item>
-		<item name="android:layout_width">48dp</item>
-		<item name="android:layout_height">48dp</item>
-		<item name="android:scaleType">center</item>
-		<item name="android:background">?roundSelector</item>
-		<item name="android:focusableInTouchMode">false</item>
-		<item name="android:focusable">false</item>
-	</style>
+    <style name="TextAppearance">
+        <item name="android:textStyle">normal</item>
+    </style>
 
-	<style name="textSeparatorMiddleDot">
-		<item name="android:layout_width">wrap_content</item>
-		<item name="android:layout_height">wrap_content</item>
-		<item name="android:paddingLeft">10dp</item>
-		<item name="android:paddingRight">10dp</item>
-		<item name="android:text">@string/mode_middleDot</item>
-	</style>
+    <style name="TextAppearance.Primary" parent="@style/TextAppearance">
+        <item name="android:textAppearance">?android:attr/textAppearanceMedium</item>
+        <item name="android:textSize">@dimen/font_size_primary</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
 
-	<style name="listContentLayoutStyle">
-		<item name="android:padding">@dimen/padding_list_content_parent_layout</item>
-	</style>
+    <style name="TextAppearance.Primary.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
 
-	<style name="listContentIconStyle">
-		<item name="android:layout_width">@dimen/icon_size_list_normal</item>
-		<item name="android:layout_height">@dimen/icon_size_list_normal</item>
-		<item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left</item>
-		<item name="android:layout_marginStart">@dimen/padding_list_content_icon_main_margin_left</item>
-		<item name="android:layout_marginEnd">@dimen/padding_list_content_icon_main_margin_right</item>
-		<item name="android:layout_marginRight">@dimen/padding_list_content_icon_main_margin_right</item>
-	</style>
+    <style name="TextAppearance.Primary.Big">
+        <item name="android:textSize">@dimen/font_size_big</item>
+    </style>
 
-	<style name="customListFragmentEmptyImageStyle">
-		<item name="android:background">?rippleBackground</item>
-		<item name="android:cropToPadding">true</item>
-		<item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
-		<item name="tint">?colorControlNormal</item>
-	</style>
+    <style name="TextAppearance.Primary.Big.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
 
-	<style name="customListFragmentEmptyTextStyle" parent="marqueeText.primary.big">
-		<item name="android:text">@string/text_listEmpty</item>
-		<item name="android:textColor">?android:textColorPrimary</item>
-	</style>
+    <style name="TextAppearance.Primary.Normal">
+        <item name="android:textSize">@dimen/font_size_primary_normal</item>
+    </style>
 
-	<style name="condensedTitleStyle">
-		<item name="android:layout_gravity">center</item>
-		<item name="android:textAllCaps">true</item>
-		<item name="android:textColor">?android:textColorPrimary</item>
-		<item name="fontFamily">sans-serif-condensed</item>
-	</style>
+    <style name="TextAppearance.Primary.Normal.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextAppearance.Primary.Small">
+        <item name="android:textSize">@dimen/font_size_small</item>
+    </style>
+
+    <style name="TextAppearance.Primary.Small.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextAppearance.Secondary">
+        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:textSize">@dimen/font_size_secondary</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
+    </style>
+
+    <style name="TextAppearance.Secondary.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextAppearance.Secondary.Big">
+        <item name="android:textSize">@dimen/font_size_big</item>
+    </style>
+
+    <style name="TextAppearance.Secondary.Big.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextAppearance.Secondary.Small">
+        <item name="android:textSize">@dimen/font_size_small</item>
+    </style>
+
+    <style name="TextAppearance.Secondary.Small.SingleLine">
+        <item name="android:ellipsize">end</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="OverflowButton">
+        <item name="srcCompat">@drawable/ic_more_vert_white_24dp</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="android:background">?roundSelector</item>
+        <item name="android:focusableInTouchMode">false</item>
+        <item name="android:focusable">false</item>
+    </style>
+
+    <style name="TextSeparatorMiddleDot">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:text">@string/mode_middleDot</item>
+    </style>
+
+    <style name="ListContentLayoutStyle">
+        <item name="android:paddingLeft">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingStart">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingRight">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingTop">@dimen/padding_list_content_parent_layout</item>
+        <item name="android:paddingBottom">@dimen/padding_list_content_parent_layout</item>
+    </style>
+
+    <style name="ListContentLayoutStyle.WithOverflowButton">
+        <item name="android:paddingRight">@dimen/padding_list_content_narrow_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_narrow_parent_layout</item>
+    </style>
+
+    <style name="ListContentLayoutStyle.Narrow">
+        <item name="android:paddingTop">@dimen/padding_list_content_narrow_parent_layout</item>
+        <item name="android:paddingBottom">@dimen/padding_list_content_narrow_parent_layout</item>
+    </style>
+
+    <style name="ListContentLayoutStyle.Narrow.WithOverflowButton">
+        <item name="android:paddingRight">@dimen/padding_list_content_narrow_parent_layout</item>
+        <item name="android:paddingEnd">@dimen/padding_list_content_narrow_parent_layout</item>
+    </style>
+
+    <style name="ListContentIconStyle">
+        <item name="android:layout_width">@dimen/icon_size_list_normal</item>
+        <item name="android:layout_height">@dimen/icon_size_list_normal</item>
+        <item name="android:layout_marginLeft">@dimen/padding_list_content_icon_main_margin_left
+        </item>
+        <item name="android:layout_marginStart">@dimen/padding_list_content_icon_main_margin_left
+        </item>
+        <item name="android:layout_marginEnd">@dimen/padding_list_content_icon_main_margin_right
+        </item>
+        <item name="android:layout_marginRight">@dimen/padding_list_content_icon_main_margin_right
+        </item>
+    </style>
+
+    <style name="CustomListFragmentEmptyImageStyle">
+        <item name="android:background">?rippleBackground</item>
+        <item name="android:cropToPadding">true</item>
+        <item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
+        <item name="tint">?colorAccent</item>
+    </style>
+
+    <style name="CustomListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
+        <item name="android:text">@string/text_listEmpty</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+    </style>
+
+    <style name="CondensedTitleStyle">
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="fontFamily">sans-serif-condensed</item>
+    </style>
 
 </resources>

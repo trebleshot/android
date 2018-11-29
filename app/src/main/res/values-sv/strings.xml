@@ -362,4 +362,12 @@
     <string name="text_killServiceAfterLeaving">Tjänsten stannar när du stänger appen</string>
     <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som har ändrats sen förra versionen\?</string>
     <string name="butn_telegram_channel">Telegramkanal</string>
-</resources>
+<string name="text_transactionGroupDetails">Överföringsgruppsuppgifter</string>
+    <string name="mesg_providerNotAllowedError">Standardmappen är inte tillgänglig för andra appar</string>
+    <string name="text_easyDiscoveryHelp">Skanna QR-koden om båda enheterna är i samma nätverk</string>
+    <string name="text_killServiceAfterLeavingSummary">Avbryter kommunikationen om ingen uppgift pågår</string>
+    <string name="mesg_notSavingToChosenLocation">Filerna sparas inte i önskad mapp eftersom den inte är tillgänglig just nu.
+\n
+\n%s</string>
+    <string name="text_requestPermissionStorageSummary">Denna behörighet tillåter att TrebleShot att läsa och skriva till enhetens lagringsutrymme för att kunna ta emot och dela ut filer.</string>
+    </resources>

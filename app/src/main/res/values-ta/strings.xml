@@ -4,4 +4,16 @@
     <string name="butn_reject">நிராகரி</string>
     <string name="butn_stopService">நிறுத்து</string>
     <string name="text_sending">அனுப்பபடுகிறது</string>
+    <string name="text_preferences">அமைப்புகள்</string>
+    <string name="mesg_scanningDevices">அருகாமை சாதனங்களை தேடுகிறது</string>
+    <string name="butn_cancelSending">அனுப்புதலை நிறுத்து</string>
+    <string name="text_receiving">பெறுகிறது</string>
+    <string name="butn_cancelReceiving">பெறுவதை நிறுத்து</string>
+    <string name="ques_receiveFile">கோப்பினை ஏற்க்கவா \?</string>
+    <string name="text_listEmpty">ஏதுமில்லை</string>
+    <string name="text_developerMode">மேம்பாட்டாளர் முறை</string>
+    <string name="text_deviceName">சாதனத்தின் பெயர்</string>
+    <string name="text_deviceNameTitle">சாதனத்தின் பெயரை உள்ளிடு</string>
+    <string name="mesg_connectionFailure">இணைப்பு தோல்வியுற்றது</string>
+    <string name="text_fileReceived">கோப்பு பெற்றுகொள்ளப்பட்டது</string>
     </resources>
