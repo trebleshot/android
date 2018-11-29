@@ -232,9 +232,11 @@ public class FileListFragment
                             menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead);
                             menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canAlter);
                             menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canAlter);
+                            menuItself.findItem(R.id.action_mode_file_show).setVisible(fileHolder instanceof FileListAdapter.RecentFileHolder);
                             menuItself.findItem(R.id.action_mode_file_change_save_path)
                                     .setVisible(FileUtils.getApplicationDirectory(getContext(),
                                             AppUtils.getDefaultPreferences(getContext())).getUri().equals(fileHolder.file.getUri()));
+
 
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
@@ -251,6 +253,9 @@ public class FileListFragment
 
                                     if (id == R.id.action_mode_file_open) {
                                         performLayoutClickOpenUri(clazz);
+                                    } else if (id == R.id.action_mode_file_show
+                                            && fileHolder.file.getParentFile() != null) {
+                                        goPath(fileHolder.file.getParentFile());
                                     } else if (id == R.id.action_mode_file_eject_directory
                                             && fileHolder instanceof FileListAdapter.WritablePathHolder) {
                                         AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);

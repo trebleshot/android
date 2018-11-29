@@ -6,6 +6,11 @@
         android:visible="false"/>
 
     <item
+        android:id="@+id/action_mode_file_show"
+        android:title="@string/butn_show"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/action_mode_file_eject_directory"
         android:title="@string/butn_ejectDirectory"
         android:visible="false"/>

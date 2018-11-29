@@ -2,9 +2,12 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -228,8 +231,16 @@ public class AddDevicesToTransferActivity extends Activity
             @Override
             public void onRun()
             {
+                updateText(this, getString(R.string.mesg_communicating));
                 final WorkerService.RunningTask thisTask = this;
-                updateText(thisTask, getString(R.string.mesg_communicating));
+                final DialogInterface.OnClickListener retyButtonListener = new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        startConnectionManagerActivity();
+                    }
+                };
 
                 CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
                 {
@@ -366,30 +377,49 @@ public class AddDevicesToTransferActivity extends Activity
                                 finish();
                             } else {
                                 if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
-                                    createSnackbar(R.string.mesg_notAllowed)
-                                            .setAction(R.string.ques_why, new View.OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(View v)
-                                                {
-                                                    AlertDialog.Builder builder = new AlertDialog.Builder(AddDevicesToTransferActivity.this);
-
-                                                    builder.setMessage(getString(R.string.text_notAllowedHelp,
-                                                            device.nickname,
-                                                            AppUtils.getLocalDeviceName(AddDevicesToTransferActivity.this)));
-
-                                                    builder.setNegativeButton(R.string.butn_close, null);
-                                                    builder.show();
-                                                }
-                                            }).show();
+                                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            new AlertDialog.Builder(AddDevicesToTransferActivity.this)
+                                                    .setTitle(R.string.mesg_notAllowed)
+                                                    .setMessage(getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(AddDevicesToTransferActivity.this)))
+                                                    .setNegativeButton(R.string.butn_close, null)
+                                                    .setPositiveButton(R.string.butn_retry, retyButtonListener)
+                                                    .show();
+                                        }
+                                    });
                                 else
-                                    createSnackbar(R.string.mesg_somethingWentWrong).show();
+                                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                                    {
+                                        @Override
+                                        public void run()
+                                        {
+                                            new AlertDialog.Builder(AddDevicesToTransferActivity.this)
+                                                    .setMessage(R.string.mesg_somethingWentWrong)
+                                                    .setNegativeButton(R.string.butn_close, null)
+                                                    .setPositiveButton(R.string.butn_retry, retyButtonListener)
+                                                    .show();
+                                        }
+                                    });
                             }
                         } catch (Exception e) {
                             if (!(e instanceof InterruptedException)) {
                                 e.printStackTrace();
-                                createSnackbar(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem))
-                                        .show();
+
+                                new Handler(Looper.getMainLooper()).post(new Runnable()
+                                {
+                                    @Override
+                                    public void run()
+                                    {
+                                        new AlertDialog.Builder(AddDevicesToTransferActivity.this)
+                                                .setMessage(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)))
+                                                .setNegativeButton(R.string.butn_close, null)
+                                                .setPositiveButton(R.string.butn_retry, retyButtonListener)
+                                                .show();
+                                    }
+                                });
                             }
                         } finally {
                             runOnUiThread(new Runnable()
@@ -442,21 +472,6 @@ public class AddDevicesToTransferActivity extends Activity
         });
 
         getDefaultInterrupter().reset(true);
-    }
-
-    protected void showChooserDialog(final NetworkDevice device)
-    {
-        device.isRestricted = false;
-        getDatabase().publish(device);
-
-        new ConnectionChooserDialog(AddDevicesToTransferActivity.this, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
-        {
-            @Override
-            public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
-            {
-                doCommunicate(device, connection);
-            }
-        }, true).show();
     }
 
     private void startConnectionManagerActivity()

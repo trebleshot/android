@@ -194,7 +194,7 @@ public class BarcodeConnectFragment
                             hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
                         }
 
-                        mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
+                        mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
                     } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
 
                         if ((Build.VERSION.SDK_INT >= 26 && !mConnectionUtils // With Android Oreo to gather Wi-Fi information, minimal access to location is needed
@@ -210,7 +210,7 @@ public class BarcodeConnectFragment
                             if (wifiInfo != null
                                     && wifiInfo.getBSSID() != null
                                     && wifiInfo.getBSSID().equals(bssid))
-                                mConnectionUtils.makeAcquaintance(getContext(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
+                                mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
                             else {
                                 mBarcodeView.pauseAndWait();
 

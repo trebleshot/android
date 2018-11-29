@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="?colorDivider" />
+
+        <Button
+            android:id="@+id/fixConnectionButton"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/butn_fixConnection" />
+
+    </LinearLayout>
 
     <fragment
+        android:id="@+id/devicesFragment"
+        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
-        android:id="@+id/devicesFragment"/>
+        android:layout_above="@id/app_bar"
+        android:layout_alignParentTop="true" />
 
-</LinearLayout>
+</RelativeLayout>

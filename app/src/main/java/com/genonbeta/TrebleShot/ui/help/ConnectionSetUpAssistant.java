@@ -17,8 +17,6 @@ public class ConnectionSetUpAssistant
     public ConnectionSetUpAssistant(Activity activity)
     {
         mContext = activity;
-
-        isOtherDeviceReady();
     }
 
     public Context getContext()
@@ -154,6 +152,10 @@ public class ConnectionSetUpAssistant
                     }
                 })
                 .show();
+    }
+
+    public void startShowing() {
+        isOtherDeviceReady();
     }
 
     public void updateFragment(ConnectionManagerActivity.AvailableFragment fragment)

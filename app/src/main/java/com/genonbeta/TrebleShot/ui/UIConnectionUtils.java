@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,9 +22,7 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.google.android.material.snackbar.Snackbar;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
@@ -39,7 +36,6 @@ public class UIConnectionUtils
     public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
 
     private SnackbarSupport mSnackbarSupport;
-    private boolean mShowHotspotInfo = false;
     private boolean mWirelessEnableRequested = false;
     private ConnectionUtils mConnectionUtils;
 
@@ -59,7 +55,7 @@ public class UIConnectionUtils
         return mSnackbarSupport;
     }
 
-    public void makeAcquaintance(final Context context, final AccessDatabase database,
+    public void makeAcquaintance(final FragmentActivity activity, final AccessDatabase database,
                                  final UITask task, final Object object, final int accessPin,
                                  final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
     {
@@ -105,8 +101,29 @@ public class UIConnectionUtils
                     }
 
                     if (!mConnected && !getInterrupter().interruptedByUser())
-                        getSnackbarSupport().createSnackbar(R.string.mesg_connectionFailure)
-                                .show();
+                        new Handler(Looper.getMainLooper()).post(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                                        .setMessage(R.string.mesg_connectionFailure)
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                                        {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                makeAcquaintance(activity, database, task, object, accessPin, registerListener);
+                                            }
+                                        });
+
+                                if (object instanceof NetworkDevice)
+                                    dialogBuilder.setTitle(((NetworkDevice) object).nickname);
+
+                                dialogBuilder.show();
+                            }
+                        });
                 } catch (Exception e) {
 
                 } finally {
@@ -127,16 +144,7 @@ public class UIConnectionUtils
         if (task != null)
             task.updateTaskStarted(runningTask.getInterrupter());
 
-        WorkerService.run(context, runningTask);
-    }
-
-    public boolean notifyShowHotspotHandled()
-    {
-        boolean returnedState = mShowHotspotInfo;
-
-        mShowHotspotInfo = false;
-
-        return returnedState;
+        WorkerService.run(activity, runningTask);
     }
 
     public boolean notifyWirelessRequestHandled()
@@ -171,7 +179,8 @@ public class UIConnectionUtils
                         @Override
                         public void onClick(View view)
                         {
-                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         }
                     })
                     .show();
@@ -211,9 +220,9 @@ public class UIConnectionUtils
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                activity.startActivityForResult(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
+                                activity.startActivity(new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS)
                                         .setData(Uri.parse("package:" + getConnectionUtils().getContext().getPackageName()))
-                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), locationPermRequestId);
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
                                 watcher.onResultReturned(false, true);
                             }
@@ -256,8 +265,6 @@ public class UIConnectionUtils
 
         watcher.onResultReturned(true, false);
 
-        mShowHotspotInfo = true;
-
         return true;
     }
 
@@ -283,7 +290,8 @@ public class UIConnectionUtils
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            activity.startActivityForResult(new Intent(Settings.ACTION_WIFI_SETTINGS), requestId);
+                            activity.startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                             watcher.onResultReturned(false, true);
                         }
                     })
@@ -316,6 +324,8 @@ public class UIConnectionUtils
                         public void onClick(DialogInterface dialog, int which)
                         {
                             watcher.onResultReturned(false, true);
+                            // No I am not going to add an if statement because when it is not needed
+                            // the main method returns true.
                             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
                         }
@@ -335,7 +345,8 @@ public class UIConnectionUtils
                         public void onClick(DialogInterface dialog, int which)
                         {
                             watcher.onResultReturned(false, true);
-                            activity.startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), requestId);
+                            activity.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
                         }
                     })
                     .show();
@@ -348,7 +359,8 @@ public class UIConnectionUtils
         return true;
     }
 
-    public interface RequestWatcher {
+    public interface RequestWatcher
+    {
         void onResultReturned(boolean result, boolean shouldWait);
     }
 }

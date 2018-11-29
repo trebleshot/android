@@ -100,7 +100,7 @@ public class ViewTransferActivity
 
                     synchronized (mActiveProcesses) {
                         if (taskChange == CommunicationService.TASK_STATUS_ONGOING)
-                                mActiveProcesses.add(deviceId);
+                            mActiveProcesses.add(deviceId);
                         else
                             mActiveProcesses.remove(deviceId);
                     }
@@ -137,7 +137,6 @@ public class ViewTransferActivity
 
     private PowerfulActionMode mMode;
     private MenuItem mStartMenu;
-    private MenuItem mSendMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFiles;
     private MenuItem mAddDevice;
@@ -273,7 +272,6 @@ public class ViewTransferActivity
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
-        mSendMenu = menu.findItem(R.id.actions_transfer_send);
         mStartMenu = menu.findItem(R.id.actions_transfer_resume);
         mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
         mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
@@ -299,29 +297,26 @@ public class ViewTransferActivity
         } else if (id == R.id.actions_transfer_resume) {
             toggleTask();
         } else if (id == R.id.actions_transfer_remove) {
-            AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-
-            dialog.setTitle(R.string.ques_removeAll);
-            dialog.setMessage(R.string.text_removeCertainPendingTransfersSummary);
-            dialog.setNegativeButton(R.string.butn_cancel, null);
-            dialog.setPositiveButton(R.string.butn_removeAll, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    WorkerService.run(ViewTransferActivity.this, new WorkerService.RunningTask(TAG, TASK_REMOVE_GROUP)
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.ques_removeAll)
+                    .setMessage(R.string.text_removeCertainPendingTransfersSummary)
+                    .setNegativeButton(R.string.butn_cancel, null)
+                    .setPositiveButton(R.string.butn_removeAll, new DialogInterface.OnClickListener()
                     {
                         @Override
-                        protected void onRun()
+                        public void onClick(DialogInterface dialog, int which)
                         {
-                            publishStatusText(getString(R.string.mesg_removing));
-                            getDatabase().remove(mGroup);
+                            WorkerService.run(ViewTransferActivity.this, new WorkerService.RunningTask(TAG, TASK_REMOVE_GROUP)
+                            {
+                                @Override
+                                protected void onRun()
+                                {
+                                    publishStatusText(getString(R.string.mesg_removing));
+                                    getDatabase().remove(mGroup);
+                                }
+                            });
                         }
-                    });
-                }
-            });
-
-            dialog.show();
+                    }).show();
         } else if (id == R.id.actions_transfer_retry_all) {
             ContentValues contentValues = new ContentValues();
 
@@ -403,13 +398,6 @@ public class ViewTransferActivity
                     .setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
     }
 
-    private void sendTask() {
-        if (mTransactionIndex.outgoingCount <=0)
-            return;
-
-        boolean hasAssignees = mTransactionIndex.assigneeCount > 0;
-    }
-
     private void showMenus()
     {
         boolean hasIncoming = getIndex().incomingCount > 0;
@@ -446,21 +434,21 @@ public class ViewTransferActivity
 
             ArrayList<TransferAssigneeListAdapter.ShowingAssignee> assignees = getDatabase()
                     .castQuery(select, TransferAssigneeListAdapter.ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<TransferAssigneeListAdapter.ShowingAssignee>()
-            {
-                @Override
-                public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, TransferAssigneeListAdapter.ShowingAssignee object)
-                {
-                    object.device = new NetworkDevice(object.deviceId);
-                    object.connection = new NetworkDevice.Connection(object);
+                    {
+                        @Override
+                        public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, TransferAssigneeListAdapter.ShowingAssignee object)
+                        {
+                            object.device = new NetworkDevice(object.deviceId);
+                            object.connection = new NetworkDevice.Connection(object);
 
-                    try {
-                        db.reconstruct(object.device);
-                        db.reconstruct(object.connection);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+                            try {
+                                db.reconstruct(object.device);
+                                db.reconstruct(object.connection);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
 
             if (assignees.size() == 0) {
                 createSnackbar(R.string.mesg_noReceiverOrSender)
@@ -472,7 +460,7 @@ public class ViewTransferActivity
 
             try {
                 getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-                TransferUtils.startTransfer(this, mGroup, assignee);
+                TransferUtils.startTransferWithTest(this, mGroup, assignee);
             } catch (Exception e) {
                 e.printStackTrace();
 
@@ -511,10 +499,10 @@ public class ViewTransferActivity
 
                     if (mTransactionIndex.assigneeCount == 0)
 
-                    if (mTransferObject != null) {
-                        new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();
-                        mTransferObject = null;
-                    }
+                        if (mTransferObject != null) {
+                            new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();
+                            mTransferObject = null;
+                        }
                 }
             });
 

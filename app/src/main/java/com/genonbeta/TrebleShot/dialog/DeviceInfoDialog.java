@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -57,19 +59,19 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
             TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
             TextView versionText = rootView.findViewById(R.id.device_info_version);
-            AppCompatImageView getUpdateButton = rootView.findViewById(R.id.device_info_get_update_button);
+            AppCompatImageView updateButton = rootView.findViewById(R.id.device_info_get_update_button);
             SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
             final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
 
             if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
 
-            getUpdateButton.setOnClickListener(new View.OnClickListener()
+            updateButton.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    new ConnectionChooserDialog(activity, device, new ConnectionChooserDialog.OnDeviceSelectedListener()
+                    new EstablishConnectionDialog(activity, device, new OnDeviceSelectedListener()
                     {
                         @Override
                         public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
@@ -127,7 +129,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                                 }
                             });
                         }
-                    }, false).show();
+                    }).show();
                 }
             });
 

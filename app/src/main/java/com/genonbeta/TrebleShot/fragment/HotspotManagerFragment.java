@@ -9,6 +9,9 @@ import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -26,8 +29,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.google.android.material.snackbar.BaseTransientBottomBar;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -38,6 +39,7 @@ import org.json.JSONObject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
 
@@ -63,6 +65,7 @@ public class HotspotManagerFragment
     private TextView mText3;
     private ImageView mCodeView;
     private AppCompatButton mToggleButton;
+    private MenuItem mHelpMenuItem;
     private boolean mWaitForHotspot = false;
     private boolean mWaitForWiFi = false;
 
@@ -123,6 +126,35 @@ public class HotspotManagerFragment
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.actions_hotspot_manager, menu);
+        mHelpMenuItem = menu.findItem(R.id.show_help);
+
+        showMenu();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
+
+        if (id == R.id.show_help && getConnectionUtils().getHotspotUtils().getConfiguration() != null) {
+            String hotspotName = getConnectionUtils().getHotspotUtils().getConfiguration().SSID;
+            String friendlyName = AppUtils.getFriendlySSID(hotspotName);
+
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(getString(R.string.mesg_hotspotCreatedInfo, hotspotName, friendlyName))
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+        } else
+            return super.onOptionsItemSelected(item);
+
+        return true;
+    }
+
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -144,7 +176,6 @@ public class HotspotManagerFragment
     }
 
     @Override
-
     public void onPause()
     {
         super.onPause();
@@ -252,42 +283,29 @@ public class HotspotManagerFragment
         }
     }
 
+    private void showMenu()
+    {
+        if (mHelpMenuItem != null)
+            mHelpMenuItem.setVisible(getConnectionUtils().getHotspotUtils().getConfiguration() != null
+                    && getConnectionUtils().getHotspotUtils().isEnabled());
+    }
+
     private void updateState()
     {
         boolean isEnabled = getUIConnectionUtils().getConnectionUtils().getHotspotUtils().isEnabled();
         WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
 
+        showMenu();
+
         if (!isEnabled) {
             updateViewsWithBlank();
-        } else {
-            if (getConnectionUtils().getHotspotUtils() instanceof HotspotUtils.HackAPI
-                    && wifiConfiguration != null)
-                updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
-            else if (Build.VERSION.SDK_INT >= 26)
-                AppUtils.startForegroundService(getActivity(),
-                        new Intent(getActivity(), CommunicationService.class)
-                                .setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
-
-            if (wifiConfiguration != null
-                    && getConnectionUtils().getHotspotUtils().isEnabled()) {
-                if (getUIConnectionUtils().notifyShowHotspotHandled()
-                        && AppUtils.getHotspotName(getActivity()).equals(wifiConfiguration.SSID)) {
-                    final Snackbar snackbar = createSnackbar(R.string.mesg_hotspotCreatedInfo, getConnectionUtils().getHotspotUtils().getConfiguration().SSID, AppUtils.getFriendlySSID(getConnectionUtils().getHotspotUtils().getConfiguration().SSID));
-
-                    snackbar.setAction(R.string.butn_gotIt, new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            snackbar.dismiss();
-                        }
-                    });
-
-                    snackbar.setDuration(BaseTransientBottomBar.LENGTH_INDEFINITE)
-                            .show();
-                }
-            }
-        }
+        } else if (getConnectionUtils().getHotspotUtils() instanceof HotspotUtils.HackAPI
+                && wifiConfiguration != null) {
+            updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
+        } else if (Build.VERSION.SDK_INT >= 26)
+            AppUtils.startForegroundService(getActivity(),
+                    new Intent(getActivity(), CommunicationService.class)
+                            .setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
     }
 
     private class StatusReceiver extends BroadcastReceiver

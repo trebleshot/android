@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -56,6 +57,7 @@ public class ConnectionManagerActivity
     private NetworkManagerFragment mNetworkManagerFragment;
     private NetworkDeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
+    private ProgressBar mProgressBar;
     private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
@@ -79,13 +81,13 @@ public class ConnectionManagerActivity
                     @Override
                     public void updateTaskStarted(Interrupter interrupter)
                     {
-
+                        mProgressBar.setVisibility(View.VISIBLE);
                     }
 
                     @Override
                     public void updateTaskStopped()
                     {
-
+                        mProgressBar.setVisibility(View.GONE);
                     }
                 };
 
@@ -170,6 +172,7 @@ public class ConnectionManagerActivity
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mOptionsFragment = (OptionsFragment) Fragment.instantiate(this, OptionsFragment.class.getName());
         mBarcodeConnectFragment = (BarcodeConnectFragment) Fragment.instantiate(this, BarcodeConnectFragment.class.getName());
         mHotspotManagerFragment = (HotspotManagerFragment) Fragment.instantiate(this, HotspotManagerFragment.class.getName());
@@ -390,7 +393,8 @@ public class ConnectionManagerActivity
                 @Override
                 public void onClick(View v)
                 {
-                    new ConnectionSetUpAssistant(getActivity());
+                    new ConnectionSetUpAssistant(getActivity())
+                            .startShowing();
                 }
             });
 

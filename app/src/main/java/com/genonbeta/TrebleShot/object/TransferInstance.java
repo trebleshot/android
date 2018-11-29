@@ -5,6 +5,7 @@ import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
 /**
  * created by: Veli
@@ -39,6 +40,8 @@ public class TransferInstance
             mDevice = buildDevice(database, mConnection.deviceId);
             mAssignee = buildAssignee(database, mGroup, mDevice);
         }
+
+        NetworkDeviceLoader.processConnection(database, getDevice(), getConnection());
     }
 
     protected TransferGroup.Assignee buildAssignee(AccessDatabase database, TransferGroup group, NetworkDevice device) throws AssigneeNotFoundException

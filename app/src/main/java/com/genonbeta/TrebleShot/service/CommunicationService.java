@@ -923,7 +923,6 @@ public class CommunicationService extends Service
                 getActiveProcessList().add(processHolder);
             }
 
-
             try {
                 ActiveConnection.Response mainRequest = activeConnection.receive();
                 Log.d(TAG, "SeamlessServer.onConnected(): receive: " + mainRequest.response);
