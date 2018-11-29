@@ -36,12 +36,6 @@
             android:title="@string/text_hotspotStartsTrustZone" />
 
         <CheckBoxPreference
-            android:defaultValue="true"
-            android:key="qr_trust"
-            android:summary="@string/text_qrAllowTrustZoneSummary"
-            android:title="@string/text_qrAllowTrustZone" />
-
-        <CheckBoxPreference
             android:defaultValue="false"
             android:key="kill_service_on_exit"
             android:summary="@string/text_killServiceAfterLeavingSummary"

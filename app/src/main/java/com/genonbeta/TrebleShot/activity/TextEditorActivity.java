@@ -2,12 +2,14 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -17,6 +19,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -214,7 +217,14 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             @Override
             public void onRun()
             {
-                final WorkerService.RunningTask thisTask = this;
+                final DialogInterface.OnClickListener retyButtonListener = new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        doCommunicate(device, connection);
+                    }
+                };
 
                 CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
                 {
@@ -239,27 +249,10 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
                             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT))
                                 createSnackbar(R.string.mesg_sent).show();
-                            else {
-                                if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
-                                    createSnackbar(R.string.mesg_notAllowed)
-                                            .setAction(R.string.ques_why, new View.OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(View v)
-                                                {
-                                                    AlertDialog.Builder builder = new AlertDialog.Builder(TextEditorActivity.this);
-
-                                                    builder.setMessage(getString(R.string.text_notAllowedHelp,
-                                                            device.nickname,
-                                                            AppUtils.getLocalDeviceName(TextEditorActivity.this)));
-
-                                                    builder.setNegativeButton(R.string.butn_close, null);
-                                                    builder.show();
-                                                }
-                                            }).show();
-                                else
-                                    createSnackbar(R.string.mesg_somethingWentWrong).show();
-                            }
+                            else
+                                UIConnectionUtils.showConnectionRejectionInformation(
+                                        TextEditorActivity.this,
+                                        device, clientResponse, retyButtonListener);
                         } catch (Exception e) {
                             e.printStackTrace();
                             createSnackbar(R.string.mesg_somethingWentWrong).show();

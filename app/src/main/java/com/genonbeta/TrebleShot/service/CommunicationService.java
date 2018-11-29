@@ -481,11 +481,6 @@ public class CommunicationService extends Service
         return mWifiLock;
     }
 
-    public boolean isQRFastMode()
-    {
-        return getDefaultPreferences().getBoolean("qr_trust", false);
-    }
-
     public boolean isProcessRunning(int groupId, String deviceId)
     {
         return findProcessById(groupId, deviceId) != null;
@@ -643,8 +638,6 @@ public class CommunicationService extends Service
                     }
                 }
 
-                final boolean seamlessActive = mSeamlessMode || (isQRFastMode() && isSecureConnection);
-
                 if (deviceSerial != null) {
                     NetworkDevice device = new NetworkDevice(deviceSerial);
 
@@ -678,6 +671,8 @@ public class CommunicationService extends Service
                     }
 
                     final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), device, activeConnection.getClientAddress());
+                    final NetworkDevice finalDevice = device;
+                    final boolean isSeamlessAvailable = mSeamlessMode && (device.isTrusted || isSecureConnection);
 
                     if (!shouldContinue)
                         replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
@@ -687,7 +682,6 @@ public class CommunicationService extends Service
                                 if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID) && getOngoingIndexList().size() < 1) {
                                     final String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
                                     final long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
-                                    final NetworkDevice finalDevice = device;
 
                                     result = true;
 
@@ -805,7 +799,7 @@ public class CommunicationService extends Service
                                                         .putExtra(EXTRA_GROUP_ID, groupId)
                                                         .putExtra(EXTRA_DEVICE_ID, finalDevice.deviceId));
 
-                                                if (seamlessActive && finalDevice.isTrusted)
+                                                if (isSeamlessAvailable)
                                                     try {
                                                         startFileReceiving(group.groupId, finalDevice.deviceId);
                                                     } catch (Exception e) {

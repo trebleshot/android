@@ -51,13 +51,13 @@ public class EstablishConnectionDialog extends ProgressDialog
             }
         });
 
-        show();
-
         runThis(interrupter, activity, networkDevice, listener);
     }
 
     private void runThis(final Interrupter interrupter, final Activity activity, final NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
     {
+        show();
+
         WorkerService.run(activity, new WorkerService.RunningTask(TAG, TASK_CONNECT)
         {
             @Override
@@ -69,6 +69,8 @@ public class EstablishConnectionDialog extends ProgressDialog
                 final ArrayList<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                         .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.deviceId)
                         .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class);
+
+                setMax(connectionList.size());
 
                 for (final NetworkDevice.Connection connection : connectionList) {
                     if (getInterrupter().interrupted())

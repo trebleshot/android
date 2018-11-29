@@ -167,5 +167,6 @@
                 android:text="@string/butn_useKnownDevice" />
 
         </LinearLayout>
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

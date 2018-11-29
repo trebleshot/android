@@ -14,10 +14,6 @@
         android:key="hotspot_trust"/>
 
     <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="qr_trust"/>
-
-    <CheckBoxPreference
         android:defaultValue="true"
         android:key="kill_service_on_exit"/>
 

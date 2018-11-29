@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.ui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,18 +12,25 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
@@ -55,7 +63,7 @@ public class UIConnectionUtils
         return mSnackbarSupport;
     }
 
-    public void makeAcquaintance(final FragmentActivity activity, final AccessDatabase database,
+    public void makeAcquaintance(final Activity activity, final AccessDatabase database,
                                  final UITask task, final Object object, final int accessPin,
                                  final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
     {
@@ -67,6 +75,15 @@ public class UIConnectionUtils
             @Override
             public void onRun()
             {
+                final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        makeAcquaintance(activity, database, task, object, accessPin, registerListener);
+                    }
+                };
+
                 try {
                     if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
                         mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
@@ -81,7 +98,7 @@ public class UIConnectionUtils
                         mRemoteAddress = (String) object;
 
                     if (mRemoteAddress != null) {
-                        mConnected = getConnectionUtils().setupConnection(database, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
+                        mConnected = setupConnection(activity, mRemoteAddress, accessPin, new NetworkDeviceLoader.OnDeviceRegisteredListener()
                         {
                             @Override
                             public void onDeviceRegistered(final AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
@@ -97,7 +114,7 @@ public class UIConnectionUtils
                                     }
                                 });
                             }
-                        }) != null;
+                        }, retryButtonListener) != null;
                     }
 
                     if (!mConnected && !getInterrupter().interruptedByUser())
@@ -109,14 +126,7 @@ public class UIConnectionUtils
                                 AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
                                         .setMessage(R.string.mesg_connectionFailure)
                                         .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-                                        {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which)
-                                            {
-                                                makeAcquaintance(activity, database, task, object, accessPin, registerListener);
-                                            }
-                                        });
+                                        .setPositiveButton(R.string.butn_retry, retryButtonListener);
 
                                 if (object instanceof NetworkDevice)
                                     dialogBuilder.setTitle(((NetworkDevice) object).nickname);
@@ -156,7 +166,95 @@ public class UIConnectionUtils
         return returnedState;
     }
 
-    public void showConnectionOptions(final FragmentActivity activity, final int locationPermRequestId, final RequestWatcher watcher)
+    @WorkerThread
+    public NetworkDevice setupConnection(final Activity activity,
+                                         final String ipAddress,
+                                         final int accessPin,
+                                         final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
+                                         final DialogInterface.OnClickListener retryButtonListener)
+    {
+        return CommunicationBridge.connect(AppUtils.getDatabase(activity), NetworkDevice.class, new CommunicationBridge.Client.ConnectionHandler()
+        {
+            @Override
+            public void onConnect(CommunicationBridge.Client client)
+            {
+                try {
+                    client.setSecureKey(accessPin);
+
+                    CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
+                    NetworkDevice device = client.loadDevice(activeConnection);
+
+                    activeConnection.reply(new JSONObject()
+                            .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
+                            .toString());
+
+                    JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
+
+                    if (receivedReply.has(Keyword.RESULT)
+                            && receivedReply.getBoolean(Keyword.RESULT)
+                            && device.deviceId != null) {
+                        final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(AppUtils.getDatabase(activity), device, ipAddress);
+
+                        device.lastUsageTime = System.currentTimeMillis();
+                        device.tmpSecureKey = accessPin;
+                        device.isRestricted = false;
+                        device.isTrusted = true;
+
+                        AppUtils.getDatabase(activity).publish(device);
+
+                        if (listener != null)
+                            listener.onDeviceRegistered(AppUtils.getDatabase(activity), device, connection);
+                    } else
+                        showConnectionRejectionInformation(activity, device, receivedReply, retryButtonListener);
+
+                    client.setReturn(device);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public static void showConnectionRejectionInformation(final Activity activity,
+                                                          final NetworkDevice device,
+                                                          final JSONObject clientResponse,
+                                                          final DialogInterface.OnClickListener retryButtonListener)
+    {
+        try {
+            if (clientResponse.has(Keyword.ERROR)) {
+                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            new AlertDialog.Builder(activity)
+                                    .setTitle(R.string.mesg_notAllowed)
+                                    .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
+                                    .setNegativeButton(R.string.butn_close, null)
+                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                    .show();
+                        }
+                    });
+            } else
+                new Handler(Looper.getMainLooper()).post(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        new AlertDialog.Builder(activity)
+                                .setMessage(R.string.mesg_somethingWentWrong)
+                                .setNegativeButton(R.string.butn_close, null)
+                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                .show();
+                    }
+                });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void showConnectionOptions(final Activity activity, final int locationPermRequestId, final RequestWatcher watcher)
     {
         if (!getConnectionUtils().getWifiManager().isWifiEnabled())
             getSnackbarSupport().createSnackbar(R.string.mesg_suggestSelfHotspot)
@@ -268,7 +366,7 @@ public class UIConnectionUtils
         return true;
     }
 
-    public boolean turnOnWiFi(final FragmentActivity activity, final int requestId, final RequestWatcher watcher)
+    public boolean turnOnWiFi(final Activity activity, final int requestId, final RequestWatcher watcher)
     {
         if (getConnectionUtils().getWifiManager().setWifiEnabled(true)) {
             getSnackbarSupport().createSnackbar(R.string.mesg_turningWiFiOn).show();
@@ -300,7 +398,7 @@ public class UIConnectionUtils
         return false;
     }
 
-    public boolean validateLocationPermission(final FragmentActivity activity, final int requestId, final RequestWatcher watcher)
+    public boolean validateLocationPermission(final Activity activity, final int requestId, final RequestWatcher watcher)
     {
         if (Build.VERSION.SDK_INT < 23)
             return true;
@@ -324,7 +422,7 @@ public class UIConnectionUtils
                         public void onClick(DialogInterface dialog, int which)
                         {
                             watcher.onResultReturned(false, true);
-                            // No I am not going to add an if statement because when it is not needed
+                            // No, I am not going to add an if statement since when it is not needed
                             // the main method returns true.
                             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);

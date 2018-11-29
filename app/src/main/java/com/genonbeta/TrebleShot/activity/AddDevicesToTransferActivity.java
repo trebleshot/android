@@ -23,13 +23,12 @@ import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -375,35 +374,10 @@ public class AddDevicesToTransferActivity extends Activity
                                         .putExtra(EXTRA_GROUP_ID, assignee.groupId));
 
                                 finish();
-                            } else {
-                                if (clientResponse.has(Keyword.ERROR) && clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
-                                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                                    {
-                                        @Override
-                                        public void run()
-                                        {
-                                            new AlertDialog.Builder(AddDevicesToTransferActivity.this)
-                                                    .setTitle(R.string.mesg_notAllowed)
-                                                    .setMessage(getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(AddDevicesToTransferActivity.this)))
-                                                    .setNegativeButton(R.string.butn_close, null)
-                                                    .setPositiveButton(R.string.butn_retry, retyButtonListener)
-                                                    .show();
-                                        }
-                                    });
-                                else
-                                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                                    {
-                                        @Override
-                                        public void run()
-                                        {
-                                            new AlertDialog.Builder(AddDevicesToTransferActivity.this)
-                                                    .setMessage(R.string.mesg_somethingWentWrong)
-                                                    .setNegativeButton(R.string.butn_close, null)
-                                                    .setPositiveButton(R.string.butn_retry, retyButtonListener)
-                                                    .show();
-                                        }
-                                    });
-                            }
+                            } else
+                                UIConnectionUtils.showConnectionRejectionInformation(
+                                        AddDevicesToTransferActivity.this,
+                                        device, clientResponse, retyButtonListener);
                         } catch (Exception e) {
                             if (!(e instanceof InterruptedException)) {
                                 e.printStackTrace();

@@ -25,12 +25,17 @@
 
     </LinearLayout>
 
-    <fragment
-        android:id="@+id/devicesFragment"
-        android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/app_bar"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true">
 
+        <fragment
+            android:id="@+id/devicesFragment"
+            android:name="com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

@@ -142,7 +142,8 @@ public class TransferInfoDialog extends AlertDialog.Builder
 										try {
 											FileUtils.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, transferObject);
 
-											AppUtils.getDatabase(context).remove(transferObject);
+											transferObject.flag = TransferObject.Flag.DONE;
+											AppUtils.getDatabase(context).update(transferObject);
 
 											Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
 										} catch (IOException e) {

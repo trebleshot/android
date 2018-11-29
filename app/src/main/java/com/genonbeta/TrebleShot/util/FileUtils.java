@@ -1,15 +1,21 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.File;
@@ -51,7 +57,8 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return DocumentFile.fromFile(defaultFolder);
     }
 
-    public static String getDefaultApplicationDirectoryPath(Context context) {
+    public static String getDefaultApplicationDirectoryPath(Context context)
+    {
         return Environment.getExternalStorageDirectory().getAbsolutePath()
                 + File.separator
                 + context.getString(R.string.text_appName);

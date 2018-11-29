@@ -139,50 +139,6 @@ public class ConnectionUtils
         return remoteAddress;
     }
 
-    @WorkerThread
-    public NetworkDevice setupConnection(final AccessDatabase database, final String ipAddress, final int accessPin, final NetworkDeviceLoader.OnDeviceRegisteredListener listener)
-    {
-        return CommunicationBridge.connect(database, NetworkDevice.class, new CommunicationBridge.Client.ConnectionHandler()
-        {
-            @Override
-            public void onConnect(CommunicationBridge.Client client)
-            {
-                try {
-                    client.setSecureKey(accessPin);
-
-                    CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress, false);
-                    NetworkDevice device = client.loadDevice(activeConnection);
-
-                    activeConnection.reply(new JSONObject()
-                            .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
-                            .toString());
-
-                    JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
-
-                    if (receivedReply.has(Keyword.RESULT)
-                            && receivedReply.getBoolean(Keyword.RESULT)
-                            && device.deviceId != null) {
-                        final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(database, device, ipAddress);
-
-                        device.lastUsageTime = System.currentTimeMillis();
-                        device.tmpSecureKey = accessPin;
-                        device.isRestricted = false;
-                        device.isTrusted = true;
-
-                        database.publish(device);
-
-                        if (listener != null)
-                            listener.onDeviceRegistered(database, device, connection);
-                    }
-
-                    client.setReturn(device);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
     public boolean hasLocationPermission(Context context)
     {
         return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;

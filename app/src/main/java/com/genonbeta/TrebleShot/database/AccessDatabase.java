@@ -153,6 +153,7 @@ public class AccessDatabase extends SQLiteDatabase
 
                 try {
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
+                    SQLValues.Table divisTransfer = databaseTables.getTables().get(DIVIS_TRANSFER);
                     ArrayMap<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
                     List<TransferGroup.Assignee> availableAssignees = castQuery(database, new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class, null);
@@ -172,6 +173,7 @@ public class AccessDatabase extends SQLiteDatabase
 
                     database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
                     SQLQuery.createTable(database, tableTransfer);
+                    SQLQuery.createTable(database, divisTransfer);
                     insert(database, supportedItems, null, null);
                 } catch (Exception e) {
                     e.printStackTrace();
