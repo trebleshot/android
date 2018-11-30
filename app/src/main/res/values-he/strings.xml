@@ -386,4 +386,25 @@
     <string name="mesg_sent">נשלח</string>
     <string name="text_sendText">שליחת טקסט</string>
     <string name="butn_start">התחלה</string>
+    <string name="text_downloads">הורדות</string>
+    <string name="text_documents">מסמכים</string>
+    <string name="text_shortcuts">קיצורי דרך</string>
+    <string name="text_recentFiles">קבצים אחרונים</string>
+    <string name="butn_changeSavePath">שינוי נתיב לשמירה</string>
+    <string name="mesg_fileReceiveFilesLeftError">קבלתם של חלק מהקבצים נכשלה</string>
+    <string name="text_send">שליחה</string>
+    <string name="ques_needHelp">אפשר להציע לך עזרה\?</string>
+    <string name="text_connectionWizard">אשף חיבור</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">הכול מוגדר כמו שצריך במכשיר השני\?</string>
+    <string name="ques_connectionWizardIsThereQRCode">האם מופיע QR (ברקוד) על המסך של המכשיר השני\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">לגשת למכשירים שהתחברת אליהם בעבר\?</string>
+    <string name="butn_yes">כן</string>
+    <string name="butn_no">לא</string>
+    <string name="text_loadThumbnails">טעינת תמונות ממוזערות</string>
+    <string name="text_loadThumbnailsSummary">הצגת תמונות ממוזערות עבור קבצים</string>
+    <string name="text_manageDevices">ניהול מכשירים</string>
+    <string name="text_search">חיפוש</string>
+    <string name="mesg_wifiEnableFailed">לא ניתן להפעיל את התקשורת האלחוטית.</string>
+    <string name="mesg_turningWiFiOn">התקשורת האלחוטית מופעלת</string>
+    <string name="mesg_locationPermissionRequiredAny">יש להפעיל את שירות המיקום כדי להמשיך</string>
     </resources>
