@@ -381,13 +381,13 @@
     <string name="mesg_turningWiFiOn">Wi-Fi etkinleştiriliyor</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi açılmıyor.</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Diğer cihazda gerekli şeyleri daha şimdi ayarladınız mı?</string>
-    <string name="ques_connectionWizardIsThereQRCode">Diğer cihazın ekranında bir QR Kode (karekod) görüyor musunuz?</string>
-    <string name="ques_connectionWizardUseHotspot">Diğer cihazın bu cihaza hotspot ile bağlanmasını istiyor musunuz? Hotspot nedir bilmiyorsanız, \'Evet\' diyin.</string>
+    <string name="ques_connectionWizardIsThereQRCode">Diğer cihazın ekranında bir QR Kod (karekod) görüyor musunuz\?</string>
+    <string name="ques_connectionWizardUseHotspot">Diğer cihazın bu cihaza hotspot ile bağlanmasını istiyor musunuz\? Hotspot nedir bilmiyorsanız, \'Evet\' deyin.</string>
     <string name="ques_connectionWizardUseKnownDevices">Daha önce bağlantıya geçtiğiniz cihazlara erişmek istiyor musunuz?</string>
     <string name="ques_connectionWizardUseNetwork">Sizin ve arkadaşınızın bağlı olduğu bir Wi-Fi ağınızı mı kullanmak istiyorsunuz?</string>
     <string name="ques_needHelp">Yardım lazım mı?</string>
     <string name="text_addDeviceHelp">Cihazlar ekleyerek aynı dosyaları birden fazla cihaz ile paylaşırsınız. Tamamlandığında geri döneceksiniz.</string>
-    <string name="text_connectionHelp">Diğer cihaza bağlanmak için bir şeçeneğe gidin. Örneğin, diğer cihaz bir QR Kode (karekod) gösteriyor ise, \'QR Kodu tara\' seçeneğine gidin.</string>
+    <string name="text_connectionHelp">Diğer cihaza bağlanmak için bir şeçeneğe gidin. Örneğin, diğer cihaz bir QR Kod (karekod) gösteriyor ise, \'QR Kodu tara\' seçeneğine gidin.</string>
     <string name="text_connectionWizard">Bağlantı sihirbazı</string>
     <string name="text_documents">Belgeler</string>
     <string name="text_downloads">İndirmeler</string>
