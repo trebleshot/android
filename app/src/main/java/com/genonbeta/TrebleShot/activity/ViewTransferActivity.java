@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -318,17 +317,8 @@ public class ViewTransferActivity
                         }
                     }).show();
         } else if (id == R.id.actions_transfer_retry_all) {
-            ContentValues contentValues = new ContentValues();
 
-            contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
-
-            getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                    + AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
-                                    + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                            String.valueOf(mGroup.groupId),
-                            TransferObject.Flag.INTERRUPTED.toString(),
-                            TransferObject.Type.INCOMING.toString()), contentValues);
+            TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 
             createSnackbar(R.string.mesg_retryAllInfo)
                     .show();

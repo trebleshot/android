@@ -1235,6 +1235,7 @@ public class CommunicationService extends Service
 
                                 Receive.Handler handler = mReceive.prepare(receiveBuilder);
                                 long currentSize = processHolder.currentFile.length();
+                                processHolder.transferObject.skippedBytes = currentSize;
 
                                 {
                                     JSONObject jsonObject = new JSONObject();
@@ -1244,10 +1245,8 @@ public class CommunicationService extends Service
                                     jsonObject.put(Keyword.TRANSFER_SOCKET_PORT, receiveBuilder.getServerSocket().getLocalPort());
                                     jsonObject.put(Keyword.RESULT, true);
 
-                                    if (currentSize > 0) {
+                                    if (currentSize > 0)
                                         jsonObject.put(Keyword.SKIPPED_BYTES, currentSize);
-                                        handler.skipBytes(currentSize);
-                                    }
 
                                     handler.getExtra().activeConnection.reply(jsonObject.toString());
                                     Log.d(TAG, "Receive.onTaskPrepareSocket(): reply: " + jsonObject.toString());
@@ -1276,23 +1275,37 @@ public class CommunicationService extends Service
                                             }
                                         }
                                     } else {
-                                        if (!response.has(Keyword.SIZE_CHANGED) || currentSize == 0) {
-                                            mReceive.receive(handler, true);
-                                        } else {
+                                        long sizeChanged = response.has(Keyword.SIZE_CHANGED)
+                                                ? response.getLong(Keyword.SIZE_CHANGED)
+                                                : -1;
+
+                                        boolean sizeActuallyChanged = sizeChanged > -1 &&
+                                                handler.getExtra().transferObject.fileSize != sizeChanged;
+
+                                        boolean canContinue = !sizeActuallyChanged || currentSize < 1;
+
+                                        if (sizeActuallyChanged) {
                                             Log.d(TAG, "Receive.onTaskPrepareSocket(): Sender says the file has a new size");
                                             handler.getExtra().transferObject.fileSize = response.getLong(Keyword.SIZE_CHANGED);
-
-                                            if (currentSize > 0) {
-                                                Log.d(TAG, "Receive.onTaskPrepareSocket(): The change may broke the previous file which has a length. Interrupt for now");
-                                                handler.getExtra().transferObject.flag = TransferObject.Flag.INTERRUPTED;
-                                            }
                                         }
+
+                                        if (!canContinue) {
+                                            Log.d(TAG, "Receive.onTaskPrepareSocket(): The change may broke the previous file which has a length. Cannot take the risk.");
+                                            handler.getExtra().transferObject.flag = TransferObject.Flag.REMOVED;
+                                        } else
+                                            mReceive.receive(handler, true);
                                     }
                                 }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                             retry = true;
+
+                            if (!processHolder.recoverInterruptions) {
+                                TransferUtils.recoverIncomingInterruptions(CommunicationService.this, processHolder.groupId);
+                                processHolder.recoverInterruptions = true;
+                            }
+
                             break;
                         } finally {
                             if (processHolder.transferObject != null) {
@@ -1397,6 +1410,9 @@ public class CommunicationService extends Service
         @Override
         public void onNotify(TransferHandler<ProcessHolder> handler, int percentage)
         {
+            // Some bytes have been received, meaning we can handle another file recovery (useful for big files)
+            handler.getExtra().recoverInterruptions = false;
+
             handler.getExtra().notification.setContentText(getString(R.string.text_remainingTime, TimeUtils.getDuration(handler.getTransferProgress().getTimeRemaining())));
             handler.getExtra().notification.updateProgress(100, percentage, false);
 
@@ -1458,6 +1474,20 @@ public class CommunicationService extends Service
 
                 handler.getTransferProgress().setTotalByte(indexInstance.incoming - indexInstance.incomingCompleted);
             }
+
+            return Flag.CONTINUE;
+        }
+
+        @Override
+        public Flag onTaskOrientateStreams(TransferHandler<ProcessHolder> handler, InputStream inputStream, OutputStream outputStream)
+        {
+            if (handler.getExtra().transferObject.skippedBytes > 0)
+                try {
+                    handler.skipBytes(handler.getExtra().transferObject.skippedBytes);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return Flag.CONTINUE;
+                }
 
             return Flag.CONTINUE;
         }
@@ -1568,6 +1598,7 @@ public class CommunicationService extends Service
         public DocumentFile currentFile;
         public TransferObject.Type type;
         public String deviceId;
+        public boolean recoverInterruptions = false;
         public long groupId;
         public int attemptsLeft = 2;
     }

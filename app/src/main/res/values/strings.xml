@@ -403,7 +403,7 @@
     <string name="mesg_sent">Sent</string>
     <string name="text_sendText">Send text</string>
     <string name="butn_start">Start</string>
-    <string name="text_addDeviceHelp">Adding devices helps you share the same files with more devices. You will be taken back to the transfer when it is done.</string>
+    <string name="text_addDeviceHelp">By adding devices, you share the same files with more devices. You will be taken back to the transfer when it is done.</string>
     <string name="text_downloads">Downloads</string>
     <string name="text_documents">Documents</string>
     <string name="text_shortcuts">Shortcuts</string>
@@ -419,11 +419,11 @@
     <string name="ques_connectionWizardIsThereQRCode">Do you see a QR code (barcode) on its screen?</string>
     <string name="ques_connectionWizardUseHotspot">Do you want the other device to connect to this device with hotspot (tethering)? If you don\'t know what hotspot is, tap to Yes.</string>
     <string name="ques_connectionWizardUseNetwork">Do you want to use your router or any Wi-Fi network that you and your friend connected to?</string>
-    <string name="ques_connectionWizardUseKnownDevices">No viable option left! Do you want to access your previously contacted devices? You can scan over any network there.</string>
+    <string name="ques_connectionWizardUseKnownDevices">Do you want to access your previously contacted devices?</string>
     <string name="butn_yes">Yes</string>
     <string name="butn_no">No</string>
     <string name="text_loadThumbnails">Load thumbnails</string>
-    <string name="text_loadThumbnailsSummary">Show thumbnails excluding media in Image and Video sharing sections</string>
+    <string name="text_loadThumbnailsSummary">Show thumbnails for files</string>
     <string name="text_manageDevices">Manage devices</string>
     <string name="text_search">Search</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi won\'t turn on.</string>
@@ -434,5 +434,5 @@
     <string name="butn_help">Help</string>
     <string name="butn_choose">Choose</string>
     <string name="butn_fixConnection">Fix connection</string>
-    <string name="text_fixConnection">@string/butn_fixConnection</string>
+    <string name="text_fixConnection" translatable="false">@string/butn_fixConnection</string>
 </resources>

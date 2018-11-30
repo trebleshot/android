@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -108,6 +109,20 @@ public class TransferUtils
                 .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId);
 
         AppUtils.startForegroundService(context, intent);
+    }
+
+    public static void recoverIncomingInterruptions(Context context, long groupId) {
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
+
+        AppUtils.getDatabase(context).update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+                                + AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
+                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                        String.valueOf(groupId),
+                        TransferObject.Flag.INTERRUPTED.toString(),
+                        TransferObject.Type.INCOMING.toString()), contentValues);
     }
 
     public static void startTransferWithTest(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
