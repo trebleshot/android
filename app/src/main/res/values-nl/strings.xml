@@ -18,7 +18,7 @@
     <string name="butn_accept">Accepteren</string>
     <string name="butn_reject">Afwijzen</string>
     <string name="text_taskOngoing">Lopende taak</string>
-    <string name="butn_stopService">Stoppen</string>
+    <string name="butn_stop">Stoppen</string>
     <string name="text_sending">Bezig met versturen</string>
     <string name="butn_cancelSending">Versturen annuleren</string>
     <string name="text_receiving">Bezig met ontvangen</string>
@@ -74,7 +74,7 @@
     <string name="butn_showOnFileManager">Weergeven in bestandsbeheerder</string>
     <string name="text_chooseFileManager">Kies bestandsbeheerder</string>
     <string name="text_ipAddress">IP-adres</string>
-    <string name="text_allowToAccess">Verbinden toestaan</string>
+    <string name="text_allowToConnect">Verbinden toestaan</string>
     <string name="text_connectionPermission">Verbindingsmachtiging</string>
     <string name="ques_allowDeviceToConnect">Wil je dit apparaat laten verbinden?</string>
     <string name="mesg_stopping">Bezig met stoppen</string>
@@ -96,7 +96,7 @@
     <string name="text_showSystemAppsSummary">Systeemapps tonen in het menu \"Delen\"</string>
     <string name="butn_showSystemApps">Systeemapps tonen</string>
     <string name="mesg_notAllowed">Je bent niet gemachtigd</string>
-    <string name="text_connectionProblem">Verbindingsprobleem</string>
+    <string name="mesg_connectionProblem">Verbindingsprobleem</string>
     <string name="text_communicationProblem">Communicatieprobleem</string>
     <string name="butn_multiSelect">Meerdere selecteren</string>
     <string name="butn_receive">Ontvangen</string>
@@ -207,9 +207,9 @@
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Een gokje wagen</string>
     <string name="butn_connectionList">Verbindingen</string>
-    <string name="text_feelLuckyFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot zal voor jou beslissen</string>
-    <string name="butn_retry_all">Alles opnieuw proberen</string>
+    <string name="text_automaticNetworkConnectionFailed">Alle verbindingen zijn mislukt; mogelijk is het adres gewijzigd. Houdt TrebleShot geopend en probeer om opnieuw te verbinden met het netwerk.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot zal voor jou beslissen</string>
+    <string name="butn_retryReceiving">Alles opnieuw proberen</string>
     <string name="butn_ask">Vragen</string>
     <string name="text_permissionRequest">Machtigingsverzoek</string>
     <string name="text_requestPermissionStorage">Opslagmachtiging</string>
@@ -263,10 +263,10 @@
     <string name="mesg_stoppingSelfHotspot">Bezig met uitschakelen van TrebleShot-hotspot</string>
     <string name="mesg_startingSelfHotspot">Bezig met inschakelen van TrebleShot-hotspot</string>
     <string name="text_shareWithTrebleshot">@string/butn_shareWithTrebleshot</string>
-    <string name="butn_checkAll">Alles controleren</string>
-    <string name="butn_undoAll">Alles ongedaan maken</string>
+    <string name="butn_check">Alles controleren</string>
+    <string name="butn_uncheck">Alles ongedaan maken</string>
     <string name="text_previewAndEditList">Voorvertonen en bewerken</string>
-    <string name="text_selectableNotCheckedNotice">Ongemarkeerde items zullen worden overgeslagen</string>
+    <string name="text_uncheckedItemsNotice">Ongemarkeerde items zullen worden overgeslagen</string>
     <string name="text_fileRoot">Hoofdmap</string>
     <string name="mesg_versionNotSupported">Werk de app bij naar een ondersteunde versie en zoek dan opnieuw naar apparaten.</string>
     <string name="text_versionNotSupported">@string/mesg_versionNotSupported</string>
@@ -282,7 +282,7 @@
     <string name="mesg_retryAllInfo">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Kies eerst de verbindingsmethode</string>
     <string name="butn_setUp">Instellen</string>
-    <string name="text_pseudoLocation">Neplocatie</string>
+    <string name="text_location">Neplocatie</string>
     <string name="butn_saveAnyway">Tóch opslaan</string>
     <string name="text_receivedSize">Grootte bij ontvangen</string>
     <string name="mesg_notValidTransfer">Overdracht is verlopen</string>

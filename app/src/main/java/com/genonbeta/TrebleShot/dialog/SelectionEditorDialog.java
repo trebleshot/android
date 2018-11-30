@@ -50,8 +50,8 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
 
 		setTitle(R.string.text_previewAndEditList);
 
-		setNeutralButton(R.string.butn_checkAll, null);
-		setNegativeButton(R.string.butn_undoAll, null);
+		setNeutralButton(R.string.butn_check, null);
+		setNegativeButton(R.string.butn_uncheck, null);
 		setPositiveButton(R.string.butn_close, null);
 	}
 

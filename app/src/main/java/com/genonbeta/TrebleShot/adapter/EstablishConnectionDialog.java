@@ -39,7 +39,7 @@ public class EstablishConnectionDialog extends ProgressDialog
 
         final Interrupter interrupter = new Interrupter();
 
-        setTitle(R.string.text_feelLuckyOngoing);
+        setTitle(R.string.text_automaticNetworkConnectionOngoing);
         setCancelable(false);
         setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
         setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
@@ -136,7 +136,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                                 {
                                     new AlertDialog.Builder(activity)
                                             .setTitle(R.string.text_error)
-                                            .setMessage(R.string.text_feelLuckyFailed)
+                                            .setMessage(R.string.text_automaticNetworkConnectionFailed)
                                             .setNeutralButton(R.string.butn_choose, new OnClickListener()
                                             {
                                                 @Override

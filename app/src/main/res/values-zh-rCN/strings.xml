@@ -12,7 +12,7 @@
     <string name="ques_receiveFile">是否接收此文件？</string>
     <string name="butn_accept">接受</string>
     <string name="butn_reject">拒绝</string>
-    <string name="butn_stopService">停止</string>
+    <string name="butn_stop">停止</string>
     <string name="text_sending">正在发送</string>
     <string name="butn_cancelSending">取消发送</string>
     <string name="text_receiving">正在接收</string>
@@ -60,7 +60,7 @@
     <string name="butn_showOnFileManager">在文件管理器中显示</string>
     <string name="text_chooseFileManager">选择文件管理器</string>
     <string name="text_ipAddress">IP地址</string>
-    <string name="text_allowToAccess">允许连接</string>
+    <string name="text_allowToConnect">允许连接</string>
     <string name="text_connectionPermission">连接许可</string>
     <string name="ques_allowDeviceToConnect">允许这个设备连接吗？</string>
     <string name="mesg_stopping">正在停止</string>
@@ -78,7 +78,7 @@
     <string name="text_showSystemApps">显示系统应用</string>
     <string name="text_showSystemAppsSummary">在“分享”区域显示系统应用</string>
     <string name="mesg_notAllowed">你不被允许</string>
-    <string name="text_connectionProblem">连接问题</string>
+    <string name="mesg_connectionProblem">连接问题</string>
     <string name="text_communicationProblem">通信问题</string>
     <string name="butn_multiSelect">多选</string>
     <string name="butn_receive">接收</string>
@@ -185,9 +185,9 @@
     <string name="text_shareTextShort">文本</string>
     <string name="butn_feelLucky">手气不错</string>
     <string name="butn_connectionList">连接</string>
-    <string name="text_feelLuckyFailed">没有一个连接对于设备来说是可用的。它的地址可能已经改变。尝试在TrebleShot运行时重新连接到网络。</string>
-    <string name="text_feelLuckyOngoing">TrebleShot将会为你做出决定</string>
-    <string name="butn_retry_all">全部重试</string>
+    <string name="text_automaticNetworkConnectionFailed">没有一个连接对于设备来说是可用的。它的地址可能已经改变。尝试在TrebleShot运行时重新连接到网络。</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot将会为你做出决定</string>
+    <string name="butn_retryReceiving">全部重试</string>
     <string name="text_permissionRequest">权限申请</string>
     <string name="text_requestPermissionStorage">存储权限</string>
     <string name="text_requestPermissionReadPhoneState">读取手机状态权限</string>
@@ -268,10 +268,10 @@
     <string name="mesg_locationDisabledSelfHotspot">开启位置服务来查看扫描结果并建立热点</string>
     <string name="mesg_stoppingSelfHotspot">正在停止TrebleShot热点</string>
     <string name="mesg_startingSelfHotspot">正在开启TrebleShot热点</string>
-    <string name="butn_checkAll">全选</string>
-    <string name="butn_undoAll">撤销全部</string>
+    <string name="butn_check">全选</string>
+    <string name="butn_uncheck">撤销全部</string>
     <string name="text_previewAndEditList">预览 &amp; 编辑</string>
-    <string name="text_selectableNotCheckedNotice">未标记的项目将被跳过</string>
+    <string name="text_uncheckedItemsNotice">未标记的项目将被跳过</string>
     <string name="text_fileRoot">根目录</string>
     <string name="mesg_versionNotSupported">请更新至一个受支持的版本，并重新扫描设备。</string>
     <string name="mesg_ongoingUpdateDownload">正在下载新版本</string>
@@ -300,7 +300,7 @@
     <string name="mesg_clipboardUpdateNotice">更改文本或再按一次以退出</string>
     <string name="mesg_providerNotAllowedError">默认文件夹无法被其他应用访问</string>
     <string name="mesg_deviceConnectionError">与 \"%s\" 通过 \"%s\" 的连接失败</string>
-    <string name="text_pseudoLocation">虚拟的位置</string>
+    <string name="text_location">虚拟的位置</string>
     <string name="text_receivedSize">已接收的大小</string>
     <string name="text_saveAnywaySummary">发送器不知道文件的位置，但您仍可以保存它</string>
     <string name="text_workerService">作业服务</string>

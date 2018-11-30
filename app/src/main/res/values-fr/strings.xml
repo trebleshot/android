@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">Recevoir le fichier ?</string>
     <string name="butn_accept">Accepter</string>
     <string name="butn_reject">Rejeter</string>
-    <string name="butn_stopService">Arrêter</string>
+    <string name="butn_stop">Arrêter</string>
     <string name="text_sending">Envoi</string>
     <string name="butn_cancelSending">Annuler l\'envoi</string>
     <string name="text_receiving">Réception</string>
@@ -71,7 +71,7 @@
     <string name="text_showSystemAppsSummary">Afficher les applications système dans la section \"Partager\"</string>
     <string name="butn_showSystemApps">Afficher les applications système</string>
     <string name="mesg_notAllowed">Vous n’êtes pas autorisé</string>
-    <string name="text_connectionProblem">Problème de connexion</string>
+    <string name="mesg_connectionProblem">Problème de connexion</string>
     <string name="text_communicationProblem">Problème de communication</string>
     <string name="butn_receive">Recevoir</string>
     <string name="butn_block">Bloquer</string>
@@ -154,8 +154,8 @@
     <string name="text_shareTextShort">Texte</string>
     <string name="butn_feelLucky">Se sentir chanceux</string>
     <string name="butn_connectionList">Connexions</string>
-    <string name="text_feelLuckyOngoing">TrebleShot décidera pour vous</string>
-    <string name="butn_retry_all">Tout réessayer</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot décidera pour vous</string>
+    <string name="butn_retryReceiving">Tout réessayer</string>
     <string name="butn_ask">Demander</string>
     <string name="text_permissionRequest">Demande de permission</string>
     <string name="text_requestPermissionStorage">Autorisation de stockage</string>
@@ -203,10 +203,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">À la recherche d’appareils sur le hotspot de TrebleShot</string>
     <string name="mesg_stoppingSelfHotspot">Arrêt du point d\'accès TrebleShot</string>
     <string name="mesg_startingSelfHotspot">Démarrage du point d\'accès TrebleShot</string>
-    <string name="butn_checkAll">Tout cocher</string>
-    <string name="butn_undoAll">Tout annuler</string>
+    <string name="butn_check">Tout cocher</string>
+    <string name="butn_uncheck">Tout annuler</string>
     <string name="text_previewAndEditList">Prévisualiser et éditer</string>
-    <string name="text_selectableNotCheckedNotice">Les éléments non marqués seront ignorés</string>
+    <string name="text_uncheckedItemsNotice">Les éléments non marqués seront ignorés</string>
     <string name="text_fileRoot">Fichier racine</string>
     <string name="mesg_versionNotSupported">Veuillez mettre à niveau vers une version prise en charge et ré-analyser les périphériques.</string>
     <string name="mesg_connectionUpdated">Vous communiquez actuellement via la connexion \"%s\"</string>
@@ -218,7 +218,7 @@
     <string name="mesg_retryAllInfo">TrebleShot réessaiera de recevoir les transferts interrompus</string>
     <string name="mesg_transferConnectionNotSetUpFix">Veuillez d’abord choisir la méthode de connexion</string>
     <string name="butn_setUp">Mettre en place</string>
-    <string name="text_pseudoLocation">Pseudo emplacement</string>
+    <string name="text_location">Pseudo emplacement</string>
     <string name="butn_saveAnyway">Sauvegarder quand même</string>
     <string name="text_receivedSize">Taille reçue</string>
     <string name="mesg_notValidTransfer">Transfert expiré</string>
@@ -310,7 +310,7 @@
     <string name="mesg_versionUpdatedChangelogRejected">Vous pouvez toujours trouver le « Changelog » dans la section « À propos »</string>
 	<string name="mesg_noInternetConnection">Cela nécessite une connexion Internet</string>
 <string name="mesg_stillScanning">En cours de balayage</string>
-    <string name="text_allowToAccess">Permettre la connexion</string>
+    <string name="text_allowToConnect">Permettre la connexion</string>
     <string name="ques_allowDeviceToConnect">Laisser cet appareil se connecter \?</string>
     <string name="mesg_stopping">Arrêt en cours</string>
     <string name="text_useLights">Lumières</string>

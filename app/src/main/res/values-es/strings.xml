@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">¿Recibir archivo?</string>
     <string name="butn_accept">Aceptar</string>
     <string name="butn_reject">Rechazar</string>
-    <string name="butn_stopService">Detener</string>
+    <string name="butn_stop">Detener</string>
     <string name="text_sending">Enviando</string>
     <string name="butn_cancelSending">Cancelar envío</string>
     <string name="text_receiving">Recibiendo</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">Los nuevos archivos serán almacenados en esta carpeta</string>
     <string name="mesg_pathUnavailable">%s no disponible</string>
     <string name="text_ipAddress">Dirección IP</string>
-    <string name="text_allowToAccess">Permitir conexión</string>
+    <string name="text_allowToConnect">Permitir conexión</string>
     <string name="text_connectionPermission">Permiso para conectar</string>
     <string name="ques_allowDeviceToConnect">¿Permitir que este dispositivo se conecte?</string>
     <string name="mesg_stopping">Deteniendo</string>
@@ -80,7 +80,7 @@
     <string name="text_showSystemAppsSummary">Mostrar aplicaciones del sistema en la sección de Compartir</string>
     <string name="butn_showSystemApps">Mostrar aplicaciones del sistema</string>
     <string name="mesg_notAllowed">No posee permisos</string>
-    <string name="text_connectionProblem">Problema de conexión</string>
+    <string name="mesg_connectionProblem">Problema de conexión</string>
     <string name="text_communicationProblem">Problema de comunicación</string>
     <string name="butn_multiSelect">Selección múltiple</string>
     <string name="butn_receive">Recibir</string>
@@ -181,9 +181,9 @@
     <string name="text_shareTextShort">Texto</string>
     <string name="butn_feelLucky">Me siento con suerte</string>
     <string name="butn_connectionList">Conexiones</string>
-    <string name="text_feelLuckyFailed">ninguna de las conexiones funcionó para el dispositivo. Su dirección pudo haber cambiado. Intente conectarse de nuevo a la red mientras TrebleShot está ejecutándose.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot decidirá por usted</string>
-    <string name="butn_retry_all">Re intentar todo</string>
+    <string name="text_automaticNetworkConnectionFailed">ninguna de las conexiones funcionó para el dispositivo. Su dirección pudo haber cambiado. Intente conectarse de nuevo a la red mientras TrebleShot está ejecutándose.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot decidirá por usted</string>
+    <string name="butn_retryReceiving">Re intentar todo</string>
     <string name="butn_ask">Preguntar</string>
     <string name="text_permissionRequest">Solicitud de permiso</string>
     <string name="text_requestPermissionStorage">Permiso de almacenamiento</string>
@@ -235,10 +235,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Buscando dispositivos a través de un punto de acceso TrebleShot</string>
     <string name="mesg_stoppingSelfHotspot">Deteniendo el punto de acceso TrebleShot</string>
     <string name="mesg_startingSelfHotspot">Iniciando el punto de acceso de TrebleShot</string>
-    <string name="butn_checkAll">Marcar todo</string>
-    <string name="butn_undoAll">Deshacer todo</string>
+    <string name="butn_check">Marcar todo</string>
+    <string name="butn_uncheck">Deshacer todo</string>
     <string name="text_previewAndEditList">Vista previa y edición</string>
-    <string name="text_selectableNotCheckedNotice">Los elementos sin marcar serán omitidos</string>
+    <string name="text_uncheckedItemsNotice">Los elementos sin marcar serán omitidos</string>
     <string name="text_fileRoot">Raíz del archivo</string>
     <string name="mesg_versionNotSupported">Esta versión ya no es soportada. Por favor actualice, y realice la búsqueda de dispositivos nuevamente.</string>
     <string name="mesg_connectionUpdated">La comunicación será a través de la conexión \"%s\"</string>
@@ -253,7 +253,7 @@
     <string name="mesg_retryAllInfo">TrebleShot intentará recibir las transferencias interrumpidas</string>
     <string name="mesg_transferConnectionNotSetUpFix">Por favor escoja el método de transferencia primero</string>
     <string name="butn_setUp">Configurar</string>
-    <string name="text_pseudoLocation">Pseudo ubicación</string>
+    <string name="text_location">Pseudo ubicación</string>
     <string name="butn_saveAnyway">Guardar de todos modos</string>
     <string name="text_receivedSize">Tamaño recibido</string>
     <string name="mesg_notValidTransfer">La transferencia ya no es válida</string>

@@ -18,7 +18,7 @@
     <string name="butn_accept">Godta</string>
     <string name="butn_reject">Avslå</string>
     <string name="text_taskOngoing">Pågående</string>
-    <string name="butn_stopService">Stopp</string>
+    <string name="butn_stop">Stopp</string>
     <string name="text_sending">Sender</string>
     <string name="butn_cancelSending">Avbryt forsendelse</string>
     <string name="text_receiving">Mottar</string>
@@ -75,7 +75,7 @@
     <string name="butn_showOnFileManager">Vis i filbehandler</string>
     <string name="text_chooseFileManager">Velg filbehandler</string>
     <string name="text_ipAddress">IP-adresse</string>
-    <string name="text_allowToAccess">Tillat tilgang til</string>
+    <string name="text_allowToConnect">Tillat tilgang til</string>
     <string name="text_connectionPermission">Tilkoblingsproblem</string>
     <string name="ques_allowDeviceToConnect">Tillat denne enheten å koble til?</string>
     <string name="mesg_stopping">Stopper</string>
@@ -97,7 +97,7 @@
     <string name="text_showSystemAppsSummary">Vis systemprogrammer i seksjonen for deling</string>
     <string name="butn_showSystemApps">Vis systemprogrammer</string>
     <string name="mesg_notAllowed">Du har ikke tilgang til</string>
-    <string name="text_connectionProblem">Tilkoblingsproblem</string>
+    <string name="mesg_connectionProblem">Tilkoblingsproblem</string>
     <string name="text_communicationProblem">Kommunikasjonsproblem</string>
     <string name="butn_multiSelect">Flervalg</string>
     <string name="butn_receive">Motta</string>
@@ -207,9 +207,9 @@
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Jeg prøver lykken</string>
     <string name="butn_connectionList">Tilkoblinger</string>
-    <string name="text_feelLuckyFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot vil avgjøre for deg</string>
-    <string name="butn_retry_all">Prøv alle på nytt</string>
+    <string name="text_automaticNetworkConnectionFailed">Ingen av tilkoblingene fungerte for enheten. Dens adresse kan ha endret seg. Prøv å koble til nettverket mens TrebleShot er åpent.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot vil avgjøre for deg</string>
+    <string name="butn_retryReceiving">Prøv alle på nytt</string>
     <string name="butn_ask">Spør</string>
     <string name="text_permissionRequest">Tilgangsforespørsel</string>
     <string name="text_requestPermissionStorage">Lagringstilgang</string>
@@ -250,7 +250,7 @@
     <string name="butn_typeNewEntry">Skriv inn ny oppføring</string>
     <string name="mesg_providerNotAllowedError">Den forvalgte mappen er ikke tilgjengelig for andre programmer</string>
     <string name="text_previewAndEditList">Forhåndsvis og rediger</string>
-    <string name="text_selectableNotCheckedNotice">Umarkerte elementer vil bli hoppet over</string>
+    <string name="text_uncheckedItemsNotice">Umarkerte elementer vil bli hoppet over</string>
     <string name="mesg_ongoingUpdateDownload">Laster ned den nye versjonen</string>
     <string name="mesg_hotspotCreatedInfo">Koble til \"%s\" i \"Wi-Fi -innstillinger\" eller send filer via \"%s\" inne i TrebleShot</string>
     <string name="butn_selectAll">Velg alt</string>
@@ -260,7 +260,7 @@
     <string name="mesg_retryAllInfo">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Velg tilkoblingsmetode først</string>
     <string name="butn_setUp">Sett opp</string>
-    <string name="text_pseudoLocation">Tenkt plassering</string>
+    <string name="text_location">Tenkt plassering</string>
     <string name="butn_saveAnyway">Lagre uansett</string>
     <string name="text_receivedSize">Mottatt størrelse</string>
     <string name="mesg_notValidTransfer">Overføringen utløp</string>
@@ -291,8 +291,8 @@
     <string name="mesg_scanningDevicesSelfHotspot">Ser etter enheter på et lokalt TrebleShot-nettverk</string>
     <string name="mesg_stoppingSelfHotspot">Stopper det lokale TrebleShot-trådløsnettet</string>
     <string name="mesg_startingSelfHotspot">Starter det lokale TrebleShot-trådløsnettet</string>
-    <string name="butn_checkAll">Velg alle</string>
-    <string name="butn_undoAll">Angre alt</string>
+    <string name="butn_check">Velg alle</string>
+    <string name="butn_uncheck">Angre alt</string>
     <string name="text_fileRoot">Filrot</string>
     <string name="mesg_versionNotSupported">Oppgrader til en støttet versjon og se etter enheter igjen.</string>
     <string name="mesg_connectionUpdated">Kommuniserer nå over \"%s\"-tilkoblingen</string>

@@ -2,9 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/actions_selection_list_check_all"
-        android:title="@string/butn_checkAll"/>
+        android:title="@string/butn_check"/>
 
     <item
         android:id="@+id/actions_selection_list_undo_all"
-        android:title="@string/butn_undoAll"/>
+        android:title="@string/butn_uncheck"/>
 </menu>

@@ -12,7 +12,7 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp"
         android:paddingTop="8dp"
-        android:text="@string/text_selectableNotCheckedNotice"/>
+        android:text="@string/text_uncheckedItemsNotice"/>
 
     <ListView
         android:id="@+id/listView"

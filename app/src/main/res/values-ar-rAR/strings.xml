@@ -8,7 +8,7 @@
     <string name="ques_receiveFile">تلقي الملف؟</string>
     <string name="butn_accept">قبول</string>
     <string name="butn_reject">رفض</string>
-    <string name="butn_stopService">إيقاف</string>
+    <string name="butn_stop">إيقاف</string>
     <string name="text_sending">جاري الإرسال</string>
     <string name="butn_cancelSending">إيقاف الارسال</string>
     <string name="text_receiving">جاري الإستلام</string>
@@ -57,7 +57,7 @@
     <string name="text_storagePathSummary">سيتم حفظ الملفات الجديدة إلى هذا المجلد</string>
     <string name="mesg_pathUnavailable">%s غير متوفر حاليا</string>
     <string name="text_ipAddress">عنوان IP</string>
-    <string name="text_allowToAccess">السماح بالاتصال</string>
+    <string name="text_allowToConnect">السماح بالاتصال</string>
     <string name="text_connectionPermission">إذن الاتصال</string>
     <string name="ques_allowDeviceToConnect">السماح لهذا الجهاز بالاتصال؟</string>
     <string name="mesg_stopping">يتم الايقاف</string>
@@ -79,7 +79,7 @@
     <string name="text_showSystemAppsSummary">إظهار تطبيقات النظام في قسم \"المشاركة\"</string>
     <string name="butn_showSystemApps">إظهار تطبيقات النظام</string>
     <string name="mesg_notAllowed">غير مسموح لك</string>
-    <string name="text_connectionProblem">مشكلة في الاتصال</string>
+    <string name="mesg_connectionProblem">مشكلة في الاتصال</string>
     <string name="text_communicationProblem">مشكلة في التوصيل</string>
     <string name="butn_multiSelect">اختيار متعدد</string>
     <string name="butn_receive">استلام</string>
@@ -184,9 +184,9 @@
     <string name="text_shareTextShort">نص</string>
     <string name="butn_feelLucky">شعور محظوظ</string>
     <string name="butn_connectionList">الاتصالات</string>
-    <string name="text_feelLuckyFailed">لم تعمل أيا من الاتصالات لهذا لجهاز. ربما تم تغيير عنوان الجهاز الخاص به. حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.</string>
-    <string name="text_feelLuckyOngoing">سوف يقرر تريبليشوت لك</string>
-    <string name="butn_retry_all">إعادة المحاولة للجميع</string>
+    <string name="text_automaticNetworkConnectionFailed">لم تعمل أيا من الاتصالات لهذا لجهاز. ربما تم تغيير عنوان الجهاز الخاص به. حاول إعادة الاتصال بشبكة الاتصال أثناء فتح تريبليشوت.</string>
+    <string name="text_automaticNetworkConnectionOngoing">سوف يقرر تريبليشوت لك</string>
+    <string name="butn_retryReceiving">إعادة المحاولة للجميع</string>
     <string name="butn_ask">اسأل</string>
     <string name="text_permissionRequest">طلب الإذن</string>
     <string name="text_requestPermissionStorage">إذن التخزين</string>
@@ -238,10 +238,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">ابحث عن أجهزة تعمل عليها نقطة وصول تريبليشوت</string>
     <string name="mesg_stoppingSelfHotspot">إيقاف نقطة وصول تريبليشوت</string>
     <string name="mesg_startingSelfHotspot">تشغيل نقطة وصول تريبليشوت</string>
-    <string name="butn_checkAll">تحقق من الكل</string>
-    <string name="butn_undoAll">التراجع عن الكل</string>
+    <string name="butn_check">تحقق من الكل</string>
+    <string name="butn_uncheck">التراجع عن الكل</string>
     <string name="text_previewAndEditList">معاينة وتحرير</string>
-    <string name="text_selectableNotCheckedNotice">سيتم تخطي العناصر الغير محددة</string>
+    <string name="text_uncheckedItemsNotice">سيتم تخطي العناصر الغير محددة</string>
     <string name="text_fileRoot">ملف الجذر</string>
     <string name="mesg_versionNotSupported">لم يعد يتم دعم إلاصدار هذا. الرجاء الترقية، وإعادة تفحص الأجهزة.</string>
     <string name="mesg_connectionUpdated">سيكون الاتصال عبر اتصال \"%s\"</string>
@@ -256,7 +256,7 @@
     <string name="mesg_retryAllInfo">سيحاول تريبليشوت تلقي الملفات التي تمت مقاطعتها</string>
     <string name="mesg_transferConnectionNotSetUpFix">الرجاء اختيار طريقة الاتصال أولاً</string>
     <string name="butn_setUp">الإعداد</string>
-    <string name="text_pseudoLocation">موقع زائف</string>
+    <string name="text_location">موقع زائف</string>
     <string name="butn_saveAnyway">حفظ على أية حال</string>
     <string name="text_receivedSize">الحجم المستلم</string>
     <string name="mesg_notValidTransfer">انتهت مدة صلاحية عملية النقل</string>

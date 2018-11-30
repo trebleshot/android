@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">接收檔案\?</string>
     <string name="butn_accept">接受</string>
     <string name="butn_reject">拒絕</string>
-    <string name="butn_stopService">停止</string>
+    <string name="butn_stop">停止</string>
     <string name="text_sending">傳送中</string>
     <string name="butn_cancelSending">取消傳送</string>
     <string name="text_receiving">接收中</string>
@@ -57,7 +57,7 @@
     <string name="text_storagePathSummary">新檔案將會儲存到這個資料夾</string>
     <string name="mesg_pathUnavailable">%s 目前無法使用</string>
     <string name="text_ipAddress">IP 地址</string>
-    <string name="text_allowToAccess">允許連線</string>
+    <string name="text_allowToConnect">允許連線</string>
     <string name="text_connectionPermission">連接權限</string>
     <string name="ques_allowDeviceToConnect">讓這個裝置連線\?</string>
     <string name="mesg_stopping">停止中</string>
@@ -79,7 +79,7 @@
     <string name="text_showSystemAppsSummary">在分享區段顯示系統 app</string>
     <string name="butn_showSystemApps">顯示系統 app</string>
     <string name="mesg_notAllowed">您未被允許</string>
-    <string name="text_connectionProblem">連線問題</string>
+    <string name="mesg_connectionProblem">連線問題</string>
     <string name="text_communicationProblem">通訊問題</string>
     <string name="butn_multiSelect">多重選擇</string>
     <string name="butn_receive">接收</string>
@@ -179,9 +179,9 @@
     <string name="text_shareTextShort">文字</string>
     <string name="butn_feelLucky">覺得幸運</string>
     <string name="butn_connectionList">連線</string>
-    <string name="text_feelLuckyFailed">這個裝置沒有可用的連線。它的地址可能已經變更。請在 TrebleShot 開啟的時候重新連線到網路。</string>
-    <string name="text_feelLuckyOngoing">TrebleShot 將會為您決定</string>
-    <string name="butn_retry_all">全部重試</string>
+    <string name="text_automaticNetworkConnectionFailed">這個裝置沒有可用的連線。它的地址可能已經變更。請在 TrebleShot 開啟的時候重新連線到網路。</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot 將會為您決定</string>
+    <string name="butn_retryReceiving">全部重試</string>
     <string name="butn_ask">詢問</string>
     <string name="text_permissionRequest">權限請求</string>
     <string name="text_requestPermissionStorage">儲存空間權限</string>
@@ -232,5 +232,5 @@
     <string name="mesg_scanningDevicesSelfHotspot">正透過 TrebleShot 行動熱點來搜尋裝置</string>
     <string name="mesg_stoppingSelfHotspot">正在停止 TrebleShot 行動熱點</string>
     <string name="mesg_startingSelfHotspot">正在啟動 TrebleShot 行動熱點</string>
-    <string name="butn_checkAll">勾選全部</string>
+    <string name="butn_check">勾選全部</string>
     </resources>

@@ -11,7 +11,7 @@
     <string name="ques_receiveFile">Datei empfangen?</string>
     <string name="butn_accept">Akzeptieren</string>
     <string name="butn_reject">Abweisen</string>
-    <string name="butn_stopService">Stop</string>
+    <string name="butn_stop">Stop</string>
     <string name="text_sending">Sende</string>
     <string name="butn_cancelSending">Senden abbrechen</string>
     <string name="text_receiving">Empfange</string>
@@ -60,7 +60,7 @@
     <string name="text_storagePathSummary">Neue Dateien werden in diesen Ordner gespeichert</string>
     <string name="mesg_pathUnavailable">%s aktuell nicht verfügbar</string>
     <string name="text_ipAddress">IP-Adresse</string>
-    <string name="text_allowToAccess">Verbindung erlauben</string>
+    <string name="text_allowToConnect">Verbindung erlauben</string>
     <string name="text_connectionPermission">Verbindungsberechtigung</string>
     <string name="ques_allowDeviceToConnect">Verbindung für dieses Gerät zulassen?</string>
     <string name="mesg_stopping">Stoppe</string>
@@ -82,7 +82,7 @@
     <string name="text_showSystemAppsSummary">System-Apps in \"Teilen\"-Sektion zeigen</string>
     <string name="butn_showSystemApps">System-Apps zeigen</string>
     <string name="mesg_notAllowed">Nicht erlaubt</string>
-    <string name="text_connectionProblem">Verbindungsproblem</string>
+    <string name="mesg_connectionProblem">Verbindungsproblem</string>
     <string name="text_communicationProblem">Kommunikationsproblem</string>
     <string name="butn_multiSelect">Mehrfachauswahl</string>
     <string name="butn_receive">Empfangen</string>
@@ -184,9 +184,9 @@
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Auf gut Glück</string>
     <string name="butn_connectionList">Verbindungen</string>
-    <string name="text_feelLuckyFailed">Keine der Verbindungen zum Gerät hat funktioniert. Die Adresse könnte sich geändert haben. Bitte mit dem Netzwerk verbinden während TrebleShot geöffnet ist.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot wird entscheiden</string>
-    <string name="butn_retry_all">Alle erneut versuchen</string>
+    <string name="text_automaticNetworkConnectionFailed">Keine der Verbindungen zum Gerät hat funktioniert. Die Adresse könnte sich geändert haben. Bitte mit dem Netzwerk verbinden während TrebleShot geöffnet ist.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot wird entscheiden</string>
+    <string name="butn_retryReceiving">Alle erneut versuchen</string>
     <string name="butn_ask">Fragen</string>
     <string name="text_permissionRequest">Berechtigungsanfrage</string>
     <string name="text_requestPermissionStorage">Speicherberechtigung</string>
@@ -238,10 +238,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Nach anderen Geräten über einen TrebleShot-Hotspot suchen</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot-Hotspot beenden</string>
     <string name="mesg_startingSelfHotspot">TrebleShot-Hotspot starten</string>
-    <string name="butn_checkAll">Alle prüfen</string>
-    <string name="butn_undoAll">Alles rückgängig machen</string>
+    <string name="butn_check">Alle prüfen</string>
+    <string name="butn_uncheck">Alles rückgängig machen</string>
     <string name="text_previewAndEditList">Vorschau und Bearbeiten</string>
-    <string name="text_selectableNotCheckedNotice">Nicht markierte Einträge werden übersprungen</string>
+    <string name="text_uncheckedItemsNotice">Nicht markierte Einträge werden übersprungen</string>
     <string name="text_fileRoot">Wurzelverzeichnis</string>
     <string name="mesg_versionNotSupported">Bitte auf eine unterstützte Version aktualisieren und Geräte neu suchen.</string>
     <string name="mesg_connectionUpdated">Kommuniziere jetzt über die Verbindung \"%s\"</string>
@@ -256,7 +256,7 @@
     <string name="mesg_retryAllInfo">TrebleShot versucht, unterbrochene Dateitransfers zu wiederholen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Bitte erst die Verbindungsart wählen</string>
     <string name="butn_setUp">Einrichten</string>
-    <string name="text_pseudoLocation">Pseudo-Standort</string>
+    <string name="text_location">Pseudo-Standort</string>
     <string name="butn_saveAnyway">Trotzdem speichern</string>
     <string name="text_receivedSize">Empfangene Größe</string>
     <string name="mesg_notValidTransfer">Übertragung abgelaufen</string>

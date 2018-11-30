@@ -388,7 +388,7 @@ public class AddDevicesToTransferActivity extends Activity
                                     public void run()
                                     {
                                         new AlertDialog.Builder(AddDevicesToTransferActivity.this)
-                                                .setMessage(getString(R.string.mesg_fileSendError, getString(R.string.text_connectionProblem)))
+                                                .setMessage(getString(R.string.mesg_fileSendError, getString(R.string.mesg_connectionProblem)))
                                                 .setNegativeButton(R.string.butn_close, null)
                                                 .setPositiveButton(R.string.butn_retry, retyButtonListener)
                                                 .show();

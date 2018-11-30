@@ -9,7 +9,7 @@
     <string name="ques_receiveFile">Ta emot filen\?</string>
     <string name="butn_accept">Acceptera</string>
     <string name="butn_reject">Avvisa</string>
-    <string name="butn_stopService">Stopp</string>
+    <string name="butn_stop">Stopp</string>
     <string name="text_sending">Skickar</string>
     <string name="butn_cancelSending">Avbryt sändningen</string>
     <string name="text_receiving">Tar emot</string>
@@ -57,7 +57,7 @@
     <string name="text_storagePathSummary">Nya filer sparas i denna mappen</string>
     <string name="mesg_pathUnavailable">%s är för närvarande inte tillgänglig</string>
     <string name="text_ipAddress">IP-adress</string>
-    <string name="text_allowToAccess">Tillåts att ansluta</string>
+    <string name="text_allowToConnect">Tillåts att ansluta</string>
     <string name="text_connectionPermission">Anslutningsbehörighet</string>
     <string name="ques_allowDeviceToConnect">Låt denna enheten ansluta\?</string>
     <string name="mesg_stopping">Stoppar</string>
@@ -79,7 +79,7 @@
     <string name="text_showSystemAppsSummary">Visa systemappar i sektionen \"Dela\"</string>
     <string name="butn_showSystemApps">Visa systemappar</string>
     <string name="mesg_notAllowed">Du får inte</string>
-    <string name="text_connectionProblem">Anslutningsproblem</string>
+    <string name="mesg_connectionProblem">Anslutningsproblem</string>
     <string name="text_communicationProblem">Kommunikationsproblem</string>
     <string name="butn_multiSelect">Markera flera</string>
     <string name="butn_receive">Ta emot</string>
@@ -174,9 +174,9 @@
     <string name="text_shareTextShort">Text</string>
     <string name="butn_feelLucky">Jag har tur</string>
     <string name="butn_connectionList">Anslutningar</string>
-    <string name="text_feelLuckyFailed">Ingen av anslutningarna fungerade för enheten. Kanske har adressen ändrat sig. Prova att återansluta medans TrebleShot är öppen.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot kommer att välja åt dig</string>
-    <string name="butn_retry_all">Försök igen med alla</string>
+    <string name="text_automaticNetworkConnectionFailed">Ingen av anslutningarna fungerade för enheten. Kanske har adressen ändrat sig. Prova att återansluta medans TrebleShot är öppen.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot kommer att välja åt dig</string>
+    <string name="butn_retryReceiving">Försök igen med alla</string>
     <string name="butn_ask">Fråga</string>
     <string name="text_permissionRequest">Behörighetsförfrågan</string>
     <string name="text_requestPermissionStorage">Lagrigsbehörighet</string>
@@ -223,10 +223,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Letar efter enheter över TrebleShot-hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Stoppar TrebleShot-hotspot</string>
     <string name="mesg_startingSelfHotspot">Startar TrebleShot-hotspot</string>
-    <string name="butn_checkAll">Markera alla</string>
-    <string name="butn_undoAll">Avmarkera alla</string>
+    <string name="butn_check">Markera alla</string>
+    <string name="butn_uncheck">Avmarkera alla</string>
     <string name="text_previewAndEditList">Förhandsgranska och redigera</string>
-    <string name="text_selectableNotCheckedNotice">Omarkerade objekt kommer att hoppas över</string>
+    <string name="text_uncheckedItemsNotice">Omarkerade objekt kommer att hoppas över</string>
     <string name="text_fileRoot">Filrot</string>
     <string name="mesg_versionNotSupported">Uppgradera till en nyare version och sök efter enheter igen.</string>
     <string name="mesg_connectionUpdated">Kommunicerar nu över anslutningen \"%s\"</string>
@@ -235,7 +235,7 @@
     <string name="mesg_helpFolderSelection">För att markera en mapp, tryck på ikonen</string>
     <string name="butn_selectAll">Markera alla</string>
     <string name="butn_selectNone">Markera inga</string>
-    <string name="text_pseudoLocation">Pseudoplats</string>
+    <string name="text_location">Pseudoplats</string>
     <string name="butn_saveAnyway">Spara ändå</string>
     <string name="text_receivedSize">Mottagen storlek</string>
     <string name="mesg_notValidTransfer">Överföringen har utgått</string>

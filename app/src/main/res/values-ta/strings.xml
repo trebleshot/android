@@ -2,7 +2,7 @@
 <resources><string name="text_deviceListEmpty">சாதனங்கள் இல்லை</string>
     <string name="butn_accept">ஏற்றுக்கொள்</string>
     <string name="butn_reject">நிராகரி</string>
-    <string name="butn_stopService">நிறுத்து</string>
+    <string name="butn_stop">நிறுத்து</string>
     <string name="text_sending">அனுப்பபடுகிறது</string>
     <string name="text_preferences">அமைப்புகள்</string>
     <string name="mesg_scanningDevices">அருகாமை சாதனங்களை தேடுகிறது</string>

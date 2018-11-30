@@ -18,7 +18,7 @@
     <string name="butn_accept">同意</string>
     <string name="butn_reject">拒否</string>
     <string name="text_taskOngoing">実行中</string>
-    <string name="butn_stopService">停止</string>
+    <string name="butn_stop">停止</string>
     <string name="text_sending">送信中</string>
     <string name="butn_cancelSending">キャンセル送信中</string>
     <string name="text_receiving">受信中</string>
@@ -75,7 +75,7 @@
     <string name="butn_showOnFileManager">ファイルマネージャーで表示</string>
     <string name="text_chooseFileManager">ファイルマネージャーを選択</string>
     <string name="text_ipAddress">IP アドレス</string>
-    <string name="text_allowToAccess">アクセスを許可する</string>
+    <string name="text_allowToConnect">アクセスを許可する</string>
     <string name="text_connectionPermission">接続アクセス許可</string>
     <string name="ques_allowDeviceToConnect">このデバイスの接続を許可しますか?</string>
     <string name="mesg_stopping">停止しています</string>
@@ -97,7 +97,7 @@
     <string name="butn_showSystemApps">システムアプリを表示</string>
     <string name="text_showSystemAppsSummary">共有画面にシステムアプリを表示します</string>
     <string name="mesg_notAllowed">許可されていません</string>
-    <string name="text_connectionProblem">接続の問題が発生しました</string>
+    <string name="mesg_connectionProblem">接続の問題が発生しました</string>
     <string name="text_communicationProblem">通信の問題が発生しました</string>
     <string name="text_error">エラー</string>
     <string name="butn_multiSelect">複数選択</string>

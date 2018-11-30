@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">לקבל את הקובץ\?</string>
     <string name="butn_accept">קבלה</string>
     <string name="butn_reject">דחייה</string>
-    <string name="butn_stopService">עצירה</string>
+    <string name="butn_stop">עצירה</string>
     <string name="text_sending">במהלך שיחה</string>
     <string name="butn_cancelSending">ביטול שליחה</string>
     <string name="text_receiving">במהלך קבלה</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">קבצים חדשים יישמרו לתיקיה זו</string>
     <string name="mesg_pathUnavailable">%s לא זמין כרגע</string>
     <string name="text_ipAddress">כתובת IP</string>
-    <string name="text_allowToAccess">לאפשר התחברות</string>
+    <string name="text_allowToConnect">לאפשר התחברות</string>
     <string name="text_connectionPermission">הרשאת חיבור</string>
     <string name="ques_allowDeviceToConnect">לאפשר למכשיר להתחבר\?</string>
     <string name="mesg_stopping">התהליך נעצר</string>
@@ -80,7 +80,7 @@
     <string name="text_showSystemAppsSummary">הצגת יישומוני מערכת בתפריט „שיתוף”</string>
     <string name="butn_showSystemApps">הצגת יישומוני מערכת</string>
     <string name="mesg_notAllowed">אין לך הרשאה לכך</string>
-    <string name="text_connectionProblem">בעיית חיבור</string>
+    <string name="mesg_connectionProblem">בעיית חיבור</string>
     <string name="text_communicationProblem">בעיית תקשורת</string>
     <string name="butn_multiSelect">מצב סימון מרובה</string>
     <string name="butn_receive">קבלה</string>
@@ -181,9 +181,9 @@
     <string name="text_shareTextShort">טקסט</string>
     <string name="butn_feelLucky">יותר מזל משכל</string>
     <string name="butn_connectionList">חיבורים</string>
-    <string name="text_feelLuckyFailed">אף אחד מהחיבורים לא הצליח עבור ההתקן. יכול להיות שהכתובת שלו השתנתה. כדאי לנסות להתחבר מחדש לרשת בזמן ש־TrebleShot פתוח.</string>
-    <string name="text_feelLuckyOngoing">ההחלטה תתקבל על ידי TrebleShot</string>
-    <string name="butn_retry_all">לנסות הכול שוב</string>
+    <string name="text_automaticNetworkConnectionFailed">אף אחד מהחיבורים לא הצליח עבור ההתקן. יכול להיות שהכתובת שלו השתנתה. כדאי לנסות להתחבר מחדש לרשת בזמן ש־TrebleShot פתוח.</string>
+    <string name="text_automaticNetworkConnectionOngoing">ההחלטה תתקבל על ידי TrebleShot</string>
+    <string name="butn_retryReceiving">לנסות הכול שוב</string>
     <string name="butn_ask">לשאול</string>
     <string name="text_permissionRequest">בקשת הרשאות</string>
     <string name="text_requestPermissionStorage">הרשאה לאחסון</string>
@@ -235,10 +235,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">מתבצע איתור אחר מכשירים דרך נקודה חמה של TrebleShot</string>
     <string name="mesg_stoppingSelfHotspot">הנקודה החמה של TrebleShot מופסקת</string>
     <string name="mesg_startingSelfHotspot">הנקודה החמה של TrebleShot מופעלת</string>
-    <string name="butn_checkAll">לסמן הכול</string>
-    <string name="butn_undoAll">לבטל סימון</string>
+    <string name="butn_check">לסמן הכול</string>
+    <string name="butn_uncheck">לבטל סימון</string>
     <string name="text_previewAndEditList">תצוגה מקדימה ועריכה</string>
-    <string name="text_selectableNotCheckedNotice">הפריטים שלא סומנו יוחרגו</string>
+    <string name="text_uncheckedItemsNotice">הפריטים שלא סומנו יוחרגו</string>
     <string name="text_fileRoot">בסיס הקבצים</string>
     <string name="mesg_versionNotSupported">נא לשדרג לגרסה נתמכת ולסרוק אחר התקנים מחדש.</string>
     <string name="mesg_connectionUpdated">מתבצעת תקשורת כעת דרך החיבור „%s”</string>
@@ -253,7 +253,7 @@
     <string name="mesg_retryAllInfo">"יתבצע ניסיון חוזר על ידי TrebleShot לקבלת העברות שנקטעו "</string>
     <string name="mesg_transferConnectionNotSetUpFix">נא לבחור תחילה את שיטת החיבור</string>
     <string name="butn_setUp">הגדרה</string>
-    <string name="text_pseudoLocation">מיקום מדומה</string>
+    <string name="text_location">מיקום מדומה</string>
     <string name="butn_saveAnyway">לשמור בכל זאת</string>
     <string name="text_receivedSize">גודל שהתקבל</string>
     <string name="mesg_notValidTransfer">ההעברה פגה</string>

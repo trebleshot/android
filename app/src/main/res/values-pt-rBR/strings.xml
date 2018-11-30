@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">Receber o arquivo\?</string>
     <string name="butn_accept">Aceitar</string>
     <string name="butn_reject">Rejeitar</string>
-    <string name="butn_stopService">Parar</string>
+    <string name="butn_stop">Parar</string>
     <string name="text_sending">Enviando</string>
     <string name="butn_cancelSending">Cancelar envio</string>
     <string name="text_receiving">Recebendo</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">Novos arquivos serão salvos nesta pasta</string>
     <string name="mesg_pathUnavailable">%s não disponíveis no momento</string>
     <string name="text_ipAddress">Endereço IP</string>
-    <string name="text_allowToAccess">Permitir conexão</string>
+    <string name="text_allowToConnect">Permitir conexão</string>
     <string name="text_connectionPermission">Permissão de conexão</string>
     <string name="ques_allowDeviceToConnect">Permitir a conexão deste dispositivo\?</string>
     <string name="mesg_stopping">Parando</string>
@@ -80,7 +80,7 @@
     <string name="text_showSystemAppsSummary">Exibe aplicativos do sistema na seção \"compartilhar\"</string>
     <string name="butn_showSystemApps">Exibir aplicativos do sistema</string>
     <string name="mesg_notAllowed">Você não está autorizado</string>
-    <string name="text_connectionProblem">Problemas com a conexão</string>
+    <string name="mesg_connectionProblem">Problemas com a conexão</string>
     <string name="text_communicationProblem">Problemas com a comunicação</string>
     <string name="butn_multiSelect">Seleção múltipla</string>
     <string name="butn_receive">Receber</string>
@@ -105,8 +105,8 @@
     <string name="text_pendingTransfers">Transferências pendentes</string>
     <string name="text_stopping">Parando!</string>
     <string name="mesg_warningHotspotMobileActive">Outros podem se conectar à sua rede enquanto os dados móveis estiverem ativos</string>
-    <string name="butn_checkAll">Marcar todos</string>
-    <string name="butn_undoAll">Desmarcar todos</string>
+    <string name="butn_check">Marcar todos</string>
+    <string name="butn_uncheck">Desmarcar todos</string>
     <string name="text_scanQRWifiRequired">Para se conectar a dispositivos, o Wi-Fi deverá estar ligado</string>
     <string name="text_cancellingTransfer">Cancelando tarefa…</string>
     <string name="butn_killNow">Matar agora</string>

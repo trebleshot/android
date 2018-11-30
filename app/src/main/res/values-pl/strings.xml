@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">Odbierz plik\?</string>
     <string name="butn_accept">Zaakceptuj</string>
     <string name="butn_reject">Odrzuć</string>
-    <string name="butn_stopService">Zatrzymaj</string>
+    <string name="butn_stop">Zatrzymaj</string>
     <string name="text_sending">Wyślij</string>
     <string name="butn_cancelSending">Anuluj wysyłanie</string>
     <string name="text_receiving">Odbierz</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">Nowe pliki zostaną zapisane w tym folderze</string>
     <string name="mesg_pathUnavailable">%s obecnie niedostępne</string>
     <string name="text_ipAddress">Adres IP</string>
-    <string name="text_allowToAccess">Pozwól się połączyć</string>
+    <string name="text_allowToConnect">Pozwól się połączyć</string>
     <string name="text_connectionPermission">Uprawnienia do połączenia</string>
     <string name="ques_allowDeviceToConnect">Pozwól temu urządzeniu łączyć się\?</string>
     <string name="mesg_stopping">Zatrzymaj</string>
@@ -80,7 +80,7 @@
     <string name="text_showSystemAppsSummary">Pokaż aplikacje systemowe w sekcji \"Udostępnij\"</string>
     <string name="butn_showSystemApps">Pokaż aplikacje systemowe</string>
     <string name="mesg_notAllowed">Nie masz pozwolenia</string>
-    <string name="text_connectionProblem">Problem z połączeniem</string>
+    <string name="mesg_connectionProblem">Problem z połączeniem</string>
     <string name="text_communicationProblem">Problem z komunikacją</string>
     <string name="butn_multiSelect">Wybór wielokrotny</string>
     <string name="butn_receive">Odbierz</string>
@@ -181,9 +181,9 @@
     <string name="text_shareTextShort">Tekst</string>
     <string name="butn_feelLucky">Szczęśliwy traf</string>
     <string name="butn_connectionList">Połączenia</string>
-    <string name="text_feelLuckyFailed">Żadne z połączeń nie działało na urządzenie. Jego adres mógł się zmienić. Spróbuj ponownie połączyć się z siecią, gdy otwarty jest TrebleShot.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot zadecyduje za Ciebie</string>
-    <string name="butn_retry_all">Spróbuj ponownie</string>
+    <string name="text_automaticNetworkConnectionFailed">Żadne z połączeń nie działało na urządzenie. Jego adres mógł się zmienić. Spróbuj ponownie połączyć się z siecią, gdy otwarty jest TrebleShot.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot zadecyduje za Ciebie</string>
+    <string name="butn_retryReceiving">Spróbuj ponownie</string>
     <string name="butn_ask">Zapytaj</string>
     <string name="text_permissionRequest">Prośba o pozwolenie</string>
     <string name="text_requestPermissionStorage">Uprawnienia do przechowywania</string>
@@ -235,10 +235,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Szukam urządzeń na TrebleShot hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Zatrzymaj TrebleShot hotspot</string>
     <string name="mesg_startingSelfHotspot">Uruchom TrebleShot hotspot</string>
-    <string name="butn_checkAll">Zaznacz wszystko</string>
-    <string name="butn_undoAll">Cofnij wszystko</string>
+    <string name="butn_check">Zaznacz wszystko</string>
+    <string name="butn_uncheck">Cofnij wszystko</string>
     <string name="text_previewAndEditList">Podgląd i edycja</string>
-    <string name="text_selectableNotCheckedNotice">Odznaczone elementy zostaną pominięte</string>
+    <string name="text_uncheckedItemsNotice">Odznaczone elementy zostaną pominięte</string>
     <string name="text_fileRoot">Główny plik</string>
     <string name="mesg_versionNotSupported">Uaktualnij do obsługiwanej wersji i ponownie przeskanuj urządzenia.</string>
     <string name="mesg_connectionUpdated">Teraz komunikujesz się przez połączenie \"%s\"</string>
@@ -253,7 +253,7 @@
     <string name="mesg_retryAllInfo">TrebleShot spróbuje ponownie odebrać przerwane transfery</string>
     <string name="mesg_transferConnectionNotSetUpFix">Najpierw wybierz metodę połączenia</string>
     <string name="butn_setUp">Ustaw</string>
-    <string name="text_pseudoLocation">Pseudo lokalizacja</string>
+    <string name="text_location">Pseudo lokalizacja</string>
     <string name="butn_saveAnyway">Zapisz mimo to</string>
     <string name="text_receivedSize">Otrzymany rozmiar</string>
     <string name="mesg_notValidTransfer">Transfer wygasł</string>

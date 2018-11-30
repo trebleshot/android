@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">فایل دریافت شود؟</string>
     <string name="butn_accept">پذیرش</string>
     <string name="butn_reject">رد کردن</string>
-    <string name="butn_stopService">توقف</string>
+    <string name="butn_stop">توقف</string>
     <string name="text_sending">ارسال</string>
     <string name="butn_cancelSending">لغو ارسال</string>
     <string name="text_receiving">درحال دریافت</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">فایل های جدید در این پوشه نگهداری میشوند.</string>
     <string name="mesg_pathUnavailable">%s در حال حاضر موجود نیست</string>
     <string name="text_ipAddress">آدرس آی پی</string>
-    <string name="text_allowToAccess">اجازه بده وصل شود</string>
+    <string name="text_allowToConnect">اجازه بده وصل شود</string>
     <string name="text_connectionPermission">اتصال مجاز است</string>
     <string name="ques_allowDeviceToConnect">به این دستگاه اجازه اتصال میدهید؟</string>
     <string name="mesg_stopping">در حال توقف</string>
@@ -77,7 +77,7 @@
     <string name="text_showSystemAppsSummary">نمایش برنامه های سیستمی در بخش \"اشتراک\"</string>
     <string name="butn_showSystemApps">نمایش برنامه های سیستمی</string>
     <string name="mesg_notAllowed">شما مجاز نیستید</string>
-    <string name="text_connectionProblem">مشکل اتصال</string>
+    <string name="mesg_connectionProblem">مشکل اتصال</string>
     <string name="text_communicationProblem">مشکل برقراری ارتباط</string>
     <string name="butn_multiSelect">چند انتخابی</string>
     <string name="butn_receive">دریافت</string>
@@ -172,14 +172,14 @@
     <string name="text_shareTextShort">متن</string>
     <string name="butn_feelLucky">شانسی</string>
     <string name="butn_connectionList">اتصالات</string>
-    <string name="text_feelLuckyOngoing">برنامه برای شما تصمیم خواهد گرفت</string>
-    <string name="butn_retry_all">تلاش مجدد برای همه</string>
+    <string name="text_automaticNetworkConnectionOngoing">برنامه برای شما تصمیم خواهد گرفت</string>
+    <string name="butn_retryReceiving">تلاش مجدد برای همه</string>
     <string name="butn_ask">سوال بپرس</string>
     <string name="text_permissionRequest">درخواست مجوز</string>
     <string name="text_requestPermissionStorage">مجوز ذخیره سازی</string>
     <string name="text_requestPermissionReadPhoneState">مجوز برای خواندن وضعیت تلفن</string>
     <string name="butn_proceed">ادامه</string>
-    <string name="text_feelLuckyFailed">اتصال به وسیله مورد نظر از هیچ طریقی میسر نشد. ممکن است نشانی آن تغییر کرده باشد. تلاش کنید حین باز بودن TrebleShot، دوباره به شبکه وصل شوید.</string>
+    <string name="text_automaticNetworkConnectionFailed">اتصال به وسیله مورد نظر از هیچ طریقی میسر نشد. ممکن است نشانی آن تغییر کرده باشد. تلاش کنید حین باز بودن TrebleShot، دوباره به شبکه وصل شوید.</string>
     <string name="text_requestPermissionReadPhoneStateSummary">برای ایجاد یک شماره منحصربه‌فرد بلندمدت که می‌تواند در شناسایی دستگاه شما توسط دیگران کمک کند، TrebleShot نیاز دارد تا به شماره سریال دستگاه شما دسترسی داشته باشد</string>
     <string name="text_mediaDirectory">پوشه رسانه</string>
     <string name="mesg_notEnoughSpace">فضای کافی موجود نیست</string>
@@ -212,9 +212,9 @@
     <string name="butn_skip">صرف‌نظر</string>
     <string name="butn_enable">فعال‌سازی</string>
     <string name="butn_locationSettings">مکان</string>
-    <string name="butn_checkAll">انتخاب همه</string>
+    <string name="butn_check">انتخاب همه</string>
     <string name="text_previewAndEditList">پیش‌نمایش و ویرایش</string>
-    <string name="text_selectableNotCheckedNotice">از موارد انتخاب‌نشده صرف نظر می‌شود</string>
+    <string name="text_uncheckedItemsNotice">از موارد انتخاب‌نشده صرف نظر می‌شود</string>
     <string name="mesg_ongoingUpdateDownload">بارگیری نسخه جدید</string>
     <string name="butn_gotIt">دریافت شد</string>
     <string name="mesg_helpFolderSelection">برای انتخاب پوشه، شمایل آن را لمس کنید</string>

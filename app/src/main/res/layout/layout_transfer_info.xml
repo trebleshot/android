@@ -108,7 +108,7 @@
             style="@style/TextAppearance.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/text_pseudoLocation"/>
+            android:text="@string/text_location"/>
 
         <TextView
             android:id="@+id/transfer_info_pseudo_location"

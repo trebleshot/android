@@ -10,7 +10,7 @@
     <string name="ques_receiveFile">Jaso fitxategia?</string>
     <string name="butn_accept">Onartu</string>
     <string name="butn_reject">Ukatu</string>
-    <string name="butn_stopService">Gelditu</string>
+    <string name="butn_stop">Gelditu</string>
     <string name="text_sending">Bidaltzen</string>
     <string name="butn_cancelSending">Eten bidalketa</string>
     <string name="text_receiving">Jasotzen</string>
@@ -58,7 +58,7 @@
     <string name="text_storagePathSummary">Fitxategi berriak karpeta honetan gordeko dira</string>
     <string name="mesg_pathUnavailable">%s orain eskuraezina</string>
     <string name="text_ipAddress">IP helbidea</string>
-    <string name="text_allowToAccess">Baimendu konektatzea</string>
+    <string name="text_allowToConnect">Baimendu konektatzea</string>
     <string name="text_connectionPermission">Konektatzeko baimena</string>
     <string name="ques_allowDeviceToConnect">Baimendu gailu honi konektatzea?</string>
     <string name="mesg_stopping">Gelditzen</string>
@@ -80,7 +80,7 @@
     <string name="text_showSystemAppsSummary">Erakutsi sistemako aplikazioak \"partekatu\" atalean</string>
     <string name="butn_showSystemApps">Erakutsi sistemako aplikazioak</string>
     <string name="mesg_notAllowed">Ez duzu baimenik</string>
-    <string name="text_connectionProblem">Konexio arazoa</string>
+    <string name="mesg_connectionProblem">Konexio arazoa</string>
     <string name="text_communicationProblem">Komunikazio arazoa</string>
     <string name="butn_multiSelect">Hautaketa anitza</string>
     <string name="butn_receive">Jaso</string>
@@ -181,9 +181,9 @@
     <string name="text_shareTextShort">Testua</string>
     <string name="butn_feelLucky">Ausaz</string>
     <string name="butn_connectionList">Konexioak</string>
-    <string name="text_feelLuckyFailed">Ez du konexioetako bat bera ere funtzionatu gailu honentzat. Agian helbiea aldatu da. Saiatu berriro konektatzen sarera TrebleShot irekita dagoela.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot-ek hartuko du erabakia zure izenean</string>
-    <string name="butn_retry_all">Saiatu berriro dena</string>
+    <string name="text_automaticNetworkConnectionFailed">Ez du konexioetako bat bera ere funtzionatu gailu honentzat. Agian helbiea aldatu da. Saiatu berriro konektatzen sarera TrebleShot irekita dagoela.</string>
+    <string name="text_automaticNetworkConnectionOngoing">TrebleShot-ek hartuko du erabakia zure izenean</string>
+    <string name="butn_retryReceiving">Saiatu berriro dena</string>
     <string name="butn_ask">Galdetu</string>
     <string name="text_permissionRequest">Baimen eskaera</string>
     <string name="text_requestPermissionStorage">Biltegiratze baimena</string>
@@ -235,10 +235,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Gailuen bila TrebleShot Wifigunearen bidez</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot Wifigunea gelditzen</string>
     <string name="mesg_startingSelfHotspot">TrebleShot Wifigunea abiatzen</string>
-    <string name="butn_checkAll">Markatu denak</string>
-    <string name="butn_undoAll">Desegin dena</string>
+    <string name="butn_check">Markatu denak</string>
+    <string name="butn_uncheck">Desegin dena</string>
     <string name="text_previewAndEditList">Aurreikusi eta editatu</string>
-    <string name="text_selectableNotCheckedNotice">Markatu gabeko elementuak saltatuko dira</string>
+    <string name="text_uncheckedItemsNotice">Markatu gabeko elementuak saltatuko dira</string>
     <string name="text_fileRoot">Fitxategiaren erroa</string>
     <string name="mesg_versionNotSupported">Eguneratu onartutako bertsio batera eta bilatu gailuak berriro.</string>
     <string name="mesg_connectionUpdated">\"%s\" konexioaren bidez komunikatzen</string>
@@ -253,7 +253,7 @@
     <string name="mesg_retryAllInfo">TrebleShot etendako transferentziak jasotzen saiatuko da berriro</string>
     <string name="mesg_transferConnectionNotSetUpFix">Aukeratu konexio metodoa aurretik</string>
     <string name="butn_setUp">Konfiguratu</string>
-    <string name="text_pseudoLocation">Sasi-kokalekua</string>
+    <string name="text_location">Sasi-kokalekua</string>
     <string name="butn_saveAnyway">Gorde halere</string>
     <string name="text_receivedSize">Jasotako tamaina</string>
     <string name="mesg_notValidTransfer">Transferentzia iraungituta</string>

@@ -12,19 +12,16 @@
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
     <string name="text_preferences">Preferences</string>
     <string name="mesg_connectionFailure">Connection failed</string>
-    <string name="text_notAvailable">Unavailable</string>
-    <string name="text_deviceListEmpty">No device</string>
     <string name="mesg_noNetwork">No connection such as Wi-Fi to find nearby devices</string>
     <string name="mesg_scanningDevices">Finding nearby devices</string>
     <string name="ques_receiveFile">Receive the file?</string>
     <string name="butn_accept">Accept</string>
     <string name="butn_reject">Reject</string>
-    <string name="butn_stopService">Stop</string>
+    <string name="butn_stop">Stop</string>
     <string name="text_sending">Sending</string>
     <string name="butn_cancelSending">Cancel sending</string>
     <string name="text_receiving">Receiving</string>
     <string name="butn_cancelReceiving">Cancel receiving</string>
-    <string name="text_fileReceived">The file has been received</string>
     <string name="mesg_fileReceived">%s has been received</string>
     <string name="butn_scan">Scan</string>
     <string name="text_listEmpty">No items</string>
@@ -47,17 +44,13 @@
     <string name="butn_delete">Delete</string>
     <string name="text_deleteConfirm">Confirm deletion</string>
     <string name="butn_cancel">Cancel</string>
-    <string name="text_refresh">Refresh</string>
     <string name="butn_refresh">Refresh</string>
     <string name="butn_shareTrebleshot">Share this app</string>
     <string name="text_about">About</string>
     <string name="butn_close">Close</string>
     <string name="text_deviceModelInfo">Device name</string>
     <string name="butn_clearQueue">Clear the queue</string>
-    <string name="text_pendingTransfersOfDevice">Pending queue - %s</string>
-    <string name="butn_pendingTransfers">Queue</string>
     <string name="butn_shareWithTrebleshot">Share with TrebleShot</string>
-    <string name="text_shareWithTrebleshot" translatable="false">@string/butn_shareWithTrebleshot</string>
     <string name="mesg_somethingWentWrong">Something went wrong</string>
     <string name="text_findDevicesHint">No familiar devices</string>
     <string name="text_autoScanDevices">Scan devices automatically</string>
@@ -68,7 +61,7 @@
     <string name="text_storagePathSummary">New files will be saved to this folder</string>
     <string name="mesg_pathUnavailable">%s currently unavailable</string>
     <string name="text_ipAddress">IP address</string>
-    <string name="text_allowToAccess">Allow to connect</string>
+    <string name="text_allowToConnect">Allow to connect</string>
     <string name="text_connectionPermission">Connection permission</string>
     <string name="ques_allowDeviceToConnect">Let this device connect?</string>
     <string name="mesg_stopping">Stopping</string>
@@ -90,8 +83,7 @@
     <string name="text_showSystemAppsSummary">Show system apps in \"Share\" section</string>
     <string name="butn_showSystemApps">Show system apps</string>
     <string name="mesg_notAllowed">You are not allowed</string>
-    <string name="text_connectionProblem">Connection problem</string>
-    <string name="text_communicationProblem">Communication problem</string>
+    <string name="mesg_connectionProblem">Connection problem</string>
     <string name="butn_multiSelect">Multi selection</string>
     <string name="butn_receive">Receive</string>
     <string name="text_receive" translatable="false">@string/butn_receive</string>
@@ -129,9 +121,7 @@
     <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers you see here</string>
     <string name="text_availableNetworks">Choose network - %s</string>
     <string name="text_noNetworkAvailable">No network available</string>
-    <string name="text_savedConnections">Saved connections</string>
     <string name="text_newVersionAvailable">New version available!</string>
-    <string name="butn_goUp">Go up</string>
     <string name="text_folder">Folder</string>
     <string name="mesg_organizingFiles">Organising your files</string>
     <string name="mesg_communicating">Communicating</string>
@@ -170,7 +160,7 @@
     <string name="text_chooseFile">Choose file</string>
     <string name="mesg_pathSameError">You can not select the old folder</string>
     <string name="ques_checkOldFiles">Move files?</string>
-    <string name="text_checkOldFiles">You can move associated files that are complete and partly complete to this folder, which may take some time depending on their sizes</string>
+    <string name="text_checkOldFiles">You can move associated files completed and partly completed to this folder and this may take some time depending on the sizes</string>
     <string name="mesg_newFilesReceived">New files have been received</string>
     <string name="butn_show">Show</string>
     <string name="text_preparingFiles">Preparing files</string>
@@ -188,11 +178,10 @@
     <string name="text_interfaceEthernet">Ethernet</string>
     <string name="text_interfaceUnknown">Unknown connection</string>
     <string name="text_shareTextShort">Text</string>
-    <string name="butn_feelLucky">Feeling lucky</string>
     <string name="butn_connectionList">Connections</string>
-    <string name="text_feelLuckyFailed">None of the connections worked for the device. Its address may have changed. Try reconnecting to the network while TrebleShot is open.</string>
-    <string name="text_feelLuckyOngoing">TrebleShot will decide for you</string>
-    <string name="butn_retry_all">Retry all</string>
+    <string name="text_automaticNetworkConnectionFailed">Could not connect the device. Its address may have changed. Try reconnecting to the network while TrebleShot is open.</string>
+    <string name="text_automaticNetworkConnectionOngoing">Choosing the best connection</string>
+    <string name="butn_retryReceiving">Retry receiving</string>
     <string name="butn_ask">Ask</string>
     <string name="text_permissionRequest">Permission request</string>
     <string name="text_requestPermissionStorage">Storage permission</string>
@@ -201,9 +190,6 @@
     <string name="text_mediaDirectory">Media directory</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Not enough space</string>
-    <string name="text_totalIncomingSize">Total size of incoming files</string>
-    <string name="text_totalOutgoingSize">Total size of outgoing files</string>
-    <string name="text_availableDiskSpace">Available disk space</string>
     <string name="text_savePath">Save path</string>
     <string name="text_transactionGroupDetails">Transaction group details</string>
     <string name="text_usedConnection">Used connection</string>
@@ -217,7 +203,7 @@
     <string name="butn_turnTrustZoneOn">Turn TrustZone on</string>
     <string name="butn_turnTrustZoneOff">Turn TrustZone off</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">Always start up with TrustZone on</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone is activated on start</string>
     <string name="butn_typeNewEntry">Type new entry</string>
     <string name="butn_download">Download</string>
     <string name="mesg_clipboardUpdateNotice">Revise the text or press again to exit</string>
@@ -244,10 +230,10 @@
     <string name="mesg_scanningDevicesSelfHotspot">Looking for devices over a TrebleShot hotspot</string>
     <string name="mesg_stoppingSelfHotspot">Stopping the TrebleShot hotspot</string>
     <string name="mesg_startingSelfHotspot">Starting the TrebleShot hotspot</string>
-    <string name="butn_checkAll">Check all</string>
-    <string name="butn_undoAll">Undo all</string>
+    <string name="butn_check">Check</string>
+    <string name="butn_uncheck">Uncheck</string>
     <string name="text_previewAndEditList">Preview &amp; edit</string>
-    <string name="text_selectableNotCheckedNotice">Unmarked items will be skipped</string>
+    <string name="text_uncheckedItemsNotice">Uncheck items to remove them</string>
     <string name="text_fileRoot">File root</string>
     <string name="mesg_versionNotSupported">Please upgrade to a supported version, and rescan devices.</string>
     <string name="text_versionNotSupported" translatable="false">@string/mesg_versionNotSupported</string>
@@ -263,7 +249,7 @@
     <string name="mesg_retryAllInfo">TrebleShot will retry receiving interrupted transfers</string>
     <string name="mesg_transferConnectionNotSetUpFix">Please choose the connection method first</string>
     <string name="butn_setUp">Set up</string>
-    <string name="text_pseudoLocation">Pseudo location</string>
+    <string name="text_location">Location</string>
     <string name="butn_saveAnyway">Save anyway</string>
     <string name="text_receivedSize">Received size</string>
     <string name="mesg_notValidTransfer">Transfer expired</string>
@@ -273,12 +259,12 @@
     <string name="butn_sortBy">Sort by</string>
     <string name="butn_sortOrder">Sort order</string>
     <string name="text_sortOrderAscending">Biggest first ↑</string>
-    <string name="text_sortOrderDescending">Smallest first↓</string>
+    <string name="text_sortOrderDescending">Smallest first ↓</string>
     <string name="text_sortByName">Name</string>
     <string name="text_sortByDate">Date</string>
     <string name="text_sortBySize">Size</string>
-    <string name="text_trustZoneDeviceNotice">Lets this device send you files without showing a prompt when TrustZone is on</string>
-    <string name="text_allowingToConnectNotice">When checked, this device can connect to you</string>
+    <string name="text_trustZoneDeviceNotice">Automatically accepts incoming items when TrustZone is on</string>
+    <string name="text_allowingToConnectNotice">Allow connections from this device</string>
     <string name="butn_resetToDefault">Reset to default</string>
     <string name="text_resetPreferencesToDefaultSummary">This will apply initial settings</string>
     <string name="text_workerService">Worker service</string>
@@ -298,31 +284,27 @@
     <string name="text_secondCountShort">%d sec</string>
     <string name="butn_exit">Exit</string>
     <string name="butn_queueCounted">Queue (%d)</string>
-    <string name="text_previewThenProceedNotice">Please check your selections by tapping \"Queue\" to continue</string>
     <string name="mesg_updateDownloadComplete">Update received successfully and saved to your received files</string>
     <string name="text_listEmptyFiles">No files here</string>
     <string name="text_listEmptyImage">No photos here</string>
     <string name="text_listEmptyApp">No apps here</string>
     <string name="text_listEmptyVideo">No videos here</string>
-    <string name="text_listEmptyPendingTransfer">Pending transfers will appear here</string>
     <string name="text_listEmptyTextStream">Writings will appear here</string>
     <string name="text_listEmptyMusic">No songs in here</string>
     <string name="text_internalStorage">Internal storage</string>
-    <string name="text_restrictedAccessStorage">%s (restricted access)</string>
     <string name="text_emptySearchResult">No result for \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">The list will be refreshed whenever available</string>
-    <string name="mesg_errorReadFolder">Can not access the \"%s\" folder</string>
+    <string name="mesg_errorReadFolder">Can not access \"%s\"</string>
     <string name="butn_mountDirectory">Mount folder</string>
     <string name="mesg_mountDirectoryHelp">Select the folder you want to access</string>
     <string name="butn_ejectDirectory">Unmount folder</string>
     <string name="text_movedCacheFiles">Cache files moved</string>
     <string name="mode_itemCounted" translatable="false">%s (%d)</string>
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
-    <string name="mesg_wifiEnableRequired">Please enable Wi-Fi to connect</string>
     <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
     <string name="text_qrCodeAvailableHelp">Scan this code to share and connect devices</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Start hotspot so that others can connect to you</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Set up a hotspot so that others can connect to you</string>
     <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
     <string name="butn_qrScanToSend">Scan QR code to send</string>
     <string name="butn_qrToggle">Toggle QR code visibility</string>
@@ -357,7 +339,7 @@
     <string name="butn_startHotspot">Set up hotspot</string>
     <string name="butn_stopHotspot">Stop hotspot</string>
     <string name="text_easyDiscoveryHelp">Scan this if both devices are on the same network</string>
-    <string name="text_scanQRWifiRequired">To connect to devices Wi-Fi should be turned on</string>
+    <string name="text_scanQRWifiRequired">To connect to devices, Wi-Fi should be turned on</string>
     <string name="mesg_completing">Completing</string>
     <string name="mesg_errorNotSameNetwork">The devices are not on the same network</string>
     <string name="text_cameraPermissionRequired">Camera permission required</string>
@@ -375,16 +357,16 @@
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
-    <string name="mesg_noPendingTransferObjectExists">No pending transfer left since they are either interrupted or already completed.</string>
-    <string name="mesg_notSavingToChosenLocation">Files will not be saved in your desired folder since it is not accessible right now.
+    <string name="mesg_noPendingTransferObjectExists">No pending transfer left. To resume interrupted files, use 'Retry receiving' option.</string>
+    <string name="mesg_notSavingToChosenLocation">Your desired folder is not accessible. Files will be saved to the default folder.
 \n
 \n%s</string>
     <string name="butn_changelog">Changelog</string>
     <string name="text_changelog">Changelog</string>
-    <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what has changes since you installed previous version?</string>
+    <string name="mesg_versionUpdatedChangelog">You have updated TrebleShot to a newer version, would you like to see what's new?</string>
     <string name="mesg_versionUpdatedChangelogRejected">You can always find \'Changelog\' in the \'About\' section</string>
     <string name="mesg_noInternetConnection">This requires internet connection</string>
-    <string name="text_applyDarkTheme">Dark theme</string>
+    <string name="text_applyDarkTheme">Dark mode</string>
     <string name="text_applyDarkThemeSummary">Use the dark style theme</string>
     <string name="butn_allow">Allow</string>
     <string name="butn_telegram_channel">Telegram channel</string>
@@ -395,7 +377,7 @@
     <string name="butn_useKnownDevice">Use known devices</string>
     <string name="butn_scanQrCode">Scan QR Code</string>
     <string name="butn_useExistingNetwork">Use existing networks</string>
-    <string name="butn_feedbackContact"><![CDATA[Feedback & contact]]></string>
+    <string name="butn_feedbackContact">Feedback &amp; contact</string>
     <string name="text_startHotspot" translatable="false">@string/butn_startHotspot</string>
     <string name="text_useExistingNetwork" translatable="false">@string/butn_useExistingNetwork</string>
     <string name="text_scanQrCode" translatable="false">@string/butn_scanQrCode</string>
@@ -412,7 +394,7 @@
     <string name="mesg_fileReceiveFilesLeftError">Failed to receive some files</string>
     <string name="text_send">Send</string>
     <string name="butn_send" translatable="false">@string/text_send</string>
-    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other device is showing a QR code, use Scan the QR code option</string>
+    <string name="text_connectionHelp">Choose an option to connect to the other device. For instance, if the other device is showing a QR code, use Scan QR code option.</string>
     <string name="ques_needHelp">Need a helping hand?</string>
     <string name="text_connectionWizard">Connection wizard</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Have you just set things up on the other device?</string>
