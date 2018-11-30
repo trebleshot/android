@@ -173,8 +173,8 @@
     <string name="text_shareTextShort">Metin</string>
     <string name="butn_connectionList">Bağlantılar</string>
     <string name="text_automaticNetworkConnectionFailed">Hiçbir bağlantı cihaza ulaşmıyor. Bağlantı konumu değişmiş olabilir. TrebleShot açıkken ağa tekrar bağlanmayı deneyin.</string>
-    <string name="text_automaticNetworkConnectionOngoing">TrebleShot sizin yerinize karar verecek</string>
-    <string name="butn_retryReceiving">Tekrar dene</string>
+    <string name="text_automaticNetworkConnectionOngoing">En iyi bağlantıyı seçiyoruz</string>
+    <string name="butn_retryReceiving">Almayı dene</string>
     <string name="butn_ask">Sor</string>
     <string name="text_permissionRequest">İzin isteği</string>
     <string name="text_requestPermissionStorage">Depolama izni</string>
@@ -348,8 +348,8 @@
     <string name="butn_open">Aç</string>
     <string name="butn_pause">Duraklat</string>
     <string name="butn_retry">Yeniden dene</string>
-    <string name="mesg_noPendingTransferObjectExists">Durdurulmuş ya da çoktan alınmış oldukları için bekleyen aktarım kalmadı.</string>
-    <string name="mesg_notSavingToChosenLocation">Belirtmiş olduğunuz klasöre erişilemediği için dosyalar oraya kaydedilmeyecek .
+    <string name="mesg_noPendingTransferObjectExists">Bekleyen aktarım kalmadı. Yarım kalmışları devam ettirmek için \'Almayı dene\' seçeneğini seçin.</string>
+    <string name="mesg_notSavingToChosenLocation">Belirtmiş olduğunuz klasöre erişilemediği için dosyalar oraya kaydedilmeyecek.
 \n 
 \n%s</string>
     <string name="butn_changelog">Değişiklik günlüğü</string>

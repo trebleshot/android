@@ -144,6 +144,15 @@ public class TransferUtils
 
                             builder.setMessage(R.string.mesg_noPendingTransferObjectExists);
                             builder.setNegativeButton(R.string.butn_close, null);
+                            builder.setPositiveButton(R.string.butn_retryReceiving, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    recoverIncomingInterruptions(activity, group.groupId);
+                                    startTransferWithTest(activity, group, assignee);
+                                }
+                            });
 
                             builder.show();
                         }

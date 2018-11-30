@@ -358,7 +358,7 @@
     <string name="butn_open">Open</string>
     <string name="butn_pause">Pause</string>
     <string name="butn_retry">Retry</string>
-    <string name="mesg_noPendingTransferObjectExists">No pending transfer left. To resume interrupted files, use 'Retry receiving' option.</string>
+    <string name="mesg_noPendingTransferObjectExists">No pending transfer left. To resume interrupted files, use \'Retry receiving\' option.</string>
     <string name="mesg_notSavingToChosenLocation">Your desired folder is not accessible. Files will be saved to the default folder.
 \n
 \n%s</string>
