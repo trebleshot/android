@@ -1,0 +1,3 @@
+IMPROVED: Implementation of latest features
+FIXED: Minor bugs
+MISC: Updated translations

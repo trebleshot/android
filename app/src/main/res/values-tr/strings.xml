@@ -265,7 +265,7 @@
     <string name="text_taskCompleted">İşlem tamamlandı</string>
     <string name="text_deletingFilesOngoing">Seçili dosyalar siliniyor</string>
     <string name="text_networkServiceDiscovery">ASB\'yi etkinleştir</string>
-    <string name="text_networkServiceDiscoverySummary">Ağ Service Bulma bulunabilirliği güçlendirir</string>
+    <string name="text_networkServiceDiscoverySummary">Ağ Servis Bulma bulunabilirliği güçlendirir</string>
     <string name="text_notificationChannelHigh">Önemli bildirimler</string>
     <string name="text_notificationChannelLow">Düşük öncelikli bildirimler</string>
     <string name="text_receivedTransfer">%s, %s içerisinde alındı</string>
@@ -376,7 +376,7 @@
     <string name="mesg_connectToWiFiNetworkHelp">Devam etmek için bir Wi-Fi ağına bağlanın</string>
     <string name="mesg_fileReceiveFilesLeftError">Bazı dosyalar alınamadı</string>
     <string name="mesg_locationPermissionRequiredAny">Devam etmek için konum servislerini etkinleştirin</string>
-    <string name="mesg_removing">"Kaldırılıyor… Uzun sürebilir "</string>
+    <string name="mesg_removing">Kaldırılıyor… Uzun sürebilir</string>
     <string name="mesg_sent">Gönderildi</string>
     <string name="mesg_turningWiFiOn">Wi-Fi etkinleştiriliyor</string>
     <string name="mesg_wifiEnableFailed">Wi-Fi açılmıyor.</string>
@@ -397,8 +397,8 @@
     <string name="text_sendText">Metin gönder</string>
     <string name="text_shortcuts">Kısayollar</string>
     <string name="text_transfers">Aktarımlar</string>
-<string name="text_listEmptyTransfer">Bütün aktarımlar burada görünür</string>
+    <string name="text_listEmptyTransfer">Bütün aktarımlar burada görünür</string>
     <string name="text_loadThumbnails">Önizlemeleri yükle</string>
     <string name="text_loadThumbnailsSummary">Dosyalar için önizlemeler göster</string>
     <string name="text_manageDevices">Cihazları yönet</string>
-    </resources>
+</resources>
