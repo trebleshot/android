@@ -189,7 +189,7 @@
     <string name="mesg_newFilesReceived">Nieuwe bestanden ontvangen</string>
     <string name="butn_show">Tonen</string>
     <string name="text_preparingFiles">Bezig met voorbereiden van bestanden</string>
-    <string name="text_savingDetails">Bezig met opslaan van gegevens vóór de ontvangst</string>
+    <string name="text_savingDetails">Bezig met opslaan van gegevens</string>
     <string name="text_version">Versie</string>
     <string name="text_flagPending">In wachtrij</string>
     <string name="text_flagRunning">Lopend</string>
@@ -235,7 +235,7 @@
     <string name="butn_turnTrustZoneOn">TrustZone inschakelen</string>
     <string name="butn_turnTrustZoneOff">TrustZone uitschakelen</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">TrustZone inschakelen bij opstarten van app</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone wordt automatisch opgestart</string>
     <string name="butn_typeNewEntry">Nieuwe invoer</string>
     <string name="butn_download">Downloaden</string>
     <string name="mesg_clipboardUpdateNotice">Werk de tekst bij of druk opnieuw om af te sluiten</string>
@@ -251,7 +251,7 @@
     <string name="butn_disconnect">Verbinding verbreken</string>
     <string name="text_trebleshotHotspotDescription">Je kunt bestanden direct versturen via dit openbare netwerk dat gecreëerd is door een TrebleShot-apparaat.</string>
     <string name="mesg_connectingToSelfHotspot">Bezig met verbinden met TrebleShot-hotspot</string>
-    <string name="mesg_warningHotspotMobileActive">Zolang mobiel internet is ingeschakeld, kunnen anderen verbinden met je netwerk</string>
+    <string name="mesg_warningHotspotMobileActive">Gekoppelde apparaten kunnen je mobiel internet gebruiken; mogelijk wil je dit uitschakelen.</string>
     <string name="butn_skip">Overslaan</string>
     <string name="mesg_scanningSelfHotspot">Bezig met zoeken naar TrebleShot-hotspot</string>
     <string name="mesg_suggestSelfHotspot">Je kunt Wi-Fi inschakelen om te zoeken naar een TrebleShot-hotspot</string>
@@ -296,8 +296,8 @@
     <string name="text_sortByName">Naam</string>
     <string name="text_sortByDate">Datum</string>
     <string name="text_sortBySize">Grootte</string>
-    <string name="text_trustZoneDeviceNotice">Machtigt dit apparaat om je zonder bevestiging bestanden te sturen als TrustZone is ingeschakeld</string>
-    <string name="text_allowingToConnectNotice">Als je dit aanvinkt, dan kan dit apparaat verbinden</string>
+    <string name="text_trustZoneDeviceNotice">Accepteert inkomende items automatisch als TrustZone is ingeschakeld</string>
+    <string name="text_allowingToConnectNotice">Verbindingen van dit apparaat toestaan</string>
     <string name="butn_resetToDefault">Standaardwaarden herstellen</string>
     <string name="ques_resetToDefault">Standaardwaarden herstellen?</string>
     <string name="text_resetPreferencesToDefaultSummary">Dit herstelt de standaard instellingen</string>
@@ -330,7 +330,7 @@
     <string name="text_restrictedAccessStorage">%s (beperkte toegang)</string>
     <string name="text_emptySearchResult">Geen resultate gevonden voor \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">De lijst zal worden ververst zodra deze beschikbaar is</string>
-    <string name="mesg_errorReadFolder">Geen toegang tot de map \"%s\"</string>
+    <string name="mesg_errorReadFolder">Geen toegang tot \"%s\"</string>
     <string name="butn_mountDirectory">Map aankoppelen</string>
     <string name="mesg_mountDirectoryHelp">Kies de te verkennen map</string>
     <string name="butn_ejectDirectory">Map afkoppelen</string>
@@ -339,7 +339,7 @@
     <string name="text_hotspotStartsTrustZone">De Hotspot schakelt tevens TrustZone in</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone zal ook worden gestart</string>
     <string name="text_qrCodeAvailableHelp">Scan deze code om te delen en apparaten te verbinden</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Schakel eerst de TrebleShot-hotspot in of maak verbinding met een netwerk</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Stel een hotspot in zodat anderen met je kunnen verbinden</string>
     <string name="text_scanQRCodeHelp">Scan de QR-code op het scherm van de afzender</string>
     <string name="butn_qrScanToSend">Scan de QR-code om te versturen</string>
     <string name="butn_qrToggle">QR-code tonen/verbergen</string>
@@ -393,17 +393,57 @@
 <string name="butn_open">Openen</string>
 <string name="butn_pause">Pauzeren</string>
     <string name="butn_retry">Opnieuw</string>
-    <string name="mesg_noPendingTransferObjectExists">Alle overdrachten zijn reeds voltooid of onderbroken.</string>
-    <string name="mesg_notSavingToChosenLocation">Bestanden worden niet opgeslagen naar je voorkeursmap omdat deze niet toegankelijk is
-\n
+    <string name="mesg_noPendingTransferObjectExists">Geen taken meer in de wachtrij. Gebruik de optie \'Opnieuw\' om onderbroken bestanden te hervatten.</string>
+    <string name="mesg_notSavingToChosenLocation">De voorkeursmap is niet toegankelijk; bestanden worden opgeslagen in de standaardmap. 
+\n 
 \n %s</string>
     <string name="butn_changelog">Wijzigingslog</string>
     <string name="text_changelog">Wijzigingslog</string>
-    <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt naar een nieuwere versie. Wil je de wijzigingen bekijken?</string>
+    <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt. Wil je het wijzigingslog bekijken\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
 <string name="mesg_noInternetConnection">Internetverbinding vereist</string>
 <string name="text_applyDarkTheme">Donker thema</string>
     <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
     <string name="butn_allow">Toestaan</string>
 <string name="butn_telegram_channel">Telegram-kanaal</string>
-</resources>
+<string name="text_listEmptyTransfer">Alle overdrachten verschijnen hier</string>
+    <string name="text_transfers">Overdrachten</string>
+    <string name="butn_connectionDetails">Verbindingsgegevens</string>
+    <string name="butn_useKnownDevice">Bekende apparaten gebruiken</string>
+    <string name="butn_scanQrCode">QR-code scannen</string>
+    <string name="butn_useExistingNetwork">Bestaande netwerken gebruiken</string>
+    <string name="butn_feedbackContact">Feedback &amp; Contact</string>
+    <string name="mesg_sent">Verstuurd</string>
+    <string name="text_sendText">Tekst versturen</string>
+    <string name="butn_start">Starten</string>
+    <string name="text_addDeviceHelp">Door apparaten toe te voegen kun je dezelfde bestanden delen met meerdere apparaten. Na afloop keer je terug naar het overdrachtsscherm.</string>
+    <string name="text_downloads">Downloads</string>
+    <string name="text_documents">Documenten</string>
+    <string name="text_shortcuts">Snelkoppelingen</string>
+    <string name="text_recentFiles">Recente bestanden</string>
+    <string name="butn_changeSavePath">Opslagpad wijzigen</string>
+    <string name="mesg_fileReceiveFilesLeftError">Kan sommige bestanden niet ontvangen</string>
+    <string name="text_send">Versturen</string>
+    <string name="text_connectionHelp">Kies een optie om het andere apparaat te koppelen. Als het andere apparaat bijv. een QR-code toont, kies dan de optie \'QR-code scannen\'.</string>
+    <string name="ques_needHelp">Hulp nodig\?</string>
+    <string name="text_connectionWizard">Verbindingshulp</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Heb je alles net ingesteld op het andere apparaat\?</string>
+    <string name="ques_connectionWizardIsThereQRCode">Zie je een QR-code (barcode) op het andere scherm\?</string>
+    <string name="ques_connectionWizardUseHotspot">Wil je het andere apparaat koppelen aan dit apparaat middels een hotspot (tethering)\? Als je niet weet wat een hotspot is, druk dan op Ja.</string>
+    <string name="ques_connectionWizardUseNetwork">Wil je je router of een Wi-Fi-netwerk gebruiken waar zowel jij als de ander mee verbonden zijn\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Wil je de lijst met eerder gekoppelde apparaten bekijken\?</string>
+    <string name="butn_yes">Ja</string>
+    <string name="butn_no">Nee</string>
+    <string name="text_loadThumbnails">Miniatuurvoorbeelden laden</string>
+    <string name="text_loadThumbnailsSummary">Miniatuurvoorbeelden van bestanden tonen</string>
+    <string name="text_manageDevices">Apparaten beheren</string>
+    <string name="text_search">Zoeken</string>
+    <string name="mesg_wifiEnableFailed">Wi-Fi kan niet worden ingeschakeld.</string>
+    <string name="mesg_turningWiFiOn">Bezig met inschakelen van Wi-Fi</string>
+    <string name="mesg_locationPermissionRequiredAny">Schakel de locatiedienst in om door te gaan</string>
+    <string name="mesg_connectToWiFiNetworkHelp">Maak verbinding met een Wi-Fi-netwerk om door te gaan</string>
+    <string name="mesg_removing">Bezig met verwijderen... dit kan lang duren</string>
+    <string name="butn_help">Hulp</string>
+    <string name="butn_choose">Kiezen</string>
+    <string name="butn_fixConnection">Verbinding repararen</string>
+    </resources>
