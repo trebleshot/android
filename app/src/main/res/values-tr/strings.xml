@@ -144,7 +144,7 @@
     <string name="text_chooseFile">Dosya seçin</string>
     <string name="mesg_pathSameError">Seçeceğiniz klasör şu ankinden farklı olmalıdır</string>
     <string name="ques_checkOldFiles">Dosyaları taşı?</string>
-    <string name="text_checkOldFiles">"Boyutlarına göre zaman alacak  alakası bulunan yarım kalmış ve tamamlanmış dosyaları bu klasöre taşıyabilirsiniz"</string>
+    <string name="text_checkOldFiles">"Alakalı tamamlanmış ve tamamlanacak dosyaları bu klasöre taşıyabilirsiniz ve bu işlem yeni konuma ve boyutlara göre zaman alabilir "</string>
     <string name="mesg_newFilesReceived">Yeni dosyalar var</string>
     <string name="butn_show">Göster</string>
     <string name="text_preparingFiles">Dosyalar hazırlanıyor</string>
@@ -196,7 +196,7 @@
     <string name="butn_turnTrustZoneOn">GüvenliBölge\'yi etkinleştir</string>
     <string name="butn_turnTrustZoneOff">GüvenliBölge\'yi sonlandır</string>
     <string name="text_trustZoneEnabled">GüvenliBölge</string>
-    <string name="text_trustZoneEnabledSummary">Hep kullanabilir olarak başlat (önerilmez)</string>
+    <string name="text_trustZoneEnabledSummary">GüvenliBölge bağlangıçta kullanabilir olur</string>
     <string name="butn_typeNewEntry">Yeni girdi girin</string>
     <string name="butn_download">İndir</string>
     <string name="mesg_clipboardUpdateNotice">Metni güncelleyin ya da çıkmak için tekrar basın</string>
@@ -212,7 +212,7 @@
     <string name="butn_disconnect">Bağlantıyı kes</string>
     <string name="text_trebleshotHotspotDescription">Bu açık ağ yakınınızdaki TrebleShot kullanan bir cihaz tarafından oluşturuldu. Bununla direkt olarak dosyalar gönderebilirsiniz.</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot\'una bağlanıyor</string>
-    <string name="mesg_warningHotspotMobileActive">Mobil veri etkinken başkaları ağınıza bağlanabilir</string>
+    <string name="mesg_warningHotspotMobileActive">Bağlanan cihazlar mobil verinizi kullanabilir. Kapatmak isteyebilirsiniz.</string>
     <string name="butn_skip">Atla</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Hotspot\'u aranıyor</string>
     <string name="mesg_suggestSelfHotspot">TrebleShot Hotspot\'u bulmak için Kablosuzu etkinleştirebilirsiniz</string>
@@ -256,8 +256,8 @@
     <string name="text_sortByName">İsim</string>
     <string name="text_sortByDate">Tarih</string>
     <string name="text_sortBySize">Boyut</string>
-    <string name="text_trustZoneDeviceNotice">Bunu işaretlemek bu cihazın GüvenliBölge etkinken size izin istemeksizin dosyalar göndermesine olanak sağlar</string>
-    <string name="text_allowingToConnectNotice">İşaretlendiğinde, bu cihaz size bağlanabilir</string>
+    <string name="text_trustZoneDeviceNotice">GüvenliBölge etkinken gelen nesneleri kendiliğinden kabul eder</string>
+    <string name="text_allowingToConnectNotice">Bu cihazdan gelen bağlantılara izin ver</string>
     <string name="butn_resetToDefault">Varsayılana sıfırla</string>
     <string name="ques_resetToDefault">Varsayılana sıfırlansın mı?</string>
     <string name="text_resetPreferencesToDefaultSummary">Bu varsayılan ayarları uygulayacak</string>
@@ -349,15 +349,15 @@
     <string name="butn_pause">Duraklat</string>
     <string name="butn_retry">Yeniden dene</string>
     <string name="mesg_noPendingTransferObjectExists">Durdurulmuş ya da çoktan alınmış oldukları için bekleyen aktarım kalmadı.</string>
-    <string name="mesg_notSavingToChosenLocation">Dosyalar şu anda erişilemediği için belirtmiş olduğunuz klasöre kaydedilmeyecek
-\n
+    <string name="mesg_notSavingToChosenLocation">Belirtmiş olduğunuz klasöre erişilemediği için dosyalar oraya kaydedilmeyecek .
+\n 
 \n%s</string>
     <string name="butn_changelog">Değişiklik günlüğü</string>
     <string name="text_changelog">Değişiklik günlüğü</string>
-    <string name="mesg_versionUpdatedChangelog">"TrebleShot\'u daha güncel bir sürüme yükselttiniz, bir önceki sürümü yüklemenizden bu yana nelerin değiştiğine göz atmak ister misiniz? "</string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot\'u güncellediniz, neler yeni göz atmak ister misiniz\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Değişiklik günlüğü\' ne \'Hakkında\' sekmesi üzerinden her zaman ulaşabilirsiniz</string>
     <string name="mesg_noInternetConnection">Bu internet bağlantısı gerektirir</string>
-    <string name="text_applyDarkTheme">Koyu tema</string>
+    <string name="text_applyDarkTheme">Koyu görünüm</string>
     <string name="butn_allow">İzin ver</string>
     <string name="text_applyDarkThemeSummary">Koyu biçimli temayı kullan</string>
     <string name="butn_telegram_channel">Telegram kanalı</string>
@@ -397,4 +397,8 @@
     <string name="text_sendText">Metin gönder</string>
     <string name="text_shortcuts">Kısayollar</string>
     <string name="text_transfers">Aktarımlar</string>
-</resources>
+<string name="text_listEmptyTransfer">Bütün aktarımlar burada görünür</string>
+    <string name="text_loadThumbnails">Önizlemeleri yükle</string>
+    <string name="text_loadThumbnailsSummary">Dosyalar için önizlemeler göster</string>
+    <string name="text_manageDevices">Cihazları yönet</string>
+    </resources>
