@@ -407,4 +407,11 @@
     <string name="mesg_wifiEnableFailed">לא ניתן להפעיל את התקשורת האלחוטית.</string>
     <string name="mesg_turningWiFiOn">התקשורת האלחוטית מופעלת</string>
     <string name="mesg_locationPermissionRequiredAny">יש להפעיל את שירות המיקום כדי להמשיך</string>
+    <string name="text_connectionHelp">נא לבחור באפשרות כדי להתחבר למכשיר השני. למשל, אם המכשיר מציג קוד QR ניתן להשתמש באפשרות לסריקת QR.</string>
+    <string name="ques_connectionWizardUseNetwork">האם להשתמש בנתב שלך או בכל רשת אלחוטית אחרת שאליה מחובר המכשיר שלך והמכשירים של החברים שלך\?</string>
+    <string name="mesg_connectToWiFiNetworkHelp">יש להתחבר לרשת אלחוטית כדי להמשיך</string>
+    <string name="mesg_removing">מתבצעת הסרה… עשוי לארוך זמן מה</string>
+    <string name="butn_help">עזרה</string>
+    <string name="butn_choose">בחירה</string>
+    <string name="butn_fixConnection">תיקון החיבור</string>
     </resources>
