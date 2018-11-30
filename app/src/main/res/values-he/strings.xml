@@ -161,11 +161,11 @@
     <string name="text_chooseFile">בחירת קובץ</string>
     <string name="mesg_pathSameError">לא ניתן לבחור את התיקייה הישנה</string>
     <string name="ques_checkOldFiles">להעביר קבצים\?</string>
-    <string name="text_checkOldFiles">ניתן להעביר קבצים משוייכים שהושלמו באופן מלא או למחצה לתיקייה זו, פעולה זו עשויה לארוך זמן מה בהתאם לגודל שלהם</string>
+    <string name="text_checkOldFiles">ניתן להעביר קבצים משוייכים שהושלמו באופן מלא או למחצה לתיקייה זו, פעולה זו עשויה לארוך זמן מה בהתאם לגדלים</string>
     <string name="mesg_newFilesReceived">התקבלו קבצים חדשים</string>
     <string name="butn_show">הצגה</string>
     <string name="text_preparingFiles">הקבצים בהכנה</string>
-    <string name="text_savingDetails">שמירת הפרטים בטרם השליחה</string>
+    <string name="text_savingDetails">הפרטים נשמרים</string>
     <string name="text_version">גרסה</string>
     <string name="text_flagPending">ממתין</string>
     <string name="text_flagRunning">רץ</string>
@@ -208,7 +208,7 @@
     <string name="butn_turnTrustZoneOn">הפעלת תכונת איזור מהימן</string>
     <string name="butn_turnTrustZoneOff">כיבוי תכונת איזור מהימן</string>
     <string name="text_trustZoneEnabled">איזור מהימן</string>
-    <string name="text_trustZoneEnabledSummary">תמיד להפעיל את היישומון עם תכונת האיזור המהימן פעילה</string>
+    <string name="text_trustZoneEnabledSummary">הפעלת האיזור המהימן בהתחלה</string>
     <string name="butn_typeNewEntry">להקליד רשומה חדשה</string>
     <string name="butn_download">הורדה</string>
     <string name="mesg_clipboardUpdateNotice">יש לסקור את הטקסט או ללחוץ שוב כדי לצאת</string>
@@ -224,7 +224,7 @@
     <string name="butn_disconnect">ניתוק</string>
     <string name="text_trebleshotHotspotDescription">ניתן לשלוח קבצים ישירות דרך הרשת הפתוחה הזאת שנוצרה על ידי מכשיר קרוב עם TrebleShot.</string>
     <string name="mesg_connectingToSelfHotspot">מתבצעת התחברות לנקודה החמה של TrebleShot</string>
-    <string name="mesg_warningHotspotMobileActive">אחרים עשויים להתחבר לרשת שלך בזמן שרשת הנתונים הסלולרית פעילה במכשיר</string>
+    <string name="mesg_warningHotspotMobileActive">התקנים מחוברים עשויים להשתמש בגלישה הסלולרית שלך. אולי מוטב לכבות אותה.</string>
     <string name="butn_skip">דילוג</string>
     <string name="mesg_scanningSelfHotspot">מתבצע חיפוש אחר נקודה חמה של TrebleShot</string>
     <string name="mesg_suggestSelfHotspot">ניתן להפעיל רשת אלחוטית כדי לחפש אחר נקודה חמה של TrebleShot</string>
@@ -267,8 +267,8 @@
     <string name="text_sortByName">שם</string>
     <string name="text_sortByDate">תאריך</string>
     <string name="text_sortBySize">גודל</string>
-    <string name="text_trustZoneDeviceNotice">מאפשר להתקן הזה לשלוח לך קבצים מבלי להציג בקשה כאשר האיזור המהימן פעיל</string>
-    <string name="text_allowingToConnectNotice">כאשר יש סימון, מכשיר זה יכול להתחבר אליך</string>
+    <string name="text_trustZoneDeviceNotice">מקבל פריטים נכנסים אוטומטית כאשר האיזור המהימן פעיל</string>
+    <string name="text_allowingToConnectNotice">לאפשר חיבורים ממכשיר זה</string>
     <string name="butn_resetToDefault">איפוס לבררת מחדל</string>
     <string name="text_resetPreferencesToDefaultSummary">פעולה זו תחיל את ההגדרות הראשוניות</string>
     <string name="text_workerService">שירות מנגנון</string>
@@ -301,7 +301,7 @@
     <string name="text_restrictedAccessStorage">%s (גישה מוגבלת)</string>
     <string name="text_emptySearchResult">אין תוצאות עבור „%s”</string>
     <string name="mesg_listRefreshSnoozed">הרשימה תתרענן מתי שניתן</string>
-    <string name="mesg_errorReadFolder">לא ניתן לגשת לתיקייה „%s”</string>
+    <string name="mesg_errorReadFolder">לא ניתן לגשת אל „%s”</string>
     <string name="butn_mountDirectory">עיגון תיקייה</string>
     <string name="mesg_mountDirectoryHelp">נא לבחור את התיקייה אליה ברצונך לגשת</string>
     <string name="butn_ejectDirectory">ניתוק עיגון תיקייה</string>
@@ -310,7 +310,7 @@
     <string name="text_hotspotStartsTrustZone">נקודה חמה מפעילה גם איזור מהימן</string>
     <string name="text_hotspotStartsTrustZoneSummary">איזור מהימן יופעל בהתאם</string>
     <string name="text_qrCodeAvailableHelp">יש לסרוק את הקוד הזה כדי לשתף ולהתחבר למכשירים</string>
-    <string name="text_qrCodeHotspotDisabledHelp">יש להפעיל את הנקודה החמה של TrebleShot או להתחבר לרשת לצורך גילוי פשוט</string>
+    <string name="text_qrCodeHotspotDisabledHelp">יש להפעיל נקודה חמה כדי לאפשר לאחרים להתחבר אליך</string>
     <string name="text_scanQRCodeHelp">יש לסרוק את קוד ה־QR שעל המסך של המכשיר המארח</string>
     <string name="butn_qrScanToSend">יש לסרוק קוד QR כדי לשלוח</string>
     <string name="butn_qrToggle">הפעלת מצב הצגת קוד QR</string>
@@ -363,17 +363,27 @@
     <string name="butn_open">פתיחה</string>
     <string name="butn_pause">השהיה</string>
     <string name="butn_retry">ניסיון חוזר</string>
-    <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות כיוון שהן נקטעו או הושלמו.</string>
-    <string name="mesg_notSavingToChosenLocation">קבצים לא יישמרו לתיקייה שביקשת כיוון שאינה נגישה כרגע.
+    <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש באפשרות ‚לנסות לקבל שוב’.</string>
+    <string name="mesg_notSavingToChosenLocation">התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל.
 \n 
 \n %s</string>
     <string name="butn_changelog">יומן שינויים</string>
     <string name="text_changelog">יומן שינויים</string>
-    <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot לגרסה חדשה יותר, האם מעניין אותך לראות מה הם השינויים שחלו מאז הגרסה הקודמת שהתקנת\?</string>
+    <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot, מעניין אותך לראות מה חדש\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">תמיד ניתן למצוא את ‚יומן השינויים’ תחת הסעיף ‚על אודות’</string>
 	<string name="mesg_noInternetConnection">פעולה זו דורשת חיבור לאינטרנט</string>
-    <string name="text_applyDarkTheme">ערכת עיצוב כהה</string>
+    <string name="text_applyDarkTheme">מצב כהה</string>
     <string name="text_applyDarkThemeSummary">שימוש בערכת עיצוב כהה</string>
     <string name="butn_allow">לאפשר</string>
     <string name="butn_telegram_channel">ערוץ טלגרם</string>
-</resources>
+<string name="text_listEmptyTransfer">כל ההעברות מופיעות כאן</string>
+    <string name="text_transfers">העברות</string>
+    <string name="butn_connectionDetails">פרטי חיבורים</string>
+    <string name="butn_useKnownDevice">להשתמש בהתקנים ידועים</string>
+    <string name="butn_scanQrCode">סריקת קוד QR</string>
+    <string name="butn_useExistingNetwork">להשתמש ברשתות קיימות</string>
+    <string name="butn_feedbackContact">משוב ויצירת קשר</string>
+    <string name="mesg_sent">נשלח</string>
+    <string name="text_sendText">שליחת טקסט</string>
+    <string name="butn_start">התחלה</string>
+    </resources>
