@@ -12,7 +12,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -386,12 +385,31 @@ public class AccessDatabase extends SQLiteDatabase
             broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_REMOVE);
     }
 
-    public void removeAsynchronous(final DatabaseObject object) {
-        ArrayList<DatabaseObject> objects = new ArrayList<>();
-        removeAsynchronous(objects);
+    public void removeAsynchronous(final DatabaseObject object)
+    {
+        removeAsynchronous(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                remove(object);
+            }
+        });
     }
 
-    public void removeAsynchronous(final ArrayList<DatabaseObject> objects)
+    public void removeAsynchronous(final List<? extends DatabaseObject> objects)
+    {
+        removeAsynchronous(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                remove(objects);
+            }
+        });
+    }
+
+    public void removeAsynchronous(final Runnable runnable)
     {
         WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_ASYNCHRONOUS)
         {
@@ -401,7 +419,7 @@ public class AccessDatabase extends SQLiteDatabase
                 if (getService() != null)
                     publishStatusText(getService().getString(R.string.mesg_removing));
 
-                remove(objects);
+                runnable.run();
             }
         });
     }

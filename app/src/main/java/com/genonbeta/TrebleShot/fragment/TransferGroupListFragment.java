@@ -315,10 +315,10 @@ public class TransferGroupListFragment
         {
             int id = item.getItemId();
 
-            ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+            ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_group_delete)
-                AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
+                AppUtils.getDatabase(getFragment().getContext()).removeAsynchronous(selectionList);
             else
                 return super.onActionMenuItemSelected(context, actionMode, item);
 
