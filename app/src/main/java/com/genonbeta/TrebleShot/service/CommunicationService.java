@@ -16,6 +16,9 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+import androidx.collection.ArrayMap;
+
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
@@ -46,7 +49,6 @@ import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -70,9 +72,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
-
-import androidx.annotation.RequiresApi;
-import androidx.collection.ArrayMap;
 
 public class CommunicationService extends Service
 {
@@ -824,12 +823,8 @@ public class CommunicationService extends Service
                                         getDatabase().reconstruct(group);
                                         getDatabase().reconstruct(assignee);
 
-                                        if (!isAccepted) {
-                                            if (getDatabase().getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                                    .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)))
-                                                    .size() <= 1)
-                                                getDatabase().remove(group);
-                                        }
+                                        if (!isAccepted)
+                                            getDatabase().remove(assignee);
 
                                         result = true;
                                     } catch (Exception e) {

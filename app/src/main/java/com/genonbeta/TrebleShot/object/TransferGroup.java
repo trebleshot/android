@@ -107,16 +107,14 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
-        ArrayList<TransferObject> transferList = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class, null);
-
-        database.remove(dbInstance, transferList, null, this);
-
         database.remove(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                 .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
 
         database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
+
+        database.removeAsObject(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class, null, this);
     }
 
     public static class Index
@@ -221,7 +219,16 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         @Override
         public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
-            database.remove(TransferUtils.createTransferSelection(groupId, deviceId));
+            SQLQuery.Select selection = TransferUtils.createTransferSelection(groupId, deviceId);
+
+            try {
+                TransferGroup group = new TransferGroup(groupId);
+
+                database.reconstruct(dbInstance, group);
+                database.removeAsObject(dbInstance, selection, TransferObject.class, null, group);
+            } catch (Exception e) {
+                database.remove(selection);
+            }
         }
     }
 }

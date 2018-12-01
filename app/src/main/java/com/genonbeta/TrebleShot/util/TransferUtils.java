@@ -6,6 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -13,18 +17,16 @@ import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 
 /**
  * created by: veli
@@ -96,6 +98,34 @@ public class TransferUtils
                 : new TransferObject(receiverInstance);
     }
 
+    public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
+    {
+        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+
+        return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+        {
+            @Override
+            public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+            {
+                object.device = new NetworkDevice(object.deviceId);
+                object.connection = new NetworkDevice.Connection(object);
+
+                try {
+                    db.reconstruct(object.device);
+                } catch (Exception e) {
+                    // Nope
+                }
+
+                try {
+                    db.reconstruct(object.connection);
+                } catch (Exception e) {
+                    // Nope
+                }
+            }
+        });
+    }
+
     public static void pauseTransfer(Context context, TransferGroup group, @Nullable TransferGroup.Assignee assignee)
     {
         pauseTransfer(context, group.groupId, assignee == null ? null : assignee.deviceId);
@@ -111,7 +141,8 @@ public class TransferUtils
         AppUtils.startForegroundService(context, intent);
     }
 
-    public static void recoverIncomingInterruptions(Context context, long groupId) {
+    public static void recoverIncomingInterruptions(Context context, long groupId)
+    {
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());

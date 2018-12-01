@@ -11,11 +11,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -25,15 +29,12 @@ import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * created by: veli
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment
-        extends DynamicRecyclerViewFragment<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
+        extends DynamicRecyclerViewFragment<ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
         implements TitleSupport
 {
     public static final String ARG_GROUP_ID = "groupId";
@@ -82,7 +83,7 @@ public class TransferAssigneeListFragment
                     @Override
                     public void onClick(View v)
                     {
-                        TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
+                        ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
                         new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), assignee.device)
                                 .show();
@@ -94,7 +95,7 @@ public class TransferAssigneeListFragment
                     @Override
                     public void onClick(View v)
                     {
-                        final TransferAssigneeListAdapter.ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
+                        final ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
 
                         PopupMenu popupMenu = new PopupMenu(getContext(), v);
                         Menu menu = popupMenu.getMenu();

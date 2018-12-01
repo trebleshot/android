@@ -10,11 +10,19 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
@@ -22,12 +30,6 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
 
 /**
  * created by: Veli
@@ -73,8 +75,7 @@ public class TransferGroupListAdapter
             {
                 StringBuilder assigneesText = new StringBuilder();
 
-                for (TransferAssigneeListAdapter.ShowingAssignee showingAssignee
-                        : TransferAssigneeListAdapter.loadAssigneeList(db, object.groupId)) {
+                for (ShowingAssignee showingAssignee : TransferUtils.loadAssigneeList(db, object.groupId)) {
                     if (assigneesText.length() > 0)
                         assigneesText.append(", ");
 

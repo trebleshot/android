@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -413,11 +414,11 @@ public class ViewTransferActivity
             SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                     .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));
 
-            ArrayList<TransferAssigneeListAdapter.ShowingAssignee> assignees = getDatabase()
-                    .castQuery(select, TransferAssigneeListAdapter.ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<TransferAssigneeListAdapter.ShowingAssignee>()
+            ArrayList<ShowingAssignee> assignees = getDatabase()
+                    .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
                     {
                         @Override
-                        public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, TransferAssigneeListAdapter.ShowingAssignee object)
+                        public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
                         {
                             object.device = new NetworkDevice(object.deviceId);
                             object.connection = new NetworkDevice.Connection(object);
@@ -437,7 +438,7 @@ public class ViewTransferActivity
                 return;
             }
 
-            final TransferAssigneeListAdapter.ShowingAssignee assignee = assignees.get(0);
+            final ShowingAssignee assignee = assignees.get(0);
 
             try {
                 getDatabase().reconstruct(new NetworkDevice.Connection(assignee));

@@ -9,9 +9,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -25,7 +27,7 @@ import androidx.annotation.NonNull;
  * created by: veli
  * date: 06.04.2018 12:46
  */
-public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAssigneeListAdapter.ShowingAssignee, RecyclerViewAdapter.ViewHolder>
+public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
 {
     private ArrayList<ShowingAssignee> mList = new ArrayList<>();
     private TransferGroup mGroup;
@@ -65,7 +67,7 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
     @Override
     public ArrayList<ShowingAssignee> onLoad()
     {
-        return loadAssigneeList(mDatabase, mGroup.groupId);
+        return TransferUtils.loadAssigneeList(mDatabase, mGroup.groupId);
     }
 
     @Override
@@ -90,39 +92,5 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<TransferAss
     {
         mGroup = group;
         return this;
-    }
-
-    public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
-    {
-        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
-
-        return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-        {
-            @Override
-            public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-            {
-                object.device = new NetworkDevice(object.deviceId);
-                object.connection = new NetworkDevice.Connection(object);
-
-                try {
-                    db.reconstruct(object.device);
-                    db.reconstruct(object.connection);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public static class ShowingAssignee extends TransferGroup.Assignee
-    {
-        public NetworkDevice device;
-        public NetworkDevice.Connection connection;
-
-        public ShowingAssignee()
-        {
-
-        }
     }
 }

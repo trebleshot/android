@@ -1,0 +1,8 @@
+NEW: Recovers when connection drops for a few seconds (for unstable connections)
+NEW: Thumbnails support in file manager and transfer screen
+NEW: An improved look
+NEW: Connection wizard for new-comers
+IMPROVED: Search support is back
+IMPROVED: Overall improvements on how TrebleShot works
+MISC: Bug fixes
+MISC: Updated translations
