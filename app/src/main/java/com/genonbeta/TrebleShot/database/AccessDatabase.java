@@ -6,8 +6,13 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
+import androidx.collection.ArrayMap;
+
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -18,8 +23,6 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import androidx.collection.ArrayMap;
 
 /**
  * Created by: veli
@@ -35,6 +38,9 @@ public class AccessDatabase extends SQLiteDatabase
      * C- From now on, the changes to the database will be separated to sections, one of which is belonging to
      * 		below version 6 and the other which is new generation 7
      */
+
+    public static final String TAG = AccessDatabase.class.getSimpleName();
+    public static final int TASK_REMOVE_ASYNCHRONOUS = 1;
 
     public static final int DATABASE_VERSION = 10;
 
@@ -378,6 +384,26 @@ public class AccessDatabase extends SQLiteDatabase
 
         for (String tableName : tableList)
             broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_REMOVE);
+    }
+
+    public void removeAsynchronous(final DatabaseObject object) {
+        ArrayList<DatabaseObject> objects = new ArrayList<>();
+        removeAsynchronous(objects);
+    }
+
+    public void removeAsynchronous(final ArrayList<DatabaseObject> objects)
+    {
+        WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_ASYNCHRONOUS)
+        {
+            @Override
+            protected void onRun()
+            {
+                if (getService() != null)
+                    publishStatusText(getService().getString(R.string.mesg_removing));
+
+                remove(objects);
+            }
+        });
     }
 
     @Override

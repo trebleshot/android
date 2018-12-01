@@ -116,7 +116,7 @@
     <string name="butn_remove">Remove</string>
     <string name="butn_removeAll">Remove all</string>
     <string name="ques_removeDevice">Remove this device?</string>
-    <string name="text_removeDeviceSummary">When you remove a device, its transfers will also be removed</string>
+    <string name="text_removeDeviceNotice">When you remove a device, its transfers will also be removed</string>
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
     <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers you see here</string>

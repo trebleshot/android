@@ -103,7 +103,7 @@
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除这个设备吗？</string>
-    <string name="text_removeDeviceSummary">移除设备会同时移除它的传输</string>
+    <string name="text_removeDeviceNotice">移除设备会同时移除它的传输</string>
     <string name="text_removePendingTransferSummary">这将从队列中移除%s</string>
     <string name="ques_removeAll">全部移除？</string>
     <string name="text_savedConnections">已保存连接</string>

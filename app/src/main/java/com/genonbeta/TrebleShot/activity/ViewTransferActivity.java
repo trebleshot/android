@@ -305,15 +305,7 @@ public class ViewTransferActivity
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            WorkerService.run(ViewTransferActivity.this, new WorkerService.RunningTask(TAG, TASK_REMOVE_GROUP)
-                            {
-                                @Override
-                                protected void onRun()
-                                {
-                                    publishStatusText(getString(R.string.mesg_removing));
-                                    getDatabase().remove(mGroup);
-                                }
-                            });
+                            getDatabase().removeAsynchronous(mGroup);
                         }
                     }).show();
         } else if (id == R.id.actions_transfer_retry_all) {

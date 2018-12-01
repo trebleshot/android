@@ -112,7 +112,7 @@
     <string name="butn_remove">Quitar</string>
     <string name="butn_removeAll">Quitar todo</string>
     <string name="ques_removeDevice">¿Quitar este dispositivo?</string>
-    <string name="text_removeDeviceSummary">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
+    <string name="text_removeDeviceNotice">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
     <string name="text_removePendingTransferSummary">Esto quitará %s de la cola</string>
     <string name="ques_removeAll">¿Quitar todo?</string>
     <string name="text_removeCertainPendingTransfersSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>

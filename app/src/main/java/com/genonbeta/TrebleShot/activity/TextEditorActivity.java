@@ -217,7 +217,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             @Override
             public void onRun()
             {
-                final DialogInterface.OnClickListener retyButtonListener = new DialogInterface.OnClickListener()
+                final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
                 {
                     @Override
                     public void onClick(DialogInterface dialog, int which)
@@ -252,10 +252,10 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                             else
                                 UIConnectionUtils.showConnectionRejectionInformation(
                                         TextEditorActivity.this,
-                                        device, clientResponse, retyButtonListener);
+                                        device, clientResponse, retryButtonListener);
                         } catch (Exception e) {
                             e.printStackTrace();
-                            createSnackbar(R.string.mesg_somethingWentWrong).show();
+                            UIConnectionUtils.showUnknownError(TextEditorActivity.this, retryButtonListener);
                         }
                     }
                 });

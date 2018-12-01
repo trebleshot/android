@@ -128,7 +128,7 @@
     <string name="butn_remove">Verwijderen</string>
     <string name="butn_removeAll">Alles verwijderen</string>
     <string name="ques_removeDevice">Dit apparaat verwijderen?</string>
-    <string name="text_removeDeviceSummary">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook verwijderd</string>
+    <string name="text_removeDeviceNotice">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook verwijderd</string>
     <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
     <string name="ques_removeAll">Alles verwijderen?</string>
     <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij</string>

@@ -99,7 +99,7 @@
     <string name="butn_remove">Supprimer</string>
     <string name="butn_removeAll">Tout supprimer</string>
     <string name="ques_removeDevice">Enlever cet appareil ?</string>
-    <string name="text_removeDeviceSummary">Lorsque vous supprimez un appareil, ses transferts seront également supprimés</string>
+    <string name="text_removeDeviceNotice">Lorsque vous supprimez un appareil, ses transferts seront également supprimés</string>
     <string name="text_removePendingTransferSummary">Ceci supprimera %s de la file d\'attente</string>
     <string name="ques_removeAll">Tout supprimer ?</string>
     <string name="text_availableNetworks">Choisir le réseau - %s</string>

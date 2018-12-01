@@ -118,7 +118,7 @@
     <string name="butn_remove">Elimina</string>
     <string name="butn_removeAll">Elimina tutti</string>
     <string name="ques_removeDevice">Elimina questo dispositivo?</string>
-    <string name="text_removeDeviceSummary">Quando rimuovi un dispositivo, anche i trasferimenti verranno rimossi</string>
+    <string name="text_removeDeviceNotice">Quando rimuovi un dispositivo, anche i trasferimenti verranno rimossi</string>
     <string name="text_removePendingTransferSummary">Questo rimuoverà %s dalla coda</string>
     <string name="ques_removeAll">Rimuovi tutti?</string>
     <string name="text_removeCertainPendingTransfersSummary">Questo rimuoverà tutti i trasferimenti in attesa in questa lista</string>

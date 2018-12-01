@@ -112,7 +112,7 @@
     <string name="butn_remove">Kendu</string>
     <string name="butn_removeAll">Kendu denak</string>
     <string name="ques_removeDevice">Kendu gailu hau?</string>
-    <string name="text_removeDeviceSummary">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
+    <string name="text_removeDeviceNotice">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
     <string name="text_removePendingTransferSummary">Honek %s ilaratik kenduko du</string>
     <string name="ques_removeAll">Kendu dena?</string>
     <string name="text_removeCertainPendingTransfersSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia guztiak kenduko ditu</string>

@@ -114,7 +114,7 @@
     <string name="butn_remove">Entfernen</string>
     <string name="butn_removeAll">Alle entfernen</string>
     <string name="ques_removeDevice">Dieses Gerät entfernen\?</string>
-    <string name="text_removeDeviceSummary">Beim Entfernen von Geräten werden Übertragungen auch entfernt</string>
+    <string name="text_removeDeviceNotice">Beim Entfernen von Geräten werden Übertragungen auch entfernt</string>
     <string name="text_removePendingTransferSummary">Das wird %s aus der Warteschlange entfernen</string>
     <string name="ques_removeAll">Alle entfernen?</string>
     <string name="text_removeCertainPendingTransfersSummary">Das wird alle wartenden Übertragungen entfernen, die hier zu sehen sind</string>

@@ -111,7 +111,7 @@
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除這個裝置\?</string>
-    <string name="text_removeDeviceSummary">當您移除一個裝置，它的傳輸項目也會被移除</string>
+    <string name="text_removeDeviceNotice">當您移除一個裝置，它的傳輸項目也會被移除</string>
     <string name="text_removePendingTransferSummary">這將會從列表中 %s</string>
     <string name="ques_removeAll">全部移除\?</string>
     <string name="text_removeCertainPendingTransfersSummary">這將會移除您在這邊看到的所有待辦傳輸</string>

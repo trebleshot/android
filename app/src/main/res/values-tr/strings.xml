@@ -100,7 +100,7 @@
     <string name="text_cancellingTransfer">İşlem iptal ediliyor</string>
     <string name="text_noNetworkAvailable">Kullanılabilir ağ yok</string>
     <string name="text_removeCertainPendingTransfersSummary">Bu, burada görmüş olduğunuz bekleyen aktarımlar kaldıracak</string>
-    <string name="text_removeDeviceSummary">Bir cihazı kaldırdığınızda geriye kalan aktarımları da silinir</string>
+    <string name="text_removeDeviceNotice">Bir cihazı sildiğinizde alakalı gereksiz şeyler de beraberinde silinir</string>
     <string name="text_availableNetworks">Ağ seçin - %s</string>
     <string name="ques_removeAll">Hepsini kaldır?</string>
     <string name="ques_removeDevice">Bu cihazı kaldır?</string>

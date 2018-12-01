@@ -186,7 +186,8 @@ public class TransferObject
     @Override
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
-        if (Flag.DONE.equals(flag) || !Type.INCOMING.equals(type))
+        // Normally we'd like to check every file, but I may take a while.
+        if (!Flag.INTERRUPTED.equals(flag) || !Type.INCOMING.equals(type))
             return;
 
         try {

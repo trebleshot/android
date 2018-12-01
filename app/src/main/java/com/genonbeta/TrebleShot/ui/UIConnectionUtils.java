@@ -237,18 +237,8 @@ public class UIConnectionUtils
                         }
                     });
             } else
-                new Handler(Looper.getMainLooper()).post(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        new AlertDialog.Builder(activity)
-                                .setMessage(R.string.mesg_somethingWentWrong)
-                                .setNegativeButton(R.string.butn_close, null)
-                                .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                .show();
-                    }
-                });
+                showUnknownError(activity, retryButtonListener);
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -285,6 +275,21 @@ public class UIConnectionUtils
         }
 
         watcher.onResultReturned(true, false);
+    }
+
+    public static void showUnknownError(final Activity activity, final DialogInterface.OnClickListener retryButtonListener) {
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                new AlertDialog.Builder(activity)
+                        .setMessage(R.string.mesg_somethingWentWrong)
+                        .setNegativeButton(R.string.butn_close, null)
+                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                        .show();
+            }
+        });
     }
 
     public boolean toggleHotspot(boolean conditional,

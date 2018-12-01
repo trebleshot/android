@@ -111,7 +111,7 @@
     <string name="butn_remove">Ta bort</string>
     <string name="butn_removeAll">Ta bort alla</string>
     <string name="ques_removeDevice">Ta bort enheten\?</string>
-    <string name="text_removeDeviceSummary">När du tar bort en enhet, tas även dennes överföringarna bort</string>
+    <string name="text_removeDeviceNotice">När du tar bort en enhet, tas även dennes överföringarna bort</string>
     <string name="text_removePendingTransferSummary">Detta kommer att ta bort %s från kön</string>
     <string name="ques_removeAll">Ta bort alla\?</string>
     <string name="text_removeCertainPendingTransfersSummary">Detta kommer att ta bort alla väntande överföringar du ser här</string>
