@@ -120,7 +120,7 @@ public class TransferAssigneeListFragment
                                         }
                                     });
                                 } else if (id == R.id.popup_remove) {
-                                    AppUtils.getDatabase(getContext()).remove(assignee);
+                                    AppUtils.getDatabase(getContext()).removeAsynchronous(assignee);
                                 } else
                                     return false;
 
