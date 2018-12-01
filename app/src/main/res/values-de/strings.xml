@@ -253,7 +253,7 @@
     <string name="butn_selectNone">Auswahl aufheben</string>
     <string name="butn_previewSelections">Vorschau der Auswahl</string>
     <string name="mesg_deviceConnectionError">Verbindung mit \"%s\" über \"%s\" fehlgeschlagen</string>
-    <string name="mesg_retryAllInfo">TrebleShot versucht, unterbrochene Dateitransfers zu wiederholen</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot versucht, unterbrochene Dateitransfers zu wiederholen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Bitte erst die Verbindungsart wählen</string>
     <string name="butn_setUp">Einrichten</string>
     <string name="text_location">Pseudo-Standort</string>

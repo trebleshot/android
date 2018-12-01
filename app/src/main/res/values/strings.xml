@@ -247,7 +247,7 @@
     <string name="butn_selectNone">Select none</string>
     <string name="butn_previewSelections">Preview selections</string>
     <string name="mesg_deviceConnectionError">Connection with \"%s\" over \"%s\" failed</string>
-    <string name="mesg_retryAllInfo">TrebleShot will retry receiving interrupted transfers</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot will retry receiving interrupted transfers</string>
     <string name="mesg_transferConnectionNotSetUpFix">Please choose the connection method first</string>
     <string name="butn_setUp">Set up</string>
     <string name="text_location">Location</string>

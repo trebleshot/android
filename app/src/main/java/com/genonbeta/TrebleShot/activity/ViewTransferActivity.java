@@ -26,7 +26,6 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -312,7 +311,7 @@ public class ViewTransferActivity
 
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 
-            createSnackbar(R.string.mesg_retryAllInfo)
+            createSnackbar(R.string.mesg_retryReceivingNotice)
                     .show();
         } else if (id == R.id.actions_transfer_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)

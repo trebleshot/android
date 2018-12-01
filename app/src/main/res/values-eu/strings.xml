@@ -250,7 +250,7 @@
     <string name="butn_selectNone">Ez hautatu bat ere</string>
     <string name="butn_previewSelections">Aurreikusi hautatutakoak</string>
     <string name="mesg_deviceConnectionError">Huts egin du \"%s\" konexioak \"%s\" bidez</string>
-    <string name="mesg_retryAllInfo">TrebleShot etendako transferentziak jasotzen saiatuko da berriro</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot etendako transferentziak jasotzen saiatuko da berriro</string>
     <string name="mesg_transferConnectionNotSetUpFix">Aukeratu konexio metodoa aurretik</string>
     <string name="butn_setUp">Konfiguratu</string>
     <string name="text_location">Sasi-kokalekua</string>

@@ -215,7 +215,7 @@
     <string name="mesg_helpFolderSelection">Pour sélectionner un dossier, appuyez sur son icône</string>
     <string name="butn_selectAll">Tout sélectionner</string>
     <string name="mesg_deviceConnectionError">Échec de la connexion avec \"%s\", sur \"%s\"</string>
-    <string name="mesg_retryAllInfo">TrebleShot réessaiera de recevoir les transferts interrompus</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot réessaiera de recevoir les transferts interrompus</string>
     <string name="mesg_transferConnectionNotSetUpFix">Veuillez d’abord choisir la méthode de connexion</string>
     <string name="butn_setUp">Mettre en place</string>
     <string name="text_location">Pseudo emplacement</string>

@@ -253,7 +253,7 @@
     <string name="butn_selectNone">لا تحدد شيئا</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
     <string name="mesg_deviceConnectionError">لقد فشل الاتصال مع \"%s\" على \"%s\"</string>
-    <string name="mesg_retryAllInfo">سيحاول تريبليشوت تلقي الملفات التي تمت مقاطعتها</string>
+    <string name="mesg_retryReceivingNotice">سيحاول تريبليشوت تلقي الملفات التي تمت مقاطعتها</string>
     <string name="mesg_transferConnectionNotSetUpFix">الرجاء اختيار طريقة الاتصال أولاً</string>
     <string name="butn_setUp">الإعداد</string>
     <string name="text_location">موقع زائف</string>

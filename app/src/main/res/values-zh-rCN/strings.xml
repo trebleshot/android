@@ -283,7 +283,7 @@
     <string name="butn_selectAll">全选</string>
     <string name="butn_selectNone">全不选</string>
     <string name="butn_previewSelections">预览所选项</string>
-    <string name="mesg_retryAllInfo">TrebleShot将会重试被中断的传输</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot将会重试被中断的传输</string>
     <string name="mesg_transferConnectionNotSetUpFix">请首先选择连接方式</string>
     <string name="butn_setUp">设置</string>
     <string name="butn_saveAnyway">仍然保存</string>

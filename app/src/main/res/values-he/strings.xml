@@ -250,7 +250,7 @@
     <string name="butn_selectNone">לא לבחור כלום</string>
     <string name="butn_previewSelections">תצוגה מקדימה של בחירות</string>
     <string name="mesg_deviceConnectionError">החיבור מול „%s” דרך „%s” נכשל</string>
-    <string name="mesg_retryAllInfo">"יתבצע ניסיון חוזר על ידי TrebleShot לקבלת העברות שנקטעו "</string>
+    <string name="mesg_retryReceivingNotice">"יתבצע ניסיון חוזר על ידי TrebleShot לקבלת העברות שנקטעו "</string>
     <string name="mesg_transferConnectionNotSetUpFix">נא לבחור תחילה את שיטת החיבור</string>
     <string name="butn_setUp">הגדרה</string>
     <string name="text_location">מיקום מדומה</string>

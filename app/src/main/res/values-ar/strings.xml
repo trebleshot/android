@@ -252,7 +252,7 @@
     <string name="butn_previewSelections">معاينة التحديدات</string>
     <string name="mesg_errorHotspotPermission">تريبليشوت يحتاج إلى إذن لإنشاء نقطة ساخنة</string>
     <string name="mesg_deviceConnectionError">لقد فشل الاتصال من \"%s\" الى \"%s\"</string>
-    <string name="mesg_retryAllInfo">"تريبليشوت سيقوم بإعادة المحاولة  لتلقي ملفات تمت مقاطعتها"</string>
+    <string name="mesg_retryReceivingNotice">"تريبليشوت سيقوم بإعادة المحاولة  لتلقي ملفات تمت مقاطعتها"</string>
     <string name="mesg_transferConnectionNotSetUpFix">الرجاء تحديث الاتصال أولاً باستخدام \"تغيير الاتصال\"</string>
     <string name="butn_setUp">الإعداد</string>
     <string name="text_location">موقع زائف</string>

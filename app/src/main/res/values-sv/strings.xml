@@ -337,7 +337,7 @@
     <string name="mesg_locationDisabledSelfHotspot">Aktivera platstjänsten för att se sökresultat och skapa hotspot</string>
     <string name="mesg_hotspotCreatedInfo">Anslut till \"%s\" i \"WiFi-inställningarna\" eller skicka filerna via \"%s\" från TrebleShot</string>
     <string name="mesg_deviceConnectionError">Anslutning med \"%s\" över \"%s\" misslyckades</string>
-    <string name="mesg_retryAllInfo">TrebleShot kommer att försöka ta emot avbrutna överföringar</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot kommer att försöka ta emot avbrutna överföringar</string>
     <string name="mesg_transferConnectionNotSetUpFix">Välj anslutningsmetod först</string>
     <string name="butn_setUp">Ställ in</string>
     <string name="text_trustZoneDeviceNotice">Låt den här enheten skicka filer till dig utan att du behöver bekräfta något när TrustZone är på</string>

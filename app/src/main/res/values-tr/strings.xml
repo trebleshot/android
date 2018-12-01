@@ -239,7 +239,7 @@
     <string name="butn_selectNone">Seçimleri kaldır</string>
     <string name="butn_previewSelections">Seçimleri önizle</string>
     <string name="mesg_deviceConnectionError">\"%s\" ile \"%s\" üzerinden bağlantı başarısız oldu</string>
-    <string name="mesg_retryAllInfo">TrebleShot yarıda kesilmiş aktarımları yeniden almayı deneyecek</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot yarıda kesilmiş aktarımları yeniden almayı deneyecek</string>
     <string name="mesg_transferConnectionNotSetUpFix">Lütfen ilk önce bağlantı yöntemini seçin</string>
     <string name="butn_setUp">Ayarla</string>
     <string name="text_location">Sahte konum</string>

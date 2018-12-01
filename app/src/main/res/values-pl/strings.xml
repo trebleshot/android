@@ -250,7 +250,7 @@
     <string name="butn_selectNone">Wybierz brak</string>
     <string name="butn_previewSelections">Wyświetl podgląd</string>
     <string name="mesg_deviceConnectionError">Połączenie z \"%s\" przez \"%s\" nie powiodło się</string>
-    <string name="mesg_retryAllInfo">TrebleShot spróbuje ponownie odebrać przerwane transfery</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot spróbuje ponownie odebrać przerwane transfery</string>
     <string name="mesg_transferConnectionNotSetUpFix">Najpierw wybierz metodę połączenia</string>
     <string name="butn_setUp">Ustaw</string>
     <string name="text_location">Pseudo lokalizacja</string>

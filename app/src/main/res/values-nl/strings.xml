@@ -279,7 +279,7 @@
     <string name="butn_selectNone">Niks selecteren</string>
     <string name="butn_previewSelections">Selectievoorbeeld</string>
     <string name="mesg_deviceConnectionError">De verbinding met \"%s\" via \"%s\" is mislukt</string>
-    <string name="mesg_retryAllInfo">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot zal opnieuw proberen om onderbroken overdrachten te ontvangen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Kies eerst de verbindingsmethode</string>
     <string name="butn_setUp">Instellen</string>
     <string name="text_location">Neplocatie</string>

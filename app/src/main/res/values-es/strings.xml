@@ -250,7 +250,7 @@
     <string name="butn_selectNone">Seleccionar ninguno</string>
     <string name="butn_previewSelections">Vista previa de las selecciones</string>
     <string name="mesg_deviceConnectionError">La conexión de \"%s\" a través de \"%s\" ha fallado</string>
-    <string name="mesg_retryAllInfo">TrebleShot intentará recibir las transferencias interrumpidas</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot intentará recibir las transferencias interrumpidas</string>
     <string name="mesg_transferConnectionNotSetUpFix">Por favor escoja el método de transferencia primero</string>
     <string name="butn_setUp">Configurar</string>
     <string name="text_location">Pseudo ubicación</string>

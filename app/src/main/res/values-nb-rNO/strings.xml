@@ -257,7 +257,7 @@
     <string name="butn_selectNone">Ikke velg noe</string>
     <string name="butn_previewSelections">Forhåndsvis utvalg</string>
     <string name="mesg_deviceConnectionError">Tilkobling med \"%s\" over \"%s\" mislyktes</string>
-    <string name="mesg_retryAllInfo">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot vil prøve å hente forstyrrede overføringer igjen</string>
     <string name="mesg_transferConnectionNotSetUpFix">Velg tilkoblingsmetode først</string>
     <string name="butn_setUp">Sett opp</string>
     <string name="text_location">Tenkt plassering</string>

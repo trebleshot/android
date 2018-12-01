@@ -65,7 +65,7 @@ public class InAppDonationItemListFragment
     {
         super.onViewCreated(view, savedInstanceState);
 
-        useEmptyActionButton(getString(R.string.butn_retryReceiving), new View.OnClickListener()
+        useEmptyActionButton(getString(R.string.butn_retry), new View.OnClickListener()
         {
             @Override
             public void onClick(View v)

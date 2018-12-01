@@ -247,7 +247,7 @@
     <string name="butn_selectNone">Seleziona nessuno</string>
     <string name="butn_previewSelections">Anteprima selezioni</string>
     <string name="mesg_deviceConnectionError">Connessione a \"%s\" tramite \"%s\" fallita</string>
-    <string name="mesg_retryAllInfo">TrebleShot riproverà a ricevere i trasferimenti interrotti</string>
+    <string name="mesg_retryReceivingNotice">TrebleShot riproverà a ricevere i trasferimenti interrotti</string>
     <string name="butn_saveAnyway">Salva comunque</string>
     <string name="mesg_notValidTransfer">Il trasferimento non è più valido</string>
     <string name="ques_saveAnyway">Salvare comunque?</string>
