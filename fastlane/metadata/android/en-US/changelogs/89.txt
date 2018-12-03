@@ -1,0 +1,3 @@
+IMPROVED: Illustrates changes on recent files
+IMPROVED: Shows info when you tap file error notification
+MISC: Updated translations

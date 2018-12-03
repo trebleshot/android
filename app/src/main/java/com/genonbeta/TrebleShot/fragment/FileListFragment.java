@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
@@ -39,9 +42,6 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class FileListFragment
         extends GroupEditableListFragment<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
@@ -69,25 +69,31 @@ public class FileListFragment
         {
             if ((ACTION_FILE_LIST_CHANGED.equals(intent.getAction()) && intent.hasExtra(EXTRA_FILE_PARENT))) {
                 try {
-                    final DocumentFile parentFile = FileUtils.fromUri(getContext(), (Uri) intent.getParcelableExtra(EXTRA_FILE_PARENT));
+                    Object parentUri = intent.getParcelableExtra(EXTRA_FILE_PARENT);
 
-                    if (getAdapter().getPath() != null && parentFile.getUri().equals(getAdapter().getPath().getUri()))
+                    if (parentUri == null && getAdapter().getPath() == null) {
                         refreshList();
-                    else if (intent.hasExtra(EXTRA_FILE_NAME)) {
-                        if (mUpdateSnackbar == null)
-                            mUpdateSnackbar = createSnackbar(R.string.mesg_newFilesReceived);
+                    } else if (parentUri != null) {
+                        final DocumentFile parentFile = FileUtils.fromUri(getContext(), (Uri) parentUri);
 
-                        mUpdateSnackbar
-                                .setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
-                                .setAction(R.string.butn_show, new View.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(View v)
+                        if (getAdapter().getPath() != null && parentFile.getUri().equals(getAdapter().getPath().getUri()))
+                            refreshList();
+                        else if (intent.hasExtra(EXTRA_FILE_NAME)) {
+                            if (mUpdateSnackbar == null)
+                                mUpdateSnackbar = createSnackbar(R.string.mesg_newFilesReceived);
+
+                            mUpdateSnackbar
+                                    .setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
+                                    .setAction(R.string.butn_show, new View.OnClickListener()
                                     {
-                                        goPath(parentFile);
-                                    }
-                                })
-                                .show();
+                                        @Override
+                                        public void onClick(View v)
+                                        {
+                                            goPath(parentFile);
+                                        }
+                                    })
+                                    .show();
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

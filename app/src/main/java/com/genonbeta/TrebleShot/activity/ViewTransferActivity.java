@@ -14,9 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
-import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
@@ -45,14 +52,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 /**
  * Created by: veli
  * Date: 5/23/17 1:43 PM
@@ -64,10 +63,11 @@ public class ViewTransferActivity
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
-    public static final int TASK_REMOVE_GROUP = 1;
-
     public static final String ACTION_LIST_TRANSFERS = "com.genonbeta.TrebleShot.action.LIST_TRANSFERS";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
+    public static final String EXTRA_REQUEST_ID = "extraRequestId";
+    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
+    public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
 
@@ -200,6 +200,25 @@ public class ViewTransferActivity
             try {
                 getDatabase().reconstruct(group);
                 mGroup = group;
+
+                if (getIntent().hasExtra(EXTRA_REQUEST_ID)
+                        && getIntent().hasExtra(EXTRA_DEVICE_ID)
+                        && getIntent().hasExtra(EXTRA_REQUEST_TYPE)) {
+                    long requestId = getIntent().getLongExtra(EXTRA_REQUEST_ID, -1);
+                    String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
+
+                    try {
+                        TransferObject.Type type = TransferObject.Type.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
+                        TransferObject transferObject = new TransferObject(requestId, deviceId, type);
+
+                        getDatabase().reconstruct(transferObject);
+
+                        new TransferInfoDialog(ViewTransferActivity.this, transferObject)
+                                .show();
+                    } catch (Exception e) {
+                        // May be it
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }

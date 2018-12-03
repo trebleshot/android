@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
 import com.genonbeta.CoolSocket.CoolTransfer;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
@@ -19,9 +22,6 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.receiver.DialogEventReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.android.framework.io.DocumentFile;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 /**
  * created by: Veli
@@ -248,7 +248,8 @@ public class CommunicationNotificationHelper
         return notification.show();
     }
 
-    public DynamicNotification notifyReceiveError(CommunicationService.ProcessHolder processHolder) {
+    public DynamicNotification notifyReceiveError(CommunicationService.ProcessHolder processHolder)
+    {
         DynamicNotification notification = getUtils().buildDynamicNotification(
                 TransferUtils.createUniqueTransferId(processHolder.groupId, processHolder.deviceId, processHolder.transferObject.type),
                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
@@ -278,7 +279,10 @@ public class CommunicationNotificationHelper
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), ViewTransferActivity.class)
                         .setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
-                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, transferObject.groupId), 0));
+                        .putExtra(ViewTransferActivity.EXTRA_GROUP_ID, transferObject.groupId)
+                        .putExtra(ViewTransferActivity.EXTRA_REQUEST_ID, transferObject.requestId)
+                        .putExtra(ViewTransferActivity.EXTRA_REQUEST_TYPE, transferObject.type.toString())
+                        .putExtra(ViewTransferActivity.EXTRA_DEVICE_ID, transferObject.deviceId), 0));
 
         return notification.show();
     }
