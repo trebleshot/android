@@ -414,4 +414,6 @@
     <string name="butn_help">עזרה</string>
     <string name="butn_choose">בחירה</string>
     <string name="butn_fixConnection">תיקון החיבור</string>
+    <string name="text_addDeviceHelp">כאשר מתווספים מכשירים, אותם הקבצים משותפים עם מכשירים נוספים. עם סיום ההעברה היישומון יחזור אליה.</string>
+    <string name="ques_connectionWizardUseHotspot">לאפשר למכשירים אחרים להתחבר למכשיר הזה עם נקודה חמה (קשירה)\? אם לא ברור לך ממה זו נקודה חמה, מוטב לבחור באפשרות כן.</string>
     </resources>
