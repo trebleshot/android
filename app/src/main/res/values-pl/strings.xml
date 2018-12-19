@@ -280,10 +280,10 @@
     <string name="text_notificationChannelHigh">Ważne powiadomienia</string>
     <string name="text_notificationChannelLow">Powiadomienia o niskim priorytecie</string>
     <string name="text_receivedTransfer">Otrzymano %s w %s</string>
-    <string name="text_yearCountShort">%d yr</string>
-    <string name="text_monthCountShort">%d mth</string>
-    <string name="text_dayCountShort">%d dy</string>
-    <string name="text_hourCountShort">%d hr</string>
+    <string name="text_yearCountShort">%d r</string>
+    <string name="text_monthCountShort">%d m</string>
+    <string name="text_dayCountShort">%d dn</string>
+    <string name="text_hourCountShort">%d godz</string>
     <string name="text_minuteCountShort">%d min</string>
     <string name="text_secondCountShort">%d sek</string>
     <string name="butn_exit">Wyjście</string>
@@ -295,7 +295,7 @@
     <string name="text_listEmptyApp">Brak aplikacji</string>
     <string name="text_listEmptyVideo">Brak filmów</string>
     <string name="text_listEmptyPendingTransfer">W tym miejscu pojawią się oczekujące transfery</string>
-    <string name="text_listEmptyTextStream">Tutaj pojawią się pisma</string>
+    <string name="text_listEmptyTextStream">Tutaj pojawią się teksty</string>
     <string name="text_listEmptyMusic">Brak piosenek</string>
     <string name="text_internalStorage">Pamięć wewnętrzna</string>
     <string name="text_restrictedAccessStorage">%s (ograniczony dostęp)</string>
@@ -348,7 +348,7 @@
     <string name="text_scanQRWifiRequired">Aby połączyć się z urządzeniami, Wi-Fi powinno być włączone</string>
     <string name="mesg_completing">Zakończono</string>
     <string name="mesg_errorNotSameNetwork">Urządzenia nie znajdują się w tej samej sieci</string>
-    <string name="text_cameraPermissionRequired">Wymagane pozwolenie kamery</string>
+    <string name="text_cameraPermissionRequired">Wymagane uprawnienia kamery</string>
     <string name="text_addDevicesToTransfer">Dodaj urządzenia do przenoszenia</string>
     <string name="text_file">Plik</string>
     <string name="text_noDeviceForTransfer">Do tego transferu nie dodano urządzenia</string>
@@ -374,7 +374,7 @@
 	<string name="mesg_noInternetConnection">To wymaga połączenia z Internetem</string>
     <string name="text_applyDarkTheme">Ciemny motyw</string>
     <string name="text_applyDarkThemeSummary">Użyj motywu ciemnego</string>
-    <string name="butn_allow">Zezwul</string>
+    <string name="butn_allow">Zezwól</string>
     <string name="butn_telegram_channel">Kanał Telegram</string>
 <string name="text_listEmptyTransfer">Wszystkie transfery pojawiają się tutaj</string>
     <string name="text_transfers">Transfery</string>

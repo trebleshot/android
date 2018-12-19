@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Öppna navigeringsmenyn</string>n
     <string name="text_navigationDrawerClose">Stäng navigeringsmenyn</string>
     <string name="text_preferences">Inställningar</string>
@@ -158,7 +158,7 @@
     <string name="mesg_newFilesReceived">Nya filer har mottagits</string>
     <string name="butn_show">Visa</string>
     <string name="text_preparingFiles">Förbereder filerna</string>
-    <string name="text_savingDetails">Sparar detaljer innan mottagningen</string>
+    <string name="text_savingDetails">Sparar detaljer</string>
     <string name="text_version">Version</string>
     <string name="text_flagPending">Väntar</string>
     <string name="text_flagRunning">Körs</string>
@@ -199,7 +199,7 @@
     <string name="butn_turnTrustZoneOn">Aktivera TrustZone</string>
     <string name="butn_turnTrustZoneOff">Inaktivera TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">Starta alltid upp med TrustZone aktiverad</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone är aktiverad vid start</string>
     <string name="butn_typeNewEntry">Skriv ny post</string>
     <string name="butn_download">Nerladdning</string>
     <string name="mesg_clipboardUpdateNotice">Ändra texten eller tryck igen för att avsluta</string>
@@ -213,7 +213,7 @@
     <string name="butn_disconnect">Koppla från</string>
     <string name="text_trebleshotHotspotDescription">Du kan skicka filer direkt via det här öppna nätverket som skapats av en närliggande TrebleShot-enhet.</string>
     <string name="mesg_connectingToSelfHotspot">Ansluter till TrebleShot-hotspot</string>
-    <string name="mesg_warningHotspotMobileActive">Andra kan ansluta till ditt nätverk medans mobildata är aktivt</string>
+    <string name="mesg_warningHotspotMobileActive">Anslutna enheter kan använda din mobildata. Du kanske vill inaktivera den.</string>
     <string name="butn_skip">Hoppa över</string>
     <string name="mesg_scanningSelfHotspot">Sök efter TrebleShot-hotspot</string>
     <string name="mesg_suggestSelfHotspot">Aktivera WiFi för att söka efter en TrebleShot-hotspot</string>
@@ -308,7 +308,7 @@
     <string name="butn_shareWithOtherApps">Dela med andra appar</string>
     <string name="butn_startHotspot">Ställ in hotspot</string>
     <string name="butn_stopHotspot">Stoppa hotspot</string>
-    <string name="text_scanQRWifiRequired">För att kunna ansluta till enheter måste Wi-Fi vara aktiverat</string>
+    <string name="text_scanQRWifiRequired">För att kunna ansluta till enheter måste WiFi vara aktiverat</string>
     <string name="mesg_errorNotSameNetwork">Enheterna är inte i samma nätverk</string>
     <string name="text_file">Fil</string>
     <string name="text_thirdPartyLibraries">Tredjepartsbibliotek</string>
@@ -324,15 +324,15 @@
     <string name="text_changelog">Ändringslogg</string>
     <string name="mesg_versionUpdatedChangelogRejected">Du hittar alltid \'Ändringsloggen\' i \'Om\'</string>
 	<string name="mesg_noInternetConnection">Detta kräver internetanslutning</string>
-    <string name="text_applyDarkTheme">Mörkt tema</string>
+    <string name="text_applyDarkTheme">Mörkt läge</string>
     <string name="text_applyDarkThemeSummary">Använd det mörka temat</string>
     <string name="butn_allow">Tillåt</string>
-    <string name="mesg_noNetwork">Det finns ingen Wi-Fi-anslutning för att hitta närliggande enheter</string>
+    <string name="mesg_noNetwork">Det finns ingen WiFi-anslutning för att hitta närliggande enheter</string>
     <string name="text_notAllowedHelp">Kontrollera om du är tillåten på %1$s 
 \n
 \nEnheter &gt; %2$s &gt; Tillåter anslutning &gt; (kontrollera det)</string>
     <string name="butn_selectThis">Markera detta</string>
-    <string name="text_checkOldFiles">Du kan flytta tillhörande filer som är klara och delvis klara till den här mappen, vilket kan ta tid beroende på deras storlek</string>
+    <string name="text_checkOldFiles">Du kan flytta tillhörande filer, klara och delvis klara till den här mappen och detta kan ta tid beroende på storleken</string>
     <string name="mesg_errorHotspotPermission">TrebleShot behöver tillåtelse att sätta upp en hotspot</string>
     <string name="mesg_locationDisabledSelfHotspot">Aktivera platstjänsten för att se sökresultat och skapa hotspot</string>
     <string name="mesg_hotspotCreatedInfo">Anslut till \"%s\" i \"WiFi-inställningarna\" eller skicka filerna via \"%s\" från TrebleShot</string>
@@ -340,15 +340,15 @@
     <string name="mesg_retryReceivingNotice">TrebleShot kommer att försöka ta emot avbrutna överföringar</string>
     <string name="mesg_transferConnectionNotSetUpFix">Välj anslutningsmetod först</string>
     <string name="butn_setUp">Ställ in</string>
-    <string name="text_trustZoneDeviceNotice">Låt den här enheten skicka filer till dig utan att du behöver bekräfta något när TrustZone är på</string>
-    <string name="text_allowingToConnectNotice">Markerad kan den här enheten ansluta till dig</string>
+    <string name="text_trustZoneDeviceNotice">Acceptera automatiskt inkommande objekt när TrustZone är aktiverad</string>
+    <string name="text_allowingToConnectNotice">Tillåt anslutningar från denna enheten</string>
     <string name="text_workerService">Worker-tjänst</string>
     <string name="text_receivedTransfer">Mottagna %s i %s</string>
     <string name="text_previewThenProceedNotice">Kontrollera dina val genom att trycka på \"Kö\" för att fortsätta</string>
     <string name="text_restrictedAccessStorage">%s (begränsad åtkomst)</string>
     <string name="text_emptySearchResult">Inget resultat för \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">Den här listan kommer att uppdateras när den blir tillgänglig</string>
-    <string name="mesg_errorReadFolder">Kommer inte åt mappen \"%s\"</string>
+    <string name="mesg_errorReadFolder">Kommer inte åt \"%s\"</string>
     <string name="butn_mountDirectory">Montera mapp</string>
     <string name="mesg_mountDirectoryHelp">Välj mappen du vill ha åtkomst till</string>
     <string name="butn_ejectDirectory">Avmontera mapp</string>
@@ -360,14 +360,60 @@
     <string name="text_cameraPermissionRequired">Kameratillstånd krävs</string>
     <string name="text_addDevicesToTransfer">Lägg till enheter för att överföra</string>
     <string name="text_killServiceAfterLeaving">Tjänsten stannar när du stänger appen</string>
-    <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som har ändrats sen förra versionen\?</string>
+    <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som är nytt\?</string>
     <string name="butn_telegram_channel">Telegramkanal</string>
 <string name="text_transactionGroupDetails">Överföringsgruppsuppgifter</string>
     <string name="mesg_providerNotAllowedError">Standardmappen är inte tillgänglig för andra appar</string>
     <string name="text_easyDiscoveryHelp">Skanna QR-koden om båda enheterna är i samma nätverk</string>
     <string name="text_killServiceAfterLeavingSummary">Avbryter kommunikationen om ingen uppgift pågår</string>
-    <string name="mesg_notSavingToChosenLocation">Filerna sparas inte i önskad mapp eftersom den inte är tillgänglig just nu.
-\n
+    <string name="mesg_notSavingToChosenLocation">Mappen du vill spara i finns inte. Filerna kommer därför att sparas i standardmappen. 
+\n 
 \n%s</string>
     <string name="text_requestPermissionStorageSummary">Denna behörighet tillåter att TrebleShot att läsa och skriva till enhetens lagringsutrymme för att kunna ta emot och dela ut filer.</string>
-    </resources>
+    <string name="text_savePath">Sökväg för sparade filer</string>
+    <string name="butn_previewSelections">Förhandsgranska markerade</string>
+    <string name="mesg_updateDownloadComplete">Mottagna filer har uppdaterats och sparats till dina mottagna filer</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Ställ in en hotspot så att andra kan ansluta till dig</string>
+    <string name="text_noDeviceForTransfer">Inga enheter tillagda för denna överföringen</string>
+    <string name="mesg_noPendingTransferObjectExists">Ingen väntande överföring kvar. För att återuppta avbrutna filer, använd alternativet \'Försök igen med alla\'.</string>
+    <string name="text_listEmptyTransfer">Alla överföringar visas här</string>
+    <string name="text_transfers">Överföringar</string>
+    <string name="butn_connectionDetails">Anslutningsdetaljer</string>
+    <string name="butn_useKnownDevice">Använd kända enheter</string>
+    <string name="butn_scanQrCode">Skanna QR-kod</string>
+    <string name="butn_useExistingNetwork">Använd existerande nätverk</string>
+    <string name="butn_feedbackContact">Feedback och kontakt</string>
+    <string name="mesg_sent">Skickat</string>
+    <string name="text_sendText">Skicka text</string>
+    <string name="butn_start">Start</string>
+    <string name="text_addDeviceHelp">Genom att lägga till enheter delar du samma filer med flera enheter. Du kommer tillbaka till överföringen när den är klar.</string>
+    <string name="text_downloads">Nerladdningar</string>
+    <string name="text_documents">Dokument</string>
+    <string name="text_shortcuts">Genvägar</string>
+    <string name="text_recentFiles">Senaste filer</string>
+    <string name="butn_changeSavePath">Ändra sökvägen för sparade filer</string>
+    <string name="mesg_fileReceiveFilesLeftError">Några filer togs inte emot</string>
+    <string name="text_send">Skicka</string>
+    <string name="text_connectionHelp">Välj hur du vill ansluta till den andra enheten. Till exempel, om den andra enheten visar en QR-kod, använd då skanna QR-kod.</string>
+    <string name="ques_needHelp">Behöver du en hjälpande hand\?</string>
+    <string name="text_connectionWizard">Anslutningsguide</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Har du precis ställt in allt på den andra enheten\?</string>
+    <string name="ques_connectionWizardIsThereQRCode">Ser du en QR-kod (streckkod) på skärmen\?</string>
+    <string name="ques_connectionWizardUseHotspot">Vill du att den andra enheten ska ansluta till denna enheten med hotspot (tethering)\? Om du inte vet vad hotspot är, tryck Ja.</string>
+    <string name="ques_connectionWizardUseNetwork">Vill du använda din router eller ett WiFi-nätverk som du och din vän är ansluten till\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Vill du komma åt dina tidigare kontaktade enheter\?</string>
+    <string name="butn_yes">Ja</string>
+    <string name="butn_no">Nej</string>
+    <string name="text_loadThumbnails">Ladda miniatyrer</string>
+    <string name="text_loadThumbnailsSummary">Visa miniatyrer för filer</string>
+    <string name="text_manageDevices">Hantera enheter</string>
+    <string name="text_search">Sök</string>
+    <string name="mesg_wifiEnableFailed">WiFi vill inte aktivera sig.</string>
+    <string name="mesg_turningWiFiOn">Aktiverar WiFi</string>
+    <string name="mesg_locationPermissionRequiredAny">Börja med att aktivera platstjänsten</string>
+    <string name="mesg_connectToWiFiNetworkHelp">Börja med att ansluta till ett WiFi-nätverk</string>
+    <string name="mesg_removing">Tar bort… Kan ta lång tid</string>
+    <string name="butn_help">Hjälp</string>
+    <string name="butn_choose">Välj</string>
+    <string name="butn_fixConnection">Fixa anslutningen</string>
+</resources>

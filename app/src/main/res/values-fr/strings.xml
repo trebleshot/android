@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Ouvrir le volet de navigation</string>n
     <string name="text_navigationDrawerClose">Fermer le volet de navigation</string>
     <string name="text_preferences">Préférences</string>
@@ -178,7 +178,7 @@
     <string name="butn_turnTrustZoneOn">Activer TrustZone</string>
     <string name="butn_turnTrustZoneOff">Désactiver TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">Démarrez toujours avec TrustZone activé</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone est activé au démarrage</string>
     <string name="butn_typeNewEntry">Saisir une nouvelle entrée</string>
     <string name="butn_download">Télécharger</string>
     <string name="mesg_clipboardUpdateNotice">Révisez le texte ou appuyez à nouveau sur pour quitter</string>
@@ -229,8 +229,8 @@
     <string name="text_sortByName">Nom</string>
     <string name="text_sortByDate">Date</string>
     <string name="text_sortBySize">Taille</string>
-    <string name="text_trustZoneDeviceNotice">Permettre à cet appareil de vous envoyer des fichiers sans afficher d\'invite lorsque TrustZone est activé</string>
-    <string name="text_allowingToConnectNotice">Lorsque cette option est cochée, cet appareil peut se connecter à vous</string>
+    <string name="text_trustZoneDeviceNotice">Accepter automatiquement les éléments entrants lorsque TrustZone est activé</string>
+    <string name="text_allowingToConnectNotice">Autoriser les connexions à partir de cet appareil</string>
     <string name="butn_resetToDefault">Rétablir les paramètres par défaut</string>
     <string name="text_resetPreferencesToDefaultSummary">Ceci appliquera les réglages initiaux</string>
     <string name="text_taskCompleted">Tâche terminée</string>
@@ -322,4 +322,12 @@
     <string name="mesg_textShareLimit">Vous ne pouvez partager qu’un seul texte à la fois</string>
     <string name="mesg_hotspotCreatedInfo">Connectez-vous à «%s» via votre Wi-Fi ou envoyez des fichiers via \"%s\" dans TrebleShot</string>
     <string name="butn_qrScanToSend">Scannez le QR code à envoyer</string>
-    </resources>
+    <string name="text_receivedTextSummary">Texte reçu dans le presse-papiers</string>
+    <string name="text_stopping">Arrêt en cours !</string>
+    <string name="mesg_communicating">En cours de communication</string>
+    <string name="butn_changeConnection">Modifier la connexion</string>
+    <string name="text_savingDetails">Enregistrement des détails</string>
+    <string name="text_flagRunning">En cours d’exécution</string>
+    <string name="butn_selectNone">Ne rien sélectionner</string>
+    <string name="butn_previewSelections">Aperçu des sélections</string>
+</resources>
