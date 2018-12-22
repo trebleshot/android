@@ -22,6 +22,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
@@ -46,13 +53,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 /**
  * created by: veli
@@ -79,15 +79,22 @@ public class BarcodeConnectFragment
     private IntentFilter mIntentFilter = new IntentFilter();
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private boolean mPermissionRequested = false;
-    private boolean mWatchForPermission = false;
+    private String mPreviousScanResult = null;
 
     private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
     {
         @Override
         public void onResultReturned(boolean result, boolean shouldWait)
         {
-            updateState();
-            mWatchForPermission = shouldWait;
+            if (result)
+                updateState();
+            else
+                mBarcodeView.pauseAndWait();
+
+            // We don't want to keep this when the result is ok
+            // or not asked to wait
+            if (!shouldWait || result)
+                mPreviousScanResult = null;
         }
     };
 
@@ -175,78 +182,7 @@ public class BarcodeConnectFragment
             @Override
             public void barcodeResult(BarcodeResult result)
             {
-                try {
-                    JSONObject jsonObject = new JSONObject(result.getResult().getText());
-                    NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
-
-                    int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
-                            ? jsonObject.getInt(Keyword.NETWORK_PIN)
-                            : -1;
-
-                    if (jsonObject.has(Keyword.NETWORK_NAME)) {
-                        hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
-                        hotspotNetwork.qrConnection = true;
-
-                        boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
-
-                        if (passProtected) {
-                            hotspotNetwork.password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
-                            hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
-                        }
-
-                        mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, hotspotNetwork, accessPin, mRegisteredListener);
-                    } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
-
-                        if ((Build.VERSION.SDK_INT >= 26 && !mConnectionUtils // With Android Oreo to gather Wi-Fi information, minimal access to location is needed
-                                .validateLocationPermission(getActivity(), REQUEST_PERMISSION_LOCATION, mPermissionWatcher))) {
-                            mBarcodeView.pauseAndWait();
-                        } else {
-
-                            String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
-                            String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
-
-                            WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
-
-                            if (wifiInfo != null
-                                    && wifiInfo.getBSSID() != null
-                                    && wifiInfo.getBSSID().equals(bssid))
-                                mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, ipAddress, accessPin, mRegisteredListener);
-                            else {
-                                mBarcodeView.pauseAndWait();
-
-                                new AlertDialog.Builder(getActivity())
-                                        .setMessage(R.string.mesg_errorNotSameNetwork)
-                                        .setPositiveButton(R.string.butn_close, null)
-                                        .setOnDismissListener(new DialogInterface.OnDismissListener()
-                                        {
-                                            @Override
-                                            public void onDismiss(DialogInterface dialog)
-                                            {
-                                                updateState();
-                                            }
-                                        })
-                                        .show();
-                            }
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-
-                    mBarcodeView.pauseAndWait();
-
-                    new AlertDialog.Builder(getActivity())
-                            .setMessage(R.string.mesg_somethingWentWrong)
-                            .setPositiveButton(R.string.butn_close, null)
-                            .setOnDismissListener(new DialogInterface.OnDismissListener()
-                            {
-                                @Override
-                                public void onDismiss(DialogInterface dialog)
-                                {
-                                    updateState();
-                                }
-                            })
-                            .show();
-                }
+                handleBarcode(result.getResult().getText());
             }
 
             @Override
@@ -264,6 +200,9 @@ public class BarcodeConnectFragment
 
         getContext().registerReceiver(mReceiver, mIntentFilter);
         updateState();
+
+        if (mPreviousScanResult != null)
+            handleBarcode(mPreviousScanResult);
     }
 
     @Override
@@ -290,6 +229,87 @@ public class BarcodeConnectFragment
             }
     }
 
+    protected void handleBarcode(String code) {
+        try {
+            JSONObject jsonObject = new JSONObject(code);
+            NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
+
+            mPreviousScanResult = code; // Fail-safe
+
+            final int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
+                    ? jsonObject.getInt(Keyword.NETWORK_PIN)
+                    : -1;
+
+            if (jsonObject.has(Keyword.NETWORK_NAME)) {
+                hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
+                hotspotNetwork.qrConnection = true;
+
+                boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
+
+                if (passProtected) {
+                    hotspotNetwork.password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
+                    hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
+                }
+
+                makeAcquaintance(hotspotNetwork, accessPin);
+            } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
+                if (Build.VERSION.SDK_INT < 26 // With Android Oreo to gather Wi-Fi information, minimal access to location is needed
+                        || mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_PERMISSION_LOCATION, mPermissionWatcher)) {
+                    final String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
+                    final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
+
+                    WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
+
+                    if (wifiInfo != null
+                            && wifiInfo.getBSSID() != null
+                            && wifiInfo.getBSSID().equals(bssid))
+                        makeAcquaintance(ipAddress, accessPin);
+                    else {
+                        mBarcodeView.pauseAndWait();
+
+                        new AlertDialog.Builder(getActivity())
+                                .setMessage(R.string.mesg_errorNotSameNetwork)
+                                .setNegativeButton(R.string.butn_close, null)
+                                .setPositiveButton(R.string.butn_skip, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        makeAcquaintance(ipAddress, accessPin);
+                                    }
+                                })
+                                .setOnDismissListener(new DialogInterface.OnDismissListener()
+                                {
+                                    @Override
+                                    public void onDismiss(DialogInterface dialog)
+                                    {
+                                        updateState();
+                                    }
+                                })
+                                .show();
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+
+            mBarcodeView.pauseAndWait();
+
+            new AlertDialog.Builder(getActivity())
+                    .setMessage(R.string.mesg_somethingWentWrong)
+                    .setPositiveButton(R.string.butn_close, null)
+                    .setOnDismissListener(new DialogInterface.OnDismissListener()
+                    {
+                        @Override
+                        public void onDismiss(DialogInterface dialog)
+                        {
+                            updateState();
+                        }
+                    })
+                    .show();
+        }
+    }
+
     @Override
     public int getIconRes()
     {
@@ -300,6 +320,11 @@ public class BarcodeConnectFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_scanQrCode);
+    }
+
+    protected void makeAcquaintance(Object object, int accessPin)
+    {
+        mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, object, accessPin, mRegisteredListener);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

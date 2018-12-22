@@ -415,6 +415,7 @@
     <string name="mesg_connectToWiFiNetworkHelp">Connect to a Wi-Fi network to continue</string>
     <string name="mesg_removing">Removing… May take long</string>
     <string name="butn_help">Help</string>
+    <string name="text_help" translatable="false">@string/butn_help</string>
     <string name="butn_choose">Choose</string>
     <string name="butn_fixConnection">Fix connection</string>
     <string name="text_fixConnection" translatable="false">@string/butn_fixConnection</string>

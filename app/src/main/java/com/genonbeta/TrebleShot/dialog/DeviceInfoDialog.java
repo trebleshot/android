@@ -13,6 +13,12 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.SwitchCompat;
+
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
@@ -30,11 +36,6 @@ import org.json.JSONObject;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.appcompat.widget.SwitchCompat;
 
 /**
  * Created by: veli
@@ -60,11 +61,25 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
             TextView versionText = rootView.findViewById(R.id.device_info_version);
             AppCompatImageView updateButton = rootView.findViewById(R.id.device_info_get_update_button);
+            AppCompatImageView accessHelpButton = rootView.findViewById(R.id.device_info_access_switcher_help_button);
+            AppCompatImageView trustHelpButton = rootView.findViewById(R.id.device_info_trust_switcher_help_button);
             SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
             final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
 
             if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
+
+            View.OnClickListener helpButtonListener = new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    showHelp(v);
+                }
+            };
+
+            trustHelpButton.setOnClickListener(helpButtonListener);
+            accessHelpButton.setOnClickListener(helpButtonListener);
 
             updateButton.setOnClickListener(new View.OnClickListener()
             {
@@ -149,7 +164,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                         {
                             device.isRestricted = !isChecked;
                             database.publish(device);
-
                             trustSwitch.setEnabled(isChecked);
                         }
                     }
@@ -183,5 +197,33 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @StringRes
+    protected int getHelpTextForView(View v)
+    {
+        switch (v.getId()) {
+            case R.id.device_info_access_switcher_help_button:
+                return R.string.text_allowingToConnectNotice;
+            case R.id.device_info_trust_switcher_help_button:
+                return R.string.text_trustZoneDeviceNotice;
+        }
+
+        return 0;
+    }
+
+    protected void showHelp(View v)
+    {
+        @StringRes
+        int helpId = getHelpTextForView(v);
+
+        if (helpId == 0)
+            return;
+
+        new AlertDialog.Builder(getContext())
+                .setTitle(R.string.text_help)
+                .setMessage(helpId)
+                .setPositiveButton(R.string.butn_close, null)
+                .show();
     }
 }

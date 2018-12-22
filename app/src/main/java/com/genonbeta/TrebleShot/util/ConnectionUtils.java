@@ -287,7 +287,6 @@ public class ConnectionUtils
         return false;
     }
 
-
     public interface TimeoutListener
     {
         boolean onTimePassed(int delimiter, long timePassed);
