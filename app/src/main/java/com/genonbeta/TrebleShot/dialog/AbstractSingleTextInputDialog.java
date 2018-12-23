@@ -27,6 +27,8 @@ abstract public class AbstractSingleTextInputDialog extends AbstractFailureAware
 		setView(mView);
 		setTitle(R.string.text_createFolder);
 		setNegativeButton(R.string.butn_close, null);
+
+		mEditText.requestFocus();
 	}
 
 	public ViewGroup getContainerView()

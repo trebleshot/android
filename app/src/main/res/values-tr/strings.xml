@@ -401,4 +401,5 @@
     <string name="text_loadThumbnails">Önizlemeleri yükle</string>
     <string name="text_loadThumbnailsSummary">Dosyalar için önizlemeler göster</string>
     <string name="text_manageDevices">Cihazları yönet</string>
+    <string name="butn_never">Asla</string>
 </resources>

@@ -32,6 +32,7 @@
     <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">
         <item name="cardBackgroundColor">?cardBackgroundColor</item>
         <item name="cardElevation">2dp</item>
+        <item name="cardCornerRadius">8dp</item>
     </style>
 
     <style name="Widget.TrebleShot.ProgressBar.Horizontal.Oval" parent="Widget.AppCompat.ProgressBar.Horizontal">

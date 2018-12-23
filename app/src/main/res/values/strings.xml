@@ -419,4 +419,5 @@
     <string name="butn_choose">Choose</string>
     <string name="butn_fixConnection">Fix connection</string>
     <string name="text_fixConnection" translatable="false">@string/butn_fixConnection</string>
+    <string name="butn_never">Never</string>
 </resources>

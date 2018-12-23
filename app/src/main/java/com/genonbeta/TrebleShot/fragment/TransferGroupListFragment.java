@@ -9,8 +9,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
@@ -28,14 +31,9 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * created by: Veli
@@ -99,44 +97,19 @@ public class TransferGroupListFragment
         setEmptyImage(R.drawable.ic_compare_arrows_white_24dp);
         setEmptyText(getString(R.string.text_listEmptyTransfer));
 
-        final ViewGroup actionsContainer = view.findViewById(R.id.actionsContainer);
+        View viewSend = view.findViewById(R.id.sendLayoutButton);
+        View viewReceive = view.findViewById(R.id.receiveLayoutButton);
 
-        final FloatingActionButton fabShare = view.findViewById(R.id.shareFAB);
-        FloatingActionButton fabSend = view.findViewById(R.id.sendFAB);
-        FloatingActionButton fabReceive = view.findViewById(R.id.receiveFAB);
-
-        final View.OnClickListener toggleListener = new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                toggleSharingView(actionsContainer, fabShare);
-            }
-        };
-
-        actionsContainer.setOnClickListener(toggleListener);
-        fabShare.setOnClickListener(toggleListener);
-
-        fabSend.setOnClickListener(new View.OnClickListener()
+        viewSend.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 startActivity(new Intent(getContext(), ContentSharingActivity.class));
-                toggleListener.onClick(v);
             }
         });
 
-        useEmptyActionButton(getString(R.string.butn_share), new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                toggleListener.onClick(v);
-            }
-        });
-
-        fabReceive.setOnClickListener(new View.OnClickListener()
+        viewReceive.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
@@ -144,13 +117,8 @@ public class TransferGroupListFragment
                 startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
                         .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
                         .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString()));
-
-                toggleListener.onClick(v);
             }
         });
-
-        getListView().setClipToPadding(false);
-        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
     }
 
     @Override
@@ -272,20 +240,6 @@ public class TransferGroupListFragment
     {
         mSelect = select;
         return this;
-    }
-
-    public void toggleSharingView(View v, FloatingActionButton fab)
-    {
-        boolean currentState = v.getVisibility() == View.VISIBLE;
-        v.setVisibility(!currentState ? View.VISIBLE : View.GONE);
-
-        v.setAnimation(AnimationUtils.loadAnimation(getContext(), currentState
-                ? android.R.anim.fade_out
-                : android.R.anim.fade_in));
-
-        fab.setImageResource(currentState
-                ? R.drawable.ic_share_white_24dp
-                : R.drawable.ic_close_white_24dp);
     }
 
     private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferGroupListAdapter.PreloadedGroup>

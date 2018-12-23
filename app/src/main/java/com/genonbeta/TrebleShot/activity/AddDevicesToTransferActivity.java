@@ -237,7 +237,7 @@ public class AddDevicesToTransferActivity extends Activity
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        startConnectionManagerActivity();
+                        doCommunicate(device, connection);
                     }
                 };
 

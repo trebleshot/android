@@ -86,7 +86,7 @@ public class BarcodeConnectFragment
         @Override
         public void onResultReturned(boolean result, boolean shouldWait)
         {
-            if (result)
+            if (isResumed()) // isResumed
                 updateState();
             else
                 mBarcodeView.pauseAndWait();
@@ -288,7 +288,8 @@ public class BarcodeConnectFragment
                                 })
                                 .show();
                     }
-                }
+                } else
+                    mBarcodeView.pauseAndWait();
             }
         } catch (JSONException e) {
             e.printStackTrace();

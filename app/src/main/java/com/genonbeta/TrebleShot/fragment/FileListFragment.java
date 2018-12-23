@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
@@ -382,6 +383,7 @@ public class FileListFragment
         mLastKnownPath = pathOnTrial;
     }
 
+    @RequiresApi(21)
     public void requestMountStorage()
     {
         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);

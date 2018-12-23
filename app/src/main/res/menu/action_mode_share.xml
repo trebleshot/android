@@ -3,10 +3,10 @@
         android:id="@+id/action_mode_share_trebleshot"
         android:icon="@drawable/ic_send_white_24dp"
         android:showAsAction="always"
-        android:title="@string/butn_shareWithTrebleshot"/>
+        android:title="@string/butn_shareWithTrebleshot" />
 
     <item
         android:id="@+id/action_mode_share_all_apps"
         android:icon="@drawable/ic_share_white_24dp"
-        android:title="@string/butn_shareWithOtherApps"/>
+        android:title="@string/butn_shareWithOtherApps" />
 </menu>

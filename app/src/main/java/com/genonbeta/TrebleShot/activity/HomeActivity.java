@@ -14,6 +14,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -33,13 +40,6 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 
 public class HomeActivity
         extends Activity
@@ -87,31 +87,37 @@ public class HomeActivity
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
 
         if (!AppUtils.isLatestChangeLogSeen(this)) {
-            AlertDialog.Builder versionChangeDialog = new AlertDialog.Builder(this);
-
-            versionChangeDialog.setMessage(R.string.mesg_versionUpdatedChangelog);
-
-            versionChangeDialog.setPositiveButton(R.string.butn_show, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    AppUtils.publishLatestChangelogSeen(HomeActivity.this);
-                    startActivity(new Intent(HomeActivity.this, ChangelogActivity.class));
-                }
-            });
-
-            versionChangeDialog.setNegativeButton(R.string.butn_cancel, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    AppUtils.publishLatestChangelogSeen(HomeActivity.this);
-                    Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected, Toast.LENGTH_SHORT).show();
-                }
-            });
-
-            versionChangeDialog.show();
+            new AlertDialog.Builder(this)
+                    .setMessage(R.string.mesg_versionUpdatedChangelog)
+                    .setPositiveButton(R.string.butn_yes, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+                            startActivity(new Intent(HomeActivity.this, ChangelogActivity.class));
+                        }
+                    })
+                    .setNeutralButton(R.string.butn_never, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            getDefaultPreferences().edit()
+                                    .putBoolean("show_changelog_dialog", false)
+                                    .apply();
+                        }
+                    })
+                    .setNegativeButton(R.string.butn_no, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            AppUtils.publishLatestChangelogSeen(HomeActivity.this);
+                            Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected, Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .show();
         }
 
         if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {

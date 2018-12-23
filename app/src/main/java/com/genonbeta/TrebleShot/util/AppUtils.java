@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
@@ -318,12 +319,14 @@ public class AppUtils
 
     public static boolean isLatestChangeLogSeen(Context context)
     {
+        SharedPreferences preferences = getDefaultPreferences(context);
         NetworkDevice device = getLocalDevice(context);
-        int lastSeenChangelog = getDefaultPreferences(context)
-                .getInt("changelog_seen_version", -1);
+        int lastSeenChangelog = preferences.getInt("changelog_seen_version", -1);
+        boolean dialogAllowed = preferences.getBoolean("show_changelog_dialog", true);
 
-        return !getDefaultPreferences(context).contains("previously_migrated_version")
-                || device.versionNumber == lastSeenChangelog;
+        return !preferences.contains("previously_migrated_version")
+                || device.versionNumber == lastSeenChangelog
+                || !dialogAllowed;
     }
 
     public static void publishLatestChangelogSeen(Context context)
