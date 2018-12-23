@@ -3,6 +3,7 @@
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.AppCompat.Light">
         <item name="android:textColorPrimary">@color/colorControlNormal</item>
+        <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
@@ -13,11 +14,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/colorPrimaryDark23</item>
         <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundDialog">@drawable/dialog_bg</item>
         <item name="backgroundGradient">@drawable/background_gradient</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
@@ -41,13 +44,18 @@
         <item name="useLightStatusBar">true</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
-        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">
+            @style/CustomListFragmentEmptyImageStyle
+        </item>
+        <item name="genfw_customListFragmentEmptyTextStyle">
+            @style/CustomListFragmentEmptyTextStyle
+        </item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.AppCompat">
         <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
+        <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
@@ -58,11 +66,13 @@
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/dark_colorPrimaryDark23</item>
         <item name="colorSecondary">@color/dark_colorSecondary</item>
+        <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
+        <item name="backgroundDialog">@drawable/dialog_bg_dark</item>
         <item name="backgroundGradient">@drawable/background_gradient_dark</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>
@@ -86,8 +96,12 @@
         <item name="useLightStatusBar">false</item>
 
         <!--styling framework-->
-        <item name="genfw_customListFragmentEmptyImageStyle">@style/CustomListFragmentEmptyImageStyle</item>
-        <item name="genfw_customListFragmentEmptyTextStyle">@style/CustomListFragmentEmptyTextStyle</item>
+        <item name="genfw_customListFragmentEmptyImageStyle">
+            @style/CustomListFragmentEmptyImageStyle
+        </item>
+        <item name="genfw_customListFragmentEmptyTextStyle">
+            @style/CustomListFragmentEmptyTextStyle
+        </item>
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
     <!-- prototype end -->

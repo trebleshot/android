@@ -16,10 +16,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
@@ -28,6 +28,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -60,93 +61,81 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
             TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
             TextView versionText = rootView.findViewById(R.id.device_info_version);
-            AppCompatImageView updateButton = rootView.findViewById(R.id.device_info_get_update_button);
-            AppCompatImageView accessHelpButton = rootView.findViewById(R.id.device_info_access_switcher_help_button);
-            AppCompatImageView trustHelpButton = rootView.findViewById(R.id.device_info_trust_switcher_help_button);
             SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
             final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
+            NetworkDevice localDevice = AppUtils.getLocalDevice(activity);
 
             if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
 
-            View.OnClickListener helpButtonListener = new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
+            if (localDevice.versionNumber < device.versionNumber
+                    || BuildConfig.DEBUG)
+                setNeutralButton(R.string.butn_update, new DialogInterface.OnClickListener()
                 {
-                    showHelp(v);
-                }
-            };
-
-            trustHelpButton.setOnClickListener(helpButtonListener);
-            accessHelpButton.setOnClickListener(helpButtonListener);
-
-            updateButton.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    new EstablishConnectionDialog(activity, device, new OnDeviceSelectedListener()
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
                     {
-                        @Override
-                        public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                        new EstablishConnectionDialog(activity, device, new OnDeviceSelectedListener()
                         {
-                            WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
+                            @Override
+                            public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
                             {
-                                @Override
-                                public void onRun()
+                                WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
                                 {
-                                    publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
+                                    @Override
+                                    public void onRun()
+                                    {
+                                        publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
 
-                                    try {
-                                        final Context context = getContext();
-                                        final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
-                                        {
-                                            @Override
-                                            public void onConnectionReady(ServerSocket socket)
+                                        try {
+                                            final Context context = getContext();
+                                            final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
                                             {
-                                                CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+                                                @Override
+                                                public void onConnectionReady(ServerSocket socket)
                                                 {
-                                                    @Override
-                                                    public void onConnect(CoolSocket.Client client)
+                                                    CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
                                                     {
-                                                        try {
-                                                            CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
-                                                            activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
+                                                        @Override
+                                                        public void onConnect(CoolSocket.Client client)
+                                                        {
+                                                            try {
+                                                                CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+                                                                activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
 
-                                                            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                                                            JSONObject responseJSON = new JSONObject(response.response);
+                                                                CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                                                                JSONObject responseJSON = new JSONObject(response.response);
 
-                                                            if (!responseJSON.has(Keyword.RESULT) || !responseJSON.getBoolean(Keyword.RESULT))
-                                                                throw new Exception("Not the answer we were looking for.");
-                                                        } catch (Exception e) {
-                                                            e.printStackTrace();
-                                                            getInterrupter().interrupt(false);
+                                                                if (!responseJSON.has(Keyword.RESULT) || !responseJSON.getBoolean(Keyword.RESULT))
+                                                                    throw new Exception("Not the answer we were looking for.");
+                                                            } catch (Exception e) {
+                                                                e.printStackTrace();
+                                                                getInterrupter().interrupt(false);
+                                                            }
                                                         }
-                                                    }
-                                                });
-                                            }
-                                        });
+                                                    });
+                                                }
+                                            });
 
-                                        new Handler(Looper.getMainLooper()).post(new Runnable()
-                                        {
-                                            @Override
-                                            public void run()
+                                            new Handler(Looper.getMainLooper()).post(new Runnable()
                                             {
-                                                Toast.makeText(context, receivedFile == null
-                                                        ? R.string.mesg_somethingWentWrong
-                                                        : R.string.mesg_updateDownloadComplete, Toast.LENGTH_LONG).show();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
+                                                @Override
+                                                public void run()
+                                                {
+                                                    Toast.makeText(context, receivedFile == null
+                                                            ? R.string.mesg_somethingWentWrong
+                                                            : R.string.mesg_updateDownloadComplete, Toast.LENGTH_LONG).show();
+                                                }
+                                            });
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
                                     }
-                                }
-                            });
-                        }
-                    }).show();
-                }
-            });
+                                });
+                            }
+                        }).show();
+                    }
+                });
 
             modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
             versionText.setText(device.versionName);
@@ -202,28 +191,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
     @StringRes
     protected int getHelpTextForView(View v)
     {
-        switch (v.getId()) {
-            case R.id.device_info_access_switcher_help_button:
-                return R.string.text_allowingToConnectNotice;
-            case R.id.device_info_trust_switcher_help_button:
-                return R.string.text_trustZoneDeviceNotice;
-        }
-
+        //return R.string.text_allowingToConnectNotice;
+        //return R.string.text_trustZoneDeviceNotice;
         return 0;
-    }
-
-    protected void showHelp(View v)
-    {
-        @StringRes
-        int helpId = getHelpTextForView(v);
-
-        if (helpId == 0)
-            return;
-
-        new AlertDialog.Builder(getContext())
-                .setTitle(R.string.text_help)
-                .setMessage(helpId)
-                .setPositiveButton(R.string.butn_close, null)
-                .show();
     }
 }

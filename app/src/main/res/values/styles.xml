@@ -14,6 +14,10 @@
     <style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
     <!-- generalization end -->
 
+    <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.AppCompat.Dialog">
+        <item name="android:windowBackground">?backgroundDialog</item>
+    </style>
+
     <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
