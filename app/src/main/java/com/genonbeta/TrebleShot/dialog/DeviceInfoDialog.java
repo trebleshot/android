@@ -22,6 +22,7 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -80,58 +81,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                             @Override
                             public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
                             {
-                                WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
-                                {
-                                    @Override
-                                    public void onRun()
-                                    {
-                                        publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
-
-                                        try {
-                                            final Context context = getContext();
-                                            final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
-                                            {
-                                                @Override
-                                                public void onConnectionReady(ServerSocket socket)
-                                                {
-                                                    CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
-                                                    {
-                                                        @Override
-                                                        public void onConnect(CoolSocket.Client client)
-                                                        {
-                                                            try {
-                                                                CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
-                                                                activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
-
-                                                                CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                                                                JSONObject responseJSON = new JSONObject(response.response);
-
-                                                                if (!responseJSON.has(Keyword.RESULT) || !responseJSON.getBoolean(Keyword.RESULT))
-                                                                    throw new Exception("Not the answer we were looking for.");
-                                                            } catch (Exception e) {
-                                                                e.printStackTrace();
-                                                                getInterrupter().interrupt(false);
-                                                            }
-                                                        }
-                                                    });
-                                                }
-                                            });
-
-                                            new Handler(Looper.getMainLooper()).post(new Runnable()
-                                            {
-                                                @Override
-                                                public void run()
-                                                {
-                                                    Toast.makeText(context, receivedFile == null
-                                                            ? R.string.mesg_somethingWentWrong
-                                                            : R.string.mesg_updateDownloadComplete, Toast.LENGTH_LONG).show();
-                                                }
-                                            });
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                });
+                                runReceiveTask(activity, sharedPreferences, device, connection);
                             }
                         }).show();
                     }
@@ -188,11 +138,85 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         }
     }
 
-    @StringRes
-    protected int getHelpTextForView(View v)
-    {
-        //return R.string.text_allowingToConnectNotice;
-        //return R.string.text_trustZoneDeviceNotice;
-        return 0;
+    protected void runReceiveTask(final Activity activity, final SharedPreferences sharedPreferences,
+                                  final NetworkDevice device, final NetworkDevice.Connection connection) {
+
+        WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
+        {
+            @Override
+            public void onRun()
+            {
+                publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
+
+                try {
+                    final Context context = getContext();
+                    final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+                    {
+                        @Override
+                        public void onConnectionReady(ServerSocket socket)
+                        {
+                            CoolSocket.connect(new CoolSocket.Client.ConnectionHandler()
+                            {
+                                @Override
+                                public void onConnect(CoolSocket.Client client)
+                                {
+                                    try {
+                                        CoolSocket.ActiveConnection activeConnection = client.connect(new InetSocketAddress(connection.ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+                                        activeConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.BACK_COMP_REQUEST_SEND_UPDATE).toString());
+
+                                        CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                                        JSONObject responseJSON = new JSONObject(response.response);
+
+                                        if (!responseJSON.has(Keyword.RESULT) || !responseJSON.getBoolean(Keyword.RESULT))
+                                            throw new Exception("Not the answer we were looking for.");
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                        getInterrupter().interrupt(false);
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (receivedFile == null)
+                                new AlertDialog.Builder(activity)
+                                        .setTitle(R.string.text_error)
+                                        .setMessage(R.string.mesg_somethingWentWrong)
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                                        {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                runReceiveTask(activity, sharedPreferences, device, connection);
+                                            }
+                                        })
+                                        .show();
+                            else
+                                new AlertDialog.Builder(activity)
+                                        .setTitle(R.string.text_taskCompleted)
+                                        .setMessage(R.string.mesg_updateDownloadComplete)
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_open, new DialogInterface.OnClickListener()
+                                        {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which)
+                                            {
+                                                EditableListFragment.openUri(activity, receivedFile.getUri(), activity.getString(R.string.text_fileOpenAppChoose));
+                                            }
+                                        })
+                                        .show();
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

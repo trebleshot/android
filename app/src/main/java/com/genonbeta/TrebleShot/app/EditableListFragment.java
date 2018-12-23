@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.app;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +16,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.collection.ArrayMap;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
@@ -38,13 +46,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.SearchView;
-import androidx.collection.ArrayMap;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * created by: Veli
@@ -574,16 +575,20 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public boolean openUri(Uri uri, String chooserText)
     {
+        return openUri(getActivity(), uri, chooserText);
+    }
+
+    public static boolean openUri(Activity activity, Uri uri, String chooserText)
+    {
         try {
-            StreamInfo streamInfo = StreamInfo.getStreamInfo(getActivity(), uri);
-            Intent openIntent = FileUtils.applySecureOpenIntent(getActivity(), streamInfo, new Intent(Intent.ACTION_VIEW));
+            StreamInfo streamInfo = StreamInfo.getStreamInfo(activity, uri);
+            Intent openIntent = FileUtils.applySecureOpenIntent(activity, streamInfo, new Intent(Intent.ACTION_VIEW));
 
-            startActivity(Intent.createChooser(openIntent, chooserText));
-
+            activity.startActivity(Intent.createChooser(openIntent, chooserText));
             return true;
         } catch (Throwable e) {
             e.printStackTrace();
-            Toast.makeText(getActivity(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
         }
 
         return false;
