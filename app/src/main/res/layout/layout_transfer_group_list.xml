@@ -13,7 +13,6 @@
         android:paddingLeft="@dimen/short_content_width_padding"
         android:paddingRight="@dimen/short_content_width_padding">
 
-
         <TextView
             android:id="@+id/sendLayoutButton"
             style="@style/TextAppearance.Primary.Normal.SingleLine"

@@ -18,6 +18,10 @@
         <item name="android:windowBackground">?backgroundDialog</item>
     </style>
 
+    <style name="Widget.TrebleShot.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
+        <item name="android:popupBackground">?backgroundPopupMenu</item>
+    </style>
+
     <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>

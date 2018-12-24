@@ -13,14 +13,11 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="?actionBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="?actionBarTheme" />
+            android:layout_height="?attr/actionBarSize" />
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/activity_content_sharing_tab_layout"
-            style="?tabStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -43,21 +40,17 @@
             android:layout_alignParentBottom="true"
             android:visibility="gone">
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?colorDivider" />
+
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
-                style="?actionBarStyle"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="?actionBarTheme" />
+                android:layout_height="?actionBarSize" />
 
         </com.google.android.material.appbar.AppBarLayout>
-
-        <View
-            android:id="@+id/activity_content_sharing_separator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_above="@id/activity_content_sharing_action_mode_layout"
-            android:background="?colorDivider" />
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"

@@ -4,6 +4,7 @@
     <attr name="backgroundGradient" format="reference" />
     <attr name="backgroundGradientBottom" format="reference" />
     <attr name="backgroundGradientTop" format="reference" />
+    <attr name="backgroundPopupMenu" format="reference" />
     <attr name="colorDonation" format="reference" />
     <attr name="colorDivider" format="reference" />
     <attr name="colorPrimaryDark23" format="reference" /> <!-- Marshmallow devices use dark tint color -->

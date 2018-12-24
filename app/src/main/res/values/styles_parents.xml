@@ -2,7 +2,7 @@
 <resources>
     <!-- prototype start -->
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.AppCompat.Light">
-        <item name="android:textColorPrimary">@color/colorControlNormal</item>
+        <item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupMenuStyle</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/cardViewBackground</item>
@@ -16,14 +16,17 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
+        <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
+        <item name="android:textColorPrimary">@color/colorControlNormal</item>
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
-        <item name="backgroundDialog">@drawable/dialog_bg</item>
+        <item name="backgroundDialog">@drawable/background_dialog</item>
         <item name="backgroundGradient">@drawable/background_gradient</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
+        <item name="backgroundPopupMenu">@drawable/background_popup_menu</item>
         <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorSelection">@color/colorSelection</item>
@@ -54,7 +57,6 @@
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.AppCompat">
-        <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
@@ -68,14 +70,17 @@
         <item name="colorSecondary">@color/dark_colorSecondary</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
+        <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
+        <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
-        <item name="backgroundDialog">@drawable/dialog_bg_dark</item>
+        <item name="backgroundDialog">@drawable/background_dialog_dark</item>
         <item name="backgroundGradient">@drawable/background_gradient_dark</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>
+        <item name="backgroundPopupMenu">@drawable/background_popup_menu_dark</item>
         <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorSelection">@color/dark_colorSelection</item>

@@ -244,7 +244,6 @@ public class FileListFragment
                                     .setVisible(FileUtils.getApplicationDirectory(getContext(),
                                             AppUtils.getDefaultPreferences(getContext())).getUri().equals(fileHolder.file.getUri()));
 
-
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
 
@@ -383,9 +382,11 @@ public class FileListFragment
         mLastKnownPath = pathOnTrial;
     }
 
-    @RequiresApi(21)
     public void requestMountStorage()
     {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+            return;
+
         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
         Toast.makeText(getActivity(), R.string.mesg_mountDirectoryHelp, Toast.LENGTH_LONG).show();
     }
