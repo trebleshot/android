@@ -12,17 +12,13 @@
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
-            style="?actionBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:theme="?actionBarTheme" />
+            android:layout_height="?attr/actionBarSize" />
 
         <com.genonbeta.android.framework.widget.PowerfulActionMode
             android:id="@+id/activity_transaction_action_mode"
-            style="?actionBarStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="?actionBarTheme"
+            android:layout_height="?attr/actionBarSize"
             android:visibility="gone" />
 
         <TextView

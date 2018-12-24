@@ -18,6 +18,11 @@
         <item name="android:windowBackground">?backgroundDialog</item>
     </style>
 
+    <style name="Widget.TrebleShot.PopupTheme" parent="ThemeOverlay.AppCompat">
+        <!--<item name="android:background">?cardBackgroundColor</item>-->
+        <!-- Later handle this -->
+    </style>
+
     <style name="Widget.TrebleShot.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">?backgroundPopupMenu</item>
     </style>

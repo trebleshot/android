@@ -1,27 +1,27 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_hotspot_status_container"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        layout="@layout/include_layout_hotspot_status_image_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="15dp">
+        android:layout_height="0dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_weight="1">
 
-        <LinearLayout
-            android:id="@+id/layout_hotspot_status_container"
+        <include
+            layout="@layout/include_layout_hotspot_status_info_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/include_layout_hotspot_status_image_container" />
-
-            <include
-                layout="@layout/include_layout_hotspot_status_info_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content" />
 
     </androidx.cardview.widget.CardView>
-</ScrollView>
+</LinearLayout>
