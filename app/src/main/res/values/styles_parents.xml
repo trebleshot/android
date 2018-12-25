@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- prototype start -->
-    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.AppCompat.Light">
+    <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
         <item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupTheme</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
+        <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="cardBackgroundColor">@color/cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -30,6 +31,7 @@
         <item name="backgroundPopupMenu">@drawable/background_popup_menu</item>
         <item name="colorDonation">@color/colorDonation</item>
         <item name="colorDivider">@color/colorDivider</item>
+        <item name="colorPassive">@color/colorPassive</item>
         <item name="colorSelection">@color/colorSelection</item>
         <item name="contentShowingBackground">@color/contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble</item>
@@ -57,10 +59,11 @@
         <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
     </style>
 
-    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.AppCompat">
+    <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
         <item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupTheme</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
+        <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
@@ -86,6 +89,7 @@
         <item name="backgroundPopupMenu">@drawable/background_popup_menu_dark</item>
         <item name="colorDonation">@color/dark_colorDonation</item>
         <item name="colorDivider">@color/dark_colorDivider</item>
+        <item name="colorPassive">@color/dark_colorPassive</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
         <item name="contentShowingBackground">@color/dark_contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble_dark</item>

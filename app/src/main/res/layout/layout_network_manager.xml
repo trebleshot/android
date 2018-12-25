@@ -1,28 +1,34 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_gravity="center">
+    android:layout_gravity="bottom">
 
-    <androidx.cardview.widget.CardView
+    <LinearLayout
+        android:id="@+id/layout_hotspot_status_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/layout_hotspot_status_container"
+        <include
+            layout="@layout/include_layout_network_status_image_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="15dp" />
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <include layout="@layout/include_layout_network_status_image_container" />
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="-5dp">
 
             <include
                 layout="@layout/include_layout_network_status_info_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
-        </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
-    </androidx.cardview.widget.CardView>
-
+    </LinearLayout>
 </ScrollView>

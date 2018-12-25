@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="backgroundButton" format="reference" />
     <attr name="backgroundDialog" format="reference" />
     <attr name="backgroundGradient" format="reference" />
     <attr name="backgroundGradientBottom" format="reference" />
@@ -7,6 +8,7 @@
     <attr name="backgroundPopupMenu" format="reference" />
     <attr name="colorDonation" format="reference" />
     <attr name="colorDivider" format="reference" />
+    <attr name="colorPassive" format="reference" />
     <attr name="colorPrimaryDark23" format="reference" /> <!-- Marshmallow devices use dark tint color -->
     <attr name="colorSelection" format="reference" />
     <attr name="contentShowingBackground" format="reference" />

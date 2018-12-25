@@ -14,7 +14,7 @@
     <style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
     <!-- generalization end -->
 
-    <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.AppCompat.Dialog">
+    <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="android:windowBackground">?backgroundDialog</item>
     </style>
 
@@ -23,17 +23,23 @@
         <!-- Later handle this -->
     </style>
 
+    <style name="Widget.TrebleShot.ButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+
     <style name="Widget.TrebleShot.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
         <item name="android:popupBackground">?backgroundPopupMenu</item>
     </style>
 
-    <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.Design.BottomNavigationView">
+    <style name="Widget.TrebleShot.BottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
+        <item name="android:background">@null</item>
     </style>
 
-    <style name="Widget.TrebleShot.NavigationView" parent="Widget.Design.NavigationView">
+    <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="itemTextColor">?attr/selectionAccentColor</item>
     </style>
@@ -53,7 +59,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.TrebleShot.TabLayout" parent="Widget.Design.TabLayout">
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout">
         <item name="tabTextColor">?selectionAccentColor</item>
         <item name="android:background">@android:color/transparent</item>
     </style>
@@ -197,10 +203,10 @@
     </style>
 
     <style name="CondensedTitleStyle">
+        <item name="fontFamily">sans</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textAllCaps">true</item>
         <item name="android:textColor">?android:textColorPrimary</item>
-        <item name="fontFamily">sans-serif-condensed</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
 </resources>

@@ -1,172 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="center"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:paddingTop="40dp"
+        app:srcCompat="@drawable/ic_devices_white_24dp"
+        app:tint="?colorPassive" />
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/short_content_width_padding"
-        android:layout_marginTop="15dp"
-        android:layout_marginRight="@dimen/short_content_width_padding"
-        android:layout_marginBottom="15dp"
-        android:orientation="vertical">
+        android:layout_gravity="bottom"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingLeft="25dp"
-            android:paddingTop="15dp"
-            android:paddingRight="25dp"
-            android:paddingBottom="15dp">
+            android:layout_marginLeft="@dimen/short_content_width_padding"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="@dimen/short_content_width_padding"
+            android:layout_marginBottom="-5dp">
 
-            <TextView
-                style="@style/TextAppearance.Secondary"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/text_connectionHelp" />
+                android:orientation="vertical"
+                android:padding="10dp">
 
-        </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingLeft="25dp"
+                    android:paddingTop="15dp"
+                    android:paddingRight="25dp"
+                    android:paddingBottom="15dp">
 
-        <LinearLayout
-            android:id="@+id/connection_option_guide"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+                    <TextView
+                        style="@style/TextAppearance.Secondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_connectionHelp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_help_circle_white_24dp"
-                app:tint="?colorAccent" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/ques_needHelp" />
+                <LinearLayout
+                    android:id="@+id/connection_option_guide"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginRight="30dp"
+                        app:srcCompat="@drawable/ic_help_circle_white_24dp"
+                        app:tint="?colorAccent" />
 
-        <LinearLayout
-            android:id="@+id/connection_option_hotspot"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+                    <TextView
+                        style="@style/TextAppearance.Primary.SingleLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ques_needHelp" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_wifi_tethering_white_24dp"
-                app:tint="?colorAccent" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/butn_startHotspot" />
+                <LinearLayout
+                    android:id="@+id/connection_option_hotspot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginRight="30dp"
+                        app:srcCompat="@drawable/ic_wifi_tethering_white_24dp"
+                        app:tint="?colorAccent" />
 
-        <LinearLayout
-            android:id="@+id/connection_option_network"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+                    <TextView
+                        style="@style/TextAppearance.Primary.SingleLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_startHotspot" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_wifi_white_24dp"
-                app:tint="?colorAccent" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/butn_useExistingNetwork" />
+                <LinearLayout
+                    android:id="@+id/connection_option_network"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginRight="30dp"
+                        app:srcCompat="@drawable/ic_wifi_white_24dp"
+                        app:tint="?colorAccent" />
 
-        <LinearLayout
-            android:id="@+id/connection_option_scan"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+                    <TextView
+                        style="@style/TextAppearance.Primary.SingleLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_useExistingNetwork" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_qrcode_scan_white_24dp"
-                app:tint="?colorAccent" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/butn_scanQrCode" />
+                <LinearLayout
+                    android:id="@+id/connection_option_scan"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginRight="30dp"
+                        app:srcCompat="@drawable/ic_qrcode_scan_white_24dp"
+                        app:tint="?colorAccent" />
 
-        <LinearLayout
-            android:id="@+id/connection_option_devices"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?rectSelector"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="15dp">
+                    <TextView
+                        style="@style/TextAppearance.Primary.SingleLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_scanQrCode" />
 
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginEnd="30dp"
-                android:layout_marginRight="30dp"
-                app:srcCompat="@drawable/ic_devices_white_24dp"
-                app:tint="?colorAccent" />
+                </LinearLayout>
 
-            <TextView
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/butn_useKnownDevice" />
+                <LinearLayout
+                    android:id="@+id/connection_option_devices"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?rectSelector"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        </LinearLayout>
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginEnd="30dp"
+                        android:layout_marginRight="30dp"
+                        app:srcCompat="@drawable/ic_devices_white_24dp"
+                        app:tint="?colorAccent" />
 
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+                    <TextView
+                        style="@style/TextAppearance.Primary.SingleLine"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/butn_useKnownDevice" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

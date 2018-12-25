@@ -31,7 +31,6 @@
         style="@style/TextAppearance.Primary.Normal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAllCaps="true"
         app:fontFamily="sans-serif-condensed" />
 
     <View

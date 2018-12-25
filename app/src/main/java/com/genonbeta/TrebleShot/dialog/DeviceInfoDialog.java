@@ -140,7 +140,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
     protected void runReceiveTask(final Activity activity, final SharedPreferences sharedPreferences,
                                   final NetworkDevice device, final NetworkDevice.Connection connection) {
-
         WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
         {
             @Override

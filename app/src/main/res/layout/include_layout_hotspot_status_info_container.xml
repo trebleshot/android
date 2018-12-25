@@ -34,7 +34,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/layout_hotspot_manager_info_toggle_button"
-            style="?buttonBarPositiveButtonStyle"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/butn_startHotspot" />
