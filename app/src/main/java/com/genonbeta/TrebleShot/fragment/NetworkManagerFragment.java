@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
@@ -39,6 +40,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 public class NetworkManagerFragment
         extends Fragment
@@ -58,6 +61,7 @@ public class NetworkManagerFragment
     private TextView mText2;
     private TextView mText3;
     private ImageView mCodeView;
+    private ColorStateList mColorPassiveState;
 
     private UIConnectionUtils.RequestWatcher mRequestWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -83,6 +87,7 @@ public class NetworkManagerFragment
     {
         View view = getLayoutInflater().inflate(R.layout.layout_network_manager, container, false);
 
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(getContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_network_manager_qr_image);
         mContainerText1 = view.findViewById(R.id.layout_network_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container);
@@ -217,6 +222,8 @@ public class NetworkManagerFragment
                         .into(mCodeView);
             } else
                 mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
+
+            ImageViewCompat.setImageTintList(mCodeView, showQRCode ? null : mColorPassiveState);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

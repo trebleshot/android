@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.net.wifi.WifiConfiguration;
 import android.os.Build;
@@ -16,6 +17,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatTextView;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -35,13 +45,6 @@ import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
 
 /**
  * created by: veli
@@ -66,6 +69,7 @@ public class HotspotManagerFragment
     private ImageView mCodeView;
     private AppCompatButton mToggleButton;
     private MenuItem mHelpMenuItem;
+    private ColorStateList mColorPassiveState;
     private boolean mWaitForHotspot = false;
     private boolean mWaitForWiFi = false;
 
@@ -104,6 +108,7 @@ public class HotspotManagerFragment
     {
         View view = getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
 
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(getContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_hotspot_manager_qr_image);
         mToggleButton = view.findViewById(R.id.layout_hotspot_manager_info_toggle_button);
         mContainerText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_container);
@@ -269,6 +274,8 @@ public class HotspotManagerFragment
                         .into(mCodeView);
             } else
                 mCodeView.setImageResource(R.drawable.ic_qrcode_white_128dp);
+
+            ImageViewCompat.setImageTintList(mCodeView, showQRCode ? null : mColorPassiveState);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

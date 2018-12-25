@@ -23,9 +23,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:text="@string/text_appName"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:fontFamily="sans-serif-condensed" />
+        android:text="@string/text_unknown" />
 
     <TextView
         android:id="@+id/header_default_device_version_text"

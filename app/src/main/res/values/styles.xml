@@ -16,6 +16,7 @@
 
     <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="android:windowBackground">?backgroundDialog</item>
+        <item name="buttonBarButtonStyle">@style/Widget.TrebleShot.ButtonStyle.Dialog</item>
     </style>
 
     <style name="Widget.TrebleShot.PopupTheme" parent="ThemeOverlay.AppCompat">
@@ -23,9 +24,13 @@
         <!-- Later handle this -->
     </style>
 
+    <style name="Widget.TrebleShot.ButtonStyle.Dialog" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="cornerRadius">8dp</item>
+    </style>
+
     <style name="Widget.TrebleShot.ButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="cornerRadius">8dp</item>
-        <item name="android:textAllCaps">false</item>
+        <!--<item name="android:textAllCaps">false</item>-->
     </style>
 
     <style name="Widget.TrebleShot.PopupMenuStyle" parent="Widget.AppCompat.PopupMenu">
@@ -134,6 +139,11 @@
     <style name="TextAppearance.Secondary.Small.SingleLine">
         <item name="android:ellipsize">end</item>
         <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="TextAppearance.Button" parent="@style/TextAppearance.MaterialComponents.Button">
+        <item name="cornerRadius">8dp</item>
+        <item name="android:textAllCaps">false</item>
     </style>
 
     <style name="OverflowButton">

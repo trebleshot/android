@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.journeyapps.barcodescanner.DecoratedBarcodeView
         android:id="@+id/layout_barcode_connect_barcode_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:zxing_scanner_layout="@layout/external_layout_barcode_scanner"
-        app:zxing_preview_scaling_strategy="centerCrop" />
+        app:zxing_preview_scaling_strategy="centerCrop"
+        app:zxing_scanner_layout="@layout/external_layout_barcode_scanner" />
 
     <RelativeLayout
         android:id="@+id/container_task"
@@ -47,34 +47,63 @@
 
     </RelativeLayout>
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/layout_barcode_connect_conduct_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:id="@+id/layout_barcode_connect_conduct_container"
         android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/layout_barcode_connect_conduct_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/layout_barcode_connect_conduct_text"
-            style="@style/TextAppearance.Primary.Normal"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/layout_barcode_connect_conduct_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="15dp"
-            android:text="@string/text_scanQRCodeHelp" />
+            android:layout_alignParentBottom="true"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="-5dp">
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/layout_barcode_connect_conduct_button"
-            android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="15dp"
+                android:paddingBottom="15dp">
+
+                <TextView
+                    android:id="@+id/layout_barcode_connect_conduct_text"
+                    style="@style/TextAppearance.Primary.Normal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:padding="15dp"
+                    android:text="@string/text_scanQRCodeHelp" />
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/layout_barcode_connect_conduct_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="15dp"
+                    android:text="@string/butn_enable" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="15dp"
-            android:text="@string/butn_enable" />
+            android:layout_above="@id/layout_barcode_connect_conduct_card"
+            android:layout_alignParentTop="true">
 
-    </LinearLayout>
+            <ImageView
+                android:id="@+id/layout_barcode_connect_conduct_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                app:tint="?colorPassive" />
+
+        </FrameLayout>
+    </RelativeLayout>
 </FrameLayout>
