@@ -11,4 +11,6 @@
     GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License
     along with this program.  If not, see <![CDATA[<https://www.gnu.org/licenses/>]]>.
     </string>
+    <string name="const_text_useCustomFonts" translatable="false">Use custom fonts</string>
+    <string name="const_text_useCustomFontsSummary" translatable="false">Use Ubuntu Font Family</string>
 </resources>

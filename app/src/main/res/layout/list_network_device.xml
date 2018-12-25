@@ -38,11 +38,9 @@
 
             <TextView
                 android:id="@+id/text1"
-                style="@style/TextAppearance.Primary.SingleLine"
+                style="@style/TextAppearance.Primary.Big.SingleLine"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/font_size_big"
-                app:fontFamily="sans-serif-condensed" />
+                android:layout_height="wrap_content" />
 
             <View
                 android:layout_width="wrap_content"

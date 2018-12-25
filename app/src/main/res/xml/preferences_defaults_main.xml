@@ -51,6 +51,10 @@
 
     <CheckBoxPreference
         android:defaultValue="false"
+        android:key="custom_fonts"/>
+
+    <CheckBoxPreference
+        android:defaultValue="false"
         android:key="allow_autoconnect"/>
 
     <CheckBoxPreference

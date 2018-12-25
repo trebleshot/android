@@ -6,28 +6,30 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
-import com.genonbeta.TrebleShot.service.CommunicationService;
-import com.genonbeta.TrebleShot.util.AppUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
+import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.util.AppUtils;
+
 public abstract class Activity extends AppCompatActivity
 {
     private AlertDialog mOngoingRequest;
     private boolean mDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;
+    private boolean mCustomFontsEnabled = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         mDarkThemeRequested = isDarkThemeRequested();
+        mCustomFontsEnabled = isUsingCustomFonts();
 
         if (mDarkThemeRequested) {
             try {
@@ -69,6 +71,12 @@ public abstract class Activity extends AppCompatActivity
             }
         }
 
+        // Apply Ubuntu Font Family as a patch if enabled
+        if (mCustomFontsEnabled) {
+            Log.d(Activity.class.getSimpleName(), "Custom fonts have been applied");
+            getTheme().applyStyle(R.style.TextAppearance_Ubuntu, true);
+        }
+
         super.onCreate(savedInstanceState);
     }
 
@@ -77,7 +85,8 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onResume();
 
-        if (mDarkThemeRequested != isDarkThemeRequested() && !mThemeLoadingFailed)
+        if ((mDarkThemeRequested != isDarkThemeRequested() && !mThemeLoadingFailed)
+            || mCustomFontsEnabled != isUsingCustomFonts())
             recreate();
 
         if (!AppUtils.checkRunningConditions(this))
@@ -122,6 +131,12 @@ public abstract class Activity extends AppCompatActivity
     public boolean isDarkThemeRequested()
     {
         return getDefaultPreferences().getBoolean("dark_theme", false);
+    }
+
+    public boolean isUsingCustomFonts()
+    {
+        return getDefaultPreferences().getBoolean("custom_fonts", false)
+                && getDefaultPreferences().getBoolean("developer_mode", false);
     }
 
     public boolean requestRequiredPermissions()
