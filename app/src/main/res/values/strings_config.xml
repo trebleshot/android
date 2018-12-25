@@ -10,6 +10,9 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License
     along with this program.  If not, see <![CDATA[<https://www.gnu.org/licenses/>]]>.
+    \n\nThis program uses a modified version of Ubuntu Font under the terms of Ubuntu Font License.
+    For license, see <![CDATA[<https://www.ubuntu.com/legal/font-licence>]]>.
+    For the modified version, visit <![CDATA[<https://github.com/velitasali/UbuntuFontForAndroid>]]>.
     </string>
     <string name="const_text_useCustomFonts" translatable="false">Use custom fonts</string>
     <string name="const_text_useCustomFontsSummary" translatable="false">Use Ubuntu Font Family</string>
