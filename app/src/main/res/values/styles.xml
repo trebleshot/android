@@ -65,6 +65,7 @@
     </style>
 
     <style name="TextAppearance">
+        <item name="android:letterSpacing" tools:targetApi="21">0.011</item>
         <item name="android:textStyle">normal</item>
     </style>
 

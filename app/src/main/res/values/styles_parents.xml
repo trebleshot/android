@@ -63,6 +63,7 @@
         <item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupTheme</item>
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
         <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
+        <item name="android:buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
