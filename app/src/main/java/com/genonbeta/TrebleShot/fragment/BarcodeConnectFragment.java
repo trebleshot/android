@@ -74,12 +74,12 @@ public class BarcodeConnectFragment
     private TextView mConductText;
     private ImageView mConductImage;
     private Button mConductButton;
+    private Button mTaskInterruptButton;
     private View mTaskContainer;
-    private AppCompatButton mTaskInterruptButton;
     private IntentFilter mIntentFilter = new IntentFilter();
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
-    private boolean mPermissionRequested = false;
     private String mPreviousScanResult = null;
+    private boolean mPermissionRequested = false;
 
     private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
     {

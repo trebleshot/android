@@ -15,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,8 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
 
@@ -63,11 +62,11 @@ public class HotspotManagerFragment
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
-    private AppCompatTextView mText1;
+    private TextView mText1;
     private TextView mText2;
     private TextView mText3;
     private ImageView mCodeView;
-    private AppCompatButton mToggleButton;
+    private Button mToggleButton;
     private MenuItem mHelpMenuItem;
     private ColorStateList mColorPassiveState;
     private boolean mWaitForHotspot = false;

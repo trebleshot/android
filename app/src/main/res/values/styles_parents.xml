@@ -22,7 +22,7 @@
         <item name="popupTheme">@style/Widget.TrebleShot.PopupTheme</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
-        <item name="android:textColorPrimary">@color/colorControlNormal</item>
+        <!--<item name="android:textColorPrimary">@color/colorControlNormal</item>-->
         <item name="android:windowBackground">@color/windowBackground</item>
 
         <!-- app styling -->
@@ -35,6 +35,7 @@
         <item name="colorDivider">@color/colorDivider</item>
         <item name="colorPassive">@color/colorPassive</item>
         <item name="colorSelection">@color/colorSelection</item>
+        <item name="colorTranslucent">@color/colorTranslucent</item>
         <item name="contentShowingBackground">@color/contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble</item>
         <item name="rectSelector">@drawable/rect_selector</item>
@@ -82,7 +83,7 @@
         <item name="popupTheme">@style/Widget.TrebleShot.PopupTheme</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
-        <item name="android:textColorPrimary">@color/dark_colorControlNormal</item>
+        <!--<item name="android:textColorPrimary">@color/dark_colorControlNormal</item>-->
         <item name="android:windowBackground">@color/dark_windowBackground</item>
 
         <!-- app styling -->
@@ -95,6 +96,8 @@
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorPassive">@color/dark_colorPassive</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
+        <item name="colorSelection">@color/dark_colorSelection</item>
+        <item name="colorTranslucent">@color/dark_colorTranslucent</item>
         <item name="contentShowingBackground">@color/dark_contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble_dark</item>
         <item name="rectSelector">@drawable/rect_selector_dark</item>

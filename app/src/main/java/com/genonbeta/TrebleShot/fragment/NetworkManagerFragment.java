@@ -15,8 +15,15 @@ import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.ImageViewCompat;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -35,14 +42,6 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatTextView;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.ImageViewCompat;
-
 public class NetworkManagerFragment
         extends Fragment
         implements TitleSupport, IconSupport
@@ -53,11 +52,11 @@ public class NetworkManagerFragment
     private StatusReceiver mStatusReceiver = new StatusReceiver();
     private UIConnectionUtils mConnectionUtils;
 
-    private AppCompatButton mActionButton;
     private View mContainerText1;
     private View mContainerText2;
     private View mContainerText3;
-    private AppCompatTextView mText1;
+    private Button mActionButton;
+    private TextView mText1;
     private TextView mText2;
     private TextView mText3;
     private ImageView mCodeView;

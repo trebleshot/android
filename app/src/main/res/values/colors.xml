@@ -20,6 +20,7 @@
     <color name="colorSelection">#20000000</color>
     <color name="colorShadowBeginning">#00D0D0D0</color>
     <color name="colorShadowEnd">#70D0D0D0</color>
+    <color name="colorTranslucent">#bfff</color>
     <color name="contentShowingBackground">#cfcfcf</color>
 
 
@@ -42,5 +43,6 @@
     <color name="dark_colorSelection">#229e9e9e</color>
     <color name="dark_colorShadowBeginning">#0037474f</color>
     <color name="dark_colorShadowEnd">#700E171A</color>
+    <color name="dark_colorTranslucent">#b000</color>
     <color name="dark_contentShowingBackground">#616161</color>
 </resources>
