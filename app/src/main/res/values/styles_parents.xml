@@ -27,6 +27,7 @@
 
         <!-- app styling -->
         <item name="backgroundDialog">@drawable/background_dialog</item>
+        <item name="backgroundEdgeAction">@drawable/background_edge_action</item>
         <item name="backgroundGradient">@drawable/background_gradient</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top</item>
@@ -88,6 +89,7 @@
 
         <!-- app styling -->
         <item name="backgroundDialog">@drawable/background_dialog_dark</item>
+        <item name="backgroundEdgeAction">@drawable/background_edge_action_dark</item>
         <item name="backgroundGradient">@drawable/background_gradient_dark</item>
         <item name="backgroundGradientBottom">@drawable/background_gradient_bottom_dark</item>
         <item name="backgroundGradientTop">@drawable/background_gradient_top_dark</item>

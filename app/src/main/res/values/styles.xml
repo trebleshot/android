@@ -19,7 +19,7 @@
         <item name="buttonBarButtonStyle">@style/Widget.TrebleShot.ButtonStyle.Dialog</item>
     </style>
 
-    <style name="Widget.TrebleShot.PopupTheme" parent="ThemeOverlay.AppCompat">
+    <style name="Widget.TrebleShot.PopupTheme" parent="ThemeOverlay.MaterialComponents">
         <!--<item name="android:background">?cardBackgroundColor</item>-->
         <!-- Later handle this -->
     </style>

@@ -2,6 +2,7 @@
 <resources>
     <attr name="backgroundButton" format="reference" />
     <attr name="backgroundDialog" format="reference" />
+    <attr name="backgroundEdgeAction" format="reference" />
     <attr name="backgroundGradient" format="reference" />
     <attr name="backgroundGradientBottom" format="reference" />
     <attr name="backgroundGradientTop" format="reference" />

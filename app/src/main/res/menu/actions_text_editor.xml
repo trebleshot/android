@@ -1,33 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_action_share_trebleshot"
-        android:title="@string/butn_shareWithTrebleshot"
         android:icon="@drawable/ic_send_white_24dp"
-        app:showAsAction="always"/>
+        android:title="@string/butn_shareWithTrebleshot"
+        app:showAsAction="always" />
 
     <item
-        android:icon="@drawable/ic_done_white_24dp"
         android:id="@+id/menu_action_done"
+        android:icon="@drawable/ic_done_white_24dp"
         android:title="@string/butn_done"
-        app:showAsAction="always"/>
+        app:showAsAction="always" />
 
     <item
-        android:icon="@drawable/ic_save_white_24dp"
         android:id="@+id/menu_action_save"
+        android:icon="@drawable/ic_save_white_24dp"
         android:title="@string/butn_save" />
 
-
     <item
-        android:icon="@drawable/ic_content_copy_white_24dp"
         android:id="@+id/menu_action_copy"
-        android:title="@string/butn_copyToClipboard"/>
+        android:icon="@drawable/ic_content_copy_white_24dp"
+        android:title="@string/butn_copyToClipboard" />
 
     <item
         android:id="@+id/menu_action_share"
-        android:title="@string/butn_shareWithOtherApps"
-        android:icon="@drawable/ic_share_white_24dp"/>
-
+        android:icon="@drawable/ic_share_white_24dp"
+        android:title="@string/butn_shareWithOtherApps" />
 </menu>

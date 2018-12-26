@@ -9,8 +9,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
@@ -26,9 +27,6 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.snackbar.Snackbar;
 
 import org.json.JSONObject;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 /**
  * Created by: veli
@@ -118,19 +116,25 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
+        super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_text_editor, menu);
-        return super.onCreateOptionsMenu(menu);
+
+        return true;
     }
 
     @Override
     public void onBackPressed()
     {
-        if ((System.currentTimeMillis() - mBackPressTime) < 3000
-                || (mTextStreamObject == null && mEditTextEditor.getText().length() == 0))
+        boolean hasObject = mTextStreamObject != null;
+        boolean hasEntry = mEditTextEditor.getText().length() > 0;
+        boolean hasSavedText = hasObject && mTextStreamObject.text != null && mTextStreamObject.text.length() > 0;
+
+        if (!hasEntry || (hasSavedText && mTextStreamObject.text.equals(mEditTextEditor.getText().toString()))
+                || (System.currentTimeMillis() - mBackPressTime) < 3000)
             super.onBackPressed();
         else
-            createSnackbar(mTextStreamObject != null ? R.string.mesg_clipboardUpdateNotice : R.string.mesg_textSaveNotice)
-                    .setAction(mTextStreamObject != null ? R.string.butn_update : R.string.butn_save, new View.OnClickListener()
+            createSnackbar(hasObject ? R.string.mesg_clipboardUpdateNotice : R.string.mesg_textSaveNotice)
+                    .setAction(hasObject ? R.string.butn_update : R.string.butn_save, new View.OnClickListener()
                     {
                         @Override
                         public void onClick(View v)
@@ -160,7 +164,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
         menu.findItem(R.id.menu_action_share_trebleshot)
                 .setVisible(!applySupported);
 
-        return true;
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -192,7 +196,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             startActivityForResult(
                     new Intent(TextEditorActivity.this, ConnectionManagerActivity.class)
                             .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.RETURN_RESULT.toString())
-                    .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_sendText)),
+                            .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_sendText)),
                     REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == android.R.id.home) {
             onBackPressed();

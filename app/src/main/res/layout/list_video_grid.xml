@@ -24,25 +24,29 @@
             android:layout_height="match_parent"
             android:background="?rectSelector" />
 
+        <!--android:background="?backgroundGradientTop"-->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:background="?backgroundGradientTop"
             android:gravity="end"
-            android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:paddingTop="3dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="8dp">
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/text3"
                 style="@style/TextAppearance.Primary.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dp"
+                android:background="?colorTranslucent"
                 android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingTop="2dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="2dp"
                 android:textStyle="bold" />
 
             <TextView
@@ -50,8 +54,12 @@
                 style="@style/TextAppearance.Primary.Small"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:background="?colorTranslucent"
                 android:gravity="center"
+                android:paddingLeft="5dp"
+                android:paddingTop="2dp"
+                android:paddingRight="5dp"
+                android:paddingBottom="2dp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -66,11 +74,16 @@
             android:visibility="gone" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            android:background="?backgroundGradientBottom"
-            android:gravity="end">
+            android:layout_marginEnd="-5dp"
+            android:layout_marginRight="-5dp"
+            android:layout_marginBottom="-5dp"
+            android:background="?backgroundEdgeAction"
+            android:padding="5dp">
 
             <ImageView
                 android:id="@+id/visitImage"
