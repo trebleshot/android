@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Otwórz pasek nawigacji</string>n
     <string name="text_navigationDrawerClose">Zamknij pasek nawigacji</string>
     <string name="text_preferences">Preferencje</string>
@@ -11,7 +11,7 @@
     <string name="butn_accept">Zaakceptuj</string>
     <string name="butn_reject">Odrzuć</string>
     <string name="butn_stop">Zatrzymaj</string>
-    <string name="text_sending">Wyślij</string>
+    <string name="text_sending">Wysyłanie</string>
     <string name="butn_cancelSending">Anuluj wysyłanie</string>
     <string name="text_receiving">Odbierz</string>
     <string name="butn_cancelReceiving">Anuluj odbieranie</string>
