@@ -43,7 +43,7 @@ import java.io.File;
 
 public class HomeActivity
         extends Activity
-        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
+        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport, DrawerLayout.DrawerListener
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -53,6 +53,7 @@ public class HomeActivity
     private HomeFragment mHomeFragment;
 
     private long mExitPressTime;
+    private int mChosenMenuItemId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,6 +72,15 @@ public class HomeActivity
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+
+        mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
+        {
+            @Override
+            public void onDrawerClosed(View drawerView)
+            {
+                applyAwaitingDrawerAction();
+            }
+        });
 
         mNavigationView.setNavigationItemSelectedListener(this);
 
@@ -153,28 +163,7 @@ public class HomeActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
-        if (R.id.menu_activity_main_manage_devices == item.getItemId()) {
-            startActivity(new Intent(this, ManageDevicesActivity.class));
-        } else if (R.id.menu_activity_main_about == item.getItemId()) {
-            startActivity(new Intent(this, AboutActivity.class));
-        } else if (R.id.menu_activity_main_send_application == item.getItemId()) {
-            sendThisApplication();
-        } else if (R.id.menu_activity_main_preferences == item.getItemId()) {
-            startActivity(new Intent(this, PreferencesActivity.class));
-        } else if (R.id.menu_activity_main_exit == item.getItemId()) {
-            stopService(new Intent(this, CommunicationService.class));
-            stopService(new Intent(this, DeviceScannerService.class));
-            stopService(new Intent(this, WorkerService.class));
-
-            finish();
-        } else if (R.id.menu_activity_main_donate == item.getItemId()) {
-            try {
-                startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        } else
-            return false;
+        mChosenMenuItemId = item.getItemId();
 
         if (mDrawerLayout != null)
             mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -196,6 +185,35 @@ public class HomeActivity
             mExitPressTime = System.currentTimeMillis();
             Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void applyAwaitingDrawerAction()
+    {
+        if (mChosenMenuItemId == 0) {
+            // Do nothing
+        } else if (R.id.menu_activity_main_manage_devices == mChosenMenuItemId) {
+            startActivity(new Intent(this, ManageDevicesActivity.class));
+        } else if (R.id.menu_activity_main_about == mChosenMenuItemId) {
+            startActivity(new Intent(this, AboutActivity.class));
+        } else if (R.id.menu_activity_main_send_application == mChosenMenuItemId) {
+            sendThisApplication();
+        } else if (R.id.menu_activity_main_preferences == mChosenMenuItemId) {
+            startActivity(new Intent(this, PreferencesActivity.class));
+        } else if (R.id.menu_activity_main_exit == mChosenMenuItemId) {
+            stopService(new Intent(this, CommunicationService.class));
+            stopService(new Intent(this, DeviceScannerService.class));
+            stopService(new Intent(this, WorkerService.class));
+
+            finish();
+        } else if (R.id.menu_activity_main_donate == mChosenMenuItemId) {
+            try {
+                startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        mChosenMenuItemId = 0;
     }
 
     @Override
@@ -250,5 +268,29 @@ public class HomeActivity
                 }
             }
         });
+    }
+
+    @Override
+    public void onDrawerSlide(@NonNull View drawerView, float slideOffset)
+    {
+
+    }
+
+    @Override
+    public void onDrawerOpened(@NonNull View drawerView)
+    {
+
+    }
+
+    @Override
+    public void onDrawerClosed(@NonNull View drawerView)
+    {
+
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState)
+    {
+
     }
 }

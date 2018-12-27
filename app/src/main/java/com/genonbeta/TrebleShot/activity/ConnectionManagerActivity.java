@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.bottomappbar.BottomAppBar;
 import com.google.android.material.snackbar.Snackbar;
 
@@ -58,6 +59,8 @@ public class ConnectionManagerActivity
     private NetworkDeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
     private ProgressBar mProgressBar;
+    private Toolbar mToolbar;
+    private AppBarLayout mAppBarLayout;
     private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
@@ -163,15 +166,8 @@ public class ConnectionManagerActivity
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_connection_manager);
 
-        BottomAppBar bar = findViewById(R.id.bar);
-        setSupportActionBar(bar);
-
-        final Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        if (getSupportActionBar() != null)
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+        mToolbar = findViewById(R.id.toolbar);
+        mAppBarLayout = findViewById(R.id.app_bar);
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mOptionsFragment = (OptionsFragment) Fragment.instantiate(this, OptionsFragment.class.getName());
         mBarcodeConnectFragment = (BarcodeConnectFragment) Fragment.instantiate(this, BarcodeConnectFragment.class.getName());
@@ -182,6 +178,11 @@ public class ConnectionManagerActivity
         mFilter.addAction(ACTION_CHANGE_FRAGMENT);
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
         mFilter.addAction(CommunicationService.ACTION_INCOMING_TRANSFER_READY);
+
+        setSupportActionBar(mToolbar);
+
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if (getIntent() != null) {
             if (getIntent().hasExtra(EXTRA_REQUEST_TYPE))
@@ -244,11 +245,11 @@ public class ConnectionManagerActivity
                     : getString(R.string.text_connectDevices);
 
             if (fragment instanceof OptionsFragment) {
-                getSupportActionBar().setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
-                getSupportActionBar().setSubtitle(null);
+                mToolbar.setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
+                mToolbar.setSubtitle(null);
             } else {
-                getSupportActionBar().setTitle(titleCurrent);
-                getSupportActionBar().setSubtitle(mTitleProvided);
+                mToolbar.setTitle(titleCurrent);
+                mToolbar.setSubtitle(mTitleProvided);
             }
         }
     }
@@ -329,6 +330,8 @@ public class ConnectionManagerActivity
 
             transaction.add(R.id.activity_connection_establishing_content_view, fragmentCandidate);
             transaction.commit();
+
+            mAppBarLayout.setExpanded(true, true);
 
             applyViewChanges(fragmentCandidate, mTitleProvided);
         }
