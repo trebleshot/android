@@ -23,6 +23,7 @@
     <attr name="selectionColor" format="reference" />
     <attr name="selectionAccentColor" format="reference" />
     <attr name="selectableItemBackground" format="reference" />
+    <attr name="snackbarBackground" format="reference" />
     <attr name="stateSelectedImage" format="reference" />
     <attr name="stateSelectedImageRounded" format="reference" />
     <attr name="stateSelectedImageSquare" format="reference" />

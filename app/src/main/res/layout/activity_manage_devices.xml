@@ -16,7 +16,7 @@
             android:layout_height="1dp"
             android:background="?colorDivider" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/fixConnectionButton"
             style="?borderlessButtonStyle"
             android:layout_width="wrap_content"

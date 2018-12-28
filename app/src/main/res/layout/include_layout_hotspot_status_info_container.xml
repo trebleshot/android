@@ -28,7 +28,7 @@
 
     </LinearLayout>
 
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/layout_hotspot_manager_info_toggle_button"
         style="?borderlessButtonStyle"
         android:layout_width="wrap_content"

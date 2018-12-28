@@ -81,7 +81,7 @@
                 android:layout_marginTop="15dp"
                 android:text="@string/butn_cancel" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/returnButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

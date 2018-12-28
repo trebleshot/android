@@ -4,4 +4,31 @@
     <dimen name="fast_scroller_bubble_date_vertical_margin">16dp</dimen>
     <dimen name="fast_scroller_bubble_date_handle_size">30dp</dimen>
     <dimen name="fast_scroller_bubble_date_bubble_size">60dp</dimen>
+    <item name="direction_scale_factor" format="float" type="dimen">1</item>
+    <dimen name="nav_header_vertical_spacing">16dp</dimen>
+    <dimen name="nav_header_height">180dp</dimen>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="short_content_width_padding">15dp</dimen>
+    <dimen name="font_size_primary">16sp</dimen>
+    <dimen name="font_size_primary_normal">14sp</dimen>
+    <dimen name="font_size_secondary">14sp</dimen>
+    <dimen name="font_size_tiny">10sp</dimen>
+    <dimen name="font_size_small">12sp</dimen>
+    <dimen name="font_size_big">18sp</dimen>
+    <dimen name="icon_size_list_small">25dp</dimen>
+    <dimen name="icon_size_list_normal">35dp</dimen>
+    <dimen name="icon_size_list_big">50dp</dimen>
+    <dimen name="padding_borderless_button">16dp</dimen>
+    <dimen name="padding_list_content_parent_layout">15dp</dimen>
+    <dimen name="padding_list_content_narrow_parent_layout">10dp</dimen>
+    <dimen name="padding_list_content_parent_layout_orientation">8dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_left">9dp</dimen>
+    <dimen name="padding_list_content_icon_main_margin_right">24dp</dimen> <!-- It was 29dp -->
+    <dimen name="padding_list_content_two_lines_separation_height">2dp</dimen>
+    <dimen name="space_list_default">2dp</dimen>
+    <dimen name="space_list_grid">8dp</dimen>
+    <dimen name="material_radius_default">8dp</dimen>
 </resources>

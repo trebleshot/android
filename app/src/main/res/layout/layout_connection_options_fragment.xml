@@ -187,7 +187,7 @@
             android:layout_marginLeft="@dimen/short_content_width_padding"
             android:layout_marginRight="@dimen/short_content_width_padding">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/connection_option_devices"
                 style="?borderlessButtonStyle"
                 android:layout_width="wrap_content"

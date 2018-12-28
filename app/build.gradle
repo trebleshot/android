@@ -106,9 +106,9 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha02'
 
-    implementation 'com.genonbeta.android:framework:1.0.2.5'
+    implementation 'com.genonbeta.android:framework:1.0.2.6-alpha01'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.6'
     implementation 'com.genonbeta.coolsocket:main:1.0.3'
 

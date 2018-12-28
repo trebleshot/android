@@ -4,22 +4,26 @@
     <style name="Theme.Prototype.TrebleShot.Base" parent="Theme.MaterialComponents.Light">
         <!--<item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupTheme</item>-->
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
-        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
-        <item name="buttonBarButtonStyle">@style/Widget.TrebleShot.ButtonStyle.Dialog</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
+        <item name="borderlessButtonStyle">@style/Widget.TrebleShot.ButtonStyle.TextButton</item>
+        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlNormal">@color/colorControlNormal</item>
         <item name="colorError">@color/colorError</item>
+        <item name="colorOnPrimary">?android:textColorPrimary</item>
+        <item name="colorOnSurface">?android:textColorSecondary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/colorPrimaryDark23</item>
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
+        <item name="materialButtonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
         <item name="popupTheme">@style/Widget.TrebleShot.PopupTheme</item>
+        <item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
         <!--<item name="android:textColorPrimary">@color/colorControlNormal</item>-->
@@ -47,6 +51,7 @@
         <item name="selectionAccentColor">@color/selection_accent</item>
         <item name="selectionColor">@color/selection</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background</item>
+        <item name="snackbarBackground">@drawable/background_snackbar</item>
         <item name="stateSelectedImage">@drawable/state_selected_image</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded</item>
         <item name="stateSelectedImageSquare">@drawable/state_selected_image_square</item>
@@ -60,28 +65,32 @@
         <item name="genfw_customListFragmentEmptyTextStyle">
             @style/CustomListFragmentEmptyTextStyle
         </item>
-        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
+        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonStyle</item>
     </style>
 
     <style name="Theme.Prototype.TrebleShot.Dark.Base" parent="Theme.MaterialComponents">
         <!--<item name="actionBarPopupTheme">@style/Widget.TrebleShot.PopupTheme</item>-->
         <item name="alertDialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
-        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
-        <item name="buttonBarButtonStyle">@style/Widget.TrebleShot.ButtonStyle.Dialog</item>
         <item name="buttonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
+        <item name="borderlessButtonStyle">@style/Widget.TrebleShot.ButtonStyle.TextButton</item>
+        <item name="bottomNavigationStyle">@style/Widget.TrebleShot.BottomNavigationView</item>
         <item name="cardBackgroundColor">@color/dark_cardViewBackground</item>
         <item name="cardViewStyle">@style/Widget.TrebleShot.CardView</item>
         <item name="colorAccent">@color/dark_colorAccent</item>
         <item name="colorControlNormal">@color/dark_colorControlNormal</item>
         <item name="colorError">@color/dark_colorError</item>
+        <item name="colorOnPrimary">?android:textColorPrimary</item>
+        <item name="colorOnSurface">?android:textColorSecondary</item>
         <item name="colorPrimary">@color/dark_colorPrimary</item>
         <item name="colorPrimaryDark">@color/dark_colorPrimaryDark</item>
         <item name="colorPrimaryDark23">@color/dark_colorPrimaryDark23</item>
         <item name="colorSecondary">@color/dark_colorSecondary</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
+        <item name="materialButtonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
         <item name="popupTheme">@style/Widget.TrebleShot.PopupTheme</item>
+        <item name="snackbarStyle">@style/Widget.TrebleShot.Snackbar</item>
         <item name="tabStyle">@style/Widget.TrebleShot.TabLayout</item>
         <item name="textAppearanceButton">@style/TextAppearance.Button</item>
         <!--<item name="android:textColorPrimary">@color/dark_colorControlNormal</item>-->
@@ -98,7 +107,6 @@
         <item name="colorDivider">@color/dark_colorDivider</item>
         <item name="colorPassive">@color/dark_colorPassive</item>
         <item name="colorSelection">@color/dark_colorSelection</item>
-        <item name="colorSelection">@color/dark_colorSelection</item>
         <item name="colorTranslucent">@color/dark_colorTranslucent</item>
         <item name="contentShowingBackground">@color/dark_contentShowingBackground</item>
         <item name="fastScrollBackground">@drawable/fastscroll_default_bubble_dark</item>
@@ -110,6 +118,7 @@
         <item name="selectionAccentColor">@color/selection_accent_dark</item>
         <item name="selectionColor">@color/selection_dark</item>
         <item name="selectableItemBackground">@drawable/selectable_item_background_dark</item>
+        <item name="snackbarBackground">@drawable/background_snackbar_dark</item>
         <item name="stateSelectedImage">@drawable/state_selected_image_dark</item>
         <item name="stateSelectedImageRounded">@drawable/state_selected_image_rounded_dark</item>
         <item name="stateSelectedImageSquare">@drawable/state_selected_image_square_dark</item>
@@ -123,7 +132,7 @@
         <item name="genfw_customListFragmentEmptyTextStyle">
             @style/CustomListFragmentEmptyTextStyle
         </item>
-        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonBarButtonStyle</item>
+        <item name="genfw_customListFragmentEmptyActionButtonStyle">?buttonStyle</item>
     </style>
     <!-- prototype end -->
 
