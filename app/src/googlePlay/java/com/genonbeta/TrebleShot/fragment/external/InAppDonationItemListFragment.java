@@ -144,7 +144,8 @@ public class InAppDonationItemListFragment
             @Override
             public void run()
             {
-                Toast.makeText(getActivity(), stringRes, Toast.LENGTH_LONG).show();
+                if (getContext() != null)
+                    Toast.makeText(getContext(), stringRes, Toast.LENGTH_LONG).show();
             }
         });
     }

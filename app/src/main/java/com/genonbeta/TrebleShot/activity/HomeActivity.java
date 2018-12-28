@@ -1,4 +1,3 @@
-
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.DialogInterface;
@@ -43,7 +42,7 @@ import java.io.File;
 
 public class HomeActivity
         extends Activity
-        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport, DrawerLayout.DrawerListener
+        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 
@@ -268,29 +267,5 @@ public class HomeActivity
                 }
             }
         });
-    }
-
-    @Override
-    public void onDrawerSlide(@NonNull View drawerView, float slideOffset)
-    {
-
-    }
-
-    @Override
-    public void onDrawerOpened(@NonNull View drawerView)
-    {
-
-    }
-
-    @Override
-    public void onDrawerClosed(@NonNull View drawerView)
-    {
-
-    }
-
-    @Override
-    public void onDrawerStateChanged(int newState)
-    {
-
     }
 }

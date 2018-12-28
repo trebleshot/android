@@ -47,22 +47,25 @@
 
     </RelativeLayout>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/layout_barcode_connect_conduct_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/layout_barcode_connect_conduct_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:tint="?colorPassive" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/layout_barcode_connect_conduct_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_gravity="bottom"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="-5dp">
+            android:layout_margin="15dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -81,29 +84,15 @@
                     android:padding="15dp"
                     android:text="@string/text_scanQRCodeHelp" />
 
-                <androidx.appcompat.widget.AppCompatButton
+                <Button
                     android:id="@+id/layout_barcode_connect_conduct_button"
+                    style="?borderlessButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="15dp"
                     android:text="@string/butn_enable" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_above="@id/layout_barcode_connect_conduct_card"
-            android:layout_alignParentTop="true">
-
-            <ImageView
-                android:id="@+id/layout_barcode_connect_conduct_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:tint="?colorPassive" />
-
-        </FrameLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </FrameLayout>

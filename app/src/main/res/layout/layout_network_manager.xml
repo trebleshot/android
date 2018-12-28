@@ -1,7 +1,6 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_gravity="bottom">
+    android:layout_height="wrap_content">
 
     <LinearLayout
         android:id="@+id/layout_hotspot_status_container"
@@ -18,10 +17,7 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_marginBottom="-5dp">
+            android:layout_margin="15dp">
 
             <include
                 layout="@layout/include_layout_network_status_info_container"
@@ -31,4 +27,4 @@
         </androidx.cardview.widget.CardView>
 
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

@@ -128,7 +128,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                     : getResources().getDimension(R.dimen.padding_list_content_parent_layout);
 
             getListView().addItemDecoration(new PaddingItemDecoration((int) padding,
-                    mUseDefaultPaddingDecorationSpaceForEdges, false));
+                    mUseDefaultPaddingDecorationSpaceForEdges, isHorizontalOrientation()));
         }
     }
 
@@ -337,12 +337,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     @Override
     public RecyclerView.LayoutManager onLayoutManager()
     {
+        final RecyclerView.LayoutManager defaultLayoutManager = super.onLayoutManager();
         final int preferredGridSize = getViewingGridSize();
         final int optimalGridSize = preferredGridSize > 1
                 ? preferredGridSize
                 : !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1;
 
-        final GridLayoutManager layoutManager = new GridLayoutManager(getContext(), optimalGridSize);
+        final GridLayoutManager layoutManager;
+
+        if (defaultLayoutManager instanceof GridLayoutManager) {
+            layoutManager = (GridLayoutManager) defaultLayoutManager;
+            layoutManager.setSpanCount(optimalGridSize);
+        } else
+            layoutManager = new GridLayoutManager(getContext(), optimalGridSize);
 
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
         {

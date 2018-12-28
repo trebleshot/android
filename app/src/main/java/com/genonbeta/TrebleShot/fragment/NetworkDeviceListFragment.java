@@ -14,6 +14,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
@@ -22,7 +29,6 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -39,22 +45,19 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import java.util.ArrayList;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 public class NetworkDeviceListFragment
         extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
         implements TitleSupport, DetachListener, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
+    public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
+
     private NsdDiscovery mNsdDiscovery;
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
+    @Nullable
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
     private boolean mWaitForWiFi = false;
@@ -91,6 +94,9 @@ public class NetworkDeviceListFragment
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
+        if (isHorizontalOrientation())
+            return super.onListView(mainContainer, listViewContainer);
+
         Context context = mainContainer.getContext();
 
         mSwipeRefreshLayout = new SwipeRefreshLayout(getActivity());
@@ -122,14 +128,15 @@ public class NetworkDeviceListFragment
             }
         });
 
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
-        {
-            @Override
-            public void onRefresh()
+        if (mSwipeRefreshLayout != null)
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener()
             {
-                requestRefresh();
-            }
-        });
+                @Override
+                public void onRefresh()
+                {
+                    requestRefresh();
+                }
+            });
     }
 
     @Override
@@ -292,19 +299,20 @@ public class NetworkDeviceListFragment
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.actions_network_device, menu);
+
+        if (!isHorizontalOrientation())
+            inflater.inflate(R.menu.actions_network_device, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch (item.getItemId()) {
-            case R.id.network_devices_scan:
-                requestRefresh();
-                return true;
-        }
+        if (R.id.network_devices_scan == item.getItemId())
+            requestRefresh();
+        else
+            return super.onOptionsItemSelected(item);
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
@@ -324,8 +332,9 @@ public class NetworkDeviceListFragment
 
     public void checkRefreshing()
     {
-        mSwipeRefreshLayout.setRefreshing(!DeviceScannerService.getDeviceScanner()
-                .isScannerAvailable());
+        if (mSwipeRefreshLayout != null)
+            mSwipeRefreshLayout.setRefreshing(!DeviceScannerService.getDeviceScanner()
+                    .isScannerAvailable());
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -351,6 +360,13 @@ public class NetworkDeviceListFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_useKnownDevice);
+    }
+
+    @Override
+    public boolean isHorizontalOrientation()
+    {
+        return (getArguments() != null && getArguments().getBoolean(ARG_USE_HORIZONTAL_VIEW))
+                || super.isHorizontalOrientation();
     }
 
     private void openInfo(NetworkDevice device)

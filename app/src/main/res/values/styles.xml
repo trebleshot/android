@@ -14,6 +14,10 @@
     <style name="Theme.TrebleShot.Dark.NoActionBar.StaticStatusBar" parent="Theme.TrebleShot.Dark.NoActionBar" />
     <!-- generalization end -->
 
+    <style name="Theme.TrebleShot.BarcodeScannerActivity" parent="Theme.TrebleShot.Dark.NoActionBar">
+        <item name="statusBarColor">@color/dark_colorShadowEnd</item>
+    </style>
+
     <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">
         <item name="android:windowBackground">?backgroundDialog</item>
         <item name="buttonBarButtonStyle">@style/Widget.TrebleShot.ButtonStyle.Dialog</item>

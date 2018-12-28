@@ -7,16 +7,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.viewpager.widget.ViewPager;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.viewpager.widget.ViewPager;
 
 public class HomeFragment
         extends com.genonbeta.android.framework.app.Fragment
@@ -86,7 +86,16 @@ public class HomeFragment
     public boolean onBackPressed()
     {
         Object activeItem = mAdapter.getItem(mViewPager.getCurrentItem());
-        return activeItem instanceof Activity.OnBackPressedListener
-                && ((Activity.OnBackPressedListener) activeItem).onBackPressed();
+
+        if ((activeItem instanceof Activity.OnBackPressedListener
+                && ((Activity.OnBackPressedListener) activeItem).onBackPressed()))
+            return true;
+
+        if (mViewPager.getCurrentItem() > 0) {
+            mViewPager.setCurrentItem(0, true);
+            return true;
+        }
+
+        return false;
     }
 }

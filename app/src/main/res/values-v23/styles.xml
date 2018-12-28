@@ -1,16 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- generalization start -->
     <style name="Theme.TrebleShot.Base" parent="Theme.Prototype.TrebleShot.Base">
         <item name="colorPrimaryDark">?colorPrimaryDark23</item>
+        <item name="android:navigationBarColor" tools:targetApi="27">@android:color/transparent
+        </item>
         <item name="android:statusBarColor">?statusBarColor</item>
         <item name="android:windowLightStatusBar">?useLightStatusBar</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds" tools:targetApi="27">true</item>
     </style>
 
     <style name="Theme.TrebleShot.Dark.Base" parent="Theme.Prototype.TrebleShot.Dark.Base">
         <item name="colorPrimaryDark">?colorPrimaryDark23</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:statusBarColor">?statusBarColor</item>
         <item name="android:windowLightStatusBar">?useLightStatusBar</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
     <!-- generalization end -->
 

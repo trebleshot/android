@@ -76,11 +76,6 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ReceiveActivity"
-            android:label="@string/text_receive"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
-
-        <activity
             android:name=".activity.ConnectionManagerActivity"
             android:label="@string/text_connectDevices"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
@@ -153,6 +148,12 @@
         <activity
             android:name=".activity.ChangelogActivity"
             android:label="@string/text_changelog" />
+
+        <!-- todo: Remember, we are always using dark theme for this for better effects-->
+        <activity
+            android:name=".activity.BarcodeScannerActivity"
+            android:label="@string/text_scanQrCode"
+            android:theme="@style/Theme.TrebleShot.BarcodeScannerActivity" />
 
         <service
             android:name=".service.CommunicationService"

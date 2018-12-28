@@ -104,7 +104,7 @@
                 android:background="?backgroundGradientTop" />
 
             <FrameLayout
-                android:id="@+id/assigneListFragment"
+                android:id="@+id/assigneeListFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:minHeight="220dp" />

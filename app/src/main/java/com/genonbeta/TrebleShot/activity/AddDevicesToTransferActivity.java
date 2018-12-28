@@ -103,7 +103,7 @@ public class AddDevicesToTransferActivity extends Activity
         mTextInfo = findViewById(R.id.textInfo);
         mActionButton = findViewById(R.id.actionButton);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
-        mAssigneeFragment = (TransferAssigneeListFragment) getSupportFragmentManager().findFragmentById(R.id.assigneListFragment);
+        mAssigneeFragment = (TransferAssigneeListFragment) getSupportFragmentManager().findFragmentById(R.id.assigneeListFragment);
 
         findViewById(R.id.returnButton).setOnClickListener(new View.OnClickListener()
         {
@@ -120,7 +120,7 @@ public class AddDevicesToTransferActivity extends Activity
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            transaction.add(R.id.assigneListFragment, mAssigneeFragment);
+            transaction.add(R.id.assigneeListFragment, mAssigneeFragment);
             transaction.commit();
         }
 

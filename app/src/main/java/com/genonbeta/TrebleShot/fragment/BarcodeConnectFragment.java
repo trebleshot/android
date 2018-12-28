@@ -25,7 +25,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatButton;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -65,8 +64,8 @@ public class BarcodeConnectFragment
     public static final String TAG = "BarcodeConnectFragment";
 
     public static final int REQUEST_PERMISSION_CAMERA = 1;
-    public static final int REQUEST_PERMISSION_LOCATION = 1;
-    public static final int REQUEST_TURN_WIFI_ON = 2;
+    public static final int REQUEST_PERMISSION_LOCATION = 2;
+    public static final int REQUEST_TURN_WIFI_ON = 4;
 
     private DecoratedBarcodeView mBarcodeView;
     private UIConnectionUtils mConnectionUtils;
@@ -229,7 +228,8 @@ public class BarcodeConnectFragment
             }
     }
 
-    protected void handleBarcode(String code) {
+    protected void handleBarcode(String code)
+    {
         try {
             JSONObject jsonObject = new JSONObject(code);
             NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
@@ -335,6 +335,11 @@ public class BarcodeConnectFragment
 
     public void updateState(boolean isConnecting, final Interrupter interrupter)
     {
+        if (!isAdded()) {
+            mBarcodeView.pauseAndWait();
+            return;
+        }
+
         if (isConnecting) {
             // Keep showing barcode view
             mBarcodeView.pauseAndWait();
@@ -358,6 +363,9 @@ public class BarcodeConnectFragment
 
     public void updateState()
     {
+        if (!isAdded())
+            return;
+
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
         final boolean hasPermissions = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;

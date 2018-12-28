@@ -5,23 +5,19 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
-import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
 
 /**
  * created by: veli
@@ -45,9 +41,9 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssi
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new ViewHolder(isHorizontalOrientation()
-                ? getInflater().inflate(R.layout.list_assignee_grid, parent, false)
-                : getInflater().inflate(R.layout.list_assignee, parent, false));
+        return new ViewHolder(getInflater().inflate(isHorizontalOrientation()
+                ? R.layout.list_assignee_grid
+                : R.layout.list_assignee, parent, false));
     }
 
     @Override

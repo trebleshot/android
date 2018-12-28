@@ -11,6 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -31,15 +38,8 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.bottomappbar.BottomAppBar;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
-
-import androidx.annotation.IdRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 public class ConnectionManagerActivity
         extends Activity
@@ -58,9 +58,10 @@ public class ConnectionManagerActivity
     private NetworkManagerFragment mNetworkManagerFragment;
     private NetworkDeviceListFragment mDeviceListFragment;
     private OptionsFragment mOptionsFragment;
+    private AppBarLayout mAppBarLayout;
+    private CollapsingToolbarLayout mToolbarLayout;
     private ProgressBar mProgressBar;
     private Toolbar mToolbar;
-    private AppBarLayout mAppBarLayout;
     private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
@@ -169,6 +170,7 @@ public class ConnectionManagerActivity
         mToolbar = findViewById(R.id.toolbar);
         mAppBarLayout = findViewById(R.id.app_bar);
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
+        mToolbarLayout = findViewById(R.id.toolbar_layout);
         mOptionsFragment = (OptionsFragment) Fragment.instantiate(this, OptionsFragment.class.getName());
         mBarcodeConnectFragment = (BarcodeConnectFragment) Fragment.instantiate(this, BarcodeConnectFragment.class.getName());
         mHotspotManagerFragment = (HotspotManagerFragment) Fragment.instantiate(this, HotspotManagerFragment.class.getName());
@@ -236,6 +238,8 @@ public class ConnectionManagerActivity
 
     public void applyViewChanges(Fragment fragment, String mTitleProvided)
     {
+        boolean isOptions = fragment instanceof OptionsFragment;
+
         if (fragment instanceof DeviceSelectionSupport)
             ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(mDeviceSelectionListener);
 
@@ -244,14 +248,13 @@ public class ConnectionManagerActivity
                     ? ((TitleSupport) fragment).getTitle(ConnectionManagerActivity.this)
                     : getString(R.string.text_connectDevices);
 
-            if (fragment instanceof OptionsFragment) {
-                mToolbar.setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
-                mToolbar.setSubtitle(null);
-            } else {
-                mToolbar.setTitle(titleCurrent);
-                mToolbar.setSubtitle(mTitleProvided);
-            }
+            if (isOptions)
+                mToolbarLayout.setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
+            else
+                mToolbarLayout.setTitle(titleCurrent);
         }
+
+        mAppBarLayout.setExpanded(isOptions, true);
     }
 
     private void checkFragment()
@@ -331,8 +334,6 @@ public class ConnectionManagerActivity
             transaction.add(R.id.activity_connection_establishing_content_view, fragmentCandidate);
             transaction.commit();
 
-            mAppBarLayout.setExpanded(true, true);
-
             applyViewChanges(fragmentCandidate, mTitleProvided);
         }
     }
@@ -357,8 +358,45 @@ public class ConnectionManagerActivity
         CreateHotspot
     }
 
-    public static class OptionsFragment extends com.genonbeta.android.framework.app.Fragment
+    public static class CustomHorizontalNetworkDeviceListFragment extends NetworkDeviceListFragment
     {
+        @Override
+        public void onCreate(Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            setUseDefaultPaddingDecorationSpaceForEdges(false);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, Bundle savedInstanceState)
+        {
+            super.onViewCreated(view, savedInstanceState);
+
+            getListView().setNestedScrollingEnabled(true);
+
+            if (getContext() != null) {
+                float padding = getContext().getResources().getDimension(R.dimen.short_content_width_padding);
+
+                getListView().setClipToPadding(false);
+                getListView().setPadding((int) padding, 0, (int) padding, 0);
+            }
+        }
+
+        @Override
+        public boolean isHorizontalOrientation()
+        {
+            return true;
+        }
+    }
+
+    public static class OptionsFragment
+            extends com.genonbeta.android.framework.app.Fragment
+            implements DeviceSelectionSupport
+    {
+        public static final int REQUEST_CHOOSE_DEVICE = 100;
+
+        private NetworkDeviceSelectedListener mListener;
+
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
@@ -386,10 +424,23 @@ public class ConnectionManagerActivity
                 }
             };
 
+            NetworkDeviceListFragment deviceListFragment = (NetworkDeviceListFragment) getChildFragmentManager().findFragmentById(R.id.connection_option_device_list);
+
+            if (deviceListFragment != null)
+                deviceListFragment.setDeviceSelectedListener(mListener);
+
             view.findViewById(R.id.connection_option_devices).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
-            view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_scan).setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
+                            REQUEST_CHOOSE_DEVICE);
+                }
+            });
 
             view.findViewById(R.id.connection_option_guide).setOnClickListener(new View.OnClickListener()
             {
@@ -404,11 +455,38 @@ public class ConnectionManagerActivity
             return view;
         }
 
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data)
+        {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == REQUEST_CHOOSE_DEVICE)
+                if (resultCode == RESULT_OK && data != null) {
+                    try {
+                        NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
+                        AppUtils.getDatabase(getContext()).reconstruct(device);
+                        NetworkDevice.Connection connection = new NetworkDevice.Connection(device.deviceId, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
+                        AppUtils.getDatabase(getContext()).reconstruct(connection);
+
+                        if (mListener != null)
+                            mListener.onNetworkDeviceSelected(device, connection);
+                    } catch (Exception e) {
+                        // do nothing
+                    }
+                }
+        }
+
         public void updateFragment(AvailableFragment fragment)
         {
             if (getContext() != null)
                 getContext().sendBroadcast(new Intent(ACTION_CHANGE_FRAGMENT)
                         .putExtra(EXTRA_FRAGMENT_ENUM, fragment.toString()));
+        }
+
+        @Override
+        public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)
+        {
+            mListener = listener;
         }
     }
 }

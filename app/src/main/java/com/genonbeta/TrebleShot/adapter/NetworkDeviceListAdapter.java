@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -20,8 +22,6 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
 {
@@ -82,7 +82,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     @Override
     public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_network_device, parent, false));
+        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(isHorizontalOrientation()
+                ? R.layout.list_network_device_grid
+                : R.layout.list_network_device, parent, false));
     }
 
     @Override
