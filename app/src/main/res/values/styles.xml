@@ -233,7 +233,7 @@
     </style>
 
     <style name="CondensedTitleStyle">
-        <item name="fontFamily">sans</item>
+        <item name="fontFamily">sans-serif</item>
         <item name="android:layout_gravity">center</item>
         <item name="android:textColor">?android:textColorPrimary</item>
         <item name="android:textStyle">bold</item>

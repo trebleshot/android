@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="TextAppearance.Ubuntu">
-        <item name="android:fontFamily">@font/ubuntu_font</item>
+        <item name="android:fontFamily">@font/ubuntu_formatted</item>
     </style>
 </resources>
