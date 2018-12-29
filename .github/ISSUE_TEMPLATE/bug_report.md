@@ -17,6 +17,9 @@ Steps to reproduce the behavior:
 **Expected behavior**
 A clear and concise description of what you expected to happen.
 
+**Log files**
+After producing the error, go to *About* > *tap to the mail icon*, now the log was saved to your *Received files* under the name of  *trebleshot_log(\*).txt*. The asterisk is the file number. Grab the biggest one and paste it here.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
@@ -28,3 +31,5 @@ If applicable, add screenshots to help explain your problem.
 
 **Additional context**
 Add any other context about the problem here.
+
+*Please remove the placeholders after filling them.*
