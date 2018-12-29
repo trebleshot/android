@@ -11,10 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -139,7 +137,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
     }
 
     protected void runReceiveTask(final Activity activity, final SharedPreferences sharedPreferences,
-                                  final NetworkDevice device, final NetworkDevice.Connection connection) {
+                                  final NetworkDevice device, final NetworkDevice.Connection connection)
+    {
         WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
         {
             @Override
@@ -182,34 +181,36 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                         @Override
                         public void run()
                         {
-                            if (receivedFile == null)
-                                new AlertDialog.Builder(activity)
-                                        .setTitle(R.string.text_error)
-                                        .setMessage(R.string.mesg_somethingWentWrong)
-                                        .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-                                        {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which)
+                            if (!activity.isFinishing()) {
+                                if (receivedFile == null)
+                                    new AlertDialog.Builder(activity)
+                                            .setTitle(R.string.text_error)
+                                            .setMessage(R.string.mesg_somethingWentWrong)
+                                            .setNegativeButton(R.string.butn_close, null)
+                                            .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
                                             {
-                                                runReceiveTask(activity, sharedPreferences, device, connection);
-                                            }
-                                        })
-                                        .show();
-                            else
-                                new AlertDialog.Builder(activity)
-                                        .setTitle(R.string.text_taskCompleted)
-                                        .setMessage(R.string.mesg_updateDownloadComplete)
-                                        .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_open, new DialogInterface.OnClickListener()
-                                        {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which)
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which)
+                                                {
+                                                    runReceiveTask(activity, sharedPreferences, device, connection);
+                                                }
+                                            })
+                                            .show();
+                                else
+                                    new AlertDialog.Builder(activity)
+                                            .setTitle(R.string.text_taskCompleted)
+                                            .setMessage(R.string.mesg_updateDownloadComplete)
+                                            .setNegativeButton(R.string.butn_close, null)
+                                            .setPositiveButton(R.string.butn_open, new DialogInterface.OnClickListener()
                                             {
-                                                EditableListFragment.openUri(activity, receivedFile.getUri(), activity.getString(R.string.text_fileOpenAppChoose));
-                                            }
-                                        })
-                                        .show();
+                                                @Override
+                                                public void onClick(DialogInterface dialog, int which)
+                                                {
+                                                    EditableListFragment.openUri(activity, receivedFile.getUri(), activity.getString(R.string.text_fileOpenAppChoose));
+                                                }
+                                            })
+                                            .show();
+                            }
                         }
                     });
                 } catch (Exception e) {
