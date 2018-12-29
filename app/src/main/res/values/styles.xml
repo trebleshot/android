@@ -28,10 +28,10 @@
         <!-- Later handle this -->
     </style>
 
-    <style name="Widget.TrebleShot.ButtonStyle.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton.Dialog">
+    <style name="Widget.TrebleShot.ButtonStyle.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
         <item name="cornerRadius">8dp</item>
-        <item name="android:textColor">@color/text_button_text_color_selector</item>
         <item name="rippleColor">@color/text_button_ripple_color</item>
+        <item name="android:textColor">@color/text_button_text_color_selector</item>
     </style>
 
     <style name="Widget.TrebleShot.Snackbar" parent="Widget.MaterialComponents.Snackbar">

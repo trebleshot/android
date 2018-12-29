@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.util.TypedValue;
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.AboutActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -88,6 +90,26 @@ public class AppUtils
 
         object.put(Keyword.APP_INFO, appInfo);
         object.put(Keyword.DEVICE_INFO, deviceInformation);
+    }
+
+    public static void createFeedbackIntent(Activity activity) {
+        Intent intent = new Intent(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
+                .putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.text_appName));
+
+        DocumentFile logFile = AppUtils.createLog(activity);
+
+        if (logFile != null) {
+            try {
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(activity, logFile)));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        activity.startActivity(Intent.createChooser(intent, activity.getString(R.string.butn_feedbackContact)));
     }
 
     public static boolean checkRunningConditions(Context context)

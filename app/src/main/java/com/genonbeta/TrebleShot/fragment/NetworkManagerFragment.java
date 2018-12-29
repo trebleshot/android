@@ -170,7 +170,7 @@ public class NetworkManagerFragment
 
     public void updateViewsLocationDisabled()
     {
-        updateViews(null, R.string.butn_setUp, getString(R.string.mesg_locationPermissionRequiredAny), null, null);
+        updateViews(null, R.string.butn_enable, getString(R.string.mesg_locationPermissionRequiredAny), null, null);
     }
 
     public void updateViewsWithBlank()

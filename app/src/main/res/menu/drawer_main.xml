@@ -37,9 +37,15 @@
 
     <group android:id="@+id/nav_group_support">
         <item
+            android:id="@+id/menu_activity_feedback"
+            android:icon="@drawable/ic_email_white_24dp"
+            android:orderInCategory="15"
+            android:title="@string/butn_feedbackContact" />
+
+        <item
             android:id="@+id/menu_activity_main_donate"
             android:icon="@drawable/ic_favorite_white_24dp"
-            android:orderInCategory="15"
+            android:orderInCategory="16"
             android:title="@string/butn_donate"
             android:visible="false" />
     </group>

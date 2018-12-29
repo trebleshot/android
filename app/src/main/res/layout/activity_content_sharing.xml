@@ -48,8 +48,7 @@
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                android:background="?cardBackgroundColor" />
+                android:layout_height="?actionBarSize" />
 
         </com.google.android.material.appbar.AppBarLayout>
 

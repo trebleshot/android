@@ -341,7 +341,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         final int preferredGridSize = getViewingGridSize();
         final int optimalGridSize = preferredGridSize > 1
                 ? preferredGridSize
-                : !getAdapter().isGridSupported() && isScreenLarge() ? 2 : 1;
+                : !getAdapter().isGridSupported() && isScreenLarge() && !isHorizontalOrientation() ? 2 : 1;
 
         final GridLayoutManager layoutManager;
 

@@ -37,7 +37,7 @@
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/task_interrupter_button"
-            style="?buttonBarPositiveButtonStyle"
+            style="?borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/task_help_text"
@@ -61,38 +61,24 @@
             android:layout_gravity="center_horizontal"
             app:tint="?colorPassive" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/layout_barcode_connect_conduct_card"
+        <TextView
+            android:id="@+id/layout_barcode_connect_conduct_text"
+            style="@style/TextAppearance.Primary.Normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="15dp">
+            android:gravity="center"
+            android:padding="15dp"
+            android:layout_marginTop="15dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/text_scanQRCodeHelp" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp">
-
-                <TextView
-                    android:id="@+id/layout_barcode_connect_conduct_text"
-                    style="@style/TextAppearance.Primary.Normal"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:padding="15dp"
-                    android:text="@string/text_scanQRCodeHelp" />
-
-                <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/layout_barcode_connect_conduct_button"
-                    style="?borderlessButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/butn_enable" />
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/layout_barcode_connect_conduct_button"
+            style="?borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/butn_enable" />
 
     </LinearLayout>
 </FrameLayout>

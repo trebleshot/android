@@ -63,10 +63,13 @@ public class ConnectionUtils
         return networkName.replace("\"", "");
     }
 
+    public boolean canAccessLocation() {
+        return hasLocationPermission(getContext()) && isLocationServiceEnabled();
+    }
+
     public boolean canReadScanResults()
     {
-        return getWifiManager().isWifiEnabled()
-                && (Build.VERSION.SDK_INT < 23 || (hasLocationPermission(getContext()) && isLocationServiceEnabled()));
+        return getWifiManager().isWifiEnabled() && (Build.VERSION.SDK_INT < 23 || canAccessLocation());
     }
 
     public boolean disableCurrentNetwork()
@@ -157,6 +160,11 @@ public class ConnectionUtils
     public HotspotUtils getHotspotUtils()
     {
         return mHotspotUtils;
+    }
+
+    public LocationManager getLocationManager()
+    {
+        return mLocationManager;
     }
 
     public WifiManager getWifiManager()

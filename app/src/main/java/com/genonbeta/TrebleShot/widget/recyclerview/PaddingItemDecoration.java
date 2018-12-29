@@ -1,6 +1,7 @@
 package com.genonbeta.TrebleShot.widget.recyclerview;
 
 import android.graphics.Rect;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -64,13 +65,13 @@ public class PaddingItemDecoration extends RecyclerView.ItemDecoration
                 thisRect.right = spanIndex == spanCount ? paddingNormal : paddingRect;
                 thisRect.bottom = mPadding;
 
-                if (position == 0)
+                if (position <= spanCount && spanIndex == position)
                     thisRect.top = mPadding;
             } else {
                 thisRect.left = spanIndex == 0 ? 0 : paddingRect;
                 thisRect.right = spanIndex == spanCount ? 0 : paddingRect;
 
-                if (position > 0)
+                if (position > spanCount || spanIndex != position)
                     thisRect.top = mPadding;
             }
         }

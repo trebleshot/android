@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -78,7 +79,8 @@ public class BarcodeConnectFragment
     private IntentFilter mIntentFilter = new IntentFilter();
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private String mPreviousScanResult = null;
-    private boolean mPermissionRequested = false;
+    private boolean mPermissionRequestedCamera = false;
+    private boolean mPermissionRequestedLocation = false;
 
     private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -103,7 +105,8 @@ public class BarcodeConnectFragment
         public void onReceive(Context context, Intent intent)
         {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-                    || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
+                    || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
+                    || LocationManager.PROVIDERS_CHANGED_ACTION.equals(intent.getAction()))
                 updateState();
         }
     };
@@ -127,6 +130,7 @@ public class BarcodeConnectFragment
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
 
         setHasOptionsMenu(true);
     }
@@ -223,7 +227,7 @@ public class BarcodeConnectFragment
                 if (Manifest.permission.CAMERA.equals(permissions[permIterator]) &&
                         grantResults[permIterator] == PackageManager.PERMISSION_GRANTED) {
                     updateState();
-                    mPermissionRequested = false;
+                    mPermissionRequestedCamera = false;
                 }
             }
     }
@@ -253,43 +257,39 @@ public class BarcodeConnectFragment
 
                 makeAcquaintance(hotspotNetwork, accessPin);
             } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
-                if (Build.VERSION.SDK_INT < 26 // With Android Oreo to gather Wi-Fi information, minimal access to location is needed
-                        || mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_PERMISSION_LOCATION, mPermissionWatcher)) {
-                    final String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
-                    final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
+                final String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
+                final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
 
-                    WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
+                WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
 
-                    if (wifiInfo != null
-                            && wifiInfo.getBSSID() != null
-                            && wifiInfo.getBSSID().equals(bssid))
-                        makeAcquaintance(ipAddress, accessPin);
-                    else {
-                        mBarcodeView.pauseAndWait();
-
-                        new AlertDialog.Builder(getActivity())
-                                .setMessage(R.string.mesg_errorNotSameNetwork)
-                                .setNegativeButton(R.string.butn_close, null)
-                                .setPositiveButton(R.string.butn_skip, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        makeAcquaintance(ipAddress, accessPin);
-                                    }
-                                })
-                                .setOnDismissListener(new DialogInterface.OnDismissListener()
-                                {
-                                    @Override
-                                    public void onDismiss(DialogInterface dialog)
-                                    {
-                                        updateState();
-                                    }
-                                })
-                                .show();
-                    }
-                } else
+                if (wifiInfo != null
+                        && wifiInfo.getBSSID() != null
+                        && wifiInfo.getBSSID().equals(bssid))
+                    makeAcquaintance(ipAddress, accessPin);
+                else {
                     mBarcodeView.pauseAndWait();
+
+                    new AlertDialog.Builder(getActivity())
+                            .setMessage(R.string.mesg_errorNotSameNetwork)
+                            .setNegativeButton(R.string.butn_close, null)
+                            .setPositiveButton(R.string.butn_skip, new DialogInterface.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
+                                {
+                                    makeAcquaintance(ipAddress, accessPin);
+                                }
+                            })
+                            .setOnDismissListener(new DialogInterface.OnDismissListener()
+                            {
+                                @Override
+                                public void onDismiss(DialogInterface dialog)
+                                {
+                                    updateState();
+                                }
+                            })
+                            .show();
+                }
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -367,14 +367,16 @@ public class BarcodeConnectFragment
             return;
 
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
-        final boolean hasPermissions = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
+        final boolean hasCameraPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
-        final boolean state = wifiEnabled && hasPermissions;
+        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 26 // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
+                || mConnectionUtils.getConnectionUtils().canAccessLocation();
+        final boolean state = wifiEnabled && hasCameraPermission && hasLocationPermission;
 
         if (!state) {
             mBarcodeView.pauseAndWait();
 
-            if (!hasPermissions) {
+            if (!hasCameraPermission) {
                 mConductImage.setImageResource(R.drawable.ic_camera_white_144dp);
                 mConductText.setText(R.string.text_cameraPermissionRequired);
                 mConductButton.setText(R.string.butn_ask);
@@ -388,10 +390,28 @@ public class BarcodeConnectFragment
                     }
                 });
 
-                if (!mPermissionRequested)
+                if (!mPermissionRequestedCamera)
                     ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
 
-                mPermissionRequested = true;
+                mPermissionRequestedCamera = true;
+            } else if (!hasLocationPermission) {
+                mConductImage.setImageResource(R.drawable.ic_perm_device_information_white_144dp);
+                mConductText.setText(R.string.mesg_locationPermissionRequiredAny);
+                mConductButton.setText(R.string.butn_enable);
+
+                mConductButton.setOnClickListener(new View.OnClickListener()
+                {
+                    @Override
+                    public void onClick(View v)
+                    {
+                        mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_PERMISSION_LOCATION, mPermissionWatcher);
+                    }
+                });
+
+                if (!mPermissionRequestedLocation)
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_CAMERA);
+
+                mPermissionRequestedLocation = true;
             } else {
                 mConductImage.setImageResource(R.drawable.ic_signal_wifi_off_white_144dp);
                 mConductText.setText(R.string.text_scanQRWifiRequired);

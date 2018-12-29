@@ -106,6 +106,7 @@ public class CommunicationService extends Service
     public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
     public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
     public static final String EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled";
+    public static final String EXTRA_HOTSPOT_DISABLING = "extraHotspotDisabling";
     public static final String EXTRA_HOTSPOT_NAME = "extraHotspotName";
     public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
     public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
@@ -520,10 +521,17 @@ public class CommunicationService extends Service
                 .putStringArrayListExtra(EXTRA_DEVICE_LIST_RUNNING, deviceList));
     }
 
+    public void sendHotspotStatusDisabling() {
+        sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
+                .putExtra(EXTRA_HOTSPOT_ENABLED, false)
+                .putExtra(EXTRA_HOTSPOT_DISABLING, true));
+    }
+
     public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
     {
         Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS)
-                .putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null);
+                .putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null)
+                .putExtra(EXTRA_HOTSPOT_DISABLING, false);
 
         if (wifiConfiguration != null) {
             statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
@@ -551,7 +559,7 @@ public class CommunicationService extends Service
             getHotspotUtils().disable();
 
             if (Build.VERSION.SDK_INT >= 26)
-                sendHotspotStatus(null);
+                sendHotspotStatusDisabling();
         }
     }
 

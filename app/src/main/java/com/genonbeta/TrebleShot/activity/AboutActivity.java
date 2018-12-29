@@ -128,23 +128,7 @@ public class AboutActivity extends Activity
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.actions_about_feedback) {
-            Intent intent = new Intent(Intent.ACTION_SEND)
-                    .setType("text/plain")
-                    .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
-                    .putExtra(Intent.EXTRA_SUBJECT, getString(R.string.text_appName));
-
-            DocumentFile logFile = AppUtils.createLog(AboutActivity.this);
-
-            if (logFile != null) {
-                try {
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            .putExtra(Intent.EXTRA_STREAM, (FileUtils.getSecureUri(AboutActivity.this, logFile)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            startActivity(Intent.createChooser(intent, getString(R.string.butn_feedbackContact)));
+            AppUtils.createFeedbackIntent(AboutActivity.this);
         } else
             return super.onOptionsItemSelected(item);
 

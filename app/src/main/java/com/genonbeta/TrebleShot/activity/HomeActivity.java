@@ -210,6 +210,8 @@ public class HomeActivity
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+        } else if (R.id.menu_activity_feedback == mChosenMenuItemId) {
+            AppUtils.createFeedbackIntent(HomeActivity.this);
         }
 
         mChosenMenuItemId = 0;

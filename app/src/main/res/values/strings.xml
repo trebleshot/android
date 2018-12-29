@@ -420,4 +420,5 @@
     <string name="butn_fixConnection">Fix connection</string>
     <string name="text_fixConnection" translatable="false">@string/butn_fixConnection</string>
     <string name="butn_never">Never</string>
+    <string name="text_hotspotStartedExternallyNotice">Please disable the active hotspot in the settings first</string>
 </resources>

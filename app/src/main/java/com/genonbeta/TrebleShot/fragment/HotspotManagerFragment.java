@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.net.wifi.WifiConfiguration;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,7 +26,6 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-import androidx.core.widget.NestedScrollView;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -73,6 +72,7 @@ public class HotspotManagerFragment
     private ColorStateList mColorPassiveState;
     private boolean mWaitForHotspot = false;
     private boolean mWaitForWiFi = false;
+    private boolean mHotspotStartedExternally = false;
 
     private UIConnectionUtils.RequestWatcher mHotspotWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -215,11 +215,16 @@ public class HotspotManagerFragment
 
     private void toggleHotspot()
     {
-        getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT, mHotspotWatcher);
+        if (mHotspotStartedExternally)
+            startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
+        else
+            getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT, mHotspotWatcher);
     }
 
     private void updateViewsWithBlank()
     {
+        mHotspotStartedExternally = false;
+
         updateViews(null,
                 getString(R.string.text_qrCodeHotspotDisabledHelp),
                 null,
@@ -227,9 +232,19 @@ public class HotspotManagerFragment
                 R.string.text_startHotspot);
     }
 
+    private void updateViewsStartedExternally()
+    {
+        mHotspotStartedExternally = true;
+
+        updateViews(null, getString(R.string.text_hotspotStartedExternallyNotice),
+                null, null, R.string.butn_stopHotspot);
+    }
+
     // for hotspot
     private void updateViews(String networkName, String password, int keyManagement)
     {
+        mHotspotStartedExternally = false;
+
         try {
             JSONObject object = new JSONObject()
                     .put(Keyword.NETWORK_NAME, networkName)
@@ -323,11 +338,15 @@ public class HotspotManagerFragment
         {
             if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
                 updateState();
-            else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
-                    && intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false)) {
-                updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
-                        intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
-                        intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
+            else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
+                if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
+                    updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
+                            intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
+                            intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
+                else if (getConnectionUtils().getHotspotUtils().isEnabled()
+                        && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false)) {
+                    updateViewsStartedExternally();
+                }
             }
         }
     }

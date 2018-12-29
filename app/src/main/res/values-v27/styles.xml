@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TrebleShot.Base" parent="Theme.Prototype.TrebleShot.Base">
+        <item name="colorPrimaryDark">?colorPrimaryDark23</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">?statusBarColor</item>
+        <item name="android:windowLightStatusBar">?useLightStatusBar</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+</resources>

@@ -78,7 +78,6 @@
                 android:id="@+id/actionButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
                 android:text="@string/butn_cancel" />
 
             <androidx.appcompat.widget.AppCompatButton
@@ -86,7 +85,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="?borderlessButtonStyle"
-                android:layout_marginTop="8dp"
                 android:text="@string/butn_done" />
 
         </LinearLayout>
