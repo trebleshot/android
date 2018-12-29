@@ -104,8 +104,8 @@ public class ConnectionManagerActivity
                     }
                 };
 
-                uiConnectionUtils.makeAcquaintance(ConnectionManagerActivity.this, getDatabase(),
-                        uiTask, connection.ipAddress, -1, registeredListener);
+                uiConnectionUtils.makeAcquaintance(ConnectionManagerActivity.this, uiTask,
+                        connection.ipAddress, -1, registeredListener);
             }
 
             return true;
@@ -305,8 +305,10 @@ public class ConnectionManagerActivity
 
         switch (fragment) {
             case ScanQrCode:
-                fragmentCandidate = mBarcodeConnectFragment;
-                break;
+                //fragmentCandidate = mBarcodeConnectFragment;
+                if (mOptionsFragment.isAdded())
+                    mOptionsFragment.startCodeScanner();
+                return;
             case CreateHotspot:
                 fragmentCandidate = mHotspotManagerFragment;
                 break;
@@ -364,6 +366,9 @@ public class ConnectionManagerActivity
         public void onCreate(Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
+
+            setHasOptionsMenu(false);
+            setFilteringSupported(false);
             setUseDefaultPaddingDecorationSpaceForEdges(false);
         }
 
@@ -419,7 +424,7 @@ public class ConnectionManagerActivity
                             updateFragment(AvailableFragment.UseExistingNetwork);
                             break;
                         case R.id.connection_option_scan:
-                            updateFragment(AvailableFragment.ScanQrCode);
+                            startCodeScanner();
                     }
                 }
             };
@@ -432,15 +437,7 @@ public class ConnectionManagerActivity
             view.findViewById(R.id.connection_option_devices).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
-            view.findViewById(R.id.connection_option_scan).setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
-                            REQUEST_CHOOSE_DEVICE);
-                }
-            });
+            view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
 
             view.findViewById(R.id.connection_option_guide).setOnClickListener(new View.OnClickListener()
             {
@@ -474,6 +471,12 @@ public class ConnectionManagerActivity
                         // do nothing
                     }
                 }
+        }
+
+        private void startCodeScanner()
+        {
+            startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
+                    REQUEST_CHOOSE_DEVICE);
         }
 
         public void updateFragment(AvailableFragment fragment)

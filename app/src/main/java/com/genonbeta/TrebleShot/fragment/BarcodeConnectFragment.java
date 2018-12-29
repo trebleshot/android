@@ -78,9 +78,9 @@ public class BarcodeConnectFragment
     private View mTaskContainer;
     private IntentFilter mIntentFilter = new IntentFilter();
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
-    private String mPreviousScanResult = null;
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
+    //private String mPreviousScanResult = null;
 
     private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -94,8 +94,8 @@ public class BarcodeConnectFragment
 
             // We don't want to keep this when the result is ok
             // or not asked to wait
-            if (!shouldWait || result)
-                mPreviousScanResult = null;
+            //if (!shouldWait || result)
+            //    mPreviousScanResult = null;
         }
     };
 
@@ -204,8 +204,8 @@ public class BarcodeConnectFragment
         getContext().registerReceiver(mReceiver, mIntentFilter);
         updateState();
 
-        if (mPreviousScanResult != null)
-            handleBarcode(mPreviousScanResult);
+        //if (mPreviousScanResult != null)
+        //    handleBarcode(mPreviousScanResult);
     }
 
     @Override
@@ -238,7 +238,7 @@ public class BarcodeConnectFragment
             JSONObject jsonObject = new JSONObject(code);
             NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
 
-            mPreviousScanResult = code; // Fail-safe
+            //mPreviousScanResult = code; // Fail-safe
 
             final int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
                     ? jsonObject.getInt(Keyword.NETWORK_PIN)
@@ -325,7 +325,7 @@ public class BarcodeConnectFragment
 
     protected void makeAcquaintance(Object object, int accessPin)
     {
-        mConnectionUtils.makeAcquaintance(getActivity(), AppUtils.getDatabase(getContext()), BarcodeConnectFragment.this, object, accessPin, mRegisteredListener);
+        mConnectionUtils.makeAcquaintance(getActivity(),BarcodeConnectFragment.this, object, accessPin, mRegisteredListener);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

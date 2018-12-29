@@ -12,6 +12,10 @@ import android.os.Looper;
 import android.provider.Settings;
 import android.view.View;
 
+import androidx.annotation.WorkerThread;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
@@ -29,10 +33,6 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 
 /**
  * created by: veli
@@ -63,8 +63,7 @@ public class UIConnectionUtils
         return mSnackbarSupport;
     }
 
-    public void makeAcquaintance(final Activity activity, final AccessDatabase database,
-                                 final UITask task, final Object object, final int accessPin,
+    public void makeAcquaintance(final Activity activity, final UITask task, final Object object, final int accessPin,
                                  final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
     {
         WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
@@ -80,20 +79,22 @@ public class UIConnectionUtils
                     @Override
                     public void onClick(DialogInterface dialog, int which)
                     {
-                        makeAcquaintance(activity, database, task, object, accessPin, registerListener);
+                        makeAcquaintance(activity, task, object, accessPin, registerListener);
                     }
                 };
 
                 try {
                     if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-                        mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(), (NetworkDeviceListAdapter.HotspotNetwork) object, new ConnectionUtils.TimeoutListener()
-                        {
-                            @Override
-                            public boolean onTimePassed(int delimiter, long timePassed)
-                            {
-                                return timePassed >= 20000;
-                            }
-                        });
+                        mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
+                                (NetworkDeviceListAdapter.HotspotNetwork) object,
+                                new ConnectionUtils.ConnectionCallback()
+                                {
+                                    @Override
+                                    public boolean onTimePassed(int delimiter, long timePassed)
+                                    {
+                                        return timePassed >= 20000;
+                                    }
+                                });
                     } else if (object instanceof String)
                         mRemoteAddress = (String) object;
 
@@ -211,6 +212,7 @@ public class UIConnectionUtils
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+
             }
         });
     }
@@ -277,7 +279,8 @@ public class UIConnectionUtils
         watcher.onResultReturned(true, false);
     }
 
-    public static void showUnknownError(final Activity activity, final DialogInterface.OnClickListener retryButtonListener) {
+    public static void showUnknownError(final Activity activity, final DialogInterface.OnClickListener retryButtonListener)
+    {
         new Handler(Looper.getMainLooper()).post(new Runnable()
         {
             @Override

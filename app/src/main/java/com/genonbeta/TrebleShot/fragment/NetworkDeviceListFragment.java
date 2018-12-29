@@ -238,7 +238,6 @@ public class NetworkDeviceListFragment
                 createSnackbar(R.string.mesg_versionNotSupported).show();
             else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
                 mConnectionUtils.makeAcquaintance(getActivity(),
-                        AppUtils.getDatabase(getContext()),
                         null,
                         device,
                         -1,

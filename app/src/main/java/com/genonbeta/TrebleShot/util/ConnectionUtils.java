@@ -12,19 +12,14 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
-
-import com.genonbeta.CoolSocket.CoolSocket;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
-import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.config.Keyword;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.android.framework.util.Interrupter;
-
-import org.json.JSONObject;
+import android.widget.Toast;
 
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
+
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.android.framework.util.Interrupter;
 
 /**
  * created by: veli
@@ -63,7 +58,8 @@ public class ConnectionUtils
         return networkName.replace("\"", "");
     }
 
-    public boolean canAccessLocation() {
+    public boolean canAccessLocation()
+    {
         return hasLocationPermission(getContext()) && isLocationServiceEnabled();
     }
 
@@ -82,17 +78,22 @@ public class ConnectionUtils
     }
 
     @WorkerThread
-    public String establishHotspotConnection(Interrupter interrupter, final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork, TimeoutListener timeoutListener)
+    public String establishHotspotConnection(final Interrupter interrupter,
+                                             final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                             final ConnectionCallback connectionCallback)
     {
-        long startTime = System.currentTimeMillis();
-        boolean connectionToggled = false;
-        String remoteAddress = null;
+        final int pingTimeout = 1000; // ms
+        final long startTime = System.currentTimeMillis();
 
-        while (remoteAddress == null) {
+        String remoteAddress = null;
+        boolean connectionToggled = false;
+
+        while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
 
             if (!getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
+
                 if (!getWifiManager().setWifiEnabled(true)) {
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.");
                     break;
@@ -104,31 +105,32 @@ public class ConnectionUtils
                 connectionToggled = true;
             } else {
                 Log.d(TAG, "establishHotspotConnection(): Waiting to connect to the server");
+                final DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
 
-                for (AddressedInterface addressedInterface : NetworkUtils.getInterfaces(true, null)) {
-                    if (addressedInterface.getNetworkInterface().getDisplayName().startsWith(AppConfig.NETWORK_INTERFACE_WIFI)) {
-                        Log.d(TAG, "establishHotspotConnection(): A network is connected. Waiting to get a response from the server");
+                if (routeInfo != null && routeInfo.gateway > 0) {
+                    final String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
 
-                        DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
+                    Log.d(TAG, String.format("establishHotspotConnection(): DhcpInfo: gateway: %s dns1: %s dns2: %s ipAddr: %s serverAddr: %s netMask: %s",
+                            testedRemoteAddress,
+                            NetworkUtils.convertInet4Address(routeInfo.dns1),
+                            NetworkUtils.convertInet4Address(routeInfo.dns2),
+                            NetworkUtils.convertInet4Address(routeInfo.ipAddress),
+                            NetworkUtils.convertInet4Address(routeInfo.serverAddress),
+                            NetworkUtils.convertInet4Address(routeInfo.netmask)));
 
-                        if (routeInfo != null) {
-                            String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
-                            Log.d(TAG, "establishHotspotConnection(): There is DHCP info provided waiting to reach the address " + testedRemoteAddress);
+                    Log.d(TAG, "establishHotspotConnection(): There is DHCP info provided waiting to reach the address " + testedRemoteAddress);
 
-                            if (NetworkUtils.ping(testedRemoteAddress, 1000)) {
-                                Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-
-                                remoteAddress = testedRemoteAddress;
-                                break;
-                            } else
-                                Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
-                        } else
-                            Log.d(TAG, "establishHotspotConnection(): No DHCP provided. Looping...");
-                    }
-                }
+                    if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
+                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+                        remoteAddress = testedRemoteAddress;
+                        break;
+                    } else
+                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
+                } else
+                    Log.d(TAG, "establishHotspotConnection(): No DHCP provided. Looping...");
             }
 
-            if (timeoutListener.onTimePassed(1000, passedTime) || interrupter.interrupted())
+            if (connectionCallback.onTimePassed(1000, passedTime) || interrupter.interrupted())
                 break;
 
             try {
@@ -295,7 +297,7 @@ public class ConnectionUtils
         return false;
     }
 
-    public interface TimeoutListener
+    public interface ConnectionCallback
     {
         boolean onTimePassed(int delimiter, long timePassed);
     }
