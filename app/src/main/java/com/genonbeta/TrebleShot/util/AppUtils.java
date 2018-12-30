@@ -9,8 +9,12 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 
@@ -33,7 +37,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -75,8 +84,9 @@ public class AppUtils
         connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
     }
 
-    public static void applyDeviceToJSON(NetworkDevice device, JSONObject object) throws JSONException
+    public static void applyDeviceToJSON(Context context, JSONObject object) throws JSONException
     {
+        NetworkDevice device = getLocalDevice(context);
         JSONObject deviceInformation = new JSONObject();
         JSONObject appInfo = new JSONObject();
 
@@ -84,6 +94,16 @@ public class AppUtils
         deviceInformation.put(Keyword.DEVICE_INFO_BRAND, device.brand);
         deviceInformation.put(Keyword.DEVICE_INFO_MODEL, device.model);
         deviceInformation.put(Keyword.DEVICE_INFO_USER, device.nickname);
+
+        try {
+            ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"));
+
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, imageBytes);
+            deviceInformation.put(Keyword.DEVICE_INFO_PICTURE, Base64.encodeToString(imageBytes.toByteArray(), 0));
+        } catch (Exception e) {
+            // do nothing
+        }
 
         appInfo.put(Keyword.APP_INFO_VERSION_CODE, device.versionNumber);
         appInfo.put(Keyword.APP_INFO_VERSION_NAME, device.versionName);

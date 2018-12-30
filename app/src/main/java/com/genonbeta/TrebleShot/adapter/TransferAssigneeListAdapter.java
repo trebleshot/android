@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
@@ -57,7 +58,7 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssi
 
         text1.setText(assignee.device.nickname);
         text2.setText(TextUtils.getAdapterName(getContext(), assignee.connection));
-        image.setImageDrawable(mIconBuilder.buildRound(assignee.device.nickname));
+        NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
     }
 
     @Override

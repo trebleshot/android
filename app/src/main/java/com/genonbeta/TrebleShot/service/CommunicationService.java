@@ -629,7 +629,7 @@ public class CommunicationService extends Service
 
                 String deviceSerial = null;
 
-                AppUtils.applyDeviceToJSON(AppUtils.getLocalDevice(getApplicationContext()), replyJSON);
+                AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
 
                 if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED) && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
                     pushReply(activeConnection, replyJSON, true);

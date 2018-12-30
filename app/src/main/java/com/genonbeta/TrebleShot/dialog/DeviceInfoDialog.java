@@ -10,6 +10,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,6 +29,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
@@ -57,18 +59,19 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             @SuppressLint("InflateParams")
             View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_device_info, null);
 
-            TextView notSupportedText = rootView.findViewById(R.id.device_info_not_supported_text);
-            TextView modelText = rootView.findViewById(R.id.device_info_brand_and_model);
-            TextView versionText = rootView.findViewById(R.id.device_info_version);
-            SwitchCompat accessSwitch = rootView.findViewById(R.id.device_info_access_switcher);
-            final SwitchCompat trustSwitch = rootView.findViewById(R.id.device_info_trust_switcher);
             NetworkDevice localDevice = AppUtils.getLocalDevice(activity);
+            ImageView image = rootView.findViewById(R.id.image);
+            TextView text1 = rootView.findViewById(R.id.text1);
+            TextView notSupportedText = rootView.findViewById(R.id.notSupportedText);
+            TextView modelText = rootView.findViewById(R.id.modelText);
+            TextView versionText = rootView.findViewById(R.id.versionText);
+            final SwitchCompat accessSwitch = rootView.findViewById(R.id.accessSwitch);
+            final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
 
             if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
 
-            if (localDevice.versionNumber < device.versionNumber
-                    || BuildConfig.DEBUG)
+            if (localDevice.versionNumber < device.versionNumber || BuildConfig.DEBUG)
                 setNeutralButton(R.string.butn_update, new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -85,11 +88,11 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                     }
                 });
 
+            NetworkDeviceLoader.showPictureIntoView(device, image, AppUtils.getDefaultIconBuilder(activity));
+            text1.setText(device.nickname);
             modelText.setText(String.format("%s %s", device.brand.toUpperCase(), device.model.toUpperCase()));
             versionText.setText(device.versionName);
-
             accessSwitch.setChecked(!device.isRestricted);
-
             trustSwitch.setEnabled(!device.isRestricted);
             trustSwitch.setChecked(device.isTrusted);
 
@@ -118,7 +121,6 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                     }
             );
 
-            setTitle(device.nickname);
             setView(rootView);
             setPositiveButton(R.string.butn_close, null);
 

@@ -24,7 +24,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
-import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -142,21 +141,7 @@ public class HomeActivity
     protected void onStart()
     {
         super.onStart();
-
-        View headerView = mNavigationView.getHeaderView(0);
-
-        if (headerView != null) {
-            TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(this);
-            NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-
-            ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
-            TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
-            TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
-
-            imageView.setImageDrawable(iconBuilder.buildRound(localDevice.nickname));
-            deviceNameText.setText(localDevice.nickname);
-            versionText.setText(localDevice.versionName);
-        }
+        createHeaderView();
     }
 
     @Override
@@ -184,6 +169,12 @@ public class HomeActivity
             mExitPressTime = System.currentTimeMillis();
             Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onUserProfileUpdated()
+    {
+        createHeaderView();
     }
 
     private void applyAwaitingDrawerAction()
@@ -215,6 +206,34 @@ public class HomeActivity
         }
 
         mChosenMenuItemId = 0;
+    }
+
+    private void createHeaderView()
+    {
+        View headerView = mNavigationView.getHeaderView(0);
+
+        if (headerView != null) {
+
+            NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+
+            ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
+            ImageView editImageView = headerView.findViewById(R.id.header_default_device_edit_image);
+            TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
+            TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
+
+            deviceNameText.setText(localDevice.nickname);
+            versionText.setText(localDevice.versionName);
+            loadProfilePictureInto(localDevice.nickname, imageView);
+
+            editImageView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    startProfileEditor();
+                }
+            });
+        }
     }
 
     @Override

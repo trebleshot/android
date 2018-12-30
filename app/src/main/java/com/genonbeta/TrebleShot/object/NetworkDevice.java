@@ -40,6 +40,10 @@ public class NetworkDevice
         reconstruct(item);
     }
 
+    public String generatePictureId() {
+        return String.format("picture_%s", deviceId);
+    }
+
     @Override
     public SQLQuery.Select getWhere()
     {
@@ -97,6 +101,8 @@ public class NetworkDevice
     @Override
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
     {
+        database.getContext().deleteFile(generatePictureId());
+
         database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 

@@ -426,4 +426,5 @@
     <string name="butn_removeBookmark">Remove bookmark</string>
     <string name="mesg_removed">Removed</string>
     <string name="mesg_added">Added</string>
+    <string name="butn_change">Change</string>
 </resources>

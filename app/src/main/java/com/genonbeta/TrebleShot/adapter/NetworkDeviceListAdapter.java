@@ -18,6 +18,7 @@ import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
+import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -101,8 +102,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         userText.setText(device.nickname);
         deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
-
-        userImage.setImageDrawable(mIconBuilder.buildRound(device.nickname));
+        NetworkDeviceLoader.showPictureIntoView(device, userImage, mIconBuilder);
     }
 
     public static class EditableNetworkDevice

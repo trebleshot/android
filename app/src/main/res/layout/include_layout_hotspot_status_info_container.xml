@@ -33,7 +33,8 @@
         style="?borderlessButtonStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/butn_startHotspot" />
+        android:text="@string/butn_startHotspot"
+        app:backgroundTint="?colorSurface" />
 
     <LinearLayout
         android:id="@+id/layout_hotspot_manager_info_container_text2_container"
