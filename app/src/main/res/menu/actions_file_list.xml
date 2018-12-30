@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/actions_file_list_toggle_bookmark"
+        android:orderInCategory="98"
+        android:title="@string/butn_addBookmark"
+        android:visible="true" />
+
     <item
         android:id="@+id/actions_file_list_mount_directory"
         android:orderInCategory="99"

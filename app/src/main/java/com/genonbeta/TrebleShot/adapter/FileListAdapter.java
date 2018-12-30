@@ -10,11 +10,17 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.FileBookmarkObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
@@ -35,11 +41,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
+import java.util.List;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -81,7 +83,7 @@ public class FileListAdapter
                         continue;
 
                     if (file.isDirectory() && mShowDirectories)
-                        lister.offerObliged(this,new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
+                        lister.offerObliged(this, new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
                     else if (file.isFile() && mShowFiles) {
                         if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
                             TransferObject existingObject = null;
@@ -96,9 +98,9 @@ public class FileListAdapter
                             } catch (Exception e) {
                             }
 
-                            lister.offerObliged(this,new ReceivedFileHolder(getContext(), file, existingObject));
+                            lister.offerObliged(this, new ReceivedFileHolder(getContext(), file, existingObject));
                         } else
-                            lister.offerObliged(this,new FileHolder(getContext(), file));
+                            lister.offerObliged(this, new FileHolder(getContext(), file));
                     }
                 }
             }
@@ -115,16 +117,16 @@ public class FileListAdapter
                 lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                         getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
 
-            lister.offerObliged(this,new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
 
-            lister.offerObliged(this,new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
 
             File fileSystemRoot = new File(".");
 
             if (fileSystemRoot.canRead())
-                lister.offerObliged(this,new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
+                lister.offerObliged(this, new DirectoryHolder(DocumentFile.fromFile(fileSystemRoot),
                         getContext().getString(R.string.text_fileRoot),
                         getContext().getString(R.string.text_folder),
                         R.drawable.ic_folder_white_24dp));
@@ -164,22 +166,32 @@ public class FileListAdapter
                     }
                 }
 
-                lister.offerObliged(this,fileHolder);
+                lister.offerObliged(this, fileHolder);
             }
 
-            ArrayList<WritablePathObject> objectList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+            ArrayList<FileBookmarkObject> bookmarkedList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileBookmarkObject.class);
+
+            for (FileBookmarkObject object : bookmarkedList) {
+                try {
+                    lister.offerObliged(this, new BookmarkedDirectoryHolder(getContext(), object));
+                } catch (Exception e) {
+                    // do nothing
+                }
+            }
+
+            ArrayList<WritablePathObject> mountedPathList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
             if (Build.VERSION.SDK_INT >= 23) {
-                for (WritablePathObject pathObject : objectList)
+                for (WritablePathObject pathObject : mountedPathList)
                     try {
-                        lister.offerObliged(this,new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
+                        lister.offerObliged(this, new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
                                 pathObject,
                                 getContext().getString(R.string.text_storage)));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
 
-                lister.offerObliged(this,new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
+                lister.offerObliged(this, new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
                         R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
             }
 
@@ -197,11 +209,11 @@ public class FileListAdapter
                                     TransferObject.Flag.DONE.toString(), TransferObject.Type.INCOMING.toString()), TransferObject.class);
 
             if (linkedGroups.size() > 0 && recentFiles.size() > 0) {
-                int iteratorAdded = 0;
+                List<DocumentFile> pickedRecentFiles = new ArrayList<>();
                 Collections.reverse(recentFiles);
 
                 for (TransferObject recentFile : recentFiles) {
-                    if (iteratorAdded > 20)
+                    if (pickedRecentFiles.size() > 20)
                         break;
 
                     TransferGroup group = linkedGroups.get(recentFile.groupId);
@@ -212,14 +224,15 @@ public class FileListAdapter
                     try {
                         DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), recentFile, group, false);
 
-                        if (documentFile.exists()) {
-                            lister.offerObliged(this,new RecentFileHolder(getContext(), documentFile));
-                            iteratorAdded++;
-                        }
+                        if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
+                            pickedRecentFiles.add(documentFile);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
+
+                for (DocumentFile documentFile : pickedRecentFiles)
+                    lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
             }
         }
     }
@@ -441,7 +454,6 @@ public class FileListAdapter
         {
             super(context, file);
         }
-
     }
 
     public static class ReceivedFileHolder extends FileHolder
@@ -480,6 +492,24 @@ public class FileListAdapter
         public long getId()
         {
             return super.getId();
+        }
+    }
+
+    public static class BookmarkedDirectoryHolder extends DirectoryHolder
+    {
+        private FileBookmarkObject mBookmarkObject;
+
+        public BookmarkedDirectoryHolder(Context context, FileBookmarkObject bookmarkObject) throws FileNotFoundException
+        {
+            super(FileUtils.fromUri(context, bookmarkObject.path), bookmarkObject.title,
+                    context.getString(R.string.text_bookmark), R.drawable.ic_bookmark_white_24dp);
+
+            mBookmarkObject = bookmarkObject;
+        }
+
+        public FileBookmarkObject getBookmarkObject()
+        {
+            return mBookmarkObject;
         }
     }
 

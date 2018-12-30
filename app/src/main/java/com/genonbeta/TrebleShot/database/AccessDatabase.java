@@ -11,6 +11,7 @@ import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
+import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
@@ -41,7 +42,7 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String TAG = AccessDatabase.class.getSimpleName();
     public static final int TASK_REMOVE_ASYNCHRONOUS = 1;
 
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
 
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -52,6 +53,39 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String TYPE_REMOVE = "typeRemove";
     public static final String TYPE_INSERT = "typeInsert";
     public static final String TYPE_UPDATE = "typeUpdate";
+
+    public static final String TABLE_CLIPBOARD = "clipboard";
+    public static final String FIELD_CLIPBOARD_ID = "id";
+    public static final String FIELD_CLIPBOARD_TEXT = "text";
+    public static final String FIELD_CLIPBOARD_TIME = "time";
+    public static final String TABLE_DEVICES = "devices";
+    public static final String FIELD_DEVICES_ID = "deviceId";
+    public static final String FIELD_DEVICES_USER = "user";
+    public static final String FIELD_DEVICES_BRAND = "brand";
+    public static final String FIELD_DEVICES_MODEL = "model";
+    public static final String FIELD_DEVICES_BUILDNAME = "buildName";
+    public static final String FIELD_DEVICES_BUILDNUMBER = "buildNumber";
+    public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
+    public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
+    public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
+    public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
+    public static final String FIELD_DEVICES_TMPSECUREKEY = "tmpSecureKey";
+
+    public static final String TABLE_DEVICECONNECTION = "deviceConnection";
+    public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
+    public static final String FIELD_DEVICECONNECTION_DEVICEID = "deviceId";
+    public static final String FIELD_DEVICECONNECTION_ADAPTERNAME = "adapterName";
+    public static final String FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
+
+    public static final String TABLE_FILEBOOKMARK = "fileBookmark";
+    public static final String FIELD_FILEBOOKMARK_TITLE = "title";
+    public static final String FIELD_FILEBOOKMARK_PATH = "path";
+
+    public static final String TABLE_TRANSFERASSIGNEE = "transferAssignee";
+    public static final String FIELD_TRANSFERASSIGNEE_GROUPID = "groupId";
+    public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
+    public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
+    public static final String FIELD_TRANSFERASSIGNEE_ISCLONE = "isClone";
 
     // divisions are a separate containers for items not ready to use
     public static final String DIVIS_TRANSFER = "divisionTransfer";
@@ -74,39 +108,9 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_TRANSFERGROUP_SAVEPATH = "savePath";
     public static final String FIELD_TRANSFERGROUP_DATECREATED = "dateCreated";
 
-    public static final String TABLE_DEVICES = "devices";
-    public static final String FIELD_DEVICES_ID = "deviceId";
-    public static final String FIELD_DEVICES_USER = "user";
-    public static final String FIELD_DEVICES_BRAND = "brand";
-    public static final String FIELD_DEVICES_MODEL = "model";
-    public static final String FIELD_DEVICES_BUILDNAME = "buildName";
-    public static final String FIELD_DEVICES_BUILDNUMBER = "buildNumber";
-    public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
-    public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
-    public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
-    public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
-    public static final String FIELD_DEVICES_TMPSECUREKEY = "tmpSecureKey";
-
-    public static final String TABLE_DEVICECONNECTION = "deviceConnection";
-    public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
-    public static final String FIELD_DEVICECONNECTION_DEVICEID = "deviceId";
-    public static final String FIELD_DEVICECONNECTION_ADAPTERNAME = "adapterName";
-    public static final String FIELD_DEVICECONNECTION_LASTCHECKEDDATE = "lastCheckedDate";
-
-    public static final String TABLE_CLIPBOARD = "clipboard";
-    public static final String FIELD_CLIPBOARD_ID = "id";
-    public static final String FIELD_CLIPBOARD_TEXT = "text";
-    public static final String FIELD_CLIPBOARD_TIME = "time";
-
     public static final String TABLE_WRITABLEPATH = "writablePath";
     public static final String FIELD_WRITABLEPATH_TITLE = "title";
     public static final String FIELD_WRITABLEPATH_PATH = "path";
-
-    public static final String TABLE_TRANSFERASSIGNEE = "transferAssignee";
-    public static final String FIELD_TRANSFERASSIGNEE_GROUPID = "groupId";
-    public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
-    public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
-    public static final String FIELD_TRANSFERASSIGNEE_ISCLONE = "isClone";
 
     public AccessDatabase(Context context)
     {
@@ -148,12 +152,13 @@ public class AccessDatabase extends SQLiteDatabase
                 SQLQuery.createTable(database, targetDevicesTable);
             }
 
-            if (old <= 7) {
+            if (old < 7) {
                 // Is there any??
             }
 
-            if (old <= 10) {
+            if (old < 10) {
                 // With version 9, I added deviceId column to the transfer table
+                // With version 10, DIVISION section added for TABLE_TRANSFER and made deviceId nullable
                 // to allow users distinguish individual transfer file
 
                 try {
@@ -183,6 +188,11 @@ public class AccessDatabase extends SQLiteDatabase
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+            }
+
+            if (old < 11) {
+                SQLValues.Table tableFileBookmark = databaseTables.getTables().get(TABLE_FILEBOOKMARK);
+                SQLQuery.createTable(database, tableFileBookmark);
             }
         }
     }
@@ -273,6 +283,34 @@ public class AccessDatabase extends SQLiteDatabase
     {
         SQLValues sqlValues = new SQLValues();
 
+        sqlValues.defineTable(TABLE_CLIPBOARD)
+                .define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
+
+        sqlValues.defineTable(TABLE_DEVICES)
+                .define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true));
+
+        sqlValues.defineTable(TABLE_DEVICECONNECTION)
+                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
+
+        sqlValues.defineTable(TABLE_FILEBOOKMARK)
+                .define(new SQLValues.Column(FIELD_FILEBOOKMARK_TITLE, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_FILEBOOKMARK_PATH, SQLType.TEXT, false));
+
         sqlValues.defineTable(TABLE_TRANSFER)
                 .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
@@ -301,44 +339,20 @@ public class AccessDatabase extends SQLiteDatabase
                 .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
 
-        sqlValues.defineTable(TABLE_TRANSFERGROUP)
-                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
-
-        sqlValues.defineTable(TABLE_DEVICES)
-                .define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true));
-
-        sqlValues.defineTable(TABLE_DEVICECONNECTION)
-                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
-
-        sqlValues.defineTable(TABLE_CLIPBOARD)
-                .define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
-
-        sqlValues.defineTable(TABLE_WRITABLEPATH)
-                .define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
-
         sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
+
+        sqlValues.defineTable(TABLE_TRANSFERGROUP)
+                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
+                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
+
+        sqlValues.defineTable(TABLE_WRITABLEPATH)
+                .define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
 
         return sqlValues;
     }

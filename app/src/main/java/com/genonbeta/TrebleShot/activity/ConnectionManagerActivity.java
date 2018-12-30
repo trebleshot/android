@@ -370,6 +370,29 @@ public class ConnectionManagerActivity
             setHasOptionsMenu(false);
             setFilteringSupported(false);
             setUseDefaultPaddingDecorationSpaceForEdges(false);
+
+            setDeviceSelectedListener(new NetworkDeviceSelectedListener()
+            {
+                @Override
+                public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection)
+                {
+                    if (getContext() != null) {
+                        getContext().sendBroadcast(new Intent(CommunicationService.ACTION_DEVICE_ACQUAINTANCE)
+                                .putExtra(CommunicationService.EXTRA_DEVICE_ID, networkDevice.deviceId)
+                                .putExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
+
+                        return true;
+                    }
+
+                    return false;
+                }
+
+                @Override
+                public boolean isListenerEffective()
+                {
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -428,11 +451,6 @@ public class ConnectionManagerActivity
                     }
                 }
             };
-
-            NetworkDeviceListFragment deviceListFragment = (NetworkDeviceListFragment) getChildFragmentManager().findFragmentById(R.id.connection_option_device_list);
-
-            if (deviceListFragment != null)
-                deviceListFragment.setDeviceSelectedListener(mListener);
 
             view.findViewById(R.id.connection_option_devices).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);

@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ChangeStoragePathActivity;
@@ -29,6 +28,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
+import com.genonbeta.TrebleShot.object.FileBookmarkObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
@@ -101,7 +101,8 @@ public class FileListFragment
                 }
             } else if (getAdapter().getPath() == null
                     && AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-                    && AccessDatabase.TABLE_WRITABLEPATH.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
+                    && (AccessDatabase.TABLE_WRITABLEPATH.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
+                    || AccessDatabase.TABLE_FILEBOOKMARK.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))))
                 refreshList();
         }
     };
@@ -194,10 +195,45 @@ public class FileListFragment
 
         if (id == R.id.actions_file_list_mount_directory) {
             requestMountStorage();
+        } else if (id == R.id.actions_file_list_toggle_bookmark
+                && getAdapter().getPath() != null) {
+            FileBookmarkObject bookmarkObject = new FileBookmarkObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri());
+            AccessDatabase database = AppUtils.getDatabase(getContext());
+
+            try {
+                database.reconstruct(bookmarkObject);
+                database.remove(bookmarkObject);
+
+                createSnackbar(R.string.mesg_removed).show();
+            } catch (Exception e) {
+                database.insert(bookmarkObject);
+                createSnackbar(R.string.mesg_added).show();
+            }
         } else
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu)
+    {
+        super.onPrepareOptionsMenu(menu);
+
+        MenuItem bookmarkMenuItem = menu.findItem(R.id.actions_file_list_toggle_bookmark);
+
+        if (bookmarkMenuItem != null) {
+            boolean hasPath = getAdapter().getPath() != null;
+            bookmarkMenuItem.setEnabled(hasPath);
+
+            if (hasPath)
+                try {
+                    AppUtils.getDatabase(getContext()).reconstruct(new FileBookmarkObject(getAdapter().getPath().getUri()));
+                    bookmarkMenuItem.setTitle(R.string.butn_removeBookmark);
+                } catch (Exception e) {
+                    bookmarkMenuItem.setTitle(R.string.butn_addBookmark);
+                }
+        }
     }
 
     @Override
@@ -227,18 +263,20 @@ public class FileListFragment
                         public void onClick(View v)
                         {
                             final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
-                            boolean canWrite = fileHolder.file.canWrite();
-                            boolean canRead = fileHolder.file.canRead() && fileHolder.file.isFile();
-                            boolean canAlter = canWrite && !(fileHolder instanceof FileListAdapter.StorageHolder);
+                            boolean isFile = fileHolder.file.isFile();
+                            boolean canChange = fileHolder.file.canWrite();
+                            boolean canRead = fileHolder.file.canRead();
+                            boolean isSensitive = fileHolder instanceof FileListAdapter.StorageHolderImpl
+                                    || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
 
                             PopupMenu popupMenu = new PopupMenu(getContext(), v);
                             Menu menuItself = popupMenu.getMenu(); // Like the song Life Itself from Glass Animals, you got it?
 
                             popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
-                            menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead);
-                            menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canAlter);
-                            menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canAlter);
+                            menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
+                            menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canChange);
+                            menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canChange && !isSensitive);
                             menuItself.findItem(R.id.action_mode_file_show).setVisible(fileHolder instanceof FileListAdapter.RecentFileHolder);
                             menuItself.findItem(R.id.action_mode_file_change_save_path)
                                     .setVisible(FileUtils.getApplicationDirectory(getContext(),
@@ -246,6 +284,9 @@ public class FileListFragment
 
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
+
+                            menuItself.findItem(R.id.action_mode_file_remove_bookmark)
+                                    .setVisible(fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder);
 
                             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                             {
@@ -265,6 +306,9 @@ public class FileListFragment
                                     } else if (id == R.id.action_mode_file_eject_directory
                                             && fileHolder instanceof FileListAdapter.WritablePathHolder) {
                                         AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+                                    } else if (id == R.id.action_mode_file_remove_bookmark
+                                            && fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder) {
+                                        AppUtils.getDatabase(getContext()).remove(((FileListAdapter.BookmarkedDirectoryHolder) fileHolder).getBookmarkObject());
                                     } else if (id == R.id.action_mode_file_change_save_path) {
                                         startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                                     } else

@@ -16,6 +16,11 @@
         android:visible="false"/>
 
     <item
+        android:id="@+id/action_mode_file_remove_bookmark"
+        android:title="@string/butn_removeBookmark"
+        android:visible="false"/>
+
+    <item
         android:id="@+id/action_mode_file_change_save_path"
         android:title="@string/butn_changeSavePath"
         android:visible="false"/>
