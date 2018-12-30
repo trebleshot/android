@@ -13,7 +13,7 @@
     <string name="butn_stop">Zatrzymaj</string>
     <string name="text_sending">Wysyłanie</string>
     <string name="butn_cancelSending">Anuluj wysyłanie</string>
-    <string name="text_receiving">Odbieranie...</string>
+    <string name="text_receiving">Odbieranie</string>
     <string name="butn_cancelReceiving">Anuluj odbieranie</string>
     <string name="text_fileReceived">Plik został odebrany</string>
     <string name="mesg_fileReceived">%s został odebrany</string>
