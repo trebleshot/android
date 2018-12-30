@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        app:backgroundTint="@color/colorAccent"
+        app:backgroundTint="@color/colorSecondary"
         app:fabCradleVerticalOffset="3dp"
         app:navigationIcon="@drawable/ic_add_white_24dp" />
 
