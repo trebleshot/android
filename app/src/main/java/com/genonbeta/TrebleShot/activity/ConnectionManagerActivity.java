@@ -401,6 +401,7 @@ public class ConnectionManagerActivity
             super.onViewCreated(view, savedInstanceState);
 
             getListView().setNestedScrollingEnabled(true);
+            setDividerVisible(false);
 
             if (getContext() != null) {
                 float padding = getContext().getResources().getDimension(R.dimen.short_content_width_padding);

@@ -72,6 +72,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
     private int mDefaultViewingGridSize = 1;
     private int mDefaultViewingGridSizeLandscape = 1;
+    private int mDividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider;
     private FastScroller mFastScroller;
     private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
     private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
@@ -142,6 +143,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
         // We have to recreate the provider class because old one loses its ground
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
+        setDividerVisible(true);
     }
 
     @Override
@@ -701,6 +703,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     {
         mDefaultViewingGridSize = gridSize;
         mDefaultViewingGridSizeLandscape = gridSizeLandscape;
+    }
+
+    public void setDividerVisible(boolean visible)
+    {
+        if (getView() != null) {
+            View divider = getView().findViewById(mDividerResId);
+            divider.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    public void setDividerView(int resId)
+    {
+        mDividerResId = resId;
     }
 
     public boolean setItemSelected(V holder)

@@ -6,13 +6,15 @@
         android:id="@+id/layout_hotspot_status_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
         android:orientation="vertical">
 
         <include
             layout="@layout/include_layout_network_status_image_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="15dp" />
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"

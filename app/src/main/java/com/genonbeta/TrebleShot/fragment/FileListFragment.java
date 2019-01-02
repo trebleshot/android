@@ -197,18 +197,7 @@ public class FileListFragment
             requestMountStorage();
         } else if (id == R.id.actions_file_list_toggle_bookmark
                 && getAdapter().getPath() != null) {
-            FileBookmarkObject bookmarkObject = new FileBookmarkObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri());
-            AccessDatabase database = AppUtils.getDatabase(getContext());
-
-            try {
-                database.reconstruct(bookmarkObject);
-                database.remove(bookmarkObject);
-
-                createSnackbar(R.string.mesg_removed).show();
-            } catch (Exception e) {
-                database.insert(bookmarkObject);
-                createSnackbar(R.string.mesg_added).show();
-            }
+            bookmarkItem(new FileBookmarkObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri()));
         } else
             return super.onOptionsItemSelected(item);
 
@@ -263,14 +252,30 @@ public class FileListFragment
                         public void onClick(View v)
                         {
                             final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
+                            final FileBookmarkObject bookmarkObject;
                             boolean isFile = fileHolder.file.isFile();
                             boolean canChange = fileHolder.file.canWrite();
                             boolean canRead = fileHolder.file.canRead();
                             boolean isSensitive = fileHolder instanceof FileListAdapter.StorageHolderImpl
                                     || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
-
                             PopupMenu popupMenu = new PopupMenu(getContext(), v);
-                            Menu menuItself = popupMenu.getMenu(); // Like the song Life Itself from Glass Animals, you got it?
+                            Menu menuItself = popupMenu.getMenu();
+
+                            if (fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder)
+                                bookmarkObject = ((FileListAdapter.BookmarkedDirectoryHolder) fileHolder).getBookmarkObject();
+                            else if (fileHolder.file.isDirectory()) {
+                                FileBookmarkObject testedObject;
+
+                                try {
+                                    testedObject = new FileBookmarkObject(fileHolder.file.getUri());
+                                    AppUtils.getDatabase(getContext()).reconstruct(testedObject);
+                                } catch (Exception e) {
+                                    testedObject = null;
+                                }
+
+                                bookmarkObject = testedObject;
+                            } else
+                                bookmarkObject = null;
 
                             popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
@@ -285,8 +290,11 @@ public class FileListFragment
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
 
-                            menuItself.findItem(R.id.action_mode_file_remove_bookmark)
-                                    .setVisible(fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder);
+                            menuItself.findItem(R.id.action_mode_file_toggle_bookmark)
+                                    .setVisible(!isFile)
+                                    .setTitle(bookmarkObject == null
+                                            ? R.string.butn_addBookmark
+                                            : R.string.butn_removeBookmark);
 
                             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                             {
@@ -306,9 +314,10 @@ public class FileListFragment
                                     } else if (id == R.id.action_mode_file_eject_directory
                                             && fileHolder instanceof FileListAdapter.WritablePathHolder) {
                                         AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
-                                    } else if (id == R.id.action_mode_file_remove_bookmark
-                                            && fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder) {
-                                        AppUtils.getDatabase(getContext()).remove(((FileListAdapter.BookmarkedDirectoryHolder) fileHolder).getBookmarkObject());
+                                    } else if (id == R.id.action_mode_file_toggle_bookmark) {
+                                        bookmarkItem(bookmarkObject != null
+                                                ? bookmarkObject
+                                                : new FileBookmarkObject(fileHolder.friendlyName, fileHolder.file.getUri()));
                                     } else if (id == R.id.action_mode_file_change_save_path) {
                                         startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                                     } else
@@ -390,6 +399,36 @@ public class FileListFragment
     }
 
     @Override
+    protected void onListRefreshed()
+    {
+        super.onListRefreshed();
+
+        // Try to bring scope to the top if the user is viewing another folder
+        DocumentFile pathOnTrial = getAdapter().getPath();
+
+        if (!(mLastKnownPath == null && getAdapter().getPath() == null)
+                && (mLastKnownPath != null && !mLastKnownPath.equals(pathOnTrial)))
+            getListView().scrollToPosition(0);
+
+        mLastKnownPath = pathOnTrial;
+    }
+
+    protected void bookmarkItem(FileBookmarkObject bookmarkObject)
+    {
+        AccessDatabase database = AppUtils.getDatabase(getContext());
+
+        try {
+            database.reconstruct(bookmarkObject);
+            database.remove(bookmarkObject);
+
+            createSnackbar(R.string.mesg_removed).show();
+        } catch (Exception e) {
+            database.insert(bookmarkObject);
+            createSnackbar(R.string.mesg_added).show();
+        }
+    }
+
+    @Override
     public Snackbar createSnackbar(int resId, Object... objects)
     {
         return Snackbar.make(getListView(), getString(resId, objects), Snackbar.LENGTH_SHORT);
@@ -409,21 +448,6 @@ public class FileListFragment
 
         getAdapter().goPath(file);
         refreshList();
-    }
-
-    @Override
-    protected void onListRefreshed()
-    {
-        super.onListRefreshed();
-
-        // Try to bring scope to the top if the user is viewing another folder
-        DocumentFile pathOnTrial = getAdapter().getPath();
-
-        if (!(mLastKnownPath == null && getAdapter().getPath() == null)
-                && (mLastKnownPath != null && !mLastKnownPath.equals(pathOnTrial)))
-            getListView().scrollToPosition(0);
-
-        mLastKnownPath = pathOnTrial;
     }
 
     public void requestMountStorage()

@@ -16,7 +16,6 @@ import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import androidx.annotation.DrawableRes;
@@ -134,7 +133,7 @@ public class SelectionListFragment
 		@Override
 		public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 		{
-			final ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_selection_editor, parent, false));
+			final ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_selection, parent, false));
 			final AppCompatCheckBox checkBox = holder.getView().findViewById(R.id.checkbox);
 
 			holder.getView().setOnClickListener(new View.OnClickListener()

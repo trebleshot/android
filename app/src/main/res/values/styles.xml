@@ -239,4 +239,10 @@
 
     <style name="TextAppearance.Ubuntu" />
 
+    <style name="DividerStyle">
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:background">?colorDivider</item>
+    </style>
+
 </resources>

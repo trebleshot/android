@@ -11,10 +11,10 @@
         android:gravity="center"
         android:orientation="vertical">
 
-        <View
+        <!--<View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="?colorDivider" />
+            android:background="?colorDivider" />-->
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/fixConnectionButton"

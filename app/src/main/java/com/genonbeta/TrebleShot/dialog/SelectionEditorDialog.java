@@ -119,7 +119,7 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
 		public View getView(int position, View convertView, ViewGroup parent)
 		{
 			if (convertView == null)
-				convertView = mLayoutInflater.inflate(R.layout.list_selection_editor, parent, false);
+				convertView = mLayoutInflater.inflate(R.layout.list_selection, parent, false);
 
 			final Selectable selectable = (Selectable) getItem(position);
 			final AppCompatCheckBox checkBox = convertView.findViewById(R.id.checkbox);

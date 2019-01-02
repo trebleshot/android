@@ -3,25 +3,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/layout_transfer_explorer_recycler"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:scrollbars="none" />
-
-    <View
-        android:id="@+id/layout_transfer_explorer_separator"
+    <LinearLayout
+        android:id="@+id/layout_transfer_explorer_path_container"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/layout_transfer_explorer_recycler"
-        android:background="?colorDivider" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/layout_transfer_explorer_separator"
+            style="@style/DividerStyle" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/layout_transfer_explorer_recycler"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:scrollbars="none" />
+
+    </LinearLayout>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/layout_transfer_explorer_fragment_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/layout_transfer_explorer_separator"
-        android:layout_alignParentBottom="true" />
+        android:layout_height="wrap_content"
+        android:layout_above="@id/layout_transfer_explorer_path_container"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

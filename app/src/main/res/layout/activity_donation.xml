@@ -100,9 +100,11 @@
                     android:tag="donationsFragment" />
 
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
+
+    <View
+        style="@style/DividerStyle"
+        android:layout_gravity="bottom" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

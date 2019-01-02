@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.ImageViewCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -99,10 +100,21 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         TextView deviceText = parentView.findViewById(R.id.text2);
         TextView userText = parentView.findViewById(R.id.text1);
         ImageView userImage = parentView.findViewById(R.id.image);
+        ImageView statusImage = parentView.findViewById(R.id.imageStatus);
 
         userText.setText(device.nickname);
         deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
         NetworkDeviceLoader.showPictureIntoView(device, userImage, mIconBuilder);
+
+        if (device.isRestricted) {
+            statusImage.setVisibility(View.VISIBLE);
+            statusImage.setImageResource(R.drawable.ic_block_white_24dp);
+        } else if (device.isTrusted) {
+            statusImage.setVisibility(View.VISIBLE);
+            statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
+        } else {
+            statusImage.setVisibility(View.GONE);
+        }
     }
 
     public static class EditableNetworkDevice

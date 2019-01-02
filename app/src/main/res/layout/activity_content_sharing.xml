@@ -38,12 +38,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:visibility="gone">
+            android:visibility="gone"
+            app:elevation="0px">
 
-            <View
+            <!--<View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="?colorDivider" />
+                android:background="?colorDivider" />-->
 
             <com.genonbeta.android.framework.widget.PowerfulActionMode
                 android:id="@+id/activity_content_sharing_action_mode"

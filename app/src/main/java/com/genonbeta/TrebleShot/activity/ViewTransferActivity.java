@@ -526,26 +526,31 @@ public class ViewTransferActivity
             super(context);
         }
 
+        @Override
+        public Holder.Index<String> onFirstItem()
+        {
+            return new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, null);
+        }
+
         public void goTo(String[] paths)
         {
-            getList().clear();
-
             StringBuilder mergedPath = new StringBuilder();
+            initAdapter();
 
-            getList().add(new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, (String) null));
+            synchronized (getList()) {
+                if (paths != null)
+                    for (String path : paths) {
+                        if (path.length() == 0)
+                            continue;
 
-            if (paths != null)
-                for (String path : paths) {
-                    if (path.length() == 0)
-                        continue;
+                        if (mergedPath.length() > 0)
+                            mergedPath.append(File.separator);
 
-                    if (mergedPath.length() > 0)
-                        mergedPath.append(File.separator);
+                        mergedPath.append(path);
 
-                    mergedPath.append(path);
-
-                    getList().add(new Holder.Index<>(path, mergedPath.toString()));
-                }
+                        getList().add(new Holder.Index<>(path, mergedPath.toString()));
+                    }
+            }
         }
     }
 
@@ -555,6 +560,13 @@ public class ViewTransferActivity
     {
         private RecyclerView mPathView;
         private TransferPathResolverRecyclerAdapter mPathAdapter;
+
+        @Override
+        public void onCreate(@Nullable Bundle savedInstanceState)
+        {
+            super.onCreate(savedInstanceState);
+            setDividerView(R.id.layout_transfer_explorer_separator);
+        }
 
         @Override
         protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)

@@ -48,17 +48,17 @@
         </LinearLayout>
     </LinearLayout>
 
-    <View
+    <!--<View
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_above="@id/actionsContainer"
-        android:background="?colorDivider" />
+        android:background="?colorDivider" />-->
 
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/separator"
+        android:layout_above="@id/actionsContainer"
         android:layout_alignParentTop="true" />
 </RelativeLayout>

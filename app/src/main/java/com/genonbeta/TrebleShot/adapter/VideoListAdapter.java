@@ -82,7 +82,7 @@ public class VideoListAdapter
 
                 GlideApp.with(getContext())
                         .load(object.uri)
-                        .override(400)
+                        .override(300)
                         .centerCrop()
                         .into(image);
             }

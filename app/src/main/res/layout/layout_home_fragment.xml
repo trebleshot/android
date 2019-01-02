@@ -9,12 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:orientation="vertical">
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?colorDivider" />
+        android:orientation="vertical"
+        app:elevation="0px">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/layout_home_bottom_navigation_view"
