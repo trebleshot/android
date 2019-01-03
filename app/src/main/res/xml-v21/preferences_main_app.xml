@@ -21,8 +21,8 @@
             android:defaultValue="false"
             android:icon="@drawable/ic_short_text_white_24dp"
             android:key="custom_fonts"
-            android:summary="@string/const_text_useCustomFontsSummary"
-            android:title="@string/const_text_useCustomFonts"
+            android:summary="@string/const_text_useAppFontsSummary"
+            android:title="@string/const_text_useAppFonts"
             tools:targetApi="16" />
 
         <CheckBoxPreference

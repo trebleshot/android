@@ -10,7 +10,7 @@
     <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="custom_fonts"
-        android:title="@string/const_text_useCustomFonts"
+        android:title="@string/const_text_useAppFonts"
         tools:targetApi="16" />
 
 </PreferenceScreen>

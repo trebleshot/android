@@ -8,13 +8,12 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.ArrayList;
-
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.AppCompatCheckBox;
 
 /**
  * created by: Veli
@@ -23,131 +22,122 @@ import androidx.appcompat.widget.AppCompatCheckBox;
 
 public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Builder
 {
-	private ArrayList<T> mList;
-	private LayoutInflater mLayoutInflater;
-	private SelfAdapter mAdapter;
-	private ListView mListView;
+    private ArrayList<T> mList;
+    private LayoutInflater mLayoutInflater;
+    private SelfAdapter mAdapter;
+    private ListView mListView;
 
-	public SelectionEditorDialog(Context context, ArrayList<T> list)
-	{
-		super(context);
+    public SelectionEditorDialog(Context context, ArrayList<T> list)
+    {
+        super(context);
 
-		mList = list;
-		mLayoutInflater = LayoutInflater.from(context);
+        mList = list;
+        mLayoutInflater = LayoutInflater.from(context);
 
-		View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
+        View view = mLayoutInflater.inflate(R.layout.layout_selection_editor, null, false);
 
-		mListView = view.findViewById(R.id.listView);
-		mAdapter = new SelfAdapter();
+        mListView = view.findViewById(R.id.listView);
+        mAdapter = new SelfAdapter();
 
-		mListView.setAdapter(mAdapter);
-		mListView.setDividerHeight(0);
+        mListView.setAdapter(mAdapter);
+        mListView.setDividerHeight(0);
 
-		if (mList.size() > 0)
-			setView(view);
-		else
-			setMessage(R.string.text_listEmpty);
+        if (mList.size() > 0)
+            setView(view);
+        else
+            setMessage(R.string.text_listEmpty);
 
-		setTitle(R.string.text_previewAndEditList);
+        setTitle(R.string.text_previewAndEditList);
 
-		setNeutralButton(R.string.butn_check, null);
-		setNegativeButton(R.string.butn_uncheck, null);
-		setPositiveButton(R.string.butn_close, null);
-	}
+        setNeutralButton(R.string.butn_check, null);
+        setNegativeButton(R.string.butn_uncheck, null);
+        setPositiveButton(R.string.butn_close, null);
+    }
 
-	public void checkReversed(AppCompatCheckBox checkBox, Selectable selectable)
-	{
-		if (selectable.setSelectableSelected(!selectable.isSelectableSelected()))
-			checkBox.setChecked(selectable.isSelectableSelected());
-	}
+    public void checkReversed(View removeSign, Selectable selectable)
+    {
+        selectable.setSelectableSelected(!selectable.isSelectableSelected());
+        removeSign.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
+    }
 
-	public void massCheck(boolean check)
-	{
-		for (Selectable selectable : mList)
-			selectable.setSelectableSelected(check);
+    public void massCheck(boolean check)
+    {
+        for (Selectable selectable : mList)
+            selectable.setSelectableSelected(check);
 
-		mAdapter.notifyDataSetChanged();
-	}
+        mAdapter.notifyDataSetChanged();
+    }
 
-	@Override
-	public AlertDialog show()
-	{
-		final AlertDialog dialog = super.show();
+    @Override
+    public AlertDialog show()
+    {
+        final AlertDialog dialog = super.show();
 
-		dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				massCheck(true);
-			}
-		});
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                massCheck(true);
+            }
+        });
 
-		dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				massCheck(false);
-			}
-		});
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                massCheck(false);
+            }
+        });
 
-		return dialog;
-	}
+        return dialog;
+    }
 
-	private class SelfAdapter extends BaseAdapter
-	{
-		@Override
-		public int getCount()
-		{
-			return mList.size();
-		}
+    private class SelfAdapter extends BaseAdapter
+    {
+        @Override
+        public int getCount()
+        {
+            return mList.size();
+        }
 
-		@Override
-		public Object getItem(int position)
-		{
-			return mList.get(position);
-		}
+        @Override
+        public Object getItem(int position)
+        {
+            return mList.get(position);
+        }
 
-		@Override
-		public long getItemId(int position)
-		{
-			return 0;
-		}
+        @Override
+        public long getItemId(int position)
+        {
+            return 0;
+        }
 
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent)
-		{
-			if (convertView == null)
-				convertView = mLayoutInflater.inflate(R.layout.list_selection, parent, false);
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            if (convertView == null)
+                convertView = mLayoutInflater.inflate(R.layout.list_selection, parent, false);
 
-			final Selectable selectable = (Selectable) getItem(position);
-			final AppCompatCheckBox checkBox = convertView.findViewById(R.id.checkbox);
-			TextView text1 = convertView.findViewById(R.id.text);
+            final Selectable selectable = (Selectable) getItem(position);
+            final TextView text1 = convertView.findViewById(R.id.text);
+            final View removalSignView =  convertView.findViewById(R.id.removalSign);
 
-			text1.setText(selectable.getSelectableTitle());
-			checkBox.setChecked(selectable.isSelectableSelected());
+            text1.setText(selectable.getSelectableTitle());
+            removalSignView.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
 
-			convertView.setClickable(true);
-			convertView.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					checkReversed(checkBox, selectable);
-				}
-			});
+            convertView.setClickable(true);
+            convertView.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    checkReversed(removalSignView, selectable);
+                }
+            });
 
-			checkBox.setOnClickListener(new View.OnClickListener()
-			{
-				@Override
-				public void onClick(View v)
-				{
-					checkReversed(checkBox, selectable);
-				}
-			});
-
-			return convertView;
-		}
-	}
+            return convertView;
+        }
+    }
 }

@@ -1,23 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              style="@style/ListContentLayoutStyle"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="?rectSelector"
-              android:gravity="center_vertical"
-              android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?rectSelector"
+    android:paddingLeft="24dp"
+    android:paddingTop="12dp"
+    android:paddingRight="24dp"
+    android:paddingBottom="12dp">
 
-    <androidx.appcompat.widget.AppCompatCheckBox
-        android:id="@+id/checkbox"
-        style="@style/ListContentIconStyle"
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/removalSign"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        app:srcCompat="@drawable/ic_remove_circle_white_24dp"
+        app:tint="?colorError" />
 
     <TextView
         android:id="@+id/text"
         style="@style/TextAppearance.Primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:maxLines="2"/>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/removalSign"
+        android:layout_toLeftOf="@id/removalSign"
+        android:maxLines="2"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
 
-</LinearLayout>
+</RelativeLayout>

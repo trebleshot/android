@@ -157,13 +157,8 @@
 
         <activity
             android:name=".activity.WelcomeActivity"
-            android:theme="@style/Theme.TrebleShot.NoActionBar"
-            android:label="@string/text_welcome">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:label="@string/text_welcome"
+            android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
         <service
             android:name=".service.CommunicationService"

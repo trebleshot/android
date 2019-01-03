@@ -17,7 +17,7 @@
         android:layout_above="@id/mainContainer"
         android:layout_alignParentTop="true"
         android:gravity="center"
-        android:text="Make it yours"
+        android:text="@string/text_introMakeItYours"
         android:textSize="@dimen/font_size_title" />
 
 </RelativeLayout>

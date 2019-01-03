@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
-        android:text="Good to go!"
+        android:text="@string/text_introAllSet"
         android:textSize="@dimen/font_size_title" />
 
 </RelativeLayout>

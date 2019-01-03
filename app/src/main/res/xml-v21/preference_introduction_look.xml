@@ -11,7 +11,7 @@
     <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="custom_fonts"
-        android:title="@string/const_text_useCustomFonts"
+        android:title="@string/const_text_useAppFonts"
         app:icon="@drawable/ic_short_text_white_24dp" />
 
 </PreferenceScreen>

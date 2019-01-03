@@ -37,57 +37,65 @@
         app:backgroundTint="?colorSurface" />
 
     <LinearLayout
-        android:id="@+id/layout_hotspot_manager_info_container_text2_container"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="15dp">
+        android:layout_gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/layout_hotspot_manager_info_container_text2_icon"
+        <LinearLayout
+            android:id="@+id/layout_hotspot_manager_info_container_text2_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/layout_hotspot_manager_info_container_text2_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
+
+            <TextView
+                android:id="@+id/layout_hotspot_manager_info_container_text2"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_unknown" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_hotspot_manager_info_container_text3_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginRight="30dp"
-            app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="15dp">
 
-        <TextView
-            android:id="@+id/layout_hotspot_manager_info_container_text2"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="@string/text_unknown" />
+            <ImageView
+                android:id="@+id/layout_hotspot_manager_info_container_text3_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginEnd="30dp"
+                android:layout_marginRight="30dp"
+                app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/layout_hotspot_manager_info_container_text3"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="@string/text_unknown" />
+        </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_hotspot_manager_info_container_text3_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="15dp">
-
-        <ImageView
-            android:id="@+id/layout_hotspot_manager_info_container_text3_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginEnd="30dp"
-            android:layout_marginRight="30dp"
-            app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
-
-        <TextView
-            android:id="@+id/layout_hotspot_manager_info_container_text3"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:text="@string/text_unknown" />
     </LinearLayout>
 </LinearLayout>
