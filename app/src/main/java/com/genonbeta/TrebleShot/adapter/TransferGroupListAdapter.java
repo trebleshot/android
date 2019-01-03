@@ -141,7 +141,7 @@ public class TransferGroupListAdapter
                 final View parentView = holder.getView();
                 @ColorInt
                 int appliedColor;
-
+                int percentage = (int) (object.totalPercent * 100);
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView text1 = parentView.findViewById(R.id.text);
@@ -177,16 +177,16 @@ public class TransferGroupListAdapter
                 text3.setText(mPercentFormat.format(object.totalPercent));
                 text4.setText(getContext().getString(R.string.text_transferStatusFiles, object.totalCountCompleted, object.totalCount));
                 progressBar.setMax(100);
-                progressBar.setProgress((int) (object.totalPercent * 100));
+                progressBar.setProgress(percentage <= 0 ? 1 : percentage);
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
+
                     DrawableCompat.setTint(wrapDrawable, appliedColor);
                     progressBar.setProgressDrawable(DrawableCompat.unwrap(wrapDrawable));
-                } else {
-                    DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
-                }
+                } else
+                    progressBar.setProgressTintList(ColorStateList.valueOf(appliedColor));
             }
         } catch (Exception e) {
         }

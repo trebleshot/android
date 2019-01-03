@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -24,6 +25,7 @@ import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.WelcomeActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
@@ -43,6 +45,8 @@ public abstract class Activity extends AppCompatActivity
     private boolean mDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;
     private boolean mCustomFontsEnabled = false;
+    private boolean mSkipPermissionRequest = false;
+    private boolean mWelcomePageDisallowed = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -108,12 +112,16 @@ public abstract class Activity extends AppCompatActivity
                 || mCustomFontsEnabled != isUsingCustomFonts())
             recreate();
 
-        if (!AppUtils.checkRunningConditions(this))
-            requestRequiredPermissions();
-
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_SERVICE_STATUS)
-                .putExtra(CommunicationService.EXTRA_STATUS_STARTED, true));
+        if (!hasIntroductionShown() && !mWelcomePageDisallowed) {
+            startActivity(new Intent(this, WelcomeActivity.class));
+            finish();
+        } else if (!AppUtils.checkRunningConditions(this)) {
+            if (!mSkipPermissionRequest)
+                requestRequiredPermissions();
+        } else
+            AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+                    .setAction(CommunicationService.ACTION_SERVICE_STATUS)
+                    .putExtra(CommunicationService.EXTRA_STATUS_STARTED, true));
     }
 
     @Override
@@ -253,6 +261,12 @@ public abstract class Activity extends AppCompatActivity
         return AppUtils.getDefaultPreferences(this);
     }
 
+    public boolean hasIntroductionShown()
+    {
+        return getDefaultPreferences().
+                getBoolean("introduction_shown", false);
+    }
+
     public boolean isDarkThemeRequested()
     {
         return getDefaultPreferences().getBoolean("dark_theme", false);
@@ -261,7 +275,7 @@ public abstract class Activity extends AppCompatActivity
     public boolean isUsingCustomFonts()
     {
         return getDefaultPreferences().getBoolean("custom_fonts", false)
-                && getDefaultPreferences().getBoolean("developer_mode", false);
+                && Build.VERSION.SDK_INT >= 16;
     }
 
     public void loadProfilePictureInto(String deviceName, ImageView imageView)
@@ -270,7 +284,7 @@ public abstract class Activity extends AppCompatActivity
             FileInputStream inputStream = openFileInput("profilePicture");
             Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
 
-            GlideApp.with(imageView)
+            GlideApp.with(this)
                     .load(bitmap)
                     .circleCrop()
                     .into(imageView);
@@ -293,6 +307,11 @@ public abstract class Activity extends AppCompatActivity
             });
     }
 
+    public void setSkipPermissionRequest(boolean skip)
+    {
+        mSkipPermissionRequest = skip;
+    }
+
     public void requestProfilePictureChange()
     {
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO);
@@ -310,7 +329,13 @@ public abstract class Activity extends AppCompatActivity
         return true;
     }
 
-    public void startProfileEditor() {
+    public void setWelcomePageDisallowed(boolean disallow)
+    {
+        mWelcomePageDisallowed = disallow;
+    }
+
+    public void startProfileEditor()
+    {
         new ProfileEditorDialog(this).show();
     }
 

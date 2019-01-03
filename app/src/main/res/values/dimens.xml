@@ -18,6 +18,7 @@
     <dimen name="font_size_tiny">10sp</dimen>
     <dimen name="font_size_small">12sp</dimen>
     <dimen name="font_size_big">18sp</dimen>
+    <dimen name="font_size_title">24sp</dimen>
     <dimen name="icon_size_list_small">25dp</dimen>
     <dimen name="icon_size_list_normal">35dp</dimen>
     <dimen name="icon_size_list_big">50dp</dimen>

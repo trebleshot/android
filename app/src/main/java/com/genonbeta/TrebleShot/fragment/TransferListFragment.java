@@ -12,6 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
@@ -37,10 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 
 public class TransferListFragment
         extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransferListAdapter>
@@ -77,8 +77,8 @@ public class TransferListFragment
         super.onCreate(savedInstanceState);
 
         setFilteringSupported(true);
-        setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_DESCENDING);
-        setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_DEFAULT);
+        setDefaultOrderingCriteria(TransferListAdapter.MODE_SORT_ORDER_ASCENDING);
+        setDefaultSortingCriteria(TransferListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(TransferListAdapter.MODE_GROUP_BY_DEFAULT);
         setDefaultSelectionCallback(new SelectionCallback(this));
     }
@@ -113,7 +113,6 @@ public class TransferListFragment
     @Override
     public void onSortingOptions(Map<String, Integer> options)
     {
-        options.put(getString(R.string.text_default), TransferListAdapter.MODE_SORT_BY_DEFAULT);
         options.put(getString(R.string.text_sortByName), TransferListAdapter.MODE_SORT_BY_NAME);
         options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
     }

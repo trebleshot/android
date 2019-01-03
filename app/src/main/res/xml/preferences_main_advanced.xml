@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory android:title="@string/text_advanced">
         <CheckBoxPreference
             android:defaultValue="true"
             android:key="load_thumbnails"
             android:summary="@string/text_loadThumbnailsSummary"
             android:title="@string/text_loadThumbnails" />
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="kill_service_on_exit"
+            android:summary="@string/text_killServiceAfterLeavingSummary"
+            android:title="@string/text_killServiceAfterLeaving" />
 
         <CheckBoxPreference
             android:defaultValue="true"
@@ -22,14 +27,6 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:dependency="developer_mode"
-            android:key="custom_fonts"
-            android:summary="@string/const_text_useCustomFontsSummary"
-            android:title="@string/const_text_useCustomFonts"
-            tools:targetApi="16" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="allow_autoconnect"
             android:summary="@string/text_autoStartSummary"
             android:title="@string/text_autoStart" />
@@ -39,13 +36,5 @@
             android:key="show_system_apps"
             android:summary="@string/text_showSystemAppsSummary"
             android:title="@string/text_showSystemApps" />
-
-        <PreferenceScreen
-            android:summary="@string/text_storagePathSummary"
-            android:title="@string/text_storagePath">
-            <intent android:action="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
-        </PreferenceScreen>
-
     </PreferenceCategory>
-
 </PreferenceScreen>

@@ -91,7 +91,10 @@ public class TransferUtils
                         TransferObject.Type.INCOMING.toString(),
                         String.valueOf(groupId),
                         deviceId,
-                        TransferObject.Flag.PENDING.toString()));
+                        TransferObject.Flag.PENDING.toString())
+                .setOrderBy(String.format("`%s` ASC, `%s` ASC",
+                        AccessDatabase.FIELD_TRANSFER_DIRECTORY,
+                        AccessDatabase.FIELD_TRANSFER_NAME)));
 
         return receiverInstance == null
                 ? null

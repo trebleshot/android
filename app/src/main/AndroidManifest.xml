@@ -157,7 +157,8 @@
 
         <activity
             android:name=".activity.WelcomeActivity"
-            android:theme="@style/Theme.TrebleShot.NoActionBar">
+            android:theme="@style/Theme.TrebleShot.NoActionBar"
+            android:label="@string/text_welcome">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

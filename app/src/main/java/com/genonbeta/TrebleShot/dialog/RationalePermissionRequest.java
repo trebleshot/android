@@ -7,12 +7,12 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.provider.Settings;
 
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.Activity;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.Activity;
 
 import static com.genonbeta.TrebleShot.activity.HomeActivity.REQUEST_PERMISSION_ALL;
 
@@ -23,74 +23,74 @@ import static com.genonbeta.TrebleShot.activity.HomeActivity.REQUEST_PERMISSION_
 
 public class RationalePermissionRequest extends AlertDialog.Builder
 {
-	public PermissionRequest mPermissionQueue;
+    public PermissionRequest mPermissionQueue;
 
-	public RationalePermissionRequest(final Activity activity, @NonNull PermissionRequest permission)
-	{
-		super(activity);
+    public RationalePermissionRequest(final Activity activity, @NonNull PermissionRequest permission)
+    {
+        super(activity);
 
-		mPermissionQueue = permission;
+        mPermissionQueue = permission;
 
-		setCancelable(false);
-		setTitle(permission.title);
-		setMessage(permission.message);
+        setCancelable(false);
+        setTitle(permission.title);
+        setMessage(permission.message);
 
-		if (ActivityCompat.shouldShowRequestPermissionRationale(activity, mPermissionQueue.permission))
-			setPositiveButton(R.string.butn_settings, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i)
-				{
-					Intent intent = new Intent()
-							.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-							.setData(Uri.fromParts("package", activity.getPackageName(), null));
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity, mPermissionQueue.permission))
+            setNeutralButton(R.string.butn_settings, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i)
+                {
+                    Intent intent = new Intent()
+                            .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            .setData(Uri.fromParts("package", activity.getPackageName(), null));
 
-					activity.startActivity(intent);
-				}
-			});
-		else
-			setPositiveButton(R.string.butn_ask, new DialogInterface.OnClickListener()
-			{
-				@Override
-				public void onClick(DialogInterface dialogInterface, int i)
-				{
-					ActivityCompat.requestPermissions(activity, new String[]{mPermissionQueue.permission}, REQUEST_PERMISSION_ALL);
-				}
-			});
+                    activity.startActivity(intent);
+                }
+            });
 
-		setNegativeButton(R.string.butn_reject, new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialogInterface, int i)
-			{
-				activity.finish();
-			}
-		});
-	}
+        setPositiveButton(R.string.butn_ask, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                ActivityCompat.requestPermissions(activity, new String[]{mPermissionQueue.permission}, REQUEST_PERMISSION_ALL);
+            }
+        });
 
-	public static AlertDialog requestIfNecessary(Activity activity, PermissionRequest permissionQueue)
-	{
-		return ActivityCompat.checkSelfPermission(activity, permissionQueue.permission) == PackageManager.PERMISSION_GRANTED
-				? null
-				: new RationalePermissionRequest(activity, permissionQueue).show();
-	}
+        setNegativeButton(R.string.butn_reject, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i)
+            {
+                activity.finish();
+            }
+        });
+    }
 
-	public static class PermissionRequest
-	{
-		public String permission;
-		public String title;
-		public String message;
+    public static AlertDialog requestIfNecessary(Activity activity, PermissionRequest permissionQueue)
+    {
+        return ActivityCompat.checkSelfPermission(activity, permissionQueue.permission) == PackageManager.PERMISSION_GRANTED
+                ? null
+                : new RationalePermissionRequest(activity, permissionQueue).show();
+    }
 
-		public PermissionRequest(String permission, String title, String message)
-		{
-			this.permission = permission;
-			this.title = title;
-			this.message = message;
-		}
+    public static class PermissionRequest
+    {
+        public String permission;
+        public String title;
+        public String message;
 
-		public PermissionRequest(Context context, String permission, int titleRes, int messageRes)
-		{
-			this(permission, context.getString(titleRes), context.getString(messageRes));
-		}
-	}
+        public PermissionRequest(String permission, String title, String message)
+        {
+            this.permission = permission;
+            this.title = title;
+            this.message = message;
+        }
+
+        public PermissionRequest(Context context, String permission, int titleRes, int messageRes)
+        {
+            this(permission, context.getString(titleRes), context.getString(messageRes));
+        }
+    }
 }

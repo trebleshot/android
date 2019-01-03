@@ -427,4 +427,5 @@
     <string name="mesg_removed">Removed</string>
     <string name="mesg_added">Added</string>
     <string name="butn_change">Change</string>
+    <string name="text_welcome">Welcome</string>
 </resources>

@@ -213,7 +213,6 @@ public class HomeActivity
         View headerView = mNavigationView.getHeaderView(0);
 
         if (headerView != null) {
-
             NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
             ImageView imageView = headerView.findViewById(R.id.header_default_device_image);

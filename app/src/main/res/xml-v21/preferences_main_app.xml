@@ -12,12 +12,14 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_palette_white_24dp"
             android:key="dark_theme"
             android:summary="@string/text_applyDarkThemeSummary"
             android:title="@string/text_applyDarkTheme" />
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_short_text_white_24dp"
             android:key="custom_fonts"
             android:summary="@string/const_text_useCustomFontsSummary"
             android:title="@string/const_text_useCustomFonts"
@@ -25,6 +27,7 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
+            android:icon="@drawable/ic_vpn_key_white_24dp"
             android:key="trust_always"
             android:summary="@string/text_trustZoneEnabledSummary"
             android:title="@string/text_trustZoneEnabled" />
@@ -36,6 +39,7 @@
             android:title="@string/text_hotspotStartsTrustZone" />
 
         <PreferenceScreen
+            android:icon="@drawable/ic_save_white_24dp"
             android:summary="@string/text_storagePathSummary"
             android:title="@string/text_storagePath">
             <intent android:action="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />

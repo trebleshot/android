@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/mainContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <!--todo hardcoded string -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/layout_welcome_page_3_perm_ok_image"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            app:srcCompat="@drawable/ic_check_white_24dp"
+            app:tint="?colorSecondary" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/layout_welcome_page_3_request_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/butn_setUp" />
+
+    </FrameLayout>
+
+    <TextView
+        style="@style/TextAppearance.Primary.Big"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/mainContainer"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="Set up permissions"
+        android:textSize="@dimen/font_size_title" />
+
+</RelativeLayout>

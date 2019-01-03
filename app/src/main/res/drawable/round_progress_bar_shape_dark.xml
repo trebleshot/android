@@ -6,6 +6,6 @@
     android:thickness="2dp"
     android:useLevel="false">
 
-    <solid android:color="@color/dark_colorControlNormal" />
+    <solid android:color="@color/dark_colorPassive" />
 
 </shape>

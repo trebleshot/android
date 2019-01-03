@@ -12,6 +12,14 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.collection.ArrayMap;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
+
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -35,14 +43,6 @@ import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.collection.ArrayMap;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
-
 /**
  * Created by: veli
  * Date: 4/15/17 12:29 PM
@@ -52,7 +52,7 @@ public class TransferListAdapter
         extends GroupEditableListAdapter<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder>
         implements GroupEditableListAdapter.GroupLister.CustomGroupListener<TransferListAdapter.AbstractGenericItem>
 {
-    public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
+    //public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
 
     private SQLQuery.Select mSelect;
@@ -287,8 +287,8 @@ public class TransferListAdapter
     @Override
     public int compareItems(int sortingCriteria, int sortingOrder, AbstractGenericItem objectOne, AbstractGenericItem objectTwo)
     {
-        if (sortingCriteria == MODE_SORT_BY_DEFAULT)
-            return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
+        //if (sortingCriteria == MODE_SORT_BY_DEFAULT)
+        //    return MathUtils.compare(objectTwo.requestId, objectOne.requestId);
 
         return 1;
     }
@@ -387,6 +387,7 @@ public class TransferListAdapter
 
                 @ColorInt
                 int appliedColor;
+                int percentage = (int) (object.getPercent() * 100);
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
                 ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
@@ -409,17 +410,18 @@ public class TransferListAdapter
                 secondText.setText(object.getSecondText(this));
                 thirdText.setText(object.getThirdText(this));
                 progressBar.setMax(100);
-                progressBar.setProgress((int) (object.getPercent() * 100));
+                progressBar.setProgress(percentage <= 0 ? 1 : percentage);
+
                 thirdText.setTextColor(appliedColor);
                 ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
+
                     DrawableCompat.setTint(wrapDrawable, appliedColor);
                     progressBar.setProgressDrawable(DrawableCompat.unwrap(wrapDrawable));
-                } else {
-                    DrawableCompat.setTint(progressBar.getProgressDrawable(), appliedColor);
-                }
+                } else
+                    progressBar.setProgressTintList(ColorStateList.valueOf(appliedColor));
 
                 boolean supportThumbnail = object.loadThumbnail(thumbnail);
 

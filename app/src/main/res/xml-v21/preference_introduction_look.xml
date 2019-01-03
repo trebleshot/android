@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <CheckBoxPreference
+        android:defaultValue="false"
+        android:key="dark_theme"
+        android:title="@string/text_applyDarkTheme"
+        app:icon="@drawable/ic_palette_white_24dp" />
+
+    <androidx.preference.CheckBoxPreference
+        android:defaultValue="false"
+        android:key="custom_fonts"
+        android:title="@string/const_text_useCustomFonts"
+        app:icon="@drawable/ic_short_text_white_24dp" />
+
+</PreferenceScreen>
