@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_preferences">设置</string>
     <string name="text_connected">已连接</string>
@@ -169,7 +169,7 @@
     <string name="text_transactionDetails">详细信息</string>
     <string name="butn_show">显示</string>
     <string name="text_preparingFiles">正在准备文件</string>
-    <string name="text_savingDetails">保存详细信息...</string>
+    <string name="text_savingDetails">保存详细信息</string>
     <string name="text_version">版本</string>
     <string name="text_flagPending">等待中</string>
     <string name="text_flagRunning">正在进行</string>
@@ -295,7 +295,7 @@
     <string name="text_listEmptyApp">此处无应用</string>
     <string name="butn_goUp">向上</string>
     <string name="text_chooserTargetService">设备选择提供方</string>
-    <string name="text_checkOldFiles">你可以移动相关的部分完成或全部完成传输的文件至这个文件夹，花费的时间取决于它的大小</string>
+    <string name="text_checkOldFiles">你可以移动相关的全部完成和部分完成传输的文件至这个文件夹，其花费的时间取决于其总大小</string>
     <string name="text_emulatedMediaDirectory">模拟的 (%s)</string>
     <string name="mesg_clipboardUpdateNotice">更改文本或再按一次以退出</string>
     <string name="mesg_providerNotAllowedError">默认文件夹无法被其他应用访问</string>
@@ -382,7 +382,7 @@
     <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看更新了什么吗？</string>
     <string name="mesg_versionUpdatedChangelogRejected">你可以在“关于”部分找到“更新日志”</string>
 	<string name="mesg_noInternetConnection">这需要网络连接</string>
-    <string name="text_applyDarkTheme">黑色主题</string>
+    <string name="text_applyDarkTheme">暗黑风格</string>
     <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
     <string name="butn_allow">允许</string>
     <string name="butn_telegram_channel">Telegram频道</string>
@@ -425,4 +425,5 @@
     <string name="butn_help">帮助</string>
     <string name="butn_choose">选择</string>
     <string name="butn_fixConnection">修复连接</string>
-    </resources>
+    <string name="ques_connectionWizardUseHotspot">你想要其他设备通过热点连接至该设备吗？如果你不知道热点是什么，轻触“是”。</string>
+</resources>

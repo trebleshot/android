@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Otwórz pasek nawigacji</string>n
     <string name="text_navigationDrawerClose">Zamknij pasek nawigacji</string>
     <string name="text_preferences">Preferencje</string>
@@ -7,13 +7,13 @@
     <string name="text_deviceListEmpty">Brak urządzeń</string>
     <string name="mesg_noNetwork">Brak połączenia, takiego jak Wi-Fi, aby znaleźć w pobliżu urządzenia</string>
     <string name="mesg_scanningDevices">Znajdowanie urządzeń w pobliżu</string>
-    <string name="ques_receiveFile">Odbierz plik\?</string>
+    <string name="ques_receiveFile">Odebrać plik\?</string>
     <string name="butn_accept">Zaakceptuj</string>
     <string name="butn_reject">Odrzuć</string>
     <string name="butn_stop">Zatrzymaj</string>
-    <string name="text_sending">Wyślij</string>
+    <string name="text_sending">Wysyłanie</string>
     <string name="butn_cancelSending">Anuluj wysyłanie</string>
-    <string name="text_receiving">Odbierz</string>
+    <string name="text_receiving">Odbieranie</string>
     <string name="butn_cancelReceiving">Anuluj odbieranie</string>
     <string name="text_fileReceived">Plik został odebrany</string>
     <string name="mesg_fileReceived">%s został odebrany</string>

@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Abrir el cajón de navegación</string>
     <string name="text_navigationDrawerClose">Cerrar el cajón de navegación</string>
     <string name="text_preferences">Preferencias</string>
@@ -353,4 +353,28 @@
     <string name="text_noDeviceForTransfer">No se añadió ningún dispositivo para esta transferencia</string>
     <string name="text_thirdPartyLibraries">Librerías de terceros</string>
 <string name="butn_qrToggle">Activar el código Qr que se muestra</string>
-    </resources>
+    <string name="text_killServiceAfterLeaving">Dejar la aplicación detiene el servicio</string>
+    <string name="text_transferStatusFiles">%1d de %2d</string>
+    <string name="text_donate">Apoyar el desarrollo</string>
+    <string name="mesg_donationSuccessful">Gracias!</string>
+    <string name="butn_open">Abrir</string>
+    <string name="butn_pause">Pausar</string>
+    <string name="butn_retry">Reintentar</string>
+    <string name="mesg_versionUpdatedChangelog">Has actualizado TrebleShot, ¿te gustaría ver qué hay de nuevo\?</string>
+    <string name="mesg_noInternetConnection">Esto requiere conexión a Internet.</string>
+    <string name="text_applyDarkTheme">Modo oscuro</string>
+    <string name="butn_allow">Permitir</string>
+    <string name="text_listEmptyTransfer">Todas las transferencias aparecen aquí</string>
+    <string name="text_transfers">Transferencias</string>
+    <string name="butn_useKnownDevice">Usa dispositivos conocidos</string>
+    <string name="butn_scanQrCode">Escanear código QR</string>
+    <string name="butn_useExistingNetwork">Utilizar redes existentes</string>
+    <string name="butn_feedbackContact">Comentarios y contacto</string>
+    <string name="mesg_sent">Enviado</string>
+    <string name="text_sendText">Enviar texto</string>
+    <string name="butn_start">Comenzar</string>
+    <string name="text_downloads">Descargas</string>
+    <string name="text_documents">Documentos</string>
+    <string name="text_shortcuts">Atajos</string>
+    <string name="text_recentFiles">Archivos recientes</string>
+</resources>
