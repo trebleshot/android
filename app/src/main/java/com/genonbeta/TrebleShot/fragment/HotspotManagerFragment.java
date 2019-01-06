@@ -282,7 +282,6 @@ public class HotspotManagerFragment
             if (showQRCode) {
                 BitMatrix bitMatrix = formatWriter.encode(codeString, BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
-
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
 
                 GlideApp.with(getContext())

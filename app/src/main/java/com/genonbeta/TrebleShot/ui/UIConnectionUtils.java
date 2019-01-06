@@ -143,7 +143,7 @@ public class UIConnectionUtils
                         @Override
                         public void run()
                         {
-                            if (task != null)
+                            if (task != null && !activity.isFinishing())
                                 task.updateTaskStopped();
                         }
                     });
@@ -230,12 +230,13 @@ public class UIConnectionUtils
                         @Override
                         public void run()
                         {
-                            new AlertDialog.Builder(activity)
-                                    .setTitle(R.string.mesg_notAllowed)
-                                    .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
-                                    .setNegativeButton(R.string.butn_close, null)
-                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                    .show();
+                            if (!activity.isFinishing())
+                                new AlertDialog.Builder(activity)
+                                        .setTitle(R.string.mesg_notAllowed)
+                                        .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                        .show();
                         }
                     });
             } else
@@ -286,11 +287,12 @@ public class UIConnectionUtils
             @Override
             public void run()
             {
-                new AlertDialog.Builder(activity)
-                        .setMessage(R.string.mesg_somethingWentWrong)
-                        .setNegativeButton(R.string.butn_close, null)
-                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                        .show();
+                if (!activity.isFinishing())
+                    new AlertDialog.Builder(activity)
+                            .setMessage(R.string.mesg_somethingWentWrong)
+                            .setNegativeButton(R.string.butn_close, null)
+                            .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                            .show();
             }
         });
     }

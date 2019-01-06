@@ -1,0 +1,6 @@
+NEW: Material 2 Look
+NEW: Bookmark folders in file explorer
+NEW: Personalize with avatar
+IMPROVED: Other changes for better experience
+FIXED: Some devices use different Wi-Fi interface name
+FIXED: APK files won't open on Android 6.0.1 and below

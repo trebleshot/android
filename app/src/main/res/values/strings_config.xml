@@ -15,5 +15,5 @@
     For the modified version, visit <![CDATA[<https://github.com/velitasali/UbuntuFontForAndroid>]]>.
     </string>
     <string name="const_text_useAppFonts" translatable="false">Use recommended fonts</string>
-    <string name="const_text_useAppFontsSummary" translatable="false">Use Ubuntu Font Family</string>
+    <string name="const_text_useAppFontsSummary" translatable="false">Use the supplied font (experimental)</string>
 </resources>

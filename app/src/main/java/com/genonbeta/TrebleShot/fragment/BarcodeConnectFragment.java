@@ -234,12 +234,19 @@ public class BarcodeConnectFragment
 
     protected void handleBarcode(String code)
     {
+        final DialogInterface.OnDismissListener dismissListener = new DialogInterface.OnDismissListener()
+        {
+            @Override
+            public void onDismiss(DialogInterface dialog)
+            {
+                updateState();
+            }
+        };
+
         try {
+            //mPreviousScanResult = code; // Fail-safe
             JSONObject jsonObject = new JSONObject(code);
             NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
-
-            //mPreviousScanResult = code; // Fail-safe
-
             final int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
                     ? jsonObject.getInt(Keyword.NETWORK_PIN)
                     : -1;
@@ -247,7 +254,6 @@ public class BarcodeConnectFragment
             if (jsonObject.has(Keyword.NETWORK_NAME)) {
                 hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
                 hotspotNetwork.qrConnection = true;
-
                 boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
 
                 if (passProtected) {
@@ -280,14 +286,7 @@ public class BarcodeConnectFragment
                                     makeAcquaintance(ipAddress, accessPin);
                                 }
                             })
-                            .setOnDismissListener(new DialogInterface.OnDismissListener()
-                            {
-                                @Override
-                                public void onDismiss(DialogInterface dialog)
-                                {
-                                    updateState();
-                                }
-                            })
+                            .setOnDismissListener(dismissListener)
                             .show();
                 }
             }
@@ -299,14 +298,7 @@ public class BarcodeConnectFragment
             new AlertDialog.Builder(getActivity())
                     .setMessage(R.string.mesg_somethingWentWrong)
                     .setPositiveButton(R.string.butn_close, null)
-                    .setOnDismissListener(new DialogInterface.OnDismissListener()
-                    {
-                        @Override
-                        public void onDismiss(DialogInterface dialog)
-                        {
-                            updateState();
-                        }
-                    })
+                    .setOnDismissListener(dismissListener)
                     .show();
         }
     }

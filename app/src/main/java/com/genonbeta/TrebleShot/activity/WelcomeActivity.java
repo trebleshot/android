@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
@@ -69,13 +71,7 @@ public class WelcomeActivity extends Activity
             pagerAdapter.addView(mSplashView);
         }
 
-        {
-            mProfileView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_2, null, false);
-            pagerAdapter.addView(mProfileView);
-            setUserProfile();
-        }
-
-        {
+        if (Build.VERSION.SDK_INT >= 23) {
             mPermissionsView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_3, null, false);
             pagerAdapter.addView(mPermissionsView);
             checkPermissionsState();
@@ -91,8 +87,27 @@ public class WelcomeActivity extends Activity
                     });
         }
 
+        {
+            mProfileView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_2, null, false);
+            pagerAdapter.addView(mProfileView);
+            setUserProfile();
+        }
+
         pagerAdapter.addView(getLayoutInflater().inflate(R.layout.layout_welcome_page_4, null, false));
-        pagerAdapter.addView(getLayoutInflater().inflate(R.layout.layout_welcome_page_5, null, false));
+
+        {
+            View view = getLayoutInflater().inflate(R.layout.layout_welcome_page_5, null, false);
+            AlphaAnimation alphaAnimation = new AlphaAnimation(0.3f, 1.0f);
+
+            alphaAnimation.setDuration(2000);
+            alphaAnimation.setRepeatCount(Animation.INFINITE);
+            alphaAnimation.setRepeatMode(Animation.REVERSE);
+
+            view.findViewById(R.id.layout_welcome_page_5_text)
+                    .setAnimation(alphaAnimation);
+
+            pagerAdapter.addView(view);
+        }
         progressBar.setMax((pagerAdapter.getCount() - 1) * 100);
 
         previousButton.setOnClickListener(new View.OnClickListener()
@@ -185,6 +200,9 @@ public class WelcomeActivity extends Activity
 
     protected void checkPermissionsState()
     {
+        if (Build.VERSION.SDK_INT < 23)
+            return;
+
         boolean permissionsOk = AppUtils.checkRunningConditions(this);
 
         mPermissionsView.findViewById(R.id.layout_welcome_page_3_perm_ok_image)
