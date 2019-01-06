@@ -517,6 +517,18 @@ public class FileListFragment
         return super.performLayoutLongClick(holder);
     }
 
+    @Override
+    public boolean performLayoutClickOpenUri(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        try {
+            return FileUtils.openUri(getContext(), getAdapter().getItem(holder).file);
+        } catch (NotReadyException e) {
+            // do nothing
+        }
+
+        return super.performLayoutClickOpenUri(holder);
+    }
+
     public boolean scanFile(DocumentFile file)
     {
         // FIXME: 9/11/18 There should be insert, remove, update

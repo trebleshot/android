@@ -117,7 +117,7 @@ public abstract class Activity extends AppCompatActivity
             finish();
         } else if (!AppUtils.checkRunningConditions(this)) {
             if (!mSkipPermissionRequest)
-                requestRequiredPermissions();
+                requestRequiredPermissions(true);
         } else
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
                     .setAction(CommunicationService.ACTION_SERVICE_STATUS)
@@ -142,7 +142,7 @@ public abstract class Activity extends AppCompatActivity
         if (AppUtils.checkRunningConditions(this))
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class));
         else
-            requestRequiredPermissions();
+            requestRequiredPermissions(!mSkipPermissionRequest);
     }
 
     @Override
@@ -317,13 +317,13 @@ public abstract class Activity extends AppCompatActivity
         startActivityForResult(new Intent(Intent.ACTION_PICK).setType("image/*"), REQUEST_PICK_PROFILE_PHOTO);
     }
 
-    public boolean requestRequiredPermissions()
+    public boolean requestRequiredPermissions(boolean killActivityOtherwise)
     {
         if (mOngoingRequest != null && mOngoingRequest.isShowing())
             return false;
 
         for (RationalePermissionRequest.PermissionRequest request : AppUtils.getRequiredPermissions(this))
-            if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request)) != null)
+            if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request, killActivityOtherwise)) != null)
                 return false;
 
         return true;

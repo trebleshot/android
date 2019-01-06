@@ -1,14 +1,15 @@
 package com.genonbeta.TrebleShot.util;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -20,8 +21,6 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.File;
 import java.io.IOException;
-
-import androidx.annotation.Nullable;
 
 public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 {
@@ -104,6 +103,12 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return uri.getPath() == null ? defaultValue : uri.getPath();
     }
 
+    public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
+                               Interrupter interrupter) throws Exception
+    {
+        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
+    }
+
     public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
     {
         DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context, preferences);
@@ -133,11 +138,5 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
             throw new IOException("Failed to rename object: " + currentFile);
 
         return savePath.findFile(uniqueName);
-    }
-
-    public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
-                               Interrupter interrupter) throws Exception
-    {
-        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 }

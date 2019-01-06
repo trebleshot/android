@@ -233,7 +233,7 @@ public class CommunicationNotificationHelper
                             .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
         } else {
             try {
-                Intent openIntent = FileUtils.applySecureOpenIntent(getContext(), processHolder.currentFile, new Intent(Intent.ACTION_VIEW));
+                Intent openIntent = FileUtils.getOpenIntent(getContext(), processHolder.currentFile);
                 notification.setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), openIntent, 0));
             } catch (Exception e) {
             }

@@ -86,7 +86,7 @@ public class WelcomeActivity extends Activity
                         @Override
                         public void onClick(View v)
                         {
-                            requestRequiredPermissions();
+                            requestRequiredPermissions(false);
                         }
                     });
         }

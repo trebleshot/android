@@ -6,10 +6,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -38,6 +41,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
@@ -45,6 +49,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -582,25 +587,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return refreshed;
     }
 
-    public boolean openUri(Uri uri, String chooserText)
+    public boolean openUri(Uri uri)
     {
-        return openUri(getActivity(), uri, chooserText);
-    }
-
-    public static boolean openUri(Activity activity, Uri uri, String chooserText)
-    {
-        try {
-            StreamInfo streamInfo = StreamInfo.getStreamInfo(activity, uri);
-            Intent openIntent = FileUtils.applySecureOpenIntent(activity, streamInfo, new Intent(Intent.ACTION_VIEW));
-
-            activity.startActivity(Intent.createChooser(openIntent, chooserText));
-            return true;
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Toast.makeText(activity, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
-        }
-
-        return false;
+        return FileUtils.openUri(getContext(), uri);
     }
 
     public boolean performLayoutClick(V holder)
@@ -620,10 +609,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public boolean performLayoutClickOpenUri(V holder)
     {
         try {
-            Object object = getAdapter().getItem(holder.getAdapterPosition());
+            T object = getAdapter().getItem(holder);
 
             if (object instanceof Shareable)
-                return openUri(((Shareable) object).uri, getString(R.string.text_fileOpenAppChoose));
+                return openUri(((Shareable) object).uri);
         } catch (NotReadyException e) {
             e.printStackTrace();
         }

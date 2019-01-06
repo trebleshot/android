@@ -43,7 +43,7 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
 
 	boolean loadIfRequested();
 
-	boolean openUri(Uri uri, String chooserText);
+	boolean openUri(Uri uri);
 
 	void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
 

@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -208,7 +209,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which)
                                                 {
-                                                    EditableListFragment.openUri(activity, receivedFile.getUri(), activity.getString(R.string.text_fileOpenAppChoose));
+                                                    FileUtils.openUri(activity, receivedFile);
                                                 }
                                             })
                                             .show();

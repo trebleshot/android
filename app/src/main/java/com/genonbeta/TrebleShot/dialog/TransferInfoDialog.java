@@ -162,7 +162,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
 							public void onClick(DialogInterface dialog, int which)
 							{
 								try {
-									getContext().startActivity(new Intent(FileUtils.applySecureOpenIntent(getContext(), pseudoFile, new Intent(Intent.ACTION_VIEW))));
+									FileUtils.openUri(getContext(), pseudoFile);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -174,7 +174,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
 				// Could make use of this statement later
 				if (fileExists) {
 					try {
-						final Intent startIntent = new Intent(FileUtils.applySecureOpenIntent(getContext(), attemptedFile, new Intent(Intent.ACTION_VIEW)));
+						final Intent startIntent = FileUtils.getOpenIntent(getContext(), attemptedFile)	;
 
 						setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
 						{
