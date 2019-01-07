@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_preferences">التفضيلات</string>
     <string name="mesg_connectionFailure">فشل الاتصال</string>
     <string name="text_notAvailable">غير متوفر</string>
@@ -10,7 +10,7 @@
     <string name="butn_reject">رفض</string>
     <string name="butn_stop">إيقاف</string>
     <string name="text_sending">جاري الإرسال</string>
-    <string name="butn_cancelSending">إيقاف الارسال</string>
+    <string name="butn_cancelSending">الغاء الارسال</string>
     <string name="text_receiving">جاري الإستلام</string>
     <string name="butn_cancelReceiving">إلغاء الاستقبال</string>
     <string name="text_fileReceived">تم إستلام الملف</string>
@@ -248,7 +248,7 @@
     <string name="mesg_ongoingUpdateDownload">تحميل الإصدار الجديد</string>
     <string name="butn_gotIt">فهمت ذلك</string>
     <string name="mesg_helpFolderSelection">لتحديد مجلد، انقر فوق أيقونته</string>
-    <string name="mesg_hotspotCreatedInfo">الاتصال ب \"%s\" في \"إعدادات وأي فأي\" أو إرسال الملفات عن طريق \"%s\" داخل تريبليشوت</string>
+    <string name="mesg_hotspotCreatedInfo">إتصل بـ \"%s\" في \"إعدادات الواي فاي\" أو إرسل ملفات عن طريق \"%s\" عبر تريبليشوت</string>
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيئا</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
@@ -315,7 +315,7 @@
     <string name="text_qrCodeAvailableHelp">امسح هذه الرمز لتبادل وتوصيل الأجهزة</string>
     <string name="text_qrCodeHotspotDisabledHelp">بدء تشغيل نقطة الوصول الساخنة أو الاتصال بشبكة لاكتشاف سهل</string>
     <string name="text_scanQRCodeHelp">مسح رمز الباركود على شاشة الجهاز الاخر</string>
-    <string name="butn_qrScanToSend">امسح رمز الباركود للقيام بالإرسال</string>
+    <string name="butn_qrScanToSend">امسح رمز الكيو آر للقيام بالإرسال</string>
     <string name="butn_qrToggle">تبديل ظهور رمز الباركود</string>
     <string name="text_notificationSettingsSummary">فتح إعدادات إشعاراتك</string>
     <string name="text_notificationSettings">إعدادات الاشعارات</string>
