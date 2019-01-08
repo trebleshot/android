@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <plurals name="ques_deleteFile">
         <item quantity="other">%d ファイルを削除しますか?</item>
@@ -32,5 +32,8 @@
 </plurals>
 <plurals name="text_gridRow">
 	<item quantity="other">%d 行</item>
+</plurals>
+    <plurals name="text_devicesShared">
+    <item quantity="other">%d デバイスと共有しています</item>
 </plurals>
 </resources>
