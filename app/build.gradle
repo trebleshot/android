@@ -113,8 +113,10 @@ dependencies {
     implementation 'com.genonbeta.android:gdatabase:1.0.2.6'
     implementation 'com.genonbeta.coolsocket:main:1.0.3'
 
-    implementation 'com.google.zxing:core:3.3.0' // 3.3.2 requires minimum Android SDK 16
-    implementation 'com.velitasali.tools.android:zxing:3.6.3' // core version changes should be made in accordance with Android min SDK version
+    // 3.3.2 requires minimum Android SDK 16, so core version changes should be made in accordance
+    // with Android min SDK version
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.velitasali.tools.android:zxing:3.6.3'
 
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'androidx.annotation:annotation:1.0.1'
