@@ -160,7 +160,7 @@ public class AppUtils
 
             while ((readLine = reader.readLine()) != null) {
                 if (readLine.contains(String.valueOf(pid))) {
-                    outputStream.write(readLine.getBytes());
+                    outputStream.write((readLine + "\n").getBytes());
                     outputStream.flush();
                 }
             }

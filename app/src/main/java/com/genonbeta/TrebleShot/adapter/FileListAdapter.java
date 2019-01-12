@@ -224,7 +224,7 @@ public class FileListAdapter
                         if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
                             pickedRecentFiles.add(documentFile);
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        // do nothing
                     }
                 }
 
