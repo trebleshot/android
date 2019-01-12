@@ -282,10 +282,11 @@ public class FileListFragment
                             menuItself.findItem(R.id.action_mode_file_open).setVisible(canRead && isFile);
                             menuItself.findItem(R.id.action_mode_file_rename).setEnabled(canChange);
                             menuItself.findItem(R.id.action_mode_file_delete).setEnabled(canChange && !isSensitive);
-                            menuItself.findItem(R.id.action_mode_file_show).setVisible(fileHolder instanceof FileListAdapter.RecentFileHolder);
+                            menuItself.findItem(R.id.action_mode_file_show)
+                                    .setVisible(fileHolder instanceof FileListAdapter.RecentFileHolder);
                             menuItself.findItem(R.id.action_mode_file_change_save_path)
-                                    .setVisible(FileUtils.getApplicationDirectory(getContext(),
-                                            AppUtils.getDefaultPreferences(getContext())).getUri().equals(fileHolder.file.getUri()));
+                                    .setVisible(FileUtils.getApplicationDirectory(getContext()).getUri()
+                                            .equals(fileHolder.file.getUri()));
 
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
@@ -334,7 +335,7 @@ public class FileListFragment
             }
         };
 
-        return new FileListAdapter(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()))
+        return new FileListAdapter(getActivity())
         {
             @NonNull
             @Override
@@ -521,9 +522,9 @@ public class FileListFragment
     public boolean performLayoutClickOpenUri(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            return FileUtils.openUri(getContext(), getAdapter().getItem(holder).file);
+            return FileUtils.openUriForeground(getActivity(), getAdapter().getItem(holder).file);
         } catch (NotReadyException e) {
-            // do nothing
+            // Do nothing
         }
 
         return super.performLayoutClickOpenUri(holder);

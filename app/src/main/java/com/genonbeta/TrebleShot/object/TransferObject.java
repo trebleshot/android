@@ -196,8 +196,7 @@ public class TransferObject
                 database.reconstruct(parent);
             }
 
-            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(),
-                    AppUtils.getDefaultPreferences(database.getContext()), this, parent, false);
+            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(), this, parent, false);
 
             if (file != null && file.isFile())
                 file.delete();

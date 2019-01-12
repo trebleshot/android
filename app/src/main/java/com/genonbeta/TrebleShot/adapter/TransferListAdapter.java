@@ -150,8 +150,7 @@ public class TransferListAdapter
                             if (TransferObject.Type.OUTGOING.equals(object.type))
                                 documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
                             else if (TransferObject.Flag.DONE.equals(object.flag))
-                                documentFile = FileUtils.getIncomingPseudoFile(getContext(),
-                                        AppUtils.getDefaultPreferences(getContext()), object, mGroup, false);
+                                documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, mGroup, false);
 
                             if (documentFile != null && documentFile.exists()) {
                                 object.setFile(documentFile);
@@ -208,7 +207,7 @@ public class TransferListAdapter
             try {
                 TransferGroup group = new TransferGroup(mGroup.groupId);
                 AppUtils.getDatabase(getContext()).reconstruct(group);
-                DocumentFile savePath = FileUtils.getSavePath(getContext(), AppUtils.getDefaultPreferences(getContext()), group);
+                DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
 
                 storageItem = new StorageStatusItem();
                 storageItem.directory = savePath.getUri().toString();

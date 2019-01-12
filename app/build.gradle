@@ -108,13 +108,13 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha02'
 
-    //implementation 'com.genonbeta.android:framework:1.0.2.6-local17'
-    implementation 'com.genonbeta.android:framework:1.0.2.6-alpha03'
+    implementation 'com.genonbeta.android:framework:1.0.2.6-local22'
+    //implementation 'com.genonbeta.android:framework:1.0.2.6-alpha03'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.6'
     implementation 'com.genonbeta.coolsocket:main:1.0.3'
 
     // 3.3.2 requires minimum Android SDK 16, so core version changes should be made in accordance
-    // with Android min SDK version
+    // with min SDK version
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'
 

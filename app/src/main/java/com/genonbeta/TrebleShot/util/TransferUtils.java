@@ -192,9 +192,7 @@ public class TransferUtils
                         }
                     });
                 } else {
-                    final String savingPath = FileUtils.getSavePath(activity, AppUtils.getDefaultPreferences(activity), group)
-                            .getUri()
-                            .toString();
+                    final String savingPath = FileUtils.getSavePath(activity, group).getUri().toString();
 
                     if (!savingPath.equals(group.savePath)) {
                         activity.runOnUiThread(new Runnable()

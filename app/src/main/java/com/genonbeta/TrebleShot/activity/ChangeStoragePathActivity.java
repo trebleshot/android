@@ -23,9 +23,7 @@ public class ChangeStoragePathActivity extends Activity
 	{
 		super.onStart();
 
-		DocumentFile currentSavePath = FileUtils.getApplicationDirectory(
-				getApplicationContext(),
-				AppUtils.getDefaultPreferences(getApplicationContext()));
+		DocumentFile currentSavePath = FileUtils.getApplicationDirectory(getApplicationContext());
 
 		startActivityForResult(new Intent(this, FilePickerActivity.class)
 				.setAction(FilePickerActivity.ACTION_CHOOSE_DIRECTORY)

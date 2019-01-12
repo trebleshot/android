@@ -2,10 +2,8 @@ package com.genonbeta.TrebleShot.util;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
 import android.widget.Toast;
 
@@ -16,7 +14,6 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.File;
@@ -30,9 +27,10 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
-    public static DocumentFile getApplicationDirectory(Context context, SharedPreferences defaultPreferences)
+    public static DocumentFile getApplicationDirectory(Context context)
     {
         String defaultPath = getDefaultApplicationDirectoryPath(context);
+        SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(context);
 
         if (defaultPreferences.contains("storage_path")) {
             try {
@@ -73,14 +71,14 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return null;
     }
 
-    public static DocumentFile getIncomingPseudoFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
+    public static DocumentFile getIncomingPseudoFile(Context context, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
     {
-        return fetchFile(getSavePath(context, preferences, group), transferObject.directory, transferObject.file, createIfNotExists);
+        return fetchFile(getSavePath(context, group), transferObject.directory, transferObject.file, createIfNotExists);
     }
 
-    public static DocumentFile getIncomingTransactionFile(Context context, SharedPreferences preferences, TransferObject transferObject, TransferGroup group) throws IOException
+    public static DocumentFile getIncomingTransactionFile(Context context, TransferObject transferObject, TransferGroup group) throws IOException
     {
-        DocumentFile pseudoFile = getIncomingPseudoFile(context, preferences, transferObject, group, true);
+        DocumentFile pseudoFile = getIncomingPseudoFile(context, transferObject, group, true);
 
         if (!pseudoFile.canWrite())
             throw new IOException("File cannot be created or you don't have permission write on it");
@@ -109,9 +107,17 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
-    public static DocumentFile getSavePath(Context context, SharedPreferences preferences, TransferGroup group)
+    /**
+     * The available path to save {@link TransferGroup} with fallback check
+     *
+     * @param context
+     * @param preferences
+     * @param group
+     * @return
+     */
+    public static DocumentFile getSavePath(Context context, TransferGroup group)
     {
-        DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context, preferences);
+        DocumentFile defaultFolder = FileUtils.getApplicationDirectory(context);
 
         if (group.savePath != null) {
             try {
@@ -130,6 +136,33 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return defaultFolder;
     }
 
+    /**
+     * Tries to start an activity to view {@param file} using {@link DocumentFile}
+     *
+     * @param activity Theme supplied {@link Context}
+     * @param file
+     * @return true
+     */
+    public static boolean openUriForeground(Activity activity, DocumentFile file)
+    {
+        if (!openUri(activity, file)) {
+            Toast.makeText(activity, activity.getString(R.string.mesg_openFailure, file.getName()), Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * When the transfer is done, this saves the uniquely named file to its actual name held in {@link TransferObject}.
+     *
+     * @param savePath       The save path that contains currentFile
+     * @param currentFile    The file that should be renamed
+     * @param transferObject The transfer request
+     * @return File moved to its actual name
+     * @throws IOException Thrown when rename fails
+     */
     public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
     {
         String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.friendlyName, true);

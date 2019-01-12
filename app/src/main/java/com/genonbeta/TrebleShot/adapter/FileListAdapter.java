@@ -55,15 +55,10 @@ public class FileListAdapter
     private boolean mShowThumbnails = true;
     private String mFileMatch;
     private DocumentFile mPath;
-    private AccessDatabase mDatabase;
-    private SharedPreferences mPreferences;
 
-    public FileListAdapter(Context context, AccessDatabase database, SharedPreferences sharedPreferences)
+    public FileListAdapter(Context context)
     {
         super(context, MODE_GROUP_BY_DEFAULT);
-
-        mDatabase = database;
-        mPreferences = sharedPreferences;
     }
 
     @Override
@@ -106,7 +101,7 @@ public class FileListAdapter
             }
         } else {
             ArrayList<File> referencedDirectoryList = new ArrayList<>();
-            DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext(), mPreferences);
+            DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
 
             lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
@@ -169,7 +164,8 @@ public class FileListAdapter
                 lister.offerObliged(this, fileHolder);
             }
 
-            ArrayList<FileBookmarkObject> bookmarkedList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileBookmarkObject.class);
+            ArrayList<FileBookmarkObject> bookmarkedList = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileBookmarkObject.class);
 
             for (FileBookmarkObject object : bookmarkedList) {
                 try {
@@ -179,7 +175,8 @@ public class FileListAdapter
                 }
             }
 
-            ArrayList<WritablePathObject> mountedPathList = mDatabase.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
+            ArrayList<WritablePathObject> mountedPathList = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
             if (Build.VERSION.SDK_INT >= 23) {
                 for (WritablePathObject pathObject : mountedPathList)
@@ -222,7 +219,7 @@ public class FileListAdapter
                         continue;
 
                     try {
-                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), AppUtils.getDefaultPreferences(getContext()), recentFile, group, false);
+                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile, group, false);
 
                         if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
                             pickedRecentFiles.add(documentFile);

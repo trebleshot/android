@@ -432,4 +432,5 @@
     <string name="text_introSetUpPermissions">Set up permissions</string>
     <string name="text_introAllSet">All set!</string>
     <string name="text_introSetUpProfile">Set up your profile</string>
+    <string name="mesg_openFailure">Can not view %s</string>
 </resources>

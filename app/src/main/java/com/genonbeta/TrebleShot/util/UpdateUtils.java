@@ -101,7 +101,7 @@ public class UpdateUtils
 		socket.close();
 	}
 
-	public static DocumentFile receiveUpdate(Context context, SharedPreferences preferences, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException, PackageManager.NameNotFoundException
+	public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException
 	{
 		ServerSocket serverSocket = null;
 		Socket socket = null;
@@ -109,7 +109,7 @@ public class UpdateUtils
 
 		try {
 			serverSocket = new ServerSocket(AppConfig.SERVER_PORT_UPDATE_CHANNEL);
-			updateFile = FileUtils.getApplicationDirectory(context, preferences)
+			updateFile = FileUtils.getApplicationDirectory(context)
 					.createFile(null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
 			final ServerSocket finalServer = serverSocket;

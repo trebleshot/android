@@ -405,8 +405,8 @@ public class TransferListFragment
                                                         DocumentFile pseudoFile = null;
 
                                                         try {
-                                                            file = FileUtils.getIncomingPseudoFile(getService(), AppUtils.getDefaultPreferences(getService()), transferObject, getTransferGroup(), false);
-                                                            pseudoFile = FileUtils.getIncomingPseudoFile(getService(), AppUtils.getDefaultPreferences(getService()), transferObject, pseudoGroup, true);
+                                                            file = FileUtils.getIncomingPseudoFile(getService(), transferObject, getTransferGroup(), false);
+                                                            pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferObject, pseudoGroup, true);
                                                         } catch (Exception e) {
                                                             continue;
                                                         }

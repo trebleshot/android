@@ -521,7 +521,8 @@ public class CommunicationService extends Service
                 .putStringArrayListExtra(EXTRA_DEVICE_LIST_RUNNING, deviceList));
     }
 
-    public void sendHotspotStatusDisabling() {
+    public void sendHotspotStatusDisabling()
+    {
         sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
                 .putExtra(EXTRA_HOTSPOT_ENABLED, false)
                 .putExtra(EXTRA_HOTSPOT_DISABLING, true));
@@ -1204,8 +1205,8 @@ public class CommunicationService extends Service
                             && processHolder.activeConnection.getSocket().isConnected()) {
                         processHolder.builder.reset();
 
-                        // direct exiting will not be a problem because after this phase there will
-                        // be a reply for how the issue
+                        // Exiting directly will not be a problem since, after this phase, there will
+                        // be a response how things went.
                         if (processHolder.builder.getTransferProgress().isInterrupted())
                             break;
 
@@ -1221,7 +1222,7 @@ public class CommunicationService extends Service
                             }
 
                             processHolder.transferObject = firstAvailableTransfer;
-                            processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), getDefaultPreferences(), processHolder.transferObject, mTransfer.getGroup());
+                            processHolder.currentFile = FileUtils.getIncomingTransactionFile(getApplicationContext(), processHolder.transferObject, mTransfer.getGroup());
                             StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), processHolder.currentFile.getUri());
 
                             getNotificationHelper().notifyFileTransaction(processHolder);
@@ -1323,7 +1324,7 @@ public class CommunicationService extends Service
 
                 // Check if all the pending files are flagged with Flag.DONE
                 try {
-                    DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), getDefaultPreferences(), mTransfer.getGroup());
+                    DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), mTransfer.getGroup());
                     boolean isJobDone = CoolTransfer.Flag.CONTINUE.equals(processHolder.builder.getFlag());
                     boolean hasLeftFiles = getDatabase().getFirstFromTable(TransferUtils.createTransferSelection(
                             processHolder.groupId,

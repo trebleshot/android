@@ -264,7 +264,7 @@ public class HomeActivity
 
                     String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
 
-                    DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext(), getDefaultPreferences());
+                    DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext());
                     DocumentFile codeFile = DocumentFile.fromFile(new File(getApplicationInfo().sourceDir));
                     DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
 

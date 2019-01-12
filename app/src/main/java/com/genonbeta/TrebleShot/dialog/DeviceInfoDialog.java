@@ -151,7 +151,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 
                 try {
                     final Context context = getContext();
-                    final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, sharedPreferences, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
+                    final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
                     {
                         @Override
                         public void onConnectionReady(ServerSocket socket)
@@ -209,7 +209,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which)
                                                 {
-                                                    FileUtils.openUri(activity, receivedFile);
+                                                    FileUtils.openUriForeground(activity, receivedFile);
                                                 }
                                             })
                                             .show();

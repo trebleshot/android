@@ -335,7 +335,7 @@ public class ViewTransferActivity
                     .show();
         } else if (id == R.id.actions_transfer_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)
-                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, getDefaultPreferences(), mGroup).getUri()));
+                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
         } else if (id == R.id.actions_transfer_add_device) {
             startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
                     .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);

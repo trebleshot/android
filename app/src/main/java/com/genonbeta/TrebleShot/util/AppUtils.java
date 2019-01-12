@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,17 +10,21 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.AnyRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.AboutActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -37,22 +40,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
-
-import androidx.annotation.AnyRes;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 public class AppUtils
 {
@@ -112,7 +107,8 @@ public class AppUtils
         object.put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
-    public static void createFeedbackIntent(Activity activity) {
+    public static void createFeedbackIntent(Activity activity)
+    {
         Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
                 .putExtra(Intent.EXTRA_EMAIL, new String[]{AppConfig.EMAIL_DEVELOPER})
@@ -143,10 +139,9 @@ public class AppUtils
 
     public static DocumentFile createLog(Context context)
     {
-        String saveDirectoryPath = FileUtils.getDefaultApplicationDirectoryPath(context);
-        DocumentFile saveDirectory = DocumentFile.fromFile(new File(saveDirectoryPath));
+        DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
         String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
-        File logFile = new File(String.format("%s%s%s", saveDirectoryPath, File.separator, fileName));
+        DocumentFile logFile = saveDirectory.createFile(FileUtils.getFileContentType(fileName), fileName);
 
         int pid = android.os.Process.myPid();
 
@@ -155,23 +150,27 @@ public class AppUtils
             Process process = Runtime.getRuntime().exec(command);
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            StringBuilder result = new StringBuilder();
-            String currentLine = null;
+            OutputStream outputStream = context.getContentResolver()
+                    .openOutputStream(logFile.getUri(), "w");
 
-            while ((currentLine = reader.readLine()) != null) {
-                if (currentLine.contains(String.valueOf(pid))) {
-                    result.append(currentLine);
-                    result.append("\n");
+            if (outputStream == null)
+                throw new IOException(String.format("Could not open %s", fileName));
+
+            String readLine;
+
+            while ((readLine = reader.readLine()) != null) {
+                if (readLine.contains(String.valueOf(pid))) {
+                    outputStream.write(readLine.getBytes());
+                    outputStream.flush();
                 }
             }
 
-            FileWriter out = new FileWriter(logFile);
-            out.write(result.toString());
-            out.close();
+            outputStream.close();
+            reader.close();
 
-            return DocumentFile.fromFile(logFile);
+            return logFile;
         } catch (IOException e) {
-
+            // do nothing
         }
 
         return null;
