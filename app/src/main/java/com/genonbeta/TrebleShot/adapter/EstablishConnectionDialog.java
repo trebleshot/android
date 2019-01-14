@@ -78,8 +78,10 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                     setProgress(getProgress() + 1);
 
-                    if (!NetworkUtils.ping(connectionResult.connection.ipAddress, 500))
-                        continue;
+                    // Now that pinging is already implemented within CommunicationBridge,
+                    // there is no need to execute the code below.
+                    //if (!NetworkUtils.ping(connectionResult.connection.ipAddress, 500))
+                    //    continue;
 
                     final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class, new CommunicationBridge.Client.ConnectionHandler()
                     {
