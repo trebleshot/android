@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -42,7 +44,6 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
@@ -59,7 +60,7 @@ import java.util.List;
 
 public class ViewTransferActivity
         extends Activity
-        implements PowerfulActionModeSupport
+        implements PowerfulActionModeSupport, SnackbarSupport
 {
     public static final String TAG = ViewTransferActivity.class.getSimpleName();
 
@@ -135,7 +136,8 @@ public class ViewTransferActivity
     final private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
 
     private PowerfulActionMode mMode;
-    private MenuItem mStartMenu;
+    private MenuItem mCnTestMenu;
+    private MenuItem mToggleMenu;
     private MenuItem mRetryMenu;
     private MenuItem mShowFiles;
     private MenuItem mAddDevice;
@@ -290,10 +292,11 @@ public class ViewTransferActivity
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
-        mStartMenu = menu.findItem(R.id.actions_transfer_resume);
-        mRetryMenu = menu.findItem(R.id.actions_transfer_retry_all);
-        mShowFiles = menu.findItem(R.id.actions_transfer_show_files);
-        mAddDevice = menu.findItem(R.id.actions_transfer_add_device);
+        mCnTestMenu = menu.findItem(R.id.actions_transfer_receiver_test_connection);
+        mToggleMenu = menu.findItem(R.id.actions_transfer_toggle);
+        mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
+        mShowFiles = menu.findItem(R.id.actions_transfer_receiver_show_files);
+        mAddDevice = menu.findItem(R.id.actions_transfer_sender_add_device);
 
         return true;
     }
@@ -312,33 +315,39 @@ public class ViewTransferActivity
 
         if (id == android.R.id.home) {
             finish();
-        } else if (id == R.id.actions_transfer_resume) {
+        } else if (id == R.id.actions_transfer_toggle) {
             toggleTask();
         } else if (id == R.id.actions_transfer_remove) {
             new AlertDialog.Builder(this)
                     .setTitle(R.string.ques_removeAll)
                     .setMessage(R.string.text_removeCertainPendingTransfersSummary)
                     .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_removeAll, new DialogInterface.OnClickListener()
+                    .setPositiveButton(R.string.butn_remove, new DialogInterface.OnClickListener()
                     {
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-                            getDatabase().removeAsynchronous(mGroup);
+                            getDatabase().removeAsynchronous(ViewTransferActivity.this, mGroup);
                         }
                     }).show();
-        } else if (id == R.id.actions_transfer_retry_all) {
+        } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
 
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 
             createSnackbar(R.string.mesg_retryReceivingNotice)
                     .show();
-        } else if (id == R.id.actions_transfer_show_files) {
+        } else if (id == R.id.actions_transfer_receiver_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)
                     .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
-        } else if (id == R.id.actions_transfer_add_device) {
+        } else if (id == R.id.actions_transfer_sender_add_device) {
             startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
                     .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
+        } else if (id == R.id.actions_transfer_receiver_test_connection) {
+            ShowingAssignee assignee = TransferUtils.getFirstAssignee(this, getDatabase(), mGroup);
+
+            if (assignee != null)
+                new EstablishConnectionDialog(ViewTransferActivity.this, assignee.device, null)
+                        .show();
         } else
             return super.onOptionsItemSelected(item);
 
@@ -359,8 +368,15 @@ public class ViewTransferActivity
                 : null;
     }
 
-    private Snackbar createSnackbar(int resId, Object... objects)
+    @Override
+    public Snackbar createSnackbar(int resId, Object... objects)
     {
+        TransferFileExplorerFragment explorerFragment = (TransferFileExplorerFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.activity_transaction_content_frame);
+
+        if (explorerFragment != null && explorerFragment.isAdded())
+            return explorerFragment.createSnackbar(resId, objects);
+
         return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
@@ -405,14 +421,15 @@ public class ViewTransferActivity
         boolean hasOutgoing = getIndex().outgoingCount > 0;
         boolean hasRunning = mActiveProcesses.size() > 0;
 
-        if (mStartMenu == null || mRetryMenu == null || mShowFiles == null)
+        if (mToggleMenu == null || mRetryMenu == null || mShowFiles == null)
             return;
 
-        mStartMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_start);
+        mToggleMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_receive);
 
         // Only show when there
         mAddDevice.setVisible(hasOutgoing);
-        mStartMenu.setVisible(hasIncoming || hasRunning);
+        mToggleMenu.setVisible(hasIncoming || hasRunning);
+        mCnTestMenu.setVisible(hasIncoming);
         mRetryMenu.setVisible(hasIncoming);
         mShowFiles.setVisible(hasIncoming);
 
@@ -430,58 +447,33 @@ public class ViewTransferActivity
                 new PauseMultipleTransferDialog(ViewTransferActivity.this, mGroup, mActiveProcesses)
                         .show();
         } else {
-            SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                    .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId));
+            final ShowingAssignee assignee = TransferUtils.getFirstAssignee(this, getDatabase(), mGroup);
 
-            ArrayList<ShowingAssignee> assignees = getDatabase()
-                    .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-                    {
-                        @Override
-                        public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-                        {
-                            object.device = new NetworkDevice(object.deviceId);
-                            object.connection = new NetworkDevice.Connection(object);
+            if (assignee != null) {
+                try {
+                    getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
+                    TransferUtils.startTransferWithTest(this, mGroup, assignee);
+                } catch (Exception e) {
+                    e.printStackTrace();
 
-                            try {
-                                db.reconstruct(object.device);
-                                db.reconstruct(object.connection);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-
-            if (assignees.size() == 0) {
-                createSnackbar(R.string.mesg_noReceiverOrSender)
-                        .show();
-                return;
-            }
-
-            final ShowingAssignee assignee = assignees.get(0);
-
-            try {
-                getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-                TransferUtils.startTransferWithTest(this, mGroup, assignee);
-            } catch (Exception e) {
-                e.printStackTrace();
-
-                createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
-                        .setAction(R.string.butn_setUp, new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
+                    createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
+                            .setAction(R.string.butn_setUp, new View.OnClickListener()
                             {
-                                TransferUtils.changeConnection(ViewTransferActivity.this, getDatabase(), mGroup, assignee.device, new TransferUtils.ConnectionUpdatedListener()
+                                @Override
+                                public void onClick(View v)
                                 {
-                                    @Override
-                                    public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
+                                    TransferUtils.changeConnection(ViewTransferActivity.this, getDatabase(), mGroup, assignee.device, new TransferUtils.ConnectionUpdatedListener()
                                     {
-                                        createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(), connection))
-                                                .show();
-                                    }
-                                });
-                            }
-                        }).show();
+                                        @Override
+                                        public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
+                                        {
+                                            createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(), connection))
+                                                    .show();
+                                        }
+                                    });
+                                }
+                            }).show();
+                }
             }
         }
     }
@@ -556,7 +548,7 @@ public class ViewTransferActivity
 
     public static class TransferFileExplorerFragment
             extends TransferListFragment
-            implements TitleSupport, SnackbarSupport
+            implements TitleSupport
     {
         private RecyclerView mPathView;
         private TransferPathResolverRecyclerAdapter mPathAdapter;
@@ -594,6 +586,13 @@ public class ViewTransferActivity
             });
 
             return super.onListView(mainContainer, (ViewGroup) adaptedView.findViewById(R.id.layout_transfer_explorer_fragment_content));
+        }
+
+        @Override
+        public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+        {
+            super.onViewCreated(view, savedInstanceState);
+            setSnackbarContainer(view.findViewById(R.id.layout_transfer_explorer_fragment_content));
         }
 
         @Override

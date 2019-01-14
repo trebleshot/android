@@ -1,8 +1,10 @@
 package com.genonbeta.TrebleShot.adapter;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
@@ -10,6 +12,7 @@ import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
+import com.genonbeta.TrebleShot.dialog.ConnectionTestDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -23,17 +26,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-
-import androidx.appcompat.app.AlertDialog;
 
 public class EstablishConnectionDialog extends ProgressDialog
 {
     public static final String TAG = EstablishConnectionDialog.class.getSimpleName();
-
     public static final int TASK_CONNECT = 1;
 
-    public EstablishConnectionDialog(final Activity activity, final NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
+    private WorkerService.RunningTask mTask;
+
+    public EstablishConnectionDialog(final Activity activity,
+                                     final NetworkDevice networkDevice,
+                                     @Nullable final OnDeviceSelectedListener listener)
     {
         super(activity);
 
@@ -51,46 +54,43 @@ public class EstablishConnectionDialog extends ProgressDialog
             }
         });
 
-        runThis(interrupter, activity, networkDevice, listener);
-    }
-
-    private void runThis(final Interrupter interrupter, final Activity activity, final NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
-    {
-        show();
-
-        WorkerService.run(activity, new WorkerService.RunningTask(TAG, TASK_CONNECT)
+        mTask = new WorkerService.RunningTask(TAG, TASK_CONNECT)
         {
             @Override
             protected void onRun()
             {
                 setInterrupter(interrupter);
 
-                @SuppressLint("UseSparseArrays") final HashMap<Integer, NetworkDevice.Connection> calculatedConnections = new HashMap<>();
+                final ArrayList<ConnectionResult> reachedConnections = new ArrayList<>();
+                final ArrayList<ConnectionResult> calculatedConnections = new ArrayList<>();
                 final ArrayList<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                         .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.deviceId)
                         .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class);
 
                 setMax(connectionList.size());
 
-                for (final NetworkDevice.Connection connection : connectionList) {
+                for (NetworkDevice.Connection connection : connectionList)
+                    calculatedConnections.add(new ConnectionResult(connection));
+
+                for (final ConnectionResult connectionResult : calculatedConnections) {
                     if (getInterrupter().interrupted())
                         break;
 
                     setProgress(getProgress() + 1);
 
-                    if (!NetworkUtils.ping(connection.ipAddress, 500))
+                    if (!NetworkUtils.ping(connectionResult.connection.ipAddress, 500))
                         continue;
 
-                    Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class, new CommunicationBridge.Client.ConnectionHandler()
+                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class, new CommunicationBridge.Client.ConnectionHandler()
                     {
                         @Override
                         public void onConnect(CommunicationBridge.Client client)
                         {
-                            int outTime = -1;
+                            connectionResult.pingTime = -1;
 
                             try {
                                 final long startTime = System.currentTimeMillis();
-                                final CoolSocket.ActiveConnection activeConnection = client.connect(connection);
+                                final CoolSocket.ActiveConnection activeConnection = client.connect(connectionResult.connection);
                                 final Interrupter.Closer selfCloser = new Interrupter.Closer()
                                 {
                                     @Override
@@ -111,78 +111,100 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                                 getInterrupter().removeCloser(selfCloser);
 
-                                outTime = (int) (System.currentTimeMillis() - startTime);
+                                connectionResult.pingTime = (int) (System.currentTimeMillis() - startTime);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
-                                client.setReturn(outTime);
+                                client.setReturn(connectionResult.pingTime);
                             }
                         }
                     });
 
                     if (calculatedTime != null && calculatedTime > -1)
-                        calculatedConnections.put(calculatedTime, connection);
+                        reachedConnections.add(connectionResult);
                 }
 
                 dismiss();
 
-                if (!getInterrupter().interrupted())
-                    if (calculatedConnections.size() < 1) {
-                        if (activity != null)
-                            activity.runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    new AlertDialog.Builder(activity)
-                                            .setTitle(R.string.text_error)
-                                            .setMessage(R.string.text_automaticNetworkConnectionFailed)
-                                            .setNeutralButton(R.string.butn_choose, new OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which)
-                                                {
-                                                    new ConnectionChooserDialog(activity, networkDevice, listener)
-                                                            .show();
-                                                }
-                                            })
-                                            .setNegativeButton(R.string.butn_close, null)
-                                            .setPositiveButton(R.string.butn_retry, new OnClickListener()
-                                            {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which)
-                                                {
-                                                    runThis(interrupter, activity, networkDevice, listener);
-                                                }
-                                            })
-                                            .show();
-                                }
-                            });
-                    } else {
-                        final ArrayList<Integer> comparedList = new ArrayList<>(calculatedConnections.keySet());
+                Comparator<ConnectionResult> connectionComparator = new Comparator<ConnectionResult>()
+                {
+                    @Override
+                    public int compare(ConnectionResult resultFirst, ConnectionResult resultLast)
+                    {
+                        if (resultFirst.pingTime < 0 || resultLast.pingTime < 0)
+                            return MathUtils.compare(resultFirst.pingTime, resultLast.pingTime);
 
-                        Collections.sort(comparedList, new Comparator<Integer>()
-                        {
-                            @Override
-                            public int compare(Integer integer1, Integer integer2)
-                            {
-                                return MathUtils.compare(integer1, integer2);
-                            }
-                        });
-
-                        if (activity != null)
-                            activity.runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    listener.onDeviceSelected(calculatedConnections.get(comparedList.get(0)), connectionList);
-                                }
-                            });
-
-                        dismiss();
+                        return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime); // reverse: the smaller is the fastest
                     }
+                };
+
+                Collections.sort(reachedConnections, connectionComparator);
+                Collections.sort(calculatedConnections, connectionComparator);
+
+                if (activity != null && !activity.isFinishing())
+                    activity.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (listener == null) {
+                                new ConnectionTestDialog(activity, networkDevice, calculatedConnections).show();
+                            } else {
+                                if (!getInterrupter().interrupted())
+                                    if (reachedConnections.size() < 1) {
+                                        new AlertDialog.Builder(activity)
+                                                .setTitle(R.string.text_error)
+                                                .setMessage(R.string.text_automaticNetworkConnectionFailed)
+                                                .setNeutralButton(R.string.butn_choose, new OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which)
+                                                    {
+                                                        new ConnectionChooserDialog(activity, networkDevice, listener)
+                                                                .show();
+                                                    }
+                                                })
+                                                .setNegativeButton(R.string.butn_close, null)
+                                                .setPositiveButton(R.string.butn_retry, new OnClickListener()
+                                                {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which)
+                                                    {
+                                                        show();
+                                                    }
+                                                })
+                                                .show();
+                                    } else {
+                                        listener.onDeviceSelected(reachedConnections.get(0).connection, connectionList);
+                                        dismiss();
+                                    }
+                            }
+                        }
+                    });
             }
-        });
+        };
+    }
+
+    @Override
+    public void show()
+    {
+        super.show();
+        runThis();
+    }
+
+    private void runThis()
+    {
+        WorkerService.run(getContext(), mTask);
+    }
+
+    public static class ConnectionResult
+    {
+        public NetworkDevice.Connection connection;
+        public int pingTime = -1;
+
+        public ConnectionResult(NetworkDevice.Connection connection)
+        {
+            this.connection = connection;
+        }
     }
 }

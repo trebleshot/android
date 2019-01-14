@@ -31,6 +31,8 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ProfileEditorDialog;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.service.DeviceScannerService;
+import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 
 import java.io.FileInputStream;
@@ -47,6 +49,7 @@ public abstract class Activity extends AppCompatActivity
     private boolean mCustomFontsEnabled = false;
     private boolean mSkipPermissionRequest = false;
     private boolean mWelcomePageDisallowed = false;
+    private boolean mExitAppRequested = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -122,6 +125,8 @@ public abstract class Activity extends AppCompatActivity
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
                     .setAction(CommunicationService.ACTION_SERVICE_STATUS)
                     .putExtra(CommunicationService.EXTRA_STATUS_STARTED, true));
+
+        mExitAppRequested = false;
     }
 
     @Override
@@ -129,9 +134,10 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onPause();
 
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_SERVICE_STATUS)
-                .putExtra(CommunicationService.EXTRA_STATUS_STARTED, false));
+        if (!mExitAppRequested)
+            AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
+                    .setAction(CommunicationService.ACTION_SERVICE_STATUS)
+                    .putExtra(CommunicationService.EXTRA_STATUS_STARTED, false));
     }
 
     @Override
@@ -249,6 +255,22 @@ public abstract class Activity extends AppCompatActivity
     public void onUserProfileUpdated()
     {
 
+    }
+
+    /**
+     * Exits app closing all the active services and connections.
+     * This will also prevent this activity from notifying {@link CommunicationService}
+     * as the user leaves to the state of {@link Activity#onPause()}
+     */
+    public void exitApp()
+    {
+        mExitAppRequested = true;
+
+        stopService(new Intent(this, CommunicationService.class));
+        stopService(new Intent(this, DeviceScannerService.class));
+        stopService(new Intent(this, WorkerService.class));
+
+        finish();
     }
 
     public AccessDatabase getDatabase()

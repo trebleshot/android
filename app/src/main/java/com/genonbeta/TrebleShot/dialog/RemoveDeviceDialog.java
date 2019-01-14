@@ -1,6 +1,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.DialogInterface;
 
 import androidx.annotation.NonNull;
@@ -12,9 +12,9 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 
 public class RemoveDeviceDialog extends AlertDialog.Builder
 {
-    public RemoveDeviceDialog(@NonNull final Context context, final NetworkDevice device)
+    public RemoveDeviceDialog(@NonNull final Activity activity, final NetworkDevice device)
     {
-        super(context);
+        super(activity);
 
         setTitle(R.string.ques_removeDevice);
         setMessage(R.string.text_removeDeviceNotice);
@@ -24,7 +24,7 @@ public class RemoveDeviceDialog extends AlertDialog.Builder
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-                AppUtils.getDatabase(context).removeAsynchronous(device);
+                AppUtils.getDatabase(getContext()).removeAsynchronous(activity, device);
             }
         });
     }

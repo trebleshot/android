@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.database;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -399,9 +400,9 @@ public class AccessDatabase extends SQLiteDatabase
             broadcast(openDatabase, new SQLQuery.Select(tableName), TYPE_REMOVE);
     }
 
-    public void removeAsynchronous(final DatabaseObject object)
+    public void removeAsynchronous(Activity activity, final DatabaseObject object)
     {
-        removeAsynchronous(new Runnable()
+        removeAsynchronous(activity, new Runnable()
         {
             @Override
             public void run()
@@ -411,9 +412,9 @@ public class AccessDatabase extends SQLiteDatabase
         });
     }
 
-    public void removeAsynchronous(final List<? extends DatabaseObject> objects)
+    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject> objects)
     {
-        removeAsynchronous(new Runnable()
+        removeAsynchronous(activity, new Runnable()
         {
             @Override
             public void run()
@@ -423,9 +424,12 @@ public class AccessDatabase extends SQLiteDatabase
         });
     }
 
-    public void removeAsynchronous(final Runnable runnable)
+    public void removeAsynchronous(Activity activity, final Runnable runnable)
     {
-        WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_ASYNCHRONOUS)
+        if (activity == null || activity.isFinishing())
+            return;
+
+        WorkerService.run(activity, new WorkerService.RunningTask(TAG, TASK_REMOVE_ASYNCHRONOUS)
         {
             @Override
             protected void onRun()

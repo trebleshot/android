@@ -25,6 +25,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 
 import java.util.ArrayList;
 
@@ -78,6 +79,46 @@ public class TransferUtils
                         AccessDatabase.FIELD_TRANSFER_DEVICEID,
                         AccessDatabase.FIELD_TRANSFER_FLAG),
                         String.valueOf(groupId), deviceId, flag.toString());
+    }
+
+    public static ShowingAssignee getFirstAssignee(AccessDatabase database, TransferGroup group)
+    {
+        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId));
+
+        ArrayList<ShowingAssignee> assignees = database
+                .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+                {
+                    @Override
+                    public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+                    {
+                        object.device = new NetworkDevice(object.deviceId);
+                        object.connection = new NetworkDevice.Connection(object);
+
+                        try {
+                            db.reconstruct(object.device);
+                            db.reconstruct(object.connection);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        return assignees.size() == 0 ? null : assignees.get(0);
+    }
+
+    public static ShowingAssignee getFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, TransferGroup group)
+    {
+        ShowingAssignee assignee = getFirstAssignee(database, group);
+
+        if (assignee == null) {
+            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
+                    .show();
+
+            return null;
+        }
+
+        return assignee;
     }
 
     public static TransferObject fetchValidIncomingTransfer(Context context, long groupId, String deviceId)
@@ -168,6 +209,9 @@ public class TransferUtils
             @Override
             protected void onRun()
             {
+                if (activity == null || activity.isFinishing())
+                    return;
+
                 if (fetchValidIncomingTransfer(activity, group.groupId, assignee.deviceId) == null) {
                     activity.runOnUiThread(new Runnable()
                     {
@@ -226,44 +270,52 @@ public class TransferUtils
 
     public static void startTransfer(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
     {
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
+        if (activity != null && !activity.isFinishing())
+            activity.runOnUiThread(new Runnable()
             {
-                try {
-                    NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
+                @Override
+                public void run()
+                {
+                    try {
+                        NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
 
-                    AppUtils.getDatabase(activity)
-                            .reconstruct(networkDevice);
+                        AppUtils.getDatabase(activity)
+                                .reconstruct(networkDevice);
 
-                    new EstablishConnectionDialog(activity, networkDevice, new OnDeviceSelectedListener()
-                    {
-                        @Override
-                        public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                        new EstablishConnectionDialog(activity, networkDevice, new OnDeviceSelectedListener()
                         {
-                            AppUtils.startForegroundService(activity, new Intent(activity, CommunicationService.class)
-                                    .setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
-                                    .putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId)
-                                    .putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
-                        }
-                    }).show();
-                } catch (Exception e) {
-                    new AlertDialog.Builder(activity)
-                            .setMessage(R.string.mesg_somethingWentWrong)
-                            .setNegativeButton(R.string.butn_cancel, null)
-                            .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                            @Override
+                            public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
                             {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    startTransfer(activity, group, assignee);
+                                if (!assignee.connectionAdapter.equals(connection.adapterName)) {
+                                    assignee.connectionAdapter = connection.adapterName;
+
+                                    AppUtils.getDatabase(activity)
+                                            .publish(assignee);
                                 }
-                            })
-                            .show();
+
+                                AppUtils.startForegroundService(activity, new Intent(activity, CommunicationService.class)
+                                        .setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
+                                        .putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId)
+                                        .putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
+                            }
+                        }).show();
+                    } catch (Exception e) {
+                        new AlertDialog.Builder(activity)
+                                .setMessage(R.string.mesg_somethingWentWrong)
+                                .setNegativeButton(R.string.butn_cancel, null)
+                                .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        startTransfer(activity, group, assignee);
+                                    }
+                                })
+                                .show();
+                    }
                 }
-            }
-        });
+            });
     }
 
     public interface ConnectionUpdatedListener

@@ -241,7 +241,6 @@ public class UIConnectionUtils
                     });
             } else
                 showUnknownError(activity, retryButtonListener);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }

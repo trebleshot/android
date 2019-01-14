@@ -1,24 +1,18 @@
 package com.genonbeta.TrebleShot.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -41,15 +35,12 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -497,6 +488,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 : mFilteringDelegate;
     }
 
+    @Override
+    public void setFilteringDelegate(FilteringDelegate<T> delegate)
+    {
+        mFilteringDelegate = delegate;
+    }
+
     public FastScroller getFastScroller()
     {
         return mFastScroller;
@@ -524,6 +521,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return mSelectionCallback == null
                 ? mDefaultSelectionCallback
                 : mSelectionCallback;
+    }
+
+    public void setSelectionCallback(SelectionCallback<T> selectionCallback)
+    {
+        mSelectionCallback = selectionCallback;
     }
 
     public int getSortingCriteria()
@@ -570,9 +572,19 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return mRefreshRequested;
     }
 
+    public void setRefreshRequested(boolean requested)
+    {
+        mRefreshRequested = requested;
+    }
+
     public boolean isSortingSupported()
     {
         return mSortingSupported;
+    }
+
+    public void setSortingSupported(boolean sortingSupported)
+    {
+        mSortingSupported = sortingSupported;
     }
 
     public boolean loadIfRequested()
@@ -718,36 +730,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         mLayoutClickListener = clickListener;
     }
 
-    @Override
-    public void setFilteringDelegate(FilteringDelegate<T> delegate)
-    {
-        mFilteringDelegate = delegate;
-    }
-
     public void setFilteringSupported(boolean supported)
     {
         mFilteringSupported = supported;
-    }
-
-    public void setRefreshRequested(boolean requested)
-    {
-        mRefreshRequested = requested;
-    }
-
-    public void setSortingSupported(boolean sortingSupported)
-    {
-        mSortingSupported = sortingSupported;
     }
 
     @Override
     public void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection)
     {
         mSelectionConnection = selectionConnection;
-    }
-
-    public void setSelectionCallback(SelectionCallback<T> selectionCallback)
-    {
-        mSelectionCallback = selectionCallback;
     }
 
     public void setUseDefaultPaddingDecoration(boolean use)
@@ -763,6 +754,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>
     {
         boolean onLayoutClick(EditableListFragment listFragment, V holder, boolean longClick);
+    }
+
+    public interface FilteringDelegate<T extends Editable>
+    {
+        boolean changeFilteringKeyword(@Nullable String keyword);
+
+        @Nullable
+        String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 
     public static class SelectionCallback<T extends Editable> implements PowerfulActionMode.Callback<T>
@@ -905,13 +904,5 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             mFragment.getSelectionConnection().getSelectedItemList().clear();
             mFragment.loadIfRequested();
         }
-    }
-
-    public interface FilteringDelegate<T extends Editable>
-    {
-        boolean changeFilteringKeyword(@Nullable String keyword);
-
-        @Nullable
-        String[] getFilteringKeyword(EditableListFragmentImpl<T> listFragment);
     }
 }

@@ -3,29 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/actions_transfer_resume"
-        android:title="@string/butn_start"
+        android:id="@+id/actions_transfer_toggle"
+        android:title="@string/butn_receive"
         android:visible="false"
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/actions_transfer_send"
-        android:title="@string/butn_start"
-        android:visible="false"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/actions_transfer_add_device"
+        android:id="@+id/actions_transfer_sender_add_device"
         android:title="@string/butn_addDevices"
         android:visible="false" />
 
     <item
-        android:id="@+id/actions_transfer_show_files"
+        android:id="@+id/actions_transfer_receiver_test_connection"
+        android:title="@string/butn_connectionTest"
+        android:visible="false" />
+
+    <item
+        android:id="@+id/actions_transfer_receiver_show_files"
         android:title="@string/butn_showFiles"
         android:visible="false" />
 
     <item
-        android:id="@+id/actions_transfer_retry_all"
+        android:id="@+id/actions_transfer_receiver_retry_receiving"
         android:title="@string/butn_retryReceiving"
         android:visible="false" />
 

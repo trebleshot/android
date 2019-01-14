@@ -19,6 +19,7 @@ public class Keyword
 			BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate",
 			TRANSFER_REQUEST_ID = "requestId",
 			TRANSFER_GROUP_ID = "groupId",
+			TRANSFER_DEVICE_ID = "deviceId", // Introduced in 91
 			TRANSFER_SOCKET_PORT = "socketPort",
 			TRANSFER_IS_ACCEPTED = "isAccepted",
 			TRANSFER_CLIPBOARD_TEXT = "clipboardText",

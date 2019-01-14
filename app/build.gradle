@@ -32,8 +32,8 @@ android {
         applicationId "com.genonbeta.TrebleShot"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 90
-        versionName "1.2.8.2"
+        versionCode 91
+        versionName "1.2.8.3"
 
         vectorDrawables {
             useSupportLibrary = true
@@ -108,8 +108,8 @@ dependencies {
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
     implementation 'com.google.android.material:material:1.1.0-alpha02'
 
-    implementation 'com.genonbeta.android:framework:1.0.2.6-local46'
-    //implementation 'com.genonbeta.android:framework:1.0.2.6-alpha03'
+    //implementation 'com.genonbeta.android:framework:1.0.2.6-local69'
+    implementation 'com.genonbeta.android:framework:1.0.2.6-alpha04'
     implementation 'com.genonbeta.android:gdatabase:1.0.2.6'
     implementation 'com.genonbeta.coolsocket:main:1.0.3'
 

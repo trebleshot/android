@@ -190,11 +190,7 @@ public class HomeActivity
         } else if (R.id.menu_activity_main_preferences == mChosenMenuItemId) {
             startActivity(new Intent(this, PreferencesActivity.class));
         } else if (R.id.menu_activity_main_exit == mChosenMenuItemId) {
-            stopService(new Intent(this, CommunicationService.class));
-            stopService(new Intent(this, DeviceScannerService.class));
-            stopService(new Intent(this, WorkerService.class));
-
-            finish();
+            exitApp();
         } else if (R.id.menu_activity_main_donate == mChosenMenuItemId) {
             try {
                 startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));

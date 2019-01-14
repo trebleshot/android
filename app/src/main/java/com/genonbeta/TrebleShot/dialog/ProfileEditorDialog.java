@@ -44,6 +44,8 @@ public class ProfileEditorDialog extends AlertDialog.Builder
         });
 
         setView(view);
+
+
         setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
         {
             @Override

@@ -924,7 +924,11 @@ public class CommunicationService extends Service
             try {
                 ActiveConnection.Response mainRequest = activeConnection.receive();
                 Log.d(TAG, "SeamlessServer.onConnected(): receive: " + mainRequest.response);
-                int groupId = new JSONObject(mainRequest.response).getInt(Keyword.TRANSFER_GROUP_ID);
+                JSONObject mainRequestJSON = new JSONObject(mainRequest.response);
+                String deviceId = mainRequestJSON.has(Keyword.TRANSFER_DEVICE_ID)
+                        ? mainRequestJSON.getString(Keyword.TRANSFER_DEVICE_ID)
+                        : null;
+                int groupId = mainRequestJSON.getInt(Keyword.TRANSFER_GROUP_ID);
 
                 activeConnection.setId(groupId);
 
@@ -933,7 +937,19 @@ public class CommunicationService extends Service
                             .put(Keyword.RESULT, false);
 
                     try {
-                        transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
+                        if (deviceId != null) {
+                            NetworkDevice otherDevice = new NetworkDevice(deviceId);
+                            getDatabase().reconstruct(otherDevice);
+
+                            NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), otherDevice, activeConnection.getClientAddress());
+
+                            transferInstance = new TransferInstance.Builder()
+                                    .supply(connection)
+                                    .supply(otherDevice)
+                                    .build(getDatabase(), groupId, deviceId, true);
+                        } else
+                            transferInstance = new TransferInstance(getDatabase(), groupId, activeConnection.getClientAddress(), false);
+
                         processHolder.groupId = transferInstance.getGroup().groupId;
                         processHolder.deviceId = transferInstance.getAssignee().deviceId;
 
@@ -950,6 +966,11 @@ public class CommunicationService extends Service
                         activeConnection.reply(reply.toString());
                         Log.d(TAG, "SeamlessServer.onConnected(): reply: " + reply.toString());
                     }
+                }
+
+                {
+                    // It is a good practice to update the transfer method
+                    // when the connection address is not
                 }
 
                 notifyTaskStatusChange(processHolder.groupId, processHolder.deviceId, TASK_STATUS_ONGOING);
@@ -1116,6 +1137,7 @@ public class CommunicationService extends Service
         @Override
         public void onConnect(CoolSocket.Client client)
         {
+            NetworkDevice thisDevice = AppUtils.getLocalDevice(CommunicationService.this);
             boolean retry = false;
 
             ProcessHolder processHolder = new ProcessHolder();
@@ -1167,6 +1189,7 @@ public class CommunicationService extends Service
                 try {
                     processHolder.activeConnection.reply(new JSONObject()
                             .put(Keyword.TRANSFER_GROUP_ID, processHolder.groupId)
+                            .put(Keyword.TRANSFER_DEVICE_ID, thisDevice.deviceId)
                             .toString());
                     Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: empty");
 
