@@ -254,7 +254,8 @@ public class FileListFragment
                             final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
                             final FileBookmarkObject bookmarkObject;
                             boolean isFile = fileHolder.file.isFile();
-                            boolean canChange = fileHolder.file.canWrite();
+                            boolean canChange = fileHolder.file.canWrite()
+                                    || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
                             boolean canRead = fileHolder.file.canRead();
                             boolean isSensitive = fileHolder instanceof FileListAdapter.StorageHolderImpl
                                     || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
@@ -287,10 +288,8 @@ public class FileListFragment
                             menuItself.findItem(R.id.action_mode_file_change_save_path)
                                     .setVisible(FileUtils.getApplicationDirectory(getContext()).getUri()
                                             .equals(fileHolder.file.getUri()));
-
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
-
                             menuItself.findItem(R.id.action_mode_file_toggle_bookmark)
                                     .setVisible(!isFile)
                                     .setTitle(bookmarkObject == null
