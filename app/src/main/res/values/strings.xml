@@ -421,9 +421,9 @@
     <string name="text_fixConnection" translatable="false">@string/butn_fixConnection</string>
     <string name="butn_never">Never</string>
     <string name="text_hotspotStartedExternallyNotice">The hotspot was started externally. To use QR code, you should start it here. </string>
-    <string name="text_bookmark">Bookmark</string>
-    <string name="butn_addBookmark">Add bookmark</string>
-    <string name="butn_removeBookmark">Remove bookmark</string>
+    <string name="text_shortcut">Shortcut</string>
+    <string name="butn_addShortcut">Add shortcut</string>
+    <string name="butn_removeShortcut">Remove shortcut</string>
     <string name="mesg_removed">Removed</string>
     <string name="mesg_added">Added</string>
     <string name="butn_change">Change</string>
@@ -432,7 +432,7 @@
     <string name="text_introSetUpPermissions">Set up permissions</string>
     <string name="text_introAllSet">All set!</string>
     <string name="text_introSetUpProfile">Set up your profile</string>
-    <string name="mesg_openFailure">Can not view %s</string>
+    <string name="mesg_openFailure">Can not view \"%s\"</string>
     <string name="text_connectionTest">Connection test - %s</string>
     <string name="butn_connectionTest">Connection test</string>
     <string name="text_textMillisecond">%d ms</string>

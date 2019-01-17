@@ -9,21 +9,21 @@ import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
-public class FileBookmarkObject implements DatabaseObject<Object>
+public class FileShortcutObject implements DatabaseObject<Object>
 {
     public String title;
     public Uri path;
 
-    public FileBookmarkObject()
+    public FileShortcutObject()
     {
     }
 
-    public FileBookmarkObject(Uri path)
+    public FileShortcutObject(Uri path)
     {
         this.path = path;
     }
 
-    public FileBookmarkObject(String title, Uri path)
+    public FileShortcutObject(String title, Uri path)
     {
         this(path);
         this.title = title;

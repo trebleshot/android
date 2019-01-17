@@ -18,7 +18,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.object.FileBookmarkObject;
+import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
@@ -165,12 +165,12 @@ public class FileListAdapter
                 lister.offerObliged(this, fileHolder);
             }
 
-            List<FileBookmarkObject> bookmarkedList = AppUtils.getDatabase(getContext())
-                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileBookmarkObject.class);
+            List<FileShortcutObject> shortcutList = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileShortcutObject.class);
 
-            for (FileBookmarkObject object : bookmarkedList) {
+            for (FileShortcutObject object : shortcutList) {
                 try {
-                    lister.offerObliged(this, new BookmarkedDirectoryHolder(getContext(), object));
+                    lister.offerObliged(this, new ShortcutDirectoryHolder(getContext(), object));
                 } catch (Exception e) {
                     // do nothing
                 }
@@ -415,7 +415,7 @@ public class FileListAdapter
 
         public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
         {
-            // It will be generated in getId() method
+            // 'id' will be generated in getId() method
             super(0, friendlyName, friendlyName, file.getType(), date, size, uri);
 
             this.file = file;
@@ -522,21 +522,21 @@ public class FileListAdapter
         }
     }
 
-    public static class BookmarkedDirectoryHolder extends DirectoryHolder
+    public static class ShortcutDirectoryHolder extends DirectoryHolder
     {
-        private FileBookmarkObject mBookmarkObject;
+        private FileShortcutObject mShortcutObject;
 
-        public BookmarkedDirectoryHolder(Context context, FileBookmarkObject bookmarkObject) throws FileNotFoundException
+        public ShortcutDirectoryHolder(Context context, FileShortcutObject shortcutObject) throws FileNotFoundException
         {
-            super(FileUtils.fromUri(context, bookmarkObject.path), bookmarkObject.title,
-                    context.getString(R.string.text_bookmark), R.drawable.ic_bookmark_white_24dp);
+            super(FileUtils.fromUri(context, shortcutObject.path), shortcutObject.title,
+                    context.getString(R.string.text_shortcut), R.drawable.ic_bookmark_white_24dp);
 
-            mBookmarkObject = bookmarkObject;
+            mShortcutObject = shortcutObject;
         }
 
-        public FileBookmarkObject getBookmarkObject()
+        public FileShortcutObject getShortcutObject()
         {
-            return mBookmarkObject;
+            return mShortcutObject;
         }
     }
 

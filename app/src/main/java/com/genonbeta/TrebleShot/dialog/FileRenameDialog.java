@@ -6,7 +6,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
-import com.genonbeta.TrebleShot.object.FileBookmarkObject;
+import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -94,8 +94,8 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
     public boolean renameFile(T holder, String renameTo, OnFileRenameListener renameListener)
     {
         try {
-            if (holder instanceof FileListAdapter.BookmarkedDirectoryHolder) {
-                FileBookmarkObject object = ((FileListAdapter.BookmarkedDirectoryHolder) holder).getBookmarkObject();
+            if (holder instanceof FileListAdapter.ShortcutDirectoryHolder) {
+                FileShortcutObject object = ((FileListAdapter.ShortcutDirectoryHolder) holder).getShortcutObject();
 
                 if (object != null) {
                     object.title = renameTo;

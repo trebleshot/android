@@ -402,4 +402,20 @@
     <string name="text_loadThumbnailsSummary">Dosyalar için önizlemeler göster</string>
     <string name="text_manageDevices">Cihazları yönet</string>
     <string name="butn_never">Asla</string>
+    <string name="butn_change">Değiştir</string>
+    <string name="butn_connectionTest">Bağlantı testi</string>
+    <string name="mesg_added">Eklendi</string>
+    <string name="mesg_openFailure">\"%s\" görüntülenemiyor</string>
+    <string name="mesg_removed">Kaldırıldı</string>
+    <string name="text_connectionTest">Bağlantı testi - %s</string>
+    <string name="text_introAllSet">Gitmeye hazır!</string>
+    <string name="text_introMakeItYours">Sizin yapın</string>
+    <string name="text_introSetUpPermissions">İzinleri ayarlayın</string>
+    <string name="text_introSetUpProfile">Profilinizi ayarlayın</string>
+    <string name="text_textMillisecond">%s milisaniye</string>
+    <string name="text_welcome">Hoşgeldiniz</string>
+    <string name="butn_addShortcut">Kısayollara ekle</string>
+    <string name="butn_removeShortcut">Kısayolu kaldır</string>
+    <string name="text_shortcut">Kısayol</string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot harici olarak başlatıldı. QR Kodu\'nu kullanmak için buradan başlatın.</string>
 </resources>

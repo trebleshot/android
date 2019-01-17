@@ -69,19 +69,25 @@ public class App extends Application
     private void initializeSettings()
     {
         SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
-
+        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
         boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
+        boolean refVersion = defaultPreferences.contains("referral_version");
 
         PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
 
+        if (!refVersion)
+            defaultPreferences.edit()
+                    .putInt("referral_version", localDevice.versionNumber)
+                    .apply();
+
+        // Some pre-kitkat devices were soft rebooting when this feature was turned on.
+        // So we will disable it for them and they will still be able to enable it.
         if (!nsdDefined)
             defaultPreferences.edit()
                     .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
                     .apply();
 
         PreferenceUtils.syncDefaults(getApplicationContext());
-
-        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
         if (defaultPreferences.contains("migrated_version")) {
             int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);

@@ -28,7 +28,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.FileDeletionDialog;
 import com.genonbeta.TrebleShot.dialog.FileRenameDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.object.FileBookmarkObject;
+import com.genonbeta.TrebleShot.object.FileShortcutObject;
 import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
@@ -251,9 +251,9 @@ public class FileListFragment
 
         if (id == R.id.actions_file_list_mount_directory) {
             requestMountStorage();
-        } else if (id == R.id.actions_file_list_toggle_bookmark
+        } else if (id == R.id.actions_file_list_toggle_shortcut
                 && getAdapter().getPath() != null) {
-            bookmarkItem(new FileBookmarkObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri()));
+            shortcutItem(new FileShortcutObject(getAdapter().getPath().getName(), getAdapter().getPath().getUri()));
         } else
             return super.onOptionsItemSelected(item);
 
@@ -265,18 +265,18 @@ public class FileListFragment
     {
         super.onPrepareOptionsMenu(menu);
 
-        MenuItem bookmarkMenuItem = menu.findItem(R.id.actions_file_list_toggle_bookmark);
+        MenuItem shortcutMenuItem = menu.findItem(R.id.actions_file_list_toggle_shortcut);
 
-        if (bookmarkMenuItem != null) {
+        if (shortcutMenuItem != null) {
             boolean hasPath = getAdapter().getPath() != null;
-            bookmarkMenuItem.setEnabled(hasPath);
+            shortcutMenuItem.setEnabled(hasPath);
 
             if (hasPath)
                 try {
-                    AppUtils.getDatabase(getContext()).reconstruct(new FileBookmarkObject(getAdapter().getPath().getUri()));
-                    bookmarkMenuItem.setTitle(R.string.butn_removeBookmark);
+                    AppUtils.getDatabase(getContext()).reconstruct(new FileShortcutObject(getAdapter().getPath().getUri()));
+                    shortcutMenuItem.setTitle(R.string.butn_removeShortcut);
                 } catch (Exception e) {
-                    bookmarkMenuItem.setTitle(R.string.butn_addBookmark);
+                    shortcutMenuItem.setTitle(R.string.butn_addShortcut);
                 }
         }
     }
@@ -308,31 +308,31 @@ public class FileListFragment
                         public void onClick(View v)
                         {
                             final FileListAdapter.GenericFileHolder fileHolder = getAdapter().getList().get(clazz.getAdapterPosition());
-                            final FileBookmarkObject bookmarkObject;
+                            final FileShortcutObject shortcutObject;
                             boolean isFile = fileHolder.file.isFile();
                             boolean canChange = fileHolder.file.canWrite()
-                                    || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
+                                    || fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder;
                             boolean canRead = fileHolder.file.canRead();
                             boolean isSensitive = fileHolder instanceof FileListAdapter.StorageHolderImpl
-                                    || fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder;
+                                    || fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder;
                             PopupMenu popupMenu = new PopupMenu(getContext(), v);
                             Menu menuItself = popupMenu.getMenu();
 
-                            if (fileHolder instanceof FileListAdapter.BookmarkedDirectoryHolder)
-                                bookmarkObject = ((FileListAdapter.BookmarkedDirectoryHolder) fileHolder).getBookmarkObject();
+                            if (fileHolder instanceof FileListAdapter.ShortcutDirectoryHolder)
+                                shortcutObject = ((FileListAdapter.ShortcutDirectoryHolder) fileHolder).getShortcutObject();
                             else if (fileHolder.file.isDirectory()) {
-                                FileBookmarkObject testedObject;
+                                FileShortcutObject testedObject;
 
                                 try {
-                                    testedObject = new FileBookmarkObject(fileHolder.file.getUri());
+                                    testedObject = new FileShortcutObject(fileHolder.file.getUri());
                                     AppUtils.getDatabase(getContext()).reconstruct(testedObject);
                                 } catch (Exception e) {
                                     testedObject = null;
                                 }
 
-                                bookmarkObject = testedObject;
+                                shortcutObject = testedObject;
                             } else
-                                bookmarkObject = null;
+                                shortcutObject = null;
 
                             popupMenu.getMenuInflater().inflate(R.menu.action_mode_file, menuItself);
 
@@ -346,11 +346,11 @@ public class FileListFragment
                                             .equals(fileHolder.file.getUri()));
                             menuItself.findItem(R.id.action_mode_file_eject_directory)
                                     .setVisible(fileHolder instanceof FileListAdapter.WritablePathHolder);
-                            menuItself.findItem(R.id.action_mode_file_toggle_bookmark)
+                            menuItself.findItem(R.id.action_mode_file_toggle_shortcut)
                                     .setVisible(!isFile)
-                                    .setTitle(bookmarkObject == null
-                                            ? R.string.butn_addBookmark
-                                            : R.string.butn_removeBookmark);
+                                    .setTitle(shortcutObject == null
+                                            ? R.string.butn_addShortcut
+                                            : R.string.butn_removeShortcut);
 
                             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
                             {
@@ -370,10 +370,10 @@ public class FileListFragment
                                     } else if (id == R.id.action_mode_file_eject_directory
                                             && fileHolder instanceof FileListAdapter.WritablePathHolder) {
                                         AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
-                                    } else if (id == R.id.action_mode_file_toggle_bookmark) {
-                                        bookmarkItem(bookmarkObject != null
-                                                ? bookmarkObject
-                                                : new FileBookmarkObject(fileHolder.friendlyName, fileHolder.file.getUri()));
+                                    } else if (id == R.id.action_mode_file_toggle_shortcut) {
+                                        shortcutItem(shortcutObject != null
+                                                ? shortcutObject
+                                                : new FileShortcutObject(fileHolder.friendlyName, fileHolder.file.getUri()));
                                     } else if (id == R.id.action_mode_file_change_save_path) {
                                         startActivity(new Intent(getContext(), ChangeStoragePathActivity.class));
                                     } else
@@ -469,17 +469,17 @@ public class FileListFragment
         mLastKnownPath = pathOnTrial;
     }
 
-    protected void bookmarkItem(FileBookmarkObject bookmarkObject)
+    protected void shortcutItem(FileShortcutObject shortcutObject)
     {
         AccessDatabase database = AppUtils.getDatabase(getContext());
 
         try {
-            database.reconstruct(bookmarkObject);
-            database.remove(bookmarkObject);
+            database.reconstruct(shortcutObject);
+            database.remove(shortcutObject);
 
             createSnackbar(R.string.mesg_removed).show();
         } catch (Exception e) {
-            database.insert(bookmarkObject);
+            database.insert(shortcutObject);
             createSnackbar(R.string.mesg_added).show();
         }
     }
