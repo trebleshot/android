@@ -75,6 +75,11 @@ public class TextDrawable extends ShapeDrawable
         paint.setColor(mColor);
     }
 
+    public static IShapeBuilder builder()
+    {
+        return new Builder();
+    }
+
     private int getDarkerShade(int color)
     {
         return Color.rgb((int) (SHADE_FACTOR * Color.red(color)),
@@ -150,9 +155,53 @@ public class TextDrawable extends ShapeDrawable
         return mHeight;
     }
 
-    public static IShapeBuilder builder()
+    public interface IConfigBuilder
     {
-        return new Builder();
+        IConfigBuilder bold();
+
+        IConfigBuilder firstLettersOnly(boolean use);
+
+        IConfigBuilder fontSize(int size);
+
+        IConfigBuilder height(int height);
+
+        IConfigBuilder shapeColor(int color);
+
+        IConfigBuilder textColor(int color);
+
+        IConfigBuilder textMaxLength(int length);
+
+        IConfigBuilder toUpperCase();
+
+        IConfigBuilder useFont(Typeface font);
+
+        IConfigBuilder width(int width);
+
+        IConfigBuilder withBorder(int thickness);
+
+        IShapeBuilder endConfig();
+    }
+
+    public interface IBuilder
+    {
+        TextDrawable build(String text);
+    }
+
+    public interface IShapeBuilder
+    {
+        IConfigBuilder beginConfig();
+
+        IBuilder rect();
+
+        IBuilder round();
+
+        IBuilder roundRect(int radius);
+
+        TextDrawable buildRect(String text);
+
+        TextDrawable buildRound(String text);
+
+        TextDrawable buildRoundRect(String text, int radius);
     }
 
     public static class Builder implements IConfigBuilder, IShapeBuilder, IBuilder
@@ -319,54 +368,5 @@ public class TextDrawable extends ShapeDrawable
             mText = text;
             return new TextDrawable(this);
         }
-    }
-
-    public interface IConfigBuilder
-    {
-        IConfigBuilder bold();
-
-        IConfigBuilder firstLettersOnly(boolean use);
-
-        IConfigBuilder fontSize(int size);
-
-        IConfigBuilder height(int height);
-
-        IConfigBuilder shapeColor(int color);
-
-        IConfigBuilder textColor(int color);
-
-        IConfigBuilder textMaxLength(int length);
-
-        IConfigBuilder toUpperCase();
-
-        IConfigBuilder useFont(Typeface font);
-
-        IConfigBuilder width(int width);
-
-        IConfigBuilder withBorder(int thickness);
-
-        IShapeBuilder endConfig();
-    }
-
-    public interface IBuilder
-    {
-        TextDrawable build(String text);
-    }
-
-    public interface IShapeBuilder
-    {
-        IConfigBuilder beginConfig();
-
-        IBuilder rect();
-
-        IBuilder round();
-
-        IBuilder roundRect(int radius);
-
-        TextDrawable buildRect(String text);
-
-        TextDrawable buildRound(String text);
-
-        TextDrawable buildRoundRect(String text, int radius);
     }
 }

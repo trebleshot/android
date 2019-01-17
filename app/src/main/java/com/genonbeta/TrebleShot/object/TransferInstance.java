@@ -7,8 +7,6 @@ import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
-import java.util.Objects;
-
 /**
  * created by: Veli
  * date: 9.01.2018 18:40
@@ -183,7 +181,8 @@ public class TransferInstance
             return this;
         }
 
-        public Builder supply(TransferGroup.Assignee assignee) {
+        public Builder supply(TransferGroup.Assignee assignee)
+        {
             mTransferInstance.mAssignee = assignee;
             return this;
         }

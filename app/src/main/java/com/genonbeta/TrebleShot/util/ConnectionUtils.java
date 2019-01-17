@@ -12,7 +12,6 @@ import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
@@ -71,7 +70,8 @@ public class ConnectionUtils
     public boolean disableCurrentNetwork()
     {
         // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
-        // And it is the case that then the return value of disableNetwork will be false.
+        // This is because we are only allowed to manipulate the connections that we added.
+        // And if it is the case, then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork()
                 && getWifiManager().disconnect()
                 && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
@@ -130,8 +130,10 @@ public class ConnectionUtils
                     Log.d(TAG, "establishHotspotConnection(): No DHCP provided. Looping...");
             }
 
-            if (connectionCallback.onTimePassed(1000, passedTime) || interrupter.interrupted())
+            if (connectionCallback.onTimePassed(1000, passedTime) || interrupter.interrupted()) {
+                Log.d(TAG, "establishHotspotConnection(): Timed out or onTimePassed returned true. Exiting...");
                 break;
+            }
 
             try {
                 Thread.sleep(1000);

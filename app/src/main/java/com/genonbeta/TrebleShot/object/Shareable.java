@@ -83,6 +83,12 @@ public class Shareable implements Editable
     }
 
     @Override
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
+    @Override
     public String getSelectableTitle()
     {
         return this.friendlyName;
@@ -97,12 +103,6 @@ public class Shareable implements Editable
     public boolean searchMatches(String searchWord)
     {
         return TextUtils.searchWord(this.friendlyName, searchWord);
-    }
-
-    @Override
-    public void setId(long id)
-    {
-        this.id = id;
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created by: Veli
@@ -24,9 +25,9 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
     public static final String TAG = FileRenameDialog.class.getSimpleName();
     public static final int JOB_RENAME_FILES = 0;
 
-    private ArrayList<T> mItemList = new ArrayList<>();
+    private List<T> mItemList = new ArrayList<>();
 
-    public FileRenameDialog(Context context, ArrayList<T> itemList, final OnFileRenameListener renameListener)
+    public FileRenameDialog(Context context, List<T> itemList, final OnFileRenameListener renameListener)
     {
         super(context);
 
@@ -85,7 +86,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
         });
     }
 
-    public ArrayList<T> getItemList()
+    public List<T> getItemList()
     {
         return mItemList;
     }

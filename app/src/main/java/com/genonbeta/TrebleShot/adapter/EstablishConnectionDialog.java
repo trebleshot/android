@@ -17,7 +17,6 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.util.MathUtils;
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 
 public class EstablishConnectionDialog extends ProgressDialog
 {
@@ -61,9 +61,9 @@ public class EstablishConnectionDialog extends ProgressDialog
             {
                 setInterrupter(interrupter);
 
-                final ArrayList<ConnectionResult> reachedConnections = new ArrayList<>();
-                final ArrayList<ConnectionResult> calculatedConnections = new ArrayList<>();
-                final ArrayList<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+                final List<ConnectionResult> reachedConnections = new ArrayList<>();
+                final List<ConnectionResult> calculatedConnections = new ArrayList<>();
+                final List<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                         .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.deviceId)
                         .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class);
 

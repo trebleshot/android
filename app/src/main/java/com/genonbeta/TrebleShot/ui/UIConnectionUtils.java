@@ -53,6 +53,52 @@ public class UIConnectionUtils
         mSnackbarSupport = snackbarSupport;
     }
 
+    public static void showConnectionRejectionInformation(final Activity activity,
+                                                          final NetworkDevice device,
+                                                          final JSONObject clientResponse,
+                                                          final DialogInterface.OnClickListener retryButtonListener)
+    {
+        try {
+            if (clientResponse.has(Keyword.ERROR)) {
+                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
+                    new Handler(Looper.getMainLooper()).post(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            if (!activity.isFinishing())
+                                new AlertDialog.Builder(activity)
+                                        .setTitle(R.string.mesg_notAllowed)
+                                        .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                        .show();
+                        }
+                    });
+            } else
+                showUnknownError(activity, retryButtonListener);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void showUnknownError(final Activity activity, final DialogInterface.OnClickListener retryButtonListener)
+    {
+        new Handler(Looper.getMainLooper()).post(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (!activity.isFinishing())
+                    new AlertDialog.Builder(activity)
+                            .setMessage(R.string.mesg_somethingWentWrong)
+                            .setNegativeButton(R.string.butn_close, null)
+                            .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                            .show();
+            }
+        });
+    }
+
     public ConnectionUtils getConnectionUtils()
     {
         return mConnectionUtils;
@@ -124,15 +170,17 @@ public class UIConnectionUtils
                             @Override
                             public void run()
                             {
-                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                                        .setMessage(R.string.mesg_connectionFailure)
-                                        .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_retry, retryButtonListener);
+                                if (!activity.isFinishing()) {
+                                    AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                                            .setMessage(R.string.mesg_connectionFailure)
+                                            .setNegativeButton(R.string.butn_close, null)
+                                            .setPositiveButton(R.string.butn_retry, retryButtonListener);
 
-                                if (object instanceof NetworkDevice)
-                                    dialogBuilder.setTitle(((NetworkDevice) object).nickname);
+                                    if (object instanceof NetworkDevice)
+                                        dialogBuilder.setTitle(((NetworkDevice) object).nickname);
 
-                                dialogBuilder.show();
+                                    dialogBuilder.show();
+                                }
                             }
                         });
                 } catch (Exception e) {
@@ -217,35 +265,6 @@ public class UIConnectionUtils
         });
     }
 
-    public static void showConnectionRejectionInformation(final Activity activity,
-                                                          final NetworkDevice device,
-                                                          final JSONObject clientResponse,
-                                                          final DialogInterface.OnClickListener retryButtonListener)
-    {
-        try {
-            if (clientResponse.has(Keyword.ERROR)) {
-                if (clientResponse.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ALLOWED))
-                    new Handler(Looper.getMainLooper()).post(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (!activity.isFinishing())
-                                new AlertDialog.Builder(activity)
-                                        .setTitle(R.string.mesg_notAllowed)
-                                        .setMessage(activity.getString(R.string.text_notAllowedHelp, device.nickname, AppUtils.getLocalDeviceName(activity)))
-                                        .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                        .show();
-                        }
-                    });
-            } else
-                showUnknownError(activity, retryButtonListener);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void showConnectionOptions(final Activity activity, final int locationPermRequestId, final RequestWatcher watcher)
     {
         if (!getConnectionUtils().getWifiManager().isWifiEnabled())
@@ -277,23 +296,6 @@ public class UIConnectionUtils
         }
 
         watcher.onResultReturned(true, false);
-    }
-
-    public static void showUnknownError(final Activity activity, final DialogInterface.OnClickListener retryButtonListener)
-    {
-        new Handler(Looper.getMainLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if (!activity.isFinishing())
-                    new AlertDialog.Builder(activity)
-                            .setMessage(R.string.mesg_somethingWentWrong)
-                            .setNegativeButton(R.string.butn_close, null)
-                            .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                            .show();
-            }
-        });
     }
 
     public boolean toggleHotspot(boolean conditional,

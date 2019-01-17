@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by: veli
@@ -21,7 +22,7 @@ import java.util.ArrayList;
 
 abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapter<PathResolverRecyclerAdapter.Holder>
 {
-    private ArrayList<Holder.Index<T>> mList = new ArrayList<>();
+    private List<Holder.Index<T>> mList = new ArrayList<>();
     private OnClickListener<T> mClickListener;
     private Context mContext;
 
@@ -62,7 +63,8 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
             });
     }
 
-    public void initAdapter() {
+    public void initAdapter()
+    {
         synchronized (getList()) {
             getList().clear();
             getList().add(onFirstItem());
@@ -80,7 +82,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
         return mList.size();
     }
 
-    public ArrayList<Holder.Index<T>> getList()
+    public List<Holder.Index<T>> getList()
     {
         return mList;
     }
@@ -88,6 +90,11 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
     public void setOnClickListener(OnClickListener<T> clickListener)
     {
         mClickListener = clickListener;
+    }
+
+    public interface OnClickListener<E>
+    {
+        void onClick(Holder<E> holder);
     }
 
     public static class Holder<E> extends RecyclerView.ViewHolder
@@ -123,10 +130,5 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
                 this(title, R.drawable.ic_keyboard_arrow_right_white_24dp, object);
             }
         }
-    }
-
-    public interface OnClickListener<E>
-    {
-        void onClick(Holder<E> holder);
     }
 }

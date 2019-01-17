@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
@@ -15,9 +18,6 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.io.FileNotFoundException;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 
 public class FileExplorerActivity
         extends Activity

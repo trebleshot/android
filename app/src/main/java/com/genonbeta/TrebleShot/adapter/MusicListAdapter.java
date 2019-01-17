@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.collection.ArrayMap;
+
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -17,10 +20,8 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.io.File;
-import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.collection.ArrayMap;
+import java.util.List;
+import java.util.Map;
 
 public class MusicListAdapter
         extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -41,7 +42,7 @@ public class MusicListAdapter
     @Override
     protected void onLoad(GroupLister<SongHolder> lister)
     {
-        ArrayMap<Integer, AlbumHolder> albumList = new ArrayMap<>();
+        Map<Integer, AlbumHolder> albumList = new ArrayMap<>();
         Cursor songCursor = mResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                 null,
                 MediaStore.Audio.Media.IS_MUSIC + "=?",
@@ -173,7 +174,7 @@ public class MusicListAdapter
         return true;
     }
 
-    public GroupLister<SongHolder> createLister(ArrayList<SongHolder> loadedList, int groupBy)
+    public GroupLister<SongHolder> createLister(List<SongHolder> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);

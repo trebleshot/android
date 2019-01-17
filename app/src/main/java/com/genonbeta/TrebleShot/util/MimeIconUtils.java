@@ -17,30 +17,23 @@ package com.genonbeta.TrebleShot.util;
  */
 
 /*
-* Modified-by: veli
-* Date: 16/11/2018 18:57
+ * Modified-by: veli
+ * Date: 16/11/2018 18:57
  */
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.provider.DocumentsContract;
 
+import androidx.core.content.ContextCompat;
+
 import com.genonbeta.TrebleShot.R;
 
 import java.util.HashMap;
 
-import androidx.core.content.ContextCompat;
-
 public class MimeIconUtils
 {
     private static HashMap<String, Integer> sMimeIcons = new HashMap<>();
-
-    private static void add(String mimeType, int resId)
-    {
-        if (sMimeIcons.put(mimeType, resId) != null) {
-            throw new RuntimeException(mimeType + " already registered!");
-        }
-    }
 
     static {
         int icon;
@@ -188,7 +181,15 @@ public class MimeIconUtils
         add("application/vnd.openxmlformats-officedocument.presentationml.slideshow", icon);
     }
 
-    public static Drawable loadMimeIcon(Context context, String mimeType) {
+    private static void add(String mimeType, int resId)
+    {
+        if (sMimeIcons.put(mimeType, resId) != null) {
+            throw new RuntimeException(mimeType + " already registered!");
+        }
+    }
+
+    public static Drawable loadMimeIcon(Context context, String mimeType)
+    {
         return ContextCompat.getDrawable(context, loadMimeIcon(mimeType));
     }
 

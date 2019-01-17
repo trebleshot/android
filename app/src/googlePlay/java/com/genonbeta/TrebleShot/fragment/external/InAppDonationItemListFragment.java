@@ -152,7 +152,7 @@ public class InAppDonationItemListFragment
 
     public class DefaultAdapter extends RecyclerViewAdapter<SkuDetails, RecyclerViewAdapter.ViewHolder>
     {
-        private ArrayList<SkuDetails> mList = new ArrayList<>();
+        private List<SkuDetails> mList = new ArrayList<>();
 
         public DefaultAdapter(Context context)
         {
@@ -188,7 +188,7 @@ public class InAppDonationItemListFragment
         }
 
         @Override
-        public ArrayList<SkuDetails> onLoad()
+        public List<SkuDetails> onLoad()
         {
             ArrayList<SkuDetails> returnedList = new ArrayList<>();
 
@@ -233,7 +233,7 @@ public class InAppDonationItemListFragment
         }
 
         @Override
-        public void onUpdate(ArrayList<SkuDetails> passedItem)
+        public void onUpdate(List<SkuDetails> passedItem)
         {
             synchronized (getList()) {
                 getList().clear();
@@ -242,7 +242,7 @@ public class InAppDonationItemListFragment
         }
 
         @Override
-        public ArrayList<SkuDetails> getList()
+        public List<SkuDetails> getList()
         {
             return mList;
         }

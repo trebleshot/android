@@ -5,10 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.genonbeta.android.framework.app.Fragment;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.genonbeta.android.framework.app.Fragment;
 
 public class CurrentNetworkConnectorFragment extends Fragment
 {

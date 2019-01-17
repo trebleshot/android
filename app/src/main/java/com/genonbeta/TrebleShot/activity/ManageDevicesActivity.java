@@ -5,10 +5,10 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-
-import androidx.annotation.Nullable;
 
 public class ManageDevicesActivity extends Activity
 {

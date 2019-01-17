@@ -30,6 +30,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created by: Veli
@@ -39,7 +40,7 @@ import java.util.ArrayList;
 public class TransferGroupListAdapter
         extends GroupEditableListAdapter<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder>
 {
-    final private ArrayList<Long> mRunningTasks = new ArrayList<>();
+    final private List<Long> mRunningTasks = new ArrayList<>();
 
     private AccessDatabase mDatabase;
     private SQLQuery.Select mSelect;
@@ -66,7 +67,7 @@ public class TransferGroupListAdapter
     @Override
     protected void onLoad(GroupLister<PreloadedGroup> lister)
     {
-        ArrayList<Long> activeList = new ArrayList<>(mRunningTasks);
+        List<Long> activeList = new ArrayList<>(mRunningTasks);
 
         for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
         {
@@ -270,6 +271,12 @@ public class TransferGroupListAdapter
         }
 
         @Override
+        public void setId(long id)
+        {
+            this.groupId = id;
+        }
+
+        @Override
         public String getSelectableTitle()
         {
             return String.format("%s (%s)", assignees, FileUtils.sizeExpression(totalBytes, false));
@@ -294,6 +301,12 @@ public class TransferGroupListAdapter
         }
 
         @Override
+        public void setRepresentativeText(CharSequence representativeText)
+        {
+            this.representativeText = String.valueOf(representativeText);
+        }
+
+        @Override
         public boolean isGroupRepresentative()
         {
             return representativeText != null;
@@ -306,12 +319,6 @@ public class TransferGroupListAdapter
         }
 
         @Override
-        public void setId(long id)
-        {
-            this.groupId = id;
-        }
-
-        @Override
         public boolean setSelectableSelected(boolean selected)
         {
             return !isGroupRepresentative() && super.setSelectableSelected(selected);
@@ -321,12 +328,6 @@ public class TransferGroupListAdapter
         public void setSize(long size)
         {
             this.totalCount = ((Long) size).intValue();
-        }
-
-        @Override
-        public void setRepresentativeText(CharSequence representativeText)
-        {
-            this.representativeText = String.valueOf(representativeText);
         }
     }
 }

@@ -1,18 +1,14 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.object.Selectable;
-
-import java.util.ArrayList;
 
 /**
  * created by: veli
@@ -99,7 +95,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance,SQLiteDatabase database, NetworkDevice parent)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
 
     }

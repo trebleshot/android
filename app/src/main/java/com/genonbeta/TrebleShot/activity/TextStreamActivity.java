@@ -4,14 +4,14 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 
 public class TextStreamActivity
         extends Activity

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
@@ -18,8 +20,7 @@ import com.genonbeta.android.framework.widget.recyclerview.fastscroll.SectionTit
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Comparator;
-
-import androidx.annotation.NonNull;
+import java.util.List;
 
 /**
  * created by: Veli
@@ -40,7 +41,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     public static final int MODE_SORT_ORDER_DESCENDING = 110;
 
     private EditableListFragmentImpl<T> mFragment;
-    private ArrayList<T> mItemList = new ArrayList<>();
+    private List<T> mItemList = new ArrayList<>();
     private int mSortingCriteria = MODE_SORT_BY_NAME;
     private int mSortingOrderAscending = MODE_SORT_ORDER_ASCENDING;
     private boolean mGridLayoutRequested = false;
@@ -53,7 +54,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     }
 
     @Override
-    public void onUpdate(ArrayList<T> passedItem)
+    public void onUpdate(List<T> passedItem)
     {
         synchronized (getItemList()) {
             mItemList.clear();
@@ -139,6 +140,11 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
         return mFragment;
     }
 
+    public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
+    {
+        mFragment = fragmentImpl;
+    }
+
     @Override
     public int getItemCount()
     {
@@ -171,7 +177,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
         return AppUtils.getUniqueNumber();
     }
 
-    public ArrayList<T> getItemList()
+    public List<T> getItemList()
     {
         return mItemList;
     }
@@ -183,7 +189,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     }
 
     @Override
-    public ArrayList<T> getList()
+    public List<T> getList()
     {
         return getItemList();
     }
@@ -257,11 +263,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
                 || gridSize > 2;
     }
 
-    public void setFragment(EditableListFragmentImpl<T> fragmentImpl)
-    {
-        mFragment = fragmentImpl;
-    }
-
     public void setSortingCriteria(int sortingCriteria, int sortingOrder)
     {
         mSortingCriteria = sortingCriteria;
@@ -275,7 +276,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
         }
     }
 
-    public synchronized void syncSelectionList(ArrayList<T> itemList)
+    public synchronized void syncSelectionList(List<T> itemList)
     {
         if (getFragment() == null || getFragment().getSelectionConnection() == null)
             return;

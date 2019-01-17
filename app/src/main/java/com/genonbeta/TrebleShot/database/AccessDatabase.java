@@ -12,7 +12,6 @@ import androidx.collection.ArrayMap;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
@@ -23,6 +22,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -118,6 +118,16 @@ public class AccessDatabase extends SQLiteDatabase
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public static CursorItem convertValues(ContentValues values)
+    {
+        CursorItem cursorItem = new CursorItem();
+
+        for (String key : values.keySet())
+            cursorItem.put(key, values.get(key));
+
+        return cursorItem;
+    }
+
     @Override
     public void onCreate(android.database.sqlite.SQLiteDatabase db)
     {
@@ -165,7 +175,7 @@ public class AccessDatabase extends SQLiteDatabase
                 try {
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
                     SQLValues.Table divisTransfer = databaseTables.getTables().get(DIVIS_TRANSFER);
-                    ArrayMap<Long, String> mapDist = new ArrayMap<>();
+                    Map<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
                     List<TransferGroup.Assignee> availableAssignees = castQuery(database, new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class, null);
                     List<TransferObject> availableTransfers = castQuery(database, new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class, null);
@@ -198,16 +208,6 @@ public class AccessDatabase extends SQLiteDatabase
         }
     }
 
-    public static CursorItem convertValues(ContentValues values)
-    {
-        CursorItem cursorItem = new CursorItem();
-
-        for (String key : values.keySet())
-            cursorItem.put(key, values.get(key));
-
-        return cursorItem;
-    }
-
     protected void broadcast(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, String type)
     {
         getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
@@ -220,7 +220,7 @@ public class AccessDatabase extends SQLiteDatabase
     {
         indexObject.reset();
 
-        ArrayList<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+        List<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class);
 
         indexObject.assigneeCount = getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)

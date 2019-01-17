@@ -42,7 +42,8 @@ public class FileBookmarkObject implements DatabaseObject<Object>
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_TITLE, title);
-        contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_PATH, path.toString());;
+        contentValues.put(AccessDatabase.FIELD_FILEBOOKMARK_PATH, path.toString());
+        ;
 
         return contentValues;
     }

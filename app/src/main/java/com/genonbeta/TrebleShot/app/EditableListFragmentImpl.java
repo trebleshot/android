@@ -13,41 +13,41 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
  */
 public interface EditableListFragmentImpl<T extends Editable> extends ListFragmentImpl<T>
 {
-	boolean applyViewingChanges(int gridSize);
+    boolean applyViewingChanges(int gridSize);
 
-	void changeGridViewSize(int gridSize);
+    void changeGridViewSize(int gridSize);
 
-	void changeOrderingCriteria(int id);
+    void changeOrderingCriteria(int id);
 
-	void changeSortingCriteria(int id);
+    void changeSortingCriteria(int id);
 
-	EditableListAdapterImpl<T> getAdapterImpl();
+    EditableListAdapterImpl<T> getAdapterImpl();
 
-	EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
+    EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
 
-	int getOrderingCriteria();
+    void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
 
-	PowerfulActionMode.SelectorConnection<T> getSelectionConnection();
+    int getOrderingCriteria();
 
-	EditableListFragment.SelectionCallback<T> getSelectionCallback();
+    PowerfulActionMode.SelectorConnection<T> getSelectionConnection();
 
-	int getSortingCriteria();
+    EditableListFragment.SelectionCallback<T> getSelectionCallback();
 
-	String getUniqueSettingKey(String setting);
+    void setSelectionCallback(EditableListFragment.SelectionCallback<T> selectionCallback);
 
-	boolean isRefreshLocked();
+    int getSortingCriteria();
 
-	boolean isRefreshRequested();
+    String getUniqueSettingKey(String setting);
 
-	boolean isSortingSupported();
+    boolean isRefreshLocked();
 
-	boolean loadIfRequested();
+    boolean isRefreshRequested();
 
-	boolean openUri(Uri uri);
+    boolean isSortingSupported();
 
-	void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
+    boolean loadIfRequested();
 
-	void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection);
+    boolean openUri(Uri uri);
 
-	void setSelectionCallback(EditableListFragment.SelectionCallback<T> selectionCallback);
+    void setSelectorConnection(PowerfulActionMode.SelectorConnection<T> selectionConnection);
 }

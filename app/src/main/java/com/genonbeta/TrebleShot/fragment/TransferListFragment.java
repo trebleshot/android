@@ -40,6 +40,7 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class TransferListFragment
@@ -285,62 +286,6 @@ public class TransferListFragment
         return false;
     }
 
-    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>
-    {
-        private TransferListAdapter mAdapter;
-
-        public SelectionCallback(TransferListFragment fragment)
-        {
-            super(fragment);
-            mAdapter = fragment.getAdapter();
-        }
-
-        @Override
-        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-        {
-            super.onCreateActionMenu(context, actionMode, menu);
-            actionMode.getMenuInflater().inflate(R.menu.action_mode_transfer, menu);
-            return true;
-        }
-
-        @Override
-        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-        {
-            int id = item.getItemId();
-
-            final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
-
-            if (id == R.id.action_mode_transfer_delete) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
-
-                builder.setTitle(R.string.ques_removeQueue);
-                builder.setMessage(getFragment().getContext().getResources().getQuantityString(R.plurals.text_removeQueueSummary, selectionList.size(), selectionList.size()));
-                builder.setNegativeButton(R.string.butn_close, null);
-                builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        WorkerService.run(getFragment().getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_TRANSFER_OBJECTS)
-                        {
-                            @Override
-                            protected void onRun()
-                            {
-                                AppUtils.getDatabase(getFragment().getContext())
-                                        .remove(selectionList);
-                            }
-                        });
-                    }
-                });
-
-                builder.show();
-            } else
-                return super.onActionMenuItemSelected(context, actionMode, item);
-
-            return true;
-        }
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -384,7 +329,7 @@ public class TransferListFragment
                                                 publishStatusText(getService().getString(R.string.mesg_organizingFiles));
                                                 TransferUtils.pauseTransfer(getContext(), mHeldGroup, null);
 
-                                                ArrayList<TransferObject> checkList = AppUtils.getDatabase(getService()).
+                                                List<TransferObject> checkList = AppUtils.getDatabase(getService()).
                                                         castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                                                                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                                                 + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
@@ -478,5 +423,61 @@ public class TransferListFragment
                     createSnackbar(R.string.mesg_pathSaved).show();
                 }
             });
+    }
+
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>
+    {
+        private TransferListAdapter mAdapter;
+
+        public SelectionCallback(TransferListFragment fragment)
+        {
+            super(fragment);
+            mAdapter = fragment.getAdapter();
+        }
+
+        @Override
+        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        {
+            super.onCreateActionMenu(context, actionMode, menu);
+            actionMode.getMenuInflater().inflate(R.menu.action_mode_transfer, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        {
+            int id = item.getItemId();
+
+            final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+
+            if (id == R.id.action_mode_transfer_delete) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
+
+                builder.setTitle(R.string.ques_removeQueue);
+                builder.setMessage(getFragment().getContext().getResources().getQuantityString(R.plurals.text_removeQueueSummary, selectionList.size(), selectionList.size()));
+                builder.setNegativeButton(R.string.butn_close, null);
+                builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i)
+                    {
+                        WorkerService.run(getFragment().getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_TRANSFER_OBJECTS)
+                        {
+                            @Override
+                            protected void onRun()
+                            {
+                                AppUtils.getDatabase(getFragment().getContext())
+                                        .remove(selectionList);
+                            }
+                        });
+                    }
+                });
+
+                builder.show();
+            } else
+                return super.onActionMenuItemSelected(context, actionMode, item);
+
+            return true;
+        }
     }
 }

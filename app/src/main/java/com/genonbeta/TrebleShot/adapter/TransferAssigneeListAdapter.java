@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created by: veli
@@ -26,7 +27,7 @@ import java.util.ArrayList;
  */
 public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
 {
-    private ArrayList<ShowingAssignee> mList = new ArrayList<>();
+    private List<ShowingAssignee> mList = new ArrayList<>();
     private TransferGroup mGroup;
     private AccessDatabase mDatabase;
     private TextDrawable.IShapeBuilder mIconBuilder;
@@ -62,13 +63,13 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssi
     }
 
     @Override
-    public ArrayList<ShowingAssignee> onLoad()
+    public List<ShowingAssignee> onLoad()
     {
         return TransferUtils.loadAssigneeList(mDatabase, mGroup.groupId);
     }
 
     @Override
-    public void onUpdate(ArrayList<ShowingAssignee> passedItem)
+    public void onUpdate(List<ShowingAssignee> passedItem)
     {
         mList = passedItem;
     }
@@ -80,7 +81,7 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssi
     }
 
     @Override
-    public ArrayList<ShowingAssignee> getList()
+    public List<ShowingAssignee> getList()
     {
         return mList;
     }

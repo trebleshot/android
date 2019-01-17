@@ -71,11 +71,18 @@ public class ViewTransferActivity
     public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
 
     public static final int REQUEST_ADD_DEVICES = 5045;
-
+    final private List<String> mActiveProcesses = new ArrayList<>();
+    final private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
     private OnBackPressedListener mBackPressedListener;
     private TransferGroup mGroup;
     private TransferObject mTransferObject;
-
+    private PowerfulActionMode mMode;
+    private MenuItem mCnTestMenu;
+    private MenuItem mToggleMenu;
+    private MenuItem mRetryMenu;
+    private MenuItem mShowFiles;
+    private MenuItem mAddDevice;
+    private CrunchLatestDataTask mDataCruncher;
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
         @Override
@@ -109,7 +116,7 @@ public class ViewTransferActivity
                 }
             } else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
                 long[] groupIds = intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING);
-                ArrayList<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST_RUNNING);
+                List<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST_RUNNING);
 
                 if (groupIds != null && deviceIds != null
                         && groupIds.length == deviceIds.size()) {
@@ -132,16 +139,13 @@ public class ViewTransferActivity
         }
     };
 
-    final private List<String> mActiveProcesses = new ArrayList<>();
-    final private TransferGroup.Index mTransactionIndex = new TransferGroup.Index();
-
-    private PowerfulActionMode mMode;
-    private MenuItem mCnTestMenu;
-    private MenuItem mToggleMenu;
-    private MenuItem mRetryMenu;
-    private MenuItem mShowFiles;
-    private MenuItem mAddDevice;
-    private CrunchLatestDataTask mDataCruncher;
+    public static void startInstance(Context context, long groupId)
+    {
+        context.startActivity(new Intent(context, ViewTransferActivity.class)
+                .setAction(ACTION_LIST_TRANSFERS)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -501,14 +505,6 @@ public class ViewTransferActivity
 
             mDataCruncher.execute(this);
         }
-    }
-
-    public static void startInstance(Context context, long groupId)
-    {
-        context.startActivity(new Intent(context, ViewTransferActivity.class)
-                .setAction(ACTION_LIST_TRANSFERS)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 
     private static class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>

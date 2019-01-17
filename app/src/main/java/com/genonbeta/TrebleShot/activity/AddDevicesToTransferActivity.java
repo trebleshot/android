@@ -17,6 +17,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
@@ -41,11 +46,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import java.util.List;
 
 public class AddDevicesToTransferActivity extends Activity
         implements SnackbarSupport
@@ -81,6 +82,13 @@ public class AddDevicesToTransferActivity extends Activity
                         finish();
         }
     };
+
+    public static void startInstance(Context context, long groupId)
+    {
+        context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -175,7 +183,6 @@ public class AddDevicesToTransferActivity extends Activity
         getDefaultInterrupter().interrupt(false);
     }
 
-
     @Override
     protected void onResume()
     {
@@ -252,9 +259,9 @@ public class AddDevicesToTransferActivity extends Activity
                             boolean doPublish = false;
                             final JSONObject jsonRequest = new JSONObject();
                             final TransferGroup.Assignee assignee = new TransferGroup.Assignee(mGroup, device, connection);
-                            final ArrayList<TransferObject> pendingRegistry = new ArrayList<>();
+                            final List<TransferObject> pendingRegistry = new ArrayList<>();
 
-                            final ArrayList<TransferObject> existingRegistry = new ArrayList<>(getDatabase()
+                            final List<TransferObject> existingRegistry = new ArrayList<>(getDatabase()
                                     .castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                                             .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                             + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
@@ -505,13 +512,6 @@ public class AddDevicesToTransferActivity extends Activity
                 mTextMain.setText(text);
             }
         });
-    }
-
-    public static void startInstance(Context context, long groupId)
-    {
-        context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
     }
 }
 

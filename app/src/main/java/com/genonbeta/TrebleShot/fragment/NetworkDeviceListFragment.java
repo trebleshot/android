@@ -43,7 +43,7 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkDeviceListFragment
         extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
@@ -260,7 +260,7 @@ public class NetworkDeviceListFragment
                 new EstablishConnectionDialog(getActivity(), device, new OnDeviceSelectedListener()
                 {
                     @Override
-                    public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                    public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
                     {
                         mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
                     }

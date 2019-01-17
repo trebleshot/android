@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -42,6 +41,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -100,7 +100,7 @@ public class FileListAdapter
                 }
             }
         } else {
-            ArrayList<File> referencedDirectoryList = new ArrayList<>();
+            List<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
 
             lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
@@ -164,7 +164,7 @@ public class FileListAdapter
                 lister.offerObliged(this, fileHolder);
             }
 
-            ArrayList<FileBookmarkObject> bookmarkedList = AppUtils.getDatabase(getContext())
+            List<FileBookmarkObject> bookmarkedList = AppUtils.getDatabase(getContext())
                     .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_FILEBOOKMARK), FileBookmarkObject.class);
 
             for (FileBookmarkObject object : bookmarkedList) {
@@ -175,7 +175,7 @@ public class FileListAdapter
                 }
             }
 
-            ArrayList<WritablePathObject> mountedPathList = AppUtils.getDatabase(getContext())
+            List<WritablePathObject> mountedPathList = AppUtils.getDatabase(getContext())
                     .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
             if (Build.VERSION.SDK_INT >= 23) {
@@ -192,44 +192,49 @@ public class FileListAdapter
                         R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
             }
 
-            ArrayList<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
-                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class);
+            {
+                // Testing whether the files checked as completed exist takes too much time
+                // causing long load times at times. To overcome this, we we will skip
+                // transfer groups when they provide 2 files that are not existing.
+                List<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
+                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class);
 
-            ArrayMap<Long, TransferGroup> linkedGroups = new ArrayMap<>();
+                Map<Long, TransferGroup> linkedGroups = new ArrayMap<>();
 
-            for (TransferGroup group : transferGroups)
-                linkedGroups.put(group.groupId, group);
+                for (TransferGroup group : transferGroups)
+                    linkedGroups.put(group.groupId, group);
 
-            ArrayList<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
-                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                            .setWhere(String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG, AccessDatabase.FIELD_TRANSFER_TYPE),
-                                    TransferObject.Flag.DONE.toString(), TransferObject.Type.INCOMING.toString()), TransferObject.class);
+                List<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
+                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                                .setWhere(String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG, AccessDatabase.FIELD_TRANSFER_TYPE),
+                                        TransferObject.Flag.DONE.toString(), TransferObject.Type.INCOMING.toString()), TransferObject.class);
 
-            if (linkedGroups.size() > 0 && recentFiles.size() > 0) {
-                List<DocumentFile> pickedRecentFiles = new ArrayList<>();
-                Collections.reverse(recentFiles);
+                if (linkedGroups.size() > 0 && recentFiles.size() > 0) {
+                    List<DocumentFile> pickedRecentFiles = new ArrayList<>();
+                    Collections.reverse(recentFiles);
 
-                for (TransferObject recentFile : recentFiles) {
-                    if (pickedRecentFiles.size() > 20)
-                        break;
+                    for (TransferObject recentFile : recentFiles) {
+                        if (pickedRecentFiles.size() > 20)
+                            break;
 
-                    TransferGroup group = linkedGroups.get(recentFile.groupId);
+                        TransferGroup group = linkedGroups.get(recentFile.groupId);
 
-                    if (group == null)
-                        continue;
+                        if (group == null)
+                            continue;
 
-                    try {
-                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile, group, false);
+                        try {
+                            DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile, group, false);
 
-                        if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
-                            pickedRecentFiles.add(documentFile);
-                    } catch (IOException e) {
-                        // do nothing
+                            if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
+                                pickedRecentFiles.add(documentFile);
+                        } catch (IOException e) {
+                            // do nothing
+                        }
                     }
-                }
 
-                for (DocumentFile documentFile : pickedRecentFiles)
-                    lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
+                    for (DocumentFile documentFile : pickedRecentFiles)
+                        lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
+                }
             }
         }
     }
@@ -358,6 +363,10 @@ public class FileListAdapter
         mFileMatch = fileMatch;
     }
 
+    public interface StorageHolderImpl
+    {
+    }
+
     public static class GenericFileHolder extends GroupEditableListAdapter.GroupShareable
     {
         public DocumentFile file;
@@ -445,14 +454,6 @@ public class FileListAdapter
         }
     }
 
-    public class RecentFileHolder extends FileHolder
-    {
-        public RecentFileHolder(Context context, DocumentFile file)
-        {
-            super(context, file);
-        }
-    }
-
     public static class ReceivedFileHolder extends FileHolder
     {
         public ReceivedFileHolder(Context context, DocumentFile file, TransferObject transferObject)
@@ -507,31 +508,6 @@ public class FileListAdapter
         public FileBookmarkObject getBookmarkObject()
         {
             return mBookmarkObject;
-        }
-    }
-
-    public class PublicDirectoryHolder extends DirectoryHolder
-    {
-        public PublicDirectoryHolder(File file, String info, int iconRes)
-        {
-            this(DocumentFile.fromFile(file), info, iconRes);
-
-            String[] files = file.list();
-            int fileCount = files != null ? files.length : 0;
-
-            this.friendlyName = info;
-            this.info = getContext().getResources().getQuantityString(R.plurals.text_files, fileCount, fileCount);
-        }
-
-        public PublicDirectoryHolder(DocumentFile file, String info, int iconRes)
-        {
-            super(file, info, iconRes);
-        }
-
-        @Override
-        public boolean setSelectableSelected(boolean selected)
-        {
-            return false;
         }
     }
 
@@ -599,10 +575,6 @@ public class FileListAdapter
         }
     }
 
-    public interface StorageHolderImpl
-    {
-    }
-
     public static class FileHolderMerger extends ComparableMerger<GenericFileHolder>
     {
         private Type mType;
@@ -652,6 +624,39 @@ public class FileListAdapter
             RECENT_FILE,
             FILE_PART,
             FILE
+        }
+    }
+
+    public class RecentFileHolder extends FileHolder
+    {
+        public RecentFileHolder(Context context, DocumentFile file)
+        {
+            super(context, file);
+        }
+    }
+
+    public class PublicDirectoryHolder extends DirectoryHolder
+    {
+        public PublicDirectoryHolder(File file, String info, int iconRes)
+        {
+            this(DocumentFile.fromFile(file), info, iconRes);
+
+            String[] files = file.list();
+            int fileCount = files != null ? files.length : 0;
+
+            this.friendlyName = info;
+            this.info = getContext().getResources().getQuantityString(R.plurals.text_files, fileCount, fileCount);
+        }
+
+        public PublicDirectoryHolder(DocumentFile file, String info, int iconRes)
+        {
+            super(file, info, iconRes);
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return false;
         }
     }
 }

@@ -9,6 +9,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ManageDevicesActivity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
@@ -23,10 +27,7 @@ import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
-
-import androidx.annotation.ColorInt;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
+import java.util.List;
 
 /**
  * Created by: veli
@@ -35,8 +36,8 @@ import androidx.core.content.ContextCompat;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-    final private ArrayList<NetworkDevice.Connection> mConnections = new ArrayList<>();
-    final private ArrayList<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
+    final private List<NetworkDevice.Connection> mConnections = new ArrayList<>();
+    final private List<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
 
     private NetworkDevice mNetworkDevice;
 
@@ -62,7 +63,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    ArrayList<NetworkDevice.Connection> connections = getConnections();
+                    List<NetworkDevice.Connection> connections = getConnections();
                     listener.onDeviceSelected(connections.get(which), connections);
                 }
             });
@@ -81,7 +82,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         });
     }
 
-    public synchronized ArrayList<NetworkDevice.Connection> getConnections()
+    public synchronized List<NetworkDevice.Connection> getConnections()
     {
         return new ArrayList<>(mConnections);
     }

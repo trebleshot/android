@@ -12,23 +12,23 @@ import com.genonbeta.TrebleShot.util.NotificationUtils;
  */
 abstract public class Service extends android.app.Service
 {
-	private NotificationUtils mNotificationUtils;
+    private NotificationUtils mNotificationUtils;
 
-	public AccessDatabase getDatabase()
-	{
-		return AppUtils.getDatabase(this);
-	}
+    public AccessDatabase getDatabase()
+    {
+        return AppUtils.getDatabase(this);
+    }
 
-	public SharedPreferences getDefaultPreferences()
-	{
-		return AppUtils.getDefaultPreferences(getApplicationContext());
-	}
+    public SharedPreferences getDefaultPreferences()
+    {
+        return AppUtils.getDefaultPreferences(getApplicationContext());
+    }
 
-	public NotificationUtils getNotificationUtils()
-	{
-		if (mNotificationUtils == null)
-			mNotificationUtils = new NotificationUtils(getApplicationContext(), getDatabase(), getDefaultPreferences());
+    public NotificationUtils getNotificationUtils()
+    {
+        if (mNotificationUtils == null)
+            mNotificationUtils = new NotificationUtils(getApplicationContext(), getDatabase(), getDefaultPreferences());
 
-		return mNotificationUtils;
-	}
+        return mNotificationUtils;
+    }
 }

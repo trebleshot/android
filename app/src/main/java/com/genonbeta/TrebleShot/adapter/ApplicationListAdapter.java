@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -20,8 +22,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-
-import androidx.annotation.NonNull;
+import java.util.List;
 
 public class ApplicationListAdapter
         extends EditableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>
@@ -37,16 +38,15 @@ public class ApplicationListAdapter
     }
 
     @Override
-    public ArrayList<PackageHolder> onLoad()
+    public List<PackageHolder> onLoad()
     {
-        ArrayList<PackageHolder> list = new ArrayList<>();
+        List<PackageHolder> list = new ArrayList<>();
         boolean showSystemApps = mPreferences.getBoolean("show_system_apps", false);
 
         for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
 
-            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || showSystemApps)
-            {
+            if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || showSystemApps) {
                 PackageHolder packageHolder = new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
                         appInfo,
                         packageInfo.versionName,

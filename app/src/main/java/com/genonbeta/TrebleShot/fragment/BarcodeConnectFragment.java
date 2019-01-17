@@ -40,7 +40,6 @@ import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.util.Interrupter;
@@ -317,7 +316,7 @@ public class BarcodeConnectFragment
 
     protected void makeAcquaintance(Object object, int accessPin)
     {
-        mConnectionUtils.makeAcquaintance(getActivity(),BarcodeConnectFragment.this, object, accessPin, mRegisteredListener);
+        mConnectionUtils.makeAcquaintance(getActivity(), BarcodeConnectFragment.this, object, accessPin, mRegisteredListener);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

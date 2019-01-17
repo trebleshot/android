@@ -12,9 +12,7 @@ import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -31,6 +29,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 public class ShareActivity extends Activity
@@ -78,7 +77,7 @@ public class ShareActivity extends Activity
 
                 if (ACTION_SEND_MULTIPLE.equals(action)
                         || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
-                    ArrayList<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+                    List<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
                     fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
 
                     fileUris.addAll(pendingFileUris);
@@ -128,7 +127,7 @@ public class ShareActivity extends Activity
         getDefaultInterrupter().interrupt(false);
     }
 
-    protected void createFolderStructure(DocumentFile file, String folderName, ArrayList<SelectableStream> pendingObjects)
+    protected void createFolderStructure(DocumentFile file, String folderName, List<SelectableStream> pendingObjects)
     {
         DocumentFile[] files = file.listFiles();
 
@@ -165,7 +164,7 @@ public class ShareActivity extends Activity
         return mInterrupter;
     }
 
-    protected void organizeFiles(final ArrayList<Uri> fileUris, final ArrayList<CharSequence> fileNames)
+    protected void organizeFiles(final List<Uri> fileUris, final List<CharSequence> fileNames)
     {
         runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_LOAD_ITEMS)
         {
@@ -177,8 +176,8 @@ public class ShareActivity extends Activity
 
                 updateText(thisTask, getString(R.string.mesg_organizingFiles));
 
-                final ArrayList<SelectableStream> measuredObjects = new ArrayList<>();
-                final ArrayList<TransferObject> pendingObjects = new ArrayList<>();
+                final List<SelectableStream> measuredObjects = new ArrayList<>();
+                final List<TransferObject> pendingObjects = new ArrayList<>();
                 final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
 
                 for (int position = 0; position < fileUris.size(); position++) {

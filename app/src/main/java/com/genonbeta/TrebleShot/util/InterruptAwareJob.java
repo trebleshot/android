@@ -9,11 +9,11 @@ import com.genonbeta.android.framework.util.Interrupter;
 
 abstract public class InterruptAwareJob
 {
-	abstract protected void onRun();
+    abstract protected void onRun();
 
-	public void run(Interrupter interrupter)
-	{
-		onRun();
-		interrupter.removeClosers();
-	}
+    public void run(Interrupter interrupter)
+    {
+        onRun();
+        interrupter.removeClosers();
+    }
 }

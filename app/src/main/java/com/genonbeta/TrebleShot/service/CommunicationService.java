@@ -69,6 +69,7 @@ import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
@@ -117,10 +118,10 @@ public class CommunicationService extends Service
     public static final int TASK_STATUS_ONGOING = 0;
     public static final int TASK_STATUS_STOPPED = 1;
 
-    private ArrayList<ProcessHolder> mActiveProcessList = new ArrayList<>();
+    private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
     private SeamlessServer mSeamlessServer = new SeamlessServer();
-    private ArrayMap<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
+    private Map<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
     private Receive mReceive = new Receive();
     private Send mSend = new Send();
     private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
@@ -451,7 +452,7 @@ public class CommunicationService extends Service
         return null;
     }
 
-    public synchronized ArrayList<ProcessHolder> getActiveProcessList()
+    public synchronized List<ProcessHolder> getActiveProcessList()
     {
         return mActiveProcessList;
     }
@@ -466,7 +467,7 @@ public class CommunicationService extends Service
         return mNotificationHelper;
     }
 
-    public synchronized ArrayMap<Long, Interrupter> getOngoingIndexList()
+    public synchronized Map<Long, Interrupter> getOngoingIndexList()
     {
         return mOngoingIndexList;
     }
@@ -498,7 +499,7 @@ public class CommunicationService extends Service
 
     public void notifyTaskRunningListChange()
     {
-        ArrayList<Long> taskList = new ArrayList<>();
+        List<Long> taskList = new ArrayList<>();
         ArrayList<String> deviceList = new ArrayList<>();
 
         synchronized (getActiveProcessList()) {

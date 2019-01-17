@@ -13,7 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.object.Selectable;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created by: Veli
@@ -22,12 +22,12 @@ import java.util.ArrayList;
 
 public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Builder
 {
-    private ArrayList<T> mList;
+    private List<T> mList;
     private LayoutInflater mLayoutInflater;
     private SelfAdapter mAdapter;
     private ListView mListView;
 
-    public SelectionEditorDialog(Context context, ArrayList<T> list)
+    public SelectionEditorDialog(Context context, List<T> list)
     {
         super(context);
 
@@ -122,7 +122,7 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
 
             final Selectable selectable = (Selectable) getItem(position);
             final TextView text1 = convertView.findViewById(R.id.text);
-            final View removalSignView =  convertView.findViewById(R.id.removalSign);
+            final View removalSignView = convertView.findViewById(R.id.removalSign);
 
             text1.setText(selectable.getSelectableTitle());
             removalSignView.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);

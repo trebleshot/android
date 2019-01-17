@@ -7,11 +7,11 @@ package com.genonbeta.TrebleShot.object;
 
 public interface Comparable
 {
-	boolean comparisonSupported();
+    boolean comparisonSupported();
 
-	String getComparableName();
+    String getComparableName();
 
-	long getComparableDate();
+    long getComparableDate();
 
-	long getComparableSize();
+    long getComparableSize();
 }

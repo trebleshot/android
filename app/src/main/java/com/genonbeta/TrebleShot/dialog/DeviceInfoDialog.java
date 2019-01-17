@@ -21,7 +21,6 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -38,7 +37,7 @@ import org.json.JSONObject;
 
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by: veli
@@ -81,7 +80,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                         new EstablishConnectionDialog(activity, device, new OnDeviceSelectedListener()
                         {
                             @Override
-                            public void onDeviceSelected(final NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                            public void onDeviceSelected(final NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
                             {
                                 runReceiveTask(activity, sharedPreferences, device, connection);
                             }

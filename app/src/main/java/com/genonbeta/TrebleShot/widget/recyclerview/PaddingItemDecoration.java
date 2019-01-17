@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.widget.recyclerview;
 
 import android.graphics.Rect;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;

@@ -6,11 +6,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 
-import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+
+import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 
 /**
  * Created by: veli
@@ -19,77 +19,77 @@ import androidx.core.app.NotificationManagerCompat;
 
 public class NotificationUtils
 {
-	public static final String TAG = "NotificationUtils";
-	public static final String NOTIFICATION_CHANNEL_HIGH = "tsHighPriority";
-	public static final String NOTIFICATION_CHANNEL_LOW = "tsLowPriority";
+    public static final String TAG = "NotificationUtils";
+    public static final String NOTIFICATION_CHANNEL_HIGH = "tsHighPriority";
+    public static final String NOTIFICATION_CHANNEL_LOW = "tsLowPriority";
 
-	public static final String EXTRA_NOTIFICATION_ID = "notificationId";
+    public static final String EXTRA_NOTIFICATION_ID = "notificationId";
 
-	private Context mContext;
-	private NotificationManagerCompat mManager;
-	private AccessDatabase mDatabase;
-	private SharedPreferences mPreferences;
+    private Context mContext;
+    private NotificationManagerCompat mManager;
+    private AccessDatabase mDatabase;
+    private SharedPreferences mPreferences;
 
-	public NotificationUtils(Context context, AccessDatabase database, SharedPreferences preferences)
-	{
-		mContext = context;
-		mManager = NotificationManagerCompat.from(context);
-		mDatabase = database;
-		mPreferences = preferences;
+    public NotificationUtils(Context context, AccessDatabase database, SharedPreferences preferences)
+    {
+        mContext = context;
+        mManager = NotificationManagerCompat.from(context);
+        mDatabase = database;
+        mPreferences = preferences;
 
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-			NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-			NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel channelHigh = new NotificationChannel(NOTIFICATION_CHANNEL_HIGH, mContext.getString(R.string.text_notificationChannelHigh), NotificationManager.IMPORTANCE_HIGH);
 
-			channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
-			channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
-			notificationManager.createNotificationChannel(channelHigh);
+            channelHigh.enableLights(mPreferences.getBoolean("notification_light", false));
+            channelHigh.enableVibration(mPreferences.getBoolean("notification_vibrate", false));
+            notificationManager.createNotificationChannel(channelHigh);
 
-			NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
-			notificationManager.createNotificationChannel(channelLow);
-		}
-	}
+            NotificationChannel channelLow = new NotificationChannel(NOTIFICATION_CHANNEL_LOW, mContext.getString(R.string.text_notificationChannelLow), NotificationManager.IMPORTANCE_LOW);
+            notificationManager.createNotificationChannel(channelLow);
+        }
+    }
 
-	public DynamicNotification buildDynamicNotification(long notificationId, String channelId)
-	{
-		// Let's hope it will turn out to be less painful
-		return new DynamicNotification(getContext(), getManager(), channelId,
-				(int) (notificationId > Integer.MAX_VALUE ? notificationId / 100000 : notificationId));
-	}
+    public DynamicNotification buildDynamicNotification(long notificationId, String channelId)
+    {
+        // Let's hope it will turn out to be less painful
+        return new DynamicNotification(getContext(), getManager(), channelId,
+                (int) (notificationId > Integer.MAX_VALUE ? notificationId / 100000 : notificationId));
+    }
 
-	public NotificationUtils cancel(int notificationId)
-	{
-		mManager.cancel(notificationId);
-		return this;
-	}
+    public NotificationUtils cancel(int notificationId)
+    {
+        mManager.cancel(notificationId);
+        return this;
+    }
 
-	public Context getContext()
-	{
-		return mContext;
-	}
+    public Context getContext()
+    {
+        return mContext;
+    }
 
-	public AccessDatabase getDatabase()
-	{
-		return mDatabase;
-	}
+    public AccessDatabase getDatabase()
+    {
+        return mDatabase;
+    }
 
-	public NotificationManagerCompat getManager()
-	{
-		return mManager;
-	}
+    public NotificationManagerCompat getManager()
+    {
+        return mManager;
+    }
 
-	public int getNotificationSettings()
-	{
-		int makeSound = (mPreferences.getBoolean("notification_sound", true)) ? NotificationCompat.DEFAULT_SOUND : 0;
-		int vibrate = (mPreferences.getBoolean("notification_vibrate", true)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
-		int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
+    public int getNotificationSettings()
+    {
+        int makeSound = (mPreferences.getBoolean("notification_sound", true)) ? NotificationCompat.DEFAULT_SOUND : 0;
+        int vibrate = (mPreferences.getBoolean("notification_vibrate", true)) ? NotificationCompat.DEFAULT_VIBRATE : 0;
+        int light = (mPreferences.getBoolean("notification_light", false)) ? NotificationCompat.DEFAULT_LIGHTS : 0;
 
-		return makeSound | vibrate | light;
-	}
+        return makeSound | vibrate | light;
+    }
 
-	public SharedPreferences getPreferences()
-	{
-		return mPreferences;
-	}
+    public SharedPreferences getPreferences()
+    {
+        return mPreferences;
+    }
 }

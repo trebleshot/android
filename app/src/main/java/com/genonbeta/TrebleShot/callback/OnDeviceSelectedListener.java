@@ -2,9 +2,9 @@ package com.genonbeta.TrebleShot.callback;
 
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface OnDeviceSelectedListener
 {
-    void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces);
+    void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces);
 }

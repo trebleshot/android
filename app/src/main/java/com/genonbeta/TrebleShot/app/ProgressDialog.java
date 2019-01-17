@@ -79,13 +79,6 @@ public class ProgressDialog extends AlertDialog
         initFormats();
     }
 
-    private void initFormats()
-    {
-        mProgressNumberFormat = "%1d/%2d";
-        mProgressPercentFormat = NumberFormat.getPercentInstance();
-        mProgressPercentFormat.setMaximumFractionDigits(0);
-    }
-
     /**
      * Creates and shows a ProgressDialog.
      *
@@ -162,6 +155,13 @@ public class ProgressDialog extends AlertDialog
         return dialog;
     }
 
+    private void initFormats()
+    {
+        mProgressNumberFormat = "%1d/%2d";
+        mProgressPercentFormat = NumberFormat.getPercentInstance();
+        mProgressPercentFormat.setMaximumFractionDigits(0);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -222,6 +222,19 @@ public class ProgressDialog extends AlertDialog
     }
 
     /**
+     * Gets the current progress.
+     *
+     * @return the current progress, a value between 0 and {@link #getMax()}
+     */
+    public int getProgress()
+    {
+        if (mProgress != null) {
+            return mProgress.getProgress();
+        }
+        return mProgressVal;
+    }
+
+    /**
      * Sets the current progress.
      *
      * @param value the current progress, a value between 0 and {@link #getMax()}
@@ -235,6 +248,19 @@ public class ProgressDialog extends AlertDialog
         } else {
             mProgressVal = value;
         }
+    }
+
+    /**
+     * Gets the current secondary progress.
+     *
+     * @return the current secondary progress, a value between 0 and {@link #getMax()}
+     */
+    public int getSecondaryProgress()
+    {
+        if (mProgress != null) {
+            return mProgress.getSecondaryProgress();
+        }
+        return mSecondaryProgressVal;
     }
 
     /**
@@ -252,32 +278,6 @@ public class ProgressDialog extends AlertDialog
         } else {
             mSecondaryProgressVal = secondaryProgress;
         }
-    }
-
-    /**
-     * Gets the current progress.
-     *
-     * @return the current progress, a value between 0 and {@link #getMax()}
-     */
-    public int getProgress()
-    {
-        if (mProgress != null) {
-            return mProgress.getProgress();
-        }
-        return mProgressVal;
-    }
-
-    /**
-     * Gets the current secondary progress.
-     *
-     * @return the current secondary progress, a value between 0 and {@link #getMax()}
-     */
-    public int getSecondaryProgress()
-    {
-        if (mProgress != null) {
-            return mProgress.getSecondaryProgress();
-        }
-        return mSecondaryProgressVal;
     }
 
     /**
@@ -370,6 +370,19 @@ public class ProgressDialog extends AlertDialog
     }
 
     /**
+     * Whether this ProgressDialog is in indeterminate mode.
+     *
+     * @return true if the dialog is in indeterminate mode, false otherwise
+     */
+    public boolean isIndeterminate()
+    {
+        if (mProgress != null) {
+            return mProgress.isIndeterminate();
+        }
+        return mIndeterminate;
+    }
+
+    /**
      * Change the indeterminate mode for this ProgressDialog. In indeterminate
      * mode, the progress is ignored and the dialog shows an infinite
      * animation instead.
@@ -387,19 +400,6 @@ public class ProgressDialog extends AlertDialog
         } else {
             mIndeterminate = indeterminate;
         }
-    }
-
-    /**
-     * Whether this ProgressDialog is in indeterminate mode.
-     *
-     * @return true if the dialog is in indeterminate mode, false otherwise
-     */
-    public boolean isIndeterminate()
-    {
-        if (mProgress != null) {
-            return mProgress.isIndeterminate();
-        }
-        return mIndeterminate;
     }
 
     @Override

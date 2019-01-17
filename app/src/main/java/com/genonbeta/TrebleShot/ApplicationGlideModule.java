@@ -5,6 +5,9 @@ import android.content.pm.ApplicationInfo;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.Registry;
@@ -24,9 +27,6 @@ import com.bumptech.glide.util.Util;
 
 import java.io.IOException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 /**
  * created by: Veli
  * date: 28.03.2018 17:29
@@ -34,118 +34,118 @@ import androidx.annotation.Nullable;
 @GlideModule
 public final class ApplicationGlideModule extends AppGlideModule
 {
-	@Override
-	public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry)
-	{
-		super.registerComponents(context, glide, registry);
+    @Override
+    public void registerComponents(@NonNull Context context, @NonNull Glide glide, @NonNull Registry registry)
+    {
+        super.registerComponents(context, glide, registry);
 
-		registry.append(ApplicationInfo.class, ApplicationInfo.class,
-				new ModelLoaderFactory<ApplicationInfo, ApplicationInfo>()
-				{
-					@Override
-					public ModelLoader<ApplicationInfo, ApplicationInfo> build(
-							MultiModelLoaderFactory multiFactory)
-					{
-						return new ApplicationIconModelLoader();
-					}
+        registry.append(ApplicationInfo.class, ApplicationInfo.class,
+                new ModelLoaderFactory<ApplicationInfo, ApplicationInfo>()
+                {
+                    @Override
+                    public ModelLoader<ApplicationInfo, ApplicationInfo> build(
+                            MultiModelLoaderFactory multiFactory)
+                    {
+                        return new ApplicationIconModelLoader();
+                    }
 
-					@Override
-					public void teardown()
-					{
+                    @Override
+                    public void teardown()
+                    {
 
-					}
-				}).append(ApplicationInfo.class, Drawable.class, new ApplicationIconDecoder(context));
-	}
+                    }
+                }).append(ApplicationInfo.class, Drawable.class, new ApplicationIconDecoder(context));
+    }
 
-	private class ApplicationIconModelLoader implements ModelLoader<ApplicationInfo, ApplicationInfo>
-	{
-		@Nullable
-		@Override
-		public LoadData<ApplicationInfo> buildLoadData(final ApplicationInfo applicationInfo, int width, int height, Options options)
-		{
-			return new LoadData<>(new ObjectKey(applicationInfo), new DataFetcher<ApplicationInfo>()
-			{
-				@Override
-				public void loadData(Priority priority, DataCallback<? super ApplicationInfo> callback)
-				{
-					callback.onDataReady(applicationInfo);
-				}
+    private class ApplicationIconModelLoader implements ModelLoader<ApplicationInfo, ApplicationInfo>
+    {
+        @Nullable
+        @Override
+        public LoadData<ApplicationInfo> buildLoadData(final ApplicationInfo applicationInfo, int width, int height, Options options)
+        {
+            return new LoadData<>(new ObjectKey(applicationInfo), new DataFetcher<ApplicationInfo>()
+            {
+                @Override
+                public void loadData(Priority priority, DataCallback<? super ApplicationInfo> callback)
+                {
+                    callback.onDataReady(applicationInfo);
+                }
 
-				@Override
-				public void cleanup()
-				{
+                @Override
+                public void cleanup()
+                {
 
-				}
+                }
 
-				@Override
-				public void cancel()
-				{
+                @Override
+                public void cancel()
+                {
 
-				}
+                }
 
-				@Override
-				public Class<ApplicationInfo> getDataClass()
-				{
-					return ApplicationInfo.class;
-				}
+                @Override
+                public Class<ApplicationInfo> getDataClass()
+                {
+                    return ApplicationInfo.class;
+                }
 
-				@Override
-				public DataSource getDataSource()
-				{
-					return DataSource.LOCAL;
-				}
-			});
-		}
+                @Override
+                public DataSource getDataSource()
+                {
+                    return DataSource.LOCAL;
+                }
+            });
+        }
 
-		@Override
-		public boolean handles(ApplicationInfo applicationInfo)
-		{
-			return true;
-		}
-	}
+        @Override
+        public boolean handles(ApplicationInfo applicationInfo)
+        {
+            return true;
+        }
+    }
 
-	private class ApplicationIconDecoder implements ResourceDecoder<ApplicationInfo, Drawable>
-	{
-		private final Context context;
+    private class ApplicationIconDecoder implements ResourceDecoder<ApplicationInfo, Drawable>
+    {
+        private final Context context;
 
-		public ApplicationIconDecoder(Context context)
-		{
-			this.context = context;
-		}
+        public ApplicationIconDecoder(Context context)
+        {
+            this.context = context;
+        }
 
-		@Nullable
-		@Override
-		public Resource<Drawable> decode(ApplicationInfo source, int width, int height, Options options) throws IOException
-		{
-			Drawable icon = source.loadIcon(context.getPackageManager());
-			return new DrawableResource<Drawable>(icon)
-			{
-				@Override
-				public Class<Drawable> getResourceClass()
-				{
-					return Drawable.class;
-				}
+        @Nullable
+        @Override
+        public Resource<Drawable> decode(ApplicationInfo source, int width, int height, Options options) throws IOException
+        {
+            Drawable icon = source.loadIcon(context.getPackageManager());
+            return new DrawableResource<Drawable>(icon)
+            {
+                @Override
+                public Class<Drawable> getResourceClass()
+                {
+                    return Drawable.class;
+                }
 
-				@Override
-				public int getSize()
-				{
-					if (drawable instanceof BitmapDrawable)
-						return Util.getBitmapByteSize(((BitmapDrawable) drawable).getBitmap());
+                @Override
+                public int getSize()
+                {
+                    if (drawable instanceof BitmapDrawable)
+                        return Util.getBitmapByteSize(((BitmapDrawable) drawable).getBitmap());
 
-					return 1;
-				}
+                    return 1;
+                }
 
-				@Override
-				public void recycle()
-				{
-				}
-			};
-		}
+                @Override
+                public void recycle()
+                {
+                }
+            };
+        }
 
-		@Override
-		public boolean handles(ApplicationInfo source, Options options) throws IOException
-		{
-			return true;
-		}
-	}
+        @Override
+        public boolean handles(ApplicationInfo source, Options options) throws IOException
+        {
+            return true;
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.DialogInterface;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -72,7 +71,8 @@ public class ProfileEditorDialog extends AlertDialog.Builder
         setNeutralButton(R.string.butn_close, null);
     }
 
-    protected void closeIfPossible() {
+    protected void closeIfPossible()
+    {
         if (mDialog != null) {
             if (mDialog.isShowing())
                 mDialog.dismiss();

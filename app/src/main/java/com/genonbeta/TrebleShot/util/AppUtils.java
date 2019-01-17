@@ -40,14 +40,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 public class AppUtils
 {
@@ -66,7 +64,7 @@ public class AppUtils
             return;
         }
 
-        ArrayList<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+        List<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
         for (AddressedInterface addressedInterface : interfaceList) {
             if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
@@ -324,9 +322,9 @@ public class AppUtils
         return typedValue.resourceId;
     }
 
-    public static ArrayList<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
+    public static List<RationalePermissionRequest.PermissionRequest> getRequiredPermissions(Context context)
     {
-        ArrayList<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
+        List<RationalePermissionRequest.PermissionRequest> permissionRequests = new ArrayList<>();
 
         if (Build.VERSION.SDK_INT >= 16) {
             permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,

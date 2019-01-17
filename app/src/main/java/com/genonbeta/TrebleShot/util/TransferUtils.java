@@ -27,7 +27,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * created by: veli
@@ -44,7 +44,7 @@ public class TransferUtils
         new ConnectionChooserDialog(activity, device, new OnDeviceSelectedListener()
         {
             @Override
-            public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> connectionList)
+            public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> connectionList)
             {
                 TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device, connection);
 
@@ -86,7 +86,7 @@ public class TransferUtils
         SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId));
 
-        ArrayList<ShowingAssignee> assignees = database
+        List<ShowingAssignee> assignees = database
                 .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
                 {
                     @Override
@@ -142,7 +142,7 @@ public class TransferUtils
                 : new TransferObject(receiverInstance);
     }
 
-    public static ArrayList<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
+    public static List<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
     {
         SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
@@ -285,7 +285,7 @@ public class TransferUtils
                         new EstablishConnectionDialog(activity, networkDevice, new OnDeviceSelectedListener()
                         {
                             @Override
-                            public void onDeviceSelected(NetworkDevice.Connection connection, ArrayList<NetworkDevice.Connection> availableInterfaces)
+                            public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
                             {
                                 if (!assignee.connectionAdapter.equals(connection.adapterName)) {
                                     assignee.connectionAdapter = connection.adapterName;

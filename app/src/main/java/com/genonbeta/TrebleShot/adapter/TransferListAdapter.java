@@ -42,6 +42,8 @@ import com.genonbeta.android.framework.util.listing.Merger;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by: veli
@@ -92,13 +94,13 @@ public class TransferListAdapter
         }
 
         boolean hasIncoming = false;
-        ArrayMap<String, TransferFolder> folders = new ArrayMap<>();
-        ArrayList<GenericTransferItem> files = new ArrayList<>();
+        Map<String, TransferFolder> folders = new ArrayMap<>();
+        List<GenericTransferItem> files = new ArrayList<>();
         String currentPath = getPath();
         currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
-        ArrayMap<String, NetworkDevice> networkDevices = new ArrayMap<>();
-        ArrayList<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
+        Map<String, NetworkDevice> networkDevices = new ArrayMap<>();
+        List<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
                 .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                         .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId)), TransferGroup.Assignee.class);
 
@@ -123,7 +125,7 @@ public class TransferListAdapter
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroup.groupId), currentPath, currentPath + File.separator + "%");
 
-        ArrayList<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
+        List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
 
         // we first get the default files
         for (GenericTransferItem object : derivedList) {
@@ -292,7 +294,8 @@ public class TransferListAdapter
         return 1;
     }
 
-    public GroupLister<AbstractGenericItem> createLister(ArrayList<AbstractGenericItem> loadedList, int groupBy)
+    @Override
+    public GroupLister<AbstractGenericItem> createLister(List<AbstractGenericItem> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);
@@ -303,9 +306,22 @@ public class TransferListAdapter
         return mGroup.groupId;
     }
 
+    public void setGroupId(long groupId)
+    {
+        mGroup.groupId = groupId;
+    }
+
     public String getPath()
     {
         return mPath;
+    }
+
+    public void setPath(String path)
+    {
+        mPath = path;
+
+        if (mListener != null)
+            mListener.onPathChange(path);
     }
 
     public NumberFormat getPercentFormat()
@@ -345,19 +361,6 @@ public class TransferListAdapter
             mSelect = select;
 
         return this;
-    }
-
-    public void setGroupId(long groupId)
-    {
-        mGroup.groupId = groupId;
-    }
-
-    public void setPath(String path)
-    {
-        mPath = path;
-
-        if (mListener != null)
-            mListener.onPathChange(path);
     }
 
     public void setPathChangedListener(PathChangedListener listener)
@@ -514,6 +517,12 @@ public class TransferListAdapter
         }
 
         @Override
+        public void setRepresentativeText(CharSequence representativeText)
+        {
+            this.representativeText = String.valueOf(representativeText);
+        }
+
+        @Override
         public boolean isGroupRepresentative()
         {
             return this.viewType == VIEW_TYPE_REPRESENTATIVE;
@@ -535,12 +544,6 @@ public class TransferListAdapter
         public void setSize(long size)
         {
             this.fileSize = size;
-        }
-
-        @Override
-        public void setRepresentativeText(CharSequence representativeText)
-        {
-            this.representativeText = String.valueOf(representativeText);
         }
     }
 
@@ -658,12 +661,11 @@ public class TransferListAdapter
 
     public static class TransferFolder extends AbstractGenericItem
     {
-        private boolean mHasIssues = false;
-
         public int filesTotal = 0;
         public int filesReceived = 0;
         public long bytesTotal = 0;
         public long bytesReceived = 0;
+        private boolean mHasIssues = false;
 
         public TransferFolder(long groupId, String friendlyName, String directory)
         {
@@ -743,16 +745,16 @@ public class TransferListAdapter
         }
 
         @Override
-        public boolean loadThumbnail(ImageView imageView)
-        {
-            return false;
-        }
-
-        @Override
         public void setId(long id)
         {
             super.setId(id);
             Log.d(TransferListAdapter.class.getSimpleName(), "setId(): This method should not be invoked");
+        }
+
+        @Override
+        public boolean loadThumbnail(ImageView imageView)
+        {
+            return false;
         }
 
         public void setHasIssues(boolean hasIssues)

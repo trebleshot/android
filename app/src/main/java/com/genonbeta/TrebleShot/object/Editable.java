@@ -9,9 +9,9 @@ import com.genonbeta.android.framework.object.Selectable;
 
 public interface Editable extends Comparable, Selectable
 {
-	boolean applyFilter(String[] filteringKeywords);
+    boolean applyFilter(String[] filteringKeywords);
 
-	long getId();
+    long getId();
 
-	void setId(long id);
+    void setId(long id);
 }

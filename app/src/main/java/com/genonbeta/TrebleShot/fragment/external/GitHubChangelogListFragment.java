@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -18,9 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import java.util.List;
 
 /**
  * created by: veli
@@ -80,7 +81,7 @@ public class GitHubChangelogListFragment
 
     public static class VersionListAdapter extends RecyclerViewAdapter<VersionObject, RecyclerViewAdapter.ViewHolder>
     {
-        private ArrayList<VersionObject> mList = new ArrayList<>();
+        private List<VersionObject> mList = new ArrayList<>();
         private String mCurrentVersion;
 
         public VersionListAdapter(Context context)
@@ -113,9 +114,9 @@ public class GitHubChangelogListFragment
         }
 
         @Override
-        public ArrayList<VersionObject> onLoad()
+        public List<VersionObject> onLoad()
         {
-            ArrayList<VersionObject> versionObjects = new ArrayList<>();
+            List<VersionObject> versionObjects = new ArrayList<>();
             RemoteServer server = new RemoteServer(AppConfig.URI_REPO_APP_UPDATE);
 
             try {
@@ -142,7 +143,7 @@ public class GitHubChangelogListFragment
         }
 
         @Override
-        public void onUpdate(ArrayList<VersionObject> passedItem)
+        public void onUpdate(List<VersionObject> passedItem)
         {
             synchronized (getList()) {
                 getList().clear();
@@ -163,7 +164,7 @@ public class GitHubChangelogListFragment
         }
 
         @Override
-        public ArrayList<VersionObject> getList()
+        public List<VersionObject> getList()
         {
             return mList;
         }

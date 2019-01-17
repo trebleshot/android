@@ -9,5 +9,5 @@ import android.content.Context;
 
 public interface TitleSupport
 {
-	CharSequence getTitle(Context context);
+    CharSequence getTitle(Context context);
 }

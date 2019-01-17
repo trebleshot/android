@@ -8,7 +8,6 @@ import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class NetworkDevice
@@ -40,7 +39,8 @@ public class NetworkDevice
         reconstruct(item);
     }
 
-    public String generatePictureId() {
+    public String generatePictureId()
+    {
         return String.format("picture_%s", deviceId);
     }
 
@@ -106,7 +106,7 @@ public class NetworkDevice
         database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-        ArrayList<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+        List<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices

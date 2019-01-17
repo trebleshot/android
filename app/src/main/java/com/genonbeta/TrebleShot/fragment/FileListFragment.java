@@ -43,6 +43,7 @@ import com.google.android.material.snackbar.Snackbar;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class FileListFragment
         extends GroupEditableListFragment<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder, FileListAdapter>
@@ -106,6 +107,61 @@ public class FileListFragment
                 refreshList();
         }
     };
+
+    public static boolean handleEditingAction(int id, final FileListFragment fragment, List<FileListAdapter.GenericFileHolder> selectedItemList)
+    {
+        final FileListAdapter adapter = fragment.getAdapter();
+
+        if (id == R.id.action_mode_file_delete) {
+            new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
+            {
+                @Override
+                public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
+                {
+                    fragment.scanFile(file);
+                }
+
+                @Override
+                public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
+                {
+                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
+                                    ? null
+                                    : adapter.getPath().getUri()));
+                }
+            }).show();
+        } else if (id == R.id.action_mode_file_rename) {
+            new FileRenameDialog<>(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
+            {
+                @Override
+                public void onFileRename(DocumentFile file, String displayName)
+                {
+                    fragment.scanFile(file);
+                }
+
+                @Override
+                public void onFileRenameCompleted(Context context)
+                {
+                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
+                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
+                                    ? null
+                                    : adapter.getPath().getUri()));
+                }
+            }).show();
+        } else if (id == R.id.action_mode_file_copy_here) {
+            WorkerService.run(fragment.getContext(), new WorkerService.RunningTask(TAG, JOB_COPY_FILES)
+            {
+                @Override
+                protected void onRun()
+                {
+
+                }
+            });
+        } else
+            return false;
+
+        return true;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -545,61 +601,6 @@ public class FileListFragment
     public void setOnPathChangedListener(OnPathChangedListener pathChangedListener)
     {
         mPathChangedListener = pathChangedListener;
-    }
-
-    public static boolean handleEditingAction(int id, final FileListFragment fragment, ArrayList<FileListAdapter.GenericFileHolder> selectedItemList)
-    {
-        final FileListAdapter adapter = fragment.getAdapter();
-
-        if (id == R.id.action_mode_file_delete) {
-            new FileDeletionDialog(fragment.getContext(), selectedItemList, new FileDeletionDialog.Listener()
-            {
-                @Override
-                public void onFileDeletion(WorkerService.RunningTask runningTask, Context context, DocumentFile file)
-                {
-                    fragment.scanFile(file);
-                }
-
-                @Override
-                public void onCompleted(WorkerService.RunningTask runningTask, Context context, int fileSize)
-                {
-                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
-                                    ? null
-                                    : adapter.getPath().getUri()));
-                }
-            }).show();
-        } else if (id == R.id.action_mode_file_rename) {
-            new FileRenameDialog<>(fragment.getContext(), selectedItemList, new FileRenameDialog.OnFileRenameListener()
-            {
-                @Override
-                public void onFileRename(DocumentFile file, String displayName)
-                {
-                    fragment.scanFile(file);
-                }
-
-                @Override
-                public void onFileRenameCompleted(Context context)
-                {
-                    context.sendBroadcast(new Intent(ACTION_FILE_LIST_CHANGED)
-                            .putExtra(EXTRA_FILE_PARENT, adapter.getPath() == null
-                                    ? null
-                                    : adapter.getPath().getUri()));
-                }
-            }).show();
-        } else if (id == R.id.action_mode_file_copy_here) {
-            WorkerService.run(fragment.getContext(), new WorkerService.RunningTask(TAG, JOB_COPY_FILES)
-            {
-                @Override
-                protected void onRun()
-                {
-
-                }
-            });
-        } else
-            return false;
-
-        return true;
     }
 
     public interface OnPathChangedListener

@@ -41,6 +41,7 @@ import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,8 +71,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private int mDefaultViewingGridSizeLandscape = 1;
     private int mDividerResId = R.id.abstract_layout_fast_scroll_recyclerview_bottom_divider;
     private FastScroller mFastScroller;
-    private ArrayMap<String, Integer> mSortingOptions = new ArrayMap<>();
-    private ArrayMap<String, Integer> mOrderingOptions = new ArrayMap<>();
+    private Map<String, Integer> mSortingOptions = new ArrayMap<>();
+    private Map<String, Integer> mOrderingOptions = new ArrayMap<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
     private String mSearchText;
@@ -366,7 +367,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return layoutManager;
     }
 
-    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, ArrayMap<String, Integer> options)
+    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
     {
         if (mainItem != null) {
             mainItem.setVisible(true);
@@ -790,18 +791,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         }
 
         @Override
-        public ArrayList<T> getSelectableList()
+        public List<T> getSelectableList()
         {
             return getAdapter().getList();
         }
-
 
         public boolean setItemSelected(int position)
         {
             return isSelectionActivated() && mFragment.getSelectionConnection().setSelected(position);
         }
 
-        public void setSelection(boolean selection, ArrayList<T> selectableList)
+        public void setSelection(boolean selection, List<T> selectableList)
         {
             for (T selectable : selectableList)
                 mFragment.getSelectionConnection().setSelected(selectable, selection);
@@ -880,7 +880,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                             @Override
                             public void onDismiss(DialogInterface dialog)
                             {
-                                ArrayList<T> selectedItems = new ArrayList<>(mFragment.getSelectionConnection().getSelectedItemList());
+                                List<T> selectedItems = new ArrayList<>(mFragment.getSelectionConnection().getSelectedItemList());
 
                                 for (T selectable : selectedItems)
                                     if (!selectable.isSelectableSelected())

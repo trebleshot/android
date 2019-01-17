@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.widget.ImageViewCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -24,6 +23,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
 {
@@ -39,9 +39,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     }
 
     @Override
-    public ArrayList<EditableNetworkDevice> onLoad()
+    public List<EditableNetworkDevice> onLoad()
     {
-        ArrayList<EditableNetworkDevice> list = new ArrayList<>();
+        List<EditableNetworkDevice> list = new ArrayList<>();
 
         if (mConnectionUtils.canReadScanResults()) {
             for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {

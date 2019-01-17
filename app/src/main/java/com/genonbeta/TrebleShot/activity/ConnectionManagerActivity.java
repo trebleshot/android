@@ -340,11 +340,6 @@ public class ConnectionManagerActivity
         }
     }
 
-    public interface DeviceSelectionSupport
-    {
-        void setDeviceSelectedListener(NetworkDeviceSelectedListener listener);
-    }
-
     public enum RequestType
     {
         RETURN_RESULT,
@@ -358,6 +353,11 @@ public class ConnectionManagerActivity
         UseKnownDevice,
         ScanQrCode,
         CreateHotspot
+    }
+
+    public interface DeviceSelectionSupport
+    {
+        void setDeviceSelectedListener(NetworkDeviceSelectedListener listener);
     }
 
     public static class CustomHorizontalNetworkDeviceListFragment extends NetworkDeviceListFragment

@@ -217,17 +217,17 @@ public abstract class Activity extends AppCompatActivity
 
                                 }
 
-                                @Override
-                                public void setRequest(@Nullable Request request)
-                                {
-
-                                }
-
                                 @Nullable
                                 @Override
                                 public Request getRequest()
                                 {
                                     return null;
+                                }
+
+                                @Override
+                                public void setRequest(@Nullable Request request)
+                                {
+
                                 }
 
                                 @Override

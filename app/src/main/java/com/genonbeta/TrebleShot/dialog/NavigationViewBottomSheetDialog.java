@@ -4,13 +4,13 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.genonbeta.TrebleShot.R;
-import com.google.android.material.bottomsheet.BottomSheetDialog;
-import com.google.android.material.navigation.NavigationView;
-
 import androidx.annotation.IdRes;
 import androidx.annotation.MenuRes;
 import androidx.annotation.NonNull;
+
+import com.genonbeta.TrebleShot.R;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.navigation.NavigationView;
 
 public class NavigationViewBottomSheetDialog extends BottomSheetDialog
 {

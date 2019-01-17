@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
@@ -231,6 +230,13 @@ public class TransferObject
     }
 
     @Override
+    public void setId(long id)
+    {
+        // it will && should be effective on representative text items
+        this.requestId = id;
+    }
+
+    @Override
     public String getSelectableTitle()
     {
         return friendlyName;
@@ -240,13 +246,6 @@ public class TransferObject
     public boolean isSelectableSelected()
     {
         return mIsSelected;
-    }
-
-    @Override
-    public void setId(long id)
-    {
-        // it will && should be effective on representative text items
-        this.requestId = id;
     }
 
     @Override

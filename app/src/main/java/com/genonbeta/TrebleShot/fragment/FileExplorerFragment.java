@@ -41,6 +41,18 @@ public class FileExplorerFragment
     private FilePathResolverRecyclerAdapter mPathAdapter;
     private DocumentFile mRequestedPath = null;
 
+    public static DocumentFile getReadableFolder(DocumentFile documentFile)
+    {
+        DocumentFile parent = documentFile.getParentFile();
+
+        if (parent == null)
+            return null;
+
+        return parent.canRead()
+                ? parent
+                : getReadableFolder(parent);
+    }
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
@@ -166,18 +178,6 @@ public class FileExplorerFragment
     public CharSequence getTitle(Context context)
     {
         return context.getString(R.string.text_fileExplorer);
-    }
-
-    public static DocumentFile getReadableFolder(DocumentFile documentFile)
-    {
-        DocumentFile parent = documentFile.getParentFile();
-
-        if (parent == null)
-            return null;
-
-        return parent.canRead()
-                ? parent
-                : getReadableFolder(parent);
     }
 
     public void requestPath(DocumentFile file)

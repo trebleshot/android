@@ -2,7 +2,6 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -26,159 +25,159 @@ import java.net.Socket;
 
 public class UpdateUtils
 {
-	public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog, final GitHubUpdater.OnInfoAvailableListener listener)
-	{
-		updater.checkForUpdates(popupDialog, new GitHubUpdater.OnInfoAvailableListener()
-		{
-			@Override
-			public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
-			{
-				SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
+    public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog, final GitHubUpdater.OnInfoAvailableListener listener)
+    {
+        updater.checkForUpdates(popupDialog, new GitHubUpdater.OnInfoAvailableListener()
+        {
+            @Override
+            public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
+            {
+                SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
 
-				sharedPreferences.edit()
-						.putString("availableVersion", versionName)
-						.putLong("checkedForUpdatesTime", System.currentTimeMillis())
-						.apply();
+                sharedPreferences.edit()
+                        .putString("availableVersion", versionName)
+                        .putLong("checkedForUpdatesTime", System.currentTimeMillis())
+                        .apply();
 
-				if (listener != null)
-					listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
-			}
-		});
-	}
+                if (listener != null)
+                    listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
+            }
+        });
+    }
 
-	public static String getAvailableVersion(Context context)
-	{
-		return AppUtils.getDefaultPreferences(context).getString("availableVersion", null);
-	}
+    public static String getAvailableVersion(Context context)
+    {
+        return AppUtils.getDefaultPreferences(context).getString("availableVersion", null);
+    }
 
-	public static GitHubUpdater getDefaultUpdater(Context context)
-	{
-		return new GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.Theme_TrebleShot, false);
-	}
+    public static GitHubUpdater getDefaultUpdater(Context context)
+    {
+        return new GitHubUpdater(context, AppConfig.URI_REPO_APP_UPDATE, R.style.Theme_TrebleShot, false);
+    }
 
-	public static long getLastTimeCheckedForUpdates(Context context)
-	{
-		return AppUtils.getDefaultPreferences(context).getLong("checkedForUpdatesTime", 0);
-	}
+    public static long getLastTimeCheckedForUpdates(Context context)
+    {
+        return AppUtils.getDefaultPreferences(context).getLong("checkedForUpdatesTime", 0);
+    }
 
-	public static boolean hasNewVersion(Context context)
-	{
-		String availableVersion = getAvailableVersion(context);
-		return availableVersion != null && GitHubUpdater.isNewVersion(context, availableVersion);
-	}
+    public static boolean hasNewVersion(Context context)
+    {
+        String availableVersion = getAvailableVersion(context);
+        return availableVersion != null && GitHubUpdater.isNewVersion(context, availableVersion);
+    }
 
-	public static void sendUpdate(Context context, String toIp) throws IOException
-	{
-		Socket socket = new Socket();
+    public static void sendUpdate(Context context, String toIp) throws IOException
+    {
+        Socket socket = new Socket();
 
-		socket.bind(null);
-		socket.connect(new InetSocketAddress(toIp, AppConfig.SERVER_PORT_UPDATE_CHANNEL));
+        socket.bind(null);
+        socket.connect(new InetSocketAddress(toIp, AppConfig.SERVER_PORT_UPDATE_CHANNEL));
 
-		FileInputStream fileInputStream = new FileInputStream(context.getApplicationInfo().sourceDir);
-		OutputStream outputStream = socket.getOutputStream();
+        FileInputStream fileInputStream = new FileInputStream(context.getApplicationInfo().sourceDir);
+        OutputStream outputStream = socket.getOutputStream();
 
-		byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-		int len;
-		long lastRead = System.currentTimeMillis();
+        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+        int len;
+        long lastRead = System.currentTimeMillis();
 
-		while ((len = fileInputStream.read(buffer)) != -1) {
-			if (len > 0) {
-				outputStream.write(buffer, 0, len);
-				outputStream.flush();
+        while ((len = fileInputStream.read(buffer)) != -1) {
+            if (len > 0) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
 
-				lastRead = System.currentTimeMillis();
-			}
+                lastRead = System.currentTimeMillis();
+            }
 
-			if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT) {
-				System.out.println("CoolTransfer: Timed out... Exiting.");
-				break;
-			}
-		}
+            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT) {
+                System.out.println("CoolTransfer: Timed out... Exiting.");
+                break;
+            }
+        }
 
-		outputStream.close();
-		fileInputStream.close();
+        outputStream.close();
+        fileInputStream.close();
 
-		socket.close();
-	}
+        socket.close();
+    }
 
-	public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException
-	{
-		ServerSocket serverSocket = null;
-		Socket socket = null;
-		DocumentFile updateFile = null;
+    public static DocumentFile receiveUpdate(Context context, NetworkDevice device, Interrupter interrupter, OnConnectionReadyListener readyListener) throws IOException
+    {
+        ServerSocket serverSocket = null;
+        Socket socket = null;
+        DocumentFile updateFile = null;
 
-		try {
-			serverSocket = new ServerSocket(AppConfig.SERVER_PORT_UPDATE_CHANNEL);
-			updateFile = FileUtils.getApplicationDirectory(context)
-					.createFile(null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
+        try {
+            serverSocket = new ServerSocket(AppConfig.SERVER_PORT_UPDATE_CHANNEL);
+            updateFile = FileUtils.getApplicationDirectory(context)
+                    .createFile(null, device.versionName + "_" + System.currentTimeMillis() + ".apk");
 
-			final ServerSocket finalServer = serverSocket;
+            final ServerSocket finalServer = serverSocket;
 
-			interrupter.addCloser(new Interrupter.Closer()
-			{
-				@Override
-				public void onClose(boolean userAction)
-				{
-					try {
-						if (!finalServer.isClosed())
-							finalServer.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-				}
-			});
+            interrupter.addCloser(new Interrupter.Closer()
+            {
+                @Override
+                public void onClose(boolean userAction)
+                {
+                    try {
+                        if (!finalServer.isClosed())
+                            finalServer.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
 
-			if (readyListener != null)
-				readyListener.onConnectionReady(serverSocket);
+            if (readyListener != null)
+                readyListener.onConnectionReady(serverSocket);
 
-			serverSocket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            serverSocket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
-			socket = serverSocket.accept();
+            socket = serverSocket.accept();
 
-			socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            socket.setSoTimeout(AppConfig.DEFAULT_SOCKET_TIMEOUT);
 
-			InputStream inputStream = socket.getInputStream();
-			OutputStream outputStream = context.getContentResolver().openOutputStream(updateFile.getUri());
+            InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = context.getContentResolver().openOutputStream(updateFile.getUri());
 
-			byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-			int len = 0;
-			long lastRead = System.currentTimeMillis();
+            byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+            int len = 0;
+            long lastRead = System.currentTimeMillis();
 
-			while (len != -1) {
-				if ((len = inputStream.read(buffer)) > 0) {
-					outputStream.write(buffer, 0, len);
-					outputStream.flush();
+            while (len != -1) {
+                if ((len = inputStream.read(buffer)) > 0) {
+                    outputStream.write(buffer, 0, len);
+                    outputStream.flush();
 
-					lastRead = System.currentTimeMillis();
-				}
+                    lastRead = System.currentTimeMillis();
+                }
 
-				if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT || interrupter.interrupted())
-					throw new Exception("Timed out or interrupted. Exiting!");
-			}
+                if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT || interrupter.interrupted())
+                    throw new Exception("Timed out or interrupted. Exiting!");
+            }
 
-			outputStream.close();
-			inputStream.close();
+            outputStream.close();
+            inputStream.close();
 
-		} catch (Exception e) {
-			e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
 
-			if (updateFile != null && updateFile.isFile())
-				updateFile.delete();
+            if (updateFile != null && updateFile.isFile())
+                updateFile.delete();
 
-			return null;
-		} finally {
-			if (socket != null && !socket.isClosed())
-				socket.close();
+            return null;
+        } finally {
+            if (socket != null && !socket.isClosed())
+                socket.close();
 
-			if (serverSocket != null && !serverSocket.isClosed())
-				serverSocket.close();
-		}
+            if (serverSocket != null && !serverSocket.isClosed())
+                serverSocket.close();
+        }
 
-		return updateFile;
-	}
+        return updateFile;
+    }
 
-	public interface OnConnectionReadyListener
-	{
-		void onConnectionReady(ServerSocket socket);
-	}
+    public interface OnConnectionReadyListener
+    {
+        void onConnectionReady(ServerSocket socket);
+    }
 }
