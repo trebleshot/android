@@ -86,6 +86,7 @@ public class CommunicationService extends Service
     public static final String ACTION_SEAMLESS_RECEIVE = "com.genonbeta.intent.action.SEAMLESS_START";
     public static final String ACTION_CANCEL_JOB = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
     public static final String ACTION_TOGGLE_SEAMLESS_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_SEAMLESS_MODE";
+    public static final String ACTION_REVOKE_ACCESS_PIN = "com.genonbeta.TrebleShot.transaction.action.REVOKE_ACCESS_PIN";
     public static final String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
     public static final String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
     public static final String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
@@ -133,6 +134,7 @@ public class CommunicationService extends Service
 
     private boolean mDestroyApproved = false;
     private boolean mSeamlessMode = false;
+    private boolean mPinAccess = false;
 
     @Override
     public IBinder onBind(Intent intent)
@@ -379,6 +381,12 @@ public class CommunicationService extends Service
                         : TASK_STATUS_ONGOING);
             } else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
                 notifyTaskRunningListChange();
+            } else if (ACTION_REVOKE_ACCESS_PIN.equals(intent.getAction())) {
+                getDefaultPreferences().edit()
+                        .putInt(Keyword.NETWORK_PIN, -1)
+                        .apply();
+
+                refreshServiceState();
             }
         }
 
@@ -522,6 +530,11 @@ public class CommunicationService extends Service
                 .putStringArrayListExtra(EXTRA_DEVICE_LIST_RUNNING, deviceList));
     }
 
+    public void refreshServiceState()
+    {
+        updateServiceState(mSeamlessMode);
+    }
+
     public void sendHotspotStatusDisabling()
     {
         sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
@@ -579,9 +592,12 @@ public class CommunicationService extends Service
     public void updateServiceState(boolean seamlessMode)
     {
         mSeamlessMode = seamlessMode;
+        mPinAccess = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1) != -1;
 
         startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
-                getNotificationHelper().getCommunicationServiceNotification(mSeamlessMode).build());
+                getNotificationHelper()
+                        .getCommunicationServiceNotification(mSeamlessMode, mPinAccess)
+                        .build());
     }
 
     public class CommunicationServer extends CoolSocket
@@ -626,8 +642,10 @@ public class CommunicationService extends Service
                 boolean result = false;
                 boolean shouldContinue = false;
 
-                final boolean isSecureConnection = responseJSON.has(Keyword.DEVICE_SECURE_KEY)
-                        && responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) == getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
+                final int networkPin = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
+                final boolean isSecureConnection = networkPin != -1
+                        && responseJSON.has(Keyword.DEVICE_SECURE_KEY)
+                        && responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) == networkPin;
 
                 String deviceSerial = null;
 
@@ -653,10 +671,8 @@ public class CommunicationService extends Service
                     try {
                         getDatabase().reconstruct(device);
 
-                        if (isSecureConnection) {
-                            device.isTrusted = true;
+                        if (isSecureConnection)
                             device.isRestricted = false;
-                        }
 
                         if (!device.isRestricted)
                             shouldContinue = true;
@@ -668,8 +684,10 @@ public class CommunicationService extends Service
                         if (device == null)
                             throw new Exception("Could not reach to the opposite server");
 
-                        device.isRestricted = !isSecureConnection;
-                        device.isTrusted = isSecureConnection;
+                        device.isTrusted = false;
+
+                        if (isSecureConnection)
+                            device.isRestricted = false;
 
                         getDatabase().publish(device);
 
@@ -681,11 +699,16 @@ public class CommunicationService extends Service
 
                     final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), device, activeConnection.getClientAddress());
                     final NetworkDevice finalDevice = device;
-                    final boolean isSeamlessAvailable = mSeamlessMode && (device.isTrusted || isSecureConnection);
+                    final boolean isSeamlessAvailable = (mSeamlessMode && device.isTrusted)
+                            || (isSecureConnection && getDefaultPreferences().getBoolean("qr_trust", false));
 
                     if (!shouldContinue)
                         replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
                     else if (responseJSON.has(Keyword.REQUEST)) {
+                        if (isSecureConnection && !mPinAccess)
+                            // Probably pin access has just activated, so we should update the service state
+                            refreshServiceState();
+
                         switch (responseJSON.getString(Keyword.REQUEST)) {
                             case (Keyword.REQUEST_TRANSFER):
                                 if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID) && getOngoingIndexList().size() < 1) {

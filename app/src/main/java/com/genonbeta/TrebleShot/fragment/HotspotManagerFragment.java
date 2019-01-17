@@ -263,24 +263,25 @@ public class HotspotManagerFragment
                              @Nullable String text3,
                              @StringRes int buttonText)
     {
-        String codeString = codeIndex == null ? null : codeIndex.toString();
-        boolean showQRCode = codeString != null && getContext() != null;
+        boolean showQRCode = codeIndex != null
+                && codeIndex.length() > 0
+                && getContext() != null;
 
         try {
-            if (codeIndex != null) {
-                int networkPin = AppUtils.getUniqueNumber();
-
-                codeIndex.put(Keyword.NETWORK_PIN, networkPin);
-
-                AppUtils.getDefaultPreferences(getContext()).edit()
-                        .putInt(Keyword.NETWORK_PIN, networkPin)
-                        .apply();
-            }
-
             MultiFormatWriter formatWriter = new MultiFormatWriter();
 
             if (showQRCode) {
-                BitMatrix bitMatrix = formatWriter.encode(codeString, BarcodeFormat.QR_CODE, 400, 400);
+                {
+                    int networkPin = AppUtils.getUniqueNumber();
+
+                    codeIndex.put(Keyword.NETWORK_PIN, networkPin);
+
+                    AppUtils.getDefaultPreferences(getContext()).edit()
+                            .putInt(Keyword.NETWORK_PIN, networkPin)
+                            .apply();
+                }
+
+                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
 

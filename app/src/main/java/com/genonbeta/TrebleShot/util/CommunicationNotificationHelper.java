@@ -39,7 +39,7 @@ public class CommunicationNotificationHelper
         mNotificationUtils = notificationUtils;
     }
 
-    public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode)
+    public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode, boolean pinAccess)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
@@ -51,6 +51,10 @@ public class CommunicationNotificationHelper
                         PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE), PendingIntent.FLAG_CANCEL_CURRENT))
                 .setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class)
                         .setAction(CommunicationService.ACTION_END_SESSION), 0));
+
+        if (pinAccess)
+            notification.addAction(R.drawable.ic_autorenew_white_24dp_static, getContext().getString(R.string.butn_revokeAccessPin),
+                    PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_REVOKE_ACCESS_PIN), PendingIntent.FLAG_CANCEL_CURRENT));
 
         return notification.show();
     }

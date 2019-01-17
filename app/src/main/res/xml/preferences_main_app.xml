@@ -35,6 +35,12 @@
             android:summary="@string/text_hotspotStartsTrustZoneSummary"
             android:title="@string/text_hotspotStartsTrustZone" />
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="qr_trust"
+            android:summary="@string/text_qrAllowTrustZoneSummary"
+            android:title="@string/text_qrAllowTrustZone" />
+
         <PreferenceScreen
             android:summary="@string/text_storagePathSummary"
             android:title="@string/text_storagePath">

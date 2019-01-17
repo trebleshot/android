@@ -212,7 +212,10 @@ public class FileListAdapter
                                                 AccessDatabase.FIELD_TRANSFER_TYPE, AccessDatabase.FIELD_TRANSFER_GROUPID),
                                                 TransferObject.Flag.DONE.toString(),
                                                 TransferObject.Type.INCOMING.toString(),
-                                                String.valueOf(group.groupId)), TransferObject.class);
+                                                String.valueOf(group.groupId))
+                                        .setOrderBy(String.format("`%s` DESC, `%s` DESC",
+                                                AccessDatabase.FIELD_TRANSFER_DIRECTORY,
+                                                AccessDatabase.FIELD_TRANSFER_NAME)), TransferObject.class);
 
                         for (TransferObject recentFile : recentFiles) {
                             if (pickedRecentFiles.size() >= 20)

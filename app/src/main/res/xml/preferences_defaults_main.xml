@@ -19,6 +19,10 @@
 
     <CheckBoxPreference
         android:defaultValue="true"
+        android:key="qr_trust" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
         android:key="notification_vibrate"/>
 
     <CheckBoxPreference

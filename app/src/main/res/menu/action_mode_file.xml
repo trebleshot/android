@@ -22,7 +22,8 @@
 
     <item
         android:id="@+id/action_mode_file_toggle_shortcut"
-        android:title="@string/butn_removeShortcut" />
+        android:title="@string/butn_removeShortcut"
+        android:visible="false"/>
 
     <item
         android:id="@+id/action_mode_file_copy_here"
