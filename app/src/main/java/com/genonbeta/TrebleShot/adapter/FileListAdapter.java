@@ -12,7 +12,6 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -39,9 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -105,17 +102,21 @@ public class FileListAdapter
 
             lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
                     getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
 
             if (Build.VERSION.SDK_INT >= 19)
-                lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                         getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
                     getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+            lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
                     getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
 
             File fileSystemRoot = new File(".");
@@ -194,44 +195,48 @@ public class FileListAdapter
 
             {
                 // Testing whether the files checked as completed exist takes too much time
-                // causing long load times at times. To overcome this, we we will skip
-                // transfer groups when they provide 2 files that are not existing.
+                // causing long load times when those files are deleted. To overcome this,
+                // we we will skip those transfer groups that provided 2 files that are not existing.
                 List<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
-                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class);
+                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
+                                .setOrderBy(String.format("%s DESC", AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED)), TransferGroup.class);
+                List<DocumentFile> pickedRecentFiles = new ArrayList<>();
 
-                Map<Long, TransferGroup> linkedGroups = new ArrayMap<>();
+                try {
+                    for (TransferGroup group : transferGroups) {
+                        int errorLimit = 3;
 
-                for (TransferGroup group : transferGroups)
-                    linkedGroups.put(group.groupId, group);
+                        List<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
+                                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                                        .setWhere(String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG,
+                                                AccessDatabase.FIELD_TRANSFER_TYPE, AccessDatabase.FIELD_TRANSFER_GROUPID),
+                                                TransferObject.Flag.DONE.toString(),
+                                                TransferObject.Type.INCOMING.toString(),
+                                                String.valueOf(group.groupId)), TransferObject.class);
 
-                List<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
-                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                .setWhere(String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG, AccessDatabase.FIELD_TRANSFER_TYPE),
-                                        TransferObject.Flag.DONE.toString(), TransferObject.Type.INCOMING.toString()), TransferObject.class);
+                        for (TransferObject recentFile : recentFiles) {
+                            if (pickedRecentFiles.size() >= 20)
+                                throw new Exception("Reached the threshold for picking recent files");
 
-                if (linkedGroups.size() > 0 && recentFiles.size() > 0) {
-                    List<DocumentFile> pickedRecentFiles = new ArrayList<>();
-                    Collections.reverse(recentFiles);
+                            if (errorLimit == 0)
+                                break;
 
-                    for (TransferObject recentFile : recentFiles) {
-                        if (pickedRecentFiles.size() > 20)
-                            break;
+                            try {
+                                DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile,
+                                        group, false);
 
-                        TransferGroup group = linkedGroups.get(recentFile.groupId);
-
-                        if (group == null)
-                            continue;
-
-                        try {
-                            DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile, group, false);
-
-                            if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
-                                pickedRecentFiles.add(documentFile);
-                        } catch (IOException e) {
-                            // do nothing
+                                if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
+                                    pickedRecentFiles.add(documentFile);
+                                else
+                                    errorLimit--;
+                            } catch (IOException e) {
+                                errorLimit--;
+                            }
                         }
                     }
-
+                } catch (Exception e) {
+                    // This is a more proper way to break the loop.
+                } finally {
                     for (DocumentFile documentFile : pickedRecentFiles)
                         lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
                 }
@@ -311,10 +316,34 @@ public class FileListAdapter
         return stringBuilder.toString();
     }
 
-    public GroupLister<GenericFileHolder> createLister(ArrayList<GenericFileHolder> loadedList, int groupBy)
+    public GroupLister<GenericFileHolder> createLister(List<GenericFileHolder> loadedList, int groupBy)
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);
+    }
+
+    @Override
+    public int getSortingCriteria(GenericFileHolder objectOne, GenericFileHolder objectTwo)
+    {
+        // Checking the path is null will help keep the performance high when we are not showing 'Home'.
+        if (getPath() == null
+                && objectOne instanceof RecentFileHolder
+                && objectTwo instanceof RecentFileHolder)
+            return MODE_SORT_BY_DATE;
+
+        return super.getSortingCriteria(objectOne, objectTwo);
+    }
+
+    @Override
+    public int getSortingOrder(GenericFileHolder objectOne, GenericFileHolder objectTwo)
+    {
+        // Checking the path is null will help keep the performance high when we are not showing 'Home'.
+        if (getPath() == null
+                && objectOne instanceof RecentFileHolder
+                && objectTwo instanceof RecentFileHolder)
+            return MODE_SORT_ORDER_DESCENDING;
+
+        return super.getSortingOrder(objectOne, objectTwo);
     }
 
     @Nullable

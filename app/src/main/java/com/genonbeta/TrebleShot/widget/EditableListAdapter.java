@@ -106,7 +106,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
                 @Override
                 public int compare(T toCompare, T compareTo)
                 {
-                    boolean sortingAscending = getSortingOrder() == MODE_SORT_ORDER_ASCENDING;
+                    boolean sortingAscending = getSortingOrder(toCompare, compareTo) == MODE_SORT_ORDER_ASCENDING;
 
                     T objectFirst = sortingAscending ? toCompare : compareTo;
                     T objectSecond = sortingAscending ? compareTo : toCompare;
@@ -119,7 +119,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
                     else if (!compareTo.comparisonSupported())
                         return -1;
 
-                    switch (getSortingCriteria()) {
+                    // sorting direction is not used, so that the method doesn't have to guess which is used.
+                    switch (getSortingCriteria(toCompare, compareTo)) {
                         case MODE_SORT_BY_DATE:
                             return MathUtils.compare(objectFirst.getComparableDate(), objectSecond.getComparableDate());
                         case MODE_SORT_BY_SIZE:
@@ -231,9 +232,19 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
         return TextUtils.trimText(text, 1).toUpperCase();
     }
 
+    public int getSortingCriteria(T objectOne, T objectTwo)
+    {
+        return getSortingCriteria();
+    }
+
     public int getSortingCriteria()
     {
         return mSortingCriteria;
+    }
+
+    public int getSortingOrder(T objectOne, T objectTwo)
+    {
+        return getSortingOrder();
     }
 
     public int getSortingOrder()
