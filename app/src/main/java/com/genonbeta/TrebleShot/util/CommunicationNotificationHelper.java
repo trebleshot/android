@@ -53,7 +53,7 @@ public class CommunicationNotificationHelper
                         .setAction(CommunicationService.ACTION_END_SESSION), 0));
 
         if (pinAccess)
-            notification.addAction(R.drawable.ic_autorenew_white_24dp_static, getContext().getString(R.string.butn_revokeAccessPin),
+            notification.addAction(R.drawable.ic_autorenew_white_24dp_static, getContext().getString(R.string.butn_revokePin),
                     PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_REVOKE_ACCESS_PIN), PendingIntent.FLAG_CANCEL_CURRENT));
 
         return notification.show();

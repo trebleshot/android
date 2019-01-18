@@ -151,7 +151,8 @@ public class CommunicationService extends Service
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
         mHotspotUtils = HotspotUtils.getInstance(this);
-        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
+        mWifiLock = ((WifiManager) getApplicationContext()
+                .getSystemService(Service.WIFI_SERVICE))
                 .createWifiLock(TAG);
 
         mReceive.setNotifyDelay(AppConfig.DEFAULT_NOTIFICATION_DELAY);
@@ -382,10 +383,7 @@ public class CommunicationService extends Service
             } else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
                 notifyTaskRunningListChange();
             } else if (ACTION_REVOKE_ACCESS_PIN.equals(intent.getAction())) {
-                getDefaultPreferences().edit()
-                        .putInt(Keyword.NETWORK_PIN, -1)
-                        .apply();
-
+                revokePinAccess();
                 refreshServiceState();
             }
         }
@@ -413,6 +411,7 @@ public class CommunicationService extends Service
             Log.d(TAG, "onDestroy(): Releasing Wi-Fi lock");
         }
 
+        revokePinAccess();
         stopForeground(true);
 
         synchronized (getOngoingIndexList()) {
@@ -533,6 +532,13 @@ public class CommunicationService extends Service
     public void refreshServiceState()
     {
         updateServiceState(mSeamlessMode);
+    }
+
+    public void revokePinAccess()
+    {
+        getDefaultPreferences().edit()
+                .putInt(Keyword.NETWORK_PIN, -1)
+                .apply();
     }
 
     public void sendHotspotStatusDisabling()

@@ -436,5 +436,5 @@
     <string name="text_connectionTest">Connection test - %s</string>
     <string name="butn_connectionTest">Connection test</string>
     <string name="text_textMillisecond">%d ms</string>
-    <string name="butn_revokeAccessPin">Revoke Access PIN</string>
+    <string name="butn_revokePin">Revoke PIN</string>
 </resources>
