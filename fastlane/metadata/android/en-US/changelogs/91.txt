@@ -1,0 +1,4 @@
+NEW: Connection test
+IMPROVED: Choose and save the best connection all the time
+IMPROVED: Fast scrolling
+FIXED: Occasional delays in file explorer home

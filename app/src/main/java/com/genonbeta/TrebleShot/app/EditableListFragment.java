@@ -146,11 +146,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     @Override
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
+        super.onListView(mainContainer, listViewContainer);
         View view = getLayoutInflater().inflate(R.layout.abstract_layout_fast_scroll_recyclerview, null, false);
 
         RecyclerView recyclerView = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_view);
         mFastScroller = view.findViewById(R.id.abstract_layout_fast_scroll_recyclerview_fastscroll_view);
 
+        // TODO: 1/18/19 Something like onSetListView method would be more safe to set the layout manager etc.
         recyclerView.setLayoutManager(onLayoutManager());
 
         listViewContainer.addView(view);
