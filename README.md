@@ -1,21 +1,20 @@
 # TrebleShot open-source file and text sharing application
-Send and receive files over available connections with functionalities like
-being able to resume transfer when an error occurred. [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
+Send and receive files over available connections. [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
 
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
-* Pause and resume transfers even when an error is given
+* Pause and resume transfers even after something went wrong
+* Share large files
 * Share multiple content from your video, photo, music and application libraries
-* No internet connection is required: Set up a hotspot and connect to it using a QR code
+* No internet connection is required: setup a hotspot and connect to it using QR code
 * Share with multiple devices at the same time
-* Share texts of any kind and save them to TrebleShot
-* Share folders as they are for backup or any other purpose
+* Exchange texts of any kind and save them to TrebleShot
+* Share folders as they are for backup and other purposes
 * Light UI: Works faster than its rivals on low-end devices
-* Speed-oriented: Minimal UI focusing on and optimized for speed
-* Professional features: Network change handling, choosing network after speed measurement
-* It is secure by allowing you to give extra permission to or block a device
+* Speed-oriented: Minimal UI optimized for speed
+* Advanced features: network change handling, choosing network after speed measurement
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
