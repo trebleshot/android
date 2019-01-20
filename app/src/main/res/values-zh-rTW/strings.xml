@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">開啟導航面板</string>n
     <string name="text_navigationDrawerClose">關閉導航面板</string>
     <string name="text_preferences">喜好設定</string>
@@ -71,7 +71,7 @@
     <string name="mesg_scanCompleted">掃描完畢</string>
     <string name="text_autoStart">自動啟動</string>
     <string name="text_autoStartSummary">當偵測到連線時啟用通訊</string>
-    <string name="text_application">App</string>
+    <string name="text_application">應用程式</string>
     <string name="text_image">圖片</string>
     <string name="text_music">音樂</string>
     <string name="text_video">影片</string>
@@ -172,7 +172,7 @@
     <string name="text_flagResume">已繼續</string>
     <string name="text_unknown">未知</string>
     <string name="text_longAgo">許久以前</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
+    <string name="text_interfaceWifiDirect">Wi-Fi 指導</string>
     <string name="text_interfaceBluetooth">藍芽</string>
     <string name="text_interfaceEthernet">乙太網路</string>
     <string name="text_interfaceUnknown">未知連線</string>
