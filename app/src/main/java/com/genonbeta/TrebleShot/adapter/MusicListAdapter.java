@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class MusicListAdapter
         extends GroupEditableListAdapter<MusicListAdapter.SongHolder, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<MusicListAdapter.SongHolder>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<MusicListAdapter.SongHolder>
 {
     public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_NOTHING + 1;
     public static final int MODE_GROUP_BY_ARTIST = MODE_GROUP_BY_ALBUM + 1;

@@ -165,14 +165,6 @@ public class TransferGroupListFragment
     }
 
     @Override
-    public int onGridSpanSize(int viewType, int currentSpanSize)
-    {
-        return viewType == TransferGroupListAdapter.VIEW_TYPE_REPRESENTATIVE
-                ? currentSpanSize
-                : super.onGridSpanSize(viewType, currentSpanSize);
-    }
-
-    @Override
     public TransferGroupListAdapter onAdapter()
     {
         final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()

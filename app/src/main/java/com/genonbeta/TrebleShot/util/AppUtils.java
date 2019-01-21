@@ -139,7 +139,7 @@ public class AppUtils
     {
         DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
         String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
-        DocumentFile logFile = saveDirectory.createFile(FileUtils.getFileContentType(fileName), fileName);
+        DocumentFile logFile = saveDirectory.createFile(null, fileName);
 
         int pid = android.os.Process.myPid();
 

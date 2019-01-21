@@ -42,7 +42,7 @@ import java.util.List;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<FileListAdapter.GenericFileHolder>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<FileListAdapter.GenericFileHolder>
 {
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
     public static final int REQUEST_CODE_MOUNT_FOLDER = 1;

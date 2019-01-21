@@ -291,7 +291,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     {
         private int mMode;
         private List<T> mNoGroupingList;
-        private CustomGroupListener<T> mCustomLister;
+        private CustomGroupLister<T> mCustomLister;
 
         public GroupLister(List<T> noGroupingList, int mode)
         {
@@ -299,7 +299,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
             mMode = mode;
         }
 
-        public GroupLister(List<T> noGroupingListList, int mode, CustomGroupListener<T> customList)
+        public GroupLister(List<T> noGroupingListList, int mode, CustomGroupLister<T> customList)
         {
             this(noGroupingListList, mode);
             mCustomLister = customList;
@@ -321,13 +321,13 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
                 mNoGroupingList.add(object);
         }
 
-        public GroupLister<T> setCustomLister(CustomGroupListener<T> customLister)
+        public GroupLister<T> setCustomLister(CustomGroupLister<T> customLister)
         {
             mCustomLister = customLister;
             return this;
         }
 
-        public interface CustomGroupListener<T extends GroupEditable>
+        public interface CustomGroupLister<T extends GroupEditable>
         {
             boolean onCustomGroupListing(GroupLister<T> lister, int mode, T object);
         }

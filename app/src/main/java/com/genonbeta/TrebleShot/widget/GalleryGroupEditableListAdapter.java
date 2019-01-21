@@ -15,7 +15,7 @@ import java.util.List;
  */
 abstract public class GalleryGroupEditableListAdapter<T extends GalleryGroupEditableListAdapter.GalleryGroupShareable, V extends GroupEditableListAdapter.GroupViewHolder>
         extends GroupEditableListAdapter<T, V>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupListener<T>
+        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<T>
 {
     public static final int MODE_GROUP_BY_ALBUM = MODE_GROUP_BY_DATE + 1;
 
