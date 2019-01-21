@@ -1,6 +1,6 @@
 TrebleShot is an open-source application that allows you to send and receive files without an internet connection.
 
-* TrebleShot should be installed on devices that you want to share files with.
+* TrebleShot should be installed on all devices that you want to share files with.
 
 MAIN FEATURES
 * Pause and resume transfers even after something went wrong
@@ -15,7 +15,7 @@ MAIN FEATURES
 * Advanced features: network change handling, choosing network after speed measurement
 
 DISCOVERING DEVICES
-TrebleShot provides handful tools to help you send any file on bad circumstances. Devices that are on the same network
+TrebleShot provides handful tools to help you send any file on any situation. Devices that are on the same network
 will recognize each other. You can also scan the code over your phone's screen or start a deep scan over the network.
 
 FEATURES THAT REQUIRE PERMISSION
@@ -26,11 +26,13 @@ and connection info.
 
 APP POWERED BY COMMUNITY
 TrebleShot is a community driven app. You can help it become more feature rich and available on more people's devices by
-posting and telling about it. You can also join the Telegram Group where we discuss what should change and what we should
+posting and telling about it. You can also join the Telegram group where we discuss what should change and what we should
 do for new releases. You can join it here https://t.me/trebleshot .
 
 Translate TrebleShot:
-https://hosted.weblate.org/projects/trebleshot/
+Know how to do it on Weblate? https://hosted.weblate.org/projects/trebleshot/
+A fresh starter? Learn more about the translation process - https://github.com/genonbeta/TrebleShot/wiki/Language-contribution
+
 
 Source code:
 http://github.com/genonbeta/TrebleShot
