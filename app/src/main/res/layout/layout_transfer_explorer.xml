@@ -3,34 +3,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/layout_transfer_explorer_path_container"
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/layout_transfer_explorer_recycler"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:layout_centerHorizontal="true"
+        android:clipToPadding="false"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:scrollbars="none" />
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/layout_transfer_explorer_recycler"
+        android:layout_alignParentTop="true">
+
+        <FrameLayout
+            android:id="@+id/layout_transfer_explorer_fragment_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
         <View
             android:id="@+id/layout_transfer_explorer_separator"
-            style="@style/DividerStyle" />
+            style="@style/DividerStyle"
+            android:layout_gravity="bottom" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/layout_transfer_explorer_recycler"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clipToPadding="false"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:scrollbars="none" />
-
-    </LinearLayout>
-
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/layout_transfer_explorer_fragment_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/layout_transfer_explorer_path_container"
-        android:layout_alignParentTop="true" />
-
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </RelativeLayout>

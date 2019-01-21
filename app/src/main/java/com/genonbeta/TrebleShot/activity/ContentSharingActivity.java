@@ -89,7 +89,7 @@ public class ContentSharingActivity extends Activity
             }
         };
 
-        mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
+        //mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
 
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null)

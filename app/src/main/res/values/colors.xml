@@ -8,11 +8,11 @@
     <color name="colorError">#afb42b</color>
     <color name="colorOnPrimary">@color/colorControlNormal</color>
     <color name="colorOnSecondary">@color/colorControlNormal</color>
-    <color name="colorPrimary">#fff</color>
+    <color name="colorPrimary">#ffffff</color>
     <color name="colorPrimaryDark">#ccc</color>
-    <color name="colorPrimaryDark23">#ffff</color>
+    <color name="colorPrimaryDark23">#ffffffff</color>
     <color name="colorSecondary">#66bb6a</color>
-    <color name="colorSurface">#fff</color>
+    <color name="colorSurface">#fefefe</color>
     <color name="windowBackground">#ffffff</color>
     <!-- local coloring-->
     <color name="colorDonation">#f44336</color>
@@ -21,7 +21,7 @@
     <color name="colorSelection">#20000000</color>
     <color name="colorShadowBeginning">#00D0D0D0</color>
     <color name="colorShadowEnd">#70D0D0D0</color>
-    <color name="colorTranslucent">#bfff</color>
+    <color name="colorTranslucent">#b0ffffff</color>
     <color name="contentShowingBackground">#cfcfcf</color>
 
 

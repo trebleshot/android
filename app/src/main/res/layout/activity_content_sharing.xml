@@ -33,30 +33,17 @@
         tools:context=".activity.ContentSharingActivity"
         tools:showIn="@layout/activity_content_sharing">
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/activity_content_sharing_action_mode_layout"
+        <com.genonbeta.android.framework.widget.PowerfulActionMode
+            android:id="@+id/activity_content_sharing_action_mode"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             android:layout_alignParentBottom="true"
-            android:visibility="gone"
-            app:elevation="0px">
-
-            <!--<View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="?colorDivider" />-->
-
-            <com.genonbeta.android.framework.widget.PowerfulActionMode
-                android:id="@+id/activity_content_sharing_action_mode"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize" />
-
-        </com.google.android.material.appbar.AppBarLayout>
+            android:visibility="gone"/>
 
         <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_above="@id/activity_content_sharing_action_mode_layout"
+            android:layout_above="@id/activity_content_sharing_action_mode"
             android:layout_alignParentTop="true">
 
             <androidx.viewpager.widget.ViewPager

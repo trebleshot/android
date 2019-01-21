@@ -92,12 +92,12 @@ public class NetworkDeviceListFragment
     }
 
     @Override
-    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    protected RecyclerView onListView(ViewGroup container)
     {
         if (isHorizontalOrientation())
-            return super.onListView(mainContainer, listViewContainer);
+            return super.onListView(container);
 
-        Context context = mainContainer.getContext();
+        Context context = container.getContext();
 
         mSwipeRefreshLayout = new SwipeRefreshLayout(getActivity());
 
@@ -106,9 +106,9 @@ public class NetworkDeviceListFragment
 
         mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        listViewContainer.addView(mSwipeRefreshLayout);
+        container.addView(mSwipeRefreshLayout);
 
-        return super.onListView(mainContainer, mSwipeRefreshLayout);
+        return super.onListView(mSwipeRefreshLayout);
     }
 
     @Override

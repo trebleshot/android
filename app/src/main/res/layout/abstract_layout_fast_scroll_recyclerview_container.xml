@@ -3,10 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/abstract_layout_fast_scroll_recyclerview_view"
+    <FrameLayout
+        android:id="@+id/abstract_layout_fast_scroll_recyclerview_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
     <com.genonbeta.android.framework.widget.recyclerview.FastScroller
         android:id="@+id/abstract_layout_fast_scroll_recyclerview_fastscroll_view"
