@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Åpne navigasjonsskuff</string>
@@ -37,7 +37,7 @@
     <string name="mesg_fileSendCancelled">Forsendelse av %s har blitt avbrutt</string>
     <string name="mesg_fileNameChanged">Lagrer som %s</string>
     <string name="mesg_fileReceived">Filen %s har blitt mottatt</string>
-    <string name="mesg_fileReceiveError">Kunne ikke motta %s</string>
+    <string name="mesg_fileReceiveError">Kunne ikke motta %s.</string>
     <string name="mesg_fileReceiveCancelled">Avbrøt mottak av %s</string>
     <string name="text_multipleFileReceiveCompleted">Filer mottatt</string>
     <string name="text_deviceList">Enheter</string>
@@ -185,11 +185,11 @@
     <string name="text_chooseFile">Velg fil</string>
     <string name="mesg_pathSameError">Du kan ikke velge den gamle mappen</string>
     <string name="ques_checkOldFiles">Flytt filer\?</string>
-    <string name="text_checkOldFiles">Du kan flytte tilknyttede filer som er fullførte, og delvis fullførte til denne mappen, som kan ta litt tid avhengig av størrelsen.</string>
+    <string name="text_checkOldFiles">Du kan flytte fullførte, og delvis fullførte tilknyttede filer til denne mappen, som kan ta litt tid avhengig av størrelsen på dem.</string>
     <string name="mesg_newFilesReceived">Nye filer mottatt</string>
     <string name="butn_show">Vis</string>
     <string name="text_preparingFiles">Forbereder filer</string>
-    <string name="text_savingDetails">Lagrer detaljer før mottak</string>
+    <string name="text_savingDetails">Lagrer detaljer</string>
     <string name="text_version">Versjon</string>
     <string name="text_flagPending">Ventende</string>
     <string name="text_flagRunning">Kjører</string>
@@ -278,12 +278,12 @@
     <string name="text_taskCompleted">Oppgave fullført</string>
     <string name="text_deletingFilesOngoing">Sletter valgte filer</string>
     <string name="text_remainingTime">%s gjenstår</string>
-    <string name="text_trustZoneEnabledSummary">Alltid start opp med TrustZone på</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone er aktivert ved oppstart</string>
     <string name="mesg_errorHotspotPermission">TrebleShot trenger tilgang for å sette opp et lokalt trådløsnett</string>
     <string name="text_trebleshotHotspot">Trebleshot-trådløsnett</string>
     <string name="text_trebleshotHotspotDescription">Du kan sende filer direkte via dette åpne nettverket som har blitt opprettet av en TrebleShot-enhet i nærheten.</string>
     <string name="mesg_connectingToSelfHotspot">Kobler til et lokalt TrebleShot-trådløsnett</string>
-    <string name="mesg_warningHotspotMobileActive">Andre kan koble til nettverket ditt mens mobildata er påslått</string>
+    <string name="mesg_warningHotspotMobileActive">Tilkoblede enheter kan bruke din trådløsdata. Det kan hende du ønsker å skru av trådløsdata.</string>
     <string name="mesg_scanningSelfHotspot">Søker etter lokalt TrebleShot-trådløsnett</string>
     <string name="mesg_suggestSelfHotspot">Duk kan skru på Wi-Fi for å søke etter et lokalt TrebleShot-trådløsnett</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Tillat TrebleShot å søke etter og opprette lokale trådløsnett</string>
@@ -297,9 +297,9 @@
     <string name="mesg_versionNotSupported">Oppgrader til en støttet versjon og se etter enheter igjen.</string>
     <string name="mesg_connectionUpdated">Kommuniserer nå over \"%s\"-tilkoblingen</string>
     <string name="text_sortOrderAscending">Største først ↑</string>
-    <string name="text_sortOrderDescending">Minste først ↓</string>
-    <string name="text_trustZoneDeviceNotice">Lar enheten sende deg filer uten å vise deg en forespørsel når TrustZone er på</string>
-    <string name="text_allowingToConnectNotice">La denne enheten koble til deg</string>
+    <string name="text_sortOrderDescending">Minste først↓</string>
+    <string name="text_trustZoneDeviceNotice">Godtar innkommende filer automatisk når TrustZone er på</string>
+    <string name="text_allowingToConnectNotice">Tillat tilkoblinger fra denne enheten</string>
     <string name="text_workerService">Arbeider-tjeneste</string>
     <string name="text_networkServiceDiscovery">Skru på NSD</string>
     <string name="text_networkServiceDiscoverySummary">Oppdagelse av nettverkstjenester forbedrer sjansen for å oppdage</string>
@@ -327,7 +327,7 @@
     <string name="text_restrictedAccessStorage">%s (begrenset tilgang)</string>
     <string name="text_emptySearchResult">Inget resultat for \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">Listen vil bli gjenoppfrisket når tilgjengelig</string>
-    <string name="mesg_errorReadFolder">Får ikke tilgang til \"%s\"-mappen</string>
+    <string name="mesg_errorReadFolder">Får ikke tilgang til \"%s\"</string>
     <string name="butn_mountDirectory">Avmonter mappe</string>
     <string name="mesg_mountDirectoryHelp">Velg mappen du ønsker å åpne</string>
     <string name="butn_ejectDirectory">Avmonter mappe</string>
@@ -336,7 +336,7 @@
     <string name="text_hotspotStartsTrustZone">Lokalt trådløsnett slår på TrustZone</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone vil også bli startet opp behovsvis</string>
     <string name="text_qrCodeAvailableHelp">Skann denne koden for å dele og koble til enheter</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Start det lokale TrebleShot-trådløsnettet eller koble til et nettverk for enkel oppdaging</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Sett opp et lokalt trådløsnett slik at andre kan koble seg til deg</string>
     <string name="text_scanQRCodeHelp">Skann QR-koden på vertenhetens skjerm</string>
     <string name="butn_qrScanToSend">Skann QR-koden for å sende</string>
     <string name="butn_qrToggle">Veksle visning av QR-kode</string>
@@ -390,7 +390,7 @@
     <string name="butn_open">Åpne</string>
 <string name="butn_pause">Pause</string>
     <string name="butn_retry">Prøv igjen</string>
-    <string name="mesg_noPendingTransferObjectExists">Ingen ventende overføring gjenstår, siden de enten ble forstyrret, eller allerede er overført.</string>
+    <string name="mesg_noPendingTransferObjectExists">Ingen ventende overføring gjenstår. For å gjenoppta forstyrrede filer, bruk \"Prøv alle på nytt\"-valget.</string>
     <string name="mesg_notSavingToChosenLocation">Filer vil ikke bli lagret i din ønskede mappe siden den ikke er tilgjengelig nå 
 \n 
 \n %s</string>
@@ -443,4 +443,22 @@
     <string name="butn_help">Hjelp</string>
     <string name="butn_choose">Velg</string>
     <string name="butn_fixConnection">Fiks tilkobling</string>
-    </resources>
+    <string name="butn_never">Aldri</string>
+    <string name="text_hotspotStartedExternallyNotice">Det lokale trådløsnettet ble startet eksternt. For å bruke en QR-kode, start det her.</string>
+    <string name="text_shortcut">Snarvei</string>
+    <string name="butn_addShortcut">Legg til snarvei</string>
+    <string name="butn_removeShortcut">Fjern snarvei</string>
+    <string name="mesg_removed">Fjernet</string>
+    <string name="mesg_added">Lagt til</string>
+    <string name="butn_change">Endre</string>
+    <string name="text_welcome">Velkommen</string>
+    <string name="text_introMakeItYours">Gjør det til ditt eget</string>
+    <string name="text_introSetUpPermissions">Sett opp tilganger</string>
+    <string name="text_introAllSet">Alt klart.</string>
+    <string name="text_introSetUpProfile">Sett opp profilen din.</string>
+    <string name="mesg_openFailure">Kan ikke vise \"%s\"</string>
+    <string name="text_connectionTest">Tilkoblingstest - %s</string>
+    <string name="butn_connectionTest">Tilkoblingstest</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">Tilbakekall PIN</string>
+</resources>
