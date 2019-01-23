@@ -1,7 +1,7 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><plurals name="ques_deleteFile">
-	<item quantity="one">"Θέλετε να διαγράψετε αυτό το αρχείο\? "</item>
-	<item quantity="other">"Θέλετε να διαγράψετε %δ αρχεία\? "</item>
+    <item quantity="one">Θέλετε να διαγράψετε αυτό το αρχείο\?</item>
+    <item quantity="other">Θέλετε να διαγράψετε %δ αρχεία\?</item>
 </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
 	<item quantity="one">"λήφθηκε %δ αρχείο  "</item>
@@ -20,8 +20,8 @@
 	<item quantity="other">"%δ συνδέσεις "</item>
 </plurals>
     <plurals name="ques_receiveMultipleFiles">
-	<item quantity="one">"Λήψη αυτού του αρχείου\? "</item>
-	<item quantity="other">"Λήψη αυτών των αρχείων\? "</item>
+    <item quantity="one">Λήψη αυτού του αρχείου\?</item>
+    <item quantity="other">Λήψη αυτών των αρχείων\?</item>
 </plurals>
     <plurals name="text_files">
 	<item quantity="one">"%δ αρχείο "</item>
