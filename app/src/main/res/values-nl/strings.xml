@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_appName">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Navigatiemenu openen</string>
@@ -446,4 +446,22 @@
     <string name="butn_help">Hulp</string>
     <string name="butn_choose">Kiezen</string>
     <string name="butn_fixConnection">Verbinding repararen</string>
-    </resources>
+    <string name="butn_never">Nooit</string>
+    <string name="text_hotspotStartedExternallyNotice">De hotspot is via extern gestart. Om de QR-code te gebruiken, moet je de hotspot hier starten.</string>
+    <string name="text_shortcut">Snelkoppeling</string>
+    <string name="butn_addShortcut">Snelkoppeling toevoegen</string>
+    <string name="butn_removeShortcut">Snelkoppeling verwijderen</string>
+    <string name="mesg_removed">Verwijderd</string>
+    <string name="mesg_added">Toegevoegd</string>
+    <string name="butn_change">Wijzigen</string>
+    <string name="text_welcome">Welkom</string>
+    <string name="text_introMakeItYours">Maak het eigen</string>
+    <string name="text_introSetUpPermissions">Stel de machtigingen in</string>
+    <string name="text_introAllSet">Ingesteld!</string>
+    <string name="text_introSetUpProfile">Stel je profiel in</string>
+    <string name="mesg_openFailure">Kan \"%s\" niet bekijken</string>
+    <string name="text_connectionTest">Verbindingstest - %s</string>
+    <string name="butn_connectionTest">Verbindingstest</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">Pincode intrekken</string>
+</resources>
