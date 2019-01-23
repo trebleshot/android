@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_preferences">التفضيلات</string>
     <string name="mesg_connectionFailure">فشل الاتصال</string>
     <string name="text_notAvailable">غير متوفر</string>
@@ -10,7 +10,7 @@
     <string name="butn_reject">رفض</string>
     <string name="butn_stop">إيقاف</string>
     <string name="text_sending">جاري الإرسال</string>
-    <string name="butn_cancelSending">إيقاف الارسال</string>
+    <string name="butn_cancelSending">الغاء الارسال</string>
     <string name="text_receiving">جاري الإستلام</string>
     <string name="butn_cancelReceiving">إلغاء الاستقبال</string>
     <string name="text_fileReceived">تم إستلام الملف</string>
@@ -76,7 +76,7 @@
     <string name="text_music">الموسيقى</string>
     <string name="text_video">الفيديو</string>
     <string name="text_showSystemApps">إظهار تطبيقات النظام</string>
-    <string name="text_showSystemAppsSummary">إظهار تطبيقات النظام في قسم \"المشاركة\"</string>
+    <string name="text_showSystemAppsSummary">إظهار تطبيقات النظام في قسم المشاركة</string>
     <string name="butn_showSystemApps">إظهار تطبيقات النظام</string>
     <string name="mesg_notAllowed">غير مسموح لك</string>
     <string name="mesg_connectionProblem">مشكلة في الاتصال</string>
@@ -84,7 +84,7 @@
     <string name="butn_multiSelect">اختيار متعدد</string>
     <string name="butn_receive">استلام</string>
     <string name="butn_block">حظر</string>
-    <string name="text_aboutSummary">هذا البرنامج تم تطويره من قبل \"المؤسسة البرمجيات الحرة جينونبيتا\"</string>
+    <string name="text_aboutSummary">هذا البرنامج تم تطويره من قبل مؤسسة البرمجيات الحرة Genonbeta Libre Software Org</string>
     <string name="butn_appLaunch">تشغيل</string>
     <string name="ques_launchApplication">هل تريد بدء تشغيل هذا التطبيق؟</string>
     <string name="mesg_launchApplicationError">لا يمكن تشغيل هذا التطبيق</string>
@@ -244,15 +244,15 @@
     <string name="text_uncheckedItemsNotice">سيتم تخطي العناصر الغير محددة</string>
     <string name="text_fileRoot">ملف الجذر</string>
     <string name="mesg_versionNotSupported">لم يعد يتم دعم إلاصدار هذا. الرجاء الترقية، وإعادة تفحص الأجهزة.</string>
-    <string name="mesg_connectionUpdated">سيكون الاتصال عبر اتصال \"%s\"</string>
+    <string name="mesg_connectionUpdated">يتم الاتصال حاليا عبر %s</string>
     <string name="mesg_ongoingUpdateDownload">تحميل الإصدار الجديد</string>
     <string name="butn_gotIt">فهمت ذلك</string>
     <string name="mesg_helpFolderSelection">لتحديد مجلد، انقر فوق أيقونته</string>
-    <string name="mesg_hotspotCreatedInfo">الاتصال ب \"%s\" في \"إعدادات وأي فأي\" أو إرسال الملفات عن طريق \"%s\" داخل تريبليشوت</string>
+    <string name="mesg_hotspotCreatedInfo">إتصل بـ %s في إعدادات الواي فاي أو إرسل ملفات عن طريق %s عبر تريبليشوت</string>
     <string name="butn_selectAll">تحديد الكل</string>
     <string name="butn_selectNone">لا تحدد شيئا</string>
     <string name="butn_previewSelections">معاينة التحديدات</string>
-    <string name="mesg_deviceConnectionError">لقد فشل الاتصال مع \"%s\" على \"%s\"</string>
+    <string name="mesg_deviceConnectionError">لقد فشل الاتصال مع %s على %s</string>
     <string name="mesg_retryReceivingNotice">سيحاول تريبليشوت تلقي الملفات التي تمت مقاطعتها</string>
     <string name="mesg_transferConnectionNotSetUpFix">الرجاء اختيار طريقة الاتصال أولاً</string>
     <string name="butn_setUp">الإعداد</string>
@@ -302,9 +302,9 @@
     <string name="text_listEmptyMusic">لا توجد صوتيات هنا</string>
     <string name="text_internalStorage">الذاكرة الداخلية</string>
     <string name="text_restrictedAccessStorage">%s (وصول مقيد)</string>
-    <string name="text_emptySearchResult">لا توجد نتائج ل \"%s\"</string>
+    <string name="text_emptySearchResult">لا توجد نتائج لـ %s</string>
     <string name="mesg_listRefreshSnoozed">سيتم تحديث القائمة متى توفرت</string>
-    <string name="mesg_errorReadFolder">لا يمكن الوصول إلى \"%s\"</string>
+    <string name="mesg_errorReadFolder">لا يمكن الوصول إلى %s</string>
     <string name="butn_mountDirectory">تحميل مجلد</string>
     <string name="mesg_mountDirectoryHelp">حدد المجلد الذي تريد الوصول إليه</string>
     <string name="butn_ejectDirectory">إلغاء تحميل المجلد</string>
@@ -315,7 +315,7 @@
     <string name="text_qrCodeAvailableHelp">امسح هذه الرمز لتبادل وتوصيل الأجهزة</string>
     <string name="text_qrCodeHotspotDisabledHelp">بدء تشغيل نقطة الوصول الساخنة أو الاتصال بشبكة لاكتشاف سهل</string>
     <string name="text_scanQRCodeHelp">مسح رمز الباركود على شاشة الجهاز الاخر</string>
-    <string name="butn_qrScanToSend">امسح رمز الباركود للقيام بالإرسال</string>
+    <string name="butn_qrScanToSend">امسح رمز الكيو آر للقيام بالإرسال</string>
     <string name="butn_qrToggle">تبديل ظهور رمز الباركود</string>
     <string name="text_notificationSettingsSummary">فتح إعدادات إشعاراتك</string>
     <string name="text_notificationSettings">إعدادات الاشعارات</string>
@@ -404,4 +404,5 @@
     <string name="butn_help">المساعدة</string>
     <string name="butn_choose">إختر</string>
     <string name="butn_fixConnection">إصلاح الاتصال</string>
-    </resources>
+    <string name="butn_feedbackContact">رأيك عند التطبيق</string>
+</resources>
