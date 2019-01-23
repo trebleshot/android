@@ -164,7 +164,7 @@
     <string name="text_chooseFile">اختر ملف</string>
     <string name="mesg_pathSameError">لا يمكنك تحديد المجلد القديم</string>
     <string name="ques_checkOldFiles">هل تريد نقل الملفات؟</string>
-    <string name="text_checkOldFiles">يمكنك نقل الملفات المرتبطة المكتملة والناقصة إلى هذا المجلد، سيستغرق ذلك بعض الوقت حسب أحجام الملفات</string>
+    <string name="text_checkOldFiles">يمكنك نقل الملفات المرتبطة المكتملة والناقصة إلى هذا المجلد، سيستغرق ذلك بعض الوقت حسب أحجامها</string>
     <string name="mesg_newFilesReceived">قد تم إستلام ملفات جديدة</string>
     <string name="butn_show">عرض</string>
     <string name="text_preparingFiles">إعداد الملفات</string>
@@ -227,7 +227,7 @@
     <string name="butn_disconnect">قطع الاتصال</string>
     <string name="text_trebleshotHotspotDescription">"يمكنك إرسال الملفات مباشرة عن طريق هذه الشبكة  التي تم إنشاؤها بواسطة تطبيق تريبليشوت على جهاز قريب."</string>
     <string name="mesg_connectingToSelfHotspot">الاتصال بواسطة نقطة وصول تريبليشوت</string>
-    <string name="mesg_warningHotspotMobileActive">قد يستخدموا الآخرين شبكتك للوصول الى الانترنت عندما تكون انت مفعل البيانات الخلوية</string>
+    <string name="mesg_warningHotspotMobileActive">قد تستخدم الأجهزة المتصلة البيانات الخلوية. ربما تحتاج إلى إيقاف تشغيلها.</string>
     <string name="butn_skip">تخطي</string>
     <string name="mesg_scanningSelfHotspot">البحث عن نقطة وصول تعمل بواسطة تريبليشوت</string>
     <string name="mesg_suggestSelfHotspot">يمكنك تشغيل الواي فاي للبحث عن نقطة وصول تعمل بواسطة تريبليشوت</string>
@@ -270,7 +270,7 @@
     <string name="text_sortByName">الاسم</string>
     <string name="text_sortByDate">التاريخ</string>
     <string name="text_sortBySize">الحجم</string>
-    <string name="text_trustZoneDeviceNotice">السماح لهذا الجهاز بإرسال الملفات لك دون سؤال عند تشغيل المنطقة الموثوقة</string>
+    <string name="text_trustZoneDeviceNotice">السماح لهذا الجهاز بتلقي الملفات الواردة تلقائيا عندما تكون المنطقة الموثوقة مشغّلة</string>
     <string name="text_allowingToConnectNotice">عند التحديد، يمكن لهذا الجهاز الاتصال بك</string>
     <string name="butn_resetToDefault">إعادة التعيين إلى الافتراضي</string>
     <string name="text_resetPreferencesToDefaultSummary">سيطبق هذا الإعدادات المبدئية</string>
@@ -313,7 +313,7 @@
     <string name="text_hotspotStartsTrustZone">تفعيل نقطة الوصول يفعل المنطقة الموثوقة كذلك</string>
     <string name="text_hotspotStartsTrustZoneSummary">سيتم أيضا تشغيل المنطقة الموثوقة تبعاً لذلك</string>
     <string name="text_qrCodeAvailableHelp">امسح هذه الرمز لتبادل وتوصيل الأجهزة</string>
-    <string name="text_qrCodeHotspotDisabledHelp">بدء تشغيل نقطة الوصول الساخنة أو الاتصال بشبكة لاكتشاف سهل</string>
+    <string name="text_qrCodeHotspotDisabledHelp">شغّل نقطة الوصول الساخنة ليتمكن الآخرون الاتصال بك</string>
     <string name="text_scanQRCodeHelp">مسح رمز الباركود على شاشة الجهاز الاخر</string>
     <string name="butn_qrScanToSend">امسح رمز الكيو آر للقيام بالإرسال</string>
     <string name="butn_qrToggle">تبديل ظهور رمز الباركود</string>
@@ -405,4 +405,27 @@
     <string name="butn_choose">إختر</string>
     <string name="butn_fixConnection">إصلاح الاتصال</string>
     <string name="butn_feedbackContact">رأيك عند التطبيق</string>
+    <string name="butn_changeSavePath">تغيير مسار الحفظ</string>
+    <string name="mesg_fileReceiveFilesLeftError">فشلت عملية تلقي بعض الملفات</string>
+    <string name="text_connectionWizard">مُعاون الاتصال</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">هل قمت بإعداد كل شيء على الجهاز الآخَر؟</string>
+    <string name="ques_connectionWizardIsThereQRCode">هل ترى رمز الاستجابة السريعة كيو آر على الشاشة؟</string>
+    <string name="mesg_wifiEnableFailed">تعذر تشغيل الواي فاي.</string>
+    <string name="mesg_locationPermissionRequiredAny">قم بتفعيل خدمة التموقع الجغرافي أولا قبل المواصلة</string>
+    <string name="mesg_removing">الحذف جارٍ. يمكن للعملية أن تستغرق شيئا مِن الوقت…</string>
+    <string name="butn_never">أبداً</string>
+    <string name="text_shortcut">اختصار</string>
+    <string name="butn_addShortcut">إضافة اختصار</string>
+    <string name="butn_removeShortcut">إزالة الاختصار</string>
+    <string name="mesg_removed">تمت إزالته</string>
+    <string name="mesg_added">تمت إضافته</string>
+    <string name="butn_change">تغيير</string>
+    <string name="text_welcome">أهلا بك</string>
+    <string name="text_introMakeItYours">اجعله مِلكُك</string>
+    <string name="text_introSetUpPermissions">إعداد الترخيصات</string>
+    <string name="text_introAllSet">تم الإعداد بنجاح!</string>
+    <string name="text_introSetUpProfile">إنشاء هويتك</string>
+    <string name="mesg_openFailure">لا يمكن رؤية \"%s\"</string>
+    <string name="butn_connectionTest">اختبار الاتصال</string>
+    <string name="butn_revokePin">إبطال رمز الأمان PIN</string>
 </resources>
