@@ -416,4 +416,16 @@
     <string name="butn_help">Pomoc</string>
     <string name="butn_choose">Wybierz</string>
     <string name="butn_fixConnection">Napraw połączenie</string>
-    </resources>
+    <string name="butn_never">Nigdy</string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot został uruchomiony na zewnątrz. Aby użyć kodu QR, należy go uruchomić tutaj.</string>
+    <string name="mesg_added">Dodane</string>
+    <string name="butn_change">Zmiana</string>
+    <string name="text_welcome">Witamy</string>
+    <string name="text_introSetUpPermissions">Skonfiguruj uprawnienia</string>
+    <string name="text_introAllSet">Wszystko gotowe!</string>
+    <string name="text_introSetUpProfile">Skonfiguruj swój profil</string>
+    <string name="mesg_openFailure">Nie można wyświetlić \"%s\"</string>
+    <string name="text_connectionTest">Test połączenia - %s</string>
+    <string name="butn_connectionTest">Test połączenia</string>
+    <string name="text_textMillisecond">%d ms</string>
+</resources>
