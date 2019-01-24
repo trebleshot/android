@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">פתיחת מגירת הניווט</string>n
     <string name="text_navigationDrawerClose">סגירת מגירת הניווט</string>
     <string name="text_preferences">העדפות</string>
@@ -416,4 +416,22 @@
     <string name="butn_fixConnection">תיקון החיבור</string>
     <string name="text_addDeviceHelp">כאשר מתווספים מכשירים, אותם הקבצים משותפים עם מכשירים נוספים. עם סיום ההעברה היישומון יחזור אליה.</string>
     <string name="ques_connectionWizardUseHotspot">לאפשר למכשירים אחרים להתחבר למכשיר הזה עם נקודה חמה (קשירה)\? אם לא ברור לך ממה זו נקודה חמה, מוטב לבחור באפשרות כן.</string>
-    </resources>
+    <string name="butn_never">לעולם לא</string>
+    <string name="text_hotspotStartedExternallyNotice">הנקודה החמה הופעלה באופן חיצוני. כדי להשתמש בקוד ה־QR יש להפעיל אותה מכאן.</string>
+    <string name="text_shortcut">קיצור דרך</string>
+    <string name="butn_addShortcut">הוספת קיצור דרך</string>
+    <string name="butn_removeShortcut">הסרת קיצור דרך</string>
+    <string name="mesg_removed">הוסר</string>
+    <string name="mesg_added">נוסף</string>
+    <string name="butn_change">שינוי</string>
+    <string name="text_welcome">ברוך בואך</string>
+    <string name="text_introMakeItYours">להתאים לטעמך</string>
+    <string name="text_introSetUpPermissions">הגדרת הרשאות</string>
+    <string name="text_introAllSet">הכול מוכן!</string>
+    <string name="text_introSetUpProfile">הגדרת הפרופיל שלך</string>
+    <string name="mesg_openFailure">לא ניתן לצפות ב־„%s”</string>
+    <string name="text_connectionTest">בדיקת חיבור - %s</string>
+    <string name="butn_connectionTest">בדיקת חיבור</string>
+    <string name="text_textMillisecond">%d מ״ש</string>
+    <string name="butn_revokePin">שלילת קוד</string>
+</resources>
