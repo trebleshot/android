@@ -23,7 +23,7 @@
     <string name="text_developerModeSummary">Désactive la configuration utilisateur</string>
     <string name="text_deviceName">Nom du périphérique</string>
     <string name="text_deviceNameSummary">Ce nom sera affiché sur d\'autres appareils</string>
-    <string name="text_deviceNameTitle">Entrez un nom d\'appareil</string>
+    <string name="text_deviceNameTitle">Nommez votre appareil</string>
     <string name="mesg_formatNotSupported">Format non pris en charge</string>
     <string name="mesg_fileSendError">Impossible d\'envoyer le fichier. %s</string>
     <string name="mesg_fileReceiveError">Impossible de recevoir %s.</string>
@@ -49,7 +49,7 @@
     <string name="butn_pendingTransfers">File d\'attente</string>
     <string name="butn_shareWithTrebleshot">Partager via TrebleShot</string>
     <string name="mesg_somethingWentWrong">Oups ! Quelque chose s\'est mal passé</string>
-    <string name="text_findDevicesHint">Aucun appareil familier</string>
+    <string name="text_findDevicesHint">Aucun appareil connu</string>
     <string name="text_autoScanDevices">Balayage automatique des périphériques</string>
     <string name="text_autoScanDevicesSummary">Balayage des périphériques en cas de besoin</string>
     <string name="text_advanced">Avancé</string>
@@ -291,7 +291,7 @@
     <string name="text_scanQRWifiRequired">Pour se connecter à des appareils, le Wi-Fi doit être activé</string>
     <string name="mesg_errorNotSameNetwork">Les appareils ne sont pas sur le même réseau</string>
     <string name="text_cameraPermissionRequired">Permission requise pour utiliser l’appareil photo</string>
-    <string name="text_addDevicesToTransfer">Ajouter des périphériques à transférer</string>
+    <string name="text_addDevicesToTransfer">Ajouter de périphériques pour transfért</string>
     <string name="text_file">Fichier</string>
     <string name="text_noDeviceForTransfer">Aucun appareil n’a été ajouté pour effectuer ce transfert</string>
     <string name="text_thirdPartyLibraries">Librairies tierces</string>
@@ -330,4 +330,24 @@
     <string name="text_flagRunning">En cours d’exécution</string>
     <string name="butn_selectNone">Ne rien sélectionner</string>
     <string name="butn_previewSelections">Aperçu des sélections</string>
+    <string name="text_useVibration">Vibreur et notifications d’entête</string>
+    <string name="text_communicationService">Service de communication</string>
+    <string name="butn_selectThis">Sélectionnez cette option</string>
+    <string name="text_applyDarkTheme">Thème sombre</string>
+    <string name="text_listEmptyTransfer">Tous les transferts apparaissent ici</string>
+    <string name="butn_useKnownDevice">Utiliser des appareils connus</string>
+    <string name="butn_scanQrCode">Scannez un code QR</string>
+    <string name="butn_useExistingNetwork">Utiliser les réseaux existants</string>
+    <string name="text_sendText">Envoyer du texte</string>
+    <string name="text_addDeviceHelp">En ajoutant des périphériques, vous avez la possibilité de partager les mêmes fichiers avec plus de périphériques. Vous retournerez au menu du transfert lorsque celui-ci sera terminé.</string>
+    <string name="text_send">Envoyer</string>
+    <string name="text_connectionHelp">Choisissez une option pour vous connecter à l’autre appareil. Par exemple, si l’autre appareil affiche un code QR, utilisez l’option Scan QR code.</string>
+    <string name="ques_needHelp">Besoin d’un coup de main \?</string>
+    <string name="text_manageDevices">Gérer les appareils</string>
+    <string name="butn_fixConnection">Réparer la connexion</string>
+    <string name="text_welcome">Bienvenue</string>
+    <string name="text_introMakeItYours">Personnalisez-le</string>
+    <string name="text_introSetUpPermissions">Configurer les autorisations</string>
+    <string name="text_introAllSet">Tout est prêt !</string>
+    <string name="text_introSetUpProfile">Configurez votre profil</string>
 </resources>
