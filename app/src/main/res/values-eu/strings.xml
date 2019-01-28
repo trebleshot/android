@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_navigationDrawerOpen">Ireki nabigazioaren tiradera</string>
     <string name="text_navigationDrawerClose">Itxi nabigazioaren tiradera</string>
     <string name="text_preferences">Hobespenak</string>
@@ -227,11 +227,11 @@
     <string name="mesg_warningHotspotMobileActive">Konektatutako gailuek zure sare mugikorra erabili lezakete. Agian itzali nahi duzu.</string>
     <string name="butn_skip">Saltatu</string>
     <string name="mesg_scanningSelfHotspot">TrebleShot Wifigunea bilatzen</string>
-    <string name="mesg_suggestSelfHotspot">Wi-Fia aktibatu dezakezu Trebleshot Wifigunea bilatzeko</string>
+    <string name="mesg_suggestSelfHotspot">Wifia aktibatu dezakezu Trebleshot Wifigunea bilatzeko</string>
     <string name="butn_enable">Gaitu</string>
     <string name="mesg_locationPermissionRequiredSelfHotspot">Baimendu TrebleShot-ek Wifigunea bilatu eta sortzea</string>
     <string name="butn_locationSettings">Kokalekua</string>
-    <string name="mesg_locationDisabledSelfHotspot">Gaitu kokaleu zerbitzua araketaren emaitzak ikusteko eta Wifigunea sortzeko</string>
+    <string name="mesg_locationDisabledSelfHotspot">Gaitu kokaleku zerbitzua araketaren emaitzak ikusteko eta Wifigunea sortzeko</string>
     <string name="mesg_scanningDevicesSelfHotspot">Gailuen bila TrebleShot Wifigunearen bidez</string>
     <string name="mesg_stoppingSelfHotspot">TrebleShot Wifigunea gelditzen</string>
     <string name="mesg_startingSelfHotspot">TrebleShot Wifigunea abiatzen</string>
@@ -401,7 +401,7 @@
     <string name="text_connectionWizard">Konexio aztia</string>
     <string name="ques_connectionWizardIsOtherDeviceReady">Beste gailuan ezarpenak egin dituzu\?</string>
     <string name="ques_connectionWizardIsThereQRCode">QR kode bat ikusten duzu bere pantailan\?</string>
-    <string name="ques_connectionWizardUseHotspot">Beste gailua gailu honetara wifigunea (tethering) bidez konektatu dadin da nahi duzuna\? Ez badakizu wifigune bat zer den sakatu Bai.</string>
+    <string name="ques_connectionWizardUseHotspot">Beste gailua gailu honetara wifigunea (tethering) bidez konektatzea da nahi duzuna\? Ez badakizu wifigune bat zer den, sakatu Bai.</string>
     <string name="ques_connectionWizardUseNetwork">Zure bideratzailea (router-a) erabili nahi duzu, edo bai lagunak bai zuk erabiltzen duzuen Wi-Fi sare baten bidez konektatu nahi duzu\?</string>
     <string name="ques_connectionWizardUseKnownDevices">Aurretik kontaktatutako gailuak atzitu nahi dituzu\?</string>
     <string name="butn_yes">Bai</string>
@@ -418,4 +418,22 @@
     <string name="butn_help">Laguntza</string>
     <string name="butn_choose">Hautatu</string>
     <string name="butn_fixConnection">Konpondu konexioa</string>
-    </resources>
+    <string name="butn_never">Inoiz ez</string>
+    <string name="text_hotspotStartedExternallyNotice">Wifigunea kanpotik ezarri da. QR kodea erabiltzeko, hemen hasi beharko zenuke.</string>
+    <string name="text_shortcut">Lasterbidea</string>
+    <string name="butn_addShortcut">Gehitu lasterbidea</string>
+    <string name="butn_removeShortcut">Kendu lasterbidea</string>
+    <string name="mesg_removed">Kenduta</string>
+    <string name="mesg_added">Gehituta</string>
+    <string name="butn_change">Aldatu</string>
+    <string name="text_welcome">Ongi etorri</string>
+    <string name="text_introMakeItYours">Egin zure</string>
+    <string name="text_introSetUpPermissions">Ezarri baimenak</string>
+    <string name="text_introAllSet">Dena ezarrita!</string>
+    <string name="text_introSetUpProfile">Ezarri zure profila</string>
+    <string name="mesg_openFailure">Ezin da \"%s\" gisa ikusi</string>
+    <string name="text_connectionTest">Konexio proba - %s</string>
+    <string name="butn_connectionTest">Konexio proba</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">Indargabetu PINa</string>
+</resources>
