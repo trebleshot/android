@@ -416,4 +416,22 @@
     <string name="butn_help">Hjälp</string>
     <string name="butn_choose">Välj</string>
     <string name="butn_fixConnection">Fixa anslutningen</string>
+    <string name="butn_never">Aldrig</string>
+    <string name="text_hotspotStartedExternallyNotice">Hotspot:en startades externt. För att använda QR-kod skulle du ha startat den här.</string>
+    <string name="text_shortcut">Genväg</string>
+    <string name="butn_addShortcut">Lägg till genväg</string>
+    <string name="butn_removeShortcut">Ta bort genväg</string>
+    <string name="mesg_removed">Borttagen</string>
+    <string name="mesg_added">Tillagd</string>
+    <string name="butn_change">Ändra</string>
+    <string name="text_welcome">Välkommen</string>
+    <string name="text_introMakeItYours">Gör den till din</string>
+    <string name="text_introSetUpPermissions">Ställ in behörigheterna</string>
+    <string name="text_introAllSet">Alla klara!</string>
+    <string name="text_introSetUpProfile">Ställ in din profil</string>
+    <string name="mesg_openFailure">Kan inte visa \"%s\"</string>
+    <string name="text_connectionTest">Anslutningstest - %s</string>
+    <string name="butn_connectionTest">Anslutningstest</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">Återkalla PIN-Koden</string>
 </resources>
