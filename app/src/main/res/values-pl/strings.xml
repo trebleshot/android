@@ -428,4 +428,10 @@
     <string name="text_connectionTest">Test połączenia - %s</string>
     <string name="butn_connectionTest">Test połączenia</string>
     <string name="text_textMillisecond">%d ms</string>
+    <string name="text_shortcut">Skrót</string>
+    <string name="butn_addShortcut">Dodaj skrót</string>
+    <string name="butn_removeShortcut">Usuń skrót</string>
+    <string name="mesg_removed">Usunięty</string>
+    <string name="text_introMakeItYours">Dopasuj go do siebie</string>
+    <string name="butn_revokePin">Anululuj kod PIN</string>
 </resources>
