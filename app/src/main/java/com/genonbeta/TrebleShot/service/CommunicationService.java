@@ -1120,7 +1120,8 @@ public class CommunicationService extends Service
                     }
 
                     // By rejecting to provide information when there is something wrong other
-                    // than one of the sides requested to interrupt receiver will try to attempt to
+                    // than on
+                    // e of the sides requested to interrupt receiver will try to attempt to
                     // restart the process. This is why interruption is checked. One more loop
                     // will allow us to gather information because the interruption may be requested
                     // while the transfer is going on meaning there was not a chance to gather the proper

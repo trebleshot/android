@@ -44,7 +44,7 @@ public final class ApplicationGlideModule extends AppGlideModule
                 {
                     @Override
                     public ModelLoader<ApplicationInfo, ApplicationInfo> build(
-                            MultiModelLoaderFactory multiFactory)
+                            @NonNull MultiModelLoaderFactory multiFactory)
                     {
                         return new ApplicationIconModelLoader();
                     }
@@ -61,12 +61,12 @@ public final class ApplicationGlideModule extends AppGlideModule
     {
         @Nullable
         @Override
-        public LoadData<ApplicationInfo> buildLoadData(final ApplicationInfo applicationInfo, int width, int height, Options options)
+        public LoadData<ApplicationInfo> buildLoadData(@NonNull final ApplicationInfo applicationInfo, int width, int height, @NonNull Options options)
         {
             return new LoadData<>(new ObjectKey(applicationInfo), new DataFetcher<ApplicationInfo>()
             {
                 @Override
-                public void loadData(Priority priority, DataCallback<? super ApplicationInfo> callback)
+                public void loadData(@NonNull Priority priority, @NonNull DataCallback<? super ApplicationInfo> callback)
                 {
                     callback.onDataReady(applicationInfo);
                 }
@@ -83,12 +83,14 @@ public final class ApplicationGlideModule extends AppGlideModule
 
                 }
 
+                @NonNull
                 @Override
                 public Class<ApplicationInfo> getDataClass()
                 {
                     return ApplicationInfo.class;
                 }
 
+                @NonNull
                 @Override
                 public DataSource getDataSource()
                 {
@@ -115,11 +117,12 @@ public final class ApplicationGlideModule extends AppGlideModule
 
         @Nullable
         @Override
-        public Resource<Drawable> decode(ApplicationInfo source, int width, int height, Options options) throws IOException
+        public Resource<Drawable> decode(@NonNull ApplicationInfo source, int width, int height, @NonNull Options options) throws IOException
         {
             Drawable icon = source.loadIcon(context.getPackageManager());
             return new DrawableResource<Drawable>(icon)
             {
+                @NonNull
                 @Override
                 public Class<Drawable> getResourceClass()
                 {
@@ -143,7 +146,7 @@ public final class ApplicationGlideModule extends AppGlideModule
         }
 
         @Override
-        public boolean handles(ApplicationInfo source, Options options) throws IOException
+        public boolean handles(@NonNull ApplicationInfo source, @NonNull Options options) throws IOException
         {
             return true;
         }
