@@ -426,4 +426,22 @@
     <string name="butn_choose">选择</string>
     <string name="butn_fixConnection">修复连接</string>
     <string name="ques_connectionWizardUseHotspot">你想要其他设备通过热点连接至该设备吗？如果你不知道热点是什么，轻触“是”。</string>
+    <string name="butn_never">从不</string>
+    <string name="text_hotspotStartedExternallyNotice">热点是从外部启用的。为了使用二维码，你应该在这里启用。</string>
+    <string name="text_shortcut">快捷方式</string>
+    <string name="butn_addShortcut">创建快捷方式</string>
+    <string name="butn_removeShortcut">移除快捷方式</string>
+    <string name="mesg_removed">已移除</string>
+    <string name="mesg_added">已添加</string>
+    <string name="butn_change">更改</string>
+    <string name="text_welcome">欢迎</string>
+    <string name="text_introMakeItYours">让它变成你的</string>
+    <string name="text_introSetUpPermissions">设置权限</string>
+    <string name="text_introAllSet">设置完毕！</string>
+    <string name="text_introSetUpProfile">建立你的资料</string>
+    <string name="mesg_openFailure">无法查看 \"%s\"</string>
+    <string name="text_connectionTest">连接测试 - %s</string>
+    <string name="butn_connectionTest">连接测试</string>
+    <string name="text_textMillisecond">%d 毫秒</string>
+    <string name="butn_revokePin">撤销PIN</string>
 </resources>
