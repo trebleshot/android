@@ -23,7 +23,7 @@
     <string name="text_developerMode">开发者模式</string>
     <string name="text_developerModeSummary">这会禁用用户设置</string>
     <string name="text_deviceName">设备名</string>
-    <string name="text_deviceNameSummary">这个名称将会在其他设备显示</string>
+    <string name="text_deviceNameSummary">这个名称将会在其他设备上显示</string>
     <string name="text_deviceNameTitle">输入一个设备名称</string>
     <string name="mesg_formatNotSupported">不支持的格式</string>
     <string name="mesg_fileSendError">无法发送文件 %s</string>
@@ -435,7 +435,7 @@
     <string name="mesg_added">已添加</string>
     <string name="butn_change">更改</string>
     <string name="text_welcome">欢迎</string>
-    <string name="text_introMakeItYours">让它变成你的</string>
+    <string name="text_introMakeItYours">让它变成你喜欢的</string>
     <string name="text_introSetUpPermissions">设置权限</string>
     <string name="text_introAllSet">设置完毕！</string>
     <string name="text_introSetUpProfile">建立你的资料</string>
