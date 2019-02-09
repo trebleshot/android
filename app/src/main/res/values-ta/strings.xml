@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources><string name="text_deviceListEmpty">சாதனங்கள் இல்லை</string>
     <string name="butn_accept">ஏற்றுக்கொள்</string>
     <string name="butn_reject">நிராகரி</string>
@@ -116,4 +116,7 @@
     <string name="text_sortBySize">அளவு</string>
     <string name="butn_resetToDefault">இயல்புநிலைக்கு மீட்டமை</string>
     <string name="text_files">கோப்புகள்</string>
-    </resources>
+    <string name="ques_allowDeviceToConnect">இந்த சாதனம் இணைக்க வேண்டுமா\?</string>
+    <string name="text_useLights">விளக்குகள்</string>
+    <string name="text_useLightSummary">விளக்குகளை பயன்படுத்து</string>
+</resources>
