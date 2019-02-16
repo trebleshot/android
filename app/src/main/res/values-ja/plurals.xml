@@ -7,7 +7,7 @@
         <item quantity="other">%d ファイルを受信しました</item>
     </plurals>
     <plurals name="text_itemSelected">
-        <item quantity="other">%d 選択</item>
+        <item quantity="other">%d ファイル選択しました</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="other">%d の保留中の転送が削除されます</item>
@@ -18,22 +18,22 @@
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="other">%d ファイルを受信しますか?</item>
     </plurals>
-<plurals name="text_files">
-	<item quantity="other">%d ファイル</item>
-</plurals>
+    <plurals name="text_files">
+        <item quantity="other">%d ファイル</item>
+    </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="other">%d 秒前</item>
-</plurals>
+        <item quantity="other">%d 秒前</item>
+    </plurals>
     <plurals name="text_minutesAgo">
-	<item quantity="other">%d 分前</item>
-</plurals>
-<plurals name="text_fileDeletionCompleted">
-	<item quantity="other">%d ファイルを削除しました</item>
-</plurals>
-<plurals name="text_gridRow">
-	<item quantity="other">%d 行</item>
-</plurals>
+        <item quantity="other">%d 分前</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="other">%d ファイルを削除しました</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="other">%d 行</item>
+    </plurals>
     <plurals name="text_devicesShared">
-    <item quantity="other">%d デバイスと共有しています</item>
-</plurals>
+        <item quantity="other">%d デバイスと共有しています</item>
+    </plurals>
 </resources>
