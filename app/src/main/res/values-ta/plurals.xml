@@ -1,2 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">இந்த கோப்பை அழிக்க வேண்டுமா\?</item>
+        <item quantity="other">%d கோப்புகளை அழிக்க வேண்டுமா\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d கோப்பு வந்து சேர்ந்தது</item>
+        <item quantity="other">%d கோப்புகள் வந்து சேர்ந்தன</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d கோப்பு தேர்வு செய்யப்பட்டது</item>
+        <item quantity="other">%d கோப்புகள் தேர்வு செய்யப்பட்டன</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">இந்த நிலுவையிலுள்ள பரிமாற்றம் நீக்கப்படும்</item>
+        <item quantity="other">நிலுவையிலுள்ள %d பரிமாற்றங்கள் நீக்கப்படும்</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d இணைப்பு</item>
+        <item quantity="other">%d இணைப்புகள்</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">இந்த கோப்பினை பெறலாமா\?</item>
+        <item quantity="other">%d கோப்புகளை பெறலாமா\?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d கோப்பு</item>
+        <item quantity="other">%d கொப்புகள்</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">ஒரு நொடிக்கு முன்னால்</item>
+        <item quantity="other">%d நொடிகளுக்கு முன்னால்</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">ஒரு நிமிடம் முன்னால்</item>
+        <item quantity="other">%d நிமிடங்களுக்கு முன்னால்</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d கோப்பு நீக்கப்பட்டது</item>
+        <item quantity="other">%d கோப்புகள் நீக்கப்பட்டன</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">ஒரு வரிசை</item>
+        <item quantity="other">%d வரிசைகள்</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">ஒரு பகிர்வு</item>
+        <item quantity="other">%d சாதனங்களுடன் பகிர்வு</item>
+    </plurals>
+</resources>
