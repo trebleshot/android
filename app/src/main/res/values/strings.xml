@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <!--
     Meanings of prefixes:
     butn_ : text indicates any kind of button like Button, MenuItem.title, possibly should be short
@@ -6,8 +6,7 @@
     mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes above
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
--->
-<resources>
+--><resources>
     <string name="text_appName" translatable="false">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
