@@ -350,7 +350,7 @@
     <string name="text_qrAllowTrustZoneSummary">Tillat TrustZone for tilkoblinger med QR-kode</string>
     <string name="text_translateTrebleshot">Hjelp til i oversettelsen</string>
     <string name="text_contributors">Muliggjort av</string>
-<string name="butn_gridSize">Rutenettstørrelse</string>
+    <string name="butn_gridSize">Rutenettstørrelse</string>
     <string name="butn_singleRow">Enkelt rad</string>
     <string name="butn_groupBy">Grupper etter</string>
     <string name="text_photo">Bilde</string>
@@ -378,32 +378,32 @@
     <string name="text_file">Fil</string>
     <string name="text_noDeviceForTransfer">Ingen enhet lagt til for denne overføringen</string>
     <string name="text_thirdPartyLibraries">Tredjepartsbiblioteker</string>
-<string name="text_scanQRWifiRequired">For å koble til enheter må trådløskommunikasjon være påslått</string>
+    <string name="text_scanQRWifiRequired">For å koble til enheter må trådløskommunikasjon være påslått</string>
     <string name="text_killServiceAfterLeavingSummary">Stopper kommunikasjon hvis ingen oppgave er underveis</string>
     <string name="text_killServiceAfterLeaving">Å forlate programmet stopper tjenesten</string>
-<string name="butn_donate">Hjelp utviklingen</string>
-<string name="text_emptySymbol">-</string>
+    <string name="butn_donate">Hjelp utviklingen</string>
+    <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d av %2d</string>
     <string name="text_donate">Hjelp utviklingen</string>
     <string name="mesg_donationSuccessful">Takk!</string>
     <string name="msg">Doner</string>
     <string name="butn_open">Åpne</string>
-<string name="butn_pause">Pause</string>
+    <string name="butn_pause">Pause</string>
     <string name="butn_retry">Prøv igjen</string>
     <string name="mesg_noPendingTransferObjectExists">Ingen ventende overføring gjenstår. For å gjenoppta forstyrrede filer, bruk \"Prøv alle på nytt\"-valget.</string>
-    <string name="mesg_notSavingToChosenLocation">Filer vil ikke bli lagret i din ønskede mappe siden den ikke er tilgjengelig nå 
-\n 
+    <string name="mesg_notSavingToChosenLocation">Filer vil bli lagret i forvalgt mappe, siden den angitte mappen ikke er tilgjengelig nå.
+\n
 \n %s</string>
     <string name="butn_changelog">Endringslogg</string>
     <string name="text_changelog">Endringslogg</string>
     <string name="mesg_versionUpdatedChangelog">Du har oppgradert TrebleShot til en nyere versjon, ønsker du å se hva som har endret seg siden du installerte forrige versjon?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Du finner alltid endringsloggen i \"Om\"-delen</string>
-<string name="mesg_noInternetConnection">Dette krever internettilknytning</string>
-<string name="text_applyDarkTheme">Mørk drakt</string>
+    <string name="mesg_noInternetConnection">Dette krever internettilknytning</string>
+    <string name="text_applyDarkTheme">Mørk drakt</string>
     <string name="text_applyDarkThemeSummary">Bruk mørkt stilsett</string>
     <string name="butn_allow">Tillat</string>
-<string name="butn_telegram_channel">Telegram-kanal</string>
-<string name="text_listEmptyTransfer">Alle overføringer vises her</string>
+    <string name="butn_telegram_channel">Telegram-kanal</string>
+    <string name="text_listEmptyTransfer">Alle overføringer vises her</string>
     <string name="text_transfers">Overføringer</string>
     <string name="butn_connectionDetails">Tilkoblingsdetaljer</string>
     <string name="butn_useKnownDevice">Bruk kjente enheter</string>
