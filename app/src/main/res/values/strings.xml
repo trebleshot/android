@@ -436,4 +436,6 @@
     <string name="butn_connectionTest">Connection test</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Revoke PIN</string>
+    <string name="const_text_useAppFonts">Apply the recommended font</string>
+    <string name="const_text_useAppFontsSummary">Use the supplied custom font</string>
 </resources>

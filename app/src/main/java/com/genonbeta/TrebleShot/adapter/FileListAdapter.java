@@ -557,7 +557,7 @@ public class FileListAdapter
             super(file, friendlyName, info, iconRes);
         }
 
-        // Don't let these folders to be selected
+        // Don't let these folders be selected
         @Override
         public boolean setSelectableSelected(boolean selected)
         {

@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
@@ -45,7 +47,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public void reconstruct(CursorItem item)
     {
-        this.groupId = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ID);
+        this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
         this.savePath = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
         this.dateCreated = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
     }
@@ -156,7 +158,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             this.deviceId = deviceId;
         }
 
-        public Assignee(TransferGroup group, NetworkDevice device)
+        public Assignee(@NonNull TransferGroup group, @NonNull NetworkDevice device)
         {
             this(group.groupId, device.deviceId);
         }
@@ -167,7 +169,8 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             this.connectionAdapter = connectionAdapter;
         }
 
-        public Assignee(TransferGroup group, NetworkDevice device, NetworkDevice.Connection connection)
+        public Assignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
+                        @NonNull NetworkDevice.Connection connection)
         {
             this(group.groupId, device.deviceId, connection.adapterName);
         }

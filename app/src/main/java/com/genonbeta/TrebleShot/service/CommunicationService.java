@@ -620,6 +620,10 @@ public class CommunicationService extends Service
             if (getConnectionCountByAddress(activeConnection.getAddress()) > 3)
                 return;
 
+            // the problem with the programming is that nobody seems to care what they do even though
+            // what they do always concern others. This is the new world order and only thing you can
+            // do about is to what until 
+
             try {
                 ActiveConnection.Response clientRequest = activeConnection.receive();
                 JSONObject responseJSON = analyzeResponse(clientRequest);
@@ -902,6 +906,7 @@ public class CommunicationService extends Service
                                             result = true;
                                         }
                                     } catch (Exception e) {
+                                        // do nothing
                                     }
                                 }
                                 break;
@@ -1192,9 +1197,11 @@ public class CommunicationService extends Service
                 try {
                     // this will first connect to CommunicationService to make sure the connection
                     // is okay
-                    CommunicationBridge.Client handshakeClient = new CommunicationBridge.Client(getDatabase());
+                    CommunicationBridge.Client handshakeClient
+                            = new CommunicationBridge.Client(getDatabase());
                     handshakeClient.setDevice(mTransfer.getDevice());
-                    CoolSocket.ActiveConnection initialConnection = handshakeClient.communicate(mTransfer.getDevice(), mTransfer.getConnection());
+                    CoolSocket.ActiveConnection initialConnection = handshakeClient
+                            .communicate(mTransfer.getDevice(), mTransfer.getConnection());
 
                     initialConnection.reply(new JSONObject().put(Keyword.REQUEST, Keyword.REQUEST_HANDSHAKE).toString());
                     Log.d(TAG, "SeamlessClientHandler.onConnect(): reply: empty");

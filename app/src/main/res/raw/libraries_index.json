@@ -8,6 +8,13 @@
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
         {
+            "moduleName": "androidx.annotation:annotation",
+            "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
+            "moduleVersion": "1.0.1",
+            "moduleLicense": "The Apache Software License, Version 2.0",
+            "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+        },
+        {
             "moduleName": "androidx.appcompat:appcompat",
             "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
             "moduleVersion": "1.0.2",
@@ -444,21 +451,21 @@
         {
             "moduleName": "com.genonbeta.android:framework",
             "moduleUrl": "https://github.com/genonbeta/framework-android",
-            "moduleVersion": "1.0.2.5",
+            "moduleVersion": "1.0.2.6",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
         {
             "moduleName": "com.genonbeta.android:gdatabase",
             "moduleUrl": "https://github.com/genonbeta/GDatabase",
-            "moduleVersion": "1.0.2.6",
+            "moduleVersion": "1.0.2.6.1",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
         {
             "moduleName": "com.genonbeta.coolsocket:main",
             "moduleUrl": "https://github.com/genonbeta/CoolSocket",
-            "moduleVersion": "1.0.3",
+            "moduleVersion": "1.0.3.1",
             "moduleLicense": "General Public Licence, Version 2.0",
             "moduleLicenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html"
         },
@@ -514,7 +521,7 @@
         {
             "moduleName": "com.google.android.material:material",
             "moduleUrl": "http://developer.android.com/tools/extras/support-library.html",
-            "moduleVersion": "1.0.0",
+            "moduleVersion": "1.1.0-alpha02",
             "moduleLicense": "The Apache Software License, Version 2.0",
             "moduleLicenseUrl": "http://www.apache.org/licenses/LICENSE-2.0.txt"
         },
