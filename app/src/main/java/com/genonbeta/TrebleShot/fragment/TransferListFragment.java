@@ -52,8 +52,6 @@ public class TransferListFragment
     public static final String ARG_GROUP_ID = "argGroupId";
     public static final String ARG_PATH = "path";
 
-    public static final int JOB_FILE_FIX = 1;
-    public static final int TASK_REMOVE_TRANSFER_OBJECTS = 0;
     public static final int REQUEST_CHOOSE_FOLDER = 1;
 
     private TransferGroup mHeldGroup;
@@ -321,12 +319,11 @@ public class TransferListFragment
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i)
                                     {
-                                        WorkerService.run(getContext(), new WorkerService.RunningTask(TAG, JOB_FILE_FIX)
+                                        new WorkerService.RunningTask()
                                         {
                                             @Override
                                             public void onRun()
                                             {
-                                                publishStatusText(getService().getString(R.string.mesg_organizingFiles));
                                                 TransferUtils.pauseTransfer(getContext(), mHeldGroup, null);
 
                                                 List<TransferObject> checkList = AppUtils.getDatabase(getService()).
@@ -349,6 +346,8 @@ public class TransferListFragment
                                                         DocumentFile file = null;
                                                         DocumentFile pseudoFile = null;
 
+                                                        publishStatusText(transferObject.friendlyName);
+
                                                         try {
                                                             file = FileUtils.getIncomingPseudoFile(getService(), transferObject, getTransferGroup(), false);
                                                             pseudoFile = FileUtils.getIncomingPseudoFile(getService(), transferObject, pseudoGroup, true);
@@ -370,7 +369,8 @@ public class TransferListFragment
                                                     e.printStackTrace();
                                                 }
                                             }
-                                        });
+                                        }.setTitle(getString(R.string.mesg_organizingFiles))
+                                                .run(getActivity());
                                     }
                                 });
 
@@ -461,15 +461,8 @@ public class TransferListFragment
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i)
                     {
-                        WorkerService.run(getFragment().getContext(), new WorkerService.RunningTask(TAG, TASK_REMOVE_TRANSFER_OBJECTS)
-                        {
-                            @Override
-                            protected void onRun()
-                            {
-                                AppUtils.getDatabase(getFragment().getContext())
-                                        .remove(selectionList);
-                            }
-                        });
+                        AppUtils.getDatabase(getFragment().getContext())
+                                .removeAsynchronous(getFragment().getActivity(), selectionList);
                     }
                 });
 

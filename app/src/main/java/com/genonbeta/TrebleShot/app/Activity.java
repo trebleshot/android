@@ -1,6 +1,9 @@
 package com.genonbeta.TrebleShot.app;
 
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -10,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -38,6 +42,8 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Activity extends AppCompatActivity
 {
@@ -50,6 +56,7 @@ public abstract class Activity extends AppCompatActivity
     private boolean mSkipPermissionRequest = false;
     private boolean mWelcomePageDisallowed = false;
     private boolean mExitAppRequested = false;
+    private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -107,6 +114,13 @@ public abstract class Activity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart()
+    {
+        super.onStart();
+
+    }
+
+    @Override
     protected void onResume()
     {
         super.onResume();
@@ -138,6 +152,24 @@ public abstract class Activity extends AppCompatActivity
             AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
                     .setAction(CommunicationService.ACTION_SERVICE_STATUS)
                     .putExtra(CommunicationService.EXTRA_STATUS_STARTED, false));
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+
+        synchronized (mAttachedTasks) {
+            for (WorkerService.RunningTask task : mAttachedTasks) {
+                task.detachAnchor();
+            }
+
+            mAttachedTasks.clear();
+        }
+    }
+
+    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task) {
+
     }
 
     @Override
@@ -255,6 +287,41 @@ public abstract class Activity extends AppCompatActivity
     public void onUserProfileUpdated()
     {
 
+    }
+
+    public void attachRunningTask(WorkerService.RunningTask task) {
+        synchronized (mAttachedTasks) {
+            mAttachedTasks.add(task);
+        }
+    }
+
+    public boolean checkForTasks() {
+        ServiceConnection serviceConnection = new ServiceConnection()
+        {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service)
+            {
+                AppUtils.startForegroundService(Activity.this,
+                        new Intent(Activity.this, WorkerService.class));
+
+                WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
+
+                WorkerService.RunningTask task = workerService
+                        .findTaskByHash(WorkerService.intentHash(getIntent()));
+
+                onPreviousRunningTask(task);
+                unbindService(this);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name)
+            {
+
+            }
+        };
+
+        return bindService(new Intent(Activity.this, WorkerService.class),
+                serviceConnection, Context.BIND_AUTO_CREATE);
     }
 
     /**

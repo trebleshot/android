@@ -41,7 +41,6 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
     public static final String EXTRA_TEXT_INDEX = "extraText";
     public static final String EXTRA_CLIPBOARD_ID = "clipboardId";
 
-    public static final int JOB_SEND_TEXT = 0;
     public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
 
     private EditText mEditTextEditor;
@@ -216,7 +215,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
     {
         createSnackbar(R.string.mesg_communicating).show();
 
-        WorkerService.run(TextEditorActivity.this, new WorkerService.RunningTask(TAG, JOB_SEND_TEXT)
+        new WorkerService.RunningTask()
         {
             @Override
             public void onRun()
@@ -264,7 +263,8 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                     }
                 });
             }
-        });
+        }.setTitle(getString(R.string.mesg_communicating))
+                .run(this);
     }
 
     public void saveText()

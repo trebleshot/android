@@ -41,7 +41,6 @@ import org.json.JSONObject;
 public class UIConnectionUtils
 {
     public static final String TAG = "UIConnectionUtils";
-    public static final int WORKER_TASK_CONNECT_TS_NETWORK = 1;
 
     private SnackbarSupport mSnackbarSupport;
     private boolean mWirelessEnableRequested = false;
@@ -112,7 +111,7 @@ public class UIConnectionUtils
     public void makeAcquaintance(final Activity activity, final UITask task, final Object object, final int accessPin,
                                  final NetworkDeviceLoader.OnDeviceRegisteredListener registerListener)
     {
-        WorkerService.RunningTask runningTask = new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_TS_NETWORK)
+        WorkerService.RunningTask runningTask = new WorkerService.RunningTask()
         {
             private boolean mConnected = false;
             private String mRemoteAddress;
@@ -198,12 +197,12 @@ public class UIConnectionUtils
                 }
                 // We can't add dialog outside of the else statement as it may close other dialogs as well
             }
-        };
+        }.setTitle(activity.getString(R.string.mesg_completing));
+
+        runningTask.run(activity);
 
         if (task != null)
             task.updateTaskStarted(runningTask.getInterrupter());
-
-        WorkerService.run(activity, runningTask);
     }
 
     public boolean notifyWirelessRequestHandled()

@@ -23,9 +23,6 @@ import java.util.List;
 
 public class FileDeletionDialog extends AlertDialog.Builder
 {
-    public static final String TAG = FileDeletionDialog.class.getSimpleName();
-    public static final int JOB_FILE_DELETION = 1;
-
     public FileDeletionDialog(final Context context, final List<FileListAdapter.GenericFileHolder> items, final Listener listener)
     {
         super(context);
@@ -45,15 +42,13 @@ public class FileDeletionDialog extends AlertDialog.Builder
                     @Override
                     public void onClick(DialogInterface dialog, int p2)
                     {
-                        WorkerService.run(context, new WorkerService.RunningTask(TAG, JOB_FILE_DELETION)
+                        new WorkerService.RunningTask()
                         {
                             int mTotalDeletion = 0;
 
                             @Override
                             public void onRun()
                             {
-                                publishStatusText(getService().getString(R.string.text_deletingFilesOngoing));
-
                                 for (Uri currentUri : copiedItems) {
                                     try {
                                         DocumentFile file = FileUtils.fromUri(getService(), currentUri);
@@ -84,6 +79,7 @@ public class FileDeletionDialog extends AlertDialog.Builder
                                         mTotalDeletion++;
 
                                     listener.onFileDeletion(this, getContext(), file);
+                                    publishStatusText(file.getName());
                                 }
                             }
 
@@ -95,7 +91,8 @@ public class FileDeletionDialog extends AlertDialog.Builder
                                     for (DocumentFile anotherFile : files)
                                         delete(anotherFile);
                             }
-                        });
+                        }.setTitle(getContext().getString(R.string.text_deletingFilesOngoing))
+                                .run(context);
                     }
                 }
         );

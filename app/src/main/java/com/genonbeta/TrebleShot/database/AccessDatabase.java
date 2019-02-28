@@ -41,7 +41,6 @@ public class AccessDatabase extends SQLiteDatabase
      */
 
     public static final String TAG = AccessDatabase.class.getSimpleName();
-    public static final int TASK_REMOVE_ASYNCHRONOUS = 1;
 
     public static final int DATABASE_VERSION = 11;
 
@@ -429,17 +428,18 @@ public class AccessDatabase extends SQLiteDatabase
         if (activity == null || activity.isFinishing())
             return;
 
-        WorkerService.run(activity, new WorkerService.RunningTask(TAG, TASK_REMOVE_ASYNCHRONOUS)
+        new WorkerService.RunningTask()
         {
             @Override
             protected void onRun()
             {
                 if (getService() != null)
-                    publishStatusText(getService().getString(R.string.mesg_removing));
+                    publishStatusText("-");
 
                 runnable.run();
             }
-        });
+        }.setTitle(activity.getString(R.string.mesg_removing))
+                .run(activity);
     }
 
     @Override

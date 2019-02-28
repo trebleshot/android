@@ -22,6 +22,7 @@ import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.util.MathUtils;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,9 +30,6 @@ import java.util.List;
 
 public class EstablishConnectionDialog extends ProgressDialog
 {
-    public static final String TAG = EstablishConnectionDialog.class.getSimpleName();
-    public static final int TASK_CONNECT = 1;
-
     private WorkerService.RunningTask mTask;
 
     public EstablishConnectionDialog(final Activity activity,
@@ -54,12 +52,13 @@ public class EstablishConnectionDialog extends ProgressDialog
             }
         });
 
-        mTask = new WorkerService.RunningTask(TAG, TASK_CONNECT)
+        mTask = new WorkerService.RunningTask()
         {
             @Override
             protected void onRun()
             {
                 setInterrupter(interrupter);
+                publishStatusText(getService().getString(R.string.mesg_communicating));
 
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
                 final List<ConnectionResult> calculatedConnections = new ArrayList<>();
@@ -76,12 +75,8 @@ public class EstablishConnectionDialog extends ProgressDialog
                     if (getInterrupter().interrupted())
                         break;
 
+                    publishStatusText(connectionResult.connection.adapterName);
                     setProgress(getProgress() + 1);
-
-                    // Now that pinging is already implemented within CommunicationBridge,
-                    // there is no need to execute the code below.
-                    //if (!NetworkUtils.ping(connectionResult.connection.ipAddress, 500))
-                    //    continue;
 
                     final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class, new CommunicationBridge.Client.ConnectionHandler()
                     {
@@ -191,12 +186,8 @@ public class EstablishConnectionDialog extends ProgressDialog
     public void show()
     {
         super.show();
-        runThis();
-    }
-
-    private void runThis()
-    {
-        WorkerService.run(getContext(), mTask);
+        mTask.setTitle(getContext().getString(R.string.text_connectDevices))
+                .run(getContext());
     }
 
     public static class ConnectionResult

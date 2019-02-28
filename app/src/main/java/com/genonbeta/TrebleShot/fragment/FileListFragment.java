@@ -51,7 +51,6 @@ public class FileListFragment
     public static final String TAG = FileListFragment.class.getSimpleName();
 
     public final static int REQUEST_WRITE_ACCESS = 264;
-    public static final int JOB_COPY_FILES = 0;
 
     public final static String ACTION_FILE_LIST_CHANGED = "com.genonbeta.TrebleShot.action.FILE_LIST_CHANGED";
     public final static String EXTRA_FILE_PARENT = "extraPath";
@@ -149,14 +148,7 @@ public class FileListFragment
                 }
             }).show();
         } else if (id == R.id.action_mode_file_copy_here) {
-            WorkerService.run(fragment.getContext(), new WorkerService.RunningTask(TAG, JOB_COPY_FILES)
-            {
-                @Override
-                protected void onRun()
-                {
-
-                }
-            });
+            //todo: implement file copying
         } else
             return false;
 

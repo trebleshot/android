@@ -204,12 +204,12 @@ public class TransferUtils
     {
         final Context context = activity.getApplicationContext();
 
-        WorkerService.run(activity, new WorkerService.RunningTask(TAG, TASK_START_TRANSFER_WITH_OVERVIEW)
+        new WorkerService.RunningTask()
         {
             @Override
             protected void onRun()
             {
-                if (activity == null || activity.isFinishing())
+                if (activity.isFinishing())
                     return;
 
                 if (fetchValidIncomingTransfer(activity, group.groupId, assignee.deviceId) == null) {
@@ -265,7 +265,7 @@ public class TransferUtils
                         startTransfer(activity, group, assignee);
                 }
             }
-        });
+        }.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
     }
 
     public static void startTransfer(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)

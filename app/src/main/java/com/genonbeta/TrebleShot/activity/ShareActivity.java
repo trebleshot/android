@@ -10,34 +10,27 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.task.OrganizeShareRunningTask;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class ShareActivity extends Activity
         implements SnackbarSupport, Activity.OnPreloadArgumentWatcher
 {
     public static final String TAG = "ShareActivity";
-
-    public static final int WORKER_TASK_LOAD_ITEMS = 1;
 
     public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
     public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
@@ -46,13 +39,15 @@ public class ShareActivity extends Activity
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
 
-    private Interrupter mInterrupter = new Interrupter();
     private Bundle mPreLoadingBundle = new Bundle();
     private Button mCancelButton;
     private ProgressBar mProgressBar;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
     private TextView mTextMain;
+    private List<Uri> mFileUris;
+    private List<CharSequence> mFileNames;
+    private OrganizeShareRunningTask mTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -107,11 +102,15 @@ public class ShareActivity extends Activity
                         @Override
                         public void onClick(View v)
                         {
-                            getDefaultInterrupter().interrupt(true);
+                            if (mTask != null)
+                                mTask.getInterrupter().interrupt(true);
                         }
                     });
 
-                    organizeFiles(fileUris, fileNames);
+                    mFileUris = fileUris;
+                    mFileNames = fileNames;
+
+                    checkForTasks();
                 }
             }
         } else {
@@ -121,27 +120,50 @@ public class ShareActivity extends Activity
     }
 
     @Override
-    protected void onDestroy()
+    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
     {
-        super.onDestroy();
-        getDefaultInterrupter().interrupt(false);
+        super.onPreviousRunningTask(task);
+
+        if (task instanceof OrganizeShareRunningTask) {
+            mTask = ((OrganizeShareRunningTask) task);
+            mTask.setAnchorListener(this);
+        } else {
+            mTask = new OrganizeShareRunningTask(mFileUris, mFileNames);
+
+            mTask.setTitle(getString(R.string.mesg_organizingFiles))
+                    .setAnchorListener(this)
+                    .setContentIntent(this, getIntent())
+                    .run(this);
+
+            attachRunningTask(mTask);
+        }
     }
 
-    protected void createFolderStructure(DocumentFile file, String folderName, List<SelectableStream> pendingObjects)
+    public static void createFolderStructure(DocumentFile file, String folderName,
+                                             List<SelectableStream> pendingObjects,
+                                             OrganizeShareRunningTask task)
     {
         DocumentFile[] files = file.listFiles();
 
         if (files != null) {
-            mProgressBar.setMax(mProgressBar.getMax() + files.length);
+
+            if (task.getAnchorListener() != null)
+                task.getAnchorListener().getProgressBar()
+                        .setMax(task.getAnchorListener().getProgressBar().getMax() + files.length);
 
             for (DocumentFile thisFile : files) {
-                mProgressBar.setProgress(mProgressBar.getProgress() + 1);
+                if (task.getAnchorListener() != null)
+                    task.getAnchorListener().getProgressBar()
+                            .setProgress(task.getAnchorListener().getProgressBar().getProgress() + 1);
 
-                if (getDefaultInterrupter().interrupted())
+                if (task.getInterrupter().interrupted())
                     break;
 
                 if (thisFile.isDirectory()) {
-                    createFolderStructure(thisFile, (folderName != null ? folderName + File.separator : null) + thisFile.getName(), pendingObjects);
+                    createFolderStructure(thisFile, (
+                                    folderName != null ? folderName + File.separator : null)
+                                    + thisFile.getName(),
+                            pendingObjects, task);
                     continue;
                 }
 
@@ -159,117 +181,15 @@ public class ShareActivity extends Activity
         return Snackbar.make(getWindow().getDecorView(), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    public Interrupter getDefaultInterrupter()
+    public ProgressBar getProgressBar()
     {
-        return mInterrupter;
-    }
-
-    protected void organizeFiles(final List<Uri> fileUris, final List<CharSequence> fileNames)
-    {
-        runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_LOAD_ITEMS)
-        {
-            @Override
-            public void onRun()
-            {
-                final WorkerService.RunningTask thisTask = this;
-                mProgressBar.setMax(fileUris.size());
-
-                updateText(thisTask, getString(R.string.mesg_organizingFiles));
-
-                final List<SelectableStream> measuredObjects = new ArrayList<>();
-                final List<TransferObject> pendingObjects = new ArrayList<>();
-                final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
-
-                for (int position = 0; position < fileUris.size(); position++) {
-                    if (getDefaultInterrupter().interrupted())
-                        break;
-
-                    updateProgress(mProgressBar.getMax(), mProgressBar.getProgress() + 1);
-                    publishStatusText(String.format(Locale.getDefault(), "%s - %d", getString(R.string.mesg_organizingFiles), pendingObjects.size()));
-
-                    Uri fileUri = fileUris.get(position);
-                    String fileName = fileNames != null ? String.valueOf(fileNames.get(position)) : null;
-
-                    try {
-                        SelectableStream selectableStream = new SelectableStream(ShareActivity.this, fileUri, null);
-
-                        if (selectableStream.getDocumentFile().isDirectory())
-                            createFolderStructure(selectableStream.getDocumentFile(), selectableStream.getDocumentFile().getName(), measuredObjects);
-                        else {
-                            if (fileName != null)
-                                selectableStream.setFriendlyName(fileName);
-
-                            measuredObjects.add(selectableStream);
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                for (SelectableStream selectableStream : measuredObjects) {
-                    if (getDefaultInterrupter().interrupted())
-                        break;
-
-                    long requestId = AppUtils.getUniqueNumber();
-
-                    TransferObject transferObject = new TransferObject(requestId,
-                            groupInstance.groupId,
-                            selectableStream.getSelectableTitle(),
-                            selectableStream.getDocumentFile().getUri().toString(),
-                            selectableStream.getDocumentFile().getType(),
-                            selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
-
-                    if (selectableStream.mDirectory != null)
-                        transferObject.directory = selectableStream.mDirectory;
-
-                    pendingObjects.add(transferObject);
-                }
-
-                updateText(thisTask, getString(R.string.mesg_completing));
-
-                getDatabase().insert(pendingObjects, new SQLiteDatabase.ProgressUpdater()
-                {
-                    @Override
-                    public void onProgressChange(int total, int current)
-                    {
-                        updateProgress(total, current);
-                    }
-
-                    @Override
-                    public boolean onProgressState()
-                    {
-                        return !getDefaultInterrupter().interrupted();
-                    }
-                });
-
-                if (getDefaultInterrupter().interrupted()) {
-                    getDatabase().remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                            .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                                    String.valueOf(groupInstance.groupId)));
-
-                    finish();
-                } else {
-                    getDatabase().insert(groupInstance);
-
-                    ViewTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
-                    AddDevicesToTransferActivity.startInstance(ShareActivity.this, groupInstance.groupId);
-
-                    finish();
-                }
-            }
-        });
+        return mProgressBar;
     }
 
     @Override
     public Bundle passPreLoadingArguments()
     {
         return mPreLoadingBundle;
-    }
-
-    public void runOnWorkerService(WorkerService.RunningTask runningTask)
-    {
-        getDefaultInterrupter().reset(true);
-        WorkerService.run(ShareActivity.this, runningTask.setInterrupter(getDefaultInterrupter()));
     }
 
     public void updateProgress(final int total, final int current)
@@ -308,7 +228,7 @@ public class ShareActivity extends Activity
         });
     }
 
-    private class SelectableStream implements Selectable
+    public static class SelectableStream implements Selectable
     {
         private String mDirectory;
         private String mFriendlyName;

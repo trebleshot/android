@@ -47,7 +47,6 @@ import java.util.List;
 public class DeviceInfoDialog extends AlertDialog.Builder
 {
     public static final String TAG = DeviceInfoDialog.class.getSimpleName();
-    public static final int JOB_RECEIVE_UPDATE = 1;
 
     public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final SharedPreferences sharedPreferences, final NetworkDevice device)
     {
@@ -141,14 +140,14 @@ public class DeviceInfoDialog extends AlertDialog.Builder
     protected void runReceiveTask(final Activity activity, final SharedPreferences sharedPreferences,
                                   final NetworkDevice device, final NetworkDevice.Connection connection)
     {
-        WorkerService.run(activity, new WorkerService.RunningTask(TAG, JOB_RECEIVE_UPDATE)
+        new WorkerService.RunningTask()
         {
             @Override
             public void onRun()
             {
-                publishStatusText(getService().getString(R.string.mesg_ongoingUpdateDownload));
-
                 try {
+                    publishStatusText(getService().getString(R.string.mesg_waiting));
+
                     final Context context = getContext();
                     final DocumentFile receivedFile = UpdateUtils.receiveUpdate(activity, device, getInterrupter(), new UpdateUtils.OnConnectionReadyListener()
                     {
@@ -219,6 +218,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                     e.printStackTrace();
                 }
             }
-        });
+        }.setTitle(getContext().getString(R.string.mesg_ongoingUpdateDownload))
+                .run(activity);
     }
 }

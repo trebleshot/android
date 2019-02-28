@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
@@ -32,8 +34,9 @@ public class WorkerService extends Service
 {
     public static final String ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL";
     public static final String ACTION_KILL_ALL_SIGNAL = "com.genonbeta.intent.action.KILL_ALL_SIGNAL";
-    public static final String EXTRA_TASK_ID = "extraTaskId";
+    public static final String EXTRA_TASK_HASH = "extraTaskId";
 
+    public static final int REQUEST_CODE_RESCUE_TASK = 10910;
     public static final int ID_NOTIFICATION_FOREGROUND = 1103;
 
     private final List<RunningTask> mTaskList = new ArrayList<>();
@@ -41,31 +44,6 @@ public class WorkerService extends Service
     private LocalBinder mBinder = new LocalBinder();
     private NotificationUtils mNotificationUtils;
     private DynamicNotification mNotification;
-
-    public static boolean run(final Context context, final RunningTask runningTask)
-    {
-        ServiceConnection serviceConnection = new ServiceConnection()
-        {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service)
-            {
-                AppUtils.startForegroundService(context, new Intent(context, WorkerService.class));
-
-                WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
-                workerService.run(runningTask);
-
-                context.unbindService(this);
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name)
-            {
-
-            }
-        };
-
-        return context.bindService(new Intent(context, WorkerService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-    }
 
     @Override
     public void onCreate()
@@ -85,24 +63,22 @@ public class WorkerService extends Service
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         if (intent != null)
-            if (ACTION_KILL_SIGNAL.equals(intent.getAction()) && intent.hasExtra(EXTRA_TASK_ID)) {
-                int taskId = intent.getIntExtra(EXTRA_TASK_ID, -1);
+            if (ACTION_KILL_SIGNAL.equals(intent.getAction()) && intent.hasExtra(EXTRA_TASK_HASH)) {
+                int taskHash = intent.getIntExtra(EXTRA_TASK_HASH, -1);
 
-                RunningTask runningTask = findTaskById(taskId);
+                RunningTask runningTask = findTaskByHash(taskHash);
 
-                if (runningTask == null
-                        || runningTask.getInterrupter().interrupted())
-                    getNotificationUtils().cancel(taskId);
-
-                if (runningTask != null) {
+                if (runningTask == null || runningTask.getInterrupter().interrupted())
+                    getNotificationUtils().cancel(taskHash);
+                else {
                     runningTask.getInterrupter().interrupt();
-                    runningTask.onInterrupted(taskId);
+                    runningTask.onInterrupted();
                 }
             } else if (ACTION_KILL_ALL_SIGNAL.equals(intent.getAction())) {
                 synchronized (getTaskList()) {
                     for (RunningTask runningTask : getTaskList()) {
                         runningTask.getInterrupter().interrupt();
-                        runningTask.onInterrupted(runningTask.getTaskId());
+                        runningTask.onInterrupted();
                     }
                 }
             }
@@ -121,28 +97,18 @@ public class WorkerService extends Service
         }
     }
 
-    public synchronized RunningTask findTaskById(int taskId)
+    public synchronized RunningTask findTaskByHash(int hashCode)
     {
         synchronized (getTaskList()) {
             for (RunningTask runningTask : getTaskList())
-                if (runningTask.getTaskId() == taskId)
+                if (runningTask.hashCode() == hashCode) {
+                    Log.d(WorkerService.class.getSimpleName(),
+                            "this" + runningTask.hashCode() + ", that " + hashCode);
                     return runningTask;
+                }
         }
 
         return null;
-    }
-
-    public List<RunningTask> findTasksFor(String tag)
-    {
-        List<RunningTask> taskList = new ArrayList<>();
-
-        synchronized (getTaskList()) {
-            for (RunningTask runningTask : getTaskList())
-                if (tag.equals(runningTask.getClientTag()))
-                    taskList.add(runningTask);
-        }
-
-        return taskList;
     }
 
     public List<RunningTask> getTaskList()
@@ -150,43 +116,45 @@ public class WorkerService extends Service
         return mTaskList;
     }
 
+    public void publishNotification(RunningTask runningTask)
+    {
+        if (runningTask.mNotification == null) {
+            PendingIntent cancelIntent = PendingIntent.getService(this, AppUtils.getUniqueNumber(),
+                    new Intent(this, WorkerService.class)
+                            .setAction(ACTION_KILL_SIGNAL)
+                            .putExtra(EXTRA_TASK_HASH, runningTask.hashCode()), 0);
+
+            runningTask.mNotification = mNotificationUtils.buildDynamicNotification(
+                    runningTask.hashCode(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
+            runningTask.mNotification.setSmallIcon(runningTask.getIconRes() == 0
+                    ? R.drawable.ic_autorenew_white_24dp_static
+                    : runningTask.getIconRes())
+                    .setContentTitle(getString(R.string.text_taskOngoing))
+                    .addAction(R.drawable.ic_close_white_24dp_static,
+                            getString(R.string.butn_cancel), cancelIntent);
+
+            if (runningTask.mActivityIntent != null)
+                runningTask.mNotification.setContentIntent(runningTask.mActivityIntent);
+        }
+
+        runningTask.mNotification.setContentTitle(runningTask.getTitle())
+                .setContentText(runningTask.getStatusText());
+
+        runningTask.mNotification.show();
+    }
+
     public void publishForegroundNotification()
     {
         if (mNotification == null) {
-            PendingIntent cancelIntent = PendingIntent.getService(
-                    this,
-                    0,
-                    new Intent(this, WorkerService.class).setAction(ACTION_KILL_ALL_SIGNAL),
-                    0);
-
-            mNotification = mNotificationUtils.buildDynamicNotification(ID_NOTIFICATION_FOREGROUND, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+            mNotification = mNotificationUtils.buildDynamicNotification(ID_NOTIFICATION_FOREGROUND,
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
             mNotification.setSmallIcon(R.drawable.ic_autorenew_white_24dp_static)
-                    .setContentTitle(getString(R.string.text_taskOngoing))
-                    .addAction(R.drawable.ic_close_white_24dp_static, getString(R.string.butn_cancel), cancelIntent);
+                    .setContentTitle(getString(R.string.text_taskOngoing));
         }
 
-        synchronized (getTaskList()) {
-            if (getTaskList().size() <= 0)
-                stopForeground(true);
-            else {
-                StringBuilder stringBuilder = new StringBuilder();
-
-                for (RunningTask task : getTaskList()) {
-                    String statusText = task.getStatusText();
-
-                    if (statusText == null || statusText.length() <= 0)
-                        statusText = task.getClientTag();
-
-                    statusText = statusText.replaceAll("\n", " ");
-
-                    stringBuilder.append(statusText)
-                            .append("\n");
-                }
-
-                mNotification.setContentText(stringBuilder.toString());
-                startForeground(ID_NOTIFICATION_FOREGROUND, mNotification.build());
-            }
-        }
+        mNotification.setContentText(getString(R.string.text_workerService));
+        startForeground(ID_NOTIFICATION_FOREGROUND, mNotification.build());
     }
 
     protected synchronized void registerWork(RunningTask runningTask)
@@ -196,6 +164,7 @@ public class WorkerService extends Service
         }
 
         publishForegroundNotification();
+        publishNotification(runningTask);
     }
 
     public void run(final RunningTask runningTask)
@@ -218,40 +187,39 @@ public class WorkerService extends Service
 
     protected synchronized void unregisterWork(RunningTask runningTask)
     {
+        runningTask.mNotification.cancel();
+
         synchronized (getTaskList()) {
             getTaskList().remove(runningTask);
-        }
 
-        publishForegroundNotification();
+            if (getTaskList().size() <= 0)
+                stopForeground(true);
+        }
     }
 
-    public abstract static class RunningTask extends InterruptAwareJob
+    public abstract static class RunningTask<T> extends InterruptAwareJob
     {
-        private WorkerService mService;
         private Interrupter mInterrupter;
-        private String mTag;
-        private int mJobId;
-        private int mTaskId = AppUtils.getUniqueNumber();
+        private WorkerService mService;
         private String mStatusText;
+        private String mTitle;
+        private int mIconRes;
         private long mLastNotified = 0;
+        private int mHash = 0;
+        private DynamicNotification mNotification;
+        private PendingIntent mActivityIntent;
+        private T mAnchorListener;
 
-        public RunningTask(String clientTag, int jobId)
+        public RunningTask()
         {
-            mTag = clientTag;
-            mJobId = jobId;
+
         }
 
         abstract protected void onRun();
-        //abstract protected String jobTitle(Context context);
 
-        public void onInterrupted(int taskId)
+        public void onInterrupted()
         {
 
-        }
-
-        public String getClientTag()
-        {
-            return mTag;
         }
 
         public Interrupter getInterrupter()
@@ -262,26 +230,73 @@ public class WorkerService extends Service
             return mInterrupter;
         }
 
-        public RunningTask setInterrupter(Interrupter interrupter)
+        public void detachAnchor()
+        {
+            mAnchorListener = null;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            if (mActivityIntent != null)
+                return mActivityIntent.toString().hashCode();
+
+            return super.hashCode();
+        }
+
+        @Override
+        public boolean equals(@Nullable Object obj)
+        {
+            if (obj instanceof RunningTask && mActivityIntent != null) {
+                RunningTask other = (RunningTask) obj;
+                return mHash != 0 && other.mHash != 0 && mHash == other.mHash;
+            }
+
+            return super.equals(obj);
+        }
+
+        @Nullable
+        public T getAnchorListener()
+        {
+            return mAnchorListener;
+        }
+
+        @Nullable
+        public PendingIntent getContentIntent()
+        {
+            return mActivityIntent;
+        }
+
+        public RunningTask<T> setInterrupter(Interrupter interrupter)
         {
             mInterrupter = interrupter;
             return this;
         }
 
-        public int getJobId()
-        {
-            return mJobId;
-        }
-
-        @Nullable
-        public WorkerService getService()
+        protected WorkerService getService()
         {
             return mService;
         }
 
-        public void setService(@Nullable WorkerService service)
+        public RunningTask<T> setAnchorListener(T listener)
+        {
+            mAnchorListener = listener;
+            return this;
+        }
+
+        private void setService(@Nullable WorkerService service)
         {
             mService = service;
+        }
+
+        public int getIconRes()
+        {
+            return mIconRes;
+        }
+
+        public String getTitle()
+        {
+            return mTitle;
         }
 
         public String getStatusText()
@@ -289,24 +304,72 @@ public class WorkerService extends Service
             return mStatusText;
         }
 
-        public int getTaskId()
-        {
-            return mTaskId;
-        }
-
-        public void publishStatusText(String text)
+        public boolean publishStatusText(String text)
         {
             mStatusText = text;
 
             if (System.currentTimeMillis() - mLastNotified > 2000) {
-                mService.publishForegroundNotification();
+                mService.publishNotification(this);
                 mLastNotified = System.currentTimeMillis();
+
+                return true;
             }
+            return false;
         }
 
-        public void run()
+        public RunningTask<T> setContentIntent(PendingIntent intent)
+        {
+            mActivityIntent = intent;
+            return this;
+        }
+
+        public RunningTask<T> setContentIntent(Context context, Intent intent)
+        {
+            mHash = intentHash(intent);
+            setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
+            return this;
+        }
+
+        public RunningTask<T> setIconRes(int iconRes)
+        {
+            mIconRes = iconRes;
+            return this;
+        }
+
+        public RunningTask<T> setTitle(String title)
+        {
+            mTitle = title;
+            return this;
+        }
+
+        protected void run()
         {
             run(getInterrupter());
+        }
+
+        public boolean run(final Context context)
+        {
+            ServiceConnection serviceConnection = new ServiceConnection()
+            {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service)
+                {
+                    AppUtils.startForegroundService(context, new Intent(context, WorkerService.class));
+
+                    WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
+                    workerService.run(RunningTask.this);
+
+                    context.unbindService(this);
+                }
+
+                @Override
+                public void onServiceDisconnected(ComponentName name)
+                {
+
+                }
+            };
+
+            return context.bindService(new Intent(context, WorkerService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         }
     }
 
@@ -316,5 +379,13 @@ public class WorkerService extends Service
         {
             return WorkerService.this;
         }
+    }
+
+    public static int intentHash(@NonNull Intent intent)
+    {
+        if (intent.getExtras() != null)
+            return String.format("%s%s", intent, intent.getExtras().toString()).hashCode();
+
+        return intent.toString().hashCode();
     }
 }

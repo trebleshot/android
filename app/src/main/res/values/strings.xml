@@ -438,4 +438,5 @@
     <string name="butn_revokePin">Revoke PIN</string>
     <string name="const_text_useAppFonts">Apply the recommended font</string>
     <string name="const_text_useAppFontsSummary">Use the supplied custom font</string>
+    <string name="mesg_waiting">Waiting</string>
 </resources>

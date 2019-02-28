@@ -11,7 +11,7 @@ abstract public class InterruptAwareJob
 {
     abstract protected void onRun();
 
-    public void run(Interrupter interrupter)
+    protected void run(Interrupter interrupter)
     {
         onRun();
         interrupter.removeClosers();

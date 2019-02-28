@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.service.WorkerService;
 
 public class ManageDevicesActivity extends Activity
 {

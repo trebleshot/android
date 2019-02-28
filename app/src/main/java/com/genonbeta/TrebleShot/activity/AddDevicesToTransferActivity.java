@@ -2,13 +2,9 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,35 +14,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.google.android.material.snackbar.Snackbar;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddDevicesToTransferActivity extends Activity
         implements SnackbarSupport
@@ -54,13 +34,12 @@ public class AddDevicesToTransferActivity extends Activity
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
     public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
-    public static final int WORKER_TASK_CONNECT_SERVER = 2;
 
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_GROUP_ID = "extraGroupId";
 
     private TransferGroup mGroup = null;
-    private Interrupter mInterrupter = new Interrupter();
+    private AddDeviceRunningTask mTask;
     private Button mActionButton;
     private ProgressBar mProgressBar;
     private ViewGroup mLayoutStatusContainer;
@@ -177,10 +156,21 @@ public class AddDevicesToTransferActivity extends Activity
     }
 
     @Override
-    protected void onDestroy()
+    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
     {
-        super.onDestroy();
-        getDefaultInterrupter().interrupt(false);
+        super.onPreviousRunningTask(task);
+
+        if (task instanceof AddDeviceRunningTask) {
+            mTask = ((AddDeviceRunningTask) task);
+            mTask.setAnchorListener(this);
+        }
+    }
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        checkForTasks();
     }
 
     @Override
@@ -228,194 +218,18 @@ public class AddDevicesToTransferActivity extends Activity
         return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
+    public void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
     {
         takeOnProcessMode();
 
-        runOnWorkerService(new WorkerService.RunningTask(TAG, WORKER_TASK_CONNECT_SERVER)
-        {
-            @Override
-            public void onRun()
-            {
-                updateText(this, getString(R.string.mesg_communicating));
-                final WorkerService.RunningTask thisTask = this;
-                final DialogInterface.OnClickListener retyButtonListener = new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        doCommunicate(device, connection);
-                    }
-                };
+        mTask = new AddDeviceRunningTask(mGroup, device, connection);
 
-                CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
-                {
-                    @Override
-                    public void onConnect(CommunicationBridge.Client client)
-                    {
-                        client.setDevice(device);
+        mTask.setTitle(getString(R.string.mesg_communicating))
+                .setAnchorListener(this)
+                .setContentIntent(this, getIntent())
+                .run(this);
 
-                        try {
-                            boolean doPublish = false;
-                            final JSONObject jsonRequest = new JSONObject();
-                            final TransferGroup.Assignee assignee = new TransferGroup.Assignee(mGroup, device, connection);
-                            final List<TransferObject> pendingRegistry = new ArrayList<>();
-
-                            final List<TransferObject> existingRegistry = new ArrayList<>(getDatabase()
-                                    .castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
-                                            .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                            + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                    String.valueOf(mGroup.groupId),
-                                                    TransferObject.Type.OUTGOING.toString()), TransferObject.class));
-                            final SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
-                            {
-                                @Override
-                                public void onProgressChange(int total, int current)
-                                {
-                                    updateProgress(total, current);
-                                }
-
-                                @Override
-                                public boolean onProgressState()
-                                {
-                                    return !getDefaultInterrupter().interrupted();
-                                }
-                            };
-
-                            try {
-                                // Checks if the current assignee is already on the list, if so do publish not insert
-                                getDatabase().reconstruct(new TransferGroup.Assignee(assignee.groupId, assignee.deviceId));
-                                doPublish = true;
-                            } catch (Exception e) {
-                            }
-
-                            if (device instanceof NetworkDeviceListAdapter.HotspotNetwork
-                                    && ((NetworkDeviceListAdapter.HotspotNetwork) device).qrConnection)
-                                jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
-
-                            jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-                            jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.groupId);
-
-                            if (existingRegistry.size() == 0)
-                                throw new Exception("Empty share holder id: " + mGroup.groupId);
-
-                            JSONArray filesArray = new JSONArray();
-
-                            for (TransferObject transferObject : existingRegistry) {
-                                TransferObject copyObject = new TransferObject(AccessDatabase.convertValues(transferObject.getValues()));
-
-                                if (getDefaultInterrupter().interrupted())
-                                    throw new InterruptedException("Interrupted by user");
-
-                                copyObject.deviceId = assignee.deviceId; // We will clone the file index with new deviceId
-                                copyObject.flag = TransferObject.Flag.PENDING;
-                                copyObject.accessPort = 0;
-                                copyObject.skippedBytes = 0;
-                                JSONObject thisJson = new JSONObject();
-
-                                try {
-                                    thisJson.put(Keyword.INDEX_FILE_NAME, copyObject.friendlyName);
-                                    thisJson.put(Keyword.INDEX_FILE_SIZE, copyObject.fileSize);
-                                    thisJson.put(Keyword.TRANSFER_REQUEST_ID, copyObject.requestId);
-                                    thisJson.put(Keyword.INDEX_FILE_MIME, copyObject.fileMimeType);
-
-                                    if (copyObject.directory != null)
-                                        thisJson.put(Keyword.INDEX_DIRECTORY, copyObject.directory);
-
-                                    filesArray.put(thisJson);
-                                    pendingRegistry.add(copyObject);
-                                } catch (Exception e) {
-                                    Log.e(TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + copyObject.friendlyName);
-                                }
-                            }
-
-                            // so that if the user rejects it won't be removed from the sender
-                            jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
-
-                            getDefaultInterrupter().addCloser(new Interrupter.Closer()
-                            {
-                                @Override
-                                public void onClose(boolean userAction)
-                                {
-                                    getDatabase().remove(assignee);
-                                }
-                            });
-
-                            final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
-
-                            getDefaultInterrupter().addCloser(new Interrupter.Closer()
-                            {
-                                @Override
-                                public void onClose(boolean userAction)
-                                {
-                                    try {
-                                        activeConnection.getSocket().close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            });
-
-                            activeConnection.reply(jsonRequest.toString());
-
-                            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                            activeConnection.getSocket().close();
-
-                            JSONObject clientResponse = new JSONObject(response.response);
-
-                            if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                                updateText(thisTask, getString(R.string.mesg_organizingFiles));
-
-                                if (doPublish)
-                                    getDatabase().publish(assignee);
-                                else
-                                    getDatabase().insert(assignee);
-
-                                if (doPublish)
-                                    getDatabase().publish(pendingRegistry, progressUpdater);
-                                else
-                                    getDatabase().insert(pendingRegistry, progressUpdater);
-
-                                setResult(RESULT_OK, new Intent()
-                                        .putExtra(EXTRA_DEVICE_ID, assignee.deviceId)
-                                        .putExtra(EXTRA_GROUP_ID, assignee.groupId));
-
-                                finish();
-                            } else
-                                UIConnectionUtils.showConnectionRejectionInformation(
-                                        AddDevicesToTransferActivity.this,
-                                        device, clientResponse, retyButtonListener);
-                        } catch (Exception e) {
-                            if (!(e instanceof InterruptedException)) {
-                                e.printStackTrace();
-
-                                new Handler(Looper.getMainLooper()).post(new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        new AlertDialog.Builder(AddDevicesToTransferActivity.this)
-                                                .setMessage(getString(R.string.mesg_fileSendError, getString(R.string.mesg_connectionProblem)))
-                                                .setNegativeButton(R.string.butn_close, null)
-                                                .setPositiveButton(R.string.butn_retry, retyButtonListener)
-                                                .show();
-                                    }
-                                });
-                            }
-                        } finally {
-                            runOnUiThread(new Runnable()
-                            {
-                                @Override
-                                public void run()
-                                {
-                                    resetStatusViews();
-                                }
-                            });
-                        }
-                    }
-                });
-            }
-        });
+        attachRunningTask(mTask);
     }
 
     @Override
@@ -424,17 +238,7 @@ public class AddDevicesToTransferActivity extends Activity
         return super.getIntent();
     }
 
-    public Interrupter getDefaultInterrupter()
-    {
-        return mInterrupter;
-    }
-
-    public void runOnWorkerService(WorkerService.RunningTask runningTask)
-    {
-        WorkerService.run(AddDevicesToTransferActivity.this, runningTask.setInterrupter(getDefaultInterrupter()));
-    }
-
-    protected void resetStatusViews()
+    public void resetStatusViews()
     {
         mProgressBar.setMax(0);
         mProgressBar.setProgress(0);
@@ -451,8 +255,6 @@ public class AddDevicesToTransferActivity extends Activity
                 startConnectionManagerActivity();
             }
         });
-
-        getDefaultInterrupter().reset(true);
     }
 
     private void startConnectionManagerActivity()
@@ -463,8 +265,6 @@ public class AddDevicesToTransferActivity extends Activity
 
     public void takeOnProcessMode()
     {
-        getDefaultInterrupter().reset(true);
-
         mTextInfo.setVisibility(View.GONE);
         mLayoutStatusContainer.setVisibility(View.VISIBLE);
         mActionButton.setText(R.string.butn_cancel);
@@ -473,7 +273,8 @@ public class AddDevicesToTransferActivity extends Activity
             @Override
             public void onClick(View v)
             {
-                getDefaultInterrupter().interrupt();
+                if (mTask != null)
+                    mTask.getInterrupter().interrupt();
             }
         });
     }
@@ -503,7 +304,6 @@ public class AddDevicesToTransferActivity extends Activity
             return;
 
         runningTask.publishStatusText(text);
-
         runOnUiThread(new Runnable()
         {
             @Override
