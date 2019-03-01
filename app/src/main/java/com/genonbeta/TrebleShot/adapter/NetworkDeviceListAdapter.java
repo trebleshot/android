@@ -84,9 +84,10 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     @Override
     public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(isHorizontalOrientation()
-                ? R.layout.list_network_device_grid
-                : R.layout.list_network_device, parent, false));
+        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(
+                isHorizontalOrientation() || isGridLayoutRequested()
+                        ? R.layout.list_network_device_grid
+                        : R.layout.list_network_device, parent, false));
     }
 
     @Override

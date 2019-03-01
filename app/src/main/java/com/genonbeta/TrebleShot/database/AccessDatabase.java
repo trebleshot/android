@@ -13,6 +13,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -222,8 +223,7 @@ public class AccessDatabase extends SQLiteDatabase
         List<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class);
 
-        indexObject.assigneeCount = getTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId))).size();
+        indexObject.assignees.addAll(TransferUtils.loadAssigneeList(this, groupId));
 
         if (transactionList.size() == 0)
             transactionList.addAll(castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)

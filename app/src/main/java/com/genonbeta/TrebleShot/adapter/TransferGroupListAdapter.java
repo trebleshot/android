@@ -69,26 +69,21 @@ public class TransferGroupListAdapter
     {
         List<Long> activeList = new ArrayList<>(mRunningTasks);
 
-        for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class, new SQLiteDatabase.CastQueryListener<PreloadedGroup>()
-        {
-            @Override
-            public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, PreloadedGroup object)
-            {
-                StringBuilder assigneesText = new StringBuilder();
-
-                for (ShowingAssignee showingAssignee : TransferUtils.loadAssigneeList(db, object.groupId)) {
-                    if (assigneesText.length() > 0)
-                        assigneesText.append(", ");
-
-                    assigneesText.append(showingAssignee.device.nickname);
-                }
-
-                object.assignees = assigneesText.length() > 0
-                        ? assigneesText.toString()
-                        : getContext().getString(R.string.text_emptySymbol);
-            }
-        })) {
+        for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class)) {
             mDatabase.calculateTransactionSize(group.groupId, group.index);
+
+            StringBuilder assigneesText = new StringBuilder();
+
+            for (ShowingAssignee showingAssignee : group.index.assignees) {
+                if (assigneesText.length() > 0)
+                    assigneesText.append(", ");
+
+                assigneesText.append(showingAssignee.device.nickname);
+            }
+
+            group.assignees = assigneesText.length() > 0
+                    ? assigneesText.toString()
+                    : getContext().getString(R.string.text_emptySymbol);
 
             group.isRunning = activeList.contains(group.groupId);
             group.totalCount = group.index.incomingCount + group.index.outgoingCount;

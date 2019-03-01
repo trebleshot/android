@@ -92,6 +92,7 @@ public class FileDeletionDialog extends AlertDialog.Builder
                                         delete(anotherFile);
                             }
                         }.setTitle(getContext().getString(R.string.text_deletingFilesOngoing))
+                                .setIconRes(R.drawable.ic_folder_white_24dp_static)
                                 .run(context);
                     }
                 }

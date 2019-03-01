@@ -82,6 +82,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
                             renameListener.onFileRenameCompleted(getService());
                     }
                 }.setTitle(context.getString(R.string.text_renameMultipleItems))
+                        .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
                         .run(context);
 
                 return true;

@@ -264,6 +264,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                 });
             }
         }.setTitle(getString(R.string.mesg_communicating))
+                .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
                 .run(this);
     }
 

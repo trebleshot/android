@@ -33,5 +33,10 @@
         android:title="@string/butn_remove"
         android:visible="true" />
 
-
+    <item
+        android:id="@+id/actions_transfer_settings"
+        android:title="@string/butn_settings"
+        android:visible="true">
+        <menu />
+    </item>
 </menu>

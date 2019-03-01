@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -25,16 +26,14 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
-import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 /**
  * created by: veli
  * date: 06.04.2018 12:58
  */
 public class TransferAssigneeListFragment
-        extends DynamicRecyclerViewFragment<ShowingAssignee, RecyclerViewAdapter.ViewHolder, TransferAssigneeListAdapter>
+        extends EditableListFragment<ShowingAssignee, EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter>
         implements TitleSupport
 {
     public static final String ARG_GROUP_ID = "groupId";
@@ -57,7 +56,19 @@ public class TransferAssigneeListFragment
     public void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+
         setHasOptionsMenu(true);
+        setFilteringSupported(false);
+        setSortingSupported(false);
+        //setUseDefaultPaddingDecoration(true);
+        //setUseDefaultPaddingDecorationSpaceForEdges(true);
+
+        if (isScreenLarge())
+            setDefaultViewingGridSize(4, 6);
+        else
+            setDefaultViewingGridSize(3, 5);
+
+        //setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }
 
     @Override
@@ -67,28 +78,25 @@ public class TransferAssigneeListFragment
 
         setEmptyImage(R.drawable.ic_device_hub_white_24dp);
         setEmptyText(getString(R.string.text_noDeviceForTransfer));
-        getListView().addItemDecoration(new PaddingItemDecoration((int) getResources().getDimension(R.dimen.padding_list_content_parent_layout), true, isHorizontalOrientation()));
+
+        int paddingRecyclerView = (int) getResources()
+                .getDimension(R.dimen.padding_list_content_parent_layout);
+
+        getListView().setPadding(paddingRecyclerView, paddingRecyclerView, paddingRecyclerView,
+                paddingRecyclerView);
+        getListView().setClipToPadding(false);
     }
 
     @Override
     public TransferAssigneeListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> actions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
+        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> actions
+                = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
         {
             @Override
-            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
+            public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
             {
-                clazz.getView().setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
-
-                        new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), assignee.device)
-                                .show();
-                    }
-                });
+                registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
                 {
@@ -134,11 +142,11 @@ public class TransferAssigneeListFragment
             }
         };
 
-        return new TransferAssigneeListAdapter(getContext(), AppUtils.getDatabase(getContext()))
+        return new TransferAssigneeListAdapter(getContext())
         {
             @NonNull
             @Override
-            public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), actions);
             }
@@ -157,6 +165,23 @@ public class TransferAssigneeListFragment
     {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    {
+        try {
+            ShowingAssignee assignee = getAdapter().getItem(holder);
+
+            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()),
+                    AppUtils.getDefaultPreferences(getContext()), assignee.device)
+                    .show();
+            return true;
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        return false;
     }
 
     @Override

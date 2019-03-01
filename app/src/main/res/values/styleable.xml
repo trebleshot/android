@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="SquareRelativeLayout">
+    <declare-styleable name="ComparativeRelativeLayout">
         <attr name="baseOnSmallerLength" format="boolean" />
+        <attr name="tallerLengthExtra" format="dimension" />
+        <attr name="alwaysUseWidth" format="boolean" /> <!-- Do not define baseOnSmallerLength to use this -->
     </declare-styleable>
 </resources>

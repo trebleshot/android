@@ -12,6 +12,9 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.object.Selectable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * created by: veli
  * date: 06.04.2018 09:37
@@ -127,7 +130,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         public int outgoingCount = 0;
         public int incomingCountCompleted;
         public int outgoingCountCompleted;
-        public int assigneeCount = 0;
+        public List<ShowingAssignee> assignees = new ArrayList<>();
 
         public void reset()
         {
@@ -138,6 +141,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             outgoing = 0;
             incomingCount = 0;
             outgoingCount = 0;
+            assignees.clear();
         }
     }
 

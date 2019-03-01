@@ -197,7 +197,8 @@ public class UIConnectionUtils
                 }
                 // We can't add dialog outside of the else statement as it may close other dialogs as well
             }
-        }.setTitle(activity.getString(R.string.mesg_completing));
+        }.setTitle(activity.getString(R.string.mesg_completing))
+                .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static);
 
         runningTask.run(activity);
 

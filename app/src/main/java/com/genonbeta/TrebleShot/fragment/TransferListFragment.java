@@ -49,8 +49,9 @@ public class TransferListFragment
 {
     public static final String TAG = "TransferListFragment";
 
+    public static final String ARG_DEVICE_ID = "argDeviceId";
     public static final String ARG_GROUP_ID = "argGroupId";
-    public static final String ARG_PATH = "path";
+    public static final String ARG_PATH = "argPath";
 
     public static final int REQUEST_CHOOSE_FOLDER = 1;
 
@@ -91,8 +92,10 @@ public class TransferListFragment
 
         Bundle args = getArguments();
 
-        if (args != null && args.containsKey(ARG_GROUP_ID))
-            goPath(args.getLong(ARG_GROUP_ID), args.getString(ARG_PATH));
+        if (args != null && args.containsKey(ARG_GROUP_ID)) {
+            goPath(args.getLong(ARG_GROUP_ID), args.getString(ARG_PATH),
+                    args.getString(ARG_DEVICE_ID));
+        }
     }
 
     @Override
@@ -370,6 +373,7 @@ public class TransferListFragment
                                                 }
                                             }
                                         }.setTitle(getString(R.string.mesg_organizingFiles))
+                                                .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
                                                 .run(getActivity());
                                     }
                                 });
@@ -399,12 +403,22 @@ public class TransferListFragment
         return mHeldGroup;
     }
 
+    public void goPath(long groupId, String path, String deviceId)
+    {
+        setDeviceId(deviceId);
+        goPath(groupId, path);
+    }
+
     public void goPath(long groupId, String path)
     {
         getAdapter().setGroupId(groupId);
         getAdapter().setPath(path);
 
         refreshList();
+    }
+
+    public boolean setDeviceId(String id) {
+        return getAdapter().setDeviceId(id);
     }
 
     public void updateSavePath(String selectedPath)

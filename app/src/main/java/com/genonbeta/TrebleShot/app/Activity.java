@@ -301,9 +301,6 @@ public abstract class Activity extends AppCompatActivity
             @Override
             public void onServiceConnected(ComponentName name, IBinder service)
             {
-                AppUtils.startForegroundService(Activity.this,
-                        new Intent(Activity.this, WorkerService.class));
-
                 WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
 
                 WorkerService.RunningTask task = workerService

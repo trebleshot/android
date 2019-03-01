@@ -5,15 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -26,6 +29,7 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.AddDeviceRunningTask;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDevicesToTransferActivity extends Activity
@@ -40,14 +44,11 @@ public class AddDevicesToTransferActivity extends Activity
 
     private TransferGroup mGroup = null;
     private AddDeviceRunningTask mTask;
-    private Button mActionButton;
+    private FloatingActionButton mActionButton;
     private ProgressBar mProgressBar;
     private ViewGroup mLayoutStatusContainer;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
-    private TextView mTextMain;
-    private TextView mTextInfo;
-    private TransferAssigneeListFragment mAssigneeFragment;
     private IntentFilter mFilter = new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE);
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -79,35 +80,30 @@ public class AddDevicesToTransferActivity extends Activity
         if (!checkGroupIntegrity())
             return;
 
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         Bundle assigneeFragmentArgs = new Bundle();
         assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.groupId);
-        assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, true);
+        assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);
 
         mProgressBar = findViewById(R.id.progressBar);
         mProgressTextLeft = findViewById(R.id.text1);
         mProgressTextRight = findViewById(R.id.text2);
-        mTextMain = findViewById(R.id.textMain);
-        mTextInfo = findViewById(R.id.textInfo);
-        mActionButton = findViewById(R.id.actionButton);
+        mActionButton = findViewById(R.id.content_fab);
         mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
-        mAssigneeFragment = (TransferAssigneeListFragment) getSupportFragmentManager().findFragmentById(R.id.assigneeListFragment);
 
-        findViewById(R.id.returnButton).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                finish();
-            }
-        });
+        TransferAssigneeListFragment assigneeListFragment =
+                (TransferAssigneeListFragment) getSupportFragmentManager()
+                        .findFragmentById(R.id.assigneeListFragment);
 
-        if (mAssigneeFragment == null) {
-            mAssigneeFragment = (TransferAssigneeListFragment) Fragment
+        if (assigneeListFragment == null) {
+            assigneeListFragment = (TransferAssigneeListFragment) Fragment
                     .instantiate(this, TransferAssigneeListFragment.class.getName(), assigneeFragmentArgs);
 
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-            transaction.add(R.id.assigneeListFragment, mAssigneeFragment);
+            transaction.add(R.id.assigneeListFragment, assigneeListFragment);
             transaction.commit();
         }
 
@@ -119,12 +115,30 @@ public class AddDevicesToTransferActivity extends Activity
     {
         int id = item.getItemId();
 
-        if (id == android.R.id.home) {
+        if (id == android.R.id.home || id == R.id.actions_add_devices_done) {
+            if (mTask != null)
+                mTask.getInterrupter().interrupt();
+
             finish();
+        } else if (id == R.id.actions_add_devices_help) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(R.string.text_help)
+                    .setMessage(R.string.text_addDeviceHelp)
+                    .setPositiveButton(R.string.butn_close, null);
+
+            builder.show();
         } else
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.actions_add_devices, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -149,7 +163,8 @@ public class AddDevicesToTransferActivity extends Activity
 
                     doCommunicate(networkDevice, connection);
                 } catch (Exception e) {
-                    Toast.makeText(AddDevicesToTransferActivity.this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddDevicesToTransferActivity.this,
+                            R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -206,7 +221,8 @@ public class AddDevicesToTransferActivity extends Activity
 
             return true;
         } catch (Exception e) {
-            Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(AddDevicesToTransferActivity.this,
+                    e.getMessage(), Toast.LENGTH_LONG).show();
             finish();
         }
 
@@ -243,9 +259,9 @@ public class AddDevicesToTransferActivity extends Activity
         mProgressBar.setMax(0);
         mProgressBar.setProgress(0);
 
-        mTextMain.setText(R.string.text_addDevicesToTransfer);
-        mActionButton.setText(R.string.butn_addDevices);
-        mTextInfo.setVisibility(View.VISIBLE);
+        //mTextMain.setText(R.string.text_addDevicesToTransfer);
+        mActionButton.setImageDrawable(ContextCompat
+                .getDrawable(this, R.drawable.ic_add_white_24dp));
         mLayoutStatusContainer.setVisibility(View.GONE);
         mActionButton.setOnClickListener(new View.OnClickListener()
         {
@@ -265,9 +281,9 @@ public class AddDevicesToTransferActivity extends Activity
 
     public void takeOnProcessMode()
     {
-        mTextInfo.setVisibility(View.GONE);
         mLayoutStatusContainer.setVisibility(View.VISIBLE);
-        mActionButton.setText(R.string.butn_cancel);
+        mActionButton.setImageDrawable(ContextCompat
+                .getDrawable(this, R.drawable.ic_close_white_24dp));
         mActionButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -303,15 +319,15 @@ public class AddDevicesToTransferActivity extends Activity
         if (isFinishing())
             return;
 
-        runningTask.publishStatusText(text);
-        runOnUiThread(new Runnable()
-        {
+        //runningTask.publishStatusText(text);
+        //runOnUiThread(new Runnable()
+        /*{
             @Override
-            public void run()
+            public void run ()
             {
                 mTextMain.setText(text);
             }
-        });
+        });*/
     }
 }
 

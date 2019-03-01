@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/actions_add_devices_help"
+        android:title="@string/butn_help"
+        android:icon="@drawable/ic_help_circle_white_24dp"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/actions_add_devices_done"
+        android:title="@string/butn_done"
+        android:icon="@drawable/ic_done_white_24dp"
+        app:showAsAction="always" />
+</menu>

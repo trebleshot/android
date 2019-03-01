@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
@@ -16,6 +17,7 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
+import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -25,36 +27,34 @@ import java.util.List;
  * created by: veli
  * date: 06.04.2018 12:46
  */
-public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssignee, RecyclerViewAdapter.ViewHolder>
+public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssignee, EditableListAdapter.EditableViewHolder>
 {
-    private List<ShowingAssignee> mList = new ArrayList<>();
     private TransferGroup mGroup;
-    private AccessDatabase mDatabase;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public TransferAssigneeListAdapter(Context context, AccessDatabase database)
+    public TransferAssigneeListAdapter(Context context)
     {
         super(context);
-        mDatabase = database;
         mIconBuilder = AppUtils.getDefaultIconBuilder(context);
     }
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new ViewHolder(getInflater().inflate(isHorizontalOrientation()
+        return new EditableViewHolder(getInflater().inflate(
+                isHorizontalOrientation() || isGridLayoutRequested()
                 ? R.layout.list_assignee_grid
                 : R.layout.list_assignee, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position)
+    public void onBindViewHolder(@NonNull EditableViewHolder holder, int position)
     {
         ShowingAssignee assignee = getList().get(position);
 
         ImageView image = holder.getView().findViewById(R.id.image);
-        TextView text1 = holder.getView().findViewById(R.id.text);
+        TextView text1 = holder.getView().findViewById(R.id.text1);
         TextView text2 = holder.getView().findViewById(R.id.text2);
 
         text1.setText(assignee.device.nickname);
@@ -65,25 +65,7 @@ public class TransferAssigneeListAdapter extends RecyclerViewAdapter<ShowingAssi
     @Override
     public List<ShowingAssignee> onLoad()
     {
-        return TransferUtils.loadAssigneeList(mDatabase, mGroup.groupId);
-    }
-
-    @Override
-    public void onUpdate(List<ShowingAssignee> passedItem)
-    {
-        mList = passedItem;
-    }
-
-    @Override
-    public int getItemCount()
-    {
-        return mList.size();
-    }
-
-    @Override
-    public List<ShowingAssignee> getList()
-    {
-        return mList;
+        return TransferUtils.loadAssigneeList(AppUtils.getDatabase(getContext()), mGroup.groupId);
     }
 
     public TransferAssigneeListAdapter setGroup(TransferGroup group)

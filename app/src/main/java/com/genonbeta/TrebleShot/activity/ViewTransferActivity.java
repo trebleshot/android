@@ -77,11 +77,13 @@ public class ViewTransferActivity
     private TransferGroup mGroup;
     private TransferObject mTransferObject;
     private PowerfulActionMode mMode;
+    private String mDeviceId;
     private MenuItem mCnTestMenu;
     private MenuItem mToggleMenu;
     private MenuItem mRetryMenu;
-    private MenuItem mShowFiles;
-    private MenuItem mAddDevice;
+    private MenuItem mShowFilesMenu;
+    private MenuItem mAddDeviceMenu;
+    private MenuItem mSettingsMenu;
     private CrunchLatestDataTask mDataCruncher;
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -299,8 +301,11 @@ public class ViewTransferActivity
         mCnTestMenu = menu.findItem(R.id.actions_transfer_receiver_test_connection);
         mToggleMenu = menu.findItem(R.id.actions_transfer_toggle);
         mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
-        mShowFiles = menu.findItem(R.id.actions_transfer_receiver_show_files);
-        mAddDevice = menu.findItem(R.id.actions_transfer_sender_add_device);
+        mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
+        mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
+        mSettingsMenu = menu.findItem(R.id.actions_transfer_settings);
+
+        showMenus();
 
         return true;
     }
@@ -308,7 +313,22 @@ public class ViewTransferActivity
     @Override
     public boolean onPrepareOptionsMenu(Menu menu)
     {
-        showMenus();
+        {
+            int devicePosition = findDevice(mDeviceId);
+
+            Menu thisMenu = menu.findItem(R.id.actions_transfer_settings)
+                    .getSubMenu();
+
+            MenuItem checkedItem = null;
+
+            if ((devicePosition < 0 || (checkedItem = thisMenu.getItem(devicePosition)) == null)
+                    && thisMenu.size() > 0)
+                checkedItem = thisMenu.getItem(thisMenu.size() - 1);
+
+            if (checkedItem != null)
+                checkedItem.setChecked(true);
+        }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -335,7 +355,6 @@ public class ViewTransferActivity
                         }
                     }).show();
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
-
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 
             createSnackbar(R.string.mesg_retryReceivingNotice)
@@ -352,6 +371,16 @@ public class ViewTransferActivity
             if (assignee != null)
                 new EstablishConnectionDialog(ViewTransferActivity.this, assignee.device, null)
                         .show();
+        } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
+            mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
+                    ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
+                    : null;
+
+            TransferFileExplorerFragment fragment = (TransferFileExplorerFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.activity_transaction_content_frame);
+
+            if (fragment != null && fragment.setDeviceId(mDeviceId))
+                fragment.refreshList();
         } else
             return super.onOptionsItemSelected(item);
 
@@ -382,6 +411,22 @@ public class ViewTransferActivity
             return explorerFragment.createSnackbar(resId, objects);
 
         return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects), Snackbar.LENGTH_LONG);
+    }
+
+    public int findDevice(String device)
+    {
+        List<ShowingAssignee> assignees = new ArrayList<>(mTransactionIndex.assignees);
+
+        if (device != null && assignees.size() > 0) {
+            for (int i = 0; i < assignees.size(); i++) {
+                ShowingAssignee assignee = assignees.get(i);
+
+                if (device.equals(assignee.device.deviceId))
+                    return i;
+            }
+        }
+
+        return -1;
     }
 
     @Nullable
@@ -425,17 +470,41 @@ public class ViewTransferActivity
         boolean hasOutgoing = getIndex().outgoingCount > 0;
         boolean hasRunning = mActiveProcesses.size() > 0;
 
-        if (mToggleMenu == null || mRetryMenu == null || mShowFiles == null)
+        if (mToggleMenu == null || mRetryMenu == null || mShowFilesMenu == null)
             return;
 
         mToggleMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_receive);
 
-        // Only show when there
-        mAddDevice.setVisible(hasOutgoing);
+        mAddDeviceMenu.setVisible(hasOutgoing);
         mToggleMenu.setVisible(hasIncoming || hasRunning);
         mCnTestMenu.setVisible(hasIncoming);
         mRetryMenu.setVisible(hasIncoming);
-        mShowFiles.setVisible(hasIncoming);
+        mShowFilesMenu.setVisible(hasIncoming);
+
+        if (mTransactionIndex.assignees.size() > 0 || mDeviceId != null) {
+            Menu dynamicMenu = mSettingsMenu.setVisible(true)
+                    .getSubMenu();
+
+            dynamicMenu.clear();
+
+            int iterator = 0;
+
+            if (mTransactionIndex.assignees.size() > 0)
+                for (; iterator < mTransactionIndex.assignees.size(); iterator++) {
+                    ShowingAssignee assignee = mTransactionIndex.assignees.get(iterator);
+
+                    dynamicMenu.add(R.id.actions_abs_view_transfer_activity_settings,
+                            0, iterator, assignee.device.nickname);
+                }
+
+            dynamicMenu.add(R.id.actions_abs_view_transfer_activity_settings, 0, iterator,
+                    getString(R.string.text_default));
+
+            dynamicMenu.setGroupCheckable(R.id.actions_abs_view_transfer_activity_settings,
+                    true, true);
+        } else
+            mSettingsMenu.setVisible(false);
+
 
         setTitle(getResources().getQuantityString(R.plurals.text_files,
                 getIndex().incomingCount + getIndex().outgoingCount,
@@ -492,10 +561,10 @@ public class ViewTransferActivity
                 {
                     showMenus();
                     findViewById(R.id.activity_transaction_no_devices_warning)
-                            .setVisibility(mTransactionIndex.assigneeCount > 0 ? View.GONE : View.VISIBLE);
+                            .setVisibility(mTransactionIndex.assignees.size() > 0
+                                    ? View.GONE : View.VISIBLE);
 
-                    if (mTransactionIndex.assigneeCount == 0)
-
+                    if (mTransactionIndex.assignees.size() == 0)
                         if (mTransferObject != null) {
                             new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();
                             mTransferObject = null;
@@ -509,19 +578,29 @@ public class ViewTransferActivity
 
     private static class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
     {
+        private NetworkDevice mDevice;
+        private String mHomeName;
+
         public TransferPathResolverRecyclerAdapter(Context context)
         {
             super(context);
+            mHomeName = context.getString(R.string.text_home);
         }
 
         @Override
         public Holder.Index<String> onFirstItem()
         {
-            return new Holder.Index<>(getContext().getString(R.string.text_home), R.drawable.ic_home_white_24dp, null);
+            if (mDevice != null)
+                return new Holder.Index<>(mDevice.nickname, R.drawable.ic_device_hub_white_24dp,
+                        null);
+
+            return new Holder.Index<>(mHomeName, R.drawable.ic_home_white_24dp, null);
         }
 
-        public void goTo(String[] paths)
+        public void goTo(NetworkDevice device, String[] paths)
         {
+            mDevice = device;
+
             StringBuilder mergedPath = new StringBuilder();
             initAdapter();
 
@@ -598,7 +677,8 @@ public class ViewTransferActivity
 
             String path = getAdapter().getPath();
 
-            mPathAdapter.goTo(path == null ? null : path.split(File.separator));
+            mPathAdapter.goTo(getAdapter().getDevice(), path == null ? null
+                    : path.split(File.separator));
             mPathAdapter.notifyDataSetChanged();
 
             if (mPathAdapter.getItemCount() > 0)

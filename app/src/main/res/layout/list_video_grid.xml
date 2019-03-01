@@ -1,4 +1,4 @@
-<com.genonbeta.TrebleShot.view.SquareRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.genonbeta.TrebleShot.view.ComparativeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/layout"
     android:layout_width="match_parent"
@@ -102,4 +102,4 @@
         android:layout_height="24dp"
         android:layout_margin="2dp" />
 
-</com.genonbeta.TrebleShot.view.SquareRelativeLayout>
+</com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>

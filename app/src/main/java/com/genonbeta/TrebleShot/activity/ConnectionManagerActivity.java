@@ -370,7 +370,13 @@ public class ConnectionManagerActivity
 
             setHasOptionsMenu(false);
             setFilteringSupported(false);
+            setUseDefaultPaddingDecoration(false);
             setUseDefaultPaddingDecorationSpaceForEdges(false);
+
+            if (isScreenLarge())
+                setDefaultViewingGridSize(4, 6);
+            else
+                setDefaultViewingGridSize(3, 5);
 
             setDeviceSelectedListener(new NetworkDeviceSelectedListener()
             {
@@ -410,12 +416,6 @@ public class ConnectionManagerActivity
                 getListView().setClipToPadding(false);
                 getListView().setPadding((int) padding, 0, (int) padding, 0);
             }
-        }
-
-        @Override
-        public boolean isHorizontalOrientation()
-        {
-            return true;
         }
     }
 

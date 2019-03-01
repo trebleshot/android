@@ -59,6 +59,7 @@ public class TransferListAdapter
 
     private SQLQuery.Select mSelect;
     private String mPath;
+    private NetworkDevice mDevice;
     private TransferGroup mGroup = new TransferGroup();
     private PathChangedListener mListener;
     private NumberFormat mPercentFormat;
@@ -100,30 +101,51 @@ public class TransferListAdapter
         currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
         Map<String, NetworkDevice> networkDevices = new ArrayMap<>();
-        List<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
-                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(mGroup.groupId)), TransferGroup.Assignee.class);
 
-        for (TransferGroup.Assignee assignee : assignees)
-            try {
-                NetworkDevice device = new NetworkDevice(assignee.deviceId);
+        {
+            List<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
+                    .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                            .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+                                    String.valueOf(mGroup.groupId)), TransferGroup.Assignee.class);
 
-                AppUtils.getDatabase(getContext()).reconstruct(device);
-                networkDevices.put(device.deviceId, device);
-            } catch (Exception e) {
-            }
+            for (TransferGroup.Assignee assignee : assignees)
+                try {
+                    NetworkDevice device = new NetworkDevice(assignee.deviceId);
 
-        SQLQuery.Select sqlSelect = new SQLQuery.Select(assignees.size() < 1
+                    AppUtils.getDatabase(getContext()).reconstruct(device);
+                    networkDevices.put(device.deviceId, device);
+                } catch (Exception e) {
+                    // do nothing
+                }
+        }
+
+        SQLQuery.Select sqlSelect = new SQLQuery.Select(networkDevices.size() < 1
                 ? AccessDatabase.DIVIS_TRANSFER
                 : AccessDatabase.TABLE_TRANSFER);
+        StringBuilder stringBuilder;
 
-        if (currentPath == null)
-            sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(mGroup.groupId));
-        else
-            // Does the SQL do better job?
-            sqlSelect.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND ("
-                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
-                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)", String.valueOf(mGroup.groupId), currentPath, currentPath + File.separator + "%");
+        StringBuilder whereFormat = new StringBuilder();
+        List<String> whereValues = new ArrayList<>();
+
+        whereFormat.append(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
+        whereValues.add(String.valueOf(mGroup.groupId));
+
+        if (networkDevices.size() > 0 && mDevice != null) {
+            whereFormat.append(" AND " + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=?");
+            whereValues.add(mDevice.deviceId);
+        }
+
+        if (currentPath != null) {
+            whereFormat.append(" AND (" + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
+                    + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)");
+
+            whereValues.add(currentPath);
+            whereValues.add(currentPath + File.separator + "%");
+        }
+
+        sqlSelect.where = whereFormat.toString();
+        sqlSelect.whereArgs = new String[whereValues.size()];
+        whereValues.toArray(sqlSelect.whereArgs);
 
         List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
 
@@ -299,6 +321,32 @@ public class TransferListAdapter
     {
         return super.createLister(loadedList, groupBy)
                 .setCustomLister(this);
+    }
+
+    public NetworkDevice getDevice()
+    {
+        return mDevice;
+    }
+
+    public boolean setDeviceId(String id)
+    {
+        if (id == null) {
+            mDevice = null;
+            return true;
+        }
+
+        NetworkDevice device = new NetworkDevice(id);
+
+        try {
+            AppUtils.getDatabase(getContext()).reconstruct(device);
+            mDevice = device;
+
+            return true;
+        } catch (Exception e) {
+            // do nothing
+        }
+
+        return false;
     }
 
     public long getGroupId()

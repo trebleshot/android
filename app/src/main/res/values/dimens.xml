@@ -25,7 +25,7 @@
     <dimen name="icon_size_list_big">50dp</dimen>
     <dimen name="icon_size_list_giant">70dp</dimen>
     <dimen name="padding_borderless_button">16dp</dimen>
-    <dimen name="padding_list_content_parent_layout">15dp</dimen>
+    <dimen name="padding_list_content_parent_layout">16dp</dimen>
     <dimen name="padding_list_content_narrow_parent_layout">10dp</dimen>
     <dimen name="padding_list_content_parent_layout_orientation">8dp</dimen>
     <dimen name="padding_list_content_icon_main_margin_left">9dp</dimen>
