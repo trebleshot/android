@@ -47,11 +47,6 @@ public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareAct
             if (getInterrupter().interrupted())
                 break;
 
-            if (getAnchorListener() == null) {
-                publishStatusText(getService().getString(R.string.mesg_waiting));
-                continue;
-            }
-
             publishStatusText(getService().getString(R.string.text_transferStatusFiles,
                     position, mFileUris.size()));
 
@@ -126,17 +121,14 @@ public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareAct
             AppUtils.getDatabase(getService()).remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                     .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
                             String.valueOf(groupInstance.groupId)));
-
-            if (getAnchorListener() != null)
-                getAnchorListener().finish();
         } else {
             AppUtils.getDatabase(getService()).insert(groupInstance);
 
             ViewTransferActivity.startInstance(getService(), groupInstance.groupId);
             AddDevicesToTransferActivity.startInstance(getService(), groupInstance.groupId);
-
-            if (getAnchorListener() != null)
-                getAnchorListener().finish();
         }
+
+        if (getAnchorListener() != null)
+            getAnchorListener().finish();
     }
 }

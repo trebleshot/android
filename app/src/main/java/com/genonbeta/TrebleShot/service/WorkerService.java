@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,6 +31,8 @@ import java.util.concurrent.Executors;
 
 public class WorkerService extends Service
 {
+    public static final String TAG = WorkerService.class.getSimpleName();
+
     public static final String ACTION_KILL_SIGNAL = "com.genonbeta.intent.action.KILL_SIGNAL";
     public static final String ACTION_KILL_ALL_SIGNAL = "com.genonbeta.intent.action.KILL_ALL_SIGNAL";
     public static final String EXTRA_TASK_HASH = "extraTaskId";
@@ -47,10 +48,19 @@ public class WorkerService extends Service
 
     public static int intentHash(@NonNull Intent intent)
     {
-        if (intent.getExtras() != null)
-            return String.format("%s%s", intent, intent.getExtras().toString()).hashCode();
+        StringBuilder builder = new StringBuilder();
 
-        return intent.toString().hashCode();
+        builder.append(intent.getComponent());
+        builder.append(intent.getData());
+        builder.append(intent.getPackage());
+        builder.append(intent.getAction());
+        builder.append(intent.getFlags());
+        builder.append(intent.getType());
+
+        if (intent.getExtras() != null)
+            builder.append(intent.getExtras().toString());
+
+        return builder.toString().hashCode();
     }
 
     @Override
@@ -109,11 +119,8 @@ public class WorkerService extends Service
     {
         synchronized (getTaskList()) {
             for (RunningTask runningTask : getTaskList())
-                if (runningTask.hashCode() == hashCode) {
-                    Log.d(WorkerService.class.getSimpleName(),
-                            "this" + runningTask.hashCode() + ", that " + hashCode);
+                if (runningTask.hashCode() == hashCode)
                     return runningTask;
-                }
         }
 
         return null;
@@ -205,7 +212,12 @@ public class WorkerService extends Service
         }
     }
 
-    public abstract static class RunningTask<T> extends InterruptAwareJob
+    public interface OnAttachListener
+    {
+        void onAttachedToTask(RunningTask task);
+    }
+
+    public abstract static class RunningTask<T extends OnAttachListener> extends InterruptAwareJob
     {
         private Interrupter mInterrupter;
         private WorkerService mService;
@@ -252,8 +264,8 @@ public class WorkerService extends Service
         @Override
         public int hashCode()
         {
-            if (mActivityIntent != null)
-                return mActivityIntent.toString().hashCode();
+            if (mHash != 0)
+                return mHash;
 
             return super.hashCode();
         }
@@ -278,6 +290,8 @@ public class WorkerService extends Service
         public RunningTask<T> setAnchorListener(T listener)
         {
             mAnchorListener = listener;
+            listener.onAttachedToTask(this);
+
             return this;
         }
 

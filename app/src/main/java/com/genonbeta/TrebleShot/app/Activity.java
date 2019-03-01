@@ -309,6 +309,12 @@ public abstract class Activity extends AppCompatActivity
                         .findTaskByHash(WorkerService.intentHash(getIntent()));
 
                 onPreviousRunningTask(task);
+
+                if (task != null)
+                    synchronized (mAttachedTasks) {
+                        attachRunningTask(task);
+                    }
+
                 unbindService(this);
             }
 

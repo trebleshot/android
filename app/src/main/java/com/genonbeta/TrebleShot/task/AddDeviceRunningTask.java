@@ -49,9 +49,6 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
     @Override
     public void onRun()
     {
-        if (getAnchorListener() != null)
-            getAnchorListener().updateText(this, getStatusText());
-
         final WorkerService.RunningTask thisTask = this;
         final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
         {
@@ -123,6 +120,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             JSONArray filesArray = new JSONArray();
 
                             for (TransferObject transferObject : existingRegistry) {
+                                publishStatusText(transferObject.friendlyName);
+
                                 TransferObject copyObject = new TransferObject(AccessDatabase.convertValues(transferObject.getValues()));
 
                                 if (getInterrupter().interrupted())
@@ -185,9 +184,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             JSONObject clientResponse = new JSONObject(response.response);
 
                             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                                if (getAnchorListener() != null)
-                                    getAnchorListener().updateText(thisTask, getService()
-                                            .getString(R.string.mesg_organizingFiles));
+                                publishStatusText(getService().getString(R.string.mesg_organizingFiles));
 
                                 if (doPublish)
                                     AppUtils.getDatabase(getService()).publish(assignee);

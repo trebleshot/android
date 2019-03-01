@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShareActivity extends Activity
-        implements SnackbarSupport, Activity.OnPreloadArgumentWatcher
+        implements SnackbarSupport, Activity.OnPreloadArgumentWatcher, WorkerService.OnAttachListener
 {
     public static final String TAG = "ShareActivity";
 
@@ -154,6 +154,12 @@ public class ShareActivity extends Activity
             Toast.makeText(this, R.string.mesg_formatNotSupported, Toast.LENGTH_SHORT).show();
             finish();
         }
+    }
+
+    @Override
+    public void onAttachedToTask(WorkerService.RunningTask task)
+    {
+
     }
 
     @Override

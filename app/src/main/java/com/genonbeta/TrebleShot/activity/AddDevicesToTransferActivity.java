@@ -33,7 +33,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class AddDevicesToTransferActivity extends Activity
-        implements SnackbarSupport
+        implements SnackbarSupport, WorkerService.OnAttachListener
 {
     public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
@@ -205,6 +205,12 @@ public class AddDevicesToTransferActivity extends Activity
         unregisterReceiver(mReceiver);
     }
 
+    @Override
+    public void onAttachedToTask(WorkerService.RunningTask task)
+    {
+        takeOnProcessMode();
+    }
+
     public boolean checkGroupIntegrity()
     {
         try {
@@ -236,16 +242,14 @@ public class AddDevicesToTransferActivity extends Activity
 
     public void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
     {
-        takeOnProcessMode();
+        AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
 
-        mTask = new AddDeviceRunningTask(mGroup, device, connection);
-
-        mTask.setTitle(getString(R.string.mesg_communicating))
+        task.setTitle(getString(R.string.mesg_communicating))
                 .setAnchorListener(this)
                 .setContentIntent(this, getIntent())
                 .run(this);
 
-        attachRunningTask(mTask);
+        attachRunningTask(task);
     }
 
     @Override
@@ -310,22 +314,6 @@ public class AddDevicesToTransferActivity extends Activity
 
         mProgressBar.setProgress(current);
         mProgressBar.setMax(total);
-    }
-
-    public void updateText(WorkerService.RunningTask runningTask, final String text)
-    {
-        if (isFinishing())
-            return;
-
-        //runningTask.publishStatusText(text);
-        //runOnUiThread(new Runnable()
-        /*{
-            @Override
-            public void run ()
-            {
-                mTextMain.setText(text);
-            }
-        });*/
     }
 }
 
