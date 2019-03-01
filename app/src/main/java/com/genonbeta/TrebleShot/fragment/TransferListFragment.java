@@ -417,7 +417,8 @@ public class TransferListFragment
         refreshList();
     }
 
-    public boolean setDeviceId(String id) {
+    public boolean setDeviceId(String id)
+    {
         return getAdapter().setDeviceId(id);
     }
 

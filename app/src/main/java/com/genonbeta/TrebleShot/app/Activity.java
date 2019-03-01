@@ -48,7 +48,7 @@ import java.util.List;
 public abstract class Activity extends AppCompatActivity
 {
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
-
+    private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
     private AlertDialog mOngoingRequest;
     private boolean mDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;
@@ -56,7 +56,6 @@ public abstract class Activity extends AppCompatActivity
     private boolean mSkipPermissionRequest = false;
     private boolean mWelcomePageDisallowed = false;
     private boolean mExitAppRequested = false;
-    private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
@@ -168,7 +167,8 @@ public abstract class Activity extends AppCompatActivity
         }
     }
 
-    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task) {
+    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
+    {
 
     }
 
@@ -289,13 +289,15 @@ public abstract class Activity extends AppCompatActivity
 
     }
 
-    public void attachRunningTask(WorkerService.RunningTask task) {
+    public void attachRunningTask(WorkerService.RunningTask task)
+    {
         synchronized (mAttachedTasks) {
             mAttachedTasks.add(task);
         }
     }
 
-    public boolean checkForTasks() {
+    public boolean checkForTasks()
+    {
         ServiceConnection serviceConnection = new ServiceConnection()
         {
             @Override

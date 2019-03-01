@@ -7,9 +7,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -18,9 +16,7 @@ import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.android.framework.widget.RecyclerViewAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,8 +40,8 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     {
         return new EditableViewHolder(getInflater().inflate(
                 isHorizontalOrientation() || isGridLayoutRequested()
-                ? R.layout.list_assignee_grid
-                : R.layout.list_assignee, parent, false));
+                        ? R.layout.list_assignee_grid
+                        : R.layout.list_assignee, parent, false));
     }
 
     @Override

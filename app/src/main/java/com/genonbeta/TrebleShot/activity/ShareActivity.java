@@ -49,6 +49,43 @@ public class ShareActivity extends Activity
     private List<CharSequence> mFileNames;
     private OrganizeShareRunningTask mTask;
 
+    public static void createFolderStructure(DocumentFile file, String folderName,
+                                             List<SelectableStream> pendingObjects,
+                                             OrganizeShareRunningTask task)
+    {
+        DocumentFile[] files = file.listFiles();
+
+        if (files != null) {
+
+            if (task.getAnchorListener() != null)
+                task.getAnchorListener().getProgressBar()
+                        .setMax(task.getAnchorListener().getProgressBar().getMax() + files.length);
+
+            for (DocumentFile thisFile : files) {
+                if (task.getAnchorListener() != null)
+                    task.getAnchorListener().getProgressBar()
+                            .setProgress(task.getAnchorListener().getProgressBar().getProgress() + 1);
+
+                if (task.getInterrupter().interrupted())
+                    break;
+
+                if (thisFile.isDirectory()) {
+                    createFolderStructure(thisFile, (
+                                    folderName != null ? folderName + File.separator : null)
+                                    + thisFile.getName(),
+                            pendingObjects, task);
+                    continue;
+                }
+
+                try {
+                    pendingObjects.add(new SelectableStream(thisFile, folderName));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -136,43 +173,6 @@ public class ShareActivity extends Activity
                     .run(this);
 
             attachRunningTask(mTask);
-        }
-    }
-
-    public static void createFolderStructure(DocumentFile file, String folderName,
-                                             List<SelectableStream> pendingObjects,
-                                             OrganizeShareRunningTask task)
-    {
-        DocumentFile[] files = file.listFiles();
-
-        if (files != null) {
-
-            if (task.getAnchorListener() != null)
-                task.getAnchorListener().getProgressBar()
-                        .setMax(task.getAnchorListener().getProgressBar().getMax() + files.length);
-
-            for (DocumentFile thisFile : files) {
-                if (task.getAnchorListener() != null)
-                    task.getAnchorListener().getProgressBar()
-                            .setProgress(task.getAnchorListener().getProgressBar().getProgress() + 1);
-
-                if (task.getInterrupter().interrupted())
-                    break;
-
-                if (thisFile.isDirectory()) {
-                    createFolderStructure(thisFile, (
-                                    folderName != null ? folderName + File.separator : null)
-                                    + thisFile.getName(),
-                            pendingObjects, task);
-                    continue;
-                }
-
-                try {
-                    pendingObjects.add(new SelectableStream(thisFile, folderName));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 

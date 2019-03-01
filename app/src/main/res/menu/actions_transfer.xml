@@ -35,8 +35,9 @@
 
     <item
         android:id="@+id/actions_transfer_settings"
+        android:orderInCategory="110"
         android:title="@string/butn_settings"
-        android:visible="true">
+        android:visible="false">
         <menu />
     </item>
 </menu>

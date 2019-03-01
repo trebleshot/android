@@ -45,6 +45,14 @@ public class WorkerService extends Service
     private NotificationUtils mNotificationUtils;
     private DynamicNotification mNotification;
 
+    public static int intentHash(@NonNull Intent intent)
+    {
+        if (intent.getExtras() != null)
+            return String.format("%s%s", intent, intent.getExtras().toString()).hashCode();
+
+        return intent.toString().hashCode();
+    }
+
     @Override
     public void onCreate()
     {
@@ -230,6 +238,12 @@ public class WorkerService extends Service
             return mInterrupter;
         }
 
+        public RunningTask<T> setInterrupter(Interrupter interrupter)
+        {
+            mInterrupter = interrupter;
+            return this;
+        }
+
         public void detachAnchor()
         {
             mAnchorListener = null;
@@ -261,27 +275,27 @@ public class WorkerService extends Service
             return mAnchorListener;
         }
 
+        public RunningTask<T> setAnchorListener(T listener)
+        {
+            mAnchorListener = listener;
+            return this;
+        }
+
         @Nullable
         public PendingIntent getContentIntent()
         {
             return mActivityIntent;
         }
 
-        public RunningTask<T> setInterrupter(Interrupter interrupter)
+        public RunningTask<T> setContentIntent(PendingIntent intent)
         {
-            mInterrupter = interrupter;
+            mActivityIntent = intent;
             return this;
         }
 
         protected WorkerService getService()
         {
             return mService;
-        }
-
-        public RunningTask<T> setAnchorListener(T listener)
-        {
-            mAnchorListener = listener;
-            return this;
         }
 
         private void setService(@Nullable WorkerService service)
@@ -294,9 +308,21 @@ public class WorkerService extends Service
             return mIconRes;
         }
 
+        public RunningTask<T> setIconRes(int iconRes)
+        {
+            mIconRes = iconRes;
+            return this;
+        }
+
         public String getTitle()
         {
             return mTitle;
+        }
+
+        public RunningTask<T> setTitle(String title)
+        {
+            mTitle = title;
+            return this;
         }
 
         public String getStatusText()
@@ -317,28 +343,10 @@ public class WorkerService extends Service
             return false;
         }
 
-        public RunningTask<T> setContentIntent(PendingIntent intent)
-        {
-            mActivityIntent = intent;
-            return this;
-        }
-
         public RunningTask<T> setContentIntent(Context context, Intent intent)
         {
             mHash = intentHash(intent);
             setContentIntent(PendingIntent.getActivity(context, 0, intent, 0));
-            return this;
-        }
-
-        public RunningTask<T> setIconRes(int iconRes)
-        {
-            mIconRes = iconRes;
-            return this;
-        }
-
-        public RunningTask<T> setTitle(String title)
-        {
-            mTitle = title;
             return this;
         }
 
@@ -379,13 +387,5 @@ public class WorkerService extends Service
         {
             return WorkerService.this;
         }
-    }
-
-    public static int intentHash(@NonNull Intent intent)
-    {
-        if (intent.getExtras() != null)
-            return String.format("%s%s", intent, intent.getExtras().toString()).hashCode();
-
-        return intent.toString().hashCode();
     }
 }

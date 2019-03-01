@@ -481,7 +481,7 @@ public class ViewTransferActivity
         mRetryMenu.setVisible(hasIncoming);
         mShowFilesMenu.setVisible(hasIncoming);
 
-        if (mTransactionIndex.assignees.size() > 0 || mDeviceId != null) {
+        if (hasOutgoing && (mTransactionIndex.assignees.size() > 0 || mDeviceId != null)) {
             Menu dynamicMenu = mSettingsMenu.setVisible(true)
                     .getSubMenu();
 

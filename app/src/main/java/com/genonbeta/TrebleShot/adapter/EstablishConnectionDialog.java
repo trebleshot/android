@@ -22,7 +22,6 @@ import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.util.MathUtils;
 
 import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

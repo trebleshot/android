@@ -23,7 +23,8 @@ public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareAct
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
 
-    public OrganizeShareRunningTask(List<Uri> fileUris, List<CharSequence> fileNames) {
+    public OrganizeShareRunningTask(List<Uri> fileUris, List<CharSequence> fileNames)
+    {
         mFileUris = fileUris;
         mFileNames = fileNames;
     }

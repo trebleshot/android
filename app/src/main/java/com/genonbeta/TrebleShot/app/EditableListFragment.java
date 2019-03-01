@@ -161,7 +161,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return recyclerView;
     }
 
-    protected RecyclerView onListView(ViewGroup container) {
+    protected RecyclerView onListView(ViewGroup container)
+    {
         RecyclerView view = (RecyclerView) getLayoutInflater()
                 .inflate(R.layout.abstract_recyclerview, null, false);
 
