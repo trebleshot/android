@@ -444,7 +444,8 @@ public class CommunicationService extends Service
     {
         return mCommunicationServer.getConnections().size() > 0
                 || getOngoingIndexList().size() > 0
-                || getActiveProcessList().size() > 0;
+                || getActiveProcessList().size() > 0
+                || mHotspotUtils.isStarted();
     }
 
     public ProcessHolder findProcessById(long groupId, String deviceId)

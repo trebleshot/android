@@ -360,7 +360,7 @@ public class ConnectionManagerActivity
         void setDeviceSelectedListener(NetworkDeviceSelectedListener listener);
     }
 
-    public static class CustomHorizontalNetworkDeviceListFragment extends NetworkDeviceListFragment
+    public static class CustomNetworkDeviceListFragment extends NetworkDeviceListFragment
     {
         @Override
         public void onCreate(Bundle savedInstanceState)
@@ -373,9 +373,11 @@ public class ConnectionManagerActivity
             setUseDefaultPaddingDecorationSpaceForEdges(false);
 
             if (isScreenLarge())
-                setDefaultViewingGridSize(4, 6);
+                setDefaultViewingGridSize(4, 5);
+            else if (isScreenNormal())
+                setDefaultViewingGridSize(3, 4);
             else
-                setDefaultViewingGridSize(3, 5);
+                setDefaultViewingGridSize(2, 3);
 
             setDeviceSelectedListener(new NetworkDeviceSelectedListener()
             {
