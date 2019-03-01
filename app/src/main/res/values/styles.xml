@@ -61,7 +61,7 @@
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
-        <!-- <item name="android:background">@android:color/transparent</item>-->
+        <item name="android:background">@android:color/transparent</item>
     </style>
 
     <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
