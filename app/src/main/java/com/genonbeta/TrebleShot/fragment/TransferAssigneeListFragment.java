@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,8 +66,10 @@ public class TransferAssigneeListFragment
 
         if (isScreenLarge())
             setDefaultViewingGridSize(4, 6);
-        else
+        else if (isScreenNormal())
             setDefaultViewingGridSize(3, 5);
+        else
+            setDefaultViewingGridSize(2, 4);
 
         //setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
     }

@@ -122,17 +122,17 @@ public class TransferListAdapter
         SQLQuery.Select sqlSelect = new SQLQuery.Select(networkDevices.size() < 1
                 ? AccessDatabase.DIVIS_TRANSFER
                 : AccessDatabase.TABLE_TRANSFER);
-        StringBuilder stringBuilder;
 
         StringBuilder whereFormat = new StringBuilder();
         List<String> whereValues = new ArrayList<>();
+        NetworkDevice filterDevice = mDevice;
 
         whereFormat.append(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
         whereValues.add(String.valueOf(mGroup.groupId));
 
-        if (networkDevices.size() > 0 && mDevice != null) {
+        if (networkDevices.size() > 0 && filterDevice != null) {
             whereFormat.append(" AND " + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=?");
-            whereValues.add(mDevice.deviceId);
+            whereValues.add(filterDevice.deviceId);
         }
 
         if (currentPath != null) {
@@ -253,7 +253,7 @@ public class TransferListAdapter
         }
 
         DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.groupId, currentPath == null
-                ? getContext().getString(R.string.text_home)
+                ? (filterDevice == null ? getContext().getString(R.string.text_home) : filterDevice.nickname)
                 : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
         lister.offerObliged(this, statusItem);

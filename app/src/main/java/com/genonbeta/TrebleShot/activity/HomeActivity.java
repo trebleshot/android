@@ -237,8 +237,6 @@ public class HomeActivity
     private void highlightUpdater(String availableVersion)
     {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_about);
-
-        item.setChecked(true);
         item.setTitle(R.string.text_newVersionAvailable);
     }
 
