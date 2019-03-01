@@ -67,6 +67,8 @@ public class TextUtils
     public static String getTransactionFlagString(Context context, TransferObject transferObject, NumberFormat percentFormat)
     {
         switch (transferObject.flag) {
+            case DONE:
+                return percentFormat.format(1.0);
             case IN_PROGRESS:
                 return percentFormat.format(transferObject.fileSize == 0 || transferObject.flag.getBytesValue() == 0
                         ? 0

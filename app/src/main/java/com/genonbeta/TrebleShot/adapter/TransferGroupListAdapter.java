@@ -161,8 +161,8 @@ public class TransferGroupListAdapter
                                 : R.drawable.ic_error_outline_white_24dp);
                     else
                         image.setImageResource(object.index.outgoingCount > 0
-                                ? R.drawable.ic_file_upload_white_24dp
-                                : R.drawable.ic_file_download_white_24dp);
+                                ? R.drawable.ic_arrow_up_white_24dp
+                                : R.drawable.ic_arrow_down_white_24dp);
                 }
 
                 text1.setText(object.assignees);

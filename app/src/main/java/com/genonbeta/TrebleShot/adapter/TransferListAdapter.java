@@ -441,6 +441,7 @@ public class TransferListAdapter
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
                 ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
+                ImageView sIcon = parentView.findViewById(R.id.statusIcon);
                 TextView titleText = parentView.findViewById(R.id.text);
                 TextView firstText = parentView.findViewById(R.id.text2);
                 TextView secondText = parentView.findViewById(R.id.text3);
@@ -459,6 +460,9 @@ public class TransferListAdapter
                 firstText.setText(object.getFirstText(this));
                 secondText.setText(object.getSecondText(this));
                 thirdText.setText(object.getThirdText(this));
+
+                object.handleStatusIcon(sIcon);
+                ImageViewCompat.setImageTintList(sIcon, ColorStateList.valueOf(appliedColor));
                 progressBar.setMax(100);
                 progressBar.setProgress(percentage <= 0 ? 1 : percentage);
 
@@ -539,6 +543,8 @@ public class TransferListAdapter
         abstract public double getPercent();
 
         abstract public boolean loadThumbnail(ImageView imageView);
+
+        abstract public void handleStatusIcon(ImageView imageView);
 
         abstract public String getFirstText(TransferListAdapter adapter);
 
@@ -655,17 +661,25 @@ public class TransferListAdapter
         }
 
         @Override
+        public void handleStatusIcon(ImageView imageView)
+        {
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setImageResource(Type.INCOMING.equals(type)
+                    ? R.drawable.ic_arrow_down_white_24dp
+                    : R.drawable.ic_arrow_up_white_24dp);
+        }
+
+        @Override
         public String getFirstText(TransferListAdapter adapter)
         {
-            return String.format("%s %s",
-                    Type.INCOMING.equals(type) ? "↓" : "↑",
-                    mDeviceName == null ? adapter.getContext().getString(R.string.text_unknown) : mDeviceName);
+            return FileUtils.sizeExpression(fileSize, false);
         }
 
         @Override
         public String getSecondText(TransferListAdapter adapter)
         {
-            return FileUtils.sizeExpression(fileSize, false);
+            return mDeviceName == null ? adapter.getContext().getString(R.string.text_unknown)
+                    : mDeviceName;
         }
 
         @Override
@@ -745,6 +759,12 @@ public class TransferListAdapter
             return bytesReceived <= 0 || bytesTotal <= 0
                     ? 0
                     : Long.valueOf(bytesReceived).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
+        }
+
+        @Override
+        public void handleStatusIcon(ImageView imageView)
+        {
+            imageView.setVisibility(View.GONE);
         }
 
         @Override
@@ -885,6 +905,12 @@ public class TransferListAdapter
             return bytesTotal <= 0 || bytesFree <= 0
                     ? 0
                     : Long.valueOf(bytesTotal - bytesFree).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
+        }
+
+        @Override
+        public void handleStatusIcon(ImageView imageView)
+        {
+            imageView.setVisibility(View.GONE);
         }
 
         @Override

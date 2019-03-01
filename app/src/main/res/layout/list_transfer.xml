@@ -82,6 +82,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
+            <ImageView
+                android:id="@+id/statusIcon"
+                android:layout_width="@dimen/font_size_secondary"
+                android:layout_height="@dimen/font_size_secondary"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="5dp"
+                android:layout_marginRight="5dp" />
+
             <TextView
                 android:id="@+id/text4"
                 style="@style/TextAppearance.Secondary.SingleLine"
