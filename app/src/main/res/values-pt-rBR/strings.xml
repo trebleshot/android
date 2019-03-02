@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_navigationDrawerOpen">Abrir painel lateral</string>n
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_navigationDrawerOpen">Abrir painel lateral</string>n
     <string name="text_navigationDrawerClose">Fechar painel lateral</string>
     <string name="text_preferences">Preferências</string>
     <string name="mesg_connectionFailure">Falha na conexão</string>
@@ -14,10 +15,10 @@
     <string name="text_sending">Enviando</string>
     <string name="butn_cancelSending">Cancelar envio</string>
     <string name="text_receiving">Recebendo</string>
-    <string name="butn_cancelReceiving">Cancelar recebimento</string>
+    <string name="butn_cancelReceiving">Cancelar recepção</string>
     <string name="text_fileReceived">O arquivo foi recebido</string>
     <string name="mesg_fileReceived">%s foram recebidos</string>
-    <string name="butn_scan">Escanear</string>
+    <string name="butn_scan">Examinar</string>
     <string name="text_listEmpty">Sem itens</string>
     <string name="text_developerMode">Modo desenvolvedor</string>
     <string name="text_developerModeSummary">Desativa a configuração do usuário</string>
@@ -25,13 +26,13 @@
     <string name="text_deviceNameSummary">Este nome será exibido em outros dispositivos</string>
     <string name="text_deviceNameTitle">Forneça um nome para o dispositivo</string>
     <string name="mesg_formatNotSupported">Formato não suportado</string>
-    <string name="mesg_fileSendError">Não foi possível enviar o arquivo %s.</string>
+    <string name="mesg_fileSendError">Não foi possível enviar o arquivo. %s</string>
     <string name="mesg_fileReceiveError">Não foi possível receber %s.</string>
     <string name="text_multipleFileReceiveCompleted">Arquivos recebidos</string>
     <string name="text_deviceList">Dispositivos</string>
     <string name="text_fileOpenAppChoose">Abrir com</string>
     <string name="text_fileShareAppChoose">Escolha um aplicativo para compartilhar</string>
-    <string name="ques_resetToDefault">Resetar para o padrão\?</string>
+    <string name="ques_resetToDefault">Restaurar aos valores padrão\?</string>
     <string name="text_receivedFiles">Arquivos recebidos</string>
     <string name="butn_edit">Editar</string>
     <string name="butn_share">Compartilhar</string>
@@ -118,17 +119,17 @@
     <string name="ques_removeDevice">Remover este dispositivo\?</string>
     <string name="text_removeDeviceNotice">Quando você remove um dispositivo, todas as transferências dele também são removidas</string>
     <string name="text_removePendingTransferSummary">Isto irá remover %s da fila</string>
-    <string name="ques_removeAll">Remover todos\?</string>
+    <string name="ques_removeAll">Remover tudo\?</string>
     <string name="butn_telegram_channel">Canal do Telegram</string>
-<string name="text_removeCertainPendingTransfersSummary">Isso irá remover todas as transferências pendentes desta lista</string>
+    <string name="text_removeCertainPendingTransfersSummary">Isso irá remover todas as transferências pendentes desta lista</string>
     <string name="text_availableNetworks">Escolha a rede - %s</string>
     <string name="text_noNetworkAvailable">Nenhuma rede disponível</string>
     <string name="text_savedConnections">Conexões salvas</string>
     <string name="text_newVersionAvailable">Nova versão disponível!</string>
     <string name="butn_goUp">Ir para cima</string>
     <string name="text_folder">Pasta</string>
-    <string name="mesg_organizingFiles">Organização dos seus arquivos</string>
-    <string name="mesg_communicating">Comunicação</string>
+    <string name="mesg_organizingFiles">Organizando seus arquivos</string>
+    <string name="mesg_communicating">Comunicando</string>
     <string name="text_communicationService">Serviço de comunicação</string>
     <string name="text_chooserTargetService">Provedor de escolha do dispositivo</string>
     <string name="text_transactionViewer">Exibir transação</string>
@@ -163,4 +164,10 @@
     <string name="butn_createFolder">Criar pasta</string>
     <string name="text_chooseFolder">Escolha a pasta</string>
     <string name="text_chooseFile">Escolha o arquivo</string>
-    </resources>
+    <string name="butn_resume">Continuar</string>
+    <string name="mesg_pathSameError">Você não pode escolher a pasta anterior</string>
+    <string name="ques_checkOldFiles">Mover arquivos\?</string>
+    <string name="butn_connect">Conectar</string>
+    <string name="butn_disconnect">Desconectar</string>
+    <string name="butn_skip">Pular</string>
+</resources>
