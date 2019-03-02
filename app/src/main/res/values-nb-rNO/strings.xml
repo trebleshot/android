@@ -315,7 +315,7 @@
     <string name="butn_exit">Avslutt</string>
     <string name="butn_queueCounted">Kø (%d)</string>
     <string name="text_previewThenProceedNotice">Sjekk utvalgene dine ved å trykke på \"Kø\"-knappen for å fortsette</string>
-    <string name="mesg_updateDownloadComplete">Oppdatering lastet ned og lagret i mottatte filer</string>
+    <string name="mesg_updateDownloadComplete">Oppdatering mottatt og lagret i mottatte filer</string>
     <string name="text_listEmptyFiles">Ingen filer her</string>
     <string name="text_listEmptyImage">Ingen bilder her</string>
     <string name="text_listEmptyApp">Ingen programmer her</string>
@@ -461,4 +461,7 @@
     <string name="butn_connectionTest">Tilkoblingstest</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Tilbakekall PIN</string>
+    <string name="const_text_useAppFonts">Bruk anbefalt skrift</string>
+    <string name="const_text_useAppFontsSummary">Bruk medfølgende tilpasset skrift</string>
+    <string name="mesg_waiting">Venter</string>
 </resources>
