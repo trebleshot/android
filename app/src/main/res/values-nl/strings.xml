@@ -353,7 +353,7 @@
     <string name="text_qrAllowTrustZoneSummary">TrustZone toestaan voor QR-codeverbindingen</string>
     <string name="text_translateTrebleshot">Help mee met de vertaling</string>
     <string name="text_contributors">Mogelijk gemaakt door</string>
-<string name="butn_gridSize">Rastergrootte</string>
+    <string name="butn_gridSize">Rastergrootte</string>
     <string name="butn_singleRow">Enkele rij</string>
     <string name="butn_groupBy">Groeperen op</string>
     <string name="text_photo">Foto</string>
@@ -362,7 +362,7 @@
     <string name="text_groupByAlbum">Album</string>
     <string name="text_groupByArtist">Artiest</string>
     <string name="text_groupByFolder">Map</string>
-<string name="text_home">Persoonlijk</string>
+    <string name="text_home">Persoonlijk</string>
     <string name="text_default">Standaard</string>
     <string name="text_files">Bestanden</string>
     <string name="mesg_noReceiverOrSender">Je moet eerst apparaten toevoegen</string>
@@ -379,34 +379,34 @@
     <string name="mesg_errorNotSameNetwork">De apparaten bevinden zich niet op hetzelfde netwerk</string>
     <string name="text_cameraPermissionRequired">Cameramachtiging vereist</string>
     <string name="text_addDevicesToTransfer">Apparaten toevoegen aan overdracht</string>
-<string name="text_file">Bestand</string>
-<string name="text_noDeviceForTransfer">Geen apparaat toegevoegd voor deze overdracht</string>
-<string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
-<string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
+    <string name="text_file">Bestand</string>
+    <string name="text_noDeviceForTransfer">Geen apparaat toegevoegd voor deze overdracht</string>
+    <string name="text_thirdPartyLibraries">Bibliotheken van derde partijen</string>
+    <string name="text_killServiceAfterLeavingSummary">Verbreekt de communicatie als er geen lopende taak is</string>
     <string name="text_killServiceAfterLeaving">Dienst stoppen als app wordt afgesloten</string>
-<string name="butn_donate">Steun de ontwikkeling</string>
-<string name="text_emptySymbol">-</string>
+    <string name="butn_donate">Steun de ontwikkeling</string>
+    <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d van %2d</string>
     <string name="text_donate">Steun de ontwikkeling</string>
     <string name="mesg_donationSuccessful">Bedankt!</string>
     <string name="msg">Doneren</string>
-<string name="butn_open">Openen</string>
-<string name="butn_pause">Pauzeren</string>
+    <string name="butn_open">Openen</string>
+    <string name="butn_pause">Pauzeren</string>
     <string name="butn_retry">Opnieuw</string>
     <string name="mesg_noPendingTransferObjectExists">Geen taken meer in de wachtrij. Gebruik de optie \'Opnieuw\' om onderbroken bestanden te hervatten.</string>
-    <string name="mesg_notSavingToChosenLocation">De voorkeursmap is niet toegankelijk; bestanden worden opgeslagen in de standaardmap. 
+    <string name="mesg_notSavingToChosenLocation">De voorkeursmap is ontoegankelijk; bestanden worden opgeslagen in de standaardmap. 
 \n 
 \n %s</string>
     <string name="butn_changelog">Wijzigingslog</string>
     <string name="text_changelog">Wijzigingslog</string>
     <string name="mesg_versionUpdatedChangelog">Je hebt TrebleShot bijgewerkt. Wil je het wijzigingslog bekijken\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Je kunt het wijzigingslog altijd terugvinden in de sectie \'Over\'</string>
-<string name="mesg_noInternetConnection">Internetverbinding vereist</string>
-<string name="text_applyDarkTheme">Donker thema</string>
+    <string name="mesg_noInternetConnection">Internetverbinding vereist</string>
+    <string name="text_applyDarkTheme">Donker thema</string>
     <string name="text_applyDarkThemeSummary">Donker thema gebruiken</string>
     <string name="butn_allow">Toestaan</string>
-<string name="butn_telegram_channel">Telegram-kanaal</string>
-<string name="text_listEmptyTransfer">Alle overdrachten verschijnen hier</string>
+    <string name="butn_telegram_channel">Telegram-kanaal</string>
+    <string name="text_listEmptyTransfer">Alle overdrachten verschijnen hier</string>
     <string name="text_transfers">Overdrachten</string>
     <string name="butn_connectionDetails">Verbindingsgegevens</string>
     <string name="butn_useKnownDevice">Bekende apparaten gebruiken</string>
@@ -464,4 +464,7 @@
     <string name="butn_connectionTest">Verbindingstest</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Pincode intrekken</string>
+    <string name="const_text_useAppFonts">Aanbevolen lettertype toepassen</string>
+    <string name="const_text_useAppFontsSummary">Meegeleverd aangepast lettertype gebruiken</string>
+    <string name="mesg_waiting">Bezig met wachten...</string>
 </resources>
