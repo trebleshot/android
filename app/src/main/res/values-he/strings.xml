@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">פתיחת מגירת הניווט</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">פתיחת מגירת הניווט</string>n
     <string name="text_navigationDrawerClose">סגירת מגירת הניווט</string>
     <string name="text_preferences">העדפות</string>
     <string name="mesg_connectionFailure">החיבור נכשל</string>
@@ -364,19 +365,19 @@
     <string name="butn_pause">השהיה</string>
     <string name="butn_retry">ניסיון חוזר</string>
     <string name="mesg_noPendingTransferObjectExists">לא נותרו העברות ממתינות. כדי להמשיך קבצים שנקטעו, יש להשתמש באפשרות ‚לנסות לקבל שוב’.</string>
-    <string name="mesg_notSavingToChosenLocation">התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל.
-\n 
-\n %s</string>
+    <string name="mesg_notSavingToChosenLocation">"התיקייה המבוקשת אינה נגישה. הקבצים יישמרו לתיקיית בררת המחדל. 
+\n  
+\n%s"</string>
     <string name="butn_changelog">יומן שינויים</string>
     <string name="text_changelog">יומן שינויים</string>
     <string name="mesg_versionUpdatedChangelog">עדכנת את TrebleShot, מעניין אותך לראות מה חדש\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">תמיד ניתן למצוא את ‚יומן השינויים’ תחת הסעיף ‚על אודות’</string>
-	<string name="mesg_noInternetConnection">פעולה זו דורשת חיבור לאינטרנט</string>
+    <string name="mesg_noInternetConnection">פעולה זו דורשת חיבור לאינטרנט</string>
     <string name="text_applyDarkTheme">מצב כהה</string>
     <string name="text_applyDarkThemeSummary">שימוש בערכת עיצוב כהה</string>
     <string name="butn_allow">לאפשר</string>
     <string name="butn_telegram_channel">ערוץ טלגרם</string>
-<string name="text_listEmptyTransfer">כל ההעברות מופיעות כאן</string>
+    <string name="text_listEmptyTransfer">כל ההעברות מופיעות כאן</string>
     <string name="text_transfers">העברות</string>
     <string name="butn_connectionDetails">פרטי חיבורים</string>
     <string name="butn_useKnownDevice">להשתמש בהתקנים ידועים</string>
@@ -434,4 +435,7 @@
     <string name="butn_connectionTest">בדיקת חיבור</string>
     <string name="text_textMillisecond">%d מ״ש</string>
     <string name="butn_revokePin">שלילת קוד</string>
+    <string name="const_text_useAppFonts">החלת הגופן המומלץ</string>
+    <string name="const_text_useAppFontsSummary">החלת הגופן המותאם שסופק</string>
+    <string name="mesg_waiting">בהמתנה</string>
 </resources>
