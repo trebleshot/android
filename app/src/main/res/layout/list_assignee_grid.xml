@@ -17,8 +17,8 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:background="?rectSelector">
+            android:background="?rectSelector"
+            android:orientation="vertical">
 
             <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
                 android:layout_width="match_parent"
@@ -27,12 +27,20 @@
                 app:baseOnSmallerLength="true"
                 app:tallerLengthExtra="@dimen/padding_list_content_parent_layout_orientation_reverse">
 
-                <ImageView
-                    android:id="@+id/image"
+                <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_centerInParent="true"
                     android:padding="@dimen/padding_list_content_parent_layout"
-                    android:contentDescription="@string/text_image" />
+                    app:baseOnSmallerLength="true">
+
+                    <ImageView
+                        android:id="@+id/image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:contentDescription="@string/text_image" />
+
+                </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
 
                 <ImageView
                     android:id="@+id/menu"
