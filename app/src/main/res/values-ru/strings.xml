@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_appName">TrebleShot</string>
     <string name="text_preferences">Настройки</string>
@@ -8,7 +8,7 @@
     <string name="text_developerMode">Режим разработчика</string>
     <string name="text_deviceName">Имя устройства</string>
     <string name="text_deviceNameTitle">Введите имя устройства</string>
-    <string name="text_deviceList">Список устройств</string>
+    <string name="text_deviceList">Устройства</string>
     <string name="butn_share">Поделиться</string>
     <string name="butn_delete">Удалить</string>
     <string name="butn_cancel">Отмена</string>
@@ -36,4 +36,40 @@
     <string name="text_createFolder">Создать папку</string>
     <string name="mesg_fileAlreadyExists">Файл уже существует</string>
     <string name="butn_settings">Настройки</string>
+    <string name="mesg_connectionFailure">Соединение не удалось</string>
+    <string name="mesg_noNetwork">Нет Wi-Fi соединения для поиска ближайших устройств</string>
+    <string name="mesg_scanningDevices">Поиск устройств поблизости</string>
+    <string name="ques_receiveFile">Получить файл\?</string>
+    <string name="butn_stop">Остановить</string>
+    <string name="text_sending">Отправка</string>
+    <string name="butn_cancelSending">Отменить отправку</string>
+    <string name="text_receiving">Получение</string>
+    <string name="butn_cancelReceiving">Отменить получение</string>
+    <string name="mesg_fileReceived">%s было получено</string>
+    <string name="butn_scan">Сканирование</string>
+    <string name="text_listEmpty">Пусто</string>
+    <string name="text_developerModeSummary">Отключить настройку пользователя</string>
+    <string name="text_deviceNameSummary">Это имя будет отображено на других устройствах</string>
+    <string name="mesg_formatNotSupported">Неподдерживаемый формат</string>
+    <string name="mesg_fileSendError">Невозможно отправить файл. %s</string>
+    <string name="mesg_fileReceiveError">Невозможно получить %s.</string>
+    <string name="text_multipleFileReceiveCompleted">Файл получен</string>
+    <string name="text_fileOpenAppChoose">Открыть с помощью</string>
+    <string name="text_fileShareAppChoose">Поделиться с помощью</string>
+    <string name="ques_resetToDefault">Сбросить к стандартным\?</string>
+    <string name="text_receivedFiles">Полученные файлы</string>
+    <string name="butn_edit">Изменить</string>
+    <string name="text_deleteConfirm">Подтвердить удаление</string>
+    <string name="butn_refresh">Обновить</string>
+    <string name="butn_shareTrebleshot">Поделиться этим приложением</string>
+    <string name="text_about">О приложении</string>
+    <string name="butn_close">Закрыть</string>
+    <string name="mesg_removed">Удалено</string>
+    <string name="mesg_added">Добавлено</string>
+    <string name="butn_change">Изменить</string>
+    <string name="text_welcome">Добро пожаловать</string>
+    <string name="text_introSetUpPermissions">Установите разрешения</string>
+    <string name="text_introAllSet">Все задано!</string>
+    <string name="text_introSetUpProfile">Настройте ваш профиль</string>
+    <string name="butn_connectionTest">Проверка соединения</string>
 </resources>
