@@ -163,7 +163,7 @@
     <string name="mesg_pathSameError">您不能选择旧文件夹</string>
     <string name="ques_checkOldFiles">移动文件？</string>
     <string name="mesg_newFilesReceived">新的文件已被接收</string>
-<string name="ques_resetToDefault">重置为默认值？</string>
+    <string name="ques_resetToDefault">重置为默认值？</string>
     <string name="butn_refresh">刷新</string>
     <string name="butn_showSystemApps">显示系统应用</string>
     <string name="text_transactionDetails">详细信息</string>
@@ -369,24 +369,23 @@
     <string name="mesg_donationSuccessful">感谢您的捐赠！</string>
     <string name="butn_donate">帮助开发</string>
     <string name="msg">捐赠</string>
-<string name="butn_open">打开</string>
-<string name="butn_pause">暂停</string>
+    <string name="butn_open">打开</string>
+    <string name="butn_pause">暂停</string>
     <string name="butn_retry">重试</string>
     <string name="mesg_noPendingTransferObjectExists">无正在等待的传输。使用“重试接收”选项以继续被中断的传输。</string>
-    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。
-\n
+    <string name="mesg_notSavingToChosenLocation">无法访问你想要保存文件的文件夹。文件将会被储存至默认文件夹。 
 \n 
 \n %s</string>
     <string name="butn_changelog">更新日志</string>
     <string name="text_changelog">更新日志</string>
     <string name="mesg_versionUpdatedChangelog">你已经更新TrebleShot，您想要查看更新了什么吗？</string>
     <string name="mesg_versionUpdatedChangelogRejected">你可以在“关于”部分找到“更新日志”</string>
-	<string name="mesg_noInternetConnection">这需要网络连接</string>
+    <string name="mesg_noInternetConnection">这需要网络连接</string>
     <string name="text_applyDarkTheme">暗黑风格</string>
     <string name="text_applyDarkThemeSummary">使用黑色风格的主题</string>
     <string name="butn_allow">允许</string>
     <string name="butn_telegram_channel">Telegram频道</string>
-<string name="text_listEmptyTransfer">所有的传输在此出现</string>
+    <string name="text_listEmptyTransfer">所有的传输在此出现</string>
     <string name="text_transfers">传输</string>
     <string name="butn_connectionDetails">连接详情</string>
     <string name="butn_useKnownDevice">使用已知的设备</string>
@@ -444,4 +443,7 @@
     <string name="butn_connectionTest">连接测试</string>
     <string name="text_textMillisecond">%d 毫秒</string>
     <string name="butn_revokePin">撤销PIN</string>
+    <string name="const_text_useAppFonts">使用推荐的字体</string>
+    <string name="const_text_useAppFontsSummary">使用预提供的自定义字体</string>
+    <string name="mesg_waiting">等待中</string>
 </resources>

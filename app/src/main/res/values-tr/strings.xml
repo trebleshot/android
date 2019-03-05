@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">Gezinti çekmecesini aç</string>
     <string name="text_navigationDrawerClose">Gezinti çekmecesini kapa</string>
@@ -419,4 +419,7 @@
     <string name="text_shortcut">Kısayol</string>
     <string name="text_hotspotStartedExternallyNotice">Hotspot harici olarak başlatıldı. QR Kodu\'nu kullanmak için buradan başlatın.</string>
     <string name="butn_revokePin">Kodu kaldır</string>
+    <string name="const_text_useAppFonts">Tavsiye edilen yazı tipini kullan</string>
+    <string name="const_text_useAppFontsSummary">Birlikte gelen yazı tipi</string>
+    <string name="mesg_waiting">Bekliyor</string>
 </resources>

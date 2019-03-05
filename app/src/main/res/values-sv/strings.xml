@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">Öppna navigeringsmenyn</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">Öppna navigeringsmenyn</string>n
     <string name="text_navigationDrawerClose">Stäng navigeringsmenyn</string>
     <string name="text_preferences">Inställningar</string>
     <string name="mesg_connectionFailure">Anslutningen misslyckades</string>
@@ -323,7 +324,7 @@
     <string name="butn_changelog">Ändringslogg</string>
     <string name="text_changelog">Ändringslogg</string>
     <string name="mesg_versionUpdatedChangelogRejected">Du hittar alltid \'Ändringsloggen\' i \'Om\'</string>
-	<string name="mesg_noInternetConnection">Detta kräver internetanslutning</string>
+    <string name="mesg_noInternetConnection">Detta kräver internetanslutning</string>
     <string name="text_applyDarkTheme">Mörkt läge</string>
     <string name="text_applyDarkThemeSummary">Använd det mörka temat</string>
     <string name="butn_allow">Tillåt</string>
@@ -362,12 +363,12 @@
     <string name="text_killServiceAfterLeaving">Tjänsten stannar när du stänger appen</string>
     <string name="mesg_versionUpdatedChangelog">Du har uppdaterat TrebleShot. Vill du se vad som är nytt\?</string>
     <string name="butn_telegram_channel">Telegramkanal</string>
-<string name="text_transactionGroupDetails">Överföringsgruppsuppgifter</string>
+    <string name="text_transactionGroupDetails">Överföringsgruppsuppgifter</string>
     <string name="mesg_providerNotAllowedError">Standardmappen är inte tillgänglig för andra appar</string>
     <string name="text_easyDiscoveryHelp">Skanna QR-koden om båda enheterna är i samma nätverk</string>
     <string name="text_killServiceAfterLeavingSummary">Avbryter kommunikationen om ingen uppgift pågår</string>
     <string name="mesg_notSavingToChosenLocation">Mappen du vill spara i finns inte. Filerna kommer därför att sparas i standardmappen. 
-\n 
+\n
 \n%s</string>
     <string name="text_requestPermissionStorageSummary">Denna behörighet tillåter att TrebleShot att läsa och skriva till enhetens lagringsutrymme för att kunna ta emot och dela ut filer.</string>
     <string name="text_savePath">Sökväg för sparade filer</string>
@@ -434,4 +435,7 @@
     <string name="butn_connectionTest">Anslutningstest</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Återkalla PIN-Koden</string>
+    <string name="const_text_useAppFonts">Använd det rekommenderade typsnittet</string>
+    <string name="const_text_useAppFontsSummary">Använd den medföljande anpassade typsnittet</string>
+    <string name="mesg_waiting">Väntar</string>
 </resources>
