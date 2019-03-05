@@ -474,7 +474,7 @@ public class FileListAdapter
                                 .load(file.getUri())
                                 .error(iconRes)
                                 .override(160)
-                                .circleCrop() // or centerCrop()
+                                .centerCrop()
                                 .into(imageView);
 
                         return true;

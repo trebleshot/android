@@ -2,9 +2,8 @@
 <resources>ing>
     <string name="text_prefaceDonation" translatable="false">
         You can support TrebleShot by donating any amount that you can choose below.;
-        If you do not donate, nothing will change.;
-        If you do, still nothing will change.;
-        But if do not, the developers behind the development of this software will probably be
-        discouraged and will work on something else.
+        Not donating will not affect your experience.;
+        However, we will be less motivated to fix bugs and to introduce new features and will work
+        on something else.;
     </string>
 </resources>

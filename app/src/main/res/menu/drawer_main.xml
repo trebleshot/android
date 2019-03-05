@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <group android:id="@+id/nav_group_other">
 
@@ -48,5 +50,12 @@
             android:orderInCategory="16"
             android:title="@string/butn_donate"
             android:visible="false" />
+
+        <item
+            android:id="@+id/menu_activity_main_ts_dt"
+            android:orderInCategory="17"
+            app:actionLayout="@layout/layout_main_navigationview_footer"
+            tools:ignore="MenuTitle" />
+
     </group>
 </menu>

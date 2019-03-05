@@ -221,6 +221,9 @@ public class CommunicationService extends Service
                                         .put(Keyword.TRANSFER_GROUP_ID, groupId)
                                         .put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
                                         .toString());
+
+                                activeConnection.receive();
+                                activeConnection.getSocket().close();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
