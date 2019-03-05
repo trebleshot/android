@@ -696,7 +696,7 @@ public class TransferListAdapter
                         .load(mFile.getUri())
                         .error(getIconRes())
                         .override(160)
-                        .centerCrop()
+                        .circleCrop() // or centerCrop()
                         .into(imageView);
 
                 return true;

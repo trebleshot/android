@@ -469,13 +469,12 @@ public class FileListAdapter
                 String[] format = type.split(File.separator);
 
                 if (format.length > 0)
-                    if ("image".equals(format[0])
-                            || "video".equals(format[0])) {
+                    if ("image".equals(format[0]) || "video".equals(format[0])) {
                         GlideApp.with(imageView.getContext())
                                 .load(file.getUri())
                                 .error(iconRes)
                                 .override(160)
-                                .centerCrop()
+                                .circleCrop() // or centerCrop()
                                 .into(imageView);
 
                         return true;
