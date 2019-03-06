@@ -1,0 +1,8 @@
+* The desktop version is about to take off. Get ready!
+
+NEW: Show transfer status of a specific receiver
+IMPROVED: Some UI changes.
+IMPROVED: Ongoing tasks are easier to handle
+FIXED: Hotspot randomly turns off
+MISC: Improvements and bug fixes
+MISC: Updated translations
