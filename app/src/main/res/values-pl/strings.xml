@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">Otwórz pasek nawigacji</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">Otwórz pasek nawigacji</string>n
     <string name="text_navigationDrawerClose">Zamknij pasek nawigacji</string>
     <string name="text_preferences">Preferencje</string>
     <string name="mesg_connectionFailure">Połączenie nie powiodło się</string>
@@ -371,12 +372,12 @@
     <string name="text_changelog">Lista zmian</string>
     <string name="mesg_versionUpdatedChangelog">Zaktualizowałeś TrebleShot, czy chciałbyś zobaczyć, co nowego\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Zawsze możesz znaleźć \"Listę zmian\" w sekcji \"O aplikacji\"</string>
-	<string name="mesg_noInternetConnection">To wymaga połączenia z Internetem</string>
+    <string name="mesg_noInternetConnection">To wymaga połączenia z Internetem</string>
     <string name="text_applyDarkTheme">Ciemny motyw</string>
     <string name="text_applyDarkThemeSummary">Użyj motywu ciemnego</string>
     <string name="butn_allow">Zezwól</string>
     <string name="butn_telegram_channel">Kanał Telegram</string>
-<string name="text_listEmptyTransfer">Wszystkie transfery pojawiają się tutaj</string>
+    <string name="text_listEmptyTransfer">Wszystkie transfery pojawiają się tutaj</string>
     <string name="text_transfers">Transfery</string>
     <string name="butn_connectionDetails">Szczegóły połączenia</string>
     <string name="butn_useKnownDevice">Użyj znanych urządzeń</string>
@@ -434,4 +435,7 @@
     <string name="mesg_removed">Usunięty</string>
     <string name="text_introMakeItYours">Dopasuj go do siebie</string>
     <string name="butn_revokePin">Anululuj kod PIN</string>
+    <string name="const_text_useAppFonts">Zastosuj zalecaną czcionkę</string>
+    <string name="const_text_useAppFontsSummary">Użyj dostarczonej czcionki niestandardowej</string>
+    <string name="mesg_waiting">Czekaj</string>
 </resources>
