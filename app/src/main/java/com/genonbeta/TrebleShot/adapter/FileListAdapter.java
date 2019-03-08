@@ -179,7 +179,7 @@ public class FileListAdapter
             List<WritablePathObject> mountedPathList = AppUtils.getDatabase(getContext())
                     .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_WRITABLEPATH), WritablePathObject.class);
 
-            if (Build.VERSION.SDK_INT >= 23) {
+            if (Build.VERSION.SDK_INT >= 21) {
                 for (WritablePathObject pathObject : mountedPathList)
                     try {
                         lister.offerObliged(this, new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),

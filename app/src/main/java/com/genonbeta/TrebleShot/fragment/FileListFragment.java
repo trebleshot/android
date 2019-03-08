@@ -197,7 +197,7 @@ public class FileListFragment
                 case REQUEST_WRITE_ACCESS:
                     Uri pathUri = data.getData();
 
-                    if (Build.VERSION.SDK_INT >= 23 && pathUri != null) {
+                    if (Build.VERSION.SDK_INT >= 21 && pathUri != null) {
                         String pathString = pathUri.toString();
                         String title = null;
 
@@ -231,8 +231,7 @@ public class FileListFragment
 
         MenuItem mountDirectory = menu.findItem(R.id.actions_file_list_mount_directory);
 
-        if (Build.VERSION.SDK_INT >= 23
-                && mountDirectory != null)
+        if (Build.VERSION.SDK_INT >= 21 && mountDirectory != null)
             mountDirectory.setVisible(true);
     }
 
