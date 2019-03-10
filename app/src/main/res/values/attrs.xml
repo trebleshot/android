@@ -26,6 +26,7 @@
     <attr name="snackbarBackground" format="reference" />
     <attr name="stateSelectedImage" format="reference" />
     <attr name="stateSelectedImageRounded" format="reference" />
+    <attr name="stateSelectedImageRoundedGuiding" format="reference" />
     <attr name="stateSelectedImageSquare" format="reference" />
     <attr name="statusBarColor" format="reference" />
     <attr name="useLightStatusBar" format="boolean" />

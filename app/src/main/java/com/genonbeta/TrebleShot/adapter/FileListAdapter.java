@@ -329,8 +329,7 @@ public class FileListAdapter
     public int getSortingCriteria(GenericFileHolder objectOne, GenericFileHolder objectTwo)
     {
         // Checking the path is null will help keep the performance high when we are not showing 'Home'.
-        if (getPath() == null
-                && objectOne instanceof RecentFileHolder
+        if (getPath() == null && objectOne instanceof RecentFileHolder
                 && objectTwo instanceof RecentFileHolder)
             return MODE_SORT_BY_DATE;
 
@@ -341,8 +340,7 @@ public class FileListAdapter
     public int getSortingOrder(GenericFileHolder objectOne, GenericFileHolder objectTwo)
     {
         // Checking the path is null will help keep the performance high when we are not showing 'Home'.
-        if (getPath() == null
-                && objectOne instanceof RecentFileHolder
+        if (getPath() == null && objectOne instanceof RecentFileHolder
                 && objectTwo instanceof RecentFileHolder)
             return MODE_SORT_ORDER_DESCENDING;
 
@@ -416,7 +414,8 @@ public class FileListAdapter
             super(viewType, representativeText);
         }
 
-        public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes, long date, long size, Uri uri)
+        public GenericFileHolder(DocumentFile file, String friendlyName, String info, int iconRes,
+                                 long date, long size, Uri uri)
         {
             // 'id' will be generated in getId() method
             super(0, friendlyName, friendlyName, file.getType(), date, size, uri);
@@ -430,7 +429,8 @@ public class FileListAdapter
         public long getId()
         {
             if (super.getId() == 0)
-                setId(String.format("%s_%s", file.getUri().toString(), getClass().getName()).hashCode());
+                setId(String.format("%s_%s", file.getUri().toString(),
+                        getClass().getName()).hashCode());
 
             return super.getId();
         }

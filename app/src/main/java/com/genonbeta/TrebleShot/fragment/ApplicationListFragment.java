@@ -51,10 +51,8 @@ public class ApplicationListFragment
             @Override
             public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
             {
-                registerLayoutViewClicks(clazz);
-
-                clazz.getView().findViewById(R.id.visitImage)
-                        .setOnClickListener(new View.OnClickListener()
+                clazz.getView().findViewById(R.id.visitImage).setOnClickListener(
+                        new View.OnClickListener()
                         {
                             @Override
                             public void onClick(View v)
@@ -62,6 +60,20 @@ public class ApplicationListFragment
                                 performLayoutClickOpenUri(clazz);
                             }
                         });
+
+                if (getSelectionConnection() != null) {
+                    View.OnClickListener clickListener = new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                        }
+                    };
+
+                    clazz.getView().findViewById(R.id.selector).setOnClickListener(clickListener);
+                    clazz.getView().setOnClickListener(clickListener);
+                }
             }
         };
 

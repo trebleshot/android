@@ -1,96 +1,80 @@
 <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/layout"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="1dp"
     android:background="?contentShowingBackground">
 
-    <RelativeLayout
-        android:id="@+id/container"
+    <FrameLayout
+        android:id="@+id/visitImage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true">
 
         <ImageView
             android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
             android:contentDescription="@string/text_image" />
 
-        <View
-            android:id="@+id/clickable_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?rectSelector" />
+    </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:orientation="vertical"
-            android:paddingLeft="8dp"
-            android:paddingTop="3dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="8dp">
+    <View
+        android:id="@+id/clickable_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?rectSelector" />
 
-            <TextView
-                android:id="@+id/text3"
-                style="@style/TextAppearance.Primary.Small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Primary.Small"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:gravity="center"
-                android:visibility="gone" />
-
-        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingTop="3dp"
+        android:paddingRight="8dp"
+        android:paddingBottom="8dp">
 
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/text3"
             style="@style/TextAppearance.Primary.Small"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:padding="10dp"
-            android:textColor="@android:color/white"
+            android:gravity="center"
             android:visibility="gone" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/text2"
+            style="@style/TextAppearance.Primary.Small"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="-5dp"
-            android:layout_marginRight="-5dp"
-            android:layout_marginBottom="-5dp"
-            android:background="?backgroundEdgeAction"
-            android:padding="5dp">
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/visitImage"
-                style="@style/OverflowButton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+    </LinearLayout>
 
-        </LinearLayout>
+    <TextView
+        android:id="@+id/text"
+        style="@style/TextAppearance.Primary.Small"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="10dp"
+        android:textColor="@android:color/white"
+        android:visibility="gone" />
 
-    </RelativeLayout>
+    <FrameLayout
+        android:id="@+id/selectorContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:padding="12dp">
 
-    <include
-        layout="@layout/generic_view_selection_rounded"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_margin="2dp" />
+        <include layout="@layout/generic_view_selection_rounded_guiding" />
+
+    </FrameLayout>
 
 </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>

@@ -59,6 +59,7 @@ public class ContentSharingActivity extends Activity
         mSelectionCallback = new SharingActionModeCallback(null);
         final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
 
+        /*
         final EditableListFragment.LayoutClickListener groupLayoutClickListener
                 = new EditableListFragment.LayoutClickListener()
         {
@@ -70,7 +71,7 @@ public class ContentSharingActivity extends Activity
 
                 return selectorConnection.setSelected(holder);
             }
-        };
+        };*/
 
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
         {
@@ -78,11 +79,11 @@ public class ContentSharingActivity extends Activity
             public void onItemInstantiated(StableItem item)
             {
                 EditableListFragmentImpl fragmentImpl = (EditableListFragmentImpl) item.getInitiatedItem();
-                EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) item.getInitiatedItem();
+                //EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) item.getInitiatedItem();
 
                 fragmentImpl.setSelectionCallback(mSelectionCallback);
                 fragmentImpl.setSelectorConnection(selectorConnection);
-                fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
+                //fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
                 if (viewPager.getCurrentItem() == item.getCurrentPosition())
                     attachListeners(fragmentImpl);

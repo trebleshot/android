@@ -42,10 +42,6 @@ public class ComparativeRelativeLayout extends RelativeLayout
                 R.styleable.ComparativeRelativeLayout_tallerLengthExtra, mTallerExtraLength);
         mAlwaysUseWidth = typedAttributes.getBoolean(
                 R.styleable.ComparativeRelativeLayout_alwaysUseWidth, mAlwaysUseWidth);
-
-        Log.d(ComparativeRelativeLayout.class.getSimpleName(),
-                "baseOnSmaller: " + mBaseOnSmaller + ", ratio: " + mTallerExtraLength
-                        + " alwaysWidth: " + mAlwaysUseWidth);
     }
 
     @Override
@@ -61,9 +57,6 @@ public class ComparativeRelativeLayout extends RelativeLayout
             heightMeasureSpec = widthMeasureSpec + mTallerExtraLength;
         else
             widthMeasureSpec = heightMeasureSpec + mTallerExtraLength;
-
-        Log.d(ComparativeRelativeLayout.class.getSimpleName(),
-                "width: " + widthMeasureSpec + "height: " + heightMeasureSpec);
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }

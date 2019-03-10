@@ -47,12 +47,9 @@ public class VideoListAdapter
         if (viewType == VIEW_TYPE_REPRESENTATIVE)
             return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
 
-        GroupViewHolder holder = new GroupViewHolder(getInflater().inflate(isGridLayoutRequested() ? R.layout.list_video_grid : R.layout.list_video, parent, false));
-
-        if (isGridLayoutRequested())
-            holder.setClickableLayout(R.id.clickable_layout);
-
-        return holder;
+        return new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
+                ? R.layout.list_video_grid
+                : R.layout.list_video, parent, false));
     }
 
     @Override
@@ -74,11 +71,6 @@ public class VideoListAdapter
                 text3.setText(FileUtils.sizeExpression(object.size, false));
 
                 parentView.setSelected(object.isSelectableSelected());
-
-                if (isGridLayoutRequested() && container != null) {
-                    int paddingActive = object.isSelectableSelected() ? mSelectedInset : 0;
-                    container.setPadding(paddingActive, paddingActive, paddingActive, paddingActive);
-                }
 
                 GlideApp.with(getContext())
                         .load(object.uri)

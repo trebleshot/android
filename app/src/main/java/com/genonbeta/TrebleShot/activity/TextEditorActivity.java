@@ -108,8 +108,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                     Toast.makeText(TextEditorActivity.this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
                 }
             }
-        } else
-            finish();
+        }
     }
 
     @Override
@@ -163,6 +162,8 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
         menu.findItem(R.id.menu_action_share_trebleshot)
                 .setVisible(!applySupported);
 
+        menu.findItem(R.id.menu_action_remove).setVisible(mTextStreamObject != null);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -199,6 +200,11 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                     REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == android.R.id.home) {
             onBackPressed();
+        } else if (id == R.id.menu_action_remove) {
+            if (mTextStreamObject != null)
+                getDatabase().remove(mTextStreamObject);
+
+            mTextStreamObject = null;
         } else
             return super.onOptionsItemSelected(item);
 

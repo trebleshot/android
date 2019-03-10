@@ -298,7 +298,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
     public static class EditableViewHolder extends ViewHolder
     {
-        private View mClickableLayout;
+        private View mClickableView;
 
         public EditableViewHolder(View itemView)
         {
@@ -307,17 +307,17 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
         public View getClickableView()
         {
-            return mClickableLayout == null ? getView() : mClickableLayout;
+            return mClickableView == null ? getView() : mClickableView;
         }
 
-        public EditableViewHolder setClickableLayout(int resId)
+        public EditableViewHolder setClickableView(int resId)
         {
-            return setClickableLayout(getView().findViewById(resId));
+            return setClickableView(getView().findViewById(resId));
         }
 
-        public EditableViewHolder setClickableLayout(View clickableLayout)
+        public EditableViewHolder setClickableView(View clickableLayout)
         {
-            mClickableLayout = clickableLayout;
+            mClickableView = clickableLayout;
             return this;
         }
     }

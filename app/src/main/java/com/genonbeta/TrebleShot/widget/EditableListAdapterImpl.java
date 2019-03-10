@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.widget;
 
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.android.framework.widget.ListAdapterImpl;
 
@@ -12,6 +13,8 @@ import java.util.List;
 public interface EditableListAdapterImpl<T extends Editable> extends ListAdapterImpl<T>
 {
     boolean filterItem(T item);
+
+    T getItem(int position) throws NotReadyException;
 
     void notifyAllSelectionChanges();
 

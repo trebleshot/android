@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.app;
 
 import android.net.Uri;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
@@ -26,6 +28,8 @@ public interface EditableListFragmentImpl<T extends Editable> extends ListFragme
     EditableListFragment.FilteringDelegate<T> getFilteringDelegate();
 
     void setFilteringDelegate(EditableListFragment.FilteringDelegate<T> delegate);
+
+    RecyclerView getListView();
 
     int getOrderingCriteria();
 

@@ -34,6 +34,7 @@ import com.genonbeta.TrebleShot.view.LongTextBubbleFastScrollViewProvider;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.TrebleShot.widget.recyclerview.PaddingItemDecoration;
+import com.genonbeta.TrebleShot.widget.recyclerview.SwipeTouchSelectionListener;
 import com.genonbeta.android.framework.app.DynamicRecyclerViewFragment;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.genonbeta.android.framework.widget.recyclerview.FastScroller;
@@ -141,6 +142,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         // We have to recreate the provider class because old one loses its ground
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
+
+        if (getSelectionConnection() != null)
+            getListView().addOnItemTouchListener(new SwipeTouchSelectionListener<>(this));
     }
 
     @Override
