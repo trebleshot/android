@@ -142,9 +142,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         // We have to recreate the provider class because old one loses its ground
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
-
-        if (getSelectionConnection() != null)
-            getListView().addOnItemTouchListener(new SwipeTouchSelectionListener<>(this));
+        getListView().addOnItemTouchListener(new SwipeTouchSelectionListener<>(this));
     }
 
     @Override

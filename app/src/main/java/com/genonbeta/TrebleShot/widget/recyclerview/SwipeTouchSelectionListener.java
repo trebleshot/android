@@ -2,6 +2,7 @@ package com.genonbeta.TrebleShot.widget.recyclerview;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,7 +16,8 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
  * created by: veli
  * date: 3/11/19 1:02 AM
  */
-public class SwipeTouchSelectionListener<T extends Editable> implements RecyclerView.OnItemTouchListener
+public class SwipeTouchSelectionListener<T extends Editable>
+        implements RecyclerView.OnItemTouchListener
 {
     private boolean mSelectionActivated = false;
     private boolean mActivationWaiting = true;
@@ -34,12 +36,12 @@ public class SwipeTouchSelectionListener<T extends Editable> implements Recycler
     public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
         if (MotionEvent.ACTION_DOWN == e.getAction()) {
-            mActivationWaiting = true;
-            mConsistentX = (int) e.getX();
-            mConsistentY = (int) e.getY();
+            mActivationWaiting = mListFragment.getSelectionConnection() != null;
+            mConsistentX = (int) (e.getX() / 10);
+            mConsistentY = (int) (e.getY() / 10);
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mActivationWaiting
-                && (mConsistentX != (int) e.getX() || mConsistentY != (int) e.getY())) {
-            mSelectionActivated = e.getEventTime() - e.getDownTime() > 200;
+                && (mConsistentX != (int) (e.getX() / 10) || mConsistentY != (int) (e.getY() / 10))) {
+            mSelectionActivated = e.getEventTime() - e.getDownTime() > ViewConfiguration.getLongPressTimeout();
             mActivationWaiting = false;
         }
 
@@ -118,22 +120,24 @@ public class SwipeTouchSelectionListener<T extends Editable> implements Recycler
                 {
                     float viewHeight = rv.getHeight();
                     float viewPinPoint = viewHeight / 3;
+                    float touchPointBelowStart = viewHeight - viewPinPoint;
 
-                    if (viewHeight - viewPinPoint < e.getY()) {
-                        scrollY = (int) (30 * (e.getY() / viewHeight));
+                    if (touchPointBelowStart < e.getY()) {
+                        scrollY = (int) (30 * ((Math.min(e.getY(), viewHeight) - touchPointBelowStart) / viewPinPoint));
                     } else if (viewPinPoint > e.getY()) {
-                        scrollY = (int) (-30 / Math.max(e.getY() / viewPinPoint, 1f));
+                        scrollY = (int) (-30 * ((viewPinPoint - Math.max(e.getY(), 0f)) / viewPinPoint));
                     }
                 }
 
                 {
                     float viewWidth = rv.getWidth();
                     float viewPinPoint = viewWidth / 3;
+                    float touchPointBelowStart = viewWidth - viewPinPoint;
 
                     if (viewWidth - viewPinPoint < e.getX()) {
-                        scrollX = (int) (30 * (e.getX() / viewWidth));
+                        scrollX = (int) (30 * ((Math.min(e.getX(), viewWidth) - touchPointBelowStart) / viewPinPoint));
                     } else if (viewPinPoint > e.getX()) {
-                        scrollX = (int) (-30 / Math.max(e.getX() / viewPinPoint, 1f));
+                        scrollX = (int) (-30 / ((viewPinPoint - Math.max(e.getX(), 0f)) / viewPinPoint));
                     }
                 }
 
@@ -149,6 +153,7 @@ public class SwipeTouchSelectionListener<T extends Editable> implements Recycler
         mActivationWaiting = false;
         mStartPosition = -1;
         mLastPosition = -1;
+        mConsistentX = 0;
     }
 }
 
