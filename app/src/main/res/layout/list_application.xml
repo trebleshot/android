@@ -6,7 +6,7 @@
     android:background="?rectSelector">
 
     <ImageView
-        android:id="@+id/visitImage"
+        android:id="@+id/visitView"
         style="@style/OverflowButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
@@ -36,8 +36,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/visitImage"
-        android:layout_toLeftOf="@+id/visitImage"
+        android:layout_toStartOf="@id/visitView"
+        android:layout_toLeftOf="@+id/visitView"
         android:layout_toEndOf="@id/layout_image"
         android:layout_toRightOf="@id/layout_image"
         android:orientation="vertical">

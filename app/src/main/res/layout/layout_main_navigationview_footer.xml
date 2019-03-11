@@ -11,22 +11,7 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_trebleshot_rounded_white_24dp_static"
-        app:tint="?colorPassive" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingLeft="12dp"
-        android:paddingRight="12dp"
-        android:alpha="0.5"
-        app:srcCompat="@drawable/ic_favorite_white_24dp"
-        app:tint="?colorDonation" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_devices_white_24dp"
+        app:srcCompat="@drawable/ic_genonbeta_white_24dp_static"
         app:tint="?colorPassive" />
 
 </LinearLayout>

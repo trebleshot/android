@@ -44,7 +44,7 @@ public class GitHubContributorsListFragment
             @Override
             public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
             {
-                clazz.getView().findViewById(R.id.visitImage).setOnClickListener(new View.OnClickListener()
+                clazz.getView().findViewById(R.id.visitView).setOnClickListener(new View.OnClickListener()
                 {
                     @Override
                     public void onClick(View v)

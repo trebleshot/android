@@ -354,7 +354,7 @@ public class FileListFragment
                                     generateSelectionList.add(fileHolder);
 
                                     if (id == R.id.action_mode_file_open) {
-                                        performLayoutClickOpenUri(clazz);
+                                        performLayoutClickOpen(clazz);
                                     } else if (id == R.id.action_mode_file_show
                                             && fileHolder.file.getParentFile() != null) {
                                         goPath(fileHolder.file.getParentFile());
@@ -402,7 +402,7 @@ public class FileListFragment
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        performLayoutClickOpenUri(holder);
+        performLayoutClickOpen(holder);
         return true;
     }
 
@@ -565,7 +565,7 @@ public class FileListFragment
     }
 
     @Override
-    public boolean performLayoutClickOpenUri(GroupEditableListAdapter.GroupViewHolder holder)
+    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
             return FileUtils.openUriForeground(getActivity(), getAdapter().getItem(holder).file);
@@ -573,7 +573,7 @@ public class FileListFragment
             // Do nothing
         }
 
-        return super.performLayoutClickOpenUri(holder);
+        return super.performLayoutClickOpen(holder);
     }
 
     public boolean scanFile(DocumentFile file)

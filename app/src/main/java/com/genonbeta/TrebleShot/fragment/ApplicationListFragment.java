@@ -51,29 +51,28 @@ public class ApplicationListFragment
             @Override
             public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
             {
-                clazz.getView().findViewById(R.id.visitImage).setOnClickListener(
+                registerLayoutViewClicks(clazz);
+
+                clazz.getView().findViewById(R.id.visitView).setOnClickListener(
                         new View.OnClickListener()
                         {
                             @Override
                             public void onClick(View v)
                             {
-                                performLayoutClickOpenUri(clazz);
+                                performLayoutClickOpen(clazz);
                             }
                         });
 
-                if (getSelectionConnection() != null) {
-                    View.OnClickListener clickListener = new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                        }
-                    };
-
-                    clazz.getView().findViewById(R.id.selector).setOnClickListener(clickListener);
-                    clazz.getView().setOnClickListener(clickListener);
-                }
+                if (getSelectionConnection() != null)
+                    clazz.getView().findViewById(R.id.selector).setOnClickListener(
+                            new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
+                                {
+                                    getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                                }
+                            });
             }
         };
 
@@ -91,8 +90,9 @@ public class ApplicationListFragment
     @Override
     public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
     {
-        performLayoutClickOpenUri(holder);
-        return true;
+        return getSelectionConnection() != null
+                ? getSelectionConnection().setSelected(holder)
+                : performLayoutClickOpen(holder);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class ApplicationListFragment
     }
 
     @Override
-    public boolean performLayoutClickOpenUri(EditableListAdapter.EditableViewHolder holder)
+    public boolean performLayoutClickOpen(EditableListAdapter.EditableViewHolder holder)
     {
         try {
             final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);

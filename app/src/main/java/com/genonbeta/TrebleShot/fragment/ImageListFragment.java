@@ -72,31 +72,29 @@ public class ImageListFragment
             public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
             {
                 if (!clazz.isRepresentative()) {
-                    clazz.getView().findViewById(R.id.visitImage).setOnClickListener(
+                    registerLayoutViewClicks(clazz);
+
+                    clazz.getView().findViewById(R.id.visitView).setOnClickListener(
                             new View.OnClickListener()
                             {
                                 @Override
                                 public void onClick(View v)
                                 {
-                                    performLayoutClickOpenUri(clazz);
+                                    performLayoutClickOpen(clazz);
                                 }
                             });
 
-                    if (getSelectionConnection() != null) {
-                        View.OnClickListener clickListener = new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                            }
-                        };
-
-                        clazz.getView().findViewById(getAdapter()
-                                .isGridLayoutRequested() ? R.id.selectorContainer : R.id.selector)
-                                .setOnClickListener(clickListener);
-                        clazz.getView().setOnClickListener(clickListener);
-                    }
+                    if (getSelectionConnection() != null)
+                        clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
+                                ? R.id.selectorContainer : R.id.selector)
+                                .setOnClickListener(new View.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(View v)
+                                    {
+                                        getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                                    }
+                                });
                 }
             }
         };
@@ -115,8 +113,9 @@ public class ImageListFragment
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        performLayoutClickOpenUri(holder);
-        return true;
+        return getSelectionConnection() != null
+                ? getSelectionConnection().setSelected(holder)
+                : performLayoutClickOpen(holder);
     }
 
     @Override

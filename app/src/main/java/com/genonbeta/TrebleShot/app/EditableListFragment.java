@@ -634,7 +634,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 || getSelectionConnection() != null && getSelectionConnection().setSelected(holder);
     }
 
-    public boolean performLayoutClickOpenUri(V holder)
+    public boolean performLayoutClickOpen(V holder)
     {
         try {
             T object = getAdapter().getItem(holder);
