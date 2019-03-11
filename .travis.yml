@@ -17,4 +17,16 @@ licenses:
 before_install:
   - yes | sdkmanager "platforms;android-28"
 
+after_success:
+  # find appdir -executable -type f -exec ldd {} \; | grep " => /usr" | cut -d " " -f 2-3 | sort | uniq # for debugging
+  # curl --upload-file APPNAME*.AppImage https://transfer.sh/APPNAME-git.$(git rev-parse --short HEAD)-x86_64.AppImage
+  - wget -c https://gist.githubusercontent.com/velitasali/36a8a2fd1b32231c41804676fe626e90/raw/2c1daafc796591fffa494868c93515646188ceef/upload.sh
+  - bash upload.sh app/build/outputs/apk/fossReliant/debug/app-fossReliant-debug.apk
 
+branches:
+  except:
+    - # Do not build tags that we create when we upload to GitHub Releases
+    - /^(?i:continuous)/
+
+
+    
