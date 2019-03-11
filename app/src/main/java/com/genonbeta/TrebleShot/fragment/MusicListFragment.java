@@ -93,16 +93,16 @@ public class MusicListFragment
                                 }
                             });
 
-                    if (getSelectionConnection() != null)
-                        clazz.getView().findViewById(R.id.selector).setOnClickListener(
-                                new View.OnClickListener()
+                    clazz.getView().findViewById(R.id.selector).setOnClickListener(
+                            new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
                                 {
-                                    @Override
-                                    public void onClick(View v)
-                                    {
+                                    if (getSelectionConnection() != null)
                                         getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                                    }
-                                });
+                                }
+                            });
                 }
             }
         };

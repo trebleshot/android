@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.genonbeta.TrebleShot.R;
@@ -167,15 +168,16 @@ public class ConnectionManagerActivity
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_connection_manager);
 
+        FragmentFactory factory = getSupportFragmentManager().getFragmentFactory();
         mToolbar = findViewById(R.id.toolbar);
         mAppBarLayout = findViewById(R.id.app_bar);
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mToolbarLayout = findViewById(R.id.toolbar_layout);
-        mOptionsFragment = (OptionsFragment) Fragment.instantiate(this, OptionsFragment.class.getName());
-        mBarcodeConnectFragment = (BarcodeConnectFragment) Fragment.instantiate(this, BarcodeConnectFragment.class.getName());
-        mHotspotManagerFragment = (HotspotManagerFragment) Fragment.instantiate(this, HotspotManagerFragment.class.getName());
-        mNetworkManagerFragment = (NetworkManagerFragment) Fragment.instantiate(this, NetworkManagerFragment.class.getName());
-        mDeviceListFragment = (NetworkDeviceListFragment) Fragment.instantiate(this, NetworkDeviceListFragment.class.getName());
+        mOptionsFragment = (OptionsFragment) factory.instantiate(getClassLoader(), OptionsFragment.class.getName(), null);
+        mBarcodeConnectFragment = (BarcodeConnectFragment) factory.instantiate(getClassLoader(), BarcodeConnectFragment.class.getName(), null);
+        mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(), HotspotManagerFragment.class.getName(), null);
+        mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(), NetworkManagerFragment.class.getName(), null);
+        mDeviceListFragment = (NetworkDeviceListFragment) factory.instantiate(getClassLoader(), NetworkDeviceListFragment.class.getName(), null);
 
         mFilter.addAction(ACTION_CHANGE_FRAGMENT);
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
@@ -191,7 +193,7 @@ public class ConnectionManagerActivity
                 try {
                     mRequestType = RequestType.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
                 } catch (Exception e) {
-
+                    // do nothing
                 }
 
             if (getIntent().hasExtra(EXTRA_ACTIVITY_SUBTITLE))
@@ -358,66 +360,6 @@ public class ConnectionManagerActivity
     public interface DeviceSelectionSupport
     {
         void setDeviceSelectedListener(NetworkDeviceSelectedListener listener);
-    }
-
-    public static class CustomNetworkDeviceListFragment extends NetworkDeviceListFragment
-    {
-        @Override
-        public void onCreate(Bundle savedInstanceState)
-        {
-            super.onCreate(savedInstanceState);
-
-            setHasOptionsMenu(false);
-            setFilteringSupported(false);
-            setUseDefaultPaddingDecoration(false);
-            setUseDefaultPaddingDecorationSpaceForEdges(false);
-
-            if (isScreenLarge())
-                setDefaultViewingGridSize(4, 5);
-            else if (isScreenNormal())
-                setDefaultViewingGridSize(3, 4);
-            else
-                setDefaultViewingGridSize(2, 3);
-
-            setDeviceSelectedListener(new NetworkDeviceSelectedListener()
-            {
-                @Override
-                public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection)
-                {
-                    if (getContext() != null) {
-                        getContext().sendBroadcast(new Intent(CommunicationService.ACTION_DEVICE_ACQUAINTANCE)
-                                .putExtra(CommunicationService.EXTRA_DEVICE_ID, networkDevice.deviceId)
-                                .putExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
-
-                        return true;
-                    }
-
-                    return false;
-                }
-
-                @Override
-                public boolean isListenerEffective()
-                {
-                    return true;
-                }
-            });
-        }
-
-        @Override
-        public void onViewCreated(@NonNull View view, Bundle savedInstanceState)
-        {
-            super.onViewCreated(view, savedInstanceState);
-
-            getListView().setNestedScrollingEnabled(true);
-            setDividerVisible(false);
-
-            if (getContext() != null) {
-                float padding = getContext().getResources().getDimension(R.dimen.short_content_width_padding);
-
-                getListView().setClipToPadding(false);
-                getListView().setPadding((int) padding, 0, (int) padding, 0);
-            }
-        }
     }
 
     public static class OptionsFragment

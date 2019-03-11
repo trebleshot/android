@@ -70,7 +70,8 @@ public class VideoListFragment
                 if (!clazz.isRepresentative()) {
                     registerLayoutViewClicks(clazz);
 
-                    clazz.getView().findViewById(R.id.visitView).setOnClickListener(
+                    View visitView = clazz.getView().findViewById(R.id.visitView);
+                    visitView.setOnClickListener(
                             new View.OnClickListener()
                             {
                                 @Override
@@ -80,17 +81,26 @@ public class VideoListFragment
                                 }
                             });
 
-                    if (getSelectionConnection() != null)
-                        clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
-                                ? R.id.selectorContainer : R.id.selector)
-                                .setOnClickListener(new View.OnClickListener()
+                    visitView.setOnLongClickListener(new View.OnLongClickListener()
+                    {
+                        @Override
+                        public boolean onLongClick(View v)
+                        {
+                            return performLayoutLongClick(clazz);
+                        }
+                    });
+
+                    clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
+                            ? R.id.selectorContainer : R.id.selector)
+                            .setOnClickListener(new View.OnClickListener()
+                            {
+                                @Override
+                                public void onClick(View v)
                                 {
-                                    @Override
-                                    public void onClick(View v)
-                                    {
+                                    if (getSelectionConnection() != null)
                                         getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                                    }
-                                });
+                                }
+                            });
                 }
             }
         };

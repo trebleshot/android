@@ -130,15 +130,15 @@ public class TransferListFragment
                 if (!clazz.isRepresentative()) {
                     registerLayoutViewClicks(clazz);
 
-                    if (getSelectionConnection() != null)
-                        clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                    clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
                         {
-                            @Override
-                            public void onClick(View v)
-                            {
+                            if (getSelectionConnection() != null)
                                 getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                            }
-                        });
+                        }
+                    });
                 }
             }
         };
