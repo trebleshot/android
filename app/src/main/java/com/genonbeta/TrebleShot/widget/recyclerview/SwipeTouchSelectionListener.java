@@ -86,15 +86,16 @@ public class SwipeTouchSelectionListener<T extends Editable> implements Recycler
                                                 ? mStartPosition <= i
                                                 : mStartPosition >= i;
 
-                                        mListFragment.getSelectionConnection().setSelected(
-                                                mListFragment.getAdapterImpl().getItem(i), selected);
+                                        boolean selectionResult = mListFragment
+                                                .getSelectionConnection().setSelected(mListFragment
+                                                        .getAdapterImpl().getItem(i), selected);
 
                                         EditableListAdapter.ViewHolder viewHolder
                                                 = (EditableListAdapter.ViewHolder)
                                                 rv.findViewHolderForAdapterPosition(i);
 
                                         if (viewHolder != null)
-                                            viewHolder.getView().setSelected(selected);
+                                            viewHolder.getView().setSelected(selectionResult && selected);
                                     }
                                 } catch (NotReadyException e1) {
                                     // do nothing
@@ -110,32 +111,34 @@ public class SwipeTouchSelectionListener<T extends Editable> implements Recycler
             if (mStartPosition < 0 && !childFound)
                 mSelectionActivated = false;
 
-            int scrollY = 0;
-            int scrollX = 0;
-
             {
-                float viewHeight = rv.getHeight();
-                float viewPinPoint = viewHeight / 4;
+                int scrollY = 0;
+                int scrollX = 0;
 
-                if (viewHeight - viewPinPoint < e.getY()) {
-                    scrollY = (int) (30 * (e.getY() / viewHeight));
-                } else if (viewPinPoint > e.getY()) {
-                    scrollY = (int) (-30 / Math.max(e.getY() / viewPinPoint, 1f));
+                {
+                    float viewHeight = rv.getHeight();
+                    float viewPinPoint = viewHeight / 3;
+
+                    if (viewHeight - viewPinPoint < e.getY()) {
+                        scrollY = (int) (30 * (e.getY() / viewHeight));
+                    } else if (viewPinPoint > e.getY()) {
+                        scrollY = (int) (-30 / Math.max(e.getY() / viewPinPoint, 1f));
+                    }
                 }
-            }
 
-            {
-                float viewWidth = rv.getWidth();
-                float viewPinPoint = viewWidth / 4;
+                {
+                    float viewWidth = rv.getWidth();
+                    float viewPinPoint = viewWidth / 3;
 
-                if (viewWidth - viewPinPoint < e.getX()) {
-                    scrollX = (int) (30 * (e.getX() / viewWidth));
-                } else if (viewPinPoint > e.getX()) {
-                    scrollX = (int) (-30 / Math.max(e.getX() / viewPinPoint, 1f));
+                    if (viewWidth - viewPinPoint < e.getX()) {
+                        scrollX = (int) (30 * (e.getX() / viewWidth));
+                    } else if (viewPinPoint > e.getX()) {
+                        scrollX = (int) (-30 / Math.max(e.getX() / viewPinPoint, 1f));
+                    }
                 }
-            }
 
-            rv.scrollBy(scrollX, scrollY);
+                rv.scrollBy(scrollX, scrollY);
+            }
         }
     }
 
