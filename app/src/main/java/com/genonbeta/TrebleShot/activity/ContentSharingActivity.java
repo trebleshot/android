@@ -59,20 +59,6 @@ public class ContentSharingActivity extends Activity
         mSelectionCallback = new SharingActionModeCallback(null);
         final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
 
-        /*
-        final EditableListFragment.LayoutClickListener groupLayoutClickListener
-                = new EditableListFragment.LayoutClickListener()
-        {
-            @Override
-            public boolean onLayoutClick(EditableListFragment listFragment, EditableListAdapter.EditableViewHolder holder, boolean longClick)
-            {
-                if (longClick)
-                    return listFragment.onDefaultClickAction(holder);
-
-                return selectorConnection.setSelected(holder);
-            }
-        };*/
-
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
         {
             @Override
@@ -91,9 +77,11 @@ public class ContentSharingActivity extends Activity
         };
 
         //mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
+        Bundle fileExplorerArgs = new Bundle();
+        fileExplorerArgs.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
 
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null)
+        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, fileExplorerArgs)
                 .setTitle(getString(R.string.text_files)));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, MusicListFragment.class, null));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, ImageListFragment.class, null));

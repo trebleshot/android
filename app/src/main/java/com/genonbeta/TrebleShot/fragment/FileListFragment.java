@@ -57,6 +57,9 @@ public class FileListFragment
     public final static String EXTRA_FILE_NAME = "extraFile";
     public final static String EXTRA_FILE_LOCATION = "extraFileLocation";
 
+    public final static String ARG_SELECT_BY_CLICK = "argSelectByClick";
+
+    private boolean mSelectByClick = false;
     private DocumentFile mLastKnownPath;
     private IntentFilter mIntentFilter = new IntentFilter();
     private MediaScannerConnection mMediaScanner;
@@ -165,6 +168,11 @@ public class FileListFragment
         setDefaultSortingCriteria(FileListAdapter.MODE_SORT_BY_NAME);
         setDefaultGroupingCriteria(FileListAdapter.MODE_GROUP_BY_DEFAULT);
         setDefaultSelectionCallback(new SelectionCallback(this));
+
+        if (getArguments() != null) {
+            if (getArguments().containsKey(ARG_SELECT_BY_CLICK))
+                mSelectByClick = getArguments().getBoolean(ARG_SELECT_BY_CLICK, false);
+        }
     }
 
     @Override
@@ -499,7 +507,7 @@ public class FileListFragment
 
     public void requestMountStorage()
     {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP)
+        if (Build.VERSION.SDK_INT < 21)
             return;
 
         startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE), REQUEST_WRITE_ACCESS);
@@ -515,8 +523,9 @@ public class FileListFragment
             if (fileInfo.getViewType() == GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
                     && fileInfo.getRequestCode() == FileListAdapter.REQUEST_CODE_MOUNT_FOLDER)
                 requestMountStorage();
-            else if (fileInfo instanceof FileListAdapter.FileHolder)
-                return super.performLayoutClick(holder);
+            else if (fileInfo instanceof FileListAdapter.FileHolder
+                    && mSelectByClick && getSelectionConnection() != null)
+                return getSelectionConnection().setSelected(holder);
             else if (fileInfo instanceof FileListAdapter.DirectoryHolder
                     || fileInfo instanceof FileListAdapter.WritablePathHolder) {
                 FileListFragment.this.goPath(fileInfo.file);
@@ -535,7 +544,8 @@ public class FileListFragment
                                 }
                             })
                             .show();
-            }
+            } else
+                return super.performLayoutClick(holder);
 
             return true;
         } catch (NotReadyException e) {
