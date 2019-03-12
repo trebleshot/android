@@ -17,6 +17,13 @@
             android:title="@string/text_applyDarkTheme" />
 
         <CheckBoxPreference
+            android:dependency="dark_theme"
+            android:defaultValue="false"
+            android:key="amoled_theme"
+            android:summary="@string/text_amoledOptimizedBlackThemeSummary"
+            android:title="@string/text_amoledOptimizedBlackTheme" />
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:key="custom_fonts"
             android:summary="@string/const_text_useAppFontsSummary"

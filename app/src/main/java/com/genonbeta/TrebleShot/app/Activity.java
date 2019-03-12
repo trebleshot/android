@@ -51,6 +51,7 @@ public abstract class Activity extends AppCompatActivity
     private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
     private AlertDialog mOngoingRequest;
     private boolean mDarkThemeRequested = false;
+    private boolean mAmoledDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;
     private boolean mCustomFontsEnabled = false;
     private boolean mSkipPermissionRequest = false;
@@ -61,6 +62,7 @@ public abstract class Activity extends AppCompatActivity
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         mDarkThemeRequested = isDarkThemeRequested();
+        mAmoledDarkThemeRequested = isAmoledDarkThemeRequested();
         mCustomFontsEnabled = isUsingCustomFonts();
 
         if (mDarkThemeRequested) {
@@ -96,8 +98,12 @@ public abstract class Activity extends AppCompatActivity
 
                 mThemeLoadingFailed = appliedRes == 0;
 
-                if (!mThemeLoadingFailed)
+                if (!mThemeLoadingFailed) {
                     setTheme(appliedRes);
+
+                    if (mAmoledDarkThemeRequested)
+                        getTheme().applyStyle(R.style.BlackPatch, true);
+                }
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
@@ -124,7 +130,9 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onResume();
 
-        if ((mDarkThemeRequested != isDarkThemeRequested() && !mThemeLoadingFailed)
+        if (((mDarkThemeRequested != isDarkThemeRequested()
+                || (isDarkThemeRequested() && mAmoledDarkThemeRequested != isAmoledDarkThemeRequested()))
+                && !mThemeLoadingFailed)
                 || mCustomFontsEnabled != isUsingCustomFonts())
             recreate();
 
@@ -359,6 +367,11 @@ public abstract class Activity extends AppCompatActivity
     {
         return getDefaultPreferences().
                 getBoolean("introduction_shown", false);
+    }
+
+    public boolean isAmoledDarkThemeRequested()
+    {
+        return getDefaultPreferences().getBoolean("amoled_theme", false);
     }
 
     public boolean isDarkThemeRequested()

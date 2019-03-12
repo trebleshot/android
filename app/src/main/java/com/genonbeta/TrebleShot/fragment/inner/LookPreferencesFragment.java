@@ -42,7 +42,8 @@ public class LookPreferencesFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        if (("custom_fonts".equals(key) || "dark_theme".equals(key)) && getActivity() != null) {
+        if (("custom_fonts".equals(key) || "dark_theme".equals(key) || "amoled_theme".equals(key))
+                && getActivity() != null) {
             PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(getContext()),
                     AppUtils.getDefaultPreferences(getContext()).getWeakManager());
 

@@ -17,6 +17,16 @@
         <item name="statusBarColor">@color/dark_colorShadowEnd</item>
     </style>
 
+    <style name="BlackPatch">
+        <item name="backgroundDialog">@drawable/background_dialog_black</item>
+        <item name="backgroundPopupMenu">@drawable/background_popup_black</item>
+        <item name="colorPrimary">@color/black_dominant</item>
+        <item name="colorPrimaryDark">@color/black_dominant</item>
+        <item name="colorPrimaryDark23">@color/black_dominant</item>
+        <item name="colorSurface">@color/black_surface</item>
+        <item name="android:windowBackground">@color/black_dominant</item>
+    </style>
+
     <!-- generalization end -->
 
     <style name="Widget.TrebleShot.DialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog">

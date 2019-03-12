@@ -7,6 +7,12 @@
         android:key="dark_theme"
         android:title="@string/text_applyDarkTheme" />
 
+    <CheckBoxPreference
+        android:dependency="dark_theme"
+        android:defaultValue="false"
+        android:key="amoled_theme"
+        android:title="@string/text_amoledOptimizedBlackTheme" />
+
     <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="custom_fonts"

@@ -18,6 +18,14 @@
             android:title="@string/text_applyDarkTheme" />
 
         <CheckBoxPreference
+            android:dependency="dark_theme"
+            android:defaultValue="false"
+            android:icon="@drawable/ic_invert_colors_black_24dp"
+            android:key="amoled_theme"
+            android:summary="@string/text_amoledOptimizedBlackThemeSummary"
+            android:title="@string/text_amoledOptimizedBlackTheme" />
+
+        <CheckBoxPreference
             android:defaultValue="false"
             android:icon="@drawable/ic_short_text_white_24dp"
             android:key="custom_fonts"

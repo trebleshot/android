@@ -33,11 +33,12 @@
     <color name="dark_colorOnPrimary">@color/dark_colorControlNormal</color>
     <color name="dark_colorOnSecondary">@color/dark_colorControlNormal</color>
     <color name="dark_colorPrimary">#263238</color>
-    <color name="dark_colorPrimaryDark">#263238</color>
+    <color name="dark_colorPrimaryDark">@color/dark_colorPrimary</color>
     <color name="dark_colorSecondary">#36bf6f</color>
+
     <color name="dark_colorSurface">#37474f</color>
-    <color name="dark_windowBackground">#263238</color>
-    <color name="dark_colorPrimaryDark23">#263238</color>
+    <color name="dark_windowBackground">@color/dark_colorPrimary</color>
+    <color name="dark_colorPrimaryDark23">@color/dark_colorPrimary</color>
     <!-- local coloring-->
     <color name="dark_colorDonation">#f44336</color>
     <color name="dark_colorDivider">#323844</color>
@@ -47,4 +48,11 @@
     <color name="dark_colorShadowEnd">#500E171A</color>
     <color name="dark_colorTranslucent">#b000</color>
     <color name="dark_contentShowingBackground">#616161</color>
+
+
+    <!-- SEPERATOR -->
+
+
+    <color name="black_dominant">#000</color>
+    <color name="black_surface">#222</color>
 </resources>
