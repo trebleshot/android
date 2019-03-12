@@ -25,6 +25,8 @@
         <item name="colorPrimaryDark23">@color/black_dominant</item>
         <item name="colorSurface">@color/black_surface</item>
         <item name="android:windowBackground">@color/black_dominant</item>
+
+        <item name="colorDivider">@color/black_surface</item>
     </style>
 
     <!-- generalization end -->
