@@ -1,6 +1,6 @@
 language: android
 jdk:
-    - oraclejdk8
+  - oraclejdk8
 android:
   components:
     - tools
@@ -27,6 +27,7 @@ branches:
   except:
     - # Do not build tags that we create when we upload to GitHub Releases
     - /^(?i:continuous)/
+    - /^[0-9\.]*$/
 
 
     
