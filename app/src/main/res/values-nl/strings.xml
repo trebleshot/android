@@ -467,4 +467,6 @@
     <string name="const_text_useAppFonts">Aanbevolen lettertype toepassen</string>
     <string name="const_text_useAppFontsSummary">Meegeleverd aangepast lettertype gebruiken</string>
     <string name="mesg_waiting">Bezig met wachten...</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimaliseren voor AMOLED-schermen</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Donkerder kleuren gebruiken</string>
 </resources>
