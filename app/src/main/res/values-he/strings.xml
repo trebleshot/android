@@ -438,4 +438,6 @@
     <string name="const_text_useAppFonts">החלת הגופן המומלץ</string>
     <string name="const_text_useAppFontsSummary">החלת הגופן המותאם שסופק</string>
     <string name="mesg_waiting">בהמתנה</string>
+    <string name="text_amoledOptimizedBlackTheme">מיטוב למסכי AMOLED</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">שימוש בצבעים כהים יותר</string>
 </resources>
