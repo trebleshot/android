@@ -25,7 +25,7 @@
     <string name="mesg_formatNotSupported">Biçim desteklenmiyor</string>
     <string name="mesg_fileSendError">Dosya gönderilirken birşeyler ters gitti. %s</string>
     <string name="mesg_fileReceived">%s dosyası alındı</string>
-    <string name="mesg_fileReceiveError">%s dosyası alınırken birşeyler ters gitti</string>
+    <string name="mesg_fileReceiveError">%s dosyası alınırken birşeyler ters gitti.</string>
     <string name="text_multipleFileReceiveCompleted">Dosyalar alındı</string>
     <string name="text_deviceList">Cihazlar</string>
     <string name="text_fileOpenAppChoose">Bir uygulama ile açın</string>
@@ -97,7 +97,7 @@
     <string name="text_textStream">Metin akışı</string>
     <string name="butn_wifiSettings">Kablosuz</string>
     <string name="text_pendingTransfers">Bekleyen aktarımlar</string>
-    <string name="text_cancellingTransfer">İşlem iptal ediliyor</string>
+    <string name="text_cancellingTransfer">İşlem iptal ediliyor…</string>
     <string name="text_noNetworkAvailable">Kullanılabilir ağ yok</string>
     <string name="text_removeCertainPendingTransfersSummary">Bu, burada görmüş olduğunuz bekleyen aktarımlar kaldıracak</string>
     <string name="text_removeDeviceNotice">Bir cihazı sildiğinizde alakalı gereksiz şeyler de beraberinde silinir</string>
@@ -129,7 +129,7 @@
     <string name="text_createFolder">Klasör oluştur</string>
     <string name="mesg_fileAlreadyExists">Dosya zaten var</string>
     <string name="mesg_folderCreateError">Klasör oluşturulamadı</string>
-    <string name="text_requestPermissionStorageSummary">TrebleShot izin olmadan dosyaları gönderemez ve alamaz</string>
+    <string name="text_requestPermissionStorageSummary">TrebleShot izin olmadan dosyaları gönderemez ve alamaz.</string>
     <string name="butn_settings">Ayarlar</string>
     <string name="butn_selectThis">Bunu seç</string>
     <string name="butn_newFile">Yeni dosya</string>
@@ -165,7 +165,7 @@
     <string name="text_fileStatus">Dosya durumu</string>
     <string name="butn_resume">Devam ettir</string>
     <string name="text_longAgo">Uzun zaman önce</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
+    <string name="text_interfaceWifiDirect">Doğrudan Wi-Fi</string>
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
@@ -422,4 +422,6 @@
     <string name="const_text_useAppFonts">Tavsiye edilen yazı tipini kullan</string>
     <string name="const_text_useAppFontsSummary">Birlikte gelen yazı tipi</string>
     <string name="mesg_waiting">Bekliyor</string>
+    <string name="text_amoledOptimizedBlackTheme">AMOLED Ekranlar için iyileştir</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Daha karanlık renkler kullan</string>
 </resources>
