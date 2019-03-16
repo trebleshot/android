@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">Ireki nabigazioaren tiradera</string>
+<resources>
+    <string name="text_navigationDrawerOpen">Ireki nabigazioaren tiradera</string>
     <string name="text_navigationDrawerClose">Itxi nabigazioaren tiradera</string>
     <string name="text_preferences">Hobespenak</string>
     <string name="mesg_connectionFailure">Konexioak huts egin du</string>
@@ -355,14 +356,14 @@
     <string name="text_thirdPartyLibraries">Hirugarrengoen liburutegiak</string>
     <string name="text_killServiceAfterLeavingSummary">Komunikazioa eteten du jarduerarik ez badago</string>
     <string name="text_killServiceAfterLeaving">Aplikaziotik irteteak zerbitzua eteten du</string>
-<string name="butn_donate">Lagundu garapena</string>
-<string name="text_emptySymbol">-</string>
+    <string name="butn_donate">Lagundu garapena</string>
+    <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d / %2d</string>
     <string name="text_donate">Lagundu garapena</string>
     <string name="mesg_donationSuccessful">Eskerrik asko!</string>
     <string name="msg">Dohaintza</string>
-<string name="butn_open">Ireki</string>
-<string name="butn_pause">Pausatu</string>
+    <string name="butn_open">Ireki</string>
+    <string name="butn_pause">Pausatu</string>
     <string name="butn_retry">Saiatu berriro</string>
     <string name="mesg_noPendingTransferObjectExists">Ez dago transferentziarik egiteke. Eten diren fitxategiak osatzeko, erabili \'Berriro saiatu\' aukera.</string>
     <string name="mesg_notSavingToChosenLocation">Eskatu duzun karpeta ez dago eskuragarri. Fitxategiak lehenetsitako karpetan gordeko dira.
@@ -373,12 +374,12 @@
     <string name="text_changelog">Aldaketa-egunkaria</string>
     <string name="mesg_versionUpdatedChangelog">TrebleShot eguneratu duzu, zer aldatu den ikusi nahi duzu\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">\'Aldaketa-egunkaria\' gero ere \'Honi buruz\' atalean aurkitu dezakezu</string>
-<string name="mesg_noInternetConnection">Honek Internetera konexioa behar du</string>
-<string name="text_applyDarkTheme">Modu iluna</string>
+    <string name="mesg_noInternetConnection">Honek Internetera konexioa behar du</string>
+    <string name="text_applyDarkTheme">Modu iluna</string>
     <string name="text_applyDarkThemeSummary">Erabili gai iluna estiloa</string>
     <string name="butn_allow">Baimendu</string>
     <string name="butn_telegram_channel">Telegram kanala</string>
-<string name="text_listEmptyTransfer">Transferentzia guztiak hemen agertzen dira</string>
+    <string name="text_listEmptyTransfer">Transferentzia guztiak hemen agertzen dira</string>
     <string name="text_transfers">Transferentziak</string>
     <string name="butn_connectionDetails">Konexioaren xehetasunak</string>
     <string name="butn_useKnownDevice">Erabili gailu ezagunak</string>
@@ -436,4 +437,9 @@
     <string name="butn_connectionTest">Konexio proba</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Indargabetu PINa</string>
+    <string name="const_text_useAppFonts">Aplikatu aholkatutako tipografia</string>
+    <string name="const_text_useAppFontsSummary">Erabili emandako tipografia pertsonalizatua</string>
+    <string name="mesg_waiting">Itxaroten</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimizatu AMOLED pantailetarako</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Erabili kolore ilunagoak</string>
 </resources>

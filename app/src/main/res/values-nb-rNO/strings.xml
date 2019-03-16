@@ -464,4 +464,6 @@
     <string name="const_text_useAppFonts">Bruk anbefalt skrift</string>
     <string name="const_text_useAppFontsSummary">Bruk medfølgende tilpasset skrift</string>
     <string name="mesg_waiting">Venter</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimaliser for AMOLED-skjermer</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Bruk mørkere farger</string>
 </resources>

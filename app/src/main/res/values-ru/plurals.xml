@@ -49,4 +49,9 @@
         <item quantity="few">%d минуты назад</item>
         <item quantity="many">%d минут назад</item>
     </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d файл удален</item>
+        <item quantity="few">%d файла удалено</item>
+        <item quantity="many">%d файлов удалено</item>
+    </plurals>
 </resources>

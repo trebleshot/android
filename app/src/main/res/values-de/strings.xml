@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">Seitennavigation öffnen</string>
     <string name="text_navigationDrawerClose">Seitennavigation schließen</string>
@@ -227,7 +227,7 @@
     <string name="butn_disconnect">Trennen</string>
     <string name="text_trebleshotHotspotDescription">Dateien können direkt über dieses offene Netzwerk geteilt werden, das von einem anderen TrebleShot-Gerät erstellt wird.</string>
     <string name="mesg_connectingToSelfHotspot">Verbinden mit TrebleShot-Hotspot</string>
-    <string name="mesg_warningHotspotMobileActive">Verbundene Geräte können Ihre Mobilfunkdaten verwenden. Sie sollten es vielleicht ausschalten.</string>
+    <string name="mesg_warningHotspotMobileActive">Verbundene Geräte können Ihre Mobilfunkdaten verbrauchen. Evtl. wollen Sie diese ausschalten.</string>
     <string name="butn_skip">Überspringen</string>
     <string name="mesg_scanningSelfHotspot">Nach TrebleShot-Hotspot suchen</string>
     <string name="mesg_suggestSelfHotspot">WLAN aktivieren, um nach einem TrebleShot-Hotspot zu suchen</string>
@@ -327,7 +327,7 @@
     <string name="text_qrAllowTrustZoneSummary">TrustZone für QR-Code-Verbindungen erlauben</string>
     <string name="text_translateTrebleshot">Hilf uns übersetzen</string>
     <string name="text_contributors">Ermöglicht durch</string>
-<string name="butn_gridSize">Gittergröße</string>
+    <string name="butn_gridSize">Gittergröße</string>
     <string name="butn_singleRow">Einzelne Zeile</string>
     <string name="butn_groupBy">Gruppieren nach</string>
     <string name="text_photo">Foto</string>
@@ -370,15 +370,15 @@
     <string name="mesg_notSavingToChosenLocation">Ihr gewünschter Ordner ist nicht zugänglich. Die Dateien werden im Standardordner gespeichert.
 \n 
 \n%s</string>
-    <string name="butn_changelog">Changelog</string>
-    <string name="text_changelog">Changelog</string>
-    <string name="mesg_versionUpdatedChangelog">Sie haben TrebleShot aktualisiert, möchten Sie Neuigkeiten sehen\?</string>
-    <string name="mesg_versionUpdatedChangelogRejected">Du kannst jederzeit \'Changelog\' unter \'Über\' wählen</string>
-	<string name="mesg_noInternetConnection">Dies benötigt eine Internetverbindung</string>
-<string name="text_applyDarkTheme">Dunkler Modus</string>
+    <string name="butn_changelog">Änderungsprotokoll</string>
+    <string name="text_changelog">Änderungsprotokoll</string>
+    <string name="mesg_versionUpdatedChangelog">Sie haben TrebleShot aktualisiert, möchten Sie das Änderungsprotokoll sehen\?</string>
+    <string name="mesg_versionUpdatedChangelogRejected">Das \'Änderungsprotokoll\' ist immer im Menü \'Über\' zu finden</string>
+    <string name="mesg_noInternetConnection">Dafür wird eine Internetverbindung benötigt</string>
+    <string name="text_applyDarkTheme">Dunkler Modus</string>
     <string name="text_applyDarkThemeSummary">Verwenden Sie das dunkle Stil-Thema</string>
     <string name="butn_allow">Erlauben</string>
-    <string name="butn_telegram_channel">Telegram-kanal</string>
+    <string name="butn_telegram_channel">Telegram-Kanal</string>
     <string name="text_listEmptyTransfer">Alle Übertragungen werden hier angezeigt</string>
     <string name="text_transfers">Übertragungen</string>
     <string name="butn_connectionDetails">Verbindungsdetails</string>
@@ -419,4 +419,27 @@
     <string name="butn_help">Hilfe</string>
     <string name="butn_choose">Wählen</string>
     <string name="butn_fixConnection">Fixe Verbindung</string>
-    </resources>
+    <string name="butn_never">Niemals</string>
+    <string name="text_hotspotStartedExternallyNotice">Der Hotspot wurde nicht aus der App gestartet. Um einen QR-Code zu nutzen, solltest du den Hotspot hier starten.</string>
+    <string name="text_shortcut">Verknüpfung</string>
+    <string name="butn_addShortcut">Verknüpfung hinzufügen</string>
+    <string name="butn_removeShortcut">Verknüpfung entfernen</string>
+    <string name="mesg_removed">Entfernt</string>
+    <string name="mesg_added">Hinzugefügt</string>
+    <string name="butn_change">Ändern</string>
+    <string name="text_welcome">Willkommen</string>
+    <string name="text_introMakeItYours">Mache es für dich passend</string>
+    <string name="text_introSetUpPermissions">Berechtigungen setzen</string>
+    <string name="text_introAllSet">Eingerichtet!</string>
+    <string name="text_introSetUpProfile">Profil einrichten</string>
+    <string name="mesg_openFailure">\"%s\" kann nicht geöffnet werden</string>
+    <string name="text_connectionTest">Verbindungstest - %s</string>
+    <string name="butn_connectionTest">Verbindungstest</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">PIN zurückziehen</string>
+    <string name="const_text_useAppFonts">Empfohlene Schriftart setzen</string>
+    <string name="const_text_useAppFontsSummary">Benutze die mitgelieferte angepasste Schriftart</string>
+    <string name="mesg_waiting">Warten...</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimiert für AMOLED Bildschirm</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Benutze dunklere Farben</string>
+</resources>

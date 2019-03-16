@@ -438,4 +438,6 @@
     <string name="const_text_useAppFonts">Zastosuj zalecaną czcionkę</string>
     <string name="const_text_useAppFontsSummary">Użyj dostarczonej czcionki niestandardowej</string>
     <string name="mesg_waiting">Czekaj</string>
+    <string name="text_amoledOptimizedBlackTheme">Optymalizuj do ekranów AMOLED</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">żyj ciemniejszych kolorów</string>
 </resources>
