@@ -98,6 +98,8 @@ public class CommunicationService extends Service
     public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
     public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
     public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
+    public static final String ACTION_TRUSTZONE_STATUS = "com.genonbeta.TrebleShot.transaction.action.TRUSTZONE_STATUS";
+    public static final String ACTION_REQUEST_TRUSTZONE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TRUSTZONE_STATUS";
 
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -388,6 +390,8 @@ public class CommunicationService extends Service
             } else if (ACTION_REVOKE_ACCESS_PIN.equals(intent.getAction())) {
                 revokePinAccess();
                 refreshServiceState();
+            } else if (ACTION_REQUEST_TRUSTZONE_STATUS.equals(intent.getAction())) {
+                sendTrustZoneStatus();
             }
         }
 
@@ -588,6 +592,12 @@ public class CommunicationService extends Service
         }
     }
 
+    public void sendTrustZoneStatus()
+    {
+        sendBroadcast(new Intent(ACTION_TRUSTZONE_STATUS)
+                .putExtra(EXTRA_STATUS_STARTED, mSeamlessMode));
+    }
+
     public void startFileReceiving(long groupId, String deviceId) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
     {
         // it should create its own devices
@@ -601,8 +611,12 @@ public class CommunicationService extends Service
 
     public void updateServiceState(boolean seamlessMode)
     {
+        boolean broadcastStatus = mSeamlessMode != seamlessMode;
         mSeamlessMode = seamlessMode;
         mPinAccess = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1) != -1;
+
+        if (broadcastStatus)
+            sendTrustZoneStatus();
 
         startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
                 getNotificationHelper()

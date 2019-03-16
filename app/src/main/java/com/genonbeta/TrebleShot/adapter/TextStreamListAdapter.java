@@ -64,11 +64,16 @@ public class TextStreamListAdapter
 
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
+                TextView text3 = parentView.findViewById(R.id.text3);
 
                 parentView.setSelected(object.isSelectableSelected());
 
                 text1.setText(object.text);
                 text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));
+                text3.setVisibility(getGroupBy() != MODE_GROUP_BY_DATE ? View.VISIBLE : View.GONE);
+
+                if (getGroupBy() != MODE_GROUP_BY_DATE)
+                    text3.setText(getSectionNameDate(object.date));
             }
         } catch (Exception e) {
 
