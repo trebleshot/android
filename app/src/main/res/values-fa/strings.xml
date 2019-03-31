@@ -1,5 +1,6 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><string name="text_navigationDrawerOpen">منوی ناوبری را باز کنید</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="text_navigationDrawerOpen">منوی ناوبری را باز کنید</string>
     <string name="text_navigationDrawerClose">منوی ناوبری را ببندید</string>
     <string name="text_preferences">تنظیمات</string>
     <string name="mesg_connectionFailure">اتصال ناموفق</string>
@@ -153,11 +154,11 @@
     <string name="text_chooseFile">انتخاب فایل</string>
     <string name="mesg_pathSameError">شما نمیتوانید پوشه قدیمی را برگزینید</string>
     <string name="ques_checkOldFiles">انتقال پرونده‌ها انجام شود؟</string>
-    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این پوشه منتقل کنید که این کار ممکن است بسته به حجم پرونده‌ها، مدتی طول بکشد.</string>
+    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این پوشه منتقل کنید و این کار ممکن است بسته به حجمشان مدتی طول بکشد.</string>
     <string name="mesg_newFilesReceived">فایل های جدید دریافت شدند</string>
     <string name="butn_show">نمایش</string>
     <string name="text_preparingFiles">اماده سازی فایل ها</string>
-    <string name="text_savingDetails">ذخیره جزئیات قبل دریافت</string>
+    <string name="text_savingDetails">ذخیره جزئیات</string>
     <string name="text_version">نسخه</string>
     <string name="text_flagPending">درحال انتظار</string>
     <string name="text_flagRunning">درحال اجرا</string>
@@ -197,7 +198,7 @@
     <string name="butn_turnTrustZoneOn">روشن کردن منطقه‌مطمئن</string>
     <string name="butn_turnTrustZoneOff">خاموش کردن منطقه‌مطمئن</string>
     <string name="text_trustZoneEnabled">منطقه‌مطمئن</string>
-    <string name="text_trustZoneEnabledSummary">همیشه با منطقه‌مطمئن روشن شروع به کار کن</string>
+    <string name="text_trustZoneEnabledSummary">منطقه مطمئن در ابتدای کار فعال شده است</string>
     <string name="butn_typeNewEntry">ورود مدخل جدید</string>
     <string name="butn_download">بارگیری</string>
     <string name="mesg_clipboardUpdateNotice">برای خروج متن را بازبینی کرده و یا دوباره فشار دهید</string>
@@ -232,8 +233,8 @@
     <string name="text_sortByName">نام</string>
     <string name="text_sortByDate">تاریخ</string>
     <string name="text_sortBySize">حجم</string>
-    <string name="text_trustZoneDeviceNotice">به این دستگاه اجازه داده شود که در صورت روشن بودن منطقه‌مطمئن، بدون اعلان به شما پرونده بفرستد</string>
-    <string name="text_allowingToConnectNotice">اگر انتخاب شده باشد، این وسیله می‌تواند به شما وصل شود</string>
+    <string name="text_trustZoneDeviceNotice">در زمان روشن بودن منطقه امن، بصورت خودکار موارد دریافتی را بپذیر</string>
+    <string name="text_allowingToConnectNotice">اجازه اتصال از این دستگاه را بده</string>
     <string name="butn_resetToDefault">بازنشانی به تنظیمات پیش‌فرض</string>
     <string name="text_resetPreferencesToDefaultSummary">این کار، تنظیمات اولیه را برخواهند گرداند</string>
     <string name="text_taskCompleted">وظیفه تکمیل شد</string>
@@ -270,7 +271,7 @@
     <string name="text_networkServiceDiscovery">فعال‌کردن NSD</string>
     <string name="mesg_updateDownloadComplete">به‌روزرسانی با موفقیت دریافت و در پرونده‌های دریافتی‌تان دخیر ه شد</string>
     <string name="mesg_listRefreshSnoozed">سیاهه به محض دردسترس بودن تازه‌سازی خواهند شد</string>
-    <string name="mesg_errorReadFolder">ناتوانی در دسترسی به پوشه «%s»</string>
+    <string name="mesg_errorReadFolder">دسترسی امکان پذیر نیست «%s»</string>
     <string name="mesg_mountDirectoryHelp">پوشه مورد نظر خود را انتخاب کنید</string>
     <string name="mesg_wifiEnableRequired">لطفا برای اتصال، وای‌فای را فعال کنید</string>
     <string name="text_notificationSettingsSummary">بازکردن تنظیمات اعلان</string>
@@ -318,5 +319,24 @@
     <string name="text_applyDarkTheme">پوسته تیره</string>
     <string name="text_applyDarkThemeSummary">استفاده از پوسته تیره</string>
     <string name="butn_telegram_channel">کانال تلگرام</string>
-<string name="text_useLights">روشنایی</string>
-    </resources>
+    <string name="text_useLights">روشنایی</string>
+    <string name="text_useVibration">لرزش و اعلان ها</string>
+    <string name="text_useVibrationSummary">استفاده از لرزش و اعلان ها</string>
+    <string name="butn_killNow">قطع کن</string>
+    <string name="text_transactionGroupDetails">جزئیات گروه تبادل</string>
+    <string name="text_remainingTime">زمان باقی مانده %s</string>
+    <string name="mesg_errorHotspotPermission">برنامه برای تنظیم hotspot نیاز به مجوز دارد</string>
+    <string name="text_trebleshotHotspotDescription">شما میتوانید از طریق شبکه ساخته شده توسط دستگاه نزدیکتان، فایل ها را به طور مستقیم انتقال دهید.</string>
+    <string name="mesg_connectingToSelfHotspot">در حال اتصال به شکبه تربل شات</string>
+    <string name="mesg_warningHotspotMobileActive">دستگاه های متصل شده ممکن است از اینترنت تلفن همراه شما استفاده کنند. شاید بخواهید آن را خاموش کنید.</string>
+    <string name="mesg_scanningSelfHotspot">در حال جستجوی شبکه</string>
+    <string name="mesg_suggestSelfHotspot">با روشن کردن وای فای میتوانید به جستجوی شبکه بپردازید</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">به برنامه اجازه جستجو و ایجاد شبکه دهید</string>
+    <string name="mesg_locationDisabledSelfHotspot">برای دیدن نتیجه بررسی و ساخت شبکه «موقعیت مکانی» را روشن کنید</string>
+    <string name="mesg_stoppingSelfHotspot">در حال متوقف کردن شبکه</string>
+    <string name="mesg_startingSelfHotspot">در حال راه اندازی شبکه</string>
+    <string name="mesg_retryReceivingNotice">برنامه برای دریافت انتقالی های مختل شده تلاش می کند</string>
+    <string name="text_location">مکان</string>
+    <string name="butn_saveAnyway">ذخیره کن</string>
+    <string name="ques_saveAnyway">ذخیره شود؟</string>
+</resources>
