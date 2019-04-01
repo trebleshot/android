@@ -438,4 +438,6 @@
     <string name="const_text_useAppFonts">Använd det rekommenderade typsnittet</string>
     <string name="const_text_useAppFontsSummary">Använd den medföljande anpassade typsnittet</string>
     <string name="mesg_waiting">Väntar</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimera för AMOLED-skärmar</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Använd mörkare färger</string>
 </resources>

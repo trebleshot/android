@@ -446,4 +446,6 @@
     <string name="const_text_useAppFonts">使用推荐的字体</string>
     <string name="const_text_useAppFontsSummary">使用预提供的自定义字体</string>
     <string name="mesg_waiting">等待中</string>
+    <string name="text_amoledOptimizedBlackTheme">为AMOLED屏优化</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
 </resources>
