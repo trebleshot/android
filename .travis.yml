@@ -25,7 +25,7 @@ after_success:
 
 branches:
   except:
-    - # Do not build tags that we create when we upload to GitHub Releases
+    # Do not build tags that we create when we upload to GitHub Releases
     - /^(?i:continuous)/
     - /^[0-9\.]*$/
 

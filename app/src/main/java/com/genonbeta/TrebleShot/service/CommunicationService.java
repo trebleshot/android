@@ -913,18 +913,25 @@ public class CommunicationService extends Service
                                 result = true;
                                 break;
                             case (Keyword.REQUEST_START_TRANSFER):
-                                if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
+                                if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)
+                                        && device.isTrusted) {
                                     int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
 
                                     try {
+                                        TransferGroup group = new TransferGroup(groupId);
+                                        getDatabase().reconstruct(group);
+
                                         ProcessHolder process = findProcessById(groupId, device.deviceId);
 
                                         if (process == null) {
                                             startFileReceiving(groupId, device.deviceId);
                                             result = true;
-                                        }
+                                        } else
+                                            responseJSON.put(Keyword.ERROR,
+                                                    Keyword.ERROR_NOT_ACCESSIBLE);
                                     } catch (Exception e) {
                                         // do nothing
+                                        responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_FOUND);
                                     }
                                 }
                                 break;
@@ -1291,9 +1298,10 @@ public class CommunicationService extends Service
 
                         try {
                             TransferObject firstAvailableTransfer = TransferUtils
-                                    .fetchValidIncomingTransfer(CommunicationService.this,
+                                    .fetchValidTransfer(CommunicationService.this,
                                             processHolder.groupId,
-                                            processHolder.deviceId);
+                                            processHolder.deviceId,
+                                            processHolder.type);
 
                             if (firstAvailableTransfer == null) {
                                 Log.d(TAG, "SeamlessClientHandler(): Exiting because there is no pending file instance left");

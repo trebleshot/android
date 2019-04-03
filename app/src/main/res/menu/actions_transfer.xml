@@ -14,7 +14,7 @@
         android:visible="false" />
 
     <item
-        android:id="@+id/actions_transfer_receiver_test_connection"
+        android:id="@+id/actions_transfer_test_connection"
         android:title="@string/butn_connectionTest"
         android:visible="false" />
 

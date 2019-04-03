@@ -10,10 +10,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
+import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -26,7 +28,11 @@ import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.genonbeta.android.framework.util.Interrupter;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -81,10 +87,10 @@ public class TransferUtils
                         String.valueOf(groupId), deviceId, flag.toString());
     }
 
-    public static ShowingAssignee getFirstAssignee(AccessDatabase database, TransferGroup group)
+    public static ShowingAssignee getFirstAssignee(AccessDatabase database, long groupId)
     {
         SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(group.groupId));
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
         List<ShowingAssignee> assignees = database
                 .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
@@ -107,9 +113,9 @@ public class TransferUtils
         return assignees.size() == 0 ? null : assignees.get(0);
     }
 
-    public static ShowingAssignee getFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, TransferGroup group)
+    public static ShowingAssignee getFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, long groupId)
     {
-        ShowingAssignee assignee = getFirstAssignee(database, group);
+        ShowingAssignee assignee = getFirstAssignee(database, groupId);
 
         if (assignee == null) {
             snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
@@ -121,7 +127,47 @@ public class TransferUtils
         return assignee;
     }
 
-    public static TransferObject fetchValidIncomingTransfer(Context context, long groupId, String deviceId)
+    public static TransferObject fetchFirstTransfer(Context context, long groupId,
+                                                    TransferObject.Type type)
+    {
+        CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(new SQLQuery
+                .Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
+                                + AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
+                        type.toString(),
+                        String.valueOf(groupId))
+                .setOrderBy(String.format("`%s` ASC, `%s` ASC",
+                        AccessDatabase.FIELD_TRANSFER_DIRECTORY,
+                        AccessDatabase.FIELD_TRANSFER_NAME)));
+
+        return receiverInstance == null
+                ? null
+                : new TransferObject(receiverInstance);
+    }
+
+    public static TransferObject fetchValidTransfer(Context context, long groupId,
+                                                    TransferObject.Type type)
+    {
+        CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(new SQLQuery
+                .Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_TYPE + "=? AND "
+                                + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+                                + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
+                        type.toString(),
+                        String.valueOf(groupId),
+                        TransferObject.Flag.PENDING.toString())
+                .setOrderBy(String.format("`%s` ASC, `%s` ASC",
+                        AccessDatabase.FIELD_TRANSFER_DIRECTORY,
+                        AccessDatabase.FIELD_TRANSFER_NAME)));
+
+        return receiverInstance == null
+                ? null
+                : new TransferObject(receiverInstance);
+    }
+
+    public static TransferObject fetchValidTransfer(Context context, long groupId,
+                                                    String deviceId,
+                                                    TransferObject.Type type)
     {
         CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(new SQLQuery
                 .Select(AccessDatabase.TABLE_TRANSFER)
@@ -129,7 +175,7 @@ public class TransferUtils
                                 + AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                 + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=? AND "
                                 + AccessDatabase.FIELD_TRANSFER_FLAG + "=?",
-                        TransferObject.Type.INCOMING.toString(),
+                        type.toString(),
                         String.valueOf(groupId),
                         deviceId,
                         TransferObject.Flag.PENDING.toString())
@@ -185,6 +231,110 @@ public class TransferUtils
         AppUtils.startForegroundService(context, intent);
     }
 
+    public static void requestStartSending(final Activity activity, final TransferGroup group,
+                                           final TransferGroup.Assignee assignee,
+                                           final NetworkDevice device,
+                                           final NetworkDevice.Connection connection)
+    {
+        final Context context = activity.getApplicationContext();
+
+        WorkerService.RunningTask task = new WorkerService.RunningTask()
+        {
+            @Override
+            protected void onRun()
+            {
+                CommunicationBridge.Client client = new CommunicationBridge.Client(
+                        AppUtils.getDatabase(activity));
+
+                try {
+                    final CoolSocket.ActiveConnection activeConnection = client.communicate(device,
+                            connection);
+
+                    Interrupter.Closer connectionCloser = new Interrupter.Closer()
+                    {
+                        @Override
+                        public void onClose(boolean userAction)
+                        {
+                            try {
+                                activeConnection.getSocket().close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    };
+
+                    getInterrupter().addCloser(connectionCloser);
+
+                    JSONObject jsonRequest = new JSONObject();
+
+                    jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_START_TRANSFER);
+                    jsonRequest.put(Keyword.TRANSFER_GROUP_ID, group.groupId);
+
+                    activeConnection.reply(jsonRequest.toString());
+
+                    CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                    activeConnection.getSocket().close();
+                    getInterrupter().removeCloser(connectionCloser);
+
+                    JSONObject responseJSON = new JSONObject(response.response);
+
+                    if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
+                        activity.runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                                builder.setMessage(context.getString(R.string.mesg_notAllowed));
+                                builder.setNegativeButton(R.string.butn_close, null);
+
+                                builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        requestStartSending(activity, group, assignee, device,
+                                                connection);
+                                    }
+                                });
+
+                                builder.show();
+                            }
+                        });
+                } catch (Exception e) {
+                    if (!activity.isFinishing())
+                        activity.runOnUiThread(new Runnable()
+                        {
+                            @Override
+                            public void run()
+                            {
+                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                                builder.setMessage(context.getString(R.string.mesg_connectionFailure));
+                                builder.setNegativeButton(R.string.butn_close, null);
+
+                                builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+                                {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which)
+                                    {
+                                        requestStartSending(activity, group, assignee, device,
+                                                connection);
+                                    }
+                                });
+
+                                builder.show();
+                            }
+                        });
+                }
+            }
+        };
+
+        task.setTitle(activity.getString(R.string.mesg_communicating))
+                .run(activity);
+    }
+
     public static void recoverIncomingInterruptions(Context context, long groupId)
     {
         ContentValues contentValues = new ContentValues();
@@ -200,7 +350,9 @@ public class TransferUtils
                         TransferObject.Type.INCOMING.toString()), contentValues);
     }
 
-    public static void startTransferWithTest(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
+    public static void startTransferWithTest(final Activity activity, final TransferGroup group,
+                                             final TransferGroup.Assignee assignee,
+                                             final TransferObject.Type type)
     {
         final Context context = activity.getApplicationContext();
 
@@ -212,7 +364,8 @@ public class TransferUtils
                 if (activity.isFinishing())
                     return;
 
-                if (fetchValidIncomingTransfer(activity, group.groupId, assignee.deviceId) == null) {
+                if (fetchValidTransfer(activity, group.groupId, assignee.deviceId, type) == null
+                        && TransferObject.Type.INCOMING.equals(type)) {
                     activity.runOnUiThread(new Runnable()
                     {
                         @Override
@@ -222,53 +375,53 @@ public class TransferUtils
 
                             builder.setMessage(R.string.mesg_noPendingTransferObjectExists);
                             builder.setNegativeButton(R.string.butn_close, null);
+
                             builder.setPositiveButton(R.string.butn_retryReceiving, new DialogInterface.OnClickListener()
                             {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which)
                                 {
                                     recoverIncomingInterruptions(activity, group.groupId);
-                                    startTransferWithTest(activity, group, assignee);
+                                    startTransferWithTest(activity, group, assignee, type);
                                 }
                             });
 
                             builder.show();
                         }
                     });
-                } else {
-                    final String savingPath = FileUtils.getSavePath(activity, group).getUri().toString();
-
-                    if (!savingPath.equals(group.savePath)) {
-                        activity.runOnUiThread(new Runnable()
+                } else if (TransferObject.Type.INCOMING.equals(type) && !FileUtils.getSavePath(
+                        activity, group).getUri().toString().equals(group.savePath)) {
+                    activity.runOnUiThread(new Runnable()
+                    {
+                        @Override
+                        public void run()
                         {
-                            @Override
-                            public void run()
+                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+                            builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation, FileUtils.getReadableUri(group.savePath)));
+                            builder.setNegativeButton(R.string.butn_close, null);
+
+                            builder.setPositiveButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
                             {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-
-                                builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation, FileUtils.getReadableUri(group.savePath)));
-                                builder.setNegativeButton(R.string.butn_close, null);
-
-                                builder.setPositiveButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
+                                @Override
+                                public void onClick(DialogInterface dialog, int which)
                                 {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        startTransfer(activity, group, assignee);
-                                    }
-                                });
+                                    startTransfer(activity, group, assignee, type);
+                                }
+                            });
 
-                                builder.show();
-                            }
-                        });
-                    } else
-                        startTransfer(activity, group, assignee);
-                }
+                            builder.show();
+                        }
+                    });
+                } else
+                    startTransfer(activity, group, assignee, type);
             }
         }.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
     }
 
-    public static void startTransfer(final Activity activity, final TransferGroup group, final TransferGroup.Assignee assignee)
+    public static void startTransfer(final Activity activity, final TransferGroup group,
+                                     final TransferGroup.Assignee assignee,
+                                     final TransferObject.Type type)
     {
         if (activity != null && !activity.isFinishing())
             activity.runOnUiThread(new Runnable()
@@ -277,7 +430,7 @@ public class TransferUtils
                 public void run()
                 {
                     try {
-                        NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
+                        final NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
 
                         AppUtils.getDatabase(activity)
                                 .reconstruct(networkDevice);
@@ -294,10 +447,17 @@ public class TransferUtils
                                             .publish(assignee);
                                 }
 
-                                AppUtils.startForegroundService(activity, new Intent(activity, CommunicationService.class)
-                                        .setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
-                                        .putExtra(CommunicationService.EXTRA_GROUP_ID, group.groupId)
-                                        .putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId));
+                                if (TransferObject.Type.INCOMING.equals(type))
+                                    AppUtils.startForegroundService(activity, new Intent(activity,
+                                            CommunicationService.class)
+                                            .setAction(CommunicationService.ACTION_SEAMLESS_RECEIVE)
+                                            .putExtra(CommunicationService.EXTRA_GROUP_ID,
+                                                    group.groupId)
+                                            .putExtra(CommunicationService.EXTRA_DEVICE_ID,
+                                                    assignee.deviceId));
+                                else
+                                    requestStartSending(activity, group, assignee, networkDevice,
+                                            connection);
                             }
                         }).show();
                     } catch (Exception e) {
@@ -309,7 +469,7 @@ public class TransferUtils
                                     @Override
                                     public void onClick(DialogInterface dialog, int which)
                                     {
-                                        startTransfer(activity, group, assignee);
+                                        startTransfer(activity, group, assignee, type);
                                     }
                                 })
                                 .show();

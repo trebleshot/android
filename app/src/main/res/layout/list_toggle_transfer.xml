@@ -1,5 +1,4 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     style="@style/ListContentLayoutStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -13,15 +12,26 @@
         android:layout_centerVertical="true"
         android:contentDescription="@string/text_image" />
 
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/actionImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:contentDescription="@string/text_image" />
+
     <TextView
         android:id="@+id/text"
         style="@style/TextAppearance.Primary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/actionImage"
+        android:layout_toLeftOf="@id/actionImage"
         android:layout_toEndOf="@id/image"
         android:layout_toRightOf="@id/image"
-        android:textSize="@dimen/font_size_big"
-        app:fontFamily="sans-serif-condensed" />
+        android:gravity="start"
+        android:textSize="@dimen/font_size_big" />
 
 </RelativeLayout>

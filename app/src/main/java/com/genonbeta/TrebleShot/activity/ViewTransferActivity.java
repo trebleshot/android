@@ -11,34 +11,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.adapter.PathResolverRecyclerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.PauseMultipleTransferDialog;
+import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
-import com.genonbeta.TrebleShot.fragment.TransferListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
-import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -50,7 +43,6 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.snackbar.Snackbar;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -299,7 +291,7 @@ public class ViewTransferActivity
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.actions_transfer, menu);
 
-        mCnTestMenu = menu.findItem(R.id.actions_transfer_receiver_test_connection);
+        mCnTestMenu = menu.findItem(R.id.actions_transfer_test_connection);
         mToggleMenu = menu.findItem(R.id.actions_transfer_toggle);
         mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
         mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
@@ -364,14 +356,15 @@ public class ViewTransferActivity
             startActivity(new Intent(this, FileExplorerActivity.class)
                     .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
         } else if (id == R.id.actions_transfer_sender_add_device) {
-            startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                    .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
-        } else if (id == R.id.actions_transfer_receiver_test_connection) {
-            ShowingAssignee assignee = TransferUtils.getFirstAssignee(this, getDatabase(), mGroup);
+            startDeviceAddingActivity();
+        } else if (id == R.id.actions_transfer_test_connection) {
+            //todo: change this
+            ShowingAssignee assignee = TransferUtils.getFirstAssignee(this,
+                    getDatabase(), mGroup.groupId);
 
             if (assignee != null)
-                new EstablishConnectionDialog(ViewTransferActivity.this, assignee.device, null)
-                        .show();
+                new EstablishConnectionDialog(ViewTransferActivity.this,
+                        assignee.device, null).show();
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
@@ -386,6 +379,12 @@ public class ViewTransferActivity
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    public void startDeviceAddingActivity()
+    {
+        startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
+                .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
     }
 
     @Override
@@ -469,16 +468,27 @@ public class ViewTransferActivity
     {
         boolean hasIncoming = getIndex().incomingCount > 0;
         boolean hasOutgoing = getIndex().outgoingCount > 0;
+        boolean hasAnyFiles = hasIncoming || hasOutgoing;
         boolean hasRunning = mActiveProcesses.size() > 0;
 
         if (mToggleMenu == null || mRetryMenu == null || mShowFilesMenu == null)
             return;
 
-        mToggleMenu.setTitle(hasRunning ? R.string.butn_pause : R.string.butn_receive);
+        if (hasAnyFiles || hasRunning) {
+            if (hasRunning)
+                mToggleMenu.setTitle(R.string.butn_pause);
+            else {
+                mToggleMenu.setTitle(hasIncoming == hasOutgoing
+                        ? R.string.butn_start
+                        : (hasIncoming ? R.string.butn_receive : R.string.butn_send));
+            }
 
+            mToggleMenu.setVisible(true);
+        } else
+            mToggleMenu.setVisible(false);
+
+        mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
-        mToggleMenu.setVisible(hasIncoming || hasRunning);
-        mCnTestMenu.setVisible(hasIncoming);
         mRetryMenu.setVisible(hasIncoming);
         mShowFilesMenu.setVisible(hasIncoming);
 
@@ -506,7 +516,6 @@ public class ViewTransferActivity
         } else
             mSettingsMenu.setVisible(false);
 
-
         setTitle(getResources().getQuantityString(R.plurals.text_files,
                 getIndex().incomingCount + getIndex().outgoingCount,
                 getIndex().incomingCount + getIndex().outgoingCount));
@@ -514,41 +523,54 @@ public class ViewTransferActivity
 
     private void toggleTask()
     {
-        if (mActiveProcesses.size() > 0) {
-            if (mActiveProcesses.size() == 1)
-                TransferUtils.pauseTransfer(this, mGroup.groupId, mActiveProcesses.get(0));
-            else
-                new PauseMultipleTransferDialog(ViewTransferActivity.this, mGroup, mActiveProcesses)
-                        .show();
-        } else {
-            final ShowingAssignee assignee = TransferUtils.getFirstAssignee(this, getDatabase(), mGroup);
+        List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(getDatabase(),
+                mGroup.groupId);
 
-            if (assignee != null) {
-                try {
-                    getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-                    TransferUtils.startTransferWithTest(this, mGroup, assignee);
-                } catch (Exception e) {
-                    e.printStackTrace();
+        if (assigneeList.size() > 0) {
+            if (assigneeList.size() == 1
+                    && (getIndex().outgoingCount > 0) != (getIndex().incomingCount > 0)) {
+                ShowingAssignee assignee = assigneeList.get(0);
 
-                    createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
-                            .setAction(R.string.butn_setUp, new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    TransferUtils.changeConnection(ViewTransferActivity.this, getDatabase(), mGroup, assignee.device, new TransferUtils.ConnectionUpdatedListener()
+                toggleTaskForAssignee(assignee, getIndex().incomingCount > 0
+                                ? TransferObject.Type.INCOMING : TransferObject.Type.OUTGOING,
+                        mActiveProcesses.contains(assignee.deviceId));
+            } else
+                new ToggleMultipleTransferDialog(ViewTransferActivity.this,
+                        mGroup, assigneeList, mActiveProcesses, getIndex()).show();
+        } else if (getIndex().outgoingCount > 0)
+            startDeviceAddingActivity();
+    }
+
+    public void toggleTaskForAssignee(final ShowingAssignee assignee, TransferObject.Type type,
+                                      boolean ongoing)
+    {
+        try {
+            getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
+            TransferUtils.startTransferWithTest(this, mGroup, assignee, type);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            createSnackbar(R.string.mesg_transferConnectionNotSetUpFix)
+                    .setAction(R.string.butn_setUp, new View.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(View v)
+                        {
+                            TransferUtils.changeConnection(ViewTransferActivity.this,
+                                    getDatabase(), mGroup, assignee.device,
+                                    new TransferUtils.ConnectionUpdatedListener()
                                     {
                                         @Override
                                         public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
                                         {
-                                            createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getApplicationContext(), connection))
+                                            createSnackbar(R.string.mesg_connectionUpdated,
+                                                    TextUtils.getAdapterName(
+                                                            getApplicationContext(), connection))
                                                     .show();
                                         }
                                     });
-                                }
-                            }).show();
-                }
-            }
+                        }
+                    }).show();
         }
     }
 
