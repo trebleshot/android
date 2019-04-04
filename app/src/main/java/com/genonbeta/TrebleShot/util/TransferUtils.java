@@ -7,6 +7,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentActivity;
 
@@ -30,6 +31,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -272,11 +274,11 @@ public class TransferUtils
 
                     activeConnection.reply(jsonRequest.toString());
 
-                    CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                    final CoolSocket.ActiveConnection.Response response = activeConnection.receive();
                     activeConnection.getSocket().close();
                     getInterrupter().removeCloser(connectionCloser);
 
-                    JSONObject responseJSON = new JSONObject(response.response);
+                    final JSONObject responseJSON = new JSONObject(response.response);
 
                     if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
                         activity.runOnUiThread(new Runnable()
@@ -285,10 +287,29 @@ public class TransferUtils
                             public void run()
                             {
                                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+                                @StringRes int msg = R.string.mesg_somethingWentWrong;
+                                String errorMsg = Keyword.ERROR_UNKNOWN;
 
-                                builder.setMessage(context.getString(R.string.mesg_notAllowed));
+                                try {
+                                    errorMsg = responseJSON.getString(Keyword.ERROR);
+                                } catch (JSONException e) {
+                                    // do nothing
+                                }
+
+                                switch (errorMsg) {
+                                    case Keyword.ERROR_NOT_FOUND:
+                                        msg = R.string.mesg_notValidTransfer;
+                                        break;
+                                    case Keyword.ERROR_REQUIRE_TRUSTZONE:
+                                        msg = R.string.mesg_errorNotTrustZoneDevice;
+                                        break;
+                                    case Keyword.ERROR_NOT_ALLOWED:
+                                        msg = R.string.mesg_notAllowed;
+                                        break;
+                                }
+
+                                builder.setMessage(context.getString(msg));
                                 builder.setNegativeButton(R.string.butn_close, null);
-
                                 builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
                                 {
                                     @Override

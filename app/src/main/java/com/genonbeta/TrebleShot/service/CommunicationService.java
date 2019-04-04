@@ -913,8 +913,9 @@ public class CommunicationService extends Service
                                 result = true;
                                 break;
                             case (Keyword.REQUEST_START_TRANSFER):
-                                if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)
-                                        && device.isTrusted) {
+                                if (!device.isTrusted)
+                                    replyJSON.put(Keyword.ERROR, Keyword.ERROR_REQUIRE_TRUSTZONE);
+                                else if (responseJSON.has(Keyword.TRANSFER_GROUP_ID)) {
                                     int groupId = responseJSON.getInt(Keyword.TRANSFER_GROUP_ID);
 
                                     try {

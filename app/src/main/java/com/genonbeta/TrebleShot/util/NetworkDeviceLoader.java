@@ -18,7 +18,7 @@ import com.genonbeta.android.database.SQLQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -183,18 +183,21 @@ public class NetworkDeviceLoader
     {
         Context context = imageView.getContext();
 
-        if (context != null)
-            try {
-                FileInputStream inputStream = context.openFileInput(device.generatePictureId());
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+        if (context != null) {
+            File file = context.getFileStreamPath(device.generatePictureId());
 
+            if (file.isFile()) {
                 GlideApp.with(imageView)
-                        .load(bitmap)
+                        .asBitmap()
+                        .load(file)
                         .circleCrop()
                         .into(imageView);
-            } catch (FileNotFoundException e) {
-                imageView.setImageDrawable(iconBuilder.buildRound(device.nickname));
+
+                return;
             }
+        }
+
+        imageView.setImageDrawable(iconBuilder.buildRound(device.nickname));
     }
 
     public interface OnDeviceRegisteredListener

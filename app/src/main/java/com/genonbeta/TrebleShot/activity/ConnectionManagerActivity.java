@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.ManualIpAddressConnectionDialog;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
@@ -62,7 +63,6 @@ public class ConnectionManagerActivity
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout mToolbarLayout;
     private ProgressBar mProgressBar;
-    private Toolbar mToolbar;
     private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
@@ -131,7 +131,7 @@ public class ConnectionManagerActivity
                 try {
                     setFragment(AvailableFragment.valueOf(fragmentEnum));
                 } catch (Exception e) {
-
+                    // do nothing
                 }
             } else if (mRequestType.equals(RequestType.RETURN_RESULT)) {
                 if (CommunicationService.ACTION_DEVICE_ACQUAINTANCE.equals(intent.getAction())
@@ -169,7 +169,7 @@ public class ConnectionManagerActivity
         setContentView(R.layout.activity_connection_manager);
 
         FragmentFactory factory = getSupportFragmentManager().getFragmentFactory();
-        mToolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         mAppBarLayout = findViewById(R.id.app_bar);
         mProgressBar = findViewById(R.id.activity_connection_establishing_progress_bar);
         mToolbarLayout = findViewById(R.id.toolbar_layout);
@@ -183,7 +183,7 @@ public class ConnectionManagerActivity
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
         mFilter.addAction(CommunicationService.ACTION_INCOMING_TRANSFER_READY);
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null)
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -391,6 +391,9 @@ public class ConnectionManagerActivity
                         case R.id.connection_option_network:
                             updateFragment(AvailableFragment.UseExistingNetwork);
                             break;
+                        case R.id.connection_option_manual_ip:
+                            showEnterIpAddressDialog();
+                            break;
                         case R.id.connection_option_scan:
                             startCodeScanner();
                     }
@@ -440,6 +443,12 @@ public class ConnectionManagerActivity
         {
             startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
                     REQUEST_CHOOSE_DEVICE);
+        }
+
+        protected void showEnterIpAddressDialog()
+        {
+            // TODO: 4/4/19 Add manual IP address connection.
+            //new ManualIpAddressConnectionDialog(getActivity(), getCo).show();
         }
 
         public void updateFragment(AvailableFragment fragment)

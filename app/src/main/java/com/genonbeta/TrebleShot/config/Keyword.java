@@ -49,6 +49,7 @@ public class Keyword
             ERROR_NOT_FOUND = "notFound",
             ERROR_UNKNOWN = "errorUnknown",
             ERROR_NOT_ACCESSIBLE = "notAccessible",
+            ERROR_REQUIRE_TRUSTZONE = "errorRequireTrustZone",
             HANDSHAKE_REQUIRED = "handshakeRequired",
             HANDSHAKE_ONLY = "handshakeOnly",
             NETWORK_NAME = "nwName",

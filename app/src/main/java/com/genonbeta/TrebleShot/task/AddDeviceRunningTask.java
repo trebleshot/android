@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
@@ -49,7 +50,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
     @Override
     public void onRun()
     {
-        final WorkerService.RunningTask thisTask = this;
+        final Context context = getService().getApplicationContext();
+
         final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
         {
             @Override
@@ -75,7 +77,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             final List<TransferObject> pendingRegistry = new ArrayList<>();
 
                             final List<TransferObject> existingRegistry =
-                                    new ArrayList<TransferObject>(AppUtils.getDatabase(getService()).castQuery(
+                                    new ArrayList<>(AppUtils.getDatabase(context).castQuery(
                                             new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                                                     .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                                     + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
@@ -99,7 +101,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
 
                             try {
                                 // Checks if the current assignee is already on the list, if so do publish not insert
-                                AppUtils.getDatabase(getService()).reconstruct(
+                                AppUtils.getDatabase(context).reconstruct(
                                         new TransferGroup.Assignee(assignee.groupId,
                                                 assignee.deviceId));
 
@@ -149,7 +151,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 }
                             }
 
-                            // so that if the user rejects it won't be removed from the sender
+                            // so that if the user rejects, it won't be removed from the sender
                             jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
                             getInterrupter().addCloser(new Interrupter.Closer()
@@ -157,7 +159,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 @Override
                                 public void onClose(boolean userAction)
                                 {
-                                    AppUtils.getDatabase(getService()).remove(assignee);
+                                    AppUtils.getDatabase(context).remove(assignee);
                                 }
                             });
 
@@ -184,17 +186,17 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             JSONObject clientResponse = new JSONObject(response.response);
 
                             if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                                publishStatusText(getService().getString(R.string.mesg_organizingFiles));
+                                publishStatusText(context.getString(R.string.mesg_organizingFiles));
 
                                 if (doPublish)
-                                    AppUtils.getDatabase(getService()).publish(assignee);
+                                    AppUtils.getDatabase(context).publish(assignee);
                                 else
-                                    AppUtils.getDatabase(getService()).insert(assignee);
+                                    AppUtils.getDatabase(context).insert(assignee);
 
                                 if (doPublish)
-                                    AppUtils.getDatabase(getService()).publish(pendingRegistry, progressUpdater);
+                                    AppUtils.getDatabase(context).publish(pendingRegistry, progressUpdater);
                                 else
-                                    AppUtils.getDatabase(getService()).insert(pendingRegistry, progressUpdater);
+                                    AppUtils.getDatabase(context).insert(pendingRegistry, progressUpdater);
 
                                 if (getAnchorListener() != null) {
                                     getAnchorListener().setResult(RESULT_OK, new Intent()
@@ -219,8 +221,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                         public void run()
                                         {
                                             new AlertDialog.Builder(getAnchorListener())
-                                                    .setMessage(getService().getString(R.string.mesg_fileSendError,
-                                                            getService().getString(R.string.mesg_connectionProblem)))
+                                                    .setMessage(context.getString(R.string.mesg_fileSendError,
+                                                            context.getString(R.string.mesg_connectionProblem)))
                                                     .setNegativeButton(R.string.butn_close, null)
                                                     .setPositiveButton(R.string.butn_retry, retryButtonListener)
                                                     .show();

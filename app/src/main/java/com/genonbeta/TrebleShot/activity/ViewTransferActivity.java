@@ -23,6 +23,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.SelectAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
@@ -209,7 +210,8 @@ public class ViewTransferActivity
                     String deviceId = getIntent().getStringExtra(EXTRA_DEVICE_ID);
 
                     try {
-                        TransferObject.Type type = TransferObject.Type.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
+                        TransferObject.Type type = TransferObject.Type
+                                .valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
                         TransferObject transferObject = new TransferObject(requestId, deviceId, type);
 
                         getDatabase().reconstruct(transferObject);
@@ -309,8 +311,7 @@ public class ViewTransferActivity
         {
             int devicePosition = findDevice(mDeviceId);
 
-            Menu thisMenu = menu.findItem(R.id.actions_transfer_settings)
-                    .getSubMenu();
+            Menu thisMenu = menu.findItem(R.id.actions_transfer_settings).getSubMenu();
 
             MenuItem checkedItem = null;
 
@@ -354,24 +355,38 @@ public class ViewTransferActivity
                     .show();
         } else if (id == R.id.actions_transfer_receiver_show_files) {
             startActivity(new Intent(this, FileExplorerActivity.class)
-                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, FileUtils.getSavePath(this, mGroup).getUri()));
+                    .putExtra(FileExplorerActivity.EXTRA_FILE_PATH,
+                            FileUtils.getSavePath(this, mGroup).getUri()));
         } else if (id == R.id.actions_transfer_sender_add_device) {
             startDeviceAddingActivity();
         } else if (id == R.id.actions_transfer_test_connection) {
             //todo: change this
-            ShowingAssignee assignee = TransferUtils.getFirstAssignee(this,
-                    getDatabase(), mGroup.groupId);
+            final List<ShowingAssignee> assignee = TransferUtils.loadAssigneeList(getDatabase(),
+                    mGroup.groupId);
 
-            if (assignee != null)
+            if (assignee.size() == 1)
                 new EstablishConnectionDialog(ViewTransferActivity.this,
-                        assignee.device, null).show();
+                        assignee.get(0).device, null).show();
+            else if (assignee.size() > 1) {
+                new SelectAssigneeDialog(this, assignee, new DialogInterface
+                        .OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        new EstablishConnectionDialog(ViewTransferActivity.this,
+                                assignee.get(which).device, null).show();
+                    }
+                }).show();
+            }
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
                     : null;
 
-            TransferFileExplorerFragment fragment = (TransferFileExplorerFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.activity_transaction_content_frame);
+            TransferFileExplorerFragment fragment = (TransferFileExplorerFragment)
+                    getSupportFragmentManager()
+                            .findFragmentById(R.id.activity_transaction_content_frame);
 
             if (fragment != null && fragment.setDeviceId(mDeviceId))
                 fragment.refreshList();
@@ -493,9 +508,7 @@ public class ViewTransferActivity
         mShowFilesMenu.setVisible(hasIncoming);
 
         if (hasOutgoing && (mTransactionIndex.assignees.size() > 0 || mDeviceId != null)) {
-            Menu dynamicMenu = mSettingsMenu.setVisible(true)
-                    .getSubMenu();
-
+            Menu dynamicMenu = mSettingsMenu.setVisible(true).getSubMenu();
             dynamicMenu.clear();
 
             int iterator = 0;
@@ -545,8 +558,12 @@ public class ViewTransferActivity
                                       boolean ongoing)
     {
         try {
-            getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-            TransferUtils.startTransferWithTest(this, mGroup, assignee, type);
+            if (ongoing)
+                TransferUtils.pauseTransfer(this, assignee.groupId, assignee.deviceId);
+            else {
+                getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
+                TransferUtils.startTransferWithTest(this, mGroup, assignee, type);
+            }
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -644,7 +661,6 @@ public class ViewTransferActivity
         /* Should we have used a generic type class for this?
          * This interface aims to keep its parent class non-anonymous
          */
-
         public interface PostExecuteListener
         {
             void onPostExecute();
