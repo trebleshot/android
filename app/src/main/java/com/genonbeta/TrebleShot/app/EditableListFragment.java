@@ -261,7 +261,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     }
 
     @Override
-    public void onPrepareOptionsMenu(Menu menu)
+    public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         super.onPrepareOptionsMenu(menu);
 
