@@ -246,7 +246,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             mSortingOptions.clear();
             mSortingOptions.putAll(sortingOptions);
 
-            applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by), R.id.actions_abs_editable_group_sorting, mSortingOptions);
+            applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_sort_by),
+                    R.id.actions_abs_editable_group_sorting, mSortingOptions);
 
             Map<String, Integer> orderingOptions = new ArrayMap<>();
             onOrderingOptions(orderingOptions);
@@ -255,7 +256,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 mOrderingOptions.clear();
                 mOrderingOptions.putAll(orderingOptions);
 
-                applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by), R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
+                applyDynamicMenuItems(menu.findItem(R.id.actions_abs_editable_order_by),
+                        R.id.actions_abs_editable_group_sort_order, mOrderingOptions);
             }
         }
     }
@@ -290,7 +292,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 MenuItem orderingItem = menu.findItem(R.id.actions_abs_editable_order_by);
 
                 if (orderingItem != null)
-                    checkPreferredDynamicItem(orderingItem, getOrderingCriteria(), mOrderingOptions);
+                    checkPreferredDynamicItem(orderingItem, getOrderingCriteria(),
+                            mOrderingOptions);
             }
         }
 
@@ -332,8 +335,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public void onOrderingOptions(Map<String, Integer> options)
     {
-        options.put(getString(R.string.text_sortOrderAscending), EditableListAdapter.MODE_SORT_ORDER_ASCENDING);
-        options.put(getString(R.string.text_sortOrderDescending), EditableListAdapter.MODE_SORT_ORDER_DESCENDING);
+        options.put(getString(R.string.text_sortOrderAscending),
+                EditableListAdapter.MODE_SORT_ORDER_ASCENDING);
+        options.put(getString(R.string.text_sortOrderDescending),
+                EditableListAdapter.MODE_SORT_ORDER_DESCENDING);
     }
 
     @Override
@@ -353,9 +358,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     {
         final RecyclerView.LayoutManager defaultLayoutManager = super.onLayoutManager();
         final int preferredGridSize = getViewingGridSize();
-        final int optimalGridSize = preferredGridSize > 1
-                ? preferredGridSize
-                : !getAdapter().isGridSupported() && isScreenLarge() && !isHorizontalOrientation() ? 2 : 1;
+        final int optimalGridSize = preferredGridSize > 1 ? preferredGridSize
+                : !getAdapter().isGridSupported() && isScreenLarge()
+                && !isHorizontalOrientation() ? 2 : 1;
 
         final GridLayoutManager layoutManager;
 
@@ -382,7 +387,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return layoutManager;
     }
 
-    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
+    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId,
+                                         Map<String, Integer> options)
     {
         if (mainItem != null) {
             mainItem.setVisible(true);
@@ -416,7 +422,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public void changeGridViewSize(int gridSize)
     {
         getViewPreferences().edit()
-                .putInt(getUniqueSettingKey("GridSize" + (isScreenLandscape() ? "Landscape" : "")), gridSize)
+                .putInt(getUniqueSettingKey("GridSize" + (isScreenLandscape() ? "Landscape" : "")),
+                        gridSize)
                 .apply();
 
         applyViewingChanges(gridSize);
@@ -444,7 +451,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         refreshList();
     }
 
-    public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String, Integer> options)
+    public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String,
+            Integer> options)
     {
         if (dynamicItem != null) {
             Menu gridSizeMenu = dynamicItem.getSubMenu();
@@ -517,7 +525,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public int getOrderingCriteria()
     {
-        return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"), mDefaultOrderingCriteria);
+        return getViewPreferences().getInt(getUniqueSettingKey("SortOrder"),
+                mDefaultOrderingCriteria);
     }
 
     public String getUniqueSettingKey(String setting)
@@ -567,8 +576,10 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             return 1;
 
         return isScreenLandscape()
-                ? getViewPreferences().getInt(getUniqueSettingKey("GridSizeLandscape"), mDefaultViewingGridSizeLandscape)
-                : getViewPreferences().getInt(getUniqueSettingKey("GridSize"), mDefaultViewingGridSize);
+                ? getViewPreferences().getInt(getUniqueSettingKey("GridSizeLandscape"),
+                mDefaultViewingGridSizeLandscape)
+                : getViewPreferences().getInt(getUniqueSettingKey("GridSize"),
+                mDefaultViewingGridSize);
     }
 
     public int getActiveViewingGridSize()
@@ -623,13 +634,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public boolean performLayoutClick(V holder)
     {
         return setItemSelected(holder)
-                || (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, false))
+                || (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(
+                this, holder, false))
                 || onDefaultClickAction(holder);
     }
 
     public boolean performLayoutLongClick(V holder)
     {
-        return (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(this, holder, true))
+        return (mLayoutClickListener != null && mLayoutClickListener.onLayoutClick(
+                this, holder, true))
                 || onDefaultLongClickAction(holder)
                 || getSelectionConnection() != null && getSelectionConnection().setSelected(holder);
     }

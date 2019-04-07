@@ -159,6 +159,7 @@
             android:name=".activity.WelcomeActivity"
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
+        <activity android:name=".activity.WebShareActivity" />
 
         <service
             android:name=".service.CommunicationService"

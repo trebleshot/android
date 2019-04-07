@@ -5,6 +5,7 @@ public class AppConfig
     public final static int
             SERVER_PORT_COMMUNICATION = 1128,
             SERVER_PORT_SEAMLESS = 58762,
+            SERVER_PORT_WEBSHARE = 58732,
             SERVER_PORT_UPDATE_CHANNEL = 58765,
             DEFAULT_SOCKET_TIMEOUT = 5000,
             DEFAULT_SOCKET_TIMEOUT_LARGE = 40000,
@@ -14,7 +15,8 @@ public class AppConfig
             BUFFER_LENGTH_DEFAULT = 8096,
             BUFFER_LENGTH_SMALL = 1024,
             DELAY_CHECK_FOR_UPDATES = 21600,
-            PHOTO_SCALE_FACTOR = 100;
+            PHOTO_SCALE_FACTOR = 100,
+    WEB_SHARE_CONNECTION_MAX = 10;
 
     public final static String
             EMAIL_DEVELOPER = "genonbeta@gmail.com",

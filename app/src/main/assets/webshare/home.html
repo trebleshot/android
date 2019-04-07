@@ -1,0 +1,93 @@
+<!-- 42 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <style type="text/css" rel="stylesheet">
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            min-width: 200px;
+            min-height: 400px;
+            width: auto;
+            height: auto;
+        }
+
+        a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        a:visited {
+            color: #999;
+        }
+
+        header {
+            font-size: 18pt;
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+            margin: 0;
+            box-shadow: 0 0 5px #ddd;
+        }
+
+        footer {
+            border-top: 1px solid #ddd;
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+
+        .main_body {}
+
+        .transfer {
+            border-radius: 16px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 10px 6px -10px #ddd;
+        }
+
+        .transfer:hover {
+            background: #ddd;
+            transition-duration: 400ms;
+        }
+
+        .action_layout {
+            color: #66bb6a;
+            font-weight: 600;
+        }
+    </style>
+    <title>${title}</title>
+</head>
+
+<body>
+    <header>
+        <table style="width: 100%;">
+        <tr>
+            <td style="width: 20%; text-align: center;">
+                <a href="/">
+                    <img src="${header_logo}" alt="Logo" style="height: 36pt;" />
+                </a>
+            </td>
+            <td style="width: 60%; text-align: center;">
+                ${header}
+            </td>
+            <td style="width: 20%; text-align: center;">
+            </td>
+        </tr>
+    </table></header>
+    <div class="main_body">
+        ${main_content}
+    </div>
+
+    <footer>
+        ${footer_text}
+    </footer>
+</body>
+
+</html>

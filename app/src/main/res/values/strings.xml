@@ -444,4 +444,5 @@
     <string name="mesg_errorNotTrustZoneDevice">This device needs to be set as TrustZone device on the receiver device to do this operation.</string>
     <string name="butn_enterIpAddress">Enter IP Address</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
+    <string name="butn_webShare">Share via browser</string>
 </resources>

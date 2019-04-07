@@ -110,7 +110,7 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.preference:preference:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha04'
+    implementation 'com.google.android.material:material:1.1.0-alpha05'
 
     //implementation 'com.genonbeta.android:framework:1.0.2.6-local69'
     implementation 'com.genonbeta.android:framework:1.0.2.8'
@@ -120,6 +120,7 @@ dependencies {
     // 3.3.2 requires minimum Android SDK 16, so core version changes should be made in accordance
     // with min SDK version
     implementation 'com.google.zxing:core:3.3.0'
+    implementation 'org.nanohttpd:nanohttpd:2.2.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'
 
     implementation 'com.github.bumptech.glide:glide:4.8.0'

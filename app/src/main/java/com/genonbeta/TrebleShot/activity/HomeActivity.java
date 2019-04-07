@@ -211,6 +211,8 @@ public class HomeActivity
             startActivity(new Intent(this, AboutActivity.class));
         } else if (R.id.menu_activity_main_send_application == mChosenMenuItemId) {
             sendThisApplication();
+        } else if (R.id.menu_activity_main_web_share == mChosenMenuItemId) {
+            startActivity(new Intent(this, WebShareActivity.class));
         } else if (R.id.menu_activity_main_preferences == mChosenMenuItemId) {
             startActivity(new Intent(this, PreferencesActivity.class));
         } else if (R.id.menu_activity_main_exit == mChosenMenuItemId) {

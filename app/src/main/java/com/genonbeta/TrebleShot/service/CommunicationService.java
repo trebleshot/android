@@ -73,6 +73,9 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
+
+import fi.iki.elonen.NanoHTTPD;
 
 public class CommunicationService extends Service
 {
@@ -123,6 +126,7 @@ public class CommunicationService extends Service
 
     private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
+    private WebShareServer mWebShareServer = null;
     private SeamlessServer mSeamlessServer = new SeamlessServer();
     private Map<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
     private Receive mReceive = new Receive();
@@ -188,6 +192,16 @@ public class CommunicationService extends Service
                         updateServiceState(true);
                 }
             });
+
+
+        try {
+            mWebShareServer = new WebShareServer(this,AppConfig.SERVER_PORT_WEBSHARE);
+            mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
+                    Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
+            mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+        } catch (Throwable t) {
+            Log.e(TAG, "Failed to start Web Share Server");
+        }
     }
 
     @Override
@@ -407,6 +421,9 @@ public class CommunicationService extends Service
         mSeamlessServer.stop();
         mMediaScanner.disconnect();
         mNsdDiscovery.unregisterService();
+
+        if (mWebShareServer != null)
+            mWebShareServer.stop();
 
         if (getHotspotUtils().unloadPreviousConfig()) {
             getHotspotUtils().disable();
