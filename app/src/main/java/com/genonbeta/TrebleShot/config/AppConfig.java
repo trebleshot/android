@@ -16,7 +16,7 @@ public class AppConfig
             BUFFER_LENGTH_SMALL = 1024,
             DELAY_CHECK_FOR_UPDATES = 21600,
             PHOTO_SCALE_FACTOR = 100,
-    WEB_SHARE_CONNECTION_MAX = 10;
+            WEB_SHARE_CONNECTION_MAX = 20;
 
     public final static String
             EMAIL_DEVELOPER = "genonbeta@gmail.com",

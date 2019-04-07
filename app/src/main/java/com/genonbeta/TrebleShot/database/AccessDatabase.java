@@ -43,7 +43,7 @@ public class AccessDatabase extends SQLiteDatabase
 
     public static final String TAG = AccessDatabase.class.getSimpleName();
 
-    public static final int DATABASE_VERSION = 11;
+    public static final int DATABASE_VERSION = 12;
 
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -108,6 +108,7 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_TRANSFERGROUP_ID = "id";
     public static final String FIELD_TRANSFERGROUP_SAVEPATH = "savePath";
     public static final String FIELD_TRANSFERGROUP_DATECREATED = "dateCreated";
+    public static final String FIELD_TRANSFERGROUP_ISSHAREDONWEB = "isSharedOnWeb";
 
     public static final String TABLE_WRITABLEPATH = "writablePath";
     public static final String FIELD_WRITABLEPATH_TITLE = "title";
@@ -137,6 +138,8 @@ public class AccessDatabase extends SQLiteDatabase
     @Override
     public void onUpgrade(android.database.sqlite.SQLiteDatabase database, int old, int current)
     {
+        // Database Migration Rules
+
         /*
          * Version 6 was until version 1.2.5.12 and we don't have any new changes compared to version
          * 6, so we only included version 5 which we did not note the changes
@@ -177,8 +180,11 @@ public class AccessDatabase extends SQLiteDatabase
                     SQLValues.Table divisTransfer = databaseTables.getTables().get(DIVIS_TRANSFER);
                     Map<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
-                    List<TransferGroup.Assignee> availableAssignees = castQuery(database, new SQLQuery.Select(TABLE_TRANSFERASSIGNEE), TransferGroup.Assignee.class, null);
-                    List<TransferObject> availableTransfers = castQuery(database, new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class, null);
+                    List<TransferGroup.Assignee> availableAssignees = castQuery(database,
+                            new SQLQuery.Select(TABLE_TRANSFERASSIGNEE),
+                            TransferGroup.Assignee.class, null);
+                    List<TransferObject> availableTransfers = castQuery(database,
+                            new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class, null);
 
                     for (TransferGroup.Assignee assignee : availableAssignees) {
                         if (!mapDist.containsKey(assignee.groupId))
@@ -192,7 +198,8 @@ public class AccessDatabase extends SQLiteDatabase
                             supportedItems.add(transferObject);
                     }
 
-                    database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer.getName()));
+                    database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer
+                            .getName()));
                     SQLQuery.createTable(database, tableTransfer);
                     SQLQuery.createTable(database, divisTransfer);
                     insert(database, supportedItems, null, null);
@@ -205,10 +212,23 @@ public class AccessDatabase extends SQLiteDatabase
                 SQLValues.Table tableFileBookmark = databaseTables.getTables().get(TABLE_FILEBOOKMARK);
                 SQLQuery.createTable(database, tableFileBookmark);
             }
+
+            if (old < 12) {
+                List<TransferGroup> totalGroupList = castQuery(database, new SQLQuery.Select(
+                        TABLE_TRANSFERGROUP), TransferGroup.class, null);
+                SQLValues.Table tableTransferGroup = databaseTables.getTables()
+                        .get(TABLE_TRANSFERGROUP);
+
+                database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransferGroup
+                        .getName()));
+                SQLQuery.createTable(database, tableTransferGroup);
+                insert(database, totalGroupList, null, null);
+            }
         }
     }
 
-    protected void broadcast(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, String type)
+    protected void broadcast(android.database.sqlite.SQLiteDatabase database,
+                             SQLQuery.Select select, String type)
     {
         getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
                 .putExtra(EXTRA_TABLE_NAME, select.tableName)
@@ -221,13 +241,15 @@ public class AccessDatabase extends SQLiteDatabase
         indexObject.reset();
 
         List<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class);
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
+                        String.valueOf(groupId)), TransferObject.class);
 
         indexObject.assignees.addAll(TransferUtils.loadAssigneeList(this, groupId));
 
         if (transactionList.size() == 0)
             transactionList.addAll(castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
-                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class));
+                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
+                            String.valueOf(groupId)), TransferObject.class));
 
         for (TransferObject transferObject : transactionList) {
             if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
@@ -348,7 +370,8 @@ public class AccessDatabase extends SQLiteDatabase
         sqlValues.defineTable(TABLE_TRANSFERGROUP)
                 .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true));
+                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true));
 
         sqlValues.defineTable(TABLE_WRITABLEPATH)
                 .define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))

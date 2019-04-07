@@ -71,6 +71,9 @@ public class TransferGroupListAdapter
 
             StringBuilder assigneesText = new StringBuilder();
 
+            if (group.isServedOnWeb)
+                assigneesText.append(getContext().getString(R.string.text_webShare));
+
             for (ShowingAssignee showingAssignee : group.index.assignees) {
                 if (assigneesText.length() > 0)
                     assigneesText.append(", ");

@@ -445,4 +445,8 @@
     <string name="butn_enterIpAddress">Enter IP Address</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Share via browser</string>
+    <string name="text_webShare">@string/butn_webShare</string>
+    <string name="text_webShareNoContentNotice">Should have been a content here? Try adding some transfers and enabling them to share on web!</string>
+    <string name="butn_shareOnBrowser">Share on browser</string>
+    <string name="butn_hideOnBrowser">Hide on browser</string>
 </resources>

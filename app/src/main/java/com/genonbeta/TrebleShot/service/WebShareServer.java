@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.service;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
 
@@ -18,6 +20,8 @@ import com.genonbeta.android.framework.io.StreamInfo;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,15 +82,20 @@ public class WebShareServer extends NanoHTTPD
         try {
             switch (args.length >= 1 ? args[0] : "") {
                 case "download":
-                    return serveFile(args);
+                    return serveFileDownload(args, session);
                 case "image":
-                    return serveImage(args);
+                    return serveFile(args);
+                case "trebleshot":
+                    return serveAPK();
                 case "show":
                     return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
                             serveTransferPage(args));
                 case "test":
                     return newFixedLengthResponse(Response.Status.ACCEPTED, "text/plain",
                             "Works");
+                case "help":
+                    return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
+                            serveHelpPage());
                 default:
                     return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
                             serveMainPage());
@@ -98,14 +107,32 @@ public class WebShareServer extends NanoHTTPD
         }
     }
 
-    private Response serveImage(String[] args)
+    private Response serveAPK()
+    {
+        try {
+            File file = new File(mContext.getApplicationInfo().sourceDir);
+            FileInputStream inputStream = new FileInputStream(file);
+
+            return newFixedLengthResponse(Response.Status.ACCEPTED, "application/force-download",
+                    inputStream, file.length());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
+                makePage("arrow-left.svg", R.string.text_downloads,
+                        makeNotFoundTemplate(R.string.text_empty,
+                                R.string.text_webShareNoContentNotice)));
+    }
+
+    private Response serveFile(String[] args)
     {
         try {
             if (args.length < 2)
                 throw new Exception("Expected 2 args, " + args.length + " given");
 
             return newFixedLengthResponse(Response.Status.ACCEPTED, getMimeTypeForFile(args[1]),
-                    openFile("image" + File.separator + args[1]), -1);
+                    openFile(args[0] + File.separator + args[1]), -1);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,7 +141,7 @@ public class WebShareServer extends NanoHTTPD
                 "Not found");
     }
 
-    private Response serveFile(String[] args)
+    private Response serveFileDownload(String[] args, IHTTPSession session)
     {
         try {
             if (args.length < 3)
@@ -127,17 +154,38 @@ public class WebShareServer extends NanoHTTPD
             AppUtils.getDatabase(mContext).reconstruct(group);
             AppUtils.getDatabase(mContext).reconstruct(object);
 
+            if (!group.isServedOnWeb)
+                throw new Exception("The group is not checked as served on the Web");
+
             StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(
                     object.file));
 
+            InputStream stream = streamInfo.openInputStream();
+
+            {
+                String positionString = session.getHeaders().get("Accept-Ranges");
+
+                if (positionString != null)
+                    try {
+                        long position = Long.parseLong(positionString);
+
+                        if (position < streamInfo.size)
+                            stream.skip(position);
+                    } catch (Exception e) {
+                        // do nothing, formatting issue.
+                    }
+            }
+
             return newFixedLengthResponse(Response.Status.ACCEPTED, "application/force-download",
-                    streamInfo.openInputStream(), streamInfo.size);
+                    stream, streamInfo.size);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return newFixedLengthResponse(Response.Status.NOT_FOUND, "text/plain",
-                "Not found");
+        return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
+                makePage("arrow-left.svg", R.string.text_downloads,
+                        makeNotFoundTemplate(R.string.text_empty,
+                                R.string.text_webShareNoContentNotice)));
     }
 
     private String serveMainPage()
@@ -151,19 +199,28 @@ public class WebShareServer extends NanoHTTPD
                 TransferGroup.class);
 
         for (TransferGroup group : groupList) {
+            if (!group.isServedOnWeb)
+                continue;
+
             TransferGroup.Index index = new TransferGroup.Index();
             AppUtils.getDatabase(mContext).calculateTransactionSize(group.groupId, index);
 
-            if (index.outgoingCount > 0)
-                contentBuilder.append(makeContent(mContext.getString(R.string
-                                .mode_itemCountedDetailed, mContext.getResources()
-                                .getQuantityString(R.plurals.text_files, index.outgoingCount,
-                                        index.outgoingCount), FileUtils.sizeExpression(
-                                                index.outgoing, false)),
-                        R.string.butn_show, "show", group.groupId));
+            if (index.outgoingCount < 1)
+                continue;
+
+            contentBuilder.append(makeContent(mContext.getString(R.string
+                            .mode_itemCountedDetailed, mContext.getResources()
+                            .getQuantityString(R.plurals.text_files, index.outgoingCount,
+                                    index.outgoingCount), FileUtils.sizeExpression(
+                    index.outgoing, false)),
+                    R.string.butn_show, "show", group.groupId));
         }
 
-        return makePage(R.string.text_appName, contentBuilder.toString());
+        if (contentBuilder.length() == 0)
+            contentBuilder.append(makeNotFoundTemplate(R.string.text_listEmptyTransfer,
+                    R.string.text_webShareNoContentNotice));
+
+        return makePage("icon.png", R.string.text_transfers, contentBuilder.toString());
     }
 
     private String serveTransferPage(String[] args)
@@ -172,13 +229,17 @@ public class WebShareServer extends NanoHTTPD
             if (args.length < 2)
                 throw new Exception("Expected 2 args, " + args.length + " given");
 
-            long groupId = Long.parseLong(args[1]);
+            TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
+            AppUtils.getDatabase(mContext).reconstruct(group);
+
+            if (!group.isServedOnWeb)
+                throw new Exception("The group is not checked as served on the Web");
 
             StringBuilder contentBuilder = new StringBuilder();
             List<TransferObject> groupList = AppUtils.getDatabase(mContext).castQuery(
                     new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
                             .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                                    String.valueOf(groupId))
+                                    String.valueOf(group.groupId))
                             .setOrderBy(AccessDatabase.FIELD_TRANSFER_NAME + " ASC"),
                     TransferObject.class);
 
@@ -187,12 +248,37 @@ public class WebShareServer extends NanoHTTPD
                         R.string.butn_download, "download", object.groupId,
                         object.requestId, object.friendlyName));
 
-            return makePage(R.string.text_files, contentBuilder.toString());
+            return makePage("arrow-left.svg", R.string.text_files, contentBuilder.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return makePage(R.string.text_error, "Not found");
+        return makePage("arrow-left.svg", R.string.text_files,
+                makeNotFoundTemplate(R.string.text_listEmptyFiles,
+                        R.string.text_webShareNoContentNotice));
+    }
+
+    private String serveHelpPage()
+    {
+        Map<String, String> values = new HashMap<>();
+        values.put("help_title", mContext.getString(R.string.text_help));
+        values.put("licence_text", mContext.getString(R.string.conf_licence));
+
+        try {
+            PackageManager pm = mContext.getPackageManager();
+            PackageInfo packageInfo = pm.getPackageInfo(mContext.getApplicationInfo().packageName,
+                    0);
+            String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_"
+                    + packageInfo.versionName + ".apk";
+
+            values.put("apk_link", "/trebleshot/" + fileName);
+            values.put("apk_filename", fileName);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return makePage("arrow-left.svg", R.string.text_help, applyPattern(
+                getFieldPattern(), readPage("help.html"), values));
     }
 
     private String makeContent(String content, @StringRes int buttonRes, Object... objects)
@@ -214,16 +300,30 @@ public class WebShareServer extends NanoHTTPD
         return applyPattern(getFieldPattern(), readPage("list_transfer.html"), values);
     }
 
-    private String makePage(@StringRes int titleRes, String content)
+    private String makeNotFoundTemplate(@StringRes int msg, @StringRes int detail)
+    {
+        Map<String, String> values = new HashMap<>();
+        values.put("content", mContext.getString(msg));
+        values.put("detail", mContext.getString(detail));
+
+        return applyPattern(getFieldPattern(), readPage("layout_not_found.html"),
+                values);
+    }
+
+    private String makePage(String image, @StringRes int titleRes, String content)
     {
         String title = mContext.getString(titleRes);
         String appName = mContext.getString(R.string.text_appName);
 
         Map<String, String> values = new HashMap<>();
         values.put("title", String.format("%s - %s", title, appName));
-        values.put("header_logo", "/image/icon.png");
-        values.put("header", title);
+        values.put("header_logo", "/image/" + image);
+        values.put("header", mContext.getString(R.string.text_appName));
+        values.put("title_header", title);
         values.put("main_content", content);
+        values.put("help_icon", "/image/help-circle.svg");
+        values.put("help_alt", mContext.getString(R.string.butn_help));
+        values.put("username", AppUtils.getLocalDeviceName(mContext));
         values.put("footer_text", mContext.getString(R.string.text_aboutSummary));
 
         return applyPattern(getFieldPattern(), readPage("home.html"), values);

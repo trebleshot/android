@@ -226,31 +226,31 @@ public class TransferListAdapter
 
         StorageStatusItem storageItem = null;
 
-        if (currentPath == null
-                && hasIncoming) {
-            try {
-                TransferGroup group = new TransferGroup(mGroup.groupId);
-                AppUtils.getDatabase(getContext()).reconstruct(group);
-                DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
+        if (currentPath == null)
+            if (hasIncoming) {
+                try {
+                    TransferGroup group = new TransferGroup(mGroup.groupId);
+                    AppUtils.getDatabase(getContext()).reconstruct(group);
+                    DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
 
-                storageItem = new StorageStatusItem();
-                storageItem.directory = savePath.getUri().toString();
-                storageItem.friendlyName = savePath.getName();
+                    storageItem = new StorageStatusItem();
+                    storageItem.directory = savePath.getUri().toString();
+                    storageItem.friendlyName = savePath.getName();
 
-                if (savePath instanceof LocalDocumentFile) {
-                    File saveFile = ((LocalDocumentFile) savePath).getFile();
-                    storageItem.bytesTotal = saveFile.getTotalSpace();
-                    storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
-                } else {
-                    storageItem.bytesTotal = -1;
-                    storageItem.bytesFree = -1;
+                    if (savePath instanceof LocalDocumentFile) {
+                        File saveFile = ((LocalDocumentFile) savePath).getFile();
+                        storageItem.bytesTotal = saveFile.getTotalSpace();
+                        storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
+                    } else {
+                        storageItem.bytesTotal = -1;
+                        storageItem.bytesFree = -1;
+                    }
+
+                    lister.offerObliged(this, storageItem);
+                } catch (Exception e) {
+
                 }
-
-                lister.offerObliged(this, storageItem);
-            } catch (Exception e) {
-
             }
-        }
 
         DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.groupId, currentPath == null
                 ? (filterDevice == null ? getContext().getString(R.string.text_home) : filterDevice.nickname)

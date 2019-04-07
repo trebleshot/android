@@ -11,7 +11,7 @@
             margin: 0;
             padding: 0;
             min-width: 200px;
-            min-height: 400px;
+            min-height: 100%;
             width: auto;
             height: auto;
         }
@@ -40,6 +40,7 @@
             text-align: center;
             color: #999;
             padding: 20px;
+            float: bottom;
         }
 
         .main_body {}
@@ -48,7 +49,7 @@
             border-radius: 16px;
             border: 1px solid #ddd;
             padding: 20px;
-            margin: 20px;
+            margin: 20px 10%;
             box-shadow: 0 10px 6px -10px #ddd;
         }
 
@@ -61,6 +62,23 @@
             color: #66bb6a;
             font-weight: 600;
         }
+
+        .layout_not_found,
+        .layout_help {
+            text-align: center;
+            padding: 60px 10%;
+        }
+
+        .content {
+            font-size: 28pt;
+            font-weight: 200;
+        }
+
+        .content_detail {
+            font-weight: 300;
+            font-size: 14pt;
+            color: #999;
+        }
     </style>
     <title>${title}</title>
 </head>
@@ -68,19 +86,37 @@
 <body>
     <header>
         <table style="width: 100%;">
-        <tr>
-            <td style="width: 20%; text-align: center;">
-                <a href="/">
-                    <img src="${header_logo}" alt="Logo" style="height: 36pt;" />
-                </a>
-            </td>
-            <td style="width: 60%; text-align: center;">
-                ${header}
-            </td>
-            <td style="width: 20%; text-align: center;">
-            </td>
-        </tr>
-    </table></header>
+            <tr>
+                <td style="width: 20%; text-align: center; vertical-align: middle;">
+                    <a href="/">
+                        <img src="${header_logo}" alt="Logo" style="height: 36pt;" />
+                    </a>
+                </td>
+                <td style="width: 60%; text-align: center;  vertical-align: middle;">
+                    ${header}
+                    <br>
+                    <span class="content_detail">${title_header}</span>
+                </td>
+                <td style="width: 20%; text-align: center; vertical-align: middle;">
+                    <!--<table>
+                        <tr>
+                            <td class="content_detail">
+                                ${username}
+                            </td>
+                            <td>
+                                <a href="/help">
+                                    <img src="${help_icon}" alt="${help_alt}" style="height: 24pt;" />
+                                </a>
+                            </td>
+                        </tr>
+                    </table>-->
+                    <a href="/help">
+                        <img src="${help_icon}" alt="${help_alt}" style="height: 24pt;" />
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </header>
     <div class="main_body">
         ${main_content}
     </div>

@@ -78,6 +78,7 @@ public class ViewTransferActivity
     private MenuItem mShowFilesMenu;
     private MenuItem mAddDeviceMenu;
     private MenuItem mSettingsMenu;
+    private MenuItem mToggleBrowserShare;
     private CrunchLatestDataTask mDataCruncher;
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -299,6 +300,7 @@ public class ViewTransferActivity
         mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
         mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
         mSettingsMenu = menu.findItem(R.id.actions_transfer_settings);
+        mToggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share);
 
         showMenus();
 
@@ -379,6 +381,11 @@ public class ViewTransferActivity
                     }
                 }).show();
             }
+        } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
+            mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
+            getDatabase().update(mGroup);
+
+            showMenus();
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
@@ -502,6 +509,9 @@ public class ViewTransferActivity
         } else
             mToggleMenu.setVisible(false);
 
+        mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
+                : R.string.butn_shareOnBrowser);
+        mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
         mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
         mRetryMenu.setVisible(hasIncoming);

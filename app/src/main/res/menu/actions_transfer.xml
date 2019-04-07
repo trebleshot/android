@@ -29,6 +29,11 @@
         android:visible="false" />
 
     <item
+        android:id="@+id/actions_transfer_toggle_browser_share"
+        android:title="@string/butn_shareOnBrowser"
+        android:visible="false" />
+
+    <item
         android:id="@+id/actions_transfer_remove"
         android:title="@string/butn_remove"
         android:visible="true" />

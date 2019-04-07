@@ -266,7 +266,14 @@ public class TransferGroupListFragment
             if (id == R.id.action_mode_group_delete)
                 AppUtils.getDatabase(getFragment().getContext())
                         .removeAsynchronous(getFragment().getActivity(), selectionList);
-            else
+            else if (id == R.id.action_mode_group_serve_on_web
+                    || id == R.id.action_mode_group_hide_on_web) {
+                for (TransferGroupListAdapter.PreloadedGroup group : selectionList)
+                    group.isServedOnWeb = group.index.outgoingCount > 0
+                            && id == R.id.action_mode_group_serve_on_web;
+
+                AppUtils.getDatabase(getFragment().getContext()).update(selectionList);
+            } else
                 return super.onActionMenuItemSelected(context, actionMode, item);
 
             return true;
