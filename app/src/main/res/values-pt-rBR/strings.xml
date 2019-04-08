@@ -432,4 +432,20 @@
     <string name="mesg_waiting">Aguardando</string>
     <string name="text_amoledOptimizedBlackTheme">Otimizar para telas AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Use cores mais escuras</string>
+    <string name="mesg_errorNotTrustZoneDevice">Este dispositivo precisa ser configurado como dispositivo de TrustZone no dispositivo receptor para fazer esta operação.</string>
+    <string name="butn_enterIpAddress">Digite o endereço IP</string>
+    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="butn_webShare">Compartilhar via navegador</string>
+    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShareNoContentNotice">Use a opção \"Compartilhar no navegador\" para ver as transferências aqui!</string>
+    <string name="butn_shareOnBrowser">Compartilhar no navegador</string>
+    <string name="butn_hideOnBrowser">Ocultar no navegador</string>
+    <string name="text_transferSharedOnBrowser">Compartilhado no navegador</string>
+    <string name="text_or">ou</string>
+    <string name="text_visitWebShareAddress">Visite este link com seu navegador</string>
+    <string name="text_webShareInfo">Abaixo você vê os links que os dispositivos na mesma rede podem se conectar com um navegador. Em seguida, ative individualmente o compartilhamento via web para transferências.</string>
+    <string name="text_dowloadTrebleshotAndroid">Baixe o TrebleShot para Android</string>
+    <string name="text_listEmptyConnection">As redes que você conecta aparecem aqui</string>
+    <string name="mesg_errorNotAnIpAddress">Não é um endereço IP
+\n(como 192.168.1.2)</string>
 </resources>
