@@ -100,6 +100,16 @@ public class TransferAssigneeListFragment
             }
         });
 
+        getEmptyActionButton().setOnLongClickListener(new View.OnLongClickListener()
+        {
+            @Override
+            public boolean onLongClick(View v)
+            {
+                startActivity(new Intent(getActivity(), WebShareActivity.class));
+                return true;
+            }
+        });
+
         updateTransferGroup();
 
         int paddingRecyclerView = (int) getResources()

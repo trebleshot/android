@@ -49,6 +49,7 @@ import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -430,6 +431,15 @@ public class CommunicationService extends Service
         mSeamlessServer.stop();
         mMediaScanner.disconnect();
         mNsdDiscovery.unregisterService();
+
+        {
+            ContentValues values = new ContentValues();
+
+            values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, 0);
+            getDatabase().update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
+                    .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
+                            String.valueOf(1)), values);
+        }
 
         setWebShareEnabled(false, false);
         sendTrustZoneStatus();

@@ -78,6 +78,7 @@ public class ViewTransferActivity
     private MenuItem mShowFilesMenu;
     private MenuItem mAddDeviceMenu;
     private MenuItem mSettingsMenu;
+    private MenuItem mWebShareShortcut;
     private MenuItem mToggleBrowserShare;
     private CrunchLatestDataTask mDataCruncher;
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -300,6 +301,7 @@ public class ViewTransferActivity
         mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
         mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
         mSettingsMenu = menu.findItem(R.id.actions_transfer_settings);
+        mWebShareShortcut = menu.findItem(R.id.actions_transfer_web_share_shortcut);
         mToggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share);
 
         showMenus();
@@ -513,6 +515,7 @@ public class ViewTransferActivity
         mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
                 : R.string.butn_shareOnBrowser);
         mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
+        mToggleBrowserShare.setVisible(hasOutgoing && mGroup.isServedOnWeb);
         mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
         mRetryMenu.setVisible(hasIncoming);
