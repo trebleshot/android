@@ -103,6 +103,9 @@ public class CommunicationService extends Service
     public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
     public static final String ACTION_TRUSTZONE_STATUS = "com.genonbeta.TrebleShot.transaction.action.TRUSTZONE_STATUS";
     public static final String ACTION_REQUEST_TRUSTZONE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TRUSTZONE_STATUS";
+    public static final String ACTION_TOGGLE_WEBSHARE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_WEBSHARE";
+    public static final String ACTION_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.WEBSHARE_STATUS";
+    public static final String ACTION_REQUEST_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_WEBSHARE_STATUS";
 
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -195,10 +198,9 @@ public class CommunicationService extends Service
 
 
         try {
-            mWebShareServer = new WebShareServer(this,AppConfig.SERVER_PORT_WEBSHARE);
+            mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
             mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
                     Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
-            mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         } catch (Throwable t) {
             Log.e(TAG, "Failed to start Web Share Server");
         }
@@ -346,6 +348,7 @@ public class CommunicationService extends Service
                                     receiveBuilder.getServerSocket().close();
                             }
                         } catch (Exception e) {
+                            // do nothing
                         }
 
                         try {
@@ -353,12 +356,14 @@ public class CommunicationService extends Service
                                     && processHolder.activeConnection.getSocket() != null)
                                 processHolder.activeConnection.getSocket().close();
                         } catch (IOException e) {
+                            // do nothing
                         }
 
                         try {
                             if (processHolder.builder.getSocket() != null)
                                 processHolder.builder.getSocket().close();
                         } catch (IOException e) {
+                            // do nothing
                         }
                     }
                 }
@@ -373,7 +378,8 @@ public class CommunicationService extends Service
                     && intent.hasExtra(EXTRA_STATUS_STARTED)) {
                 boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
 
-                mDestroyApproved = !startRequested && !hasOngoingTasks();
+                mDestroyApproved = !startRequested && !hasOngoingTasks() && (mWebShareServer == null
+                        || !mWebShareServer.isAlive());
 
                 if (mDestroyApproved)
                     new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
@@ -406,6 +412,10 @@ public class CommunicationService extends Service
                 refreshServiceState();
             } else if (ACTION_REQUEST_TRUSTZONE_STATUS.equals(intent.getAction())) {
                 sendTrustZoneStatus();
+            } else if (ACTION_REQUEST_WEBSHARE_STATUS.equals(intent.getAction())) {
+                sendWebShareStatus();
+            } else if (ACTION_TOGGLE_WEBSHARE.equals(intent.getAction())) {
+                toggleWebShare();
             }
         }
 
@@ -588,6 +598,12 @@ public class CommunicationService extends Service
         sendBroadcast(statusIntent);
     }
 
+    public void sendWebShareStatus()
+    {
+        sendBroadcast(new Intent(ACTION_WEBSHARE_STATUS)
+                .putExtra(EXTRA_STATUS_STARTED, mWebShareServer.isAlive()));
+    }
+
     public void setupHotspot()
     {
         boolean isEnabled = !getHotspotUtils().isEnabled();
@@ -636,9 +652,23 @@ public class CommunicationService extends Service
             sendTrustZoneStatus();
 
         startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
-                getNotificationHelper()
-                        .getCommunicationServiceNotification(mSeamlessMode, mPinAccess)
-                        .build());
+                getNotificationHelper().getCommunicationServiceNotification(mSeamlessMode, mPinAccess,
+                        mWebShareServer != null && mWebShareServer.isAlive()).build());
+    }
+
+    public void toggleWebShare()
+    {
+        if (mWebShareServer.isAlive())
+            mWebShareServer.stop();
+        else
+            try {
+                mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        updateServiceState(mSeamlessMode);
+        sendWebShareStatus();
     }
 
     public class CommunicationServer extends CoolSocket

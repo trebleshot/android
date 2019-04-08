@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_hotspot_status_info_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:paddingTop="15dp"
+    android:paddingBottom="15dp">
+
+    <LinearLayout
+        android:id="@+id/activity_web_share_info_container_text1_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/activity_web_share_info_container_text1"
+            style="@style/TextAppearance.Primary.Normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:maxLines="5"
+            android:text="@string/text_qrCodeHotspotDisabledHelp" />
+
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/activity_web_share_info_toggle_button"
+        style="?borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/butn_startHotspot"
+        app:backgroundTint="?colorSurface" />
+
+
+    <RelativeLayout
+        android:id="@+id/activity_web_share_info_container_text2_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/activity_web_share_info_container_text2"
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:maxLines="1"
+            android:text="@string/text_unknown" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_toStartOf="@id/activity_web_share_info_container_text2"
+            android:layout_toLeftOf="@id/activity_web_share_info_container_text2">
+
+            <ImageView
+                android:id="@+id/activity_web_share_info_container_text2_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_wifi_tethering_white_24dp" />
+
+        </FrameLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/activity_web_share_info_container_text3_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="15dp">
+
+        <TextView
+            android:id="@+id/activity_web_share_info_container_text3"
+            style="@style/TextAppearance.Secondary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:maxLines="1"
+            android:text="@string/text_unknown" />
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginStart="24dp"
+            android:layout_marginLeft="24dp"
+            android:layout_toStartOf="@id/activity_web_share_info_container_text3"
+            android:layout_toLeftOf="@id/activity_web_share_info_container_text3">
+
+            <ImageView
+                android:id="@+id/activity_web_share_info_container_text3_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/ic_vpn_key_white_24dp" />
+        </FrameLayout>
+    </RelativeLayout>
+</LinearLayout>
+

@@ -412,7 +412,7 @@
     <string name="text_introMakeItYours">Sizin yapın</string>
     <string name="text_introSetUpPermissions">İzinleri ayarlayın</string>
     <string name="text_introSetUpProfile">Profilinizi ayarlayın</string>
-    <string name="text_textMillisecond">%s milisaniye</string>
+    <string name="text_textMillisecond">%d milisaniye</string>
     <string name="text_welcome">Hoşgeldiniz</string>
     <string name="butn_addShortcut">Kısayollara ekle</string>
     <string name="butn_removeShortcut">Kısayolu kaldır</string>

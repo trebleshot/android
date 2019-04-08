@@ -268,7 +268,6 @@ public class HotspotManagerFragment
                 && getContext() != null;
 
         try {
-            MultiFormatWriter formatWriter = new MultiFormatWriter();
 
             if (showQRCode) {
                 {
@@ -281,6 +280,7 @@ public class HotspotManagerFragment
                             .apply();
                 }
 
+                MultiFormatWriter formatWriter = new MultiFormatWriter();
                 BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);

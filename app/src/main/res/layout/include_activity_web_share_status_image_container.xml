@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.genonbeta.TrebleShot.view.ComparativeRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/layout_hotspot_status_qr_image_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:baseOnSmallerLength="@bool/genfw_screen_isLandscape">
+
+    <ImageView
+        android:id="@+id/activity_web_share_qr_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@drawable/ic_qrcode_white_128dp" />
+
+</com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>

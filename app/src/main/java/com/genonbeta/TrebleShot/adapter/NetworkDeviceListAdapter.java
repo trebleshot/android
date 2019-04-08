@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -93,28 +94,31 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     @Override
     public void onBindViewHolder(@NonNull EditableListAdapter.EditableViewHolder holder, int position)
     {
-        View parentView = holder.getView();
-        NetworkDevice device = getList().get(position);
+        try {
+            NetworkDevice device = getItem(position);
+            View parentView = holder.getView();
+            boolean hotspotNetwork = device instanceof HotspotNetwork;
 
-        boolean hotspotNetwork = device instanceof HotspotNetwork;
+            TextView deviceText = parentView.findViewById(R.id.text2);
+            TextView userText = parentView.findViewById(R.id.text1);
+            ImageView userImage = parentView.findViewById(R.id.image);
+            ImageView statusImage = parentView.findViewById(R.id.imageStatus);
 
-        TextView deviceText = parentView.findViewById(R.id.text2);
-        TextView userText = parentView.findViewById(R.id.text1);
-        ImageView userImage = parentView.findViewById(R.id.image);
-        ImageView statusImage = parentView.findViewById(R.id.imageStatus);
+            userText.setText(device.nickname);
+            deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
+            NetworkDeviceLoader.showPictureIntoView(device, userImage, mIconBuilder);
 
-        userText.setText(device.nickname);
-        deviceText.setText(hotspotNetwork ? getContext().getString(R.string.text_trebleshotHotspot) : device.model);
-        NetworkDeviceLoader.showPictureIntoView(device, userImage, mIconBuilder);
-
-        if (device.isRestricted) {
-            statusImage.setVisibility(View.VISIBLE);
-            statusImage.setImageResource(R.drawable.ic_block_white_24dp);
-        } else if (device.isTrusted) {
-            statusImage.setVisibility(View.VISIBLE);
-            statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
-        } else {
-            statusImage.setVisibility(View.GONE);
+            if (device.isRestricted) {
+                statusImage.setVisibility(View.VISIBLE);
+                statusImage.setImageResource(R.drawable.ic_block_white_24dp);
+            } else if (device.isTrusted) {
+                statusImage.setVisibility(View.VISIBLE);
+                statusImage.setImageResource(R.drawable.ic_vpn_key_white_24dp);
+            } else {
+                statusImage.setVisibility(View.GONE);
+            }
+        } catch (NotReadyException e) {
+            e.printStackTrace();
         }
     }
 

@@ -3,6 +3,7 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferObject;
 
@@ -16,7 +17,7 @@ import java.util.HashMap;
 
 public class TextUtils
 {
-    public static int getAdapterName(NetworkDevice.Connection connection)
+    public static int getAdapterName(String adapterName)
     {
         HashMap<String, Integer> associatedNames = new HashMap<>();
 
@@ -27,7 +28,7 @@ public class TextUtils
         associatedNames.put("unk", R.string.text_interfaceUnknown);
 
         for (String displayName : associatedNames.keySet())
-            if (connection.adapterName.startsWith(displayName))
+            if (adapterName.startsWith(displayName))
                 return associatedNames.get(displayName);
 
         return -1;
@@ -35,10 +36,20 @@ public class TextUtils
 
     public static String getAdapterName(Context context, NetworkDevice.Connection connection)
     {
-        int adapterNameResource = getAdapterName(connection);
+        return getAdapterName(context, connection.adapterName);
+    }
+
+    public static String getAdapterName(Context context, AddressedInterface addressedInterface)
+    {
+        return getAdapterName(context, addressedInterface.getNetworkInterface().getDisplayName());
+    }
+
+    public static String getAdapterName(Context context, String adapterName)
+    {
+        int adapterNameResource = getAdapterName(adapterName);
 
         if (adapterNameResource == -1)
-            return connection.adapterName;
+            return adapterName;
 
         return context.getString(adapterNameResource);
     }
@@ -97,6 +108,12 @@ public class TextUtils
             default:
                 return R.string.text_unknown;
         }
+    }
+
+    public static String makeWebShareLink(Context context, String address)
+    {
+        return context.getString(R.string.mode_webShareAddress, address, AppConfig
+                .SERVER_PORT_WEBSHARE);
     }
 
     public static boolean searchWord(String word, String searchThis)

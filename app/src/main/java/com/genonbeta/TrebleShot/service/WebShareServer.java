@@ -6,9 +6,6 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
 
-import androidx.annotation.StringRes;
-import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -33,6 +30,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import androidx.annotation.StringRes;
 import fi.iki.elonen.NanoHTTPD;
 
 /**
@@ -191,7 +189,6 @@ public class WebShareServer extends NanoHTTPD
     private String serveMainPage()
     {
         StringBuilder contentBuilder = new StringBuilder();
-        Map<Long, TransferObject> calcMap = new ArrayMap<>();
 
         List<TransferGroup> groupList = AppUtils.getDatabase(mContext).castQuery(
                 new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
@@ -272,7 +269,7 @@ public class WebShareServer extends NanoHTTPD
                     + packageInfo.versionName + ".apk";
 
             values.put("apk_link", "/trebleshot/" + fileName);
-            values.put("apk_filename", fileName);
+            values.put("apk_filename", mContext.getString(R.string.text_dowloadTrebleshotAndroid));
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }

@@ -192,7 +192,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.actions_abs_editable_list, menu);

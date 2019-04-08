@@ -147,7 +147,8 @@
 
         <activity
             android:name=".activity.WebShareActivity"
-            android:label="@string/text_webShare" />
+            android:label="@string/text_webShare"
+            android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -158,6 +159,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+
         <receiver
             android:name=".receiver.NetworkStatusReceiver"
             android:process=":transfer">
@@ -171,6 +173,7 @@
         <receiver
             android:name=".receiver.DialogEventReceiver"
             android:process=":transfer" />
+
         <service
             android:name=".service.CommunicationService"
             android:enabled="true"
@@ -209,6 +212,7 @@
             </intent-filter>
         </service>
     </application>
+
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />

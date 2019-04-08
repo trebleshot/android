@@ -39,12 +39,23 @@ public class CommunicationNotificationHelper
         mNotificationUtils = notificationUtils;
     }
 
-    public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode, boolean pinAccess)
+    public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode,
+                                                                   boolean pinAccess,
+                                                                   boolean webShare)
     {
         DynamicNotification notification = getUtils().buildDynamicNotification(SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+        StringBuilder builder = new StringBuilder();
+
+        if(webShare)
+            builder.append(getContext().getString(R.string.text_webShare));
+
+        if (builder.length() > 0)
+            builder.append(" - ");
+
+        builder.append(getContext().getString(R.string.text_communicationServiceRunning));
 
         notification.setSmallIcon(R.drawable.ic_trebleshot_rounded_white_24dp_static)
-                .setContentTitle(getContext().getString(R.string.text_communicationServiceRunning))
+                .setContentTitle(builder.toString())
                 .setContentText(getContext().getString(R.string.text_communicationServiceStop))
                 .setAutoCancel(true)
                 .addAction(R.drawable.ic_compare_arrows_white_24dp_static, getContext().getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),

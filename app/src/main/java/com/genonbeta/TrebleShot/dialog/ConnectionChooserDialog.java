@@ -26,6 +26,8 @@ import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.android.database.SQLQuery;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -138,14 +140,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
                 }
 
             textView1.setTextColor(accessible ? mActiveColor : mPassiveColor);
-
-            int availableName = TextUtils.getAdapterName(address);
-
-            if (availableName == -1)
-                textView1.setText(address.adapterName);
-            else
-                textView1.setText(availableName);
-
+            textView1.setText(TextUtils.getAdapterName(getContext(), address));
             textView2.setText(address.ipAddress);
             textView3.setText(TimeUtils.getTimeAgo(getContext(), address.lastCheckedDate));
 

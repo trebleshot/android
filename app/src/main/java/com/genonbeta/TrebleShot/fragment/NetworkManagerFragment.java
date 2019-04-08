@@ -199,8 +199,6 @@ public class NetworkManagerFragment
                 && getContext() != null;
 
         try {
-            MultiFormatWriter formatWriter = new MultiFormatWriter();
-
             if (showQRCode) {
                 {
                     int networkPin = AppUtils.getUniqueNumber();
@@ -212,6 +210,7 @@ public class NetworkManagerFragment
                             .apply();
                 }
 
+                MultiFormatWriter formatWriter = new MultiFormatWriter();
                 BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400, 400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
 

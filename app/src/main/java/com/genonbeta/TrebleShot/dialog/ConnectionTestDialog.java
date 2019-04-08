@@ -83,14 +83,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
             boolean accessible = address.pingTime >= 0;
 
             textView1.setTextColor(accessible ? mActiveColor : mPassiveColor);
-
-            int availableName = TextUtils.getAdapterName(address.connection);
-
-            if (availableName == -1)
-                textView1.setText(address.connection.adapterName);
-            else
-                textView1.setText(availableName);
-
+            textView1.setText(TextUtils.getAdapterName(getContext(), address.connection));
             textView2.setText(address.connection.ipAddress);
 
             if (accessible)

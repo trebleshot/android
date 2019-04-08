@@ -449,4 +449,10 @@
     <string name="text_webShareNoContentNotice">Should have been a content here? Try adding some transfers and enabling them to share on web!</string>
     <string name="butn_shareOnBrowser">Share on browser</string>
     <string name="butn_hideOnBrowser">Hide on browser</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">or</string>
+    <string name="text_visitWebShareAddress">Visit this link with your browser</string>
+    <string name="text_webShareInfo">Below you see the addresses that other devices can connect with a browser. Next, individually enable web share for transfers.</string>
+    <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
+    <string name="text_listEmptyConnection">Networks you connect appear here</string>
 </resources>

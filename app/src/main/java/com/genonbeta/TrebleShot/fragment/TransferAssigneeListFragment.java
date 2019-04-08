@@ -5,15 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
@@ -28,6 +24,10 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * created by: veli
@@ -45,9 +45,14 @@ public class TransferAssigneeListFragment
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-                    && AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
-                refreshList();
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                if (AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(intent.getStringExtra(
+                        AccessDatabase.EXTRA_TABLE_NAME)))
+                    refreshList();
+                else if (AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(
+                        AccessDatabase.EXTRA_TABLE_NAME)))
+                    updateTransferGroup();
+            }
         }
     };
 
@@ -81,6 +86,17 @@ public class TransferAssigneeListFragment
 
         setEmptyImage(R.drawable.ic_device_hub_white_24dp);
         setEmptyText(getString(R.string.text_noDeviceForTransfer));
+        useEmptyActionButton(getString(R.string.butn_shareOnBrowser), new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
+                AppUtils.getDatabase(getContext()).update(mHeldGroup);
+            }
+        });
+
+        updateTransferGroup();
 
         int paddingRecyclerView = (int) getResources()
                 .getDimension(R.dimen.padding_list_content_parent_layout);
@@ -203,15 +219,22 @@ public class TransferAssigneeListFragment
     public TransferGroup getTransferGroup()
     {
         if (mHeldGroup == null) {
-            mHeldGroup = new TransferGroup(getArguments().getLong(ARG_GROUP_ID, -1));
-
-            try {
-                AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            mHeldGroup = new TransferGroup(getArguments() == null ? -1 : getArguments().getLong(
+                    ARG_GROUP_ID, -1));
+            updateTransferGroup();
         }
 
         return mHeldGroup;
+    }
+
+    private void updateTransferGroup()
+    {
+        try {
+            AppUtils.getDatabase(getContext()).reconstruct(mHeldGroup);
+            getEmptyActionButton().setText(mHeldGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
+                    : R.string.butn_shareOnBrowser);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
