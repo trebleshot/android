@@ -1,12 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
     Meanings of prefixes:
     butn_ : text indicates any kind of button like Button, MenuItem.title, possibly should be short
     ques_ : in that kind of text a question mark should exist
     mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes above
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
---><resources>
+-->
+<resources>
     <string name="text_appName" translatable="false">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
@@ -446,13 +446,15 @@
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Share via browser</string>
     <string name="text_webShare">@string/butn_webShare</string>
-    <string name="text_webShareNoContentNotice">Should have been a content here? Try adding some transfers and enabling them to share on web!</string>
+    <string name="text_webShareNoContentNotice">Use \'Share on browser\' option to see transfers here!</string>
     <string name="butn_shareOnBrowser">Share on browser</string>
     <string name="butn_hideOnBrowser">Hide on browser</string>
+    <string name="text_transferSharedOnBrowser">Shared on browser</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
-    <string name="text_webShareInfo">Below you see the addresses that other devices can connect with a browser. Next, individually enable web share for transfers.</string>
+    <string name="text_webShareInfo">Below you see the links that the devices on the same network can connect with a browser. Next, individually enable web share for transfers.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
+    <string name="mesg_errorNotAnIpAddress">Not an IP address\n(like 192.168.1.2)</string>
 </resources>

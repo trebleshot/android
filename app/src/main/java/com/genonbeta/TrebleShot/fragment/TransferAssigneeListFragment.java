@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -93,6 +94,9 @@ public class TransferAssigneeListFragment
             {
                 mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
                 AppUtils.getDatabase(getContext()).update(mHeldGroup);
+
+                if (mHeldGroup.isServedOnWeb)
+                    startActivity(new Intent(getActivity(), WebShareActivity.class));
             }
         });
 

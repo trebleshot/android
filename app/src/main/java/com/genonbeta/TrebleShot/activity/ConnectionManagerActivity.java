@@ -129,7 +129,12 @@ public class ConnectionManagerActivity
                 String fragmentEnum = intent.getStringExtra(EXTRA_FRAGMENT_ENUM);
 
                 try {
-                    setFragment(AvailableFragment.valueOf(fragmentEnum));
+                    AvailableFragment value = AvailableFragment.valueOf(fragmentEnum);
+
+                    if (AvailableFragment.EnterIpAddress.equals(value))
+                        showEnterIpAddressDialog();
+                    else
+                        setFragment(value);
                 } catch (Exception e) {
                     // do nothing
                 }
@@ -342,6 +347,13 @@ public class ConnectionManagerActivity
         }
     }
 
+    protected void showEnterIpAddressDialog()
+    {
+        ConnectionUtils connectionUtils = ConnectionUtils.getInstance(this);
+        UIConnectionUtils uiConnectionUtils = new UIConnectionUtils(connectionUtils, this);
+        new ManualIpAddressConnectionDialog(this, uiConnectionUtils, mDeviceSelectionListener).show();
+    }
+
     public enum RequestType
     {
         RETURN_RESULT,
@@ -354,7 +366,8 @@ public class ConnectionManagerActivity
         UseExistingNetwork,
         UseKnownDevice,
         ScanQrCode,
-        CreateHotspot
+        CreateHotspot,
+        EnterIpAddress
     }
 
     public interface DeviceSelectionSupport
@@ -392,7 +405,7 @@ public class ConnectionManagerActivity
                             updateFragment(AvailableFragment.UseExistingNetwork);
                             break;
                         case R.id.connection_option_manual_ip:
-                            showEnterIpAddressDialog();
+                            updateFragment(AvailableFragment.EnterIpAddress);
                             break;
                         case R.id.connection_option_scan:
                             startCodeScanner();
@@ -404,6 +417,7 @@ public class ConnectionManagerActivity
             view.findViewById(R.id.connection_option_hotspot).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_network).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
+            view.findViewById(R.id.connection_option_manual_ip).setOnClickListener(listener);
 
             view.findViewById(R.id.connection_option_guide).setOnClickListener(new View.OnClickListener()
             {
@@ -443,12 +457,6 @@ public class ConnectionManagerActivity
         {
             startActivityForResult(new Intent(getActivity(), BarcodeScannerActivity.class),
                     REQUEST_CHOOSE_DEVICE);
-        }
-
-        protected void showEnterIpAddressDialog()
-        {
-            // TODO: 4/4/19 Add manual IP address connection.
-            //new ManualIpAddressConnectionDialog(getActivity(), getCo).show();
         }
 
         public void updateFragment(AvailableFragment fragment)

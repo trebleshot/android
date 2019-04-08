@@ -19,6 +19,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
@@ -268,11 +269,21 @@ public class TransferGroupListFragment
                         .removeAsynchronous(getFragment().getActivity(), selectionList);
             else if (id == R.id.action_mode_group_serve_on_web
                     || id == R.id.action_mode_group_hide_on_web) {
-                for (TransferGroupListAdapter.PreloadedGroup group : selectionList)
+                boolean success = false;
+
+                for (TransferGroupListAdapter.PreloadedGroup group : selectionList) {
                     group.isServedOnWeb = group.index.outgoingCount > 0
                             && id == R.id.action_mode_group_serve_on_web;
 
+                    if (group.isServedOnWeb)
+                        success = true;
+                }
+
                 AppUtils.getDatabase(getFragment().getContext()).update(selectionList);
+
+                if (success)
+                    getFragment().getActivity().startActivity(new Intent(getFragment().getContext(),
+                            WebShareActivity.class));
             } else
                 return super.onActionMenuItemSelected(context, actionMode, item);
 

@@ -89,6 +89,25 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
+                <LinearLayout
+                    android:id="@+id/statusLayoutWeb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/TextSeparatorMiddleDot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ImageView
+                        android:layout_width="@dimen/font_size_secondary"
+                        android:layout_height="@dimen/font_size_secondary"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginRight="5dp"
+                        app:srcCompat="@drawable/ic_web_white_24dp" />
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>

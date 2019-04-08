@@ -461,7 +461,7 @@ public class TransferListAdapter
                 secondText.setText(object.getSecondText(this));
                 thirdText.setText(object.getThirdText(this));
 
-                object.handleStatusIcon(sIcon);
+                object.handleStatusIcon(sIcon, mGroup);
                 ImageViewCompat.setImageTintList(sIcon, ColorStateList.valueOf(appliedColor));
                 progressBar.setMax(100);
                 progressBar.setProgress(percentage <= 0 ? 1 : percentage);
@@ -544,7 +544,7 @@ public class TransferListAdapter
 
         abstract public boolean loadThumbnail(ImageView imageView);
 
-        abstract public void handleStatusIcon(ImageView imageView);
+        abstract public void handleStatusIcon(ImageView imageView, TransferGroup group);
 
         abstract public String getFirstText(TransferListAdapter adapter);
 
@@ -661,7 +661,7 @@ public class TransferListAdapter
         }
 
         @Override
-        public void handleStatusIcon(ImageView imageView)
+        public void handleStatusIcon(ImageView imageView, TransferGroup group)
         {
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageResource(Type.INCOMING.equals(type)
@@ -762,7 +762,7 @@ public class TransferListAdapter
         }
 
         @Override
-        public void handleStatusIcon(ImageView imageView)
+        public void handleStatusIcon(ImageView imageView, TransferGroup group)
         {
             imageView.setVisibility(View.GONE);
         }
@@ -839,9 +839,13 @@ public class TransferListAdapter
         }
 
         @Override
-        public boolean isSelectableSelected()
+        public void handleStatusIcon(ImageView imageView, TransferGroup group)
         {
-            return false;
+            if (group.isServedOnWeb) {
+                imageView.setVisibility(View.VISIBLE);
+                imageView.setImageResource(R.drawable.ic_web_white_24dp);
+            } else
+                super.handleStatusIcon(imageView, group);
         }
 
         @Override
@@ -854,6 +858,12 @@ public class TransferListAdapter
         public long getId()
         {
             return (directory != null ? directory : friendlyName).hashCode();
+        }
+
+        @Override
+        public boolean isSelectableSelected()
+        {
+            return false;
         }
 
         @Override
@@ -908,7 +918,7 @@ public class TransferListAdapter
         }
 
         @Override
-        public void handleStatusIcon(ImageView imageView)
+        public void handleStatusIcon(ImageView imageView, TransferGroup group)
         {
             imageView.setVisibility(View.GONE);
         }

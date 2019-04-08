@@ -362,7 +362,6 @@ public class ViewTransferActivity
         } else if (id == R.id.actions_transfer_sender_add_device) {
             startDeviceAddingActivity();
         } else if (id == R.id.actions_transfer_test_connection) {
-            //todo: change this
             final List<ShowingAssignee> assignee = TransferUtils.loadAssigneeList(getDatabase(),
                     mGroup.groupId);
 
@@ -384,8 +383,10 @@ public class ViewTransferActivity
         } else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
             mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
             getDatabase().update(mGroup);
-
             showMenus();
+
+            if (mGroup.isServedOnWeb)
+                startActivity(new Intent(this, WebShareActivity.class));
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId

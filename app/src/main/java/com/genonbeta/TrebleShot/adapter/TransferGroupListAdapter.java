@@ -10,12 +10,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
-import androidx.core.widget.ImageViewCompat;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
@@ -28,6 +22,12 @@ import com.genonbeta.android.database.SQLQuery;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.ImageViewCompat;
 
 /**
  * created by: Veli
@@ -71,15 +71,15 @@ public class TransferGroupListAdapter
 
             StringBuilder assigneesText = new StringBuilder();
 
-            if (group.isServedOnWeb)
-                assigneesText.append(getContext().getString(R.string.text_webShare));
-
             for (ShowingAssignee showingAssignee : group.index.assignees) {
                 if (assigneesText.length() > 0)
                     assigneesText.append(", ");
 
                 assigneesText.append(showingAssignee.device.nickname);
             }
+
+            if (assigneesText.length() == 0 && group.isServedOnWeb)
+                assigneesText.append(getContext().getString(R.string.text_transferSharedOnBrowser));
 
             group.assignees = assigneesText.length() > 0
                     ? assigneesText.toString()
@@ -140,6 +140,7 @@ public class TransferGroupListAdapter
                 int percentage = (int) (object.totalPercent * 100);
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
                 ImageView image = parentView.findViewById(R.id.image);
+                View statusLayoutWeb = parentView.findViewById(R.id.statusLayoutWeb);
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
                 TextView text3 = parentView.findViewById(R.id.text3);
@@ -168,6 +169,8 @@ public class TransferGroupListAdapter
                                 : R.drawable.ic_arrow_down_white_24dp);
                 }
 
+                statusLayoutWeb.setVisibility(object.index.outgoingCount > 0 && object.isServedOnWeb
+                        ? View.VISIBLE : View.GONE);
                 text1.setText(object.assignees);
                 text2.setText(FileUtils.sizeExpression(object.totalBytes, false));
                 text3.setText(mPercentFormat.format(object.totalPercent));
