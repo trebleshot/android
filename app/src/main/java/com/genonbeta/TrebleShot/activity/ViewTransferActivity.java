@@ -388,7 +388,7 @@ public class ViewTransferActivity
             showMenus();
 
             if (mGroup.isServedOnWeb)
-                startActivity(new Intent(this, WebShareActivity.class));
+                startWebShareActivity();
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
@@ -400,6 +400,8 @@ public class ViewTransferActivity
 
             if (fragment != null && fragment.setDeviceId(mDeviceId))
                 fragment.refreshList();
+        } else if (item.getItemId() == R.id.actions_transfer_web_share_shortcut) {
+            startWebShareActivity();
         } else
             return super.onOptionsItemSelected(item);
 
@@ -515,7 +517,7 @@ public class ViewTransferActivity
         mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
                 : R.string.butn_shareOnBrowser);
         mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
-        mToggleBrowserShare.setVisible(hasOutgoing && mGroup.isServedOnWeb);
+        mWebShareShortcut.setVisible(hasOutgoing && mGroup.isServedOnWeb);
         mCnTestMenu.setVisible(hasAnyFiles);
         mAddDeviceMenu.setVisible(hasOutgoing);
         mRetryMenu.setVisible(hasIncoming);
@@ -546,6 +548,10 @@ public class ViewTransferActivity
         setTitle(getResources().getQuantityString(R.plurals.text_files,
                 getIndex().incomingCount + getIndex().outgoingCount,
                 getIndex().incomingCount + getIndex().outgoingCount));
+    }
+
+    private void startWebShareActivity() {
+        startActivity(new Intent(this, WebShareActivity.class));
     }
 
     private void toggleTask()
