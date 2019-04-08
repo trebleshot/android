@@ -282,8 +282,7 @@ public class TransferGroupListFragment
                 AppUtils.getDatabase(getFragment().getContext()).update(selectionList);
 
                 if (success)
-                    getFragment().getActivity().startActivity(new Intent(getFragment().getContext(),
-                            WebShareActivity.class));
+                    AppUtils.startWebShareActivity(getFragment().getActivity(), true);
             } else
                 return super.onActionMenuItemSelected(context, actionMode, item);
 

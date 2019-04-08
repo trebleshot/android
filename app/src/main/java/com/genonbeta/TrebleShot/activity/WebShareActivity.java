@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat;
  */
 public class WebShareActivity extends Activity
 {
+    public static final String EXTRA_WEBSERVER_START_REQUIRED = "extraStartRequired";
+
     private FloatingActionButton mFAB;
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -58,9 +60,13 @@ public class WebShareActivity extends Activity
             @Override
             public void onClick(View v)
             {
-                toggleWebShare();
+                toggleWebShare(false);
             }
         });
+
+        if (getIntent() != null && getIntent().hasExtra(EXTRA_WEBSERVER_START_REQUIRED)
+                && getIntent().getBooleanExtra(EXTRA_WEBSERVER_START_REQUIRED, false))
+            toggleWebShare(true);
     }
 
     @Override
@@ -97,10 +103,15 @@ public class WebShareActivity extends Activity
                 .setAction(CommunicationService.ACTION_REQUEST_WEBSHARE_STATUS));
     }
 
-    public void toggleWebShare()
+    public void toggleWebShare(boolean forceStart)
     {
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE));
+        Intent intent = new Intent(this, CommunicationService.class)
+                .setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE);
+
+        if (forceStart)
+            intent.putExtra(CommunicationService.EXTRA_TOGGLE_WEBSHARE_START_ALWAYS, true);
+
+        AppUtils.startForegroundService(this, intent);
     }
 
     public void updateWebShareStatus(boolean running)

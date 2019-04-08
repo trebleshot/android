@@ -96,7 +96,7 @@ public class TransferAssigneeListFragment
                 AppUtils.getDatabase(getContext()).update(mHeldGroup);
 
                 if (mHeldGroup.isServedOnWeb)
-                    startWebShareActivity();
+                    AppUtils.startWebShareActivity(getActivity(), true);
             }
         });
 
@@ -105,7 +105,7 @@ public class TransferAssigneeListFragment
             @Override
             public boolean onLongClick(View v)
             {
-                startWebShareActivity();
+                AppUtils.startWebShareActivity(getActivity(), false);
                 return true;
             }
         });
@@ -239,10 +239,6 @@ public class TransferAssigneeListFragment
         }
 
         return mHeldGroup;
-    }
-
-    private void startWebShareActivity() {
-        startActivity(new Intent(getActivity(), WebShareActivity.class));
     }
 
     private void updateTransferGroup()

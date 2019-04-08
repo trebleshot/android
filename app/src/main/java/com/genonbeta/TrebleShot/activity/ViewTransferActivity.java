@@ -388,7 +388,7 @@ public class ViewTransferActivity
             showMenus();
 
             if (mGroup.isServedOnWeb)
-                startWebShareActivity();
+                AppUtils.startWebShareActivity(this, true);
         } else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
             mDeviceId = item.getOrder() < mTransactionIndex.assignees.size()
                     ? mTransactionIndex.assignees.get(item.getOrder()).deviceId
@@ -401,7 +401,7 @@ public class ViewTransferActivity
             if (fragment != null && fragment.setDeviceId(mDeviceId))
                 fragment.refreshList();
         } else if (item.getItemId() == R.id.actions_transfer_web_share_shortcut) {
-            startWebShareActivity();
+            AppUtils.startWebShareActivity(this, false);
         } else
             return super.onOptionsItemSelected(item);
 
@@ -548,10 +548,6 @@ public class ViewTransferActivity
         setTitle(getResources().getQuantityString(R.plurals.text_files,
                 getIndex().incomingCount + getIndex().outgoingCount,
                 getIndex().incomingCount + getIndex().outgoingCount));
-    }
-
-    private void startWebShareActivity() {
-        startActivity(new Intent(this, WebShareActivity.class));
     }
 
     private void toggleTask()

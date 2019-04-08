@@ -123,6 +123,7 @@ public class CommunicationService extends Service
     public static final String EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType";
     public static final String EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning";
     public static final String EXTRA_DEVICE_LIST_RUNNING = "extraDeviceListRunning";
+    public static final String EXTRA_TOGGLE_WEBSHARE_START_ALWAYS = "extraToggleWebShareStartAlways";
 
     public static final int TASK_STATUS_ONGOING = 0;
     public static final int TASK_STATUS_STOPPED = 1;
@@ -415,7 +416,11 @@ public class CommunicationService extends Service
             } else if (ACTION_REQUEST_WEBSHARE_STATUS.equals(intent.getAction())) {
                 sendWebShareStatus();
             } else if (ACTION_TOGGLE_WEBSHARE.equals(intent.getAction())) {
-                toggleWebShare();
+                if (intent.hasExtra(EXTRA_TOGGLE_WEBSHARE_START_ALWAYS))
+                    setWebShareEnabled(intent.getBooleanExtra(EXTRA_TOGGLE_WEBSHARE_START_ALWAYS,
+                            false), true);
+                else
+                    toggleWebShare();
             }
         }
 

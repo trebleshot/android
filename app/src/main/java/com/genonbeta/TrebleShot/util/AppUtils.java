@@ -2,6 +2,8 @@ package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,15 +18,10 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 
-import androidx.annotation.AnyRes;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -46,6 +43,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.AnyRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class AppUtils
 {
@@ -140,8 +143,10 @@ public class AppUtils
         DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
         String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
         DocumentFile logFile = saveDirectory.createFile(null, fileName);
-
-        int pid = android.os.Process.myPid();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(
+                Service.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processList = activityManager
+                .getRunningAppProcesses();
 
         try {
             String command = "logcat -d -v threadtime *:*";
@@ -156,12 +161,14 @@ public class AppUtils
 
             String readLine;
 
-            while ((readLine = reader.readLine()) != null) {
-                if (readLine.contains(String.valueOf(pid))) {
-                    outputStream.write((readLine + "\n").getBytes());
-                    outputStream.flush();
-                }
-            }
+            while ((readLine = reader.readLine()) != null)
+                for (ActivityManager.RunningAppProcessInfo processInfo : processList)
+                    if (readLine.contains(String.valueOf(processInfo.pid))) {
+                        outputStream.write((readLine + "\n").getBytes());
+                        outputStream.flush();
+
+                        break;
+                    }
 
             outputStream.close();
             reader.close();
@@ -396,6 +403,15 @@ public class AppUtils
                 .interrupt();
 
         return false;
+    }
+
+    public static void startWebShareActivity(Context context, boolean startWebShare) {
+        Intent startIntent = new Intent(context, WebShareActivity.class);
+
+        if (startWebShare)
+            startIntent.putExtra(WebShareActivity.EXTRA_WEBSERVER_START_REQUIRED, true);
+
+        context.startActivity(startIntent);
     }
 
     public static void startForegroundService(Context context, Intent intent)
