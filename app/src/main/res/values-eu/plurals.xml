@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Fitxategi hau ezabatu nahi duzu\?</item>
+        <item quantity="other">%d fitxategi ezabatu nahi dituzu\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">Fitxategi %d jaso da</item>
+        <item quantity="other">%d fitxategi jaso dira</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">Fitxategi %d hautatu da</item>
+        <item quantity="other">%d fitxategi hautatu dira</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">Burutzeke dagoen transferentzia kenduko da</item>
+        <item quantity="other">Burutzeke dauden transferentziak kenduko da</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">Konexio %d</item>
+        <item quantity="other">%d konexio</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">Fitxategi hau jaso\?</item>
+        <item quantity="other">%d fitxategi jaso\?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">Fitxategi %d</item>
+        <item quantity="other">%d fitxategi</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">Duela segundo bat</item>
+        <item quantity="other">Duela %d segundo</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">Duela minutu bat</item>
+        <item quantity="other">Duela %d minutu</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">Fitxategi %d ezabatu da</item>
+        <item quantity="other">%d fitxategi ezabatu dira</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Errenkada bat</item>
+        <item quantity="other">%d errenkada</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Partekatze bakarra</item>
+        <item quantity="other">%d fitxategiekin partekatzen</item>
+    </plurals>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="other">要刪除 %d 個文件嗎？</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="other">已收到 %d 個文件</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="other">已選擇 %d 個文件</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="other">%d 待處理的轉發將會刪除</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="other">%d 個連接</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="other">收到 %d 個文件？</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="other">%d 文件</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="other">%d 秒前</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="other">%d 分鐘前</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="other">%d 個文件已被刪除</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="other">%d 行</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="other">與 %d 台裝置共用</item>
+    </plurals>
+</resources>

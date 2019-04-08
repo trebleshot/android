@@ -208,7 +208,7 @@
     <string name="text_cameraPermissionRequired">需要相机权限</string>
     <string name="text_file">文件</string>
     <string name="text_transactionViewer">查看传输</string>
-    <string name="butn_ask">询问权限</string>
+    <string name="butn_ask">请求权限</string>
     <string name="text_usedConnection">使用过的连接</string>
     <string name="text_flagRemoved">已移除</string>
     <string name="butn_copyToClipboard">复制到剪贴板</string>
@@ -446,4 +446,6 @@
     <string name="const_text_useAppFonts">使用推荐的字体</string>
     <string name="const_text_useAppFontsSummary">使用预提供的自定义字体</string>
     <string name="mesg_waiting">等待中</string>
+    <string name="text_amoledOptimizedBlackTheme">为AMOLED屏优化</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
 </resources>
