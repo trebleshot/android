@@ -469,4 +469,21 @@
     <string name="mesg_waiting">Bezig met wachten...</string>
     <string name="text_amoledOptimizedBlackTheme">Optimaliseren voor AMOLED-schermen</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Donkerder kleuren gebruiken</string>
+    <string name="mesg_errorNotTrustZoneDevice">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
+    <string name="butn_enterIpAddress">IP-adres invoeren</string>
+    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="butn_webShare">Delen via browser</string>
+    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShareNoContentNotice">Gebruik de optie \'Delen via browser\' om hier overdrachten te zien!</string>
+    <string name="butn_shareOnBrowser">Delen via browser</string>
+    <string name="butn_hideOnBrowser">Verbergen via browser</string>
+    <string name="text_transferSharedOnBrowser">Gedeeld via browser</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">of</string>
+    <string name="text_visitWebShareAddress">Open deze link in je browser</string>
+    <string name="text_webShareInfo">Hieronder zie je de links die apparaten op hetzelfde netwerken kunnen verbinden via de browser. Schakel daarna individueel webdelen in voor overdrachten.</string>
+    <string name="text_dowloadTrebleshotAndroid">Download TrebleShot voor Android</string>
+    <string name="text_listEmptyConnection">Hier verschijnen netwerken waarmee je bent verbonden</string>
+    <string name="mesg_errorNotAnIpAddress">Geen IP-adres
+\n(zoals 192.168.1.2)</string>
 </resources>
