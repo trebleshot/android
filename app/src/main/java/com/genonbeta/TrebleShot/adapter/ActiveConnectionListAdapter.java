@@ -90,11 +90,14 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
         @Override
         public boolean applyFilter(String[] filteringKeywords)
         {
-            for (String word : filteringKeywords)
-                if (mInterface.getNetworkInterface().getDisplayName().contains(word)
-                        || mInterface.getAssociatedAddress().contains(word)
-                        || mName.contains(word))
+            for (String word : filteringKeywords) {
+                String wordLC = word.toLowerCase();
+
+                if (mInterface.getNetworkInterface().getDisplayName().toLowerCase().contains(wordLC)
+                        || mInterface.getAssociatedAddress().toLowerCase().contains(wordLC)
+                        || mName.toLowerCase().contains(wordLC))
                     return true;
+            }
 
             return false;
         }

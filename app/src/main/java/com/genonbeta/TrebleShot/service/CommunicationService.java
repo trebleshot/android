@@ -73,7 +73,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -432,8 +431,8 @@ public class CommunicationService extends Service
         mMediaScanner.disconnect();
         mNsdDiscovery.unregisterService();
 
-        if (mWebShareServer != null)
-            mWebShareServer.stop();
+        setWebShareEnabled(false, false);
+        sendTrustZoneStatus();
 
         if (getHotspotUtils().unloadPreviousConfig()) {
             getHotspotUtils().disable();
@@ -656,19 +655,27 @@ public class CommunicationService extends Service
                         mWebShareServer != null && mWebShareServer.isAlive()).build());
     }
 
-    public void toggleWebShare()
+    public void setWebShareEnabled(boolean enable, boolean updateServiceState)
     {
-        if (mWebShareServer.isAlive())
+        boolean canStart = !mWebShareServer.isAlive();
+
+        if (!enable && !canStart)
             mWebShareServer.stop();
-        else
+        else if (enable && canStart)
             try {
                 mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-        updateServiceState(mSeamlessMode);
+        if (updateServiceState)
+            updateServiceState(mSeamlessMode);
         sendWebShareStatus();
+    }
+
+    public void toggleWebShare()
+    {
+        setWebShareEnabled(!mWebShareServer.isAlive(), true);
     }
 
     public class CommunicationServer extends CoolSocket
