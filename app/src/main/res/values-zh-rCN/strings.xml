@@ -448,4 +448,21 @@
     <string name="mesg_waiting">等待中</string>
     <string name="text_amoledOptimizedBlackTheme">为AMOLED屏优化</string>
     <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
+    <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
+    <string name="butn_enterIpAddress">输入IP地址</string>
+    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="butn_webShare">通过浏览器(网页)分享</string>
+    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShareNoContentNotice">使用“在浏览器中分享”以在此处查看传输！</string>
+    <string name="butn_shareOnBrowser">在浏览器中分享</string>
+    <string name="butn_hideOnBrowser">在浏览器中隐藏</string>
+    <string name="text_transferSharedOnBrowser">已在浏览器上分享</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">或</string>
+    <string name="text_visitWebShareAddress">使用你的浏览器访问该链接</string>
+    <string name="text_webShareInfo">在下方你可以看到连接到同一个网络的设备可以通过浏览器访问的链接。然后，单独地为传输组启用网页分享。</string>
+    <string name="text_dowloadTrebleshotAndroid">下载运行于Android上的TrebleShot</string>
+    <string name="text_listEmptyConnection">你连接的网络在此出现</string>
+    <string name="mesg_errorNotAnIpAddress">不是IP地址
+\n(如 192.168.1.2)</string>
 </resources>
