@@ -1,2 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">مایلید این فایل را پاک کنید؟</item>
+        <item quantity="other">مایلید %d فایل را پاک کنید؟</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d فایل دریافت شده است</item>
+        <item quantity="other">%d فایل دریافت شده است</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d فایل انتخاب شده است</item>
+        <item quantity="other">%d فایل انتخاب شده است</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">این انتقال معلق حذف خواهد شد</item>
+        <item quantity="other">%d انتقال معلق حذف خواهد شد</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d اتصال</item>
+        <item quantity="other">%d اتصال</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">دریافت این فایل؟</item>
+        <item quantity="other">دریافت %d فایل؟</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d فایل</item>
+        <item quantity="other">%d فایل</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">یک ثانیه پیش</item>
+        <item quantity="other">%d ثانیه پیش</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">یک دقیقه پیش</item>
+        <item quantity="other">%d دقیقه پیش</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d فایل پاک شده است</item>
+        <item quantity="other">%d فایل پاک شده است</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">یک ردیف</item>
+        <item quantity="other">%d ردیف</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">تک اشتراک‌گذاری</item>
+        <item quantity="other">اشتراک‌گذاری با %d دستگاه</item>
+    </plurals>
+</resources>
