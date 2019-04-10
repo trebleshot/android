@@ -182,7 +182,7 @@
     <string name="text_flagResume">Retomados</string>
     <string name="text_unknown">Desconhecidos</string>
     <string name="text_longAgo">Há muito tempo</string>
-    <string name="text_interfaceWifiDirect">Wi-Fi Direct</string>
+    <string name="text_interfaceWifiDirect">WiFi Direct</string>
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
