@@ -27,12 +27,12 @@
     <string name="text_deviceNameTitle">یک نام برای دستگاه وارد کنید</string>
     <string name="mesg_formatNotSupported">فرمت پشتیبانی نمی‌شود</string>
     <string name="mesg_fileSendError">نمیتوان فایل را ارسال کرد. %s</string>
-    <string name="mesg_fileReceiveError">نمی‌توان دریافت کرد. %s</string>
+    <string name="mesg_fileReceiveError">امکان دریاف %s نیست.</string>
     <string name="text_multipleFileReceiveCompleted">فایل‌ها دریافت شدند</string>
     <string name="text_deviceList">دستگاه‌ها</string>
     <string name="text_fileOpenAppChoose">باز کردن با</string>
     <string name="text_fileShareAppChoose">برنامه‌ای را برای اشتراک انتخاب کنید</string>
-    <string name="ques_resetToDefault">بازگشت به پیش‌فرض</string>
+    <string name="ques_resetToDefault">بازگشت به پیش‌فرض؟</string>
     <string name="text_receivedFiles">فایل‌های دریافت‌شده</string>
     <string name="butn_edit">ویرایش</string>
     <string name="butn_share">اشتراک</string>
@@ -56,7 +56,7 @@
     <string name="mesg_stillScanning">هنوز درحال اسکن است</string>
     <string name="text_advanced">پیشرفته</string>
     <string name="text_storagePath">مسیر ذخیره‌سازی</string>
-    <string name="text_storagePathSummary">فایل‌های جدید در این پوشه نگهداری می‌شوند.</string>
+    <string name="text_storagePathSummary">فایل‌های جدید در این پوشه نگهداری می‌شوند</string>
     <string name="mesg_pathUnavailable">%s در حال حاضر موجود نیست</string>
     <string name="text_ipAddress">آدرس آی‌پی</string>
     <string name="text_allowToConnect">اجازه بده وصل شود</string>
@@ -83,11 +83,11 @@
     <string name="butn_multiSelect">چند انتخابی</string>
     <string name="butn_receive">دریافت</string>
     <string name="butn_block">مسدود</string>
-    <string name="text_aboutSummary">این برنامه توسط Genonbeta Libre Software Org توسعه داده شده است.</string>
+    <string name="text_aboutSummary">این برنامه توسط Genonbeta Libre Software Org توسعه داده شده است</string>
     <string name="butn_appLaunch">راه‌اندازی</string>
     <string name="ques_launchApplication">میخواهید این برنامه را راه‌اندازی کنید؟</string>
     <string name="mesg_launchApplicationError">این برنامه را نمی‌توان راه اندازی کرد</string>
-    <string name="text_enterText">متن را اینجا وارد کنید</string>
+    <string name="text_enterText">متن را اینجا وارد کنید…</string>
     <string name="mesg_textCopiedToClipboard">متن در کلیپ‌بورد کپی شد</string>
     <string name="ques_copyToClipboard">در کلیپ بورد کپی شود؟</string>
     <string name="text_textReceived">متن دریافت شد</string>
@@ -103,7 +103,7 @@
     <string name="text_pendingTransfers">در انتظار ارسال</string>
     <string name="text_stopping">در حال توقف!</string>
     <string name="text_cancellingTransfer">لغو کار…</string>
-    <string name="mesg_groupOngoingNotice">قبل از ارسال این فایل برای اتمام %s صبر کنید.</string>
+    <string name="mesg_groupOngoingNotice">قبل از ارسال این فایل برای اتمام %s صبر کنید</string>
     <string name="ques_removeQueue">حذف ارسال؟</string>
     <string name="butn_remove">حذف</string>
     <string name="butn_removeAll">حذف همه</string>
@@ -154,7 +154,7 @@
     <string name="text_chooseFile">انتخاب فایل</string>
     <string name="mesg_pathSameError">شما نمیتوانید پوشه قدیمی را برگزینید</string>
     <string name="ques_checkOldFiles">انتقال پرونده‌ها انجام شود؟</string>
-    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این پوشه منتقل کنید و این کار ممکن است بسته به حجمشان مدتی طول بکشد.</string>
+    <string name="text_checkOldFiles">می‌توانید پرونده‌هایی که انتقال‌شان به طور کامل یا جزئی کامل شده است را به این پوشه منتقل کنید و این کار ممکن است بسته به حجمشان مدتی طول بکشد</string>
     <string name="mesg_newFilesReceived">فایل های جدید دریافت شدند</string>
     <string name="butn_show">نمایش</string>
     <string name="text_preparingFiles">اماده سازی فایل ها</string>
@@ -321,7 +321,7 @@
     <string name="butn_telegram_channel">کانال تلگرام</string>
     <string name="text_useLights">روشنایی</string>
     <string name="text_useVibration">لرزش و اعلان‌ها</string>
-    <string name="text_useVibrationSummary">استفاده از لرزش و اعلان‌ها</string>
+    <string name="text_useVibrationSummary">استفاده از لرزش و نمایش اعلان‌ها</string>
     <string name="butn_killNow">قطع کن</string>
     <string name="text_transactionGroupDetails">جزئیات گروه تبادل</string>
     <string name="text_remainingTime">زمان باقی مانده %s</string>
@@ -419,7 +419,7 @@
     <string name="text_amoledOptimizedBlackThemeSummary">استفاده از رنگ های تیره تر</string>
     <string name="butn_enterIpAddress">آدرس IP را وارد کنید</string>
     <string name="butn_webShare">اشتراک گذاری بوسیله مرورگر</string>
-    <string name="text_webShareNoContentNotice">از گزینه رو بررو برای دیدن نقل و انتقالات استفاده کنید: «اشتراک گذاری بوسیله مرورگر»</string>
+    <string name="text_webShareNoContentNotice">"از گزینه  «اشتراک گذاری بوسیله مرورگر» برای دیدن نقل و انتقالات استفاده کنید!"</string>
     <string name="butn_shareOnBrowser">اشتراک گذاری روی مرورگر</string>
     <string name="butn_hideOnBrowser">مخفی کردن روی مرورگر</string>
     <string name="text_transferSharedOnBrowser">اشتراک گذاری شده روی مرورگر</string>
@@ -428,4 +428,12 @@
     <string name="text_listEmptyConnection">شبکه هایی که به آنها متصل می شوید اینجا نمایش داده می شوند</string>
     <string name="mesg_errorNotAnIpAddress">آدرس IP نیست
 \n(مثل 192.168.1.2)</string>
+    <string name="text_trebleshotHotspot">هات اسپات TrebleShot</string>
+    <string name="mesg_scanningDevicesSelfHotspot">به دنبال دستگاه هایی روی یک شبکه هات اسپات TrebleShot هستیم</string>
+    <string name="text_movedCacheFiles">فایل های ذخیره شده منتقل شده اند</string>
+    <string name="text_hotspotStartsTrustZone">همچنین هات اسپات منطقه امن را روشن می کند</string>
+    <string name="text_hotspotStartsTrustZoneSummary">منطقه امن نیز به همین ترتیب آغاز خواهد شد</string>
+    <string name="text_qrAllowTrustZone">منطقه امن برای کد QR</string>
+    <string name="text_connectionWizard">مراحل اتصال</string>
+    <string name="ques_connectionWizardUseNetwork">آیا میخواهید از روتر و یا هر شبکه وای فایی که شما و دوستانتان به آن متصل هستید استفاده شود؟</string>
 </resources>
