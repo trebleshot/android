@@ -436,4 +436,24 @@
     <string name="text_qrAllowTrustZone">منطقه امن برای کد QR</string>
     <string name="text_connectionWizard">مراحل اتصال</string>
     <string name="ques_connectionWizardUseNetwork">آیا میخواهید از روتر و یا هر شبکه وای فایی که شما و دوستانتان به آن متصل هستید استفاده شود؟</string>
+    <string name="text_notAllowedHelp">"بررسی کنید آیا به %1$s مجازید
+\n
+\nدستگاه‌ها &gt;  %2$s &gt; اجازه اتصال &gt; (بررسی کنید)"</string>
+    <string name="text_emulatedMediaDirectory">شبیه‌سازی شده (%s)</string>
+    <string name="text_networkServiceDiscoverySummary">کشف سرویس شبکه اکتشاف‌پذیری را بهبود می‌بخشد</string>
+    <string name="butn_mountDirectory">سوار کردن پوشه</string>
+    <string name="butn_ejectDirectory">پیاده کردن پوشه</string>
+    <string name="text_qrAllowTrustZoneSummary">مجاز کردن TrustZone برای ارتباط‌های کد QR</string>
+    <string name="mesg_noPendingTransferObjectExists">انتقال معلقی باقی نمانده است. برای ادامهٔ فایل‌های وقفه یافته، گزینهٔ \'تلاش مجدد دریافت\' را استفاده کنید.</string>
+    <string name="text_addDeviceHelp">با افزودن دستگاه‌ها، می‌توانید فایل مشترکی را با دستگاه‌های بیشتر به اشتراک بگذارید. وقتی تمام شود شما به انتقال بازگردانده خواهد شد.</string>
+    <string name="text_connectionHelp">انتخاب یک گزینه برای اتصال به سایر دستگاه‌ها. برای نمونه، اگر سایر دستگاه‌ها کد QR نشان می‌دهند، گزینهٔ اسکن کد QR را استفاده کنید.</string>
+    <string name="ques_connectionWizardUseHotspot">آیا می‌خواهید سایر دستگاه‌ها با هات‌اسپات به این دستگاه وصل شوند؟ اگر نمی‌دانید که هات‌اسپات چیست، بله را بفشارید.</string>
+    <string name="text_hotspotStartedExternallyNotice">هات‌اسپات از بیرون شروع شده است. برای استفاده کد QR، شما باید اینجا آن را شروع کنید.</string>
+    <string name="butn_revokePin">ابطال PIN</string>
+    <string name="mesg_errorNotTrustZoneDevice">این دستگاه نیاز است که به‌عنوان دستگاه TrustZone در دستگاه دریافت کنده تنظیم شده باشد که این عملیات را انجام دهد.</string>
+    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">یا</string>
+    <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.</string>
 </resources>
