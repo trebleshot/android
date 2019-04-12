@@ -440,4 +440,19 @@
     <string name="mesg_waiting">בהמתנה</string>
     <string name="text_amoledOptimizedBlackTheme">מיטוב למסכי AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">שימוש בצבעים כהים יותר</string>
+    <string name="mesg_errorNotTrustZoneDevice">יש להגדיר את המכשיר הזה כאיזור מהימן במכשיר המקבל כדי לבצע פעולה זו.</string>
+    <string name="butn_enterIpAddress">נא להקליד כתובת IP</string>
+    <string name="butn_webShare">שיתוף דרך דפדפן</string>
+    <string name="text_webShareNoContentNotice">יש להשתמש באפשרות ‚שיתוף בדפדפן’ כדי לצפות בהעברות כאן!</string>
+    <string name="butn_shareOnBrowser">שיתוף בדפדפן</string>
+    <string name="butn_hideOnBrowser">הסתרה בדפדפן</string>
+    <string name="text_transferSharedOnBrowser">משותף בדפדפן</string>
+    <string name="mode_webShareAddress">http://%s:%d/‎</string>
+    <string name="text_or">או</string>
+    <string name="text_visitWebShareAddress">יש לבקר בקישור הזה עם הדפדפן שלך</string>
+    <string name="text_webShareInfo">להלן מופיעים הקישורים שהמכשירים באותה הרשת יכולים להתחבר אליהם עם דפדפן. בשלב הבא, ניתן להפעיל באופן נקודתי שיתוף דרך הדפדפן לצורך העברות.</string>
+    <string name="text_dowloadTrebleshotAndroid">הורדת TrebleShot ל־Android</string>
+    <string name="text_listEmptyConnection">רשתות שבאפשרותך להתחבר אליהן מופיעות כאן</string>
+    <string name="mesg_errorNotAnIpAddress">לא כתובת IP
+\n(כגון 192.168.1.2)</string>
 </resources>

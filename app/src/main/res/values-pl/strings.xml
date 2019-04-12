@@ -440,4 +440,16 @@
     <string name="mesg_waiting">Czekaj</string>
     <string name="text_amoledOptimizedBlackTheme">Optymalizuj do ekranów AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">żyj ciemniejszych kolorów</string>
+    <string name="mesg_errorNotTrustZoneDevice">Aby wykonać tę operację, urządzenie to należy ustawić jako urządzenie TrustZone na urządzeniu odbiorczym.</string>
+    <string name="butn_enterIpAddress">Wprowadź adres IP</string>
+    <string name="butn_webShare">Udostępnij przez przeglądarkę</string>
+    <string name="text_webShareNoContentNotice">Użyj opcji „Udostępnij w przeglądarce”, aby zobaczyć transfery tutaj!</string>
+    <string name="butn_shareOnBrowser">Udostępnij w przeglądarce</string>
+    <string name="butn_hideOnBrowser">Ukryj w przeglądarce</string>
+    <string name="text_transferSharedOnBrowser">Udostępnione w przeglądarce</string>
+    <string name="text_or">lub</string>
+    <string name="text_visitWebShareAddress">Odwiedź ten link za pomocą przeglądarki</string>
+    <string name="text_webShareInfo">Poniżej znajdują się linki, które urządzenia w tej samej sieci mogą łączyć się z przeglądarką. Następnie włącz indywidualnie udział sieciowy dla transferów.</string>
+    <string name="text_dowloadTrebleshotAndroid">Pobierz TrebleShot dla Android</string>
+    <string name="text_listEmptyConnection">Sieci pojawiają się tutaj</string>
 </resources>
