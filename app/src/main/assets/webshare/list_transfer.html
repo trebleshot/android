@@ -1,10 +1,16 @@
 <a href="/${actionUrl}">
     <div class="transfer" style="max-width: 100%;">
-        <span style="overflow:hidden; word-wrap: break-word;">
-            ${content}
-        </span>
-        <span style="float: right;">
-            <span class="action_layout">${action_layout}</span>
-        </span>
+        <table>
+            <tr>
+                <td>
+                    <img src="/image/arrow-down.svg" alt="${action_layout}" />
+                </td>
+                <td>
+                    <div style="overflow:hidden; word-wrap: break-word;">
+                        ${content}
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 </a>

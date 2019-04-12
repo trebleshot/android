@@ -205,7 +205,7 @@ public class WebShareServer extends NanoHTTPD
             if (index.outgoingCount < 1)
                 continue;
 
-            contentBuilder.append(makeContent(mContext.getString(R.string
+            contentBuilder.append(makeContent("list_transfer_group", mContext.getString(R.string
                             .mode_itemCountedDetailed, mContext.getResources()
                             .getQuantityString(R.plurals.text_files, index.outgoingCount,
                                     index.outgoingCount), FileUtils.sizeExpression(
@@ -241,8 +241,9 @@ public class WebShareServer extends NanoHTTPD
                     TransferObject.class);
 
             for (TransferObject object : groupList)
-                contentBuilder.append(makeContent(String.valueOf(object.friendlyName),
-                        R.string.butn_download, "download", object.groupId,
+                contentBuilder.append(makeContent("list_transfer",
+                        object.friendlyName + " " + FileUtils.sizeExpression(object.fileSize,
+                                false), R.string.butn_download, "download", object.groupId,
                         object.requestId, object.friendlyName));
 
             return makePage("arrow-left.svg", R.string.text_files, contentBuilder.toString());
@@ -278,7 +279,8 @@ public class WebShareServer extends NanoHTTPD
                 getFieldPattern(), readPage("help.html"), values));
     }
 
-    private String makeContent(String content, @StringRes int buttonRes, Object... objects)
+    private String makeContent(String pageName, String content, @StringRes int buttonRes,
+                               Object... objects)
     {
         StringBuilder actionUrlBuilder = new StringBuilder();
         Map<String, String> values = new HashMap<>();
@@ -294,7 +296,7 @@ public class WebShareServer extends NanoHTTPD
 
         values.put("actionUrl", actionUrlBuilder.toString());
 
-        return applyPattern(getFieldPattern(), readPage("list_transfer.html"), values);
+        return applyPattern(getFieldPattern(), readPage(pageName + ".html"), values);
     }
 
     private String makeNotFoundTemplate(@StringRes int msg, @StringRes int detail)

@@ -1,6 +1,6 @@
 NEW: Now you can share files via browser
 NEW: You can start sending files (previously only receiver could start the transfer)
 NEW: You can enter the IP address of the other device to connect
-NEW: Support Portuguese (Brazil) language
+NEW: Support for Persian and Portuguese (Brazil) languages
 MISC: Updated translations
 

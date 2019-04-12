@@ -6,8 +6,16 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
+import android.view.animation.TranslateAnimation;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -16,8 +24,11 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.TransitionRes;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.transition.TransitionManager;
 
 /**
  * created by: veli
@@ -82,6 +93,7 @@ public class WebShareActivity extends Activity
     {
         super.onPause();
         unregisterReceiver(mReceiver);
+        mFAB.setAnimation(null);
     }
 
     @Override
@@ -120,5 +132,23 @@ public class WebShareActivity extends Activity
                 running ? R.color.colorError : R.color.colorSecondary)));
         mFAB.setImageResource(running ? R.drawable.ic_pause_white_24dp
                 : R.drawable.ic_play_arrow_white_24dp);
+
+        if (mFAB.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+            ((CoordinatorLayout.LayoutParams) mFAB.getLayoutParams()).gravity = running
+                    ? Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL
+                    : Gravity.CENTER;
+
+            mFAB.setLayoutParams(mFAB.getLayoutParams());
+
+            if (mFAB.getParent() != null && mFAB.getParent() instanceof ViewGroup)
+                TransitionManager.beginDelayedTransition((ViewGroup) mFAB.getParent());
+        }
+
+        if (running) {
+            mFAB.setAnimation(null);
+        } else {
+            mFAB.setVisibility(View.VISIBLE);
+            mFAB.setAnimation(AnimationUtils.loadAnimation(this, R.anim.pulse));
+        }
     }
 }
