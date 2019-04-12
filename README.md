@@ -18,7 +18,7 @@ Send and receive files over available connections. [FAQ](https://github.com/geno
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
-[![Translation Status](https://hosted.weblate.org/widgets/TrebleShot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
+[![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
 ## Donate
 If you value this work, you can help it. There are only a few methods that work in Turkey,
@@ -46,10 +46,15 @@ Required tools;
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_8.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_8.png)
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png)
 
-## Supported languages
-Arabic, Basque, Chinese (Simplified), Chinese (Traditional), Dutch, English, French, German, Hebrew,
-Italian, Japanese, Norwegian Bokmål, Polish, Russian, Spanish, Swedish, Turkish
+## Localization
+To start helping to the localization of TrebleShot, please read
+[this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution) first if you haven't
+worked with Weblate before. If you have, go to the
+[translation page](https://hosted.weblate.org/engage/TrebleShot/).
 
-Go to the [translation page](https://hosted.weblate.org/engage/TrebleShot/) on Weblate to see all available languages, or to start a new translation. If you want to contribute to a language for the first time, please read [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution). Languages are included here once they pass 87.5% translation threshold.
 
-This application is licensed under GPL-2.0+  
+[![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/multi-auto.svg)](https://hosted.weblate.org/engage/TrebleShot/)
+
+
+
+This application is licensed under GNU Public License version 2.0 or later versions of version 2.0.

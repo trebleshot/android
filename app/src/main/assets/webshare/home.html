@@ -45,15 +45,27 @@
 
         .main_body {}
 
-        .transfer {
+        .transfer, .transfer_group {
             border-radius: 16px;
             border: 1px solid #ddd;
-            padding: 20px;
             margin: 20px 10%;
             box-shadow: 0 10px 6px -10px #ddd;
         }
 
-        .transfer:hover {
+        .transfer_group {
+            padding: 20px;
+        }
+
+        .transfer {
+            padding: 5px;
+            font-size: 10pt;
+        }
+
+        .transfer img {
+            margin-right: 5px;
+        }
+
+        .transfer:hover, .transfer_group:hover {
             background: #ddd;
             transition-duration: 400ms;
         }
