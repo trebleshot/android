@@ -443,9 +443,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">Use darker colors</string>
     <string name="mesg_errorNotTrustZoneDevice">This device needs to be set as TrustZone device on the receiver device to do this operation.</string>
     <string name="butn_enterIpAddress">Enter IP Address</string>
-    <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
+    <string name="text_enterIpAddress" translatable="false">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Share via browser</string>
-    <string name="text_webShare">@string/butn_webShare</string>
+    <string name="text_webShare" translatable="false">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">Use \'Share on browser\' option to see transfers here!</string>
     <string name="butn_shareOnBrowser">Share on browser</string>
     <string name="butn_hideOnBrowser">Hide on browser</string>
