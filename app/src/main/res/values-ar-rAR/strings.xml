@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_preferences">التفضيلات</string>
+<resources>
+    <string name="text_preferences">التفضيلات</string>
     <string name="mesg_connectionFailure">فشل الاتصال</string>
     <string name="text_notAvailable">غير متوفر</string>
     <string name="text_deviceListEmpty">لا يوجد جهاز</string>
@@ -97,7 +98,7 @@
     <string name="butn_seeSourceCode">راجع الكود المصدري</string>
     <string name="text_typeText">اكتب شيئا لإرساله…</string>
     <string name="text_groupByFolder">مجلد</string>
-<string name="text_textEditor">محرر النص</string>
+    <string name="text_textEditor">محرر النص</string>
     <string name="butn_done">تم</string>
     <string name="text_empty">(فارغ)</string>
     <string name="text_textStream">تدفق النصوص</string>
@@ -211,7 +212,7 @@
     <string name="butn_turnTrustZoneOn">تشغيل المنطقة الموثوقة</string>
     <string name="butn_turnTrustZoneOff">إيقاف المنطقة الموثوقة</string>
     <string name="text_trustZoneEnabled">المنطقة الموثوقة</string>
-    <string name="text_trustZoneEnabledSummary">دائما شغل المنطقة الموثوقة عند البدء</string>
+    <string name="text_trustZoneEnabledSummary">المنطقة الموثوقة نشطة عند التشغيل</string>
     <string name="butn_typeNewEntry">إدخال نوع جديد</string>
     <string name="butn_download">تحميل</string>
     <string name="mesg_clipboardUpdateNotice">راجع النص أو اضغط مرة أخرى للخروج</string>
@@ -271,7 +272,7 @@
     <string name="text_sortByDate">التاريخ</string>
     <string name="text_sortBySize">الحجم</string>
     <string name="text_trustZoneDeviceNotice">السماح لهذا الجهاز بتلقي الملفات الواردة تلقائيا عندما تكون المنطقة الموثوقة مشغّلة</string>
-    <string name="text_allowingToConnectNotice">عند التحديد، يمكن لهذا الجهاز الاتصال بك</string>
+    <string name="text_allowingToConnectNotice">السماح للاتصالات عبر هذا الجهاز</string>
     <string name="butn_resetToDefault">إعادة التعيين إلى الافتراضي</string>
     <string name="text_resetPreferencesToDefaultSummary">سيطبق هذا الإعدادات المبدئية</string>
     <string name="text_workerService">الخدمة العاملة</string>
@@ -357,7 +358,7 @@
     <string name="text_thirdPartyLibraries">مكتبات الطرف الثالث</string>
     <string name="text_killServiceAfterLeavingSummary">توقيف الاتصال إذا لم يكن هناك مهمة جارية</string>
     <string name="text_killServiceAfterLeaving">مغادرة التطبيق توقف الخدمة</string>
-<string name="text_transferStatusFiles">%1d مِن %2d</string>
+    <string name="text_transferStatusFiles">%1d مِن %2d</string>
     <string name="text_donate">ساهم في التطوير</string>
     <string name="mesg_donationSuccessful">شكرًا!</string>
     <string name="butn_donate">ساهم في التطوير</string>
@@ -367,12 +368,12 @@
     <string name="butn_changelog">سجل التغييرات</string>
     <string name="text_changelog">سجل التغييرات</string>
     <string name="mesg_noInternetConnection">ذلك يتطلب اتصالا بالإنترنت</string>
-<string name="text_emptySymbol">-</string>
+    <string name="text_emptySymbol">-</string>
     <string name="mesg_versionUpdatedChangelogRejected">"يمكنك دائما الإطلاع على \'سجل التغييرات\' في  قسم \'عن التطبيق\'"</string>
-	<string name="text_applyDarkTheme">الوضع الداكن</string>
+    <string name="text_applyDarkTheme">الوضع الداكن</string>
     <string name="butn_allow">السماح</string>
     <string name="butn_telegram_channel">قناة تلغرام</string>
-<string name="mesg_noPendingTransferObjectExists">لا نقل بالانتظار حيث أنه إما تمت مقاطعته أو اكتمل النقل بالفعل.</string>
+    <string name="mesg_noPendingTransferObjectExists">لا نقل بالانتظار حيث أنه إما تمت مقاطعته أو اكتمل النقل بالفعل.</string>
     <string name="mesg_notSavingToChosenLocation">لن يتم حفظ الملفات في المجلد المطلوب بسبب استحالة الوصول إليه حاليا
 \n
 \n%s</string>
@@ -428,4 +429,20 @@
     <string name="mesg_openFailure">لا يمكن رؤية \"%s\"</string>
     <string name="butn_connectionTest">اختبار الاتصال</string>
     <string name="butn_revokePin">إبطال رمز الأمان PIN</string>
+    <string name="text_connectionTest">تجريب الاتصال- %s</string>
+    <string name="const_text_useAppFonts">استخدم الخطوط المستحسنة</string>
+    <string name="const_text_useAppFontsSummary">استخدم الخط المخصص</string>
+    <string name="mesg_waiting">في الانتظار</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">استخدم ألوانا قاتمة</string>
+    <string name="butn_enterIpAddress">ادخل عنوان إيبي</string>
+    <string name="butn_webShare">شاركه عبر متصفح</string>
+    <string name="butn_shareOnBrowser">المشارَكة عبر متصفح</string>
+    <string name="butn_hideOnBrowser">إخفاء على المتصفح</string>
+    <string name="text_transferSharedOnBrowser">تمت مشاركته على المتصفح</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">أو</string>
+    <string name="text_visitWebShareAddress">زُر هذا الرابط على متصفحك</string>
+    <string name="text_dowloadTrebleshotAndroid">تنزيل تريبل شوت للأندرويد</string>
+    <string name="mesg_errorNotAnIpAddress">ليس بعنوان إيبي 
+\n(على شكل 192.168.1.2)</string>
 </resources>
