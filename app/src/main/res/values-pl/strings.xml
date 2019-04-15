@@ -452,4 +452,5 @@
     <string name="text_webShareInfo">Poniżej znajdują się linki, które urządzenia w tej samej sieci mogą łączyć się z przeglądarką. Następnie włącz indywidualnie udział sieciowy dla transferów.</string>
     <string name="text_dowloadTrebleshotAndroid">Pobierz TrebleShot dla Android</string>
     <string name="text_listEmptyConnection">Sieci pojawiają się tutaj</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
 </resources>
