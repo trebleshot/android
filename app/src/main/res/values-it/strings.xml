@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="text_navigationDrawerOpen">Apri barra laterale</string>
     <string name="text_navigationDrawerClose">Chiudi barra laterale</string>
@@ -146,7 +146,7 @@
     <string name="butn_settings">Impostazioni</string>
     <string name="butn_selectThis">Seleziona questo</string>
     <string name="butn_newFile">Nuovo file</string>
-    <string name="mesg_currentPathUnavailable">Questa cartella non può essere usata.</string>
+    <string name="mesg_currentPathUnavailable">Questa cartella non può essere usata</string>
     <string name="text_defaultFolder">Cartella principale</string>
     <string name="text_storage">Memoria</string>
     <string name="text_shareFiles">Condividi files</string>
@@ -165,11 +165,11 @@
     <string name="text_chooseFile">Scegli file</string>
     <string name="mesg_pathSameError">Non puoi selezionare la vecchia cartella</string>
     <string name="ques_checkOldFiles">Sposta i file\?</string>
-    <string name="text_checkOldFiles">Puoi spostare i file associati che sono completi e parzialmente completi in questa cartella, il che potrebbe richiedere del tempo a seconda delle loro dimensioni</string>
+    <string name="text_checkOldFiles">Puoi spostare in questa cartella i file associati completi e parzialmente completi. Il tempo richiesto dipende dalle dimensioni</string>
     <string name="mesg_newFilesReceived">I nuovi files sono stati ricevuti</string>
     <string name="butn_show">Mostra</string>
     <string name="text_preparingFiles">Preparo i files</string>
-    <string name="text_savingDetails">Salvo i dettagli prima della ricezione</string>
+    <string name="text_savingDetails">Salvataggio dei dettagli</string>
     <string name="text_version">Versione</string>
     <string name="text_flagPending">In attesa</string>
     <string name="text_flagRunning">In corso</string>
@@ -191,7 +191,7 @@
     <string name="text_permissionRequest">Richiesta permessi</string>
     <string name="text_requestPermissionStorage">Permessi della memoria</string>
     <string name="text_requestPermissionReadPhoneState">Permesso per leggere lo stato del telefono</string>
-    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot utilizza il seriale del tuo telefono per creare un identità a lungo termine per il tuo dispositivo, questo aiuta altri dispositivi con TrebleShot a riconoscerlo. Il tuo dispositivo ha installato Oreo o superiore e TrebleShot richiede questi permessi per leggere il numero seriale. Un rifiuto causerà l\'arresto di TrebleShot.</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot necessita del numero seriale del dispositivo per creare un\'identità a lungo termine, questo aiuta altri dispositivi a riconoscerlo</string>
     <string name="mesg_notEnoughSpace">Non c\'è abbastanza spazio</string>
     <string name="text_totalIncomingSize">Dimensione totale dei files in entrata</string>
     <string name="text_totalOutgoingSize">Dimensione totale dei file in uscita</string>
@@ -207,12 +207,10 @@
     <string name="butn_turnTrustZoneOn">Attiva TrustZone</string>
     <string name="butn_turnTrustZoneOff">Disattiva TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">Attiva TrustZone quando l\'applicazione viene avviata</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone attiva all\'avvio</string>
     <string name="butn_download">Download</string>
-    <string name="mesg_clipboardUpdateNotice">Vuoi aggiornare il testo?
-\nPremi di nuovo per uscire</string>
-    <string name="mesg_textSaveNotice">Vuoi salvare il testo?
-\nPremi di nuovo per uscire</string>
+    <string name="mesg_clipboardUpdateNotice">Modificare il testo o premere ancora per uscire</string>
+    <string name="mesg_textSaveNotice">Salvare il testo o premere ancora per uscire</string>
     <string name="butn_update">Aggiorna</string>
     <string name="butn_save">Salva</string>
     <string name="mesg_textShareLimit">In questo momento può essere condiviso solo un testo</string>
@@ -223,11 +221,11 @@
     <string name="butn_connect">Connetti</string>
     <string name="butn_disconnect">Disconnetti</string>
     <string name="text_trebleshotHotspotDescription">Può inviare files direttamente attraverso questa connessione aperta creata da un dispositivo TrebleShot vicino.</string>
-    <string name="mesg_connectingToSelfHotspot">Connessione ad un hotspot TrebleShot. Non dovrebbe impiegare più di 20 secondi</string>
-    <string name="mesg_warningHotspotMobileActive">Traffico dati mobile attivo. Altri possono connettersi alla tua rete</string>
+    <string name="mesg_connectingToSelfHotspot">Connessione all\'hotspot TrebleShot</string>
+    <string name="mesg_warningHotspotMobileActive">I dispositivi collegati potrebbero utilizzare i dati della connessione mobile. Si consiglia di spegnerla.</string>
     <string name="butn_skip">Salta</string>
-    <string name="mesg_scanningSelfHotspot">Ricerco hotspot TrebleShot</string>
-    <string name="mesg_suggestSelfHotspot">Vuoi attivare il Wi-Fi per cercare un hotspot TrebleShot?</string>
+    <string name="mesg_scanningSelfHotspot">Ricerca dell\'hotspot TrebleShot</string>
+    <string name="mesg_suggestSelfHotspot">È possibile attivare la connessione Wi-Fi per cercare un hotspot TrebleShot</string>
     <string name="butn_enable">Abilita</string>
     <string name="mesg_scanningDevicesSelfHotspot">Ricerco i dispositivi tramite hotspot TrebleShot</string>
     <string name="mesg_stoppingSelfHotspot">Arresto hotspot TrebleSHot</string>
@@ -239,7 +237,7 @@
     <string name="text_connectionPermission">Permessi di connessione</string>
     <string name="butn_typeNewEntry">Scrivi nuova voce</string>
     <string name="text_fileRoot">Cartella root</string>
-    <string name="mesg_versionNotSupported">Questa versione non è più supportata. Per favore aggiorna e scansiona nuovamente i dispositivi.</string>
+    <string name="mesg_versionNotSupported">Aggiornare a una versione supportata e ripetere la scansione dei dispositivi.</string>
     <string name="mesg_ongoingUpdateDownload">Scarico la nuova versione</string>
     <string name="butn_gotIt">Capito</string>
     <string name="mesg_helpFolderSelection">Per selezionare una cartella, premi la sua icona</string>
@@ -249,19 +247,19 @@
     <string name="mesg_deviceConnectionError">Connessione a \"%s\" tramite \"%s\" fallita</string>
     <string name="mesg_retryReceivingNotice">TrebleShot riproverà a ricevere i trasferimenti interrotti</string>
     <string name="butn_saveAnyway">Salva comunque</string>
-    <string name="mesg_notValidTransfer">Il trasferimento non è più valido</string>
+    <string name="mesg_notValidTransfer">Trasferimento scaduto</string>
     <string name="ques_saveAnyway">Salvare comunque?</string>
-    <string name="mesg_fileSaved">Il file è stato salvato</string>
+    <string name="mesg_fileSaved">File salvato</string>
     <string name="butn_sortBy">Ordina per</string>
-    <string name="text_sortOrderAscending">Ascendente</string>
-    <string name="text_sortOrderDescending">Discendente</string>
+    <string name="text_sortOrderAscending">Prima il più grande ↑</string>
+    <string name="text_sortOrderDescending">Prima il più piccolo ↓</string>
     <string name="text_sortByName">Nome</string>
     <string name="text_sortByDate">Data</string>
     <string name="text_sortBySize">Dimensione</string>
-    <string name="text_trustZoneDeviceNotice">Seleziona per abilitare questo dispositivo ad inviare file senza mostrare un messaggio di conferma quando TrustZone è accesa</string>
-    <string name="text_allowingToConnectNotice">Quando selezionato, questo dispositivo può connettersi con te</string>
+    <string name="text_trustZoneDeviceNotice">Accetta automaticamente gli elementi in arrivo quando TrustZone è attiva</string>
+    <string name="text_allowingToConnectNotice">Consenti connessioni da questo dispositivo</string>
     <string name="butn_resetToDefault">Ripristina alle impostazioni originali</string>
-    <string name="text_resetPreferencesToDefaultSummary">Questo applicherà le impostazioni originali</string>
+    <string name="text_resetPreferencesToDefaultSummary">Verranno applicate le impostazioni iniziali</string>
     <string name="text_taskCompleted">Evento completato</string>
     <string name="text_deletingFilesOngoing">Cancello i file selezionati</string>
     <string name="text_notificationChannelHigh">Notifiche importanti</string>
@@ -269,13 +267,13 @@
     <string name="text_receivedTransfer">Ricevuti %s in %s</string>
     <string name="butn_exit">Uscita</string>
     <string name="butn_queueCounted">Coda (%d)</string>
-    <string name="mesg_updateDownloadComplete">Premi per installare l\'aggiornamento</string>
-    <string name="text_listEmptyFiles">Nessun file qui</string>
-    <string name="text_listEmptyImage">Nessuna foto</string>
-    <string name="text_listEmptyApp">Nessuna applicazione</string>
-    <string name="text_listEmptyVideo">Nessun video</string>
+    <string name="mesg_updateDownloadComplete">Aggiornamento ricevuto e salvato nei file ricevuti</string>
+    <string name="text_listEmptyFiles">Nessun file presente</string>
+    <string name="text_listEmptyImage">Nessuna foto presente</string>
+    <string name="text_listEmptyApp">Nessuna app presente</string>
+    <string name="text_listEmptyVideo">Nessun video presente</string>
     <string name="text_listEmptyPendingTransfer">I trasferimenti in attesa appariranno qui</string>
-<string name="mesg_communicating">Comunicare</string>
+    <string name="mesg_communicating">Comunicare</string>
     <string name="text_communicationService">Servizio di comunicazione</string>
     <string name="text_chooserTargetService">Provider di scelta del dispositivo</string>
     <string name="text_longAgo">Molto tempo fa</string>
@@ -312,7 +310,7 @@
     <string name="text_restrictedAccessStorage">%s (accesso limitato)</string>
     <string name="text_emptySearchResult">Nessun risultato per \"% s\"</string>
     <string name="mesg_listRefreshSnoozed">L\'elenco verrà aggiornato ogni volta che sarà disponibile</string>
-    <string name="mesg_errorReadFolder">Impossibile accedere alla cartella \"% s\"</string>
+    <string name="mesg_errorReadFolder">Impossibile accedere a \"%s\"</string>
     <string name="butn_mountDirectory">Montare la cartella</string>
     <string name="mesg_mountDirectoryHelp">Seleziona la cartella a cui vuoi accedere</string>
     <string name="butn_ejectDirectory">Smonta la cartella</string>
@@ -321,10 +319,10 @@
     <string name="text_hotspotStartsTrustZone">L\'Hotspot attiva anche la TrustZone</string>
     <string name="text_hotspotStartsTrustZoneSummary">TrustZone verrà avviato anche di conseguenza</string>
     <string name="text_qrCodeAvailableHelp">Scansiona questo codice per condividere e connettere i dispositivi</string>
-    <string name="text_qrCodeHotspotDisabledHelp">Avvia l\'hotspot TrebleShot o connettiti a una rete per una facile individuazione</string>
+    <string name="text_qrCodeHotspotDisabledHelp">Impostare un hotspot in modo che gli altri possano connettersi</string>
     <string name="text_scanQRCodeHelp">Scansiona il codice QR sullo schermo del dispositivo host</string>
     <string name="butn_qrScanToSend">Scansiona il codice QR per inviare</string>
-    <string name="butn_qrToggle">Attiva la visibilità del codice QR</string>
+    <string name="butn_qrToggle">Visibilità Codice QR</string>
     <string name="text_notificationSettingsSummary">Apri le impostazioni di notifica</string>
     <string name="text_notificationSettings">Impostazioni di notifica</string>
     <string name="text_renameMultipleItems">Rinominare più oggetti</string>
@@ -356,7 +354,7 @@
     <string name="butn_startHotspot">Imposta hotspot</string>
     <string name="butn_stopHotspot">Spegni l\'hotspot</string>
     <string name="text_easyDiscoveryHelp">Analizza questa rete se entrambi i dispositivi si trovano sulla stessa rete</string>
-    <string name="text_scanQRWifiRequired">Per connettersi ai dispositivi Wi-Fi quest\'ultimo dovrebbe essere acceso</string>
+    <string name="text_scanQRWifiRequired">Per connettersi ai dispositivi, la connessione Wi-Fi dovrebbe essere accesa</string>
     <string name="mesg_completing">Completamento</string>
     <string name="mesg_errorNotSameNetwork">I dispositivi non sono sulla stessa rete</string>
     <string name="text_cameraPermissionRequired">È richiesta l\'autorizzazione della Fotocamera</string>
@@ -374,16 +372,33 @@
     <string name="butn_open">Apri</string>
     <string name="butn_pause">Pausa</string>
     <string name="butn_retry">Riprova</string>
-    <string name="mesg_noPendingTransferObjectExists">Non è rimasto alcun trasferimento in sospeso poiché sono interrotti o già completati.</string>
-    <string name="mesg_notSavingToChosenLocation">I file non verranno salvati nella cartella desiderata poiché non è accessibile in questo momento 
+    <string name="mesg_noPendingTransferObjectExists">Nessun trasferimento in sospeso. Per riprendere i file interrotti, usare l\'opzione \"Riprova a ricevere\".</string>
+    <string name="mesg_notSavingToChosenLocation">Cartella desiderata non è accessibile. File verranno salvati nella cartella predefinita. 
+\n 
 \n%s</string>
     <string name="butn_changelog">Changelog</string>
     <string name="text_changelog">Changelog</string>
-    <string name="mesg_versionUpdatedChangelog">Hai aggiornato TrebleShot con una versione più recente, vorresti vedere cosa è cambiato dalla precedente versione installata\?</string>
+    <string name="mesg_versionUpdatedChangelog">Hai aggiornato TrebleShot, vorresti vedere cosa c\'è di nuovo\?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Puoi sempre trovare il \"Changelog\" nella sezione \"Informazioni\"</string>
-	<string name="mesg_noInternetConnection">Ciò richiede una connessione a Internet</string>
-    <string name="text_applyDarkTheme">Tema Dark</string>
+    <string name="mesg_noInternetConnection">Ciò richiede una connessione a Internet</string>
+    <string name="text_applyDarkTheme">Modalità Notte</string>
     <string name="text_applyDarkThemeSummary">Usa il tema Dark</string>
     <string name="butn_allow">Permetti</string>
     <string name="butn_telegram_channel">Canale di Telegram</string>
+    <string name="text_listEmptyTransfer">I trasferimenti saranno visualizzati qui</string>
+    <string name="text_transfers">Trasferimenti</string>
+    <string name="butn_connectionDetails">Dettagli Connessioni</string>
+    <string name="butn_useKnownDevice">Usa Dispositivi Conosciuti</string>
+    <string name="butn_scanQrCode">Scansiona Codice QR</string>
+    <string name="butn_useExistingNetwork">Usa Reti Esistenti</string>
+    <string name="butn_feedbackContact">Feedback e Contatti</string>
+    <string name="mesg_sent">Inviato</string>
+    <string name="text_sendText">Invia Testo</string>
+    <string name="butn_start">Avvia</string>
+    <string name="text_addDeviceHelp">Aggiungendo dispositivi, si condividono gli stessi file con più dispositivi. Sarai riportato al trasferimento quando sarà fatto.</string>
+    <string name="text_downloads">Download</string>
+    <string name="text_documents">Documenti</string>
+    <string name="text_shortcuts">Scorciatoie</string>
+    <string name="text_recentFiles">File Recenti</string>
+    <string name="butn_changeSavePath">Cambia percorso di salvataggio</string>
 </resources>
