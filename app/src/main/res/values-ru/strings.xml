@@ -209,4 +209,6 @@
     <string name="mesg_scanningSelfHotspot">Поиск точки доступа TrebleShot</string>
     <string name="butn_enable">Активировать</string>
     <string name="mesg_locationDisabledSelfHotspot">Включите службу местоположения для просмотра результатов сканирования и создания точки доступа</string>
+    <string name="ques_why">Почему\?</string>
+    <string name="text_longAgo">Давно</string>
 </resources>
