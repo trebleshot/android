@@ -201,4 +201,12 @@
     <string name="butn_qrScanToSend">Сканируйте QR-код, чтобы отправить</string>
     <string name="text_translateTrebleshot">Помогите нам перевести</string>
     <string name="text_contributors">Сделали возможным</string>
+    <string name="butn_clearQueue">Очистить очередь</string>
+    <string name="mesg_stopping">Остановка</string>
+    <string name="text_textStream">Текстовый поток</string>
+    <string name="text_flagRemoved">Удалено</string>
+    <string name="butn_skip">Пропустить</string>
+    <string name="mesg_scanningSelfHotspot">Поиск точки доступа TrebleShot</string>
+    <string name="butn_enable">Активировать</string>
+    <string name="mesg_locationDisabledSelfHotspot">Включите службу местоположения для просмотра результатов сканирования и создания точки доступа</string>
 </resources>
