@@ -442,4 +442,6 @@
     <string name="mesg_waiting">Itxaroten</string>
     <string name="text_amoledOptimizedBlackTheme">Optimizatu AMOLED pantailetarako</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Erabili kolore ilunagoak</string>
+    <string name="butn_enterIpAddress">Sartu IP helbidea</string>
+    <string name="butn_webShare">Partekatu nabigatzailearen bidez</string>
 </resources>
