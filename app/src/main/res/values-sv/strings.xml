@@ -442,9 +442,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">Använd mörkare färger</string>
     <string name="mesg_errorNotTrustZoneDevice">Denna enhet måste ställas in som TrustZone-enhet på mottagarenheten för att kunna utföra denna operationen.</string>
     <string name="butn_enterIpAddress">Ange IP-adress</string>
-    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Dela via webbläsare</string>
-    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShare">@string/butn_webShare</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">eller</string>
     <string name="text_visitWebShareAddress">Besök den här länken med din webbläsare</string>

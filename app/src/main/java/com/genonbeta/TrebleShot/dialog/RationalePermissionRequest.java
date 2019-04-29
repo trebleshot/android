@@ -87,12 +87,19 @@ public class RationalePermissionRequest extends AlertDialog.Builder
         public String permission;
         public String title;
         public String message;
+        public boolean required;
 
         public PermissionRequest(String permission, String title, String message)
+        {
+            this(permission, title, message, true);
+        }
+
+        public PermissionRequest(String permission, String title, String message, boolean required)
         {
             this.permission = permission;
             this.title = title;
             this.message = message;
+            this.required = required;
         }
 
         public PermissionRequest(Context context, String permission, int titleRes, int messageRes)

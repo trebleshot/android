@@ -306,7 +306,7 @@
     <string name="text_workerService">作业服务</string>
     <string name="text_yearCountShort">%d 年</string>
     <string name="text_monthCountShort">%d 月</string>
-    <string name="text_dayCountShort">% 日</string>
+    <string name="text_dayCountShort">%d 日</string>
     <string name="text_hourCountShort">%d 小时</string>
     <string name="text_minuteCountShort">%d 分钟</string>
     <string name="text_secondCountShort">%d 秒</string>
@@ -450,9 +450,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
     <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
     <string name="butn_enterIpAddress">输入IP地址</string>
-    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">通过浏览器(网页)分享</string>
-    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShare">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">使用“在浏览器中分享”以在此处查看传输！</string>
     <string name="butn_shareOnBrowser">在浏览器中分享</string>
     <string name="butn_hideOnBrowser">在浏览器中隐藏</string>

@@ -23,7 +23,7 @@
     <string name="text_deviceNameTitle">ادخل اسم الجهاز</string>
     <string name="mesg_formatNotSupported">هذا الصيغة غير مدعومة</string>
     <string name="mesg_fileSendError">هذ الملف لم يتم ارسالة. %s</string>
-    <string name="mesg_fileReceiveError">حدث خطأ أثناء تلقي % s،</string>
+    <string name="mesg_fileReceiveError">حدث خطأ أثناء تلقي %s،</string>
     <string name="text_multipleFileReceiveCompleted">تم إستلام الملفات بنجاح</string>
     <string name="text_deviceList">قائمة الأجهزة</string>
     <string name="text_fileOpenAppChoose">فتح بإستخدام</string>

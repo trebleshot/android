@@ -471,9 +471,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">Donkerder kleuren gebruiken</string>
     <string name="mesg_errorNotTrustZoneDevice">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
     <string name="butn_enterIpAddress">IP-adres invoeren</string>
-    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Delen via browser</string>
-    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShare">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">Gebruik de optie \'Delen via browser\' om hier overdrachten te zien!</string>
     <string name="butn_shareOnBrowser">Delen via browser</string>
     <string name="butn_hideOnBrowser">Verbergen via browser</string>

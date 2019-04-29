@@ -245,7 +245,7 @@
     <string name="mesg_ongoingUpdateDownload">Descargando la nueva versión</string>
     <string name="butn_gotIt">Lo tengo</string>
     <string name="mesg_helpFolderSelection">"Para escoger una carpeta, toque su icono "</string>
-    <string name="mesg_hotspotCreatedInfo">Conectese a \"s%\" en los \"Ajustes de Wi-Fi\" o envíe archivos por medio de \"s%\" desde TrebleShot</string>
+    <string name="mesg_hotspotCreatedInfo">Conectese a \"%s\" en los \"Ajustes de Wi-Fi\" o envíe archivos por medio de \"s%\" desde TrebleShot</string>
     <string name="butn_selectAll">Seleccionar todo</string>
     <string name="butn_selectNone">Seleccionar ninguno</string>
     <string name="butn_previewSelections">Vista previa de las selecciones</string>

@@ -246,7 +246,7 @@
     <string name="mesg_ongoingUpdateDownload">Bertsio berria deskargatzen</string>
     <string name="butn_gotIt">Ulertu dut</string>
     <string name="mesg_helpFolderSelection">Karpeta bat hautatzeko, sakatu bere ikonoa</string>
-    <string name="mesg_hotspotCreatedInfo">Konektatu \"% s\"-ra \"Wi-Fi ezarpenetan\" edo bidali fitxategiak \"%s\" bidez TrebleShot barruan</string>
+    <string name="mesg_hotspotCreatedInfo">Konektatu \"%s\"-ra \"Wi-Fi ezarpenetan\" edo bidali fitxategiak \"%s\" bidez TrebleShot barruan</string>
     <string name="butn_selectAll">Hautatu dena</string>
     <string name="butn_selectNone">Ez hautatu bat ere</string>
     <string name="butn_previewSelections">Aurreikusi hautatutakoak</string>

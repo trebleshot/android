@@ -423,7 +423,7 @@
     <string name="text_introAllSet">Tudo pronto!</string>
     <string name="text_introSetUpProfile">Configurar o seu perfil</string>
     <string name="mesg_openFailure">Não é possível ver \"%s\"</string>
-    <string name="text_connectionTest">Teste de conexão -% s</string>
+    <string name="text_connectionTest">Teste de conexão - %s</string>
     <string name="butn_connectionTest">Testar conexão</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">Revogar PIN</string>
@@ -434,9 +434,9 @@
     <string name="text_amoledOptimizedBlackThemeSummary">Use cores mais escuras</string>
     <string name="mesg_errorNotTrustZoneDevice">Este dispositivo precisa ser configurado como dispositivo de TrustZone no dispositivo receptor para fazer esta operação.</string>
     <string name="butn_enterIpAddress">Digite o endereço IP</string>
-    <string name="text_enterIpAddress">\@string/butn_enterIpAddress</string>
+    <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Compartilhar via navegador</string>
-    <string name="text_webShare">\@string/butn_webShare</string>
+    <string name="text_webShare">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">Use a opção \"Compartilhar no navegador\" para ver as transferências aqui!</string>
     <string name="butn_shareOnBrowser">Compartilhar no navegador</string>
     <string name="butn_hideOnBrowser">Ocultar no navegador</string>
