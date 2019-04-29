@@ -1,34 +1,34 @@
-# TrebleShot open-source file and text sharing application
+# TrebleShot libre software file and text sharing app
 Send and receive files over available connections. [FAQ](https://github.com/genonbeta/TrebleShot/blob/master/FAQ.md).
 
 ## Get it on
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
-* Pause and resume transfers even after something went wrong
+* Pause, resume and reconnect transfers
 * Share large files
-* Share multiple content from your video, photo, music and application libraries
-* No internet connection is required: setup a hotspot and connect to it using QR code
-* Share with multiple devices at the same time
+* Share all kinds of content, video, photo, music and app libraries
+* No Internet connection is required: Set up a hotspot and connect to it using a QR code
+* Share between multiple devices at the same time
 * Exchange texts of any kind and save them to TrebleShot
-* Share folders as they are for backup and other purposes
+* Share folders for backup and other purposes
 * Light UI: Works faster than its rivals on low-end devices
 * Speed-oriented: Minimal UI optimized for speed
-* Advanced features: network change handling, choosing network after speed measurement
+* Advanced features: Network change handling, choose network based on measured speed
 
 ## Project status
 [![Build Status](https://travis-ci.org/genonbeta/TrebleShot.svg)](https://travis-ci.org/genonbeta/TrebleShot)
 [![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/svg-badge.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
 ## Donate
-If you value this work, you can help it. There are only a few methods that work in Turkey,
-you can use Bitcoin or install Google Play version to do so (In App Billing method) (taxes will apply).
+If you value this work, you can help it along. Only a few methods of monetary contribution work in Turkey,
+you can use Bitcoin or install the Google Play version to do so (In App Billing method) (taxes will apply).
 
 Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
 
 ![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
 
-## Build from source notes
+## Build from source
 Required tools;
 * Build tools: 28.0.3
 * Support library: 1.0.0 - androidx
@@ -47,14 +47,12 @@ Required tools;
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_9.png)
 
 ## Localization
-To start helping to the localization of TrebleShot, please read
+To translate TrebleShot, please read
 [this wiki](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution) first if you haven't
-worked with Weblate before. If you have, go to the
-[translation page](https://hosted.weblate.org/engage/TrebleShot/).
+worked with Weblate, where you will find the [TrebleShot localization](https://hosted.weblate.org/engage/TrebleShot/).
 
 
 [![Translation Status](https://hosted.weblate.org/widgets/trebleshot/-/multi-auto.svg)](https://hosted.weblate.org/engage/TrebleShot/)
 
 
-
-This application is licensed under GNU Public License version 2.0 or later versions of version 2.0.
+This app is licensed under GNU Public License version 2.0 or later version.
