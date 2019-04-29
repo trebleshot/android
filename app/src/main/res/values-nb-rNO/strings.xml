@@ -466,4 +466,9 @@
     <string name="mesg_waiting">Venter</string>
     <string name="text_amoledOptimizedBlackTheme">Optimaliser for AMOLED-skjermer</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Bruk mørkere farger</string>
+    <string name="butn_enterIpAddress">Skriv inn IP-adresse</string>
+    <string name="butn_webShare">Del via nettleser</string>
+    <string name="butn_asApk">Som APK</string>
+    <string name="butn_asLink">Som en lenke</string>
+    <string name="text_linkTrebleshot">Del filer med TrebleShot. Last ned her: %s</string>
 </resources>
