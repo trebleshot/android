@@ -471,4 +471,12 @@
     <string name="butn_asApk">Som APK</string>
     <string name="butn_asLink">Som en lenke</string>
     <string name="text_linkTrebleshot">Del filer med TrebleShot. Last ned her: %s</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">eller</string>
+    <string name="text_visitWebShareAddress">Besøk denne lenken i din nettleser</string>
+    <string name="text_dowloadTrebleshotAndroid">Last ned TrebleShot for Android</string>
+    <string name="text_listEmptyConnection">Nettverk du kobler til vises her</string>
+    <string name="mesg_errorNotAnIpAddress">Ikke en IP-adresse
+\n(som f.eks. 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Del som APK eller lenke\?</string>
 </resources>
