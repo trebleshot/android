@@ -448,4 +448,10 @@
     <string name="text_listEmptyConnection">As redes que você conecta aparecem aqui</string>
     <string name="mesg_errorNotAnIpAddress">Não é um endereço IP
 \n(como 192.168.1.2)</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="ques_shareAsApkOrLink">Compartilhar como APK ou link\?</string>
+    <string name="butn_asApk">Como APK</string>
+    <string name="butn_asLink">Como um link</string>
+    <string name="text_linkTrebleshot">Compartilhe arquivos com o TrebleShot!
+\nBaixe aqui: %s</string>
 </resources>
