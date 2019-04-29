@@ -389,7 +389,7 @@ public class NetworkDeviceListFragment
 
             builder.show();
         } else
-            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()), device).show();
+            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), device).show();
     }
 
     public void requestRefresh()

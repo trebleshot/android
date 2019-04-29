@@ -206,8 +206,7 @@ public class TransferAssigneeListFragment
         try {
             ShowingAssignee assignee = getAdapter().getItem(holder);
 
-            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()),
-                    AppUtils.getDefaultPreferences(getContext()), assignee.device)
+            new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), assignee.device)
                     .show();
             return true;
         } catch (Exception e) {

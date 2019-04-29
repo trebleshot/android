@@ -48,7 +48,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 {
     public static final String TAG = DeviceInfoDialog.class.getSimpleName();
 
-    public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database, final SharedPreferences sharedPreferences, final NetworkDevice device)
+    public DeviceInfoDialog(@NonNull final Activity activity, final AccessDatabase database,
+                            final NetworkDevice device)
     {
         super(activity);
 
@@ -81,7 +82,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                             @Override
                             public void onDeviceSelected(final NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
                             {
-                                runReceiveTask(activity, sharedPreferences, device, connection);
+                                runReceiveTask(activity, device, connection);
                             }
                         }).show();
                     }
@@ -137,8 +138,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
         }
     }
 
-    protected void runReceiveTask(final Activity activity, final SharedPreferences sharedPreferences,
-                                  final NetworkDevice device, final NetworkDevice.Connection connection)
+    protected void runReceiveTask(final Activity activity, final NetworkDevice device,
+                                  final NetworkDevice.Connection connection)
     {
         new WorkerService.RunningTask()
         {
