@@ -6,8 +6,7 @@
     mesg_ : text used for Toast, Snackbar, ProgressDialog and anything that isn't in control of user
     text_ : any kind of text that doesn't belong to the prefixes above
     mode_ : these are not actual text strings. They illustrate more than one text items together and possibly are not translatable
---><resources xmlns:tools="http://schemas.android.com/tools"
-    tools:ignore="MissingTranslation">
+--><resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="text_appName" translatable="false">TrebleShot</string>
     <string name="text_navigationDrawerOpen">Open navigation drawer</string>n
     <string name="text_navigationDrawerClose">Close navigation drawer</string>
@@ -454,7 +453,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
-    <string name="text_webShareInfo">Below you see the links that the devices on the same network can connect with a browser. Next, individually enable web share for transfers.</string>
+    <string name="text_webShareInfo">Below you see links devices on the same network can connect to with a browser. Next, turn on web sharing for transfers individually.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
     <string name="mesg_errorNotAnIpAddress">Not an IP Address
