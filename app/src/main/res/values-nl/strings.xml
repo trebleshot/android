@@ -486,4 +486,8 @@
     <string name="text_listEmptyConnection">Hier verschijnen netwerken waarmee je bent verbonden</string>
     <string name="mesg_errorNotAnIpAddress">Geen IP-adres
 \n(zoals 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Wil je de APK delen of een link\?</string>
+    <string name="butn_asApk">APK delen</string>
+    <string name="butn_asLink">Link delen</string>
+    <string name="text_linkTrebleshot">Deel bestanden via TrebleShot! Download de app: %s</string>
 </resources>
