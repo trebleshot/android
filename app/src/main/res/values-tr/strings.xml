@@ -429,7 +429,7 @@
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Tarayıcı ile gönder</string>
     <string name="text_webShare">@string/butn_webShare</string>
-    <string name="text_webShareNoContentNotice">Gönderileri burada görmek için \'Tarayıcı ile gönder seçeneğini kullanın!</string>
+    <string name="text_webShareNoContentNotice">Gönderileri burada görmek için \'Tarayıcı ile gönder\' seçeneğini kullanın!</string>
     <string name="butn_shareOnBrowser">Tarayıcıda paylaş</string>
     <string name="butn_hideOnBrowser">Tarayıcıda gizle</string>
     <string name="text_transferSharedOnBrowser">Tarayıcıda paylaşıldı</string>
@@ -441,8 +441,8 @@
     <string name="text_listEmptyConnection">Bağlandığınız ağlar burada görünür</string>
     <string name="mesg_errorNotAnIpAddress">Bir IP Adresi değil
 \n(192.168.1.2 gibi)</string>
-    <string name="ques_shareAsApkOrLink">"Bağlantı veya  APK olarak\?"</string>
+    <string name="ques_shareAsApkOrLink">Bağlantı veya APK olarak\?</string>
     <string name="butn_asApk">APK olrk</string>
     <string name="butn_asLink">Bağlntı olrk</string>
-    <string name="text_linkTrebleshot">TrebleShot ile dosylara paylaşın! Şuradan edinin: %s</string>
+    <string name="text_linkTrebleshot">TrebleShot ile dosyalarınızı güvenle paylaşırsınız! Tümüyle ücretsiz ve reklam içermez. Şuradan edinin: %s</string>
 </resources>
