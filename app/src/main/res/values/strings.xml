@@ -459,4 +459,8 @@
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
     <string name="mesg_errorNotAnIpAddress">Not an IP Address
 \n(like 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Share as APK or link?</string>
+    <string name="butn_asApk">As APK</string>
+    <string name="butn_asLink">As a link</string>
+    <string name="text_linkTrebleshot">Share files with TrebleShot! Download here: https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot</string>
 </resources>

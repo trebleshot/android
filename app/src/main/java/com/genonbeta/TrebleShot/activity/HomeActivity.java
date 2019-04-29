@@ -26,6 +26,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
+import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -210,7 +212,8 @@ public class HomeActivity
         } else if (R.id.menu_activity_main_about == mChosenMenuItemId) {
             startActivity(new Intent(this, AboutActivity.class));
         } else if (R.id.menu_activity_main_send_application == mChosenMenuItemId) {
-            sendThisApplication();
+            new ShareAppDialog(HomeActivity.this)
+                    .show();
         } else if (R.id.menu_activity_main_web_share == mChosenMenuItemId) {
             startActivity(new Intent(this, WebShareActivity.class));
         } else if (R.id.menu_activity_main_preferences == mChosenMenuItemId) {
@@ -269,46 +272,6 @@ public class HomeActivity
     {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_about);
         item.setTitle(R.string.text_newVersionAvailable);
-    }
-
-    private void sendThisApplication()
-    {
-        new Handler(Looper.myLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try {
-                    Interrupter interrupter = new Interrupter();
-
-                    PackageManager pm = getPackageManager();
-                    PackageInfo packageInfo = pm.getPackageInfo(getApplicationInfo().packageName, 0);
-
-                    String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
-
-                    DocumentFile storageDirectory = FileUtils.getApplicationDirectory(getApplicationContext());
-                    DocumentFile codeFile = DocumentFile.fromFile(new File(getApplicationInfo().sourceDir));
-                    DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
-
-                    FileUtils.copy(HomeActivity.this, codeFile, cloneFile, interrupter);
-
-                    try {
-                        Intent sendIntent = new Intent(Intent.ACTION_SEND)
-                                .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
-                                .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(HomeActivity.this, cloneFile))
-                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                .setType(cloneFile.getType());
-
-                        startActivity(Intent.createChooser(sendIntent, getString(R.string.text_fileShareAppChoose)));
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(HomeActivity.this, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     public void requestTrustZoneStatus()
