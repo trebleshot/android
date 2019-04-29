@@ -194,7 +194,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which)
                                                 {
-                                                    runReceiveTask(activity, sharedPreferences, device, connection);
+                                                    runReceiveTask(activity, device, connection);
                                                 }
                                             })
                                             .show();
