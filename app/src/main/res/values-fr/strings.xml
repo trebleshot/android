@@ -382,4 +382,10 @@
     <string name="text_transfers">Transferts</string>
     <string name="butn_connectionDetails">Détails des connexions</string>
     <string name="mesg_sent">Envoyé</string>
+    <string name="butn_start">Démarrer</string>
+    <string name="text_downloads">Téléchargements</string>
+    <string name="text_documents">Documents</string>
+    <string name="text_shortcuts">Raccourcis</string>
+    <string name="text_recentFiles">Fichiers récents</string>
+    <string name="butn_changeSavePath">Modifier le chemin d\'enregistrement</string>
 </resources>
