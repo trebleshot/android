@@ -390,4 +390,5 @@
     <string name="butn_changeSavePath">Modifier le chemin d\'enregistrement</string>
     <string name="mesg_fileReceiveFilesLeftError">Échec de la réception de quelques fichiers</string>
     <string name="text_connectionWizard">Assistant de connexion</string>
+    <string name="ques_connectionWizardIsThereQRCode">Voyez-vous un code QR (code à barres) sur son écran \?</string>
 </resources>
