@@ -403,4 +403,35 @@
     <string name="mesg_removing">Suppression… ceci peut prendre beaucoup de temps</string>
     <string name="butn_help">Aide</string>
     <string name="butn_choose">Choisir</string>
+    <string name="butn_never">Jamais</string>
+    <string name="text_hotspotStartedExternallyNotice">Le hotspot a été démarré en externe. Pour utiliser le code QR, vous devez le démarrer ici.</string>
+    <string name="text_shortcut">Raccourci</string>
+    <string name="butn_addShortcut">Ajouter un raccourci</string>
+    <string name="butn_removeShortcut">Supprimer le raccourci</string>
+    <string name="mesg_removed">Supprimé</string>
+    <string name="mesg_added">Ajouté</string>
+    <string name="butn_change">Changer</string>
+    <string name="text_connectionTest">Test de connexion - %s</string>
+    <string name="butn_connectionTest">Test de connexion</string>
+    <string name="text_textMillisecond">%d ms</string>
+    <string name="butn_revokePin">Révoquer le PIN</string>
+    <string name="const_text_useAppFonts">Appliquer la police recommandée</string>
+    <string name="const_text_useAppFontsSummary">Utilisez la police personnalisée fournie</string>
+    <string name="mesg_waiting">En attente</string>
+    <string name="text_amoledOptimizedBlackTheme">Optimiser pour les écrans AMOLED</string>
+    <string name="text_amoledOptimizedBlackThemeSummary">Utilisez des couleurs plus foncées</string>
+    <string name="mesg_errorNotTrustZoneDevice">Cet appareil doit être configuré en tant qu\'appareil TrustZone sur l\'appareil récepteur pour effectuer cette opération.</string>
+    <string name="butn_enterIpAddress">Entrez l’adresse IP</string>
+    <string name="butn_webShare">Partager via le navigateur</string>
+    <string name="butn_shareOnBrowser">Partager sur le navigateur</string>
+    <string name="butn_hideOnBrowser">Masquer sur le navigateur</string>
+    <string name="text_transferSharedOnBrowser">Partagé sur le navigateur</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">ou</string>
+    <string name="text_visitWebShareAddress">Visitez ce lien avec votre navigateur</string>
+    <string name="text_dowloadTrebleshotAndroid">Télécharger TrebleShot pour Android</string>
+    <string name="text_listEmptyConnection">Les réseaux auxquels vous vous connectez apparaissent ici</string>
+    <string name="mesg_errorNotAnIpAddress">N’est pas une adresse IP
+\n(comme 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Partager comme APK ou lien \?</string>
 </resources>
