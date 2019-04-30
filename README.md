@@ -22,7 +22,7 @@ Send and receive files over available connections. [FAQ](https://github.com/geno
 
 ## Donate
 If you value this work, you can help it along. Only a few methods of monetary contribution work in Turkey,
-you can use Bitcoin or install the Google Play version to do so (In App Billing method) (taxes will apply).
+you can use Bitcoin or install the Google Play version (using App Billing) to do so (taxes will apply).
 
 Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8)
 
