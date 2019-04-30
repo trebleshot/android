@@ -434,4 +434,6 @@
     <string name="mesg_errorNotAnIpAddress">N’est pas une adresse IP
 \n(comme 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Partager comme APK ou lien \?</string>
+    <string name="butn_asApk">En tant qu’APK</string>
+    <string name="butn_asLink">Comme un lien</string>
 </resources>
