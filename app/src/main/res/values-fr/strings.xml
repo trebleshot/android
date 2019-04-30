@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">Ouvrir le volet de navigation</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">Ouvrir le volet de navigation</string>n
     <string name="text_navigationDrawerClose">Fermer le volet de navigation</string>
     <string name="text_preferences">Préférences</string>
     <string name="mesg_connectionFailure">Echec de la connexion</string>
@@ -308,8 +309,8 @@
     <string name="text_changelog">Journal des modifications</string>
     <string name="mesg_versionUpdatedChangelog">Vous venez de mettre à jour TrebleShot, désirez-vous découvrir les nouveautés \?</string>
     <string name="mesg_versionUpdatedChangelogRejected">Vous pouvez toujours trouver le « Changelog » dans la section « À propos »</string>
-	<string name="mesg_noInternetConnection">Cela nécessite une connexion Internet</string>
-<string name="mesg_stillScanning">En cours de balayage</string>
+    <string name="mesg_noInternetConnection">Cela nécessite une connexion Internet</string>
+    <string name="mesg_stillScanning">En cours de balayage</string>
     <string name="text_allowToConnect">Autoriser la connexion</string>
     <string name="ques_allowDeviceToConnect">Laisser cet appareil se connecter \?</string>
     <string name="mesg_stopping">Arrêt en cours</string>
@@ -352,4 +353,13 @@
     <string name="text_introSetUpProfile">Configurez votre profil</string>
     <string name="butn_yes">Oui</string>
     <string name="butn_no">Non</string>
+    <string name="text_useVibrationSummary">Utiliser le vibreur et afficher les notification en haut</string>
+    <string name="mesg_groupOngoingNotice">Attendre que les %s soient terminés avant de transférer ce fichier</string>
+    <string name="text_chooserTargetService">Fournisseur de choix d\'appareils</string>
+    <string name="text_longAgo">de cela</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot a besoin d\'accéder au numéro de série de votre appareil afin de créer un numéro d\'identification à long terme, aidant les autres appareils à vous reconnaître</string>
+    <string name="text_transactionGroupDetails">Détails du groupe de transactions</string>
+    <string name="text_trebleshotHotspotDescription">Vous pouvez envoyer des fichiers directement via ce réseau ouvert créé par un appareil TrebleShot proche.</string>
+    <string name="text_saveAnywaySummary">L\'expéditeur ne sait pas où se trouve le fichier, mais vous pouvez quand même l\'enregistrer</string>
+    <string name="text_taskOngoing">Tâche en cours</string>
 </resources>
