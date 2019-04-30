@@ -436,4 +436,5 @@
     <string name="ques_shareAsApkOrLink">Partager comme APK ou lien \?</string>
     <string name="butn_asApk">En tant qu’APK</string>
     <string name="butn_asLink">Comme un lien</string>
+    <string name="text_linkTrebleshot">Partagez des fichiers avec TrebleShot ! Télécharger ici : %s</string>
 </resources>
