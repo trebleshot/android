@@ -449,8 +449,14 @@
     <string name="text_transferSharedOnBrowser">Udostępnione w przeglądarce</string>
     <string name="text_or">lub</string>
     <string name="text_visitWebShareAddress">Odwiedź ten link za pomocą przeglądarki</string>
-    <string name="text_webShareInfo">Poniżej znajdują się linki, które urządzenia w tej samej sieci mogą łączyć się z przeglądarką. Następnie włącz indywidualnie udział sieciowy dla transferów.</string>
+    <string name="text_webShareInfo">Poniżej widzisz linki do pracujacych urządzeń w tej samej sieci, które można połączyć z przeglądarką. Następnie włącz indywidualnie udostępnianie transwerów w sieci.</string>
     <string name="text_dowloadTrebleshotAndroid">Pobierz TrebleShot dla Android</string>
     <string name="text_listEmptyConnection">Sieci pojawiają się tutaj</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="mesg_errorNotAnIpAddress">Nie adres IP
+\n(lubisz 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Udostępnić jako APK lub link\?</string>
+    <string name="butn_asApk">Jako APK</string>
+    <string name="butn_asLink">Jako link</string>
+    <string name="text_linkTrebleshot">Udostępnianie plików za pomocą TrebleShot! Pobierz tutaj: %s</string>
 </resources>
