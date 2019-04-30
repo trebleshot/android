@@ -362,4 +362,18 @@
     <string name="text_trebleshotHotspotDescription">Vous pouvez envoyer des fichiers directement via ce réseau ouvert créé par un appareil TrebleShot proche.</string>
     <string name="text_saveAnywaySummary">L\'expéditeur ne sait pas où se trouve le fichier, mais vous pouvez quand même l\'enregistrer</string>
     <string name="text_taskOngoing">Tâche en cours</string>
+    <string name="text_receivedTransfer">Reçu %s de %s</string>
+    <string name="text_yearCountShort">%d an</string>
+    <string name="text_monthCountShort">%d mois</string>
+    <string name="text_dayCountShort">%d j</string>
+    <string name="text_hourCountShort">%d h</string>
+    <string name="text_minuteCountShort">%d min</string>
+    <string name="text_secondCountShort">%d sec</string>
+    <string name="butn_queueCounted">File d’attente (%d)</string>
+    <string name="mesg_updateDownloadComplete">Mise à jour reçue avec succès et sauvegardée dans vos fichiers reçus</string>
+    <string name="mesg_listRefreshSnoozed">La liste sera actualisée dès que disponible</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone sera également lancé en conséquence</string>
+    <string name="text_qrAllowTrustZone">TrustZone pour le code QR</string>
+    <string name="text_qrAllowTrustZoneSummary">Autoriser TrustZone pour les connexions de code QR</string>
+    <string name="text_killServiceAfterLeavingSummary">Arrête la communication s\'il n\'y a pas de tâche en cours</string>
 </resources>
