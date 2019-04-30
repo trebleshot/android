@@ -376,4 +376,10 @@
     <string name="text_qrAllowTrustZone">TrustZone pour le code QR</string>
     <string name="text_qrAllowTrustZoneSummary">Autoriser TrustZone pour les connexions de code QR</string>
     <string name="text_killServiceAfterLeavingSummary">Arrête la communication s\'il n\'y a pas de tâche en cours</string>
+    <string name="text_applyDarkThemeSummary">Utilisez le thème sombre</string>
+    <string name="butn_allow">Autoriser</string>
+    <string name="butn_telegram_channel">Canal Télégram</string>
+    <string name="text_transfers">Transferts</string>
+    <string name="butn_connectionDetails">Détails des connexions</string>
+    <string name="mesg_sent">Envoyé</string>
 </resources>
