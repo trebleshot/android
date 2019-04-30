@@ -391,4 +391,13 @@
     <string name="mesg_fileReceiveFilesLeftError">Échec de la réception de quelques fichiers</string>
     <string name="text_connectionWizard">Assistant de connexion</string>
     <string name="ques_connectionWizardIsThereQRCode">Voyez-vous un code QR (code à barres) sur son écran \?</string>
+    <string name="ques_connectionWizardUseHotspot">Voulez-vous que l\'autre appareil se connecte à cet appareil avec un hotspot (connexion) \? Si vous ne savez pas ce qu\'est un hotspot, appuyez sur Oui.</string>
+    <string name="ques_connectionWizardUseNetwork">Voulez-vous utiliser votre routeur ou tout autre réseau Wi-Fi auquel vous et votre ami êtes connectés \?</string>
+    <string name="ques_connectionWizardUseKnownDevices">Voulez-vous accéder à vos appareils contactés précédemment \?</string>
+    <string name="text_loadThumbnails">Charger les vignettes</string>
+    <string name="text_loadThumbnailsSummary">Afficher les vignettes des fichiers</string>
+    <string name="text_search">Rechercher</string>
+    <string name="mesg_wifiEnableFailed">Le Wi-Fi ne s\'allumera pas.</string>
+    <string name="mesg_turningWiFiOn">Activer le Wi-Fi</string>
+    <string name="mesg_connectToWiFiNetworkHelp">Connectez-vous à un réseau Wi-Fi pour continuer</string>
 </resources>
