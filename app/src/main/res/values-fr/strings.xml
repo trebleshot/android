@@ -401,4 +401,6 @@
     <string name="mesg_turningWiFiOn">Activer le Wi-Fi</string>
     <string name="mesg_connectToWiFiNetworkHelp">Connectez-vous à un réseau Wi-Fi pour continuer</string>
     <string name="mesg_removing">Suppression… ceci peut prendre beaucoup de temps</string>
+    <string name="butn_help">Aide</string>
+    <string name="butn_choose">Choisir</string>
 </resources>
