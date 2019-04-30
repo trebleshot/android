@@ -400,4 +400,5 @@
     <string name="mesg_wifiEnableFailed">Le Wi-Fi ne s\'allumera pas.</string>
     <string name="mesg_turningWiFiOn">Activer le Wi-Fi</string>
     <string name="mesg_connectToWiFiNetworkHelp">Connectez-vous à un réseau Wi-Fi pour continuer</string>
+    <string name="mesg_removing">Suppression… ceci peut prendre beaucoup de temps</string>
 </resources>
