@@ -453,4 +453,8 @@
     <string name="text_listEmptyConnection">Nätverk du ansluter till syns här</string>
     <string name="mesg_errorNotAnIpAddress">Inte en IP-address
 \n(som 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Dela som APK eller länk\?</string>
+    <string name="butn_asApk">Som APK</string>
+    <string name="butn_asLink">Som en länk</string>
+    <string name="text_linkTrebleshot">Dela filer med TrebleShot! Ladda ner det här: %s</string>
 </resources>
