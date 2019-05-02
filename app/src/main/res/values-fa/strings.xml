@@ -426,7 +426,7 @@
     <string name="text_visitWebShareAddress">مشاهده این لینک با مرورگر</string>
     <string name="text_dowloadTrebleshotAndroid">دانلود TrebleShot برای اندروید</string>
     <string name="text_listEmptyConnection">شبکه هایی که به آنها متصل می شوید اینجا نمایش داده می شوند</string>
-    <string name="mesg_errorNotAnIpAddress">آدرس IP نیست
+    <string name="mesg_errorNotAnIpAddress">آدرس IP نیست 
 \n(مثل 192.168.1.2)</string>
     <string name="text_trebleshotHotspot">هات اسپات TrebleShot</string>
     <string name="mesg_scanningDevicesSelfHotspot">به دنبال دستگاه هایی روی یک شبکه هات اسپات TrebleShot هستیم</string>
@@ -456,4 +456,8 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">یا</string>
     <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.</string>
+    <string name="ques_shareAsApkOrLink"></string>
+    <string name="butn_asApk"></string>
+    <string name="butn_asLink"></string>
+    <string name="text_linkTrebleshot"></string>
 </resources>
