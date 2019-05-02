@@ -2,31 +2,31 @@
 <resources>
     <plurals name="ques_deleteFile">
         <item quantity="one">مایلید این فایل را پاک کنید؟</item>
-        <item quantity="other">مایلید %d فایل را پاک کنید؟</item>
+        <item quantity="other">مایلید فایل های %d را پاک کنید؟</item>
     </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
         <item quantity="one">%d فایل دریافت شده است</item>
-        <item quantity="other">%d فایل دریافت شده است</item>
+        <item quantity="other">%d فایل های دریافت شده اند</item>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d فایل انتخاب شده است</item>
-        <item quantity="other">%d فایل انتخاب شده است</item>
+        <item quantity="other">%d فایل ها انتخاب شده اند</item>
     </plurals>
     <plurals name="text_removeQueueSummary">
         <item quantity="one">این انتقال معلق حذف خواهد شد</item>
-        <item quantity="other">%d انتقال معلق حذف خواهد شد</item>
+        <item quantity="other">%d انتقال های معلق حذف خواهند شد</item>
     </plurals>
     <plurals name="text_availableConnections">
         <item quantity="one">%d اتصال</item>
-        <item quantity="other">%d اتصال</item>
+        <item quantity="other">%d اتصال ها</item>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="one">دریافت این فایل؟</item>
-        <item quantity="other">دریافت %d فایل؟</item>
+        <item quantity="other">"دریافت فایل های  %d ؟"</item>
     </plurals>
     <plurals name="text_files">
         <item quantity="one">%d فایل</item>
-        <item quantity="other">%d فایل</item>
+        <item quantity="other">%d فایل های</item>
     </plurals>
     <plurals name="text_secondsAgo">
         <item quantity="one">یک ثانیه پیش</item>
