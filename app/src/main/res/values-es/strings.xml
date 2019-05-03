@@ -15,7 +15,7 @@
     <string name="text_sending">Enviando</string>
     <string name="butn_cancelSending">Cancelar envío</string>
     <string name="text_receiving">Recibiendo</string>
-    <string name="butn_cancelReceiving">"Cancelar recepción "</string>
+    <string name="butn_cancelReceiving">Cancelar recepción</string>
     <string name="text_fileReceived">El archivo ha sido recibido</string>
     <string name="mesg_fileReceived">%s ha sido recibido</string>
     <string name="butn_scan">Examinar</string>
@@ -74,7 +74,7 @@
     <string name="text_autoStart">Iniciar automáticamente</string>
     <string name="text_autoStartSummary">Permitir comunicación cuando se detecte una conexión</string>
     <string name="text_application">Aplicación</string>
-    <string name="text_image">"Imagen "</string>
+    <string name="text_image">Imagen</string>
     <string name="text_music">Música</string>
     <string name="text_video">Vídeo</string>
     <string name="text_showSystemApps">Mostrar aplicaciones del sistema</string>
@@ -162,7 +162,7 @@
     <string name="text_chooseFile">Escoger archivo</string>
     <string name="mesg_pathSameError">No puede seleccionar la carpeta anterior</string>
     <string name="ques_checkOldFiles">¿Mover archivos\?</string>
-    <string name="text_checkOldFiles">Puede mover los archivos asociados completados y parcialmente completados a esta carpeta y esto puede tomar algún tiempo dependiendo de los tamaños.</string>
+    <string name="text_checkOldFiles">Puede mover los archivos asociados completados y parcialmente completados a esta carpeta y esto puede tomar algún tiempo dependiendo de los tamaños</string>
     <string name="mesg_newFilesReceived">Se han recibido nuevos archivos</string>
     <string name="butn_show">Mostrar</string>
     <string name="text_preparingFiles">Preparando archivos</string>
@@ -245,7 +245,7 @@
     <string name="mesg_connectionUpdated">Ahora comunicando a través de la conexión \"%s\"</string>
     <string name="mesg_ongoingUpdateDownload">Descargando la nueva versión</string>
     <string name="butn_gotIt">Lo tengo</string>
-    <string name="mesg_helpFolderSelection">"Para escoger una carpeta, toque su icono "</string>
+    <string name="mesg_helpFolderSelection">Para escoger una carpeta, toque su icono</string>
     <string name="mesg_hotspotCreatedInfo">Conectese a \"%s\" en los \"Ajustes de Wi-Fi\" o envíe archivos por medio de \"s%\" desde TrebleShot</string>
     <string name="butn_selectAll">Seleccionar todo</string>
     <string name="butn_selectNone">Seleccionar ninguno</string>
@@ -283,7 +283,7 @@
     <string name="text_receivedTransfer">Recibido %s en %s</string>
     <string name="text_yearCountShort">%d año</string>
     <string name="text_monthCountShort">%d mes</string>
-    <string name="text_dayCountShort">"%d día "</string>
+    <string name="text_dayCountShort">%d día</string>
     <string name="text_hourCountShort">%d hora</string>
     <string name="text_minuteCountShort">%d minuto</string>
     <string name="text_secondCountShort">%d segundo</string>
@@ -330,7 +330,7 @@
     <string name="text_photo">Foto</string>
     <string name="text_groupByNothing">Nada</string>
     <string name="text_groupByDate">Fecha</string>
-    <string name="text_groupByAlbum">"Álbum "</string>
+    <string name="text_groupByAlbum">Álbum</string>
     <string name="text_groupByArtist">Artista</string>
     <string name="text_groupByFolder">Carpeta</string>
     <string name="text_home">Inicio</string>
@@ -348,7 +348,7 @@
     <string name="text_scanQRWifiRequired">Para conectarse a dispositivos, el Wi-Fi debe estar habilitado</string>
     <string name="mesg_completing">Completando</string>
     <string name="mesg_errorNotSameNetwork">Los dispositivos no se encuentran en la misma red</string>
-    <string name="text_cameraPermissionRequired">"Se requieren permisos para la cámara  "</string>
+    <string name="text_cameraPermissionRequired">Se requieren permisos para la cámara</string>
     <string name="text_addDevicesToTransfer">Añadir dispositivos para transferir</string>
     <string name="text_file">Archivo</string>
     <string name="text_noDeviceForTransfer">No se añadió ningún dispositivo para esta transferencia</string>
@@ -362,7 +362,7 @@
     <string name="butn_pause">Pausar</string>
     <string name="butn_retry">Reintentar</string>
     <string name="mesg_versionUpdatedChangelog">Has actualizado TrebleShot, ¿te gustaría ver qué hay de nuevo\?</string>
-    <string name="mesg_noInternetConnection">Esto requiere conexión a Internet.</string>
+    <string name="mesg_noInternetConnection">Esto requiere conexión a Internet</string>
     <string name="text_applyDarkTheme">Modo oscuro</string>
     <string name="butn_allow">Permitir</string>
     <string name="text_listEmptyTransfer">Todas las transferencias aparecen aquí</string>
