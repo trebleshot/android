@@ -88,15 +88,15 @@
     <string name="butn_block">Bloquear</string>
     <string name="text_aboutSummary">Este software é desenvolvido pela Genonbeta Libre Software Org</string>
     <string name="butn_appLaunch">Executar</string>
-    <string name="ques_launchApplication">Deseja inciar este aplicativo\?</string>
-    <string name="mesg_launchApplicationError">Este aplicativo não pôde ser inciado</string>
+    <string name="ques_launchApplication">Deseja iniciar este aplicativo\?</string>
+    <string name="mesg_launchApplicationError">Este aplicativo não pode ser iniciado</string>
     <string name="text_enterText">Digite o texto aqui…</string>
     <string name="mesg_textCopiedToClipboard">Texto copiado para a área de transferência</string>
     <string name="ques_copyToClipboard">Copiar para a área de transferência\?</string>
     <string name="text_textReceived">Texto recebido</string>
     <string name="text_receivedTextSummary">Texto recebido da área de transferência</string>
     <string name="butn_checkForUpdates">Verificar se há uma nova versão</string>
-    <string name="butn_seeSourceCode">Ver o código fonte</string>
+    <string name="butn_seeSourceCode">Ver o código-fonte</string>
     <string name="text_typeText">Escreva algo para enviar…</string>
     <string name="text_textEditor">Editor de texto</string>
     <string name="butn_done">Feito</string>
@@ -182,7 +182,7 @@
     <string name="text_flagResume">Retomados</string>
     <string name="text_unknown">Desconhecidos</string>
     <string name="text_longAgo">Há muito tempo</string>
-    <string name="text_interfaceWifiDirect">WiFi Direct</string>
+    <string name="text_interfaceWifiDirect">Wi-Fi Direto</string>
     <string name="text_interfaceWireless">Wi-Fi</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_interfaceEthernet">Ethernet</string>
@@ -200,7 +200,7 @@
     <string name="text_mediaDirectory">Pasta de mídia</string>
     <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
     <string name="mesg_notEnoughSpace">Espaço insuficiente</string>
-    <string name="text_savePath">Salvar caminho</string>
+    <string name="text_savePath">Caminho onde salvar</string>
     <string name="text_transactionGroupDetails">Detalhes do grupo de transação</string>
     <string name="text_usedConnection">Conexão utilizada</string>
     <string name="text_flagRemoved">Removido</string>
@@ -213,9 +213,9 @@
     <string name="butn_turnTrustZoneOn">Ativar o TrustZone</string>
     <string name="butn_turnTrustZoneOff">Desligar o TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">O TrustZone está ativado ao inciar</string>
+    <string name="text_trustZoneEnabledSummary">O TrustZone está ativado ao iniciar</string>
     <string name="butn_typeNewEntry">Digitar a nova entrada</string>
-    <string name="butn_download">Download</string>
+    <string name="butn_download">Baixar</string>
     <string name="mesg_clipboardUpdateNotice">Revise o texto ou pressione novamente para sair</string>
     <string name="mesg_textSaveNotice">Salve o texto ou pressione novamente para sair</string>
     <string name="butn_update">Atualizar</string>
@@ -298,7 +298,7 @@
     <string name="text_emptySearchResult">Nenhum resultado para \"%s\"</string>
     <string name="mesg_listRefreshSnoozed">A lista será atualizada sempre que disponível</string>
     <string name="mesg_errorReadFolder">Não foi possível acessar \"%s\"</string>
-    <string name="butn_mountDirectory">Pasta de montagem</string>
+    <string name="butn_mountDirectory">Montar pasta</string>
     <string name="mesg_mountDirectoryHelp">Selecione a pasta que você quer acessar</string>
     <string name="butn_ejectDirectory">Desmontar pasta</string>
     <string name="text_movedCacheFiles">Arquivos de cache movidos</string>
@@ -348,7 +348,7 @@
     <string name="text_noDeviceForTransfer">Nenhum dispositivo adicionado para esta transferência</string>
     <string name="text_thirdPartyLibraries">Bibliotecas de terceiros</string>
     <string name="text_killServiceAfterLeavingSummary">Parar a comunicação se não houver tarefa em andamento</string>
-    <string name="text_killServiceAfterLeaving">Deixar o aplicativo interrompe o serviço</string>
+    <string name="text_killServiceAfterLeaving">Deixar o aplicativo interromper o serviço</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_transferStatusFiles">%1d de %2d</string>
     <string name="text_donate">Ajude o desenvolvimento</string>
@@ -448,4 +448,10 @@
     <string name="text_listEmptyConnection">As redes que você conecta aparecem aqui</string>
     <string name="mesg_errorNotAnIpAddress">Não é um endereço IP
 \n(como 192.168.1.2)</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="ques_shareAsApkOrLink">Compartilhar como APK ou link\?</string>
+    <string name="butn_asApk">Como APK</string>
+    <string name="butn_asLink">Como um link</string>
+    <string name="text_linkTrebleshot">Compartilhe arquivos com o TrebleShot!
+\nBaixe aqui: %s</string>
 </resources>

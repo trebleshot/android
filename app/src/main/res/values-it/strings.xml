@@ -458,9 +458,13 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">oppure</string>
     <string name="text_visitWebShareAddress">Usa un browser per aprire questo collegamento</string>
-    <string name="text_webShareInfo">Qui sotto trovi i collegamenti a cui dispositivi della rete possono connettersi con un browser. Bisogna abilitare individualmente la condivisione per ogni trasferimento.</string>
+    <string name="text_webShareInfo">Qui sotto trovi i collegamenti a cui i dispositivi della stessa rete possono connettersi con un browser. Bisogna abilitare individualmente la condivisione web per ogni trasferimento.</string>
     <string name="text_dowloadTrebleshotAndroid">Scarica TrebleShot per Android</string>
     <string name="text_listEmptyConnection">Qui appariranno le reti a cui connettersi</string>
     <string name="mesg_errorNotAnIpAddress">Non è un Indirizzo IP 
-\n(es. \"192.168.1.2\")</string>
+\n(es. 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Condividere come APK o Collegamento\?</string>
+    <string name="butn_asApk">Come APK</string>
+    <string name="butn_asLink">Come Collegamento</string>
+    <string name="text_linkTrebleshot">Condividi file con TrebleShot! Scarica qui: %s</string>
 </resources>

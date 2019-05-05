@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Quer eliminar este ficheiro\?</item>
+        <item quantity="other">Quer eliminar %d ficheiros\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d ficheiro foi recebido</item>
+        <item quantity="other">%d ficheiros foram recebidos</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d ficheiro está selecionado</item>
+        <item quantity="other">%d ficheiros estão selecionados</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">Esta transferência pendente será removida</item>
+        <item quantity="other">%d transferências pendentes serão removidas</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d conexão</item>
+        <item quantity="other">%d conexões</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">Receber este ficheiro\?</item>
+        <item quantity="other">Receber %d ficheiros\?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d ficheiro</item>
+        <item quantity="other">%d ficheiros</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">Um segundo atrás</item>
+        <item quantity="other">%d segundos atrás</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">Um minuto atrás</item>
+        <item quantity="other">%d minutos atrás</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d ficheiro foi eliminado</item>
+        <item quantity="other">%d ficheiros foram eliminados</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Uma linha</item>
+        <item quantity="other">%d linhas</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Uma partilha</item>
+        <item quantity="other">A partilhar com %d dispositivos</item>
+    </plurals>
+</resources>

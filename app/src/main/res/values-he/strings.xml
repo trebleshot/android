@@ -455,4 +455,8 @@
     <string name="text_listEmptyConnection">רשתות שבאפשרותך להתחבר אליהן מופיעות כאן</string>
     <string name="mesg_errorNotAnIpAddress">לא כתובת IP
 \n(כגון 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">לשתף כ־APK או כקישור\?</string>
+    <string name="butn_asApk">כ־APK</string>
+    <string name="butn_asLink">כקישור</string>
+    <string name="text_linkTrebleshot">עם TrebleShot אפשר לשתף קבצים! הורדה מכאן: %s</string>
 </resources>
