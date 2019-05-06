@@ -448,7 +448,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">eller</string>
     <string name="text_visitWebShareAddress">Besök den här länken med din webbläsare</string>
-    <string name="text_webShareInfo">Nedan ser du länkar som enheterna i samma nätverk kan ansluta till en webbläsare. Därefter aktivera individuellt webbdelning för överföringar.</string>
+    <string name="text_webShareInfo">Nedan ser du länkar som enheterna i samma nätverk kan ansluta till med en webbläsare. Därefter aktivera individuellt webbdelning för överföringar.</string>
     <string name="text_dowloadTrebleshotAndroid">Ladda ner TrebleShot för Android</string>
     <string name="text_listEmptyConnection">Nätverk du ansluter till syns här</string>
     <string name="mesg_errorNotAnIpAddress">Inte en IP-address
