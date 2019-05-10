@@ -443,7 +443,7 @@
     <string name="text_transferSharedOnBrowser">Compartilhado no navegador</string>
     <string name="text_or">ou</string>
     <string name="text_visitWebShareAddress">Visite este link com seu navegador</string>
-    <string name="text_webShareInfo">Abaixo você vê os links que os dispositivos na mesma rede podem se conectar com um navegador. Em seguida, ative individualmente o compartilhamento via web para transferências.</string>
+    <string name="text_webShareInfo">Abaixo você vê os links que os dispositivos na mesma rede podem se conectar com um navegador. Em seguida, ative o compartilhamento via web para transferências individualmente.</string>
     <string name="text_dowloadTrebleshotAndroid">Baixe o TrebleShot para Android</string>
     <string name="text_listEmptyConnection">As redes que você conecta aparecem aqui</string>
     <string name="mesg_errorNotAnIpAddress">Não é um endereço IP
