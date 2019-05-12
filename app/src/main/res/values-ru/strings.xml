@@ -211,4 +211,7 @@
     <string name="mesg_locationDisabledSelfHotspot">Включите службу местоположения для просмотра результатов сканирования и создания точки доступа</string>
     <string name="ques_why">Почему\?</string>
     <string name="text_longAgo">Давно</string>
+    <string name="butn_block">Заблокировать</string>
+    <string name="text_notificationChannelHigh">Важные уведомления</string>
+    <string name="text_notificationChannelLow">Уведомления с низким приоритетом</string>
 </resources>
