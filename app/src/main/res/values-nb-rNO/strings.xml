@@ -479,4 +479,10 @@
     <string name="mesg_errorNotAnIpAddress">Ikke en IP-adresse
 \n(som f.eks. 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Del som APK eller lenke\?</string>
+    <string name="mesg_errorNotTrustZoneDevice">Denne enheten må settes som TrustZone-enhet på mottakerenheten for å gjøre dette.</string>
+    <string name="text_webShareNoContentNotice">Bruk \"Del på nettleser\"-valget for å se overføringer her.</string>
+    <string name="butn_shareOnBrowser">Del på nettleser</string>
+    <string name="butn_hideOnBrowser">Skjul på nettleser</string>
+    <string name="text_transferSharedOnBrowser">Delt på nettleser</string>
+    <string name="text_webShareInfo">Nedenfor ser du lenkede enheter på samme nettverk du kan koble til med en nettleser. Deretter slår du på nettdeling for overføringer individuelt.</string>
 </resources>
