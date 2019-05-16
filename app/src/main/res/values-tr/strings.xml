@@ -439,7 +439,7 @@
     <string name="text_webShareInfo">"Aşağıda aynı ağdaki cihazların bir tarayıcıyla bağlanabilecekleri bağlantıları görmektesiniz. Sonrasında, aktarımlar için ağ paylaşımını bireysel olarak etkinleştirin. "</string>
     <string name="text_dowloadTrebleshotAndroid">Android için TrebleShot\'u İndirin</string>
     <string name="text_listEmptyConnection">Bağlandığınız ağlar burada görünür</string>
-    <string name="mesg_errorNotAnIpAddress">Bir IP Adresi değil 
+    <string name="mesg_errorNotAnIpAddress">Bir IP Adresi değil
 \n(192.168.1.2 gibi)</string>
     <string name="ques_shareAsApkOrLink">Bağlantı veya APK olarak\?</string>
     <string name="butn_asApk">APK olrk</string>

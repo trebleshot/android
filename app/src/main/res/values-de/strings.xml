@@ -439,7 +439,26 @@
     <string name="butn_revokePin">PIN zurückziehen</string>
     <string name="const_text_useAppFonts">Empfohlene Schriftart setzen</string>
     <string name="const_text_useAppFontsSummary">Benutze die mitgelieferte angepasste Schriftart</string>
-    <string name="mesg_waiting">Warten...</string>
+    <string name="mesg_waiting">Warten</string>
     <string name="text_amoledOptimizedBlackTheme">Optimiert für AMOLED Bildschirm</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Benutze dunklere Farben</string>
+    <string name="mesg_errorNotTrustZoneDevice">Dieses Gerät muss als TrustZone-Gerät auf dem Empfängergerät eingestellt sein, um diesen Vorgang durchzuführen.</string>
+    <string name="butn_enterIpAddress">IP-Adresse eingeben</string>
+    <string name="butn_webShare">Freigabe über den Browser</string>
+    <string name="text_webShareNoContentNotice">Verwenden Sie die Option \'Im Browser freigeben\', um die Übertragungen hier zu sehen!</string>
+    <string name="butn_shareOnBrowser">Im Browser freigeben</string>
+    <string name="butn_hideOnBrowser">Im Browser ausblenden</string>
+    <string name="text_transferSharedOnBrowser">Im Browser freigegeben</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">oder</string>
+    <string name="text_visitWebShareAddress">Besuchen Sie diesen Link mit Ihrem Browser</string>
+    <string name="text_webShareInfo">Unten sehen Sie Links, die Geräte im gleichen Netzwerk per Browser verbinden können. Als nächstes schalten Sie die Webfreigabe für einzelne Übertragungen ein.</string>
+    <string name="text_dowloadTrebleshotAndroid">TrebleShot für Android herunterladen</string>
+    <string name="text_listEmptyConnection">Netzwerke, die Sie verbinden, erscheinen hier</string>
+    <string name="mesg_errorNotAnIpAddress">Keine IP-Adresse
+\n(wie 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Als APK oder Link freigeben\?</string>
+    <string name="butn_asApk">Als APK</string>
+    <string name="butn_asLink">Als Link</string>
+    <string name="text_linkTrebleshot">Geben Sie Dateien mit TrebleShot frei! Hier können Sie es herunterladen: %s</string>
 </resources>
