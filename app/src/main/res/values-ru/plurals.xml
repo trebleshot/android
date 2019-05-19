@@ -54,4 +54,14 @@
         <item quantity="few">%d файла удалено</item>
         <item quantity="many">%d файлов удалено</item>
     </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Один ряд</item>
+        <item quantity="few"></item>
+        <item quantity="many">%d рядов</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Поделиться с одним устройством</item>
+        <item quantity="few">Поделиться с %d устройствами</item>
+        <item quantity="many">Поделиться с %d устройствами</item>
+    </plurals>
 </resources>
