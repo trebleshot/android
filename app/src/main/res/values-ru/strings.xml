@@ -129,7 +129,7 @@
     <string name="butn_connectionList">Соединения</string>
     <string name="text_storagePath">Путь к хранилищу</string>
     <string name="ques_allowDeviceToConnect">Позволить этому устройству соединиться\?</string>
-    <string name="text_useSoundsSummary">Использовать звуки</string>
+    <string name="text_useSoundsSummary">Включить звуки</string>
     <string name="text_autoStartSummary">Запустить связь, когда обнаружено соединение</string>
     <string name="butn_checkForUpdates">Проверить обновления</string>
     <string name="text_typeText">Напишите что-нибудь, чтобы отправить…</string>
@@ -441,4 +441,11 @@
     <string name="butn_asApk">Как APK</string>
     <string name="butn_asLink">Как ссылка</string>
     <string name="text_linkTrebleshot">Делитесь файлами с TrebleShot! Скачать здесь: %s</string>
+    <string name="text_autoScanDevicesSummary">Сканировать устройства, когда это необходимо</string>
+    <string name="mesg_stillScanning">Продолжать сканировать</string>
+    <string name="text_connectionPermission">Разрешение на соединение</string>
+    <string name="mesg_pathSameError">Вы не можете выбрать прошлую папку</string>
+    <string name="mesg_textShareLimit">Только одно сообщение может быть передано за раз</string>
+    <string name="text_previewAndEditList">Предпросмотр и редактирование</string>
+    <string name="text_fileRoot">Корень файловой системы</string>
 </resources>
