@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="text_navigationDrawerOpen">নেভিগেশন ড্রয়ার খোল</string>n
+    <string name="text_navigationDrawerClose">নেভিগেশন ড্রয়ার বন্ধ করো</string>
+    <string name="text_preferences">পছন্দসমূহ</string>
+</resources>
