@@ -3,4 +3,14 @@
     <string name="text_navigationDrawerOpen">নেভিগেশন ড্রয়ার খোল</string>n
     <string name="text_navigationDrawerClose">নেভিগেশন ড্রয়ার বন্ধ করো</string>
     <string name="text_preferences">পছন্দসমূহ</string>
+    <string name="mesg_connectionFailure">সংযোগ ব্যর্থ হল</string>
+    <string name="mesg_noNetwork">নিকটবর্তী ডিভাইস খোঁজার জন্য কোনো সংযোগ যেমন: ওয়াই-ফাই নেই</string>
+    <string name="mesg_scanningDevices">নিকটবর্তী ডিভাইস খোঁজা হচ্ছে</string>
+    <string name="ques_receiveFile">ফাইলটি গ্রহণ করবেন\?</string>
+    <string name="butn_accept">গ্রহণ করো</string>
+    <string name="butn_reject">বাতিল</string>
+    <string name="butn_stop">থামাও</string>
+    <string name="text_sending">পাঠানো হচ্ছে</string>
+    <string name="butn_cancelSending">পাঠানো বাতিল করো</string>
+    <string name="text_receiving">গ্রহণ করা হচ্ছে</string>
 </resources>
