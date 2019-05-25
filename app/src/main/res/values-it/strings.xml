@@ -106,7 +106,7 @@
     <string name="text_textEditor">Editor di Testo</string>
     <string name="butn_done">Fatto</string>
     <string name="text_empty">(vuoto)</string>
-    <string name="text_textStream">Flusso di testo</string>
+    <string name="text_textStream">Flusso di Testo</string>
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">Trasferimenti in attesa</string>
     <string name="text_stopping">Arresto!</string>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">এই ফাইল মুছতে চান\?</item>
+        <item quantity="other">%dটি ফাইল মুছতে চান\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%dটি ফাইল গ্রহণ করা হয়েছে</item>
+        <item quantity="other">%dটি ফাইল গ্রহণ করা হয়েছে</item>
+    </plurals>
+</resources>
