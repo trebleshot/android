@@ -13,4 +13,7 @@
     <string name="text_sending">পাঠানো হচ্ছে</string>
     <string name="butn_cancelSending">পাঠানো বাতিল করো</string>
     <string name="text_receiving">গ্রহণ করা হচ্ছে</string>
+    <string name="butn_cancelReceiving">গ্রহণ বাতিল করুন</string>
+    <string name="mesg_fileReceived">% s প্রাপ্ত হয়েছে</string>
+    <string name="butn_scan">স্ক্যান</string>
 </resources>
