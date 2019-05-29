@@ -35,6 +35,12 @@
             box-shadow: 0 0 5px #ddd;
         }
 
+        .file_upload_container {
+            border-top: 1px solid #ddd;
+            text-align: center;
+            padding: 5px;
+        }
+
         footer {
             border-top: 1px solid #ddd;
             text-align: center;
@@ -133,6 +139,12 @@
         ${main_content}
     </div>
 
+    <div class="file_upload_container">
+        <form action="#" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" >
+            <input type="submit" value="Send">
+        </form>
+    </div>
     <footer>
         ${footer_text}
     </footer>

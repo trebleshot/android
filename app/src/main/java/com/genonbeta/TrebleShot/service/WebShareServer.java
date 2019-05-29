@@ -1,19 +1,35 @@
 package com.genonbeta.TrebleShot.service;
 
+import android.app.PendingIntent;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.net.Uri;
+import android.text.Html;
+import android.util.Log;
 
+import com.genonbeta.CoolSocket.CoolTransfer;
+import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
+import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.NotificationUtils;
+import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
+import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -21,6 +37,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +48,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import androidx.annotation.StringRes;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
+
 import fi.iki.elonen.NanoHTTPD;
 
 /**
@@ -40,6 +60,8 @@ import fi.iki.elonen.NanoHTTPD;
 public class WebShareServer extends NanoHTTPD
 {
     private AssetManager mAssetManager;
+    private NotificationUtils mNotificationUtils;
+    private CommunicationNotificationHelper mComNotifications;
     private Context mContext;
 
     public WebShareServer(Context context, int port) throws IOException
@@ -47,6 +69,9 @@ public class WebShareServer extends NanoHTTPD
         super(port);
         mContext = context;
         mAssetManager = context.getAssets();
+        mNotificationUtils = new NotificationUtils(context, AppUtils.getDatabase(context),
+                AppUtils.getDefaultPreferences(context));
+        mComNotifications = new CommunicationNotificationHelper(mNotificationUtils);
     }
 
     @Override
@@ -54,10 +79,26 @@ public class WebShareServer extends NanoHTTPD
     {
         Map<String, String> files = new HashMap<>();
         NanoHTTPD.Method method = session.getMethod();
+        long receiveTimeElapsed = System.currentTimeMillis();
+        long notificationId = AppUtils.getUniqueNumber();
+        DynamicNotification notification = null;
+
+        ZipUtils
 
         if (NanoHTTPD.Method.PUT.equals(method) || NanoHTTPD.Method.POST.equals(method)) {
             try {
+                notification = mNotificationUtils.buildDynamicNotification(
+                        notificationId, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+
+                notification.setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setContentInfo(mContext.getString(R.string.text_webShare))
+                        .setContentTitle(mContext.getString(R.string.text_receiving))
+                        .setContentText(session.getHeaders().get("http-client-ip"));
+
+                notification.show();
+
                 session.parseBody(files);
+                receiveTimeElapsed = System.currentTimeMillis() - receiveTimeElapsed;
             } catch (IOException var5) {
                 return newFixedLengthResponse(NanoHTTPD.Response.Status.INTERNAL_ERROR,
                         "text/plain", "SERVER INTERNAL ERROR: IOException: "
@@ -68,8 +109,116 @@ public class WebShareServer extends NanoHTTPD
             }
         }
 
+        if (notification != null && session.getParms().containsKey("file")) {
+            final String fileName = session.getParms().get("file");
+            final String filePath = files.get("file");
+
+            if (fileName == null || filePath == null)
+                return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
+                        makePage("arrow-left.svg", R.string.text_send,
+                                makeNotFoundTemplate(R.string.mesg_somethingWentWrong,
+                                        R.string.mesg_fileSendError)));
+            else {
+                File file = new File(filePath);
+                DocumentFile savePath = FileUtils.getApplicationDirectory(mContext);
+                Interrupter interrupter = new Interrupter();
+                DocumentFile sourceFile = DocumentFile.fromFile(file);
+                DocumentFile destFile = savePath.createFile(null,
+                        FileUtils.getUniqueFileName(savePath, fileName, true));
+
+                {
+                    notification.setSmallIcon(R.drawable.ic_compare_arrows_white_24dp_static)
+                            .setContentInfo(mContext.getString(R.string.text_webShare))
+                            .setContentTitle(mContext.getString(R.string.text_preparingFiles))
+                            .setContentText(fileName);
+
+                    notification.show();
+
+                    try {
+                        ContentResolver resolver = mContext.getContentResolver();
+
+                        InputStream inputStream = resolver.openInputStream(sourceFile.getUri());
+                        OutputStream outputStream = resolver.openOutputStream(destFile.getUri());
+
+                        if (inputStream == null || outputStream == null)
+                            throw new IOException("Failed to open streams to start copying");
+
+                        byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+                        int len = 0;
+                        long lastRead = System.currentTimeMillis();
+                        long lastNotified = 0;
+                        long totalRead = 0;
+
+                        while (len != -1) {
+                            if ((len = inputStream.read(buffer)) > 0) {
+                                outputStream.write(buffer, 0, len);
+                                outputStream.flush();
+                                lastRead = System.currentTimeMillis();
+                                totalRead += len;
+                            }
+
+                            if (sourceFile.length() > 0 && totalRead > 0
+                                    && System.currentTimeMillis() - lastNotified > AppConfig.DEFAULT_NOTIFICATION_DELAY) {
+                                notification.updateProgress(100,
+                                        (int) ((totalRead / sourceFile.length()) * 100), false);
+                                lastNotified = System.currentTimeMillis();
+                            }
+
+                            if ((System.currentTimeMillis() - lastRead) > AppConfig.DEFAULT_SOCKET_TIMEOUT
+                                    || interrupter.interrupted())
+                                throw new Exception("Timed out or interrupted. Exiting!");
+                        }
+
+                        outputStream.close();
+                        inputStream.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Log.d(WebShareServer.class.getSimpleName(), "Others to done");
+
+                try {
+                    destFile.sync();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (destFile.length() == file.length() || file.length() == 0)
+                    try {
+                        notification = mNotificationUtils.buildDynamicNotification(
+                                notificationId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                        notification
+                                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                .setContentInfo(mContext.getString(R.string.text_webShare))
+                                .setAutoCancel(true)
+                                .setContentTitle(fileName)
+                                .setDefaults(mNotificationUtils.getNotificationSettings())
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setContentText(mContext.getString(R.string.text_receivedTransfer,
+                                        FileUtils.sizeExpression(destFile.length(), false),
+                                        TimeUtils.getFriendlyElapsedTime(mContext, receiveTimeElapsed)))
+                                .addAction(R.drawable.ic_folder_white_24dp_static,
+                                        mContext.getString(R.string.butn_showFiles),
+                                        PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, FileExplorerActivity.class)
+                                                .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
+
+                        try {
+                            Intent openIntent = FileUtils.getOpenIntent(mContext, destFile);
+                            notification.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), openIntent, 0));
+                        } catch (Exception e) {
+                        }
+
+                        notification.show();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+            }
+        }
+
         if ("/kill".equals(session.getUri()))
-            stop();
+            AppUtils.startForegroundService(mContext, new Intent(mContext,
+                    CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE));
 
         String[] args = new String[]{};
 
@@ -104,6 +253,7 @@ public class WebShareServer extends NanoHTTPD
                     e.toString());
         }
     }
+
 
     private Response serveAPK()
     {

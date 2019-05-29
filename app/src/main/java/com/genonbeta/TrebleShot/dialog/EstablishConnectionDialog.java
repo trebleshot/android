@@ -1,4 +1,4 @@
-package com.genonbeta.TrebleShot.adapter;
+package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
 import android.content.DialogInterface;

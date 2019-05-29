@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="conf_packageName" translatable="false">com.genonbeta.TrebleShot</string>
-    <string name="conf_licence" translatable="false">
+    <string name="conf_licence" translatable="false" formatted="false">
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 2 of the License, or
@@ -9,9 +9,9 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License
-    along with this program.  If not, see <![CDATA[<https://www.gnu.org/licenses/>]]>.
+    along with this program.  If not, see &lt;https://www.gnu.org/licenses/&gt;.
     \n\nThis program uses a modified version of Ubuntu Font Family under the terms of Ubuntu Font License.
-    For the license, see <![CDATA[<https://www.ubuntu.com/legal/font-licence>]]>.
-    For the modified version, visit <![CDATA[<https://github.com/velitasali/UbuntuFontForAndroid>]]>.
+    For the license, see &lt;https://www.ubuntu.com/legal/font-licence&gt;.
+    For the modified version, visit &lt;https://github.com/velitasali/UbuntuFontForAndroid&gt;
     </string>
 </resources>

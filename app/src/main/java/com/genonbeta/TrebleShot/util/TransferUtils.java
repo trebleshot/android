@@ -13,7 +13,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.adapter.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.Keyword;
