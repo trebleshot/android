@@ -31,21 +31,37 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import androidx.annotation.StringRes;
 import androidx.core.app.NotificationCompat;
@@ -61,7 +77,6 @@ public class WebShareServer extends NanoHTTPD
 {
     private AssetManager mAssetManager;
     private NotificationUtils mNotificationUtils;
-    private CommunicationNotificationHelper mComNotifications;
     private Context mContext;
 
     public WebShareServer(Context context, int port) throws IOException
@@ -71,7 +86,6 @@ public class WebShareServer extends NanoHTTPD
         mAssetManager = context.getAssets();
         mNotificationUtils = new NotificationUtils(context, AppUtils.getDatabase(context),
                 AppUtils.getDefaultPreferences(context));
-        mComNotifications = new CommunicationNotificationHelper(mNotificationUtils);
     }
 
     @Override
@@ -82,8 +96,6 @@ public class WebShareServer extends NanoHTTPD
         long receiveTimeElapsed = System.currentTimeMillis();
         long notificationId = AppUtils.getUniqueNumber();
         DynamicNotification notification = null;
-
-        ZipUtils
 
         if (NanoHTTPD.Method.PUT.equals(method) || NanoHTTPD.Method.POST.equals(method)) {
             try {
@@ -229,6 +241,7 @@ public class WebShareServer extends NanoHTTPD
         try {
             switch (args.length >= 1 ? args[0] : "") {
                 case "download":
+                case "download-zip":
                     return serveFileDownload(args, session);
                 case "image":
                     return serveFile(args);
@@ -292,40 +305,64 @@ public class WebShareServer extends NanoHTTPD
     private Response serveFileDownload(String[] args, IHTTPSession session)
     {
         try {
-            if (args.length < 3)
-                throw new Exception("Expected 3 args, " + args.length + " given");
+            if ("download".equals(args[0])) {
+                if (args.length < 3)
+                    throw new Exception("Expected 3 args, " + args.length + " given");
 
-            TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-            TransferObject object = new TransferObject(Long.parseLong(args[2]), null,
-                    TransferObject.Type.OUTGOING);
+                TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
+                TransferObject object = new TransferObject(Long.parseLong(args[2]), null,
+                        TransferObject.Type.OUTGOING);
 
-            AppUtils.getDatabase(mContext).reconstruct(group);
-            AppUtils.getDatabase(mContext).reconstruct(object);
+                AppUtils.getDatabase(mContext).reconstruct(group);
+                AppUtils.getDatabase(mContext).reconstruct(object);
 
-            if (!group.isServedOnWeb)
-                throw new Exception("The group is not checked as served on the Web");
+                if (!group.isServedOnWeb)
+                    throw new Exception("The group is not checked as served on the Web");
 
-            StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(
-                    object.file));
+                StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(
+                        object.file));
 
-            InputStream stream = streamInfo.openInputStream();
+                InputStream stream = streamInfo.openInputStream();
 
-            {
-                String positionString = session.getHeaders().get("Accept-Ranges");
+                {
+                    String positionString = session.getHeaders().get("Accept-Ranges");
 
-                if (positionString != null)
-                    try {
-                        long position = Long.parseLong(positionString);
+                    if (positionString != null)
+                        try {
+                            long position = Long.parseLong(positionString);
 
-                        if (position < streamInfo.size)
-                            stream.skip(position);
-                    } catch (Exception e) {
-                        // do nothing, formatting issue.
-                    }
+                            if (position < streamInfo.size)
+                                stream.skip(position);
+                        } catch (Exception e) {
+                            // do nothing, formatting issue.
+                        }
+                }
+
+                return newFixedLengthResponse(Response.Status.ACCEPTED, "application/force-download",
+                        stream, streamInfo.size);
+            } else if ("download-zip".equals(args[0])) {
+                if (args.length < 2)
+                    throw new Exception("Expected 2 args, " + args.length + " given");
+
+                TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
+                AppUtils.getDatabase(mContext).reconstruct(group);
+
+                if (!group.isServedOnWeb)
+                    throw new Exception("The group is not checked as served on the Web");
+
+                List<TransferObject> transferList = AppUtils.getDatabase(mContext)
+                        .castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                                        String.valueOf(group.groupId),
+                                        TransferObject.Type.OUTGOING.toString()), TransferObject.class);
+
+                if (transferList.size() < 1)
+                    throw new Exception("No files to send");
+
+                return new ZipBundleResponse(Response.Status.ACCEPTED, "application/force-download",
+                        transferList);
             }
-
-            return newFixedLengthResponse(Response.Status.ACCEPTED, "application/force-download",
-                    stream, streamInfo.size);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -390,11 +427,18 @@ public class WebShareServer extends NanoHTTPD
                             .setOrderBy(AccessDatabase.FIELD_TRANSFER_NAME + " ASC"),
                     TransferObject.class);
 
-            for (TransferObject object : groupList)
+            if (groupList.size() > 0) {
                 contentBuilder.append(makeContent("list_transfer",
-                        object.friendlyName + " " + FileUtils.sizeExpression(object.fileSize,
-                                false), R.string.butn_download, "download", object.groupId,
-                        object.requestId, object.friendlyName));
+                        mContext.getString(R.string.butn_downloadAllAsZip), R.string.butn_download, "download-zip", group.groupId,
+                        mContext.getResources().getQuantityString(R.plurals.text_files,
+                                groupList.size(), groupList.size()) + ".zip"));
+
+                for (TransferObject object : groupList)
+                    contentBuilder.append(makeContent("list_transfer",
+                            object.friendlyName + " " + FileUtils.sizeExpression(object.fileSize,
+                                    false), R.string.butn_download, "download", object.groupId,
+                            object.requestId, object.friendlyName));
+            }
 
             return makePage("arrow-left.svg", R.string.text_files, contentBuilder.toString());
         } catch (Exception e) {
@@ -410,7 +454,7 @@ public class WebShareServer extends NanoHTTPD
     {
         Map<String, String> values = new HashMap<>();
         values.put("help_title", mContext.getString(R.string.text_help));
-        values.put("licence_text", mContext.getString(R.string.conf_licence));
+        values.put("licence_text", Tools.escapeHtml(mContext.getString(R.string.conf_licence)));
 
         try {
             PackageManager pm = mContext.getPackageManager();
@@ -559,6 +603,281 @@ public class WebShareServer extends NanoHTTPD
         {
             executorService.submit(clientHandler);
             this.running.add(clientHandler);
+        }
+    }
+
+    /**
+     * Most of the members of the parent {@link fi.iki.elonen.NanoHTTPD.Response}
+     * class had private access, which made impossible to create concurrent zip streams.
+     * The biggest problem is that {@link fi.iki.elonen.NanoHTTPD.Response} is not an interface, but
+     * a class.
+     */
+    protected class ZipBundleResponse extends NanoHTTPD.Response
+    {
+        private class ChunkedOutputStream extends FilterOutputStream
+        {
+
+            public ChunkedOutputStream(OutputStream out)
+            {
+                super(out);
+            }
+
+            @Override
+            public void write(int b) throws IOException
+            {
+                byte[] data = {
+                        (byte) b
+                };
+                write(data, 0, 1);
+            }
+
+            @Override
+            public void write(byte[] b) throws IOException
+            {
+                write(b, 0, b.length);
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException
+            {
+                if (len == 0)
+                    return;
+                out.write(String.format("%x\r\n", len).getBytes());
+                out.write(b, off, len);
+                out.write("\r\n".getBytes());
+            }
+
+            public void finish() throws IOException
+            {
+                out.write("0\r\n\r\n".getBytes());
+            }
+
+        }
+
+        private List<TransferObject> mFiles;
+
+        private IStatus mStatus;
+
+        private String mMimeType;
+
+        private InputStream mData;
+
+        private final Map<String, String> mHeader = new HashMap<>();
+
+        private Method mRequestMethod;
+
+        private boolean mEncodeAsGzip;
+
+        private boolean mKeepAlive;
+
+        protected ZipBundleResponse(IStatus status, String mimeType, List<TransferObject> files)
+        {
+            super(status, mimeType, new InputStream()
+            {
+                @Override
+                public int read() throws IOException
+                {
+                    return -1;
+                }
+            }, -1);
+
+            mStatus = status;
+            mMimeType = mimeType;
+            mFiles = files;
+            mKeepAlive = true;
+        }
+
+        public void addHeader(String name, String value)
+        {
+            mHeader.put(name, value);
+        }
+
+        @Override
+        public String getMimeType()
+        {
+            return mMimeType;
+        }
+
+        @Override
+        public Method getRequestMethod()
+        {
+            return mRequestMethod;
+        }
+
+        @Override
+        public IStatus getStatus()
+        {
+            return mStatus;
+        }
+
+        @Override
+        public void setGzipEncoding(boolean encodeAsGzip)
+        {
+            mEncodeAsGzip = encodeAsGzip;
+        }
+
+        @Override
+        public void setKeepAlive(boolean useKeepAlive)
+        {
+            mKeepAlive = useKeepAlive;
+        }
+
+        @Override
+        public void setMimeType(String mimeType)
+        {
+            mMimeType = mimeType;
+        }
+
+        @Override
+        public void setRequestMethod(Method requestMethod)
+        {
+            mRequestMethod = requestMethod;
+        }
+
+        @Override
+        public void setStatus(IStatus status)
+        {
+            mStatus = status;
+        }
+
+        @Override
+        protected void send(OutputStream outputStream)
+        {
+            String mime = this.getMimeType();
+            SimpleDateFormat gmtFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+            gmtFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+            try {
+                if (this.getStatus() == null)
+                    throw new Error("sendResponse(): Status can't be null.");
+
+                PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(outputStream, "UTF-8")), false);
+                pw.print("HTTP/1.1 " + this.getStatus().getDescription() + " \r\n");
+
+                if (mime != null)
+                    pw.print("Content-Type: " + mime + "\r\n");
+
+                if (this.getHeader("Date") == null)
+                    pw.print("Date: " + gmtFormat.format(new Date()) + "\r\n");
+
+                for (String key : mHeader.keySet()) {
+                    String value = mHeader.get(key);
+                    pw.print(key + ": " + value + "\r\n");
+                }
+
+                if (!headerAlreadySent(mHeader, "connection"))
+                    pw.print("Connection: " + (mKeepAlive ? "keep-alive" : "close") + "\r\n");
+
+                if (mRequestMethod != Method.HEAD)
+                    pw.print("Transfer-Encoding: chunked\r\n");
+
+                pw.print("\r\n");
+                pw.flush();
+                sendBody(outputStream);
+                outputStream.flush();
+            } catch (IOException ioe) {
+                Log.d(WebShareServer.class.getSimpleName(), "Could not send response to the client", ioe);
+            }
+        }
+
+        private void sendBody(OutputStream outputStream) throws IOException
+        {
+            int bufferSize = 16 * 1024;
+            byte[] buffer = new byte[bufferSize];
+
+            ChunkedOutputStream chunkedOutputStream = new ChunkedOutputStream(outputStream);
+            ZipOutputStream zipOutputStream = new ZipOutputStream(chunkedOutputStream);
+            zipOutputStream.setLevel(0);
+            //zipOutputStream.setMethod(ZipEntry.STORED);
+
+            for (TransferObject object : mFiles) {
+                try {
+                    StreamInfo streamInfo = StreamInfo.getStreamInfo(mContext, Uri.parse(object.file));
+                    InputStream inputStream = streamInfo.openInputStream();
+
+                    ZipEntry thisEntry = new ZipEntry((object.directory != null
+                            ? object.directory + File.pathSeparator : "") + object.friendlyName);
+
+                    thisEntry.setTime(object.getComparableDate());
+
+                    zipOutputStream.putNextEntry(thisEntry);
+
+                    int len;
+                    while ((len = inputStream.read(buffer, 0, bufferSize)) != -1) {
+                        if (len > 0) {
+                            zipOutputStream.write(buffer, 0, len);
+                            zipOutputStream.flush();
+                        }
+                    }
+
+                    zipOutputStream.closeEntry();
+                    inputStream.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            zipOutputStream.finish();
+            zipOutputStream.flush();
+            chunkedOutputStream.finish();
+            zipOutputStream.close();
+        }
+    }
+
+    private static boolean headerAlreadySent(Map<String, String> header, String name)
+    {
+        boolean alreadySent = false;
+        for (String headerName : header.keySet())
+            alreadySent |= headerName.equalsIgnoreCase(name);
+        return alreadySent;
+    }
+
+    /**
+     * A backport for {@link Html}
+     */
+    public static class Tools
+    {
+        public static String escapeHtml(CharSequence text)
+        {
+            StringBuilder out = new StringBuilder();
+            withinStyle(out, text, 0, text.length());
+            return out.toString();
+        }
+
+        private static void withinStyle(StringBuilder out, CharSequence text,
+                                        int start, int end)
+        {
+            for (int i = start; i < end; i++) {
+                char c = text.charAt(i);
+
+                if (c == '<') {
+                    out.append("&lt;");
+                } else if (c == '>') {
+                    out.append("&gt;");
+                } else if (c == '&') {
+                    out.append("&amp;");
+                } else if (c >= 0xD800 && c <= 0xDFFF) {
+                    if (c < 0xDC00 && i + 1 < end) {
+                        char d = text.charAt(i + 1);
+                        if (d >= 0xDC00 && d <= 0xDFFF) {
+                            i++;
+                            int codepoint = 0x010000 | (int) c - 0xD800 << 10 | (int) d - 0xDC00;
+                            out.append("&#").append(codepoint).append(";");
+                        }
+                    }
+                } else if (c > 0x7E || c < ' ') {
+                    out.append("&#").append((int) c).append(";");
+                } else if (c == ' ') {
+                    while (i + 1 < end && text.charAt(i + 1) == ' ') {
+                        out.append("&nbsp;");
+                        i++;
+                    }
+
+                    out.append(' ');
+                } else {
+                    out.append(c);
+                }
+            }
         }
     }
 }
