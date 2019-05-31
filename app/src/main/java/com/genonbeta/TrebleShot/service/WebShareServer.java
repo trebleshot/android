@@ -225,6 +225,8 @@ public class WebShareServer extends NanoHTTPD
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                else
+                    notification.cancel();
             }
         }
 
@@ -610,7 +612,7 @@ public class WebShareServer extends NanoHTTPD
      * Most of the members of the parent {@link fi.iki.elonen.NanoHTTPD.Response}
      * class had private access, which made impossible to create concurrent zip streams.
      * The biggest problem is that {@link fi.iki.elonen.NanoHTTPD.Response} is not an interface, but
-     * a class.
+     * a class. To overcome these issues, I created a wrapper that imitates the similar behaviour.
      */
     protected class ZipBundleResponse extends NanoHTTPD.Response
     {

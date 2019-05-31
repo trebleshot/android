@@ -1,1 +1,3 @@
 NEW: Support for Russian language
+NEW: Download all files as a ZIP file (Share on Browser)
+NEW: Send files with (Share on Browser)
