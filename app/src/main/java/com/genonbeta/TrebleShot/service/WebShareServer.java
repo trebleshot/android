@@ -125,12 +125,13 @@ public class WebShareServer extends NanoHTTPD
             final String fileName = session.getParms().get("file");
             final String filePath = files.get("file");
 
-            if (fileName == null || filePath == null)
+            if (fileName == null || filePath == null || fileName.length() < 1) {
+                notification.cancel();
                 return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
                         makePage("arrow-left.svg", R.string.text_send,
                                 makeNotFoundTemplate(R.string.mesg_somethingWentWrong,
-                                        R.string.mesg_fileSendError)));
-            else {
+                                        R.string.text_listEmptyFiles)));
+            } else {
                 File file = new File(filePath);
                 DocumentFile savePath = FileUtils.getApplicationDirectory(mContext);
                 Interrupter interrupter = new Interrupter();
@@ -187,8 +188,6 @@ public class WebShareServer extends NanoHTTPD
                         e.printStackTrace();
                     }
                 }
-
-                Log.d(WebShareServer.class.getSimpleName(), "Others to done");
 
                 try {
                     destFile.sync();
