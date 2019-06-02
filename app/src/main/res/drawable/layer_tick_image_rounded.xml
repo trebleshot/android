@@ -12,7 +12,7 @@
     <item android:gravity="center">
         <bitmap
             android:gravity="center"
-            android:src="@drawable/ic_check_black_24dp_static" />
+            android:src="@drawable/ic_check_white_24dp_static" />
         <!-- app compat src definition is not available here, there is a separate png icons
         for this reason-->
     </item>

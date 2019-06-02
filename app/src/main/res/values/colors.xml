@@ -34,7 +34,7 @@
     <color name="dark_colorOnSecondary">@color/dark_colorControlNormal</color>
     <color name="dark_colorPrimary">#263238</color>
     <color name="dark_colorPrimaryDark">@color/dark_colorPrimary</color>
-    <color name="dark_colorSecondary">#36bf6f</color>
+    <color name="dark_colorSecondary">#66bb6a</color>
 
     <color name="dark_colorSurface">#37474f</color>
     <color name="dark_windowBackground">@color/dark_colorPrimary</color>

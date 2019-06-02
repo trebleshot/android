@@ -19,6 +19,7 @@
         <item name="colorSecondary">@color/colorSecondary</item>
         <item name="colorSurface">@color/colorSurface</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
+        <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>
         <item name="materialButtonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>
@@ -89,6 +90,7 @@
         <item name="colorSecondary">@color/dark_colorSecondary</item>
         <item name="colorSurface">@color/dark_colorSurface</item>
         <item name="dialogTheme">@style/Widget.TrebleShot.DialogTheme</item>
+        <item name="floatingActionButtonStyle">@style/Widget.TrebleShot.FloatingActionButtonStyle</item>
         <item name="materialButtonStyle">@style/Widget.TrebleShot.ButtonStyle</item>
         <item name="navigationViewStyle">@style/Widget.TrebleShot.NavigationView</item>
         <item name="android:popupMenuStyle">@style/Widget.TrebleShot.PopupMenuStyle</item>

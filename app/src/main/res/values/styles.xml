@@ -25,7 +25,6 @@
         <item name="colorPrimaryDark23">@color/black_dominant</item>
         <item name="colorSurface">@color/black_surface</item>
         <item name="android:windowBackground">@color/black_dominant</item>
-
         <item name="colorDivider">@color/black_surface</item>
     </style>
 
@@ -39,6 +38,10 @@
     <style name="Widget.TrebleShot.PopupTheme" parent="ThemeOverlay.MaterialComponents">
         <!--<item name="android:background">?cardBackgroundColor</item>-->
         <!-- Later handle this -->
+    </style>
+
+    <style name="Widget.TrebleShot.FloatingActionButtonStyle" parent="@style/Widget.MaterialComponents.FloatingActionButton">
+        <item name="tint">@android:color/white</item>
     </style>
 
     <style name="Widget.TrebleShot.ButtonStyle.TextButton" parent="@style/Widget.MaterialComponents.Button.TextButton">
@@ -235,7 +238,7 @@
         <item name="android:background">?rippleBackground</item>
         <item name="android:cropToPadding">true</item>
         <item name="srcCompat">@drawable/ic_trebleshot_white_24dp_static</item>
-        <item name="tint">?colorAccent</item>
+        <item name="tint">@android:color/white</item>
     </style>
 
     <style name="CustomListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">

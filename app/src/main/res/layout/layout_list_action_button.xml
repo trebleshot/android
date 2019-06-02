@@ -24,6 +24,6 @@
         android:layout_toStartOf="@id/text"
         android:layout_toLeftOf="@id/text"
         android:visibility="gone"
-        app:tint="?colorAccent" />
+        app:tint="?colorSecondary" />
 
 </RelativeLayout>

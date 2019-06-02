@@ -22,8 +22,8 @@ public class ProfileEditorDialog extends AlertDialog.Builder
         super(activity);
 
         final View view = LayoutInflater.from(activity).inflate(R.layout.layout_profile_editor, null, false);
-        final ImageView image = view.findViewById(R.id.image);
-        final ImageView editImage = view.findViewById(R.id.editImage);
+        final ImageView image = view.findViewById(R.id.layout_profile_picture_image_default);
+        final ImageView editImage = view.findViewById(R.id.layout_profile_picture_image_preferred);
         final EditText editText = view.findViewById(R.id.editText);
         final String deviceName = AppUtils.getLocalDeviceName(getContext());
 

@@ -32,7 +32,7 @@
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
             app:srcCompat="@drawable/ic_folder_white_24dp"
-            app:tint="?colorAccent" />
+            app:tint="?colorSecondary" />
 
         <include
             layout="@layout/generic_view_selection_rounded"

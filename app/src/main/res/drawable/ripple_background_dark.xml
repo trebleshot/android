@@ -5,6 +5,6 @@
     android:innerRadiusRatio="2.5"
     android:useLevel="false">
 
-    <solid android:color="@color/dark_colorControlNormal" />
+    <solid android:color="@color/colorSecondary" />
 
 </shape>

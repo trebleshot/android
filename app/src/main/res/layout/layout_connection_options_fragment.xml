@@ -58,7 +58,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_help_circle_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"
@@ -85,7 +85,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_wifi_tethering_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"
@@ -112,7 +112,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_wifi_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"
@@ -139,7 +139,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_qrcode_scan_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"
@@ -166,7 +166,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_ip_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"
@@ -194,7 +194,7 @@
                         android:layout_marginEnd="30dp"
                         android:layout_marginRight="30dp"
                         app:srcCompat="@drawable/ic_devices_white_24dp"
-                        app:tint="?colorAccent" />
+                        app:tint="?colorSecondary" />
 
                     <TextView
                         style="@style/TextAppearance.Primary.SingleLine"

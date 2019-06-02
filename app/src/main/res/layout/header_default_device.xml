@@ -4,37 +4,12 @@
     android:id="@+id/header_default_device_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:orientation="vertical"
     android:layout_marginTop="60dp"
-    android:layout_marginBottom="15dp">
+    android:layout_marginBottom="15dp"
+    android:gravity="center"
+    android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="@dimen/icon_size_list_big"
-        android:layout_height="@dimen/icon_size_list_big"
-        android:layout_marginBottom="15dp">
-
-        <ImageView
-            android:id="@+id/header_default_device_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/header_default_device_edit_image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?roundSelector" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end|bottom"
-            android:background="?rippleBackground"
-            android:padding="3dp"
-            app:srcCompat="@drawable/ic_edit_white_24dp"
-            app:tint="?colorSecondary" />
-
-    </FrameLayout>
+    <include layout="@layout/include_layout_profile_picture" />
 
     <TextView
         android:id="@+id/header_default_device_name_text"

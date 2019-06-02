@@ -1,39 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="50dp">
 
-    <FrameLayout
-        android:layout_width="@dimen/icon_size_list_big"
-        android:layout_height="@dimen/icon_size_list_big"
-        android:layout_marginTop="50dp"
-        android:layout_marginBottom="15dp">
-
-        <ImageView
-            android:id="@+id/image"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/editImage"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="?roundSelector" />
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end|bottom"
-            android:background="?rippleBackground"
-            android:padding="3dp"
-            app:srcCompat="@drawable/ic_edit_white_24dp"
-            app:tint="?colorSecondary" />
-
-    </FrameLayout>
+    <include layout="@layout/include_layout_profile_picture" />
 
     <EditText
         android:id="@+id/editText"

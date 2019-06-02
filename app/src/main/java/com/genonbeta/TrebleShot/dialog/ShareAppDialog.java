@@ -32,7 +32,7 @@ public class ShareAppDialog extends AlertDialog.Builder
     {
         super(context);
 
-        setTitle(R.string.ques_shareAsApkOrLink);
+        setMessage(R.string.ques_shareAsApkOrLink);
 
         setNegativeButton(R.string.butn_cancel, null);
         setNeutralButton(R.string.butn_asApk, new DialogInterface.OnClickListener()

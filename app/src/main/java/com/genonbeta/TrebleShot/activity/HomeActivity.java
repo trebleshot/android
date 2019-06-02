@@ -242,8 +242,8 @@ public class HomeActivity
         if (headerView != null) {
             NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
 
-            ImageView imageView = headerView.findViewById(R.id.header_default_device_image);
-            ImageView editImageView = headerView.findViewById(R.id.header_default_device_edit_image);
+            ImageView imageView = headerView.findViewById(R.id.layout_profile_picture_image_default);
+            ImageView editImageView = headerView.findViewById(R.id.layout_profile_picture_image_preferred);
             TextView deviceNameText = headerView.findViewById(R.id.header_default_device_name_text);
             TextView versionText = headerView.findViewById(R.id.header_default_device_version_text);
 

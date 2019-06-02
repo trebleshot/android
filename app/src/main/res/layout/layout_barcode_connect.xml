@@ -33,7 +33,7 @@
             android:layout_marginTop="15dp"
             android:gravity="center_horizontal"
             android:text="@string/mesg_completing"
-            android:textColor="?colorAccent" />
+            android:textColor="?colorSecondary" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/task_interrupter_button"
