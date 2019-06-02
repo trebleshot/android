@@ -7,7 +7,6 @@
         android:shape="ring"
         android:thickness="2dp"
         android:useLevel="true"><!-- this line fixes the issue for lollipop api 21 -->
-
         <gradient
             android:angle="0"
             android:endColor="@color/colorSecondary"

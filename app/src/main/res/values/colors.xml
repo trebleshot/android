@@ -32,16 +32,16 @@
     <color name="dark_colorError">#ffeb3b</color>
     <color name="dark_colorOnPrimary">@color/dark_colorControlNormal</color>
     <color name="dark_colorOnSecondary">@color/dark_colorControlNormal</color>
-    <color name="dark_colorPrimary">#263238</color>
+    <color name="dark_colorPrimary">#1E1E1E</color>
     <color name="dark_colorPrimaryDark">@color/dark_colorPrimary</color>
     <color name="dark_colorSecondary">#66bb6a</color>
 
-    <color name="dark_colorSurface">#37474f</color>
+    <color name="dark_colorSurface">#2E2E2E</color>
     <color name="dark_windowBackground">@color/dark_colorPrimary</color>
     <color name="dark_colorPrimaryDark23">@color/dark_colorPrimary</color>
     <!-- local coloring-->
     <color name="dark_colorDonation">#f44336</color>
-    <color name="dark_colorDivider">#323844</color>
+    <color name="dark_colorDivider">#2E2E2E</color>
     <color name="dark_colorPassive">#229e9e9e</color>
     <color name="dark_colorSelection">#229e9e9e</color>
     <color name="dark_colorShadowBeginning">#000E171A</color>

@@ -463,4 +463,5 @@
     <string name="butn_asLink">As a link</string>
     <string name="text_linkTrebleshot">Share files with TrebleShot! Download here: %s</string>
     <string name="butn_downloadAllAsZip">Download all as ZIP (single, uncompressed)</string>
+    <string name="text_interfaceVPN">VPN Server</string>
 </resources>

@@ -12,6 +12,7 @@
     android:paddingTop="8dp"
     android:paddingRight="15dp"
     android:paddingBottom="8dp"
+    android:textColor="@android:color/white"
     android:textSize="@dimen/font_size_giant"
     android:visibility="invisible"
     tools:text="A"

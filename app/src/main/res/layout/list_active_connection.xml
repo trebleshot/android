@@ -18,15 +18,17 @@
         style="@style/ListContentIconStyle"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:background="?rippleBackground">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="@dimen/icon_size_list_normal"
-            android:layout_height="@dimen/icon_size_list_normal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            app:srcCompat="@drawable/ic_share_white_24dp" />
+            app:srcCompat="@drawable/ic_share_white_24dp"
+            app:tint="@android:color/white" />
 
         <include layout="@layout/generic_view_selection_square" />
 

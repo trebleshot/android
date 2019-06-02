@@ -25,6 +25,7 @@ public class TextUtils
         associatedNames.put("p2p", R.string.text_interfaceWifiDirect);
         associatedNames.put("bt-pan", R.string.text_interfaceBluetooth);
         associatedNames.put("eth", R.string.text_interfaceEthernet);
+        associatedNames.put("tun", R.string.text_interfaceVPN);
         associatedNames.put("unk", R.string.text_interfaceUnknown);
 
         for (String displayName : associatedNames.keySet())
