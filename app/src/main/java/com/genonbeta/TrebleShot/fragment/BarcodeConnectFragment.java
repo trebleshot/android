@@ -1,7 +1,10 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.Manifest;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -22,6 +25,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,15 +35,18 @@ import androidx.core.content.ContextCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.UITask;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
+import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.util.Interrupter;
@@ -72,6 +79,7 @@ public class BarcodeConnectFragment
     private ViewGroup mConductContainer;
     private TextView mConductText;
     private ImageView mConductImage;
+    private ImageView mTextModeIndicator;
     private Button mConductButton;
     private Button mTaskInterruptButton;
     private View mTaskContainer;
@@ -79,6 +87,7 @@ public class BarcodeConnectFragment
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private boolean mPermissionRequestedCamera = false;
     private boolean mPermissionRequestedLocation = false;
+    private boolean mShowAsText = false;
     //private String mPreviousScanResult = null;
 
     private UIConnectionUtils.RequestWatcher mPermissionWatcher = new UIConnectionUtils.RequestWatcher()
@@ -141,6 +150,7 @@ public class BarcodeConnectFragment
         View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
 
         mConductContainer = view.findViewById(R.id.layout_barcode_connect_conduct_container);
+        mTextModeIndicator = view.findViewById(R.id.layout_barcode_connect_mode_text_indicator);
         mConductButton = view.findViewById(R.id.layout_barcode_connect_conduct_button);
         mBarcodeView = view.findViewById(R.id.layout_barcode_connect_barcode_view);
         mConductText = view.findViewById(R.id.layout_barcode_connect_conduct_text);
@@ -152,14 +162,14 @@ public class BarcodeConnectFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.actions_barcode_scanner, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int id = item.getItemId();
 
@@ -168,7 +178,16 @@ public class BarcodeConnectFragment
                     .setMessage(R.string.text_scanQRCodeHelp)
                     .setPositiveButton(android.R.string.ok, null)
                     .show();
-        else
+        else if (id == R.id.change_mode) {
+            mShowAsText = !mShowAsText;
+            mTextModeIndicator.setVisibility(mShowAsText ? View.VISIBLE : View.GONE);
+            item.setIcon(mShowAsText ? R.drawable.ic_qrcode_white_24dp : R.drawable.ic_short_text_white_24dp);
+
+            createSnackbar(mShowAsText ? R.string.mesg_qrScannerTextMode : R.string.mesg_qrScannerDefaultMode)
+                    .show();
+
+            updateState();
+        } else
             return super.onOptionsItemSelected(item);
 
         return true;
@@ -231,7 +250,7 @@ public class BarcodeConnectFragment
             }
     }
 
-    protected void handleBarcode(String code)
+    protected void handleBarcode(final String code)
     {
         final DialogInterface.OnDismissListener dismissListener = new DialogInterface.OnDismissListener()
         {
@@ -244,7 +263,11 @@ public class BarcodeConnectFragment
 
         try {
             //mPreviousScanResult = code; // Fail-safe
+            if (mShowAsText)
+                throw new JSONException("Showing as text.");
+
             JSONObject jsonObject = new JSONObject(code);
+
             NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
             final int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
                     ? jsonObject.getInt(Keyword.NETWORK_PIN)
@@ -288,6 +311,8 @@ public class BarcodeConnectFragment
                             .setOnDismissListener(dismissListener)
                             .show();
                 }
+            } else {
+                throw new JSONException("Failed to attain known variables.");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -295,8 +320,38 @@ public class BarcodeConnectFragment
             mBarcodeView.pauseAndWait();
 
             new AlertDialog.Builder(getActivity())
-                    .setMessage(R.string.mesg_somethingWentWrong)
-                    .setPositiveButton(R.string.butn_close, null)
+                    .setTitle(R.string.text_unrecognizedQrCode)
+                    .setMessage(code)
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(R.string.butn_show, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            TextStreamObject textObject = new TextStreamObject(
+                                    AppUtils.getUniqueNumber(), code);
+                            AppUtils.getDatabase(getContext()).publish(textObject);
+
+                            Toast.makeText(getContext(), R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show();
+
+                            startActivity(new Intent(getContext(), TextEditorActivity.class)
+                                    .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+                                    .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, textObject.id));
+                        }
+                    })
+                    .setNeutralButton(R.string.butn_copyToClipboard, new DialogInterface.OnClickListener()
+                    {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which)
+                        {
+                            if (getContext() != null) {
+                                ClipboardManager manager = (ClipboardManager) getContext().getSystemService(
+                                        Service.CLIPBOARD_SERVICE);
+                                manager.setPrimaryClip(ClipData.newPlainText("copiedText", code));
+                                Toast.makeText(getContext(), R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
                     .setOnDismissListener(dismissListener)
                     .show();
         }
@@ -362,7 +417,7 @@ public class BarcodeConnectFragment
                 == PackageManager.PERMISSION_GRANTED;
         final boolean hasLocationPermission = Build.VERSION.SDK_INT < 26 // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
                 || mConnectionUtils.getConnectionUtils().canAccessLocation();
-        final boolean state = wifiEnabled && hasCameraPermission && hasLocationPermission;
+        final boolean state = (wifiEnabled || mShowAsText) && hasCameraPermission && hasLocationPermission;
 
         if (!state) {
             mBarcodeView.pauseAndWait();

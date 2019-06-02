@@ -1,4 +1,6 @@
 NEW: Support for Russian & Vietnamese languages
 NEW: Download all files as a ZIP file (Share on Browser)
 NEW: Send files with (Share on Browser)
+NEW: Show texts as QR codes for easy-sharing
+IMPROVED: Scan and save QR codes
 MISC: Updated translations

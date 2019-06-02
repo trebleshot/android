@@ -12,6 +12,15 @@
         app:zxing_preview_scaling_strategy="centerCrop"
         app:zxing_scanner_layout="@layout/external_layout_barcode_scanner" />
 
+    <ImageView
+        android:id="@+id/layout_barcode_connect_mode_text_indicator"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:background="?rippleBackground"
+        app:srcCompat="@drawable/ic_short_text_white_24dp" />
+
     <RelativeLayout
         android:id="@+id/container_task"
         android:layout_width="match_parent"
@@ -66,10 +75,10 @@
             style="@style/TextAppearance.Primary.Normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="15dp"
             android:layout_marginTop="15dp"
             android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:padding="15dp"
             android:text="@string/text_scanQRCodeHelp" />
 
         <androidx.appcompat.widget.AppCompatButton

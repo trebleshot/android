@@ -4,16 +4,21 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 
 import com.genonbeta.CoolSocket.CoolSocket;
+import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -24,7 +29,13 @@ import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.CommunicationBridge;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
@@ -164,6 +175,9 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
         menu.findItem(R.id.menu_action_remove).setVisible(mTextStreamObject != null);
 
+        menu.findItem(R.id.menu_action_show_as_qr_code).setEnabled(mEditTextEditor.length() > 0
+                && mEditTextEditor.length() <= 1200);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -174,7 +188,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
         if (id == R.id.menu_action_save) {
             saveText();
-            Snackbar.make(findViewById(android.R.id.content), R.string.mesg_fileSaved, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(findViewById(android.R.id.content), R.string.mesg_textStreamSaved, Snackbar.LENGTH_LONG).show();
         } else if (id == R.id.menu_action_done) {
             Intent intent = new Intent()
                     .putExtra(EXTRA_TEXT_INDEX, mEditTextEditor.getText().toString());
@@ -198,6 +212,36 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                             .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.RETURN_RESULT.toString())
                             .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_sendText)),
                     REQUEST_CODE_CHOOSE_DEVICE);
+        } else if (id == R.id.menu_action_show_as_qr_code) {
+            if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
+                MultiFormatWriter formatWriter = new MultiFormatWriter();
+                try {
+                    BitMatrix bitMatrix = formatWriter.encode(mEditTextEditor.getText().toString(),
+                            BarcodeFormat.QR_CODE, 800, 800);
+
+                    BarcodeEncoder encoder = new BarcodeEncoder();
+                    Bitmap bitmap = encoder.createBitmap(bitMatrix);
+
+                    BottomSheetDialog dialog = new BottomSheetDialog(this);
+
+                    View view = LayoutInflater.from(this).inflate(R.layout.layout_show_text_as_qr_code, null);
+                    ImageView qrImage = view.findViewById(R.id.layout_show_text_as_qr_code_image);
+
+                    GlideApp.with(this)
+                            .load(bitmap)
+                            .into(qrImage);
+
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    );
+
+                    dialog.setTitle(R.string.butn_showAsQrCode);
+                    dialog.setContentView(view, params);
+                    dialog.show();
+                } catch (WriterException e) {
+                    Toast.makeText(this, R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+                }
+            }
         } else if (id == android.R.id.home) {
             onBackPressed();
         } else if (id == R.id.menu_action_remove) {
