@@ -106,6 +106,10 @@ public class NetworkDeviceListFragment
 
         mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
+        mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
+                ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorSurface))
+        );
+
         container.addView(mSwipeRefreshLayout);
 
         return super.onListView(mSwipeRefreshLayout);

@@ -1,3 +1,4 @@
-NEW: Support for Russian language
+NEW: Support for Russian & Vietnamese languages
 NEW: Download all files as a ZIP file (Share on Browser)
 NEW: Send files with (Share on Browser)
+MISC: Updated translations

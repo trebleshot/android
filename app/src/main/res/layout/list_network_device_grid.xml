@@ -49,7 +49,7 @@
                         android:background="?rippleBackground"
                         android:padding="3dp"
                         android:visibility="gone"
-                        app:tint="?colorSecondary" />
+                        app:tint="?colorControlNormal" />
 
                 </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
 
