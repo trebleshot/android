@@ -460,7 +460,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">或</string>
     <string name="text_visitWebShareAddress">使用你的浏览器访问该链接</string>
-    <string name="text_webShareInfo">在下方你可以看到连接到同一个网络的设备可以通过浏览器访问的链接。然后，单独地为传输组启用网页分享。</string>
+    <string name="text_webShareInfo">单独地为传输启用网页分享，然后使用连接至同一网络的设备访问以下任意的网页链接。</string>
     <string name="text_dowloadTrebleshotAndroid">下载运行于Android上的TrebleShot</string>
     <string name="text_listEmptyConnection">你连接的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
@@ -468,4 +468,13 @@
     <string name="ques_shareAsApkOrLink">以链接分享还是以安装包分享？</string>
     <string name="butn_asApk">作为安装包</string>
     <string name="butn_asLink">作为链接</string>
+    <string name="text_linkTrebleshot">使用TrebleShot分享文件！ 在此处下载： %s</string>
+    <string name="butn_downloadAllAsZip">以ZIP形式下载全部文件(单个的， 未压缩的文件)</string>
+    <string name="text_interfaceVPN">VPN 服务器</string>
+    <string name="text_unrecognizedQrCode">未识别的二维码</string>
+    <string name="mesg_textStreamSaved">文字已保存</string>
+    <string name="butn_changeMode">更改模式</string>
+    <string name="mesg_qrScannerTextMode">二维码将以文字形式显示</string>
+    <string name="mesg_qrScannerDefaultMode">返回到对二维码的默认设置</string>
+    <string name="butn_showAsQrCode">以二维码形式显示</string>
 </resources>
