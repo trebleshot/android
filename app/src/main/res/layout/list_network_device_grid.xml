@@ -1,93 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/padding_list_content_parent_layout_orientation"
-    app:baseOnSmallerLength="true">
+    android:background="?rectSelector"
+    android:orientation="vertical">
 
-    <androidx.cardview.widget.CardView
+    <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardElevation="0dp">
+        android:orientation="vertical"
+        android:padding="8dp"
+        app:baseOnSmallerLength="false">
 
-        <LinearLayout
-            android:id="@+id/container"
+        <ImageView
+            android:id="@+id/image"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="?rectSelector"
+            android:contentDescription="@string/text_image" />
+
+        <ImageView
+            android:id="@+id/imageStatus"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:background="?rippleBackground"
+            android:padding="3dp"
+            android:visibility="gone"
+            app:tint="?colorControlNormal" />
+
+    </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/infoContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:gravity="center"
             android:orientation="vertical">
 
-            <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="8dp"
-                app:baseOnSmallerLength="false">
+            <TextView
+                android:id="@+id/text1"
+                style="@style/TextAppearance.Primary.SingleLine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="2dp" />
 
-                <ImageView
-                    android:id="@+id/image"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:contentDescription="@string/text_image" />
+            <TextView
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary.Small.SingleLine"
+                android:ellipsize="middle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:id="@+id/imageStatus"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentBottom="true"
-                    android:background="?rippleBackground"
-                    android:padding="3dp"
-                    android:visibility="gone"
-                    app:tint="?colorControlNormal" />
-
-            </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <LinearLayout
-                    android:id="@+id/infoContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical"
-                    android:layout_marginLeft="2dp"
-                    android:layout_marginRight="2dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp">
-
-                    <TextView
-                        android:id="@+id/text1"
-                        style="@style/TextAppearance.Primary.SingleLine"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="2dp" />
-
-                    <TextView
-                        android:id="@+id/text2"
-                        style="@style/TextAppearance.Secondary.Small.SingleLine"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/menu"
-                    style="@style/OverflowButton"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginEnd="-12dp"
-                    android:layout_marginRight="-12dp"
-                    android:visibility="gone" />
-
-            </FrameLayout>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</RelativeLayout>
+
+        <ImageView
+            android:id="@+id/menu"
+            style="@style/OverflowButton"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="-12dp"
+            android:layout_marginRight="-12dp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+</LinearLayout>
 

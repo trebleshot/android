@@ -7,6 +7,7 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.object.FileShortcutObject;
+import com.genonbeta.TrebleShot.object.WritablePathObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -100,6 +101,13 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
         try {
             if (holder instanceof FileListAdapter.ShortcutDirectoryHolder) {
                 FileShortcutObject object = ((FileListAdapter.ShortcutDirectoryHolder) holder).getShortcutObject();
+
+                if (object != null) {
+                    object.title = renameTo;
+                    AppUtils.getDatabase(getContext()).publish(object);
+                }
+            } else if (holder instanceof FileListAdapter.WritablePathHolder) {
+                WritablePathObject object = ((FileListAdapter.WritablePathHolder) holder).pathObject;
 
                 if (object != null) {
                     object.title = renameTo;

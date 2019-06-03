@@ -201,33 +201,23 @@ public class FileListFragment
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK)
-            switch (requestCode) {
-                case REQUEST_WRITE_ACCESS:
-                    Uri pathUri = data.getData();
+            if (requestCode == REQUEST_WRITE_ACCESS) {
+                Uri pathUri = data.getData();
 
-                    if (Build.VERSION.SDK_INT >= 21 && pathUri != null) {
-                        String pathString = pathUri.toString();
-                        String title = null;
+                if (Build.VERSION.SDK_INT >= 21 && pathUri != null && getContext() != null) {
+                    getContext().getContentResolver().takePersistableUriPermission(pathUri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 
-                        try {
-                            title = FileUtils.fromUri(getContext(), pathUri).getName();
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
-
-                        if (title == null)
-                            title = pathString.substring(pathString.lastIndexOf(File.separator) + 1);
-
-                        AppUtils.getDatabase(getContext())
-                                .publish(new WritablePathObject(title, pathUri));
-
-                        if (getContext() != null)
-                            getContext().getContentResolver().takePersistableUriPermission(pathUri,
-                                    Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-
+                    try {
+                        DocumentFile documentFile = DocumentFile.fromUri(getContext(), pathUri, true);
+                        AppUtils.getDatabase(getContext()).publish(
+                                new WritablePathObject(documentFile.getName(), pathUri));
                         goPath(null);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        Toast.makeText(getContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
                     }
-                    break;
+                }
             }
     }
 

@@ -579,7 +579,7 @@ public class FileListAdapter
 
         public WritablePathHolder(DocumentFile file, WritablePathObject object, String info)
         {
-            super(file, file.getName() == null ? object.title : file.getName(), info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
+            super(file, object.title, info, R.drawable.ic_save_white_24dp, 0, 0, object.path);
             this.pathObject = object;
         }
 
