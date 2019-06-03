@@ -465,4 +465,7 @@
     <string name="text_listEmptyConnection">你连接的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
 \n(如 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">以链接分享还是以安装包分享？</string>
+    <string name="butn_asApk">作为安装包</string>
+    <string name="butn_asLink">作为链接</string>
 </resources>
