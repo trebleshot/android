@@ -30,6 +30,13 @@
             android:title="@string/text_preferences" />
 
         <item
+            android:id="@+id/menu_activity_main_dev_survey"
+            android:icon="@drawable/ic_poll_box_white_24dp"
+            android:orderInCategory="13"
+            android:title="@string/text_developmentSurvey"
+            android:visible="false" />
+
+        <item
             android:id="@+id/menu_activity_main_about"
             android:icon="@drawable/ic_info_white_24dp"
             android:orderInCategory="13"

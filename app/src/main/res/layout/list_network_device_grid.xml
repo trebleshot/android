@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/padding_list_content_parent_layout_orientation"
+    android:padding="8dp"
     android:background="?rectSelector"
     android:orientation="vertical">
 
@@ -12,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="8dp"
-        app:baseOnSmallerLength="false">
+        app:baseOnSmallerLength="false"
+        android:layout_marginBottom="8dp">
 
         <ImageView
             android:id="@+id/image"
@@ -35,43 +36,36 @@
 
     </com.genonbeta.TrebleShot.view.ComparativeRelativeLayout>
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/infoContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/infoContainer"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/text1"
+            style="@style/TextAppearance.Primary.SingleLine"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="8dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_marginBottom="2dp" />
 
-            <TextView
-                android:id="@+id/text1"
-                style="@style/TextAppearance.Primary.SingleLine"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp" />
-
-            <TextView
-                android:id="@+id/text2"
-                style="@style/TextAppearance.Secondary.Small.SingleLine"
-                android:ellipsize="middle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/text2"
+            style="@style/TextAppearance.Secondary.Small.SingleLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle" />
 
         <ImageView
             android:id="@+id/menu"
             style="@style/OverflowButton"
-            android:layout_gravity="center_vertical|end"
-            android:layout_marginEnd="-12dp"
-            android:layout_marginRight="-12dp"
-            android:visibility="gone" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/ic_dots_horizontal_white_24dp" />
 
-    </FrameLayout>
+    </LinearLayout>
 </LinearLayout>
 

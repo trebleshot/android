@@ -1,5 +1,6 @@
 package com.genonbeta.TrebleShot.activity;
 
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,9 +8,14 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.LocaleList;
 import android.os.Looper;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +31,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
@@ -41,6 +48,7 @@ import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.navigation.NavigationView;
 
 import java.io.File;
+import java.util.Locale;
 
 public class HomeActivity
         extends Activity
@@ -226,6 +234,27 @@ public class HomeActivity
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+        } else if (R.id.menu_activity_main_dev_survey == mChosenMenuItemId) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(R.string.text_developmentSurvey);
+            builder.setMessage(R.string.text_developmentSurveySummary);
+            builder.setNegativeButton(R.string.genfw_uwg_later, null);
+            builder.setPositiveButton(R.string.butn_temp_doIt, new DialogInterface.OnClickListener()
+            {
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+                    try {
+                        startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(
+                                "https://docs.google.com/forms/d/e/1FAIpQLScmwX923MACmHvZTpEyZMDCxRQjrd8b67u9p9MOjV1qFVp-_A/viewform?usp=sf_link"
+                        )));
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(HomeActivity.this, R.string.mesg_temp_noBrowser,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+            builder.show();
         } else if (R.id.menu_activity_feedback == mChosenMenuItemId) {
             AppUtils.createFeedbackIntent(HomeActivity.this);
         } else if (R.id.menu_activity_trustzone == mChosenMenuItemId) {
@@ -238,6 +267,20 @@ public class HomeActivity
     private void createHeaderView()
     {
         View headerView = mNavigationView.getHeaderView(0);
+        MenuItem surveyItem = mNavigationView.getMenu().findItem(R.id.menu_activity_main_dev_survey);
+        Configuration configuration = getApplication().getResources().getConfiguration();
+
+        if (Build.VERSION.SDK_INT >= 24) {
+            LocaleList list = configuration.getLocales();
+
+            if (list.size() > 0)
+                for (int pos = 0; pos < list.size(); pos++)
+                    if (list.get(pos).toLanguageTag().startsWith("en")) {
+                        surveyItem.setVisible(true);
+                        break;
+                    }
+        } else
+            surveyItem.setVisible(configuration.locale.toString().startsWith("en"));
 
         if (headerView != null) {
             NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
