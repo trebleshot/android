@@ -481,7 +481,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">of</string>
     <string name="text_visitWebShareAddress">Open deze link in je browser</string>
-    <string name="text_webShareInfo">Hieronder zie je de links die apparaten op hetzelfde netwerken kunnen verbinden via de browser. Schakel daarna individueel webdelen in voor overdrachten.</string>
+    <string name="text_webShareInfo">Schakel delen via internet in voor individuele overdrachten en bezoek één van de onderstaande links via een apparaat dat verbonden is met hetzelfde netwerk.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot voor Android</string>
     <string name="text_listEmptyConnection">Hier verschijnen netwerken waarmee je bent verbonden</string>
     <string name="mesg_errorNotAnIpAddress">Geen IP-adres
@@ -490,4 +490,12 @@
     <string name="butn_asApk">APK delen</string>
     <string name="butn_asLink">Link delen</string>
     <string name="text_linkTrebleshot">Deel bestanden via TrebleShot! Download de app: %s</string>
+    <string name="butn_downloadAllAsZip">Alles downloaden als ZIP-bestand (één bestand, zonder compressie)</string>
+    <string name="text_interfaceVPN">VPN-server</string>
+    <string name="text_unrecognizedQrCode">Niet-herkende code</string>
+    <string name="mesg_textStreamSaved">Tekst opgeslagen</string>
+    <string name="butn_changeMode">Modus wijzigen</string>
+    <string name="mesg_qrScannerTextMode">QR-codes worden getoond als tekst</string>
+    <string name="mesg_qrScannerDefaultMode">Terug naar standaardacties voor QR-codes</string>
+    <string name="butn_showAsQrCode">Tonen als QR-code</string>
 </resources>
