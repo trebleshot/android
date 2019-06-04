@@ -458,7 +458,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">oppure</string>
     <string name="text_visitWebShareAddress">Usa un browser per aprire questo collegamento</string>
-    <string name="text_webShareInfo">Qui sotto trovi i collegamenti a cui i dispositivi della stessa rete possono connettersi con un browser. Bisogna abilitare individualmente la condivisione web per ogni trasferimento.</string>
+    <string name="text_webShareInfo">Abilita la condivisione web singolarmente per ogni trasferimento e visita i collegamenti mostrati di seguito con un dispositivo collegato alla stessa rete.</string>
     <string name="text_dowloadTrebleshotAndroid">Scarica TrebleShot per Android</string>
     <string name="text_listEmptyConnection">Qui appariranno le reti a cui connettersi</string>
     <string name="mesg_errorNotAnIpAddress">Non è un Indirizzo IP 
@@ -467,4 +467,12 @@
     <string name="butn_asApk">Come APK</string>
     <string name="butn_asLink">Come Collegamento</string>
     <string name="text_linkTrebleshot">Condividi file con TrebleShot! Scarica qui: %s</string>
+    <string name="butn_downloadAllAsZip">Scarica Tutto come ZIP (singolo, non compresso)</string>
+    <string name="text_interfaceVPN">Server VPN</string>
+    <string name="text_unrecognizedQrCode">Codice non riconosciuto</string>
+    <string name="mesg_textStreamSaved">Testo salvato</string>
+    <string name="butn_changeMode">Cambia Modalità</string>
+    <string name="mesg_qrScannerTextMode">I codici QR saranno mostrati come testo</string>
+    <string name="mesg_qrScannerDefaultMode">Ripristina le azioni predefinite per i codici QR</string>
+    <string name="butn_showAsQrCode">Mostra come Codice QR</string>
 </resources>
