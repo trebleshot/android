@@ -443,7 +443,7 @@
     <string name="text_transferSharedOnBrowser">Compartilhado no navegador</string>
     <string name="text_or">ou</string>
     <string name="text_visitWebShareAddress">Visite este link com seu navegador</string>
-    <string name="text_webShareInfo">Abaixo você vê os links que os dispositivos na mesma rede podem se conectar com um navegador. Em seguida, ative o compartilhamento via web para transferências individualmente.</string>
+    <string name="text_webShareInfo">Ative o compartilhamento via web para transferências individuais e visite qualquer link da web mostrado abaixo com um dispositivo conectado à mesma rede.</string>
     <string name="text_dowloadTrebleshotAndroid">Baixe o TrebleShot para Android</string>
     <string name="text_listEmptyConnection">As redes que você conecta aparecem aqui</string>
     <string name="mesg_errorNotAnIpAddress">Não é um endereço IP
@@ -454,4 +454,12 @@
     <string name="butn_asLink">Como um link</string>
     <string name="text_linkTrebleshot">Compartilhe arquivos com o TrebleShot!
 \nBaixe aqui: %s</string>
+    <string name="butn_downloadAllAsZip">Baixar tudo como ZIP (único, descomprimido)</string>
+    <string name="text_interfaceVPN">Servidor VPN</string>
+    <string name="text_unrecognizedQrCode">Código não reconhecido</string>
+    <string name="mesg_textStreamSaved">Texto salvo</string>
+    <string name="butn_changeMode">Alterar o modo</string>
+    <string name="mesg_qrScannerTextMode">Códigos QR serão mostrados como texto</string>
+    <string name="mesg_qrScannerDefaultMode">Voltar para as ações padrão para códigos QR</string>
+    <string name="butn_showAsQrCode">Mostrar como código QR</string>
 </resources>
