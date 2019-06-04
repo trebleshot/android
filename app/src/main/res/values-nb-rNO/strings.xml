@@ -485,4 +485,12 @@
     <string name="butn_hideOnBrowser">Skjul på nettleser</string>
     <string name="text_transferSharedOnBrowser">Delt på nettleser</string>
     <string name="text_webShareInfo">Nedenfor ser du lenkede enheter på samme nettverk du kan koble til med en nettleser. Deretter slår du på nettdeling for overføringer individuelt.</string>
+    <string name="butn_downloadAllAsZip">Last ned alle som ZIP (én, komprimert)</string>
+    <string name="text_interfaceVPN">VPN-tjener</string>
+    <string name="text_unrecognizedQrCode">Ugjenkjent kode</string>
+    <string name="mesg_textStreamSaved">Tekst lagret</string>
+    <string name="butn_changeMode">Endre modus</string>
+    <string name="mesg_qrScannerTextMode">QR-koder vil bli vist som tekst</string>
+    <string name="mesg_qrScannerDefaultMode">Tilbake til forvalgte handlinger for QR-koder</string>
+    <string name="butn_showAsQrCode">Vis som QR-kode</string>
 </resources>
