@@ -10,13 +10,11 @@
         <item quantity="one">%d файл получен</item>
         <item quantity="few">%d файла получено</item>
         <item quantity="many">%d файлов получено</item>
-        <item quantity="other"/>
     </plurals>
     <plurals name="text_itemSelected">
         <item quantity="one">%d файл выбран</item>
         <item quantity="few">%d файла выбрано</item>
         <item quantity="many">%d файлов выбрано</item>
-        <item quantity="other"/>
     </plurals>
     <plurals name="ques_receiveMultipleFiles">
         <item quantity="one">Принять %d файл?</item>
@@ -56,7 +54,7 @@
     </plurals>
     <plurals name="text_gridRow">
         <item quantity="one">Один ряд</item>
-        <item quantity="few"></item>
+        <item quantity="few"/>
         <item quantity="many">%d рядов</item>
     </plurals>
     <plurals name="text_devicesShared">
