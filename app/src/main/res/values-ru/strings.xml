@@ -448,4 +448,12 @@
     <string name="mesg_textShareLimit">Только одно сообщение может быть передано за раз</string>
     <string name="text_previewAndEditList">Предпросмотр и редактирование</string>
     <string name="text_fileRoot">Корень файловой системы</string>
+    <string name="butn_downloadAllAsZip">Загрузить все в формате ZIP (одним файлом, без сжатия)</string>
+    <string name="text_interfaceVPN">VPN-сервер</string>
+    <string name="text_unrecognizedQrCode">Нераспознанный код</string>
+    <string name="mesg_textStreamSaved">Текст сохранён</string>
+    <string name="butn_changeMode">Изменить режим</string>
+    <string name="mesg_qrScannerTextMode">QR-коды будут отображаться в виде текста</string>
+    <string name="mesg_qrScannerDefaultMode">Вернуться к действиям по умолчанию для QR-кодов</string>
+    <string name="butn_showAsQrCode">Показать как QR-код</string>
 </resources>

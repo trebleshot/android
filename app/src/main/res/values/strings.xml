@@ -453,7 +453,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
-    <string name="text_webShareInfo">Below you see links devices on the same network can connect to with a browser. Next, turn on web sharing for transfers individually.</string>
+    <string name="text_webShareInfo">Enable web-sharing for transfers individually and visit any web-link shown below with a device that is connected to the same network.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
     <string name="mesg_errorNotAnIpAddress">Not an IP Address
@@ -467,7 +467,7 @@
     <string name="text_unrecognizedQrCode">Unrecognized code</string>
     <string name="mesg_textStreamSaved">Text saved</string>
     <string name="butn_changeMode">Change mode</string>
-    <string name="mesg_qrScannerTextMode">QR Codes will be shown as text</string>
+    <string name="mesg_qrScannerTextMode">QR codes will be shown as text</string>
     <string name="mesg_qrScannerDefaultMode">Back to the default actions for QR codes</string>
     <string name="butn_showAsQrCode">Show as QR code</string>
     <string name="text_showAsQrCode" translatable="false">@string/butn_showAsQrCode</string>

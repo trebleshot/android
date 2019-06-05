@@ -436,7 +436,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">veya</string>
     <string name="text_visitWebShareAddress">Tarayıcınızla bu bağlantıyı ziyaret edin</string>
-    <string name="text_webShareInfo">"Aşağıda aynı ağdaki cihazların bir tarayıcıyla bağlanabilecekleri bağlantıları görmektesiniz. Sonrasında, aktarımlar için ağ paylaşımını bireysel olarak etkinleştirin. "</string>
+    <string name="text_webShareInfo">Aktarımlar için ağ paylaşımını bireysel olarak etkinleştirin ve aşağıdaki herhangi bir web adresini aynı ağa bağlı bir cihazla ziyaret edin.</string>
     <string name="text_dowloadTrebleshotAndroid">Android için TrebleShot\'u İndirin</string>
     <string name="text_listEmptyConnection">Bağlandığınız ağlar burada görünür</string>
     <string name="mesg_errorNotAnIpAddress">Bir IP Adresi değil
@@ -445,4 +445,12 @@
     <string name="butn_asApk">APK olrk</string>
     <string name="butn_asLink">Bağlntı olrk</string>
     <string name="text_linkTrebleshot">TrebleShot ile dosyalarınızı güvenle paylaşırsınız! Tümüyle ücretsiz ve reklam içermez. Şuradan edinin: %s</string>
+    <string name="butn_downloadAllAsZip">Hepsini ZIP olarak indir (tek, sıkıştırılmamış)</string>
+    <string name="text_interfaceVPN">VPN Sunucusu</string>
+    <string name="text_unrecognizedQrCode">Tanınmayan kod</string>
+    <string name="mesg_textStreamSaved">Metin kaydedildi</string>
+    <string name="butn_changeMode">Modu değiştir</string>
+    <string name="mesg_qrScannerTextMode">QR kodları metin olarak gösterilecek</string>
+    <string name="mesg_qrScannerDefaultMode">QR kodları için varsayılan eylemler uygulanacak</string>
+    <string name="butn_showAsQrCode">QR kodu olarak göster</string>
 </resources>

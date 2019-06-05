@@ -450,7 +450,7 @@
     <string name="mode_webShareAddress">http://%s:%d/‎</string>
     <string name="text_or">או</string>
     <string name="text_visitWebShareAddress">יש לבקר בקישור הזה עם הדפדפן שלך</string>
-    <string name="text_webShareInfo">להלן מופיעים הקישורים שהמכשירים באותה הרשת יכולים להתחבר אליהם עם דפדפן. בשלב הבא, ניתן להפעיל באופן נקודתי שיתוף דרך הדפדפן לצורך העברות.</string>
+    <string name="text_webShareInfo">עליך להפעיל שיתוף רשת להעברות בודדות ולבקר בקישור שמופיע להלן ממכשיר שמחובר לאותה הרשת.</string>
     <string name="text_dowloadTrebleshotAndroid">הורדת TrebleShot ל־Android</string>
     <string name="text_listEmptyConnection">רשתות שבאפשרותך להתחבר אליהן מופיעות כאן</string>
     <string name="mesg_errorNotAnIpAddress">לא כתובת IP
@@ -459,4 +459,12 @@
     <string name="butn_asApk">כ־APK</string>
     <string name="butn_asLink">כקישור</string>
     <string name="text_linkTrebleshot">עם TrebleShot אפשר לשתף קבצים! הורדה מכאן: %s</string>
+    <string name="butn_downloadAllAsZip">להוריד הכול כ־ZIP (בודד, ללא כיווץ)</string>
+    <string name="text_interfaceVPN">שרת VPN</string>
+    <string name="text_unrecognizedQrCode">קוד בלתי מוכר</string>
+    <string name="mesg_textStreamSaved">טקסט נשמר</string>
+    <string name="butn_changeMode">שינוי מצב</string>
+    <string name="mesg_qrScannerTextMode">קודים מסוג QR יופיעו כטקסט</string>
+    <string name="mesg_qrScannerDefaultMode">חזרה לפעולה בררת המחדל של קודים מסוג QR</string>
+    <string name="butn_showAsQrCode">הצגה כקוד QR</string>
 </resources>

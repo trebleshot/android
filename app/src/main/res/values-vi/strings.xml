@@ -320,7 +320,7 @@
     <string name="butn_cancel">Huỷ</string>
     <string name="mesg_connectionUpdated">Đang trao đổi qua mạng \"%s\"</string>
     <string name="text_introMakeItYours">Cá nhân hoá</string>
-    <string name="text_webShareInfo">Dưới đây là các link mà những thiết bị cùng mạng có thể kết nối bằng trình duyệt. Tiếp theo, bật chia sẻ qua mạng cho từng lượt chuyển.</string>
+    <string name="text_webShareInfo">Bật chia sẻ qua mạng cho từng lượt chuyển và mở bất kỳ link nào dưới đây bằng thiết bị đã kết nối với mạng này.</string>
     <string name="text_transactionViewer">Xem lượt chuyển</string>
     <string name="butn_locationSettings">Vị trí</string>
     <string name="text_savingDetails">Lưu chi tiết</string>
@@ -442,4 +442,12 @@
     <string name="text_requestPermissionReadPhoneState">Quyền biết trạng thái điện thoại</string>
     <string name="ques_needHelp">Cần sự hỗ trợ\?</string>
     <string name="text_connectionTest">Kiểm tra kết nối - %s</string>
+    <string name="butn_downloadAllAsZip">Gói ZIP và download tất cả (đơn, không nén)</string>
+    <string name="text_interfaceVPN">Server VPN</string>
+    <string name="text_unrecognizedQrCode">Mã không đọc được</string>
+    <string name="mesg_textStreamSaved">Đã lưu văn bản</string>
+    <string name="butn_changeMode">Đổi chế độ</string>
+    <string name="mesg_qrScannerTextMode">Mã QR sẽ hiện ra dạng chữ</string>
+    <string name="mesg_qrScannerDefaultMode">Quay về thao tác mặc định cho mã QR</string>
+    <string name="butn_showAsQrCode">Hiện mã QR</string>
 </resources>
