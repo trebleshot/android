@@ -218,8 +218,8 @@ public class CommunicationNotificationHelper
                 .setContentIntent(PendingIntent.getActivity(getContext(), AppUtils.getUniqueNumber(), activityIntent, 0))
                 .setDefaults(getUtils().getNotificationSettings())
                 .setDeleteIntent(negativeIntent)
-                .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(R.string.butn_accept), positiveIntent)
-                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(R.string.butn_reject), negativeIntent)
+                .addAction(R.drawable.ic_check_white_24dp_static, getContext().getString(android.R.string.yes), positiveIntent)
+                .addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(android.R.string.no), negativeIntent)
                 .setTicker(getContext().getString(R.string.text_receivedTextSummary))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
