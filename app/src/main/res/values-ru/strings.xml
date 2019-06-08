@@ -317,7 +317,7 @@
     <string name="text_qrAllowTrustZoneSummary">Разрешить TrustZone для подключения QR-кода</string>
     <string name="butn_gridSize">Размер сетки</string>
     <string name="butn_singleRow">Один ряд</string>
-    <string name="butn_groupBy">Группа по</string>
+    <string name="butn_groupBy">Группировать по</string>
     <string name="text_photo">Фото</string>
     <string name="text_groupByNothing">Ничего</string>
     <string name="text_groupByDate">Дата</string>
