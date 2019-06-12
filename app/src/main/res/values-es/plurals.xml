@@ -1,50 +1,51 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<resources><plurals name="ques_deleteFile">
-	<item quantity="one">¿Desea eliminar ese archivo?</item>
-	<item quantity="other">¿Desea eliminar esos %d archivos?</item>
-</plurals>
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">¿Desea eliminar este archivo\?</item>
+        <item quantity="other">¿Desea eliminar estos %d archivos\?</item>
+    </plurals>
     <plurals name="text_fileReceiveCompletedSummary">
-	<item quantity="one">Un archivo ha sido recibido</item>
-	<item quantity="other">%d archivos han sido recibidos</item>
-</plurals>
+        <item quantity="one">%d archivo ha sido recibido</item>
+        <item quantity="other">%d archivos han sido recibidos</item>
+    </plurals>
     <plurals name="text_itemSelected">
-	<item quantity="one">Un archivo se ha seleccionado</item>
-	<item quantity="other">%d archivos se han seleccionado</item>
-</plurals>
+        <item quantity="one">%d archivo se ha seleccionado</item>
+        <item quantity="other">%d archivos se han seleccionado</item>
+    </plurals>
     <plurals name="text_removeQueueSummary">
-	<item quantity="one">Una transferencia pendiente será removida</item>
-	<item quantity="other">%d transferencias pendientes serán removidas</item>
-</plurals>
+        <item quantity="one">Esta transferencia pendiente será removida</item>
+        <item quantity="other">%d transferencias pendientes serán removidas</item>
+    </plurals>
     <plurals name="text_availableConnections">
-	<item quantity="one">Una conexión</item>
-	<item quantity="other">%d conexiones</item>
-</plurals>
+        <item quantity="one">%d conexión</item>
+        <item quantity="other">%d conexiones</item>
+    </plurals>
     <plurals name="ques_receiveMultipleFiles">
-	<item quantity="one">¿Recibir este archivo?</item>
-	<item quantity="other">¿Recibir estos %d archivos?</item>
-</plurals>
+        <item quantity="one">¿Recibir este archivo?</item>
+        <item quantity="other">¿Recibir estos %d archivos?</item>
+    </plurals>
     <plurals name="text_files">
-	<item quantity="one">Un archivo</item>
-	<item quantity="other">%d archivos</item>
-</plurals>
+        <item quantity="one">%d archivo</item>
+        <item quantity="other">%d archivos</item>
+    </plurals>
     <plurals name="text_secondsAgo">
-	<item quantity="one">Hace un segundo</item>
-	<item quantity="other">Hace %d segundos</item>
-</plurals>
+        <item quantity="one">Hace un segundo</item>
+        <item quantity="other">Hace %d segundos</item>
+    </plurals>
     <plurals name="text_minutesAgo">
-	<item quantity="one">Hace un minuto</item>
-	<item quantity="other">Hace %d minutos</item>
-</plurals>
+        <item quantity="one">Hace un minuto</item>
+        <item quantity="other">Hace %d minutos</item>
+    </plurals>
     <plurals name="text_fileDeletionCompleted">
-	<item quantity="one">Se ha borrado un archivo</item>
-	<item quantity="other">Se ha borrado %d archivos</item>
-</plurals>
+        <item quantity="one">Se ha borrado %d archivo</item>
+        <item quantity="other">Se han borrado %d archivos</item>
+    </plurals>
     <plurals name="text_gridRow">
-	<item quantity="one">Una fila</item>
-	<item quantity="other">%d filas</item>
-</plurals>
+        <item quantity="one">Una fila</item>
+        <item quantity="other">%d filas</item>
+    </plurals>
     <plurals name="text_devicesShared">
-	<item quantity="one">Compartir individualmente</item>
-	<item quantity="other">Compartiendo con %d dispositivos</item>
-</plurals>
+        <item quantity="one">Compartir individualmente</item>
+        <item quantity="other">Compartiendo con %d dispositivos</item>
+    </plurals>
 </resources>
