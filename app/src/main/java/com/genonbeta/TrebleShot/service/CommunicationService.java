@@ -606,7 +606,8 @@ public class CommunicationService extends Service
         if (wifiConfiguration != null) {
             statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
                     .putExtra(EXTRA_HOTSPOT_PASSWORD, wifiConfiguration.preSharedKey)
-                    .putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
+                    .putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(
+                            wifiConfiguration));
         }
 
         sendBroadcast(statusIntent);
@@ -647,7 +648,7 @@ public class CommunicationService extends Service
 
     public void startFileReceiving(long groupId, String deviceId) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
     {
-        // it should create its own devices
+
         startFileReceiving(new TransferInstance(getDatabase(), groupId, deviceId, true));
     }
 
@@ -704,12 +705,9 @@ public class CommunicationService extends Service
         @Override
         protected void onConnected(final ActiveConnection activeConnection)
         {
+            // check if the same address has other connections and limit that to 3
             if (getConnectionCountByAddress(activeConnection.getAddress()) > 3)
                 return;
-
-            // the problem with the programming is that nobody seems to care what they do even though
-            // what they do always concern others. This is the new world order and only thing you can
-            // do about is to what until 
 
             try {
                 ActiveConnection.Response clientRequest = activeConnection.receive();
@@ -803,7 +801,8 @@ public class CommunicationService extends Service
                         replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
                     else if (responseJSON.has(Keyword.REQUEST)) {
                         if (isSecureConnection && !mPinAccess)
-                            // Probably pin access has just activated, so we should update the service state
+                            // Probably pin access has just activated, so we should update
+                            // the service state.
                             refreshServiceState();
 
                         switch (responseJSON.getString(Keyword.REQUEST)) {
@@ -1098,19 +1097,12 @@ public class CommunicationService extends Service
                     }
                 }
 
-                {
-                    // It is a good practice to update the transfer method
-                    // when the connection address is not
-                }
-
                 notifyTaskStatusChange(processHolder.groupId, processHolder.deviceId, TASK_STATUS_ONGOING);
                 notifyTaskRunningListChange();
 
                 while (activeConnection.getSocket() != null
                         && activeConnection.getSocket().isConnected()) {
                     processHolder.builder.reset();
-
-                    // This will set the previous
 
                     {
                         Send.Builder<ProcessHolder> sendBuilder = (Send.Builder<ProcessHolder>) processHolder.builder;
@@ -1127,7 +1119,6 @@ public class CommunicationService extends Service
 
                         try {
                             if (request.has(Keyword.RESULT) && !request.getBoolean(Keyword.RESULT)) {
-                                // the assignee for this transfer has received the files. We can remove it
                                 if (request.has(Keyword.TRANSFER_JOB_DONE) && request.getBoolean(Keyword.TRANSFER_JOB_DONE))
                                     Log.d(TAG, "SeamlessServer.onConnected(): Receiver notified us that it has received all the pending transfers: " + processHolder.deviceId);
                                 else

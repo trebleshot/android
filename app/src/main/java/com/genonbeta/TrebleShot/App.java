@@ -80,8 +80,8 @@ public class App extends Application
                     .putInt("referral_version", localDevice.versionNumber)
                     .apply();
 
-        // Some pre-kitkat devices were soft rebooting when this feature was turned on.
-        // So we will disable it for them and they will still be able to enable it.
+        // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
+        // So we will disable it for them and they will still remain an option for the user.
         if (!nsdDefined)
             defaultPreferences.edit()
                     .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)

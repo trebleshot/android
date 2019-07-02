@@ -211,11 +211,19 @@ public class HomeActivity
         createHeaderView();
     }
 
+    /***
+     * This method helps to reduce the glitch when the drawer option is chosen
+     * and loaded at the same time. To prevent the glitch we wait for the signal
+     * that the drawer is closed. We also hold the id of the menu item that has been clicked.
+     * After this is called, we also clean the chosen menu item id.
+     */
     private void applyAwaitingDrawerAction()
     {
-        if (mChosenMenuItemId == 0) {
-            // Do nothing
-        } else if (R.id.menu_activity_main_manage_devices == mChosenMenuItemId) {
+        if (mChosenMenuItemId == 0)
+            // drawer was opened, but nothing was clicked.
+            return;
+
+        if (R.id.menu_activity_main_manage_devices == mChosenMenuItemId) {
             startActivity(new Intent(this, ManageDevicesActivity.class));
         } else if (R.id.menu_activity_main_about == mChosenMenuItemId) {
             startActivity(new Intent(this, AboutActivity.class));

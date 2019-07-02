@@ -46,6 +46,8 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import org.json.JSONObject;
 
+import java.util.BitSet;
+
 /**
  * created by: veli
  * date: 11/04/18 20:53
@@ -142,7 +144,7 @@ public class HotspotManagerFragment
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    public boolean onOptionsItemSelected(@NonNull MenuItem item)
     {
         int id = item.getItemId();
 
@@ -241,7 +243,7 @@ public class HotspotManagerFragment
     }
 
     // for hotspot
-    private void updateViews(String networkName, String password, int keyManagement)
+    private void updateViews(String networkName, String password, BitSet keyManagement)
     {
         mHotspotStartedExternally = false;
 
@@ -257,10 +259,8 @@ public class HotspotManagerFragment
         }
     }
 
-    private void updateViews(@Nullable JSONObject codeIndex,
-                             @Nullable String text1,
-                             @Nullable String text2,
-                             @Nullable String text3,
+    private void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1,
+                             @Nullable String text2, @Nullable String text3,
                              @StringRes int buttonText)
     {
         boolean showQRCode = codeIndex != null
@@ -324,7 +324,8 @@ public class HotspotManagerFragment
             updateViewsWithBlank();
         } else if (getConnectionUtils().getHotspotUtils() instanceof HotspotUtils.HackAPI
                 && wifiConfiguration != null) {
-            updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey, NetworkUtils.getAllowedKeyManagement(wifiConfiguration));
+            updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey,
+                    wifiConfiguration.allowedKeyManagement);
         } else if (Build.VERSION.SDK_INT >= 26)
             AppUtils.startForegroundService(getActivity(),
                     new Intent(getActivity(), CommunicationService.class)
@@ -342,7 +343,7 @@ public class HotspotManagerFragment
                 if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
                     updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
                             intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
-                            intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, 0));
+                            (BitSet)intent.getSerializableExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT));
                 else if (getConnectionUtils().getHotspotUtils().isEnabled()
                         && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false)) {
                     updateViewsStartedExternally();

@@ -119,7 +119,8 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
                     else if (!compareTo.comparisonSupported())
                         return -1;
 
-                    // sorting direction is not used, so that the method doesn't have to guess which is used.
+                    // sorting direction is not used, so that the method doesn't have to guess which
+                    // one is used.
                     switch (getSortingCriteria(toCompare, compareTo)) {
                         case MODE_SORT_BY_DATE:
                             return MathUtils.compare(objectFirst.getComparableDate(), objectSecond.getComparableDate());

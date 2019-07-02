@@ -448,7 +448,8 @@ public class FileListFragment
     {
         super.onListRefreshed();
 
-        // Try to bring scope to the top if the user is viewing another folder
+        // If the current path is different from the older one, move the scroll position
+        // to the top.
         DocumentFile pathOnTrial = getAdapter().getPath();
 
         if (!(mLastKnownPath == null && getAdapter().getPath() == null)
@@ -570,7 +571,7 @@ public class FileListFragment
         try {
             return FileUtils.openUriForeground(getActivity(), getAdapter().getItem(holder).file);
         } catch (NotReadyException e) {
-            // Do nothing
+            // do nothing
         }
 
         return super.performLayoutClickOpen(holder);

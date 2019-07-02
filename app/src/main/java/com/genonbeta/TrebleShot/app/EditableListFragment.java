@@ -139,7 +139,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
         getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 
-        // We have to recreate the provider class because old one loses its ground
+        // We have to recreate the provider class because old one lose doesn't work when
+        // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
         getListView().addOnItemTouchListener(new SwipeTouchSelectionListener<>(this));
@@ -375,7 +376,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             @Override
             public int getSpanSize(int position)
             {
-                // should be reserved so it can occupy all the available space of a line
+                // should be reserved so it can occupy all the available space of a row.
                 int viewType = getAdapter().getItemViewType(position);
 
                 return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT

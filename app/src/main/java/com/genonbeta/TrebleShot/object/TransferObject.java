@@ -157,7 +157,8 @@ public class TransferObject
         this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFER_DEVICEID);
         this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
 
-        // We may have put long in that field indicating that the file was / is in progress so generate
+        // Normally what we would expect is a pure string, however, sometimes we also
+        // put integers to indicate the progress. So this checks whether this is a progress indicator.
         try {
             this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
         } catch (Exception e) {

@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>

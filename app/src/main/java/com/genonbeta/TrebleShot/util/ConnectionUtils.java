@@ -238,9 +238,8 @@ public class ConnectionUtils
                     if (hotspotNetwork.password != null
                             && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
                         config.wepKeys[0] = hotspotNetwork.password;
-                    } else {
-                        //fail("Please type hex pair for the password");
-                    }
+                    } else
+                        Log.d(TAG, "Please type hex pair for the password");
                     break;
                 case 2: // WEP128
                     config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
@@ -251,9 +250,8 @@ public class ConnectionUtils
                     if (hotspotNetwork.password != null
                             && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
                         config.wepKeys[0] = hotspotNetwork.password;
-                    } else {
-                        //fail("Please type hex pair for the password");
-                    }
+                    } else
+                        Log.d(TAG, "Please type hex pair for the password");
                     break;
                 case 3: // WPA_TKIP
                     config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);

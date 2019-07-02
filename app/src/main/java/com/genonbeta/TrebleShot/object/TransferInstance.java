@@ -19,7 +19,17 @@ public class TransferInstance
     private NetworkDevice.Connection mConnection;
     private TransferGroup.Assignee mAssignee;
 
-    // false means "to find connection first"
+    /**
+     *
+     * @param database The database instance to use
+     * @param groupId ID for the transfer group
+     * @param using Device Id or IP address
+     * @param findDevice Assign false to use 'using' parameter as IP address and true for device ID
+     * @throws TransferGroupNotFoundException When transfer does not exit
+     * @throws DeviceNotFoundException When device does not exist
+     * @throws ConnectionNotFoundException When connection does not exits
+     * @throws AssigneeNotFoundException When assignee does not exist
+     */
     public TransferInstance(AccessDatabase database, long groupId, String using, boolean findDevice) throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
     {
         buildAll(database, groupId, using, findDevice);

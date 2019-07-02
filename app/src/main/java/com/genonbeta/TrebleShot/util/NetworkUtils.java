@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 
@@ -119,6 +120,14 @@ public class NetworkUtils
         return filteredInterfaceList;
     }
 
+    /**
+     * Return the integet value of an allowed passphrase types for {@link WifiConfiguration}
+     * @param wifiConfiguration Configuration object to extra the value from
+     * @return The integer representation of the connection
+     * @deprecated A WifiConfiguration can support more than one encryption methods and this assumes
+     * that as if it is only one and fails when the first supported method is not equal to 1
+     */
+    @Deprecated
     public static int getAllowedKeyManagement(WifiConfiguration wifiConfiguration)
     {
         String keyManagement = wifiConfiguration.allowedKeyManagement.toString();

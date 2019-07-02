@@ -195,7 +195,8 @@ public class UIConnectionUtils
                         }
                     });
                 }
-                // We can't add dialog outside of the else statement as it may close other dialogs as well
+                // We can't add dialog outside of the else statement as it may close other dialogs
+                // as well
             }
         }.setTitle(activity.getString(R.string.mesg_completing))
                 .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static);
@@ -350,7 +351,7 @@ public class UIConnectionUtils
                             @Override
                             public void onClick(DialogInterface dialog, int which)
                             {
-                                // no need to call watcher due to recycle
+                                // no need to call watcher due to the recycling process.
                                 toggleHotspot(false, activity, locationPermRequestId, watcher);
                             }
                         })
@@ -433,8 +434,7 @@ public class UIConnectionUtils
                         public void onClick(DialogInterface dialog, int which)
                         {
                             watcher.onResultReturned(false, true);
-                            // No, I am not going to add an if statement since when it is not needed
-                            // the main method returns true.
+                            // API version is already checked in the parent scope.
                             activity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
                                     Manifest.permission.ACCESS_COARSE_LOCATION}, requestId);
                         }
