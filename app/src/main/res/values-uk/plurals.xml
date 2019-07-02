@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">Ця очікуюча передача буде видалена</item>
+        <item quantity="few">%d очікуючі передачі будуть видалені</item>
+        <item quantity="many">%d очікуючих передач буде видалено</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d файл</item>
+        <item quantity="few">%d файли</item>
+        <item quantity="many">%d файлів</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">Секунду тому</item>
+        <item quantity="few">%d секунди тому</item>
+        <item quantity="many">%d секунд тому</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">Хвилину тому</item>
+        <item quantity="few">%d хвилини тому</item>
+        <item quantity="many">%d хвилин тому</item>
+    </plurals>
+    <plurals name="ques_deleteFile">
+        <item quantity="one">Ви хочете видалити цей файл\?</item>
+        <item quantity="few">Ви хочете видалити %d файли\?</item>
+        <item quantity="many">Ви хочете видалити %d файлів\?</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">Отримати цей файл\?</item>
+        <item quantity="few">Отримати %d файли\?</item>
+        <item quantity="many">Отримати %d файлів\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="one">%d файл отримано</item>
+        <item quantity="few">%d файли отримано</item>
+        <item quantity="many">%d файлів отримано</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d файл видалено</item>
+        <item quantity="few">%d файли видалено</item>
+        <item quantity="many">%d файлів видалено</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">Поділитися з одним пристроєм</item>
+        <item quantity="few">Поділитися з %d пристроями</item>
+        <item quantity="many">Поділитися з %d пристроями</item>
+    </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d файл вибрано</item>
+        <item quantity="few">%d файли вибрано</item>
+        <item quantity="many">%d файлів вибрано</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">Один рядок</item>
+        <item quantity="few">%d рядки</item>
+        <item quantity="many">%d рядків</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d з\'єднання</item>
+        <item quantity="few">%d з\'єднання</item>
+        <item quantity="many">%d з\'єднань</item>
+    </plurals>
+</resources>

@@ -117,7 +117,7 @@
     <string name="ques_removeAll">إزالة الكل؟</string>
     <string name="text_navigationDrawerOpen">افتح درج الإنتقال</string>
     <string name="text_navigationDrawerClose">اغلق درج الإنتقال</string>
-    <string name="text_developerModeSummary">يقوم بتعطيل ضبط المستخدم</string>
+    <string name="text_developerModeSummary">تعطيل تكوين المستخدم</string>
     <string name="butn_proceed">المضي قدما</string>
     <string name="text_removeCertainPendingTransfersSummary">يؤدي هذا إلى إزالة كافة عمليات النقل المعلقة التي تراها هنا</string>
     <string name="text_availableNetworks">اختر الشبكة - %s</string>
@@ -373,10 +373,10 @@
     <string name="text_applyDarkTheme">الوضع الداكن</string>
     <string name="butn_allow">السماح</string>
     <string name="butn_telegram_channel">قناة تلغرام</string>
-    <string name="mesg_noPendingTransferObjectExists">لا نقل بالانتظار حيث أنه إما تمت مقاطعته أو اكتمل النقل بالفعل.</string>
-    <string name="mesg_notSavingToChosenLocation">لن يتم حفظ الملفات في المجلد المطلوب بسبب استحالة الوصول إليه حاليا
-\n
-\n%s</string>
+    <string name="mesg_noPendingTransferObjectExists">لم يتبقى اي نقل معلق. لاستئناف الملفات التي تمت مقاطعتها ، استخدم الخيار \"أعاده محاولة التلقي\".</string>
+    <string name="mesg_notSavingToChosenLocation">المجلد المطلوب غير قابل للوصول. سيتم حفظ الملفات إلى المجلد الافتراضي. 
+\n 
+\n% s</string>
     <string name="mesg_versionUpdatedChangelog">لقد قمتَ بتحديث تريبلشوت ، هل تود استعراض ما الجديد في هذا الإصدار؟</string>
     <string name="text_applyDarkThemeSummary">استخدم سمة داكنة</string>
     <string name="text_listEmptyTransfer">"كافة التحويلات ستظهر هنا "</string>
@@ -443,6 +443,30 @@
     <string name="text_or">أو</string>
     <string name="text_visitWebShareAddress">زُر هذا الرابط على متصفحك</string>
     <string name="text_dowloadTrebleshotAndroid">تنزيل تريبل شوت للأندرويد</string>
-    <string name="mesg_errorNotAnIpAddress">ليس بعنوان إيبي 
-\n(على شكل 192.168.1.2)</string>
+    <string name="mesg_errorNotAnIpAddress">ليس عنوان IP 
+\n(مثل 192.168.1.2)</string>
+    <string name="text_addDeviceHelp">باضافه الاجهزه ، يمكنك مشاركه نفس الملفات مع المزيد من الاجهزه. سيتم اعادتك إلى النقل عندما يتم ذلك.</string>
+    <string name="text_connectionHelp">اختر خيارا للاتصال بالجهاز الآخر. علي سبيل المثال ، إذا كان الجهاز الآخر يظهر رمز الاستجابة السريعة ، استخدم الخيار رمز QR المسح الضوئي.</string>
+    <string name="ques_connectionWizardUseHotspot">هل تريد ان يتصل الجهاز الآخر بهذا الجهاز بنقطه الاتصال (الربط) ؟ إذا كنت لا تعرف النقطة الساخنة ، فانقر علي \"نعم\".</string>
+    <string name="ques_connectionWizardUseNetwork">هل تريد استخدام جهاز التوجيه الخاص بك أو اي شبكه Wi-fi تتصل بها أنت وصديقك ؟</string>
+    <string name="ques_connectionWizardUseKnownDevices">هل تريد الوصول إلى أجهزتك التي تم الاتصال بها مسبقا ؟</string>
+    <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ، يجب ان تبدا هنا.</string>
+    <string name="text_textMillisecond">% d مللي ثانيه</string>
+    <string name="text_amoledOptimizedBlackTheme">تحسين شاشات AMOLED</string>
+    <string name="mesg_errorNotTrustZoneDevice">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
+    <string name="text_webShareNoContentNotice">استخدم خيار \"مشاركه علي المتصفح\" لرؤية عمليات النقل هنا!</string>
+    <string name="text_webShareInfo">تمكين مشاركه الويب لعمليات النقل بشكل فردي وزيارة اي ارتباط ويب موضح أدناه مع جهاز متصل بنفس الشبكة.</string>
+    <string name="text_listEmptyConnection">تظهر الشبكات التي تتصل بها هنا</string>
+    <string name="ques_shareAsApkOrLink">مشاركة ملف التثبيت او الرابط؟</string>
+    <string name="butn_asApk">ملف التثبيت</string>
+    <string name="butn_asLink">كرابط</string>
+    <string name="text_linkTrebleshot">مشاركه الملفات مع TrebleShot! تحميل هنا:% s</string>
+    <string name="butn_downloadAllAsZip">تحميل الجميع كملف ZIP (واحد ، غير مضغوط)</string>
+    <string name="text_interfaceVPN">خادم VPN</string>
+    <string name="text_unrecognizedQrCode">رمز غير معروف</string>
+    <string name="mesg_textStreamSaved">تم حفظ النص</string>
+    <string name="butn_changeMode">تغيير الوضع</string>
+    <string name="mesg_qrScannerTextMode">سيتم عرض رموز QR كنص</string>
+    <string name="mesg_qrScannerDefaultMode">العودة إلى الإجراءات الافتراضية لرموز QR</string>
+    <string name="butn_showAsQrCode">إظهار كرمز QR</string>
 </resources>

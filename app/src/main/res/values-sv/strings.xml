@@ -448,7 +448,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">eller</string>
     <string name="text_visitWebShareAddress">Besök den här länken med din webbläsare</string>
-    <string name="text_webShareInfo">Nedan ser du länkar som enheterna i samma nätverk kan ansluta till med en webbläsare. Därefter aktivera individuellt webbdelning för överföringar.</string>
+    <string name="text_webShareInfo">Aktivera webb-delning för individuella överföringar genom att gå till nedanstående webb-länk med en enhet som är ansluten till samma nätverk.</string>
     <string name="text_dowloadTrebleshotAndroid">Ladda ner TrebleShot för Android</string>
     <string name="text_listEmptyConnection">Nätverk du ansluter till syns här</string>
     <string name="mesg_errorNotAnIpAddress">Inte en IP-address
@@ -457,4 +457,16 @@
     <string name="butn_asApk">Som APK</string>
     <string name="butn_asLink">Som en länk</string>
     <string name="text_linkTrebleshot">Dela filer med TrebleShot! Ladda ner det här: %s</string>
+    <string name="text_webShareNoContentNotice">Använd alternativet \'Dela i webbläsaren\' för att se överföringar här!</string>
+    <string name="butn_shareOnBrowser">Dela i webbläsaren</string>
+    <string name="butn_hideOnBrowser">Göm i webbläsaren</string>
+    <string name="text_transferSharedOnBrowser">Delad i webbläsaren</string>
+    <string name="butn_downloadAllAsZip">Ladda ner alla som ZIP-fil (en fil, okomprimerad)</string>
+    <string name="text_interfaceVPN">VPN-server</string>
+    <string name="text_unrecognizedQrCode">Oigenkännlig kod</string>
+    <string name="mesg_textStreamSaved">Texten sparad</string>
+    <string name="butn_changeMode">Ändra läge</string>
+    <string name="mesg_qrScannerTextMode">QR-koden visas som text</string>
+    <string name="mesg_qrScannerDefaultMode">Tillbaka till standardåtgärder för QR-koder</string>
+    <string name="butn_showAsQrCode">Visa som QR-kod</string>
 </resources>
