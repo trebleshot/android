@@ -25,7 +25,7 @@ import java.util.List;
 public class DialogUtils
 {
     public static void showGenericCheckBoxDialog(final Activity activity, @StringRes int title,
-                                                 @StringRes int text, @StringRes int positiveButton,
+                                                 String content, @StringRes int positiveButton,
                                                  @StringRes int checkBox, final ClickListener positiveListener,
                                                  String... textArgs)
     {
@@ -34,7 +34,7 @@ public class DialogUtils
         final TextView text1 = view.findViewById(R.id.text1);
         final CheckBox checkBox1 = view.findViewById(R.id.checkbox1);
 
-        text1.setText(activity.getString(text, (Object[]) textArgs));
+        text1.setText(content);
 
         if (checkBox == 0)
             checkBox1.setVisibility(View.GONE);
@@ -58,7 +58,8 @@ public class DialogUtils
 
     public static void showRemoveDialog(final Activity activity, final TransferGroup group)
     {
-        showGenericCheckBoxDialog(activity, R.string.ques_removeAll, R.string.text_removeTransferGroupSummary,
+        showGenericCheckBoxDialog(activity, R.string.ques_removeAll,
+                activity.getString(R.string.text_removeTransferGroupSummary),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 new ClickListener()
                 {
@@ -73,10 +74,11 @@ public class DialogUtils
 
     public static void showRemoveDialog(final Activity activity, final TransferObject object)
     {
-        int checBox = TransferObject.Type.INCOMING.equals(object.type)
+        int checkBox = TransferObject.Type.INCOMING.equals(object.type)
                 ? R.string.text_alsoDeleteReceivedFiles : 0;
-        showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer, R.string.text_removeTransferSummary,
-                R.string.butn_remove, checBox,
+        showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
+                activity.getString(R.string.text_removeTransferSummary, object.friendlyName),
+                R.string.butn_remove, checkBox,
                 new ClickListener()
                 {
                     @Override
@@ -85,15 +87,38 @@ public class DialogUtils
                         object.setDeleteOnRemoval(checkBox.isChecked());
                         AppUtils.getDatabase(activity).removeAsynchronous(activity, object);
                     }
-                }, object.friendlyName);
+                });
+    }
+
+    public static void showRemoveTransferObjectListDialog(final Activity activity, final List<? extends TransferObject> objects)
+    {
+        final List<TransferObject> copiedObjects = new ArrayList<>(objects);
+
+        showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
+                activity.getResources().getQuantityString(R.plurals.text_removeQueueSummary, objects.size(), objects.size()),
+                R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
+                new ClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which, CheckBox checkBox)
+                    {
+                        boolean isChecked = checkBox.isChecked();
+
+                        for (TransferObject object : copiedObjects)
+                            object.setDeleteOnRemoval(isChecked);
+
+                        AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedObjects);
+                    }
+                });
     }
 
 
-    public static void showRemoveDialog(final Activity activity, final List<? extends TransferGroup> groups)
+    public static void showRemoveTransferGroupListDialog(final Activity activity, final List<? extends TransferGroup> groups)
     {
         final List<TransferGroup> copiedGroups = new ArrayList<>(groups);
 
-        showGenericCheckBoxDialog(activity, R.string.ques_removeAll, R.string.text_removeSelected,
+        showGenericCheckBoxDialog(activity, R.string.ques_removeAll,
+                activity.getString(R.string.text_removeSelected),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
                 new ClickListener()
                 {

@@ -266,7 +266,7 @@ public class TransferGroupListFragment
             List<TransferGroupListAdapter.PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_group_delete)
-                DialogUtils.showRemoveDialog(getFragment().getActivity(), selectionList);
+                DialogUtils.showRemoveTransferGroupListDialog(getFragment().getActivity(), selectionList);
             else if (id == R.id.action_mode_group_serve_on_web
                     || id == R.id.action_mode_group_hide_on_web) {
                 boolean success = false;

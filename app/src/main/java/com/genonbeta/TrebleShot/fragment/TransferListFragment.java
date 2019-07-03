@@ -24,6 +24,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -465,24 +466,9 @@ public class TransferListFragment
 
             final ArrayList<TransferListAdapter.AbstractGenericItem> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
-            if (id == R.id.action_mode_transfer_delete) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
-
-                builder.setTitle(R.string.ques_removeTransfer);
-                builder.setMessage(getFragment().getContext().getResources().getQuantityString(R.plurals.text_removeQueueSummary, selectionList.size(), selectionList.size()));
-                builder.setNegativeButton(R.string.butn_close, null);
-                builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i)
-                    {
-                        AppUtils.getDatabase(getFragment().getContext())
-                                .removeAsynchronous(getFragment().getActivity(), selectionList);
-                    }
-                });
-
-                builder.show();
-            } else
+            if (id == R.id.action_mode_transfer_delete)
+                DialogUtils.showRemoveTransferObjectListDialog(getFragment().getActivity(), selectionList);
+            else
                 return super.onActionMenuItemSelected(context, actionMode, item);
 
             return true;
