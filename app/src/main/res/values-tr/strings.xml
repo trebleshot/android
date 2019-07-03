@@ -104,13 +104,13 @@
     <string name="text_availableNetworks">Ağ seçin - %s</string>
     <string name="ques_removeAll">Hepsini kaldır?</string>
     <string name="ques_removeDevice">Bu cihazı kaldır?</string>
-    <string name="ques_removeQueue">İş kuyruğunu kaldır?</string>
+    <string name="ques_removeTransfer">İş kuyruğunu kaldır?</string>
     <string name="butn_killNow">Şimdi durdur</string>
     <string name="butn_proceed">Devam et</string>
     <string name="butn_remove">Kaldır</string>
     <string name="butn_removeAll">Hepsini kaldır</string>
     <string name="text_stopping">Durduruluyor!</string>
-    <string name="text_removePendingTransferSummary">Bu %s aktarımını kuyruktan silecek</string>
+    <string name="text_removeTransferSummary">Bu %s aktarımını kuyruktan silecek</string>
     <string name="mesg_groupOngoingNotice">Bu dosya, %s dosyası alındıktan sonra alınacak</string>
     <string name="text_newVersionAvailable">Yeni sürüm mevcut!</string>
     <string name="text_folder">Klasör</string>

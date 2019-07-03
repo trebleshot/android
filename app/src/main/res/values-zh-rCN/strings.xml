@@ -99,12 +99,12 @@
     <string name="text_cancellingTransfer">正在取消任务…</string>
     <string name="butn_killNow">现在中止</string>
     <string name="mesg_groupOngoingNotice">等待%s完成再传输这个文件</string>
-    <string name="ques_removeQueue">移除传输？</string>
+    <string name="ques_removeTransfer">移除传输？</string>
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除这个设备吗？</string>
     <string name="text_removeDeviceNotice">移除设备会同时移除它的传输</string>
-    <string name="text_removePendingTransferSummary">这将从队列中移除%s</string>
+    <string name="text_removeTransferSummary">这将从队列中移除%s</string>
     <string name="ques_removeAll">全部移除？</string>
     <string name="text_savedConnections">已保存连接</string>
     <string name="text_newVersionAvailable">新版本可用！</string>

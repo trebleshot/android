@@ -108,12 +108,12 @@
     <string name="text_cancellingTransfer">جاري إلغاء المهمة…</string>
     <string name="butn_killNow">قتل الآن</string>
     <string name="mesg_groupOngoingNotice">في انتظار %s حتى ينتهي قبل نقل هذا الملف</string>
-    <string name="ques_removeQueue">إزالة النقل؟</string>
+    <string name="ques_removeTransfer">إزالة النقل؟</string>
     <string name="butn_remove">إزالة</string>
     <string name="butn_removeAll">إزالة الكل</string>
     <string name="ques_removeDevice">إزالة هذا الجهاز؟</string>
     <string name="text_removeDeviceNotice">عند إزالة جهاز ما، ستتم إزالة جميع عملياته</string>
-    <string name="text_removePendingTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
+    <string name="text_removeTransferSummary">سيؤدي ذلك إلى إزالة %s من قائمة الانتظار</string>
     <string name="ques_removeAll">إزالة الكل؟</string>
     <string name="text_navigationDrawerOpen">افتح درج الإنتقال</string>
     <string name="text_navigationDrawerClose">اغلق درج الإنتقال</string>

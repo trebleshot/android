@@ -340,7 +340,7 @@ public class ViewTransferActivity
         } else if (id == R.id.actions_transfer_toggle) {
             toggleTask();
         } else if (id == R.id.actions_transfer_remove) {
-            DialogUtils.showRemoveGroupDialog(this, mGroup);
+            DialogUtils.showRemoveDialog(this, mGroup);
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 

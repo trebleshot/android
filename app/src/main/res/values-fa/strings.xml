@@ -104,12 +104,12 @@
     <string name="text_stopping">در حال توقف!</string>
     <string name="text_cancellingTransfer">لغو کار…</string>
     <string name="mesg_groupOngoingNotice">قبل از ارسال این فایل برای اتمام %s صبر کنید</string>
-    <string name="ques_removeQueue">حذف ارسال؟</string>
+    <string name="ques_removeTransfer">حذف ارسال؟</string>
     <string name="butn_remove">حذف</string>
     <string name="butn_removeAll">حذف همه</string>
     <string name="ques_removeDevice">حذف این دستگاه؟</string>
     <string name="text_removeDeviceNotice">زمانی که شما دستگاهی را حذف میکنید ارسال‌های آن نیز حذف میشوند</string>
-    <string name="text_removePendingTransferSummary">%s از صف حذف خواهد شد</string>
+    <string name="text_removeTransferSummary">%s از صف حذف خواهد شد</string>
     <string name="ques_removeAll">همه حذف شوند؟</string>
     <string name="text_removeTransferGroupSummary">همه انتقال های در انتظار شما را پاک خواهد کرد</string>
     <string name="text_availableNetworks">انتخاب شبکه - %s</string>

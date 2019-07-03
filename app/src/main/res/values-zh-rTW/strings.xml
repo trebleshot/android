@@ -107,12 +107,12 @@
     <string name="butn_killNow">現在終止</string>
     <string name="mesg_groupOngoingNotice">"正在傳送這個檔案前等待 %s  來完成"</string>
     <string name="butn_proceed">繼續</string>
-    <string name="ques_removeQueue">移除傳送項目\?</string>
+    <string name="ques_removeTransfer">移除傳送項目\?</string>
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除這個裝置\?</string>
     <string name="text_removeDeviceNotice">當您移除一個裝置，它的傳輸項目也會被移除</string>
-    <string name="text_removePendingTransferSummary">這將會從列表中 %s</string>
+    <string name="text_removeTransferSummary">這將會從列表中 %s</string>
     <string name="ques_removeAll">全部移除\?</string>
     <string name="text_removeTransferGroupSummary">這將會移除您在這邊看到的所有待辦傳輸</string>
     <string name="text_availableNetworks">選擇網路 - %s</string>

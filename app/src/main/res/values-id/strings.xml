@@ -101,12 +101,12 @@
     <string name="butn_killNow">Matikan sekarang</string>
     <string name="mesg_groupOngoingNotice">Menunggu %s selesai sebelum menerima berkas ini</string>
     <string name="butn_proceed">Lanjutkan</string>
-    <string name="ques_removeQueue">Hapus transfer\?</string>
+    <string name="ques_removeTransfer">Hapus transfer\?</string>
     <string name="butn_remove">Hapus</string>
     <string name="butn_removeAll">Hapus semua</string>
     <string name="ques_removeDevice">Hapus perangkat ini\?</string>
     <string name="text_removeDeviceNotice">Saat anda menghapus perangkat, data transfernya juga akan dihapus</string>
-    <string name="text_removePendingTransferSummary">Ini akan menghapus %s dari antrian</string>
+    <string name="text_removeTransferSummary">Ini akan menghapus %s dari antrian</string>
     <string name="ques_removeAll">Hapus semua\?</string>
     <string name="text_removeTransferGroupSummary">Ini akan menghapus semua transfer yang tertunda disini</string>
     <string name="text_availableNetworks">Pilih jaringan - %s</string>

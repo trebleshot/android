@@ -137,7 +137,7 @@
     <string name="butn_saveAnyway">Vẫn lưu</string>
     <string name="text_flagResume">Đã tiếp tục</string>
     <string name="butn_removeAll">Xoá hết</string>
-    <string name="text_removePendingTransferSummary">Xoá %s khỏi danh sách chờ</string>
+    <string name="text_removeTransferSummary">Xoá %s khỏi danh sách chờ</string>
     <string name="text_interfaceBluetooth">Bluetooth</string>
     <string name="text_cameraPermissionRequired">Cần quyền camera</string>
     <string name="mesg_completing">Đang hoàn thành</string>
@@ -379,7 +379,7 @@
     <string name="butn_update">Cập nhật</string>
     <string name="text_storage">Bộ nhớ</string>
     <string name="text_defaultFolder">Thư mục Mặc định</string>
-    <string name="ques_removeQueue">Xoá lượt chuyển\?</string>
+    <string name="ques_removeTransfer">Xoá lượt chuyển\?</string>
     <string name="butn_seeSourceCode">Xem mã nguồn</string>
     <string name="text_pendingTransfers">File đang chuyển</string>
     <string name="text_requestPermissionReadPhoneStateSummary">TrebleShot cần biết số sêri của thiết bị bạn để tạo số định danh dài hạn, giúp các thiết bị khác nhận diện bạn</string>

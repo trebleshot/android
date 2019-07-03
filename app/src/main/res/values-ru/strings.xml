@@ -224,8 +224,8 @@
     <string name="text_cancellingTransfer">Отмена операции...</string>
     <string name="butn_killNow">Отменить сразу</string>
     <string name="mesg_groupOngoingNotice">Ждем окончания %s перед передачей файла</string>
-    <string name="ques_removeQueue">"Убрать из очереди\? "</string>
-    <string name="text_removePendingTransferSummary">Это уберет %s из очереди</string>
+    <string name="ques_removeTransfer">"Убрать из очереди\? "</string>
+    <string name="text_removeTransferSummary">Это уберет %s из очереди</string>
     <string name="ques_removeAll">Удалить все\?</string>
     <string name="text_removeTransferGroupSummary">Это отменит все перечисленные активные операции</string>
     <string name="text_availableNetworks">Выбрать сеть - %s</string>

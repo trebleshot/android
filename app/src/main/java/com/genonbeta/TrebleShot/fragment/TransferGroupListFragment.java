@@ -19,12 +19,12 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
-import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
@@ -34,6 +34,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -262,11 +263,10 @@ public class TransferGroupListFragment
         {
             int id = item.getItemId();
 
-            ArrayList<TransferGroupListAdapter.PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+            List<TransferGroupListAdapter.PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_group_delete)
-                AppUtils.getDatabase(getFragment().getContext())
-                        .removeAsynchronous(getFragment().getActivity(), selectionList);
+                DialogUtils.showRemoveDialog(getFragment().getActivity(), selectionList);
             else if (id == R.id.action_mode_group_serve_on_web
                     || id == R.id.action_mode_group_hide_on_web) {
                 boolean success = false;

@@ -124,12 +124,12 @@
     <string name="butn_killNow">Nu vernietigen</string>
     <string name="mesg_groupOngoingNotice">Bezig met wachten op %s alvorens het bestand over te dragen</string>
     <string name="butn_proceed">Doorgaan</string>
-    <string name="ques_removeQueue">Overdracht verwijderen?</string>
+    <string name="ques_removeTransfer">Overdracht verwijderen?</string>
     <string name="butn_remove">Verwijderen</string>
     <string name="butn_removeAll">Alles verwijderen</string>
     <string name="ques_removeDevice">Dit apparaat verwijderen?</string>
     <string name="text_removeDeviceNotice">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook verwijderd</string>
-    <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
+    <string name="text_removeTransferSummary">Dit verwijdert %s uit de wachtrij</string>
     <string name="ques_removeAll">Alles verwijderen?</string>
     <string name="text_removeTransferGroupSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij</string>
     <string name="text_availableNetworks">Geregistreerde netwerken - %s</string>

@@ -1,6 +1,8 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,15 +32,15 @@ import java.io.IOException;
 
 public class TransferInfoDialog extends AlertDialog.Builder
 {
-    public TransferInfoDialog(@NonNull final Context context, final TransferObject transferObject)
+    public TransferInfoDialog(@NonNull final Activity activity, final TransferObject transferObject)
     {
-        super(context);
+        super(activity);
 
         final TransferGroup group = new TransferGroup(transferObject.groupId);
 
         try {
-            AppUtils.getDatabase(context).reconstruct(group);
-            AppUtils.getDatabase(context).reconstruct(transferObject);
+            AppUtils.getDatabase(activity).reconstruct(group);
+            AppUtils.getDatabase(activity).reconstruct(transferObject);
 
             DocumentFile attemptedFile = null;
             boolean isIncoming = TransferObject.Type.INCOMING.equals(transferObject.type);
@@ -57,7 +59,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
             boolean fileExists = pseudoFile != null && pseudoFile.canRead();
 
             @SuppressLint("InflateParams")
-            View rootView = LayoutInflater.from(context).inflate(R.layout.layout_transfer_info, null);
+            View rootView = LayoutInflater.from(activity).inflate(R.layout.layout_transfer_info, null);
 
             TextView nameText = rootView.findViewById(R.id.transfer_info_file_name);
             TextView sizeText = rootView.findViewById(R.id.transfer_info_file_size);
@@ -90,20 +92,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i)
                 {
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(getContext());
-
-                    dialog.setTitle(R.string.ques_removeQueue);
-                    dialog.setMessage(getContext().getString(R.string.text_removePendingTransferSummary, transferObject.friendlyName));
-
-                    dialog.setNegativeButton(R.string.butn_close, null);
-                    dialog.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            AppUtils.getDatabase(context).remove(transferObject);
-                        }
-                    }).show();
+                    DialogUtils.showRemoveDialog(activity, transferObject);
                 }
             });
 
@@ -118,7 +107,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
                         public void onClick(DialogInterface dialogInterface, int i)
                         {
                             transferObject.flag = TransferObject.Flag.PENDING;
-                            AppUtils.getDatabase(context).publish(transferObject);
+                            AppUtils.getDatabase(activity).publish(transferObject);
                         }
                     });
                 } else if (fileExists) {
@@ -144,7 +133,7 @@ public class TransferInfoDialog extends AlertDialog.Builder
 
                                             transferObject.file = savedFile.getName();
                                             transferObject.flag = TransferObject.Flag.DONE;
-                                            AppUtils.getDatabase(context).update(transferObject);
+                                            AppUtils.getDatabase(activity).update(transferObject);
 
                                             Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
                                         } catch (IOException e) {

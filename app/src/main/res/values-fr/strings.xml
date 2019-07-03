@@ -96,12 +96,12 @@
     <string name="text_cancellingTransfer">Annulation de la tâche …</string>
     <string name="butn_killNow">Tuer maintenant</string>
     <string name="butn_proceed">Procéder</string>
-    <string name="ques_removeQueue">Supprimer le transfert ?</string>
+    <string name="ques_removeTransfer">Supprimer le transfert ?</string>
     <string name="butn_remove">Supprimer</string>
     <string name="butn_removeAll">Tout supprimer</string>
     <string name="ques_removeDevice">Enlever cet appareil ?</string>
     <string name="text_removeDeviceNotice">Lorsque vous supprimez un appareil, ses transferts seront également supprimés</string>
-    <string name="text_removePendingTransferSummary">Ceci supprimera %s de la file d\'attente</string>
+    <string name="text_removeTransferSummary">Ceci supprimera %s de la file d\'attente</string>
     <string name="ques_removeAll">Tout supprimer ?</string>
     <string name="text_availableNetworks">Choisir le réseau - %s</string>
     <string name="text_noNetworkAvailable">Aucun réseau disponible</string>

@@ -111,12 +111,12 @@
     <string name="butn_killNow">Kill now</string>
     <string name="mesg_groupOngoingNotice">Waiting for %s to finish before transferring this file</string>
     <string name="butn_proceed">Proceed</string>
-    <string name="ques_removeQueue">Remove transfer?</string>
+    <string name="ques_removeTransfer">Remove transfer?</string>
     <string name="butn_remove">Remove</string>
     <string name="butn_removeAll">Remove all</string>
     <string name="ques_removeDevice">Remove this device?</string>
     <string name="text_removeDeviceNotice">When you remove a device, its transfers will also be removed</string>
-    <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
+    <string name="text_removeTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
     <string name="text_removeTransferGroupSummary">This will remove all pending transfers you see here</string>
     <string name="text_availableNetworks">Choose network - %s</string>
@@ -471,5 +471,6 @@
     <string name="mesg_qrScannerDefaultMode">Back to the default actions for QR codes</string>
     <string name="butn_showAsQrCode">Show as QR code</string>
     <string name="text_showAsQrCode" translatable="false">@string/butn_showAsQrCode</string>
-    <string name="text_alsoDeleteFiles">Also delete received files from disk</string>
+    <string name="text_alsoDeleteReceivedFiles">Also delete received files from disk</string>
+    <string name="text_removeSelected">This will remove selected items</string>
 </resources>

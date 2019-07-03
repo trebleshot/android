@@ -108,12 +108,12 @@
     <string name="butn_killNow">Stäng ner nu</string>
     <string name="mesg_groupOngoingNotice">Väntar på att %s ska bli klar innan denna filen skickas</string>
     <string name="butn_proceed">Fortsätt</string>
-    <string name="ques_removeQueue">Ta bort överföringen\?</string>
+    <string name="ques_removeTransfer">Ta bort överföringen\?</string>
     <string name="butn_remove">Ta bort</string>
     <string name="butn_removeAll">Ta bort alla</string>
     <string name="ques_removeDevice">Ta bort enheten\?</string>
     <string name="text_removeDeviceNotice">När du tar bort en enhet, tas även dennes överföringarna bort</string>
-    <string name="text_removePendingTransferSummary">Detta kommer att ta bort %s från kön</string>
+    <string name="text_removeTransferSummary">Detta kommer att ta bort %s från kön</string>
     <string name="ques_removeAll">Ta bort alla\?</string>
     <string name="text_removeTransferGroupSummary">Detta kommer att ta bort alla väntande överföringar du ser här</string>
     <string name="text_availableNetworks">Välj nätverk - %s</string>

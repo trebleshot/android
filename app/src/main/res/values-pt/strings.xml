@@ -102,12 +102,12 @@
     <string name="butn_killNow">Encerrar agora</string>
     <string name="mesg_groupOngoingNotice">A esperar que %s termine antes de transferir este ficheiro</string>
     <string name="butn_proceed">Continuar</string>
-    <string name="ques_removeQueue">Remover transferência\?</string>
+    <string name="ques_removeTransfer">Remover transferência\?</string>
     <string name="butn_remove">Remover</string>
     <string name="butn_removeAll">Remover tudo</string>
     <string name="ques_removeDevice">Remover este dispositivo\?</string>
     <string name="text_removeDeviceNotice">Quando remove um dispositivo, as transferências dele também são removidas</string>
-    <string name="text_removePendingTransferSummary">Isto irá remover %s da fila</string>
+    <string name="text_removeTransferSummary">Isto irá remover %s da fila</string>
     <string name="ques_removeAll">Remover tudo\?</string>
     <string name="text_removeTransferGroupSummary">Isto irá remover todas as transferências pendentes que vê aqui</string>
     <string name="text_availableNetworks">Escolha a rede - %s</string>

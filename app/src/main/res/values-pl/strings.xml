@@ -109,12 +109,12 @@
     <string name="butn_killNow">Zakończ natychmiast</string>
     <string name="mesg_groupOngoingNotice">Oczekiwanie na zakończenie %s przed przeniesieniem tego pliku</string>
     <string name="butn_proceed">Postęp</string>
-    <string name="ques_removeQueue">Usunąć przesyłanie\?</string>
+    <string name="ques_removeTransfer">Usunąć przesyłanie\?</string>
     <string name="butn_remove">Usuń</string>
     <string name="butn_removeAll">Usuń wszystkie</string>
     <string name="ques_removeDevice">Usunąć to urządzenie\?</string>
     <string name="text_removeDeviceNotice">Po usunięciu urządzenia jego transfery również zostaną usunięte</string>
-    <string name="text_removePendingTransferSummary">Spowoduje to usunięcie %s z kolejki</string>
+    <string name="text_removeTransferSummary">Spowoduje to usunięcie %s z kolejki</string>
     <string name="ques_removeAll">Usunąć wszystko\?</string>
     <string name="text_removeTransferGroupSummary">Spowoduje to usunięcie wszystkie oczekujące transfery, które tu widzisz</string>
     <string name="text_availableNetworks">Wybierz sieć - %s</string>

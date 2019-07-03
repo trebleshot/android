@@ -109,12 +109,12 @@
     <string name="butn_killNow">לחסל כעת</string>
     <string name="mesg_groupOngoingNotice">בהמתנה לסיום מצד %s בטרם העברת הקובץ הזה</string>
     <string name="butn_proceed">להמשיך</string>
-    <string name="ques_removeQueue">להסיר את ההעברה\?</string>
+    <string name="ques_removeTransfer">להסיר את ההעברה\?</string>
     <string name="butn_remove">הסרה</string>
     <string name="butn_removeAll">להסיר הכול</string>
     <string name="ques_removeDevice">להסיר את המכשיר הזה\?</string>
     <string name="text_removeDeviceNotice">בעת הסרת מכשיר, גם ההעברות שלו תימחקנה</string>
-    <string name="text_removePendingTransferSummary">פעולה זו תסיר את %s מהתור</string>
+    <string name="text_removeTransferSummary">פעולה זו תסיר את %s מהתור</string>
     <string name="ques_removeAll">להסיר הכול\?</string>
     <string name="text_removeTransferGroupSummary">פעולה זו תסיר את כל ההעברות הממתינות המופיעות כאן</string>
     <string name="text_availableNetworks">בחירת רשת - %s</string>

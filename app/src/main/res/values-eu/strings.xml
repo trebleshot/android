@@ -109,12 +109,12 @@
     <string name="butn_killNow">Hil orain</string>
     <string name="mesg_groupOngoingNotice">%s bukatu dezan itxaroten fitxategi hau igorri aurretik</string>
     <string name="butn_proceed">Jarraitu</string>
-    <string name="ques_removeQueue">Kendu transferentzia?</string>
+    <string name="ques_removeTransfer">Kendu transferentzia?</string>
     <string name="butn_remove">Kendu</string>
     <string name="butn_removeAll">Kendu denak</string>
     <string name="ques_removeDevice">Kendu gailu hau?</string>
     <string name="text_removeDeviceNotice">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
-    <string name="text_removePendingTransferSummary">Honek %s ilaratik kenduko du</string>
+    <string name="text_removeTransferSummary">Honek %s ilaratik kenduko du</string>
     <string name="ques_removeAll">Kendu dena?</string>
     <string name="text_removeTransferGroupSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia guztiak kenduko ditu</string>
     <string name="text_availableNetworks">Hautatu sarea - %s</string>

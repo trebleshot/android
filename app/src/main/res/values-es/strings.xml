@@ -109,12 +109,12 @@
     <string name="butn_killNow">Detener ahora</string>
     <string name="mesg_groupOngoingNotice">Esperando que %s finalice antes de transferir este archivo</string>
     <string name="butn_proceed">Proceder</string>
-    <string name="ques_removeQueue">¿Quitar transferencia?</string>
+    <string name="ques_removeTransfer">¿Quitar transferencia?</string>
     <string name="butn_remove">Quitar</string>
     <string name="butn_removeAll">Quitar todo</string>
     <string name="ques_removeDevice">¿Quitar este dispositivo?</string>
     <string name="text_removeDeviceNotice">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
-    <string name="text_removePendingTransferSummary">Esto quitará %s de la cola</string>
+    <string name="text_removeTransferSummary">Esto quitará %s de la cola</string>
     <string name="ques_removeAll">¿Quitar todo?</string>
     <string name="text_removeTransferGroupSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>
     <string name="text_availableNetworks">Escoger red - %s</string>

@@ -134,12 +134,12 @@
     <string name="text_cancellingTransfer">வேலையை நீக்குகின்றது…</string>
     <string name="butn_killNow">நீக்கு</string>
     <string name="butn_proceed">தொடரவும்</string>
-    <string name="ques_removeQueue">பறிமாற்றத்தை நீக்கலாமா\?</string>
+    <string name="ques_removeTransfer">பறிமாற்றத்தை நீக்கலாமா\?</string>
     <string name="butn_remove">நீக்கு</string>
     <string name="butn_removeAll">அனைத்தையும் நீக்கு</string>
     <string name="ques_removeDevice">இந்த சாதனத்தை நீக்கலாமா\?</string>
     <string name="text_removeDeviceNotice">ஒரு சாதனத்தை நீக்கும்போது, அதன் பரிமாற்றங்களும் நீக்கப்படும்</string>
-    <string name="text_removePendingTransferSummary">இது %s -ஐ வரிசையில் இருந்து நீக்கும்</string>
+    <string name="text_removeTransferSummary">இது %s -ஐ வரிசையில் இருந்து நீக்கும்</string>
     <string name="ques_removeAll">அனைத்தயும் நீக்கலாமா\?</string>
     <string name="text_noNetworkAvailable">நெட்வர்க் ஏதும் இல்லை</string>
     <string name="text_folder">அடைவு</string>

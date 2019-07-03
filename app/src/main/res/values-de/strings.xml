@@ -110,12 +110,12 @@
     <string name="butn_killNow">Sofort abbrechen</string>
     <string name="mesg_groupOngoingNotice">Warte bis %s abgeschlossen ist, bevor diese Datei übertragen wird</string>
     <string name="butn_proceed">Fortfahren</string>
-    <string name="ques_removeQueue">Übertragung entfernen?</string>
+    <string name="ques_removeTransfer">Übertragung entfernen?</string>
     <string name="butn_remove">Entfernen</string>
     <string name="butn_removeAll">Alle entfernen</string>
     <string name="ques_removeDevice">Dieses Gerät entfernen\?</string>
     <string name="text_removeDeviceNotice">Beim Entfernen von Geräten werden Übertragungen auch entfernt</string>
-    <string name="text_removePendingTransferSummary">Das wird %s aus der Warteschlange entfernen</string>
+    <string name="text_removeTransferSummary">Das wird %s aus der Warteschlange entfernen</string>
     <string name="ques_removeAll">Alle entfernen?</string>
     <string name="text_removeTransferGroupSummary">Das wird alle wartenden Übertragungen entfernen, die hier zu sehen sind</string>
     <string name="text_availableNetworks">Netzwerk wählen - %s</string>

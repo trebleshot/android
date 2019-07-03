@@ -125,12 +125,12 @@
     <string name="butn_killNow">Drep nå</string>
     <string name="mesg_groupOngoingNotice">Filen vil bli mottatt etter %s</string>
     <string name="butn_proceed">Fortsett</string>
-    <string name="ques_removeQueue">Fjern overføring?</string>
+    <string name="ques_removeTransfer">Fjern overføring?</string>
     <string name="butn_remove">Fjern</string>
     <string name="butn_removeAll">Fjern alle</string>
     <string name="ques_removeDevice">Fjern denne enheten?</string>
     <string name="text_removeDeviceNotice">Når du fjerner en enhet, vil dens overføringer også bli fjernet</string>
-    <string name="text_removePendingTransferSummary">Dette vil fjerne %s fra køen</string>
+    <string name="text_removeTransferSummary">Dette vil fjerne %s fra køen</string>
     <string name="ques_removeAll">Fjern alle?</string>
     <string name="text_removeTransferGroupSummary">Dette vil fjerne alle ventende overføringer du ser her</string>
     <string name="text_availableNetworks">Registrerte tilkoblinger - %s</string>

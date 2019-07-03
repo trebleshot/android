@@ -468,7 +468,7 @@ public class TransferListFragment
             if (id == R.id.action_mode_transfer_delete) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getFragment().getActivity());
 
-                builder.setTitle(R.string.ques_removeQueue);
+                builder.setTitle(R.string.ques_removeTransfer);
                 builder.setMessage(getFragment().getContext().getResources().getQuantityString(R.plurals.text_removeQueueSummary, selectionList.size(), selectionList.size()));
                 builder.setNegativeButton(R.string.butn_close, null);
                 builder.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
