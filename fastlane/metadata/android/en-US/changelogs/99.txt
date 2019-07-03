@@ -1,0 +1,4 @@
+NEW: Also allow to delete received files when removing transfers
+FIX: Contents received via Web Share won't appear in gallery
+IMPROVED: Devices once they access the web share portal can be managed just like normal devices
+IMPROVED: See files received via Web Share in transfers
