@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 
 public class ManageDevicesActivity extends Activity
 {
@@ -46,5 +47,15 @@ public class ManageDevicesActivity extends Activity
             return super.onOptionsItemSelected(item);
 
         return true;
+    }
+
+    public static class ManagerNetworkDeviceListFragment extends NetworkDeviceListFragment
+    {
+        @Override
+        public void onCreate(Bundle savedInstanceState)
+        {
+            setAllowOthers(true);
+            super.onCreate(savedInstanceState);
+        }
     }
 }

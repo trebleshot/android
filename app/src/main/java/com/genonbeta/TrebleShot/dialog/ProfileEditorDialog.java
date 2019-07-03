@@ -38,6 +38,7 @@ public class ProfileEditorDialog extends AlertDialog.Builder
             public void onClick(View v)
             {
                 activity.requestProfilePictureChange();
+                saveNickname(activity, editText);
                 closeIfPossible();
             }
         });
@@ -60,11 +61,7 @@ public class ProfileEditorDialog extends AlertDialog.Builder
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-                AppUtils.getDefaultPreferences(getContext()).edit()
-                        .putString("device_name", editText.getText().toString())
-                        .apply();
-
-                activity.notifyUserProfileChanged();
+               saveNickname(activity, editText);
             }
         });
 
@@ -85,5 +82,13 @@ public class ProfileEditorDialog extends AlertDialog.Builder
     public AlertDialog show()
     {
         return mDialog = super.show();
+    }
+
+    public void saveNickname(Activity activity, EditText editText) {
+        AppUtils.getDefaultPreferences(getContext()).edit()
+                .putString("device_name", editText.getText().toString())
+                .apply();
+
+        activity.notifyUserProfileChanged();
     }
 }

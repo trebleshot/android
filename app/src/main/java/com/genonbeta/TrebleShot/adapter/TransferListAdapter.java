@@ -116,6 +116,7 @@ public class TransferListAdapter
                     networkDevices.put(device.deviceId, device);
                 } catch (Exception e) {
                     // do nothing
+                    e.printStackTrace();
                 }
         }
 
@@ -184,6 +185,7 @@ public class TransferListAdapter
                             object.setSupportThumbnail(false);
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 files.add(object);
@@ -248,7 +250,7 @@ public class TransferListAdapter
 
                     lister.offerObliged(this, storageItem);
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
             }
 

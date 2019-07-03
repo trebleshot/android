@@ -61,6 +61,7 @@ public class NetworkDeviceListFragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
     private boolean mWaitForWiFi = false;
+    private boolean mAllowOthers = false;
 
     private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -221,7 +222,7 @@ public class NetworkDeviceListFragment
             }
         };
 
-        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils())
+        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils(), mAllowOthers)
         {
             @NonNull
             @Override
@@ -394,6 +395,11 @@ public class NetworkDeviceListFragment
             builder.show();
         } else
             new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), device).show();
+    }
+
+    public void setAllowOthers(boolean allow)
+    {
+        mAllowOthers = allow;
     }
 
     public void requestRefresh()

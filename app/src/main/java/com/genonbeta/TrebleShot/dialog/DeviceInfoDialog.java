@@ -65,11 +65,12 @@ public class DeviceInfoDialog extends AlertDialog.Builder
             TextView versionText = rootView.findViewById(R.id.versionText);
             final SwitchCompat accessSwitch = rootView.findViewById(R.id.accessSwitch);
             final SwitchCompat trustSwitch = rootView.findViewById(R.id.trustSwitch);
+            final boolean isDeviceNormal = NetworkDevice.Type.NORMAL.equals(device.type);
 
             if (device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
                 notSupportedText.setVisibility(View.VISIBLE);
 
-            if (localDevice.versionNumber < device.versionNumber || BuildConfig.DEBUG)
+            if (isDeviceNormal && (localDevice.versionNumber < device.versionNumber || BuildConfig.DEBUG))
                 setNeutralButton(R.string.butn_update, new DialogInterface.OnClickListener()
                 {
                     @Override
@@ -107,6 +108,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                     }
             );
 
+            if (isDeviceNormal)
             trustSwitch.setOnCheckedChangeListener(
                     new CompoundButton.OnCheckedChangeListener()
                     {
@@ -118,6 +120,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                         }
                     }
             );
+            else
+                trustSwitch.setVisibility(View.GONE);
 
             setView(rootView);
             setPositiveButton(R.string.butn_close, null);

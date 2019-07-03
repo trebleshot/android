@@ -10,6 +10,7 @@ import android.database.SQLException;
 import androidx.collection.ArrayMap;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -43,7 +44,7 @@ public class AccessDatabase extends SQLiteDatabase
 
     public static final String TAG = AccessDatabase.class.getSimpleName();
 
-    public static final int DATABASE_VERSION = 12;
+    public static final int DATABASE_VERSION = 13;
 
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
 
@@ -71,6 +72,8 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
     public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
     public static final String FIELD_DEVICES_TMPSECUREKEY = "tmpSecureKey";
+    // not required for the desktop version
+    public static final String FIELD_DEVICES_EXTRA_TYPE = "type";
 
     public static final String TABLE_DEVICECONNECTION = "deviceConnection";
     public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
@@ -223,6 +226,12 @@ public class AccessDatabase extends SQLiteDatabase
                         .getName()));
                 SQLQuery.createTable(database, tableTransferGroup);
                 insert(database, totalGroupList, null, null);
+            }
+
+            if (old < 13) {
+                database.execSQL("ALTER TABLE " + TABLE_DEVICES + " ADD "
+                        + FIELD_DEVICES_EXTRA_TYPE + " " + SQLType.TEXT.toString()
+                        + " NOT NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
             }
         }
     }

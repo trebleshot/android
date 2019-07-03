@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
+import android.media.MediaScannerConnection;
+import android.net.Network;
 import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
@@ -16,7 +18,9 @@ import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -27,7 +31,9 @@ import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
@@ -75,17 +81,37 @@ import fi.iki.elonen.NanoHTTPD;
  */
 public class WebShareServer extends NanoHTTPD
 {
+    public static final String TAG = WebShareServer.class.getSimpleName();
+
     private AssetManager mAssetManager;
     private NotificationUtils mNotificationUtils;
     private Context mContext;
+    private MediaScannerConnection mMediaScanner;
+    private NetworkDevice mThisDevice;
 
     public WebShareServer(Context context, int port) throws IOException
     {
         super(port);
         mContext = context;
         mAssetManager = context.getAssets();
+        mMediaScanner = new MediaScannerConnection(context, null);
         mNotificationUtils = new NotificationUtils(context, AppUtils.getDatabase(context),
                 AppUtils.getDefaultPreferences(context));
+        mThisDevice = AppUtils.getLocalDevice(mContext);
+    }
+
+    @Override
+    public void start(int timeout, boolean daemon) throws IOException
+    {
+        super.start(timeout, daemon);
+        mMediaScanner.connect();
+    }
+
+    @Override
+    public void stop()
+    {
+        super.stop();
+        mMediaScanner.disconnect();
     }
 
     @Override
@@ -96,6 +122,30 @@ public class WebShareServer extends NanoHTTPD
         long receiveTimeElapsed = System.currentTimeMillis();
         long notificationId = AppUtils.getUniqueNumber();
         DynamicNotification notification = null;
+        String clientAddress = session.getHeaders().get("http-client-ip");
+
+        NetworkDevice device = new NetworkDevice(clientAddress);
+
+        try {
+            AppUtils.getDatabase(mContext).reconstruct(device);
+        } catch (ReconstructionFailedException e) {
+            device.brand = "TrebleShot";
+            device.model = "Web";
+            device.versionNumber = mThisDevice.versionNumber;
+            device.versionName = mThisDevice.versionName;
+            device.nickname = clientAddress;
+            device.isRestricted = false;
+            device.type = NetworkDevice.Type.WEB;
+        }
+
+        device.lastUsageTime = System.currentTimeMillis();
+        AppUtils.getDatabase(mContext).publish(device);
+
+        if (device.isRestricted)
+            return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
+                    makePage("arrow-left.svg", R.string.text_send,
+                            makeNotFoundTemplate(R.string.mesg_somethingWentWrong,
+                                    R.string.mesg_notAllowed)));
 
         if (NanoHTTPD.Method.PUT.equals(method) || NanoHTTPD.Method.POST.equals(method)) {
             try {
@@ -105,7 +155,7 @@ public class WebShareServer extends NanoHTTPD
                 notification.setSmallIcon(android.R.drawable.stat_sys_download)
                         .setContentInfo(mContext.getString(R.string.text_webShare))
                         .setContentTitle(mContext.getString(R.string.text_receiving))
-                        .setContentText(session.getHeaders().get("http-client-ip"));
+                        .setContentText(device.nickname);
 
                 notification.show();
 
@@ -132,10 +182,10 @@ public class WebShareServer extends NanoHTTPD
                                 makeNotFoundTemplate(R.string.mesg_somethingWentWrong,
                                         R.string.text_listEmptyFiles)));
             } else {
-                File file = new File(filePath);
+                File tmpFile = new File(filePath);
                 DocumentFile savePath = FileUtils.getApplicationDirectory(mContext);
                 Interrupter interrupter = new Interrupter();
-                DocumentFile sourceFile = DocumentFile.fromFile(file);
+                DocumentFile sourceFile = DocumentFile.fromFile(tmpFile);
                 DocumentFile destFile = savePath.createFile(null,
                         FileUtils.getUniqueFileName(savePath, fileName, true));
 
@@ -195,10 +245,36 @@ public class WebShareServer extends NanoHTTPD
                     e.printStackTrace();
                 }
 
-                if (destFile.length() == file.length() || file.length() == 0)
+                if (destFile.length() == tmpFile.length() || tmpFile.length() == 0)
                     try {
-                        notification = mNotificationUtils.buildDynamicNotification(
-                                notificationId, NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
+                        Log.d(TAG, "Yeah we are here");
+
+                        TransferGroup webShareGroup = new TransferGroup(AppConfig.ID_GROUP_WEB_SHARE);
+                        webShareGroup.dateCreated = System.currentTimeMillis();
+                        webShareGroup.savePath = savePath.getUri().toString();
+
+                        TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(),
+                                webShareGroup.groupId, device.deviceId, destFile.getName(), destFile.getName(),
+                                destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
+                        transferObject.flag = TransferObject.Flag.DONE;
+
+                        NetworkDevice.Connection connection = new NetworkDevice.Connection(
+                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.deviceId,
+                                System.currentTimeMillis());
+                        AppUtils.applyAdapterName(connection);
+
+                        TransferGroup.Assignee assignee = new TransferGroup.Assignee(webShareGroup,
+                                device);
+                        assignee.connectionAdapter = connection.adapterName;
+
+                        AccessDatabase database = AppUtils.getDatabase(mContext);
+                        database.publish(webShareGroup);
+                        database.publish(assignee);
+                        database.publish(connection);
+                        database.publish(transferObject);
+
+                        notification = mNotificationUtils.buildDynamicNotification(notificationId,
+                                NotificationUtils.NOTIFICATION_CHANNEL_HIGH);
                         notification
                                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                                 .setContentInfo(mContext.getString(R.string.text_webShare))
@@ -221,6 +297,13 @@ public class WebShareServer extends NanoHTTPD
                         }
 
                         notification.show();
+
+                        if (mMediaScanner.isConnected() && destFile instanceof LocalDocumentFile)
+                            mMediaScanner.scanFile(((LocalDocumentFile) destFile).getFile().getAbsolutePath(),
+                                    destFile.getType());
+                        else
+                            Log.d(TAG, "Could not save file to the media database: scanner="
+                                    + mMediaScanner.isConnected() + " localFile=" + (destFile instanceof LocalDocumentFile));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

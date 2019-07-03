@@ -10,8 +10,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 import java.util.List;
 
-public class NetworkDevice
-        implements DatabaseObject<Object>
+public class NetworkDevice implements DatabaseObject<Object>
 {
     public String brand;
     public String model;
@@ -24,6 +23,7 @@ public class NetworkDevice
     public boolean isTrusted = false;
     public boolean isRestricted = false;
     public boolean isLocalAddress = false;
+    public Type type = Type.NORMAL;
 
     public NetworkDevice()
     {
@@ -66,6 +66,7 @@ public class NetworkDevice
         values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY, tmpSecureKey);
+        values.put(AccessDatabase.FIELD_DEVICES_EXTRA_TYPE, type.toString());
 
         return values;
     }
@@ -84,6 +85,12 @@ public class NetworkDevice
         this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
         this.isLocalAddress = item.getInt(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
         this.tmpSecureKey = item.getInt(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
+
+        try {
+            this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_DEVICES_EXTRA_TYPE));
+        } catch (Exception e) {
+            this.type = Type.NORMAL;
+        }
     }
 
     @Override
@@ -126,6 +133,11 @@ public class NetworkDevice
 
             }
         }
+    }
+
+    public enum Type {
+        NORMAL,
+        WEB
     }
 
     public static class Connection implements DatabaseObject<NetworkDevice>
