@@ -449,7 +449,7 @@
     <string name="text_transferSharedOnBrowser">Udostępnione w przeglądarce</string>
     <string name="text_or">lub</string>
     <string name="text_visitWebShareAddress">Odwiedź ten link za pomocą przeglądarki</string>
-    <string name="text_webShareInfo">Poniżej widzisz linki do pracujacych urządzeń w tej samej sieci, które można połączyć z przeglądarką. Następnie włącz indywidualnie udostępnianie transwerów w sieci.</string>
+    <string name="text_webShareInfo">Włącz udostępnianie sieci Web dla transferów pojedynczo i odwiedź dowolne łącze internetowe pokazane poniżej z urządzeniem podłączonym do tej samej sieci.</string>
     <string name="text_dowloadTrebleshotAndroid">Pobierz TrebleShot dla Android</string>
     <string name="text_listEmptyConnection">Sieci pojawiają się tutaj</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
@@ -459,4 +459,12 @@
     <string name="butn_asApk">Jako APK</string>
     <string name="butn_asLink">Jako link</string>
     <string name="text_linkTrebleshot">Udostępnianie plików za pomocą TrebleShot! Pobierz tutaj: %s</string>
+    <string name="butn_downloadAllAsZip">Pobierz wszystko jako ZIP (pojedynczy, nieskompresowany)</string>
+    <string name="text_interfaceVPN">Serwer VPN</string>
+    <string name="text_unrecognizedQrCode">Nierozpoznany kod</string>
+    <string name="mesg_textStreamSaved">Tekst zapisany</string>
+    <string name="butn_changeMode">Zmiana trybu</string>
+    <string name="mesg_qrScannerTextMode">Kody QR będą wyświetlane w formie tekstu</string>
+    <string name="mesg_qrScannerDefaultMode">Powrót do domyślnych akcji dla kodów QR</string>
+    <string name="butn_showAsQrCode">Pokaż jako kod QR</string>
 </resources>

@@ -317,7 +317,7 @@
     <string name="text_qrAllowTrustZoneSummary">Разрешить TrustZone для подключения QR-кода</string>
     <string name="butn_gridSize">Размер сетки</string>
     <string name="butn_singleRow">Один ряд</string>
-    <string name="butn_groupBy">Группа по</string>
+    <string name="butn_groupBy">Группировать по</string>
     <string name="text_photo">Фото</string>
     <string name="text_groupByNothing">Ничего</string>
     <string name="text_groupByDate">Дата</string>
@@ -367,8 +367,8 @@
     <string name="text_applyDarkThemeSummary">"Использовать тёмную тему "</string>
     <string name="butn_allow">Разрешить</string>
     <string name="butn_telegram_channel">Канал в Telegram</string>
-    <string name="text_listEmptyTransfer">Все переводы появляются здесь</string>
-    <string name="text_transfers">Переводы</string>
+    <string name="text_listEmptyTransfer">Все трансферы появляются здесь</string>
+    <string name="text_transfers">Трансферы</string>
     <string name="butn_connectionDetails">Детали соединения</string>
     <string name="butn_useKnownDevice">Используйте известные устройства</string>
     <string name="butn_scanQrCode">Сканировать QR-код</string>
@@ -432,7 +432,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">или же</string>
     <string name="text_visitWebShareAddress">Перейдите по этой ссылке в вашем браузере</string>
-    <string name="text_webShareInfo">Ниже вы видите ссылки, к которым устройства в одной сети могут подключаться с помощью браузера. Далее, включите общий доступ к Интернету для получения в индивидуальном порядке.</string>
+    <string name="text_webShareInfo">Включите общий доступ к Интернету для отправки по отдельности и перейдите по любой веб-ссылке, указаннойниже, на устройстве, подключенном к той же сети.</string>
     <string name="text_dowloadTrebleshotAndroid">Скачать TrebleShot для Android</string>
     <string name="text_listEmptyConnection">Сети, которые вы подключаете, появляются здесь</string>
     <string name="mesg_errorNotAnIpAddress">Не тот IP-адрес
