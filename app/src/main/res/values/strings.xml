@@ -118,7 +118,7 @@
     <string name="text_removeDeviceNotice">When you remove a device, its transfers will also be removed</string>
     <string name="text_removePendingTransferSummary">This will remove %s from the queue</string>
     <string name="ques_removeAll">Remove all?</string>
-    <string name="text_removeCertainPendingTransfersSummary">This will remove all pending transfers you see here</string>
+    <string name="text_removeTransferGroupSummary">This will remove all pending transfers you see here</string>
     <string name="text_availableNetworks">Choose network - %s</string>
     <string name="text_noNetworkAvailable">No network available</string>
     <string name="text_newVersionAvailable">New version available!</string>
@@ -471,4 +471,5 @@
     <string name="mesg_qrScannerDefaultMode">Back to the default actions for QR codes</string>
     <string name="butn_showAsQrCode">Show as QR code</string>
     <string name="text_showAsQrCode" translatable="false">@string/butn_showAsQrCode</string>
+    <string name="text_alsoDeleteFiles">Also delete received files from disk</string>
 </resources>

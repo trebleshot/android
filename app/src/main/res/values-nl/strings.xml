@@ -131,7 +131,7 @@
     <string name="text_removeDeviceNotice">Als je een apparaat verwijdert, dan worden de bijbehorende overdrachten ook verwijderd</string>
     <string name="text_removePendingTransferSummary">Dit verwijdert %s uit de wachtrij</string>
     <string name="ques_removeAll">Alles verwijderen?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij</string>
+    <string name="text_removeTransferGroupSummary">Dit verwijdert alle overdrachten op deze lijst uit de wachtrij</string>
     <string name="text_availableNetworks">Geregistreerde netwerken - %s</string>
     <string name="text_noNetworkAvailable">Geen netwerk beschikbaar</string>
     <string name="mesg_deviceNotExits">De verstuurder bestaat niet meer in uw apparaatlijst</string>

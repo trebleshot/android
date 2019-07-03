@@ -116,7 +116,7 @@
     <string name="text_removeDeviceNotice">Po usunięciu urządzenia jego transfery również zostaną usunięte</string>
     <string name="text_removePendingTransferSummary">Spowoduje to usunięcie %s z kolejki</string>
     <string name="ques_removeAll">Usunąć wszystko\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Spowoduje to usunięcie wszystkie oczekujące transfery, które tu widzisz</string>
+    <string name="text_removeTransferGroupSummary">Spowoduje to usunięcie wszystkie oczekujące transfery, które tu widzisz</string>
     <string name="text_availableNetworks">Wybierz sieć - %s</string>
     <string name="text_noNetworkAvailable">Brak sieci</string>
     <string name="text_savedConnections">Zapisane połączenia</string>

@@ -116,7 +116,7 @@
     <string name="text_removeDeviceNotice">Cuando se quita un dispositivo, también se quitan sus transferencias</string>
     <string name="text_removePendingTransferSummary">Esto quitará %s de la cola</string>
     <string name="ques_removeAll">¿Quitar todo?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>
+    <string name="text_removeTransferGroupSummary">Esto quitará todas las transferencias pendientes que ve aquí</string>
     <string name="text_availableNetworks">Escoger red - %s</string>
     <string name="text_noNetworkAvailable">No hay ninguna red disponible</string>
     <string name="text_savedConnections">Conexiones guardadas</string>

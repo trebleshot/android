@@ -8,6 +8,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -17,6 +18,8 @@ import com.genonbeta.TrebleShot.util.PreferenceUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.android.updatewithgithub.GitHubUpdater;
+
+import java.util.Locale;
 
 /**
  * created by: Veli
@@ -57,6 +60,11 @@ public class App extends Application
             GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
             UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
         }
+
+        String[] locales = getResources().getAssets().getLocales();
+
+        for (String locale : locales)
+            Log.d(App.class.getSimpleName(), "Locale: " + locale + "; display: " + Locale.forLanguageTag(locale).getDisplayName());
     }
 
     @Override

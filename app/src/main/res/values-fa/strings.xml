@@ -111,7 +111,7 @@
     <string name="text_removeDeviceNotice">زمانی که شما دستگاهی را حذف میکنید ارسال‌های آن نیز حذف میشوند</string>
     <string name="text_removePendingTransferSummary">%s از صف حذف خواهد شد</string>
     <string name="ques_removeAll">همه حذف شوند؟</string>
-    <string name="text_removeCertainPendingTransfersSummary">همه انتقال های در انتظار شما را پاک خواهد کرد</string>
+    <string name="text_removeTransferGroupSummary">همه انتقال های در انتظار شما را پاک خواهد کرد</string>
     <string name="text_availableNetworks">انتخاب شبکه - %s</string>
     <string name="text_noNetworkAvailable">شبکه ای موجود نیست</string>
     <string name="text_savedConnections">اتصال‌های ذخیره شده</string>

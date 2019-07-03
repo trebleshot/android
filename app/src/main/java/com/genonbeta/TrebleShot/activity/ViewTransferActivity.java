@@ -14,12 +14,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -340,18 +340,7 @@ public class ViewTransferActivity
         } else if (id == R.id.actions_transfer_toggle) {
             toggleTask();
         } else if (id == R.id.actions_transfer_remove) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.ques_removeAll)
-                    .setMessage(R.string.text_removeCertainPendingTransfersSummary)
-                    .setNegativeButton(R.string.butn_cancel, null)
-                    .setPositiveButton(R.string.butn_remove, new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which)
-                        {
-                            getDatabase().removeAsynchronous(ViewTransferActivity.this, mGroup);
-                        }
-                    }).show();
+            DialogUtils.showRemoveGroupDialog(this, mGroup);
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
             TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
 

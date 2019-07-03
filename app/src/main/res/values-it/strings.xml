@@ -121,7 +121,7 @@
     <string name="text_removeDeviceNotice">Alla rimozione di un dispositivo verranno rimossi anche i trasferimenti</string>
     <string name="text_removePendingTransferSummary">Questo rimuoverà \"%s\" dalla coda</string>
     <string name="ques_removeAll">Rimuovere tutto\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Questo rimuoverà tutti i trasferimenti in sospeso che vedi qui</string>
+    <string name="text_removeTransferGroupSummary">Questo rimuoverà tutti i trasferimenti in sospeso che vedi qui</string>
     <string name="text_availableNetworks">Scegli Rete - %s</string>
     <string name="text_noNetworkAvailable">Nessuna rete disponibile</string>
     <string name="mesg_deviceNotExits">Il destinatario non esiste più nella lista dei dispositivi</string>

@@ -227,7 +227,7 @@
     <string name="ques_removeQueue">"Убрать из очереди\? "</string>
     <string name="text_removePendingTransferSummary">Это уберет %s из очереди</string>
     <string name="ques_removeAll">Удалить все\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Это отменит все перечисленные активные операции</string>
+    <string name="text_removeTransferGroupSummary">Это отменит все перечисленные активные операции</string>
     <string name="text_availableNetworks">Выбрать сеть - %s</string>
     <string name="mesg_communicating">Соединение установлено</string>
     <string name="text_chooserTargetService">Выбор устройства</string>

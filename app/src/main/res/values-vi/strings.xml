@@ -58,7 +58,7 @@
     <string name="text_savePath">Nơi lưu file</string>
     <string name="butn_createFolder">Tạo thư mục</string>
     <string name="ques_launchApplication">Bạn có muốn khởi động app này\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Xoá tất cả các file đang chuyển được hiện ở đây</string>
+    <string name="text_removeTransferGroupSummary">Xoá tất cả các file đang chuyển được hiện ở đây</string>
     <string name="text_fileOpenAppChoose">Mở trong app</string>
     <string name="text_flagRemoved">Đã xoá</string>
     <string name="const_text_useAppFonts">Dùng font khuyến khích</string>

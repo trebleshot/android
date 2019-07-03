@@ -8,28 +8,27 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.media.MediaScannerConnection;
-import android.net.Network;
 import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
 
-import com.genonbeta.CoolSocket.CoolTransfer;
-import com.genonbeta.TrebleShot.App;
+import androidx.annotation.StringRes;
+import androidx.core.app.NotificationCompat;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
 import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -38,9 +37,7 @@ import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.BufferedWriter;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,8 +47,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,16 +57,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-
-import androidx.annotation.StringRes;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
 
 import fi.iki.elonen.NanoHTTPD;
 
@@ -247,8 +236,6 @@ public class WebShareServer extends NanoHTTPD
 
                 if (destFile.length() == tmpFile.length() || tmpFile.length() == 0)
                     try {
-                        Log.d(TAG, "Yeah we are here");
-
                         TransferGroup webShareGroup = new TransferGroup(AppConfig.ID_GROUP_WEB_SHARE);
                         webShareGroup.dateCreated = System.currentTimeMillis();
                         webShareGroup.savePath = savePath.getUri().toString();
@@ -297,6 +284,10 @@ public class WebShareServer extends NanoHTTPD
                         }
 
                         notification.show();
+
+                        mContext.sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+                                .putExtra(FileListFragment.EXTRA_FILE_PARENT, savePath.getUri())
+                                .putExtra(FileListFragment.EXTRA_FILE_NAME, destFile.getName()));
 
                         if (mMediaScanner.isConnected() && destFile instanceof LocalDocumentFile)
                             mMediaScanner.scanFile(((LocalDocumentFile) destFile).getFile().getAbsolutePath(),

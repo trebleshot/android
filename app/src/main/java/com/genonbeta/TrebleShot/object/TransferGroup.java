@@ -27,6 +27,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     public boolean isServedOnWeb;
 
     private boolean mIsSelected = false;
+    private boolean mDeleteFilesOnRemoval = false;
 
     public TransferGroup()
     {
@@ -89,6 +90,11 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
                 .setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
     }
 
+    public void setDeleteFilesOnRemoval(boolean delete)
+    {
+        mDeleteFilesOnRemoval = delete;
+    }
+
     @Override
     public boolean setSelectableSelected(boolean selected)
     {
@@ -117,8 +123,19 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
 
-        database.removeAsObject(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId)), TransferObject.class, null, this);
+        SQLQuery.Select objectSelection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId));
+
+        if (mDeleteFilesOnRemoval) {
+            List<TransferObject> objects = database.castQuery(dbInstance, objectSelection,
+                    TransferObject.class, null);
+
+            for (TransferObject object : objects)
+                object.setDeleteOnRemoval(true);
+
+            database.remove(objects);
+        } else
+            database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, this);
     }
 
     public static class Index

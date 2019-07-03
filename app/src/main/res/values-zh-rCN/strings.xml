@@ -141,7 +141,7 @@
     <string name="butn_wifiSettings">Wi-Fi</string>
     <string name="text_pendingTransfers">正在等待的传输</string>
     <string name="butn_proceed">确认继续</string>
-    <string name="text_removeCertainPendingTransfersSummary">这将会移除这里可见的所有等待的传输</string>
+    <string name="text_removeTransferGroupSummary">这将会移除这里可见的所有等待的传输</string>
     <string name="text_availableNetworks">选择网络 - %s</string>
     <string name="text_noNetworkAvailable">无可用的网络</string>
     <string name="mesg_organizingFiles">整理您的文件</string>

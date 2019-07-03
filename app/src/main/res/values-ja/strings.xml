@@ -133,7 +133,7 @@
     <string name="text_removeDeviceNotice">デバイスを削除すると、残りの転送も削除されます</string>
     <string name="text_removePendingTransferSummary">これにより %s キューから削除されます</string>
     <string name="ques_removeAll">すべて削除しますか?</string>
-    <string name="text_removeCertainPendingTransfersSummary">これによりここで表示されたすべての保留中の転送が削除されます</string>
+    <string name="text_removeTransferGroupSummary">これによりここで表示されたすべての保留中の転送が削除されます</string>
     <string name="text_availableNetworks">登録済みの接続 - %s</string>
     <string name="text_noNetworkAvailable">ネットワークを利用できません</string>
     <string name="mesg_deviceNotExits">送信者はお使いのデバイスにもう存在しません。 デバイス同士を接続した後に続行できます</string>

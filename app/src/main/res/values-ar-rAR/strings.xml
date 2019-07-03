@@ -119,7 +119,7 @@
     <string name="text_navigationDrawerClose">اغلق درج الإنتقال</string>
     <string name="text_developerModeSummary">تعطيل تكوين المستخدم</string>
     <string name="butn_proceed">المضي قدما</string>
-    <string name="text_removeCertainPendingTransfersSummary">يؤدي هذا إلى إزالة كافة عمليات النقل المعلقة التي تراها هنا</string>
+    <string name="text_removeTransferGroupSummary">يؤدي هذا إلى إزالة كافة عمليات النقل المعلقة التي تراها هنا</string>
     <string name="text_availableNetworks">اختر الشبكة - %s</string>
     <string name="text_noNetworkAvailable">لاتوجد شبكة متوفرة</string>
     <string name="text_savedConnections">اتصالات محفوظة</string>

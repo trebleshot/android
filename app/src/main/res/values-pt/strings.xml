@@ -109,7 +109,7 @@
     <string name="text_removeDeviceNotice">Quando remove um dispositivo, as transferências dele também são removidas</string>
     <string name="text_removePendingTransferSummary">Isto irá remover %s da fila</string>
     <string name="ques_removeAll">Remover tudo\?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Isto irá remover todas as transferências pendentes que vê aqui</string>
+    <string name="text_removeTransferGroupSummary">Isto irá remover todas as transferências pendentes que vê aqui</string>
     <string name="text_availableNetworks">Escolha a rede - %s</string>
     <string name="text_noNetworkAvailable">Nenhuma rede disponível</string>
     <string name="text_newVersionAvailable">Nova versão disponível!</string>

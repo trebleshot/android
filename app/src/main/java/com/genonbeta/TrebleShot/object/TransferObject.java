@@ -43,6 +43,7 @@ public class TransferObject
     public Type type = Type.INCOMING;
     public Flag flag = Flag.PENDING;
 
+    private boolean mDeleteOnRemoval = false;
     private boolean mIsSelected = false;
 
     public TransferObject()
@@ -171,6 +172,11 @@ public class TransferObject
         this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
     }
 
+    public void setDeleteOnRemoval(boolean delete)
+    {
+        mDeleteOnRemoval = delete;
+    }
+
     @Override
     public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
@@ -187,7 +193,8 @@ public class TransferObject
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
         // Normally we'd like to check every file, but I may take a while.
-        if (!Flag.INTERRUPTED.equals(flag) || !Type.INCOMING.equals(type))
+        if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(flag)
+                && (!Flag.DONE.equals(flag) || !mDeleteOnRemoval)))
             return;
 
         try {

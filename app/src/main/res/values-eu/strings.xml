@@ -116,7 +116,7 @@
     <string name="text_removeDeviceNotice">Gailu bat kentzean, bere transferentziak ere kenduko dira</string>
     <string name="text_removePendingTransferSummary">Honek %s ilaratik kenduko du</string>
     <string name="ques_removeAll">Kendu dena?</string>
-    <string name="text_removeCertainPendingTransfersSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia guztiak kenduko ditu</string>
+    <string name="text_removeTransferGroupSummary">Honek hemen ikusten dituzun eta betetzeke dauden transferentzia guztiak kenduko ditu</string>
     <string name="text_availableNetworks">Hautatu sarea - %s</string>
     <string name="text_noNetworkAvailable">Ez dago sarerik eskuragarri</string>
     <string name="text_savedConnections">Gordetako konexioak</string>

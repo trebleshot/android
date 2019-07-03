@@ -119,7 +119,7 @@
     <string name="butn_showSystemApps">إظهار تطبيقات النظام</string>
     <string name="butn_wifiSettings">وأي فأي</string>
     <string name="butn_proceed">المضي قدما</string>
-    <string name="text_removeCertainPendingTransfersSummary">سيؤدي ذلك إلى إزالة كافة عمليات النقل المعلقة في هذه القائمة</string>
+    <string name="text_removeTransferGroupSummary">سيؤدي ذلك إلى إزالة كافة عمليات النقل المعلقة في هذه القائمة</string>
     <string name="text_availableNetworks">اختر الشبكة--%s</string>
     <string name="text_noNetworkAvailable">لا توجد أي شبكة متوفرة</string>
     <string name="text_savedConnections">الاتصالات المحفوظة</string>

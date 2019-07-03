@@ -318,7 +318,7 @@
     <string name="text_useLightSummary">Utiliser les lumières</string>
     <string name="text_autoStartSummary">Activer la communication lors de la détection d’une connexion</string>
     <string name="butn_multiSelect">Sélection multiple</string>
-    <string name="text_removeCertainPendingTransfersSummary">Cela va supprimer tous les transferts en attente affichés ici</string>
+    <string name="text_removeTransferGroupSummary">Cela va supprimer tous les transferts en attente affichés ici</string>
     <string name="text_requestPermissionStorageSummary">Cette autorisation permet à TrebleShot l\'accès en lecture et écriture vers l’unité de stockage de votre appareil afin de recevoir et partager des fichiers.</string>
     <string name="mesg_textShareLimit">Vous ne pouvez partager qu’un seul texte à la fois</string>
     <string name="mesg_hotspotCreatedInfo">Connectez-vous à «%s» via votre Wi-Fi ou envoyez des fichiers via \"%s\" dans TrebleShot</string>
