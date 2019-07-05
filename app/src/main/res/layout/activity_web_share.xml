@@ -43,40 +43,6 @@
             android:layout_gravity="center_horizontal"
             android:minHeight="?attr/actionBarSize"
             app:tabMode="scrollable" />
-
-        <!--
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:contentScrim="?colorPrimary"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
-            app:titleEnabled="false"
-            app:toolbarId="@+id/toolbar">
-
-
-            120sp will automatically adapt when globally bigger fonts are assigned.
-            So with 18sp text we should expect 6 lines of text to fit.
-
-            <TextView
-                style="@style/TextAppearance.Primary.Big"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="?actionBarSize"
-                android:gravity="center"
-                android:paddingLeft="@dimen/short_content_width_padding"
-                android:paddingTop="20dp"
-                android:paddingRight="@dimen/short_content_width_padding"
-                android:paddingBottom="20dp"
-                android:text="@string/text_webShareInfo" />
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:layout_collapseMode="pin" />
-
-        </com.google.android.material.appbar.CollapsingToolbarLayout>-->
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.viewpager.widget.ViewPager
@@ -84,7 +50,5 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

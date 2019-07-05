@@ -33,6 +33,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
@@ -51,6 +52,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -108,7 +110,27 @@ public class ActiveConnectionListFragment
     protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
     {
         CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection, null, false);
+        final CardView webShareInfo = view.findViewById(R.id.card_web_share_info);
+        Button webShareInfoHideButton = view.findViewById(R.id.card_web_share_info_hide_button);
         mFAB = view.findViewById(R.id.content_fab);
+        final String helpWebShareInfo = "help_webShareInfo";
+
+        if (AppUtils.getDefaultPreferences(getContext()).getBoolean(helpWebShareInfo, true)) {
+            webShareInfo.setVisibility(View.VISIBLE);
+            webShareInfoHideButton.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    webShareInfo.setVisibility(View.GONE);
+                    TransitionManager.beginDelayedTransition((ViewGroup) webShareInfo.getParent());
+
+                    AppUtils.getDefaultPreferences(getContext()).edit()
+                            .putBoolean(helpWebShareInfo, false)
+                            .apply();
+                }
+            });
+        }
 
         listViewContainer.addView(view);
         mFAB.setOnClickListener(new View.OnClickListener()
