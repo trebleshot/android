@@ -33,17 +33,21 @@ import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
  * created by: veli
  * date: 3/11/19 7:43 PM
  */
-public class CustomNetworkDeviceListFragment extends NetworkDeviceListFragment
+public class QuickSelectNetworkDeviceListFragment extends NetworkDeviceListFragment
 {
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        setHiddenDeviceTypes(new NetworkDevice.Type[] {NetworkDevice.Type.WEB});
+
         super.onCreate(savedInstanceState);
 
         setHasOptionsMenu(false);
         setFilteringSupported(false);
         setUseDefaultPaddingDecoration(false);
         setUseDefaultPaddingDecorationSpaceForEdges(false);
+        setSwipeRefreshEnabled(false);
+        setDeviceScanAllowed(false);
 
         if (isScreenLarge())
             setDefaultViewingGridSize(4, 5);

@@ -491,4 +491,5 @@
     <string name="text_showAsQrCode" translatable="false">@string/butn_showAsQrCode</string>
     <string name="text_alsoDeleteReceivedFiles">Also delete received files from disk</string>
     <string name="text_removeSelected">This will remove selected items</string>
+    <string name="text_clients">Clients</string>
 </resources>

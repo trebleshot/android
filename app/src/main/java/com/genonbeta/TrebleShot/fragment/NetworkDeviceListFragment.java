@@ -70,6 +70,7 @@ public class NetworkDeviceListFragment
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
     public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
+    public static final String ARG_HIDDEN_DEVICES_LIST = "hiddenDeviceList";
 
     private NsdDiscovery mNsdDiscovery;
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
@@ -78,8 +79,10 @@ public class NetworkDeviceListFragment
     @Nullable
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
+    private NetworkDevice.Type[] mHiddenDeviceTypes;
     private boolean mWaitForWiFi = false;
-    private boolean mAllowOthers = false;
+    private boolean mSwipeRefreshEnabled = true;
+    private boolean mDeviceScanAllowed = true;
 
     private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
     {
@@ -93,6 +96,26 @@ public class NetworkDeviceListFragment
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
+        if (getArguments() != null) {
+            Bundle args = getArguments();
+
+            if (args.containsKey(ARG_HIDDEN_DEVICES_LIST)) {
+                List<String> hiddenTypes = args.getStringArrayList(ARG_HIDDEN_DEVICES_LIST);
+
+                if (hiddenTypes != null && hiddenTypes.size() > 0) {
+                    mHiddenDeviceTypes = new NetworkDevice.Type[hiddenTypes.size()];
+
+                    for (int i = 0; i < hiddenTypes.size(); i++) {
+                        NetworkDevice.Type type = NetworkDevice.Type.valueOf(hiddenTypes.get(i));
+                        mHiddenDeviceTypes[i] = type;
+
+                        if (mDeviceScanAllowed && NetworkDevice.Type.NORMAL.equals(type))
+                            mDeviceScanAllowed = false;
+                    }
+                }
+            }
+        }
+
         super.onCreate(savedInstanceState);
 
         setFilteringSupported(true);
@@ -113,7 +136,7 @@ public class NetworkDeviceListFragment
     @Override
     protected RecyclerView onListView(ViewGroup container)
     {
-        if (isHorizontalOrientation())
+        if (isHorizontalOrientation() || !mSwipeRefreshEnabled)
             return super.onListView(container);
 
         Context context = container.getContext();
@@ -240,7 +263,7 @@ public class NetworkDeviceListFragment
             }
         };
 
-        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils(), mAllowOthers)
+        return new NetworkDeviceListAdapter(getContext(), getConnectionUtils(), mHiddenDeviceTypes)
         {
             @NonNull
             @Override
@@ -318,12 +341,14 @@ public class NetworkDeviceListFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
 
-        if (!isHorizontalOrientation())
+        if (!isHorizontalOrientation()) {
             inflater.inflate(R.menu.actions_network_device, menu);
+            menu.findItem(R.id.network_devices_scan).setVisible(mDeviceScanAllowed);
+        }
     }
 
     @Override
@@ -415,9 +440,19 @@ public class NetworkDeviceListFragment
             new DeviceInfoDialog(getActivity(), AppUtils.getDatabase(getContext()), device).show();
     }
 
-    public void setAllowOthers(boolean allow)
+    public void setHiddenDeviceTypes(NetworkDevice.Type[] types)
     {
-        mAllowOthers = allow;
+        mHiddenDeviceTypes = types;
+    }
+
+    public void setSwipeRefreshEnabled(boolean enabled)
+    {
+        mSwipeRefreshEnabled = enabled;
+    }
+
+    public void setDeviceScanAllowed(boolean allow)
+    {
+        mDeviceScanAllowed = allow;
     }
 
     public void requestRefresh()

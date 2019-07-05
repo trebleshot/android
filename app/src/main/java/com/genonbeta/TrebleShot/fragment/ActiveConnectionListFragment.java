@@ -23,36 +23,49 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.ColorStateList;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.transition.TransitionManager;
 
 /**
  * created by: veli
  * date: 4/7/19 10:59 PM
  */
-public class ActiveConnectionListFragment extends EditableListFragment<ActiveConnectionListAdapter
-        .AddressedEditableInterface, EditableListAdapter.EditableViewHolder,
-        ActiveConnectionListAdapter>
+public class ActiveConnectionListFragment
+        extends EditableListFragment<ActiveConnectionListAdapter.AddressedEditableInterface,
+        EditableListAdapter.EditableViewHolder, ActiveConnectionListAdapter>
+        implements TitleSupport
 {
+    private FloatingActionButton mFAB;
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -66,6 +79,9 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
                     || WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(intent.getAction())
                     || BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED.equals(intent.getAction()))
                 refreshList();
+            else if (CommunicationService.ACTION_WEBSHARE_STATUS.equals(intent.getAction()))
+                updateWebShareStatus(intent.getBooleanExtra(CommunicationService.EXTRA_STATUS_STARTED,
+                        false));
         }
     };
 
@@ -75,7 +91,11 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
         super.onCreate(savedInstanceState);
         setSortingSupported(false);
         setFilteringSupported(true);
+        setUseDefaultPaddingDecoration(true);
+        setUseDefaultPaddingDecorationSpaceForEdges(true);
+        setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
+        mFilter.addAction(CommunicationService.ACTION_WEBSHARE_STATUS);
         mFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
         mFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -85,10 +105,30 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
     }
 
     @Override
+    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    {
+        CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection, null, false);
+        mFAB = view.findViewById(R.id.content_fab);
+
+        listViewContainer.addView(view);
+        mFAB.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                AppUtils.toggleWebShare(getContext(), false);
+            }
+        });
+
+        return super.onListView(mainContainer, (FrameLayout) view.findViewById(R.id.container));
+    }
+
+    @Override
     public void onResume()
     {
         super.onResume();
         getActivity().registerReceiver(mReceiver, mFilter);
+        requestWebShareStatus();
     }
 
     @Override
@@ -96,6 +136,7 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
     {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
+        mFAB.setAnimation(null);
     }
 
     @Override
@@ -169,6 +210,12 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
     }
 
     @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_connect);
+    }
+
+    @Override
     public boolean performLayoutClickOpen(EditableListAdapter.EditableViewHolder holder)
     {
         if (!super.performLayoutClickOpen(holder)) {
@@ -186,5 +233,37 @@ public class ActiveConnectionListFragment extends EditableListFragment<ActiveCon
         }
 
         return true;
+    }
+
+    public void requestWebShareStatus()
+    {
+        AppUtils.startForegroundService(getContext(), new Intent(getContext(), CommunicationService.class)
+                .setAction(CommunicationService.ACTION_REQUEST_WEBSHARE_STATUS));
+    }
+
+    public void updateWebShareStatus(boolean running)
+    {
+        mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(),
+                running ? R.color.colorError : R.color.colorSecondary)));
+        mFAB.setImageResource(running ? R.drawable.ic_pause_white_24dp
+                : R.drawable.ic_play_arrow_white_24dp);
+
+        if (mFAB.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
+            ((CoordinatorLayout.LayoutParams) mFAB.getLayoutParams()).gravity = running
+                    ? Gravity.BOTTOM | Gravity.END
+                    : Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
+
+            mFAB.setLayoutParams(mFAB.getLayoutParams());
+
+            if (mFAB.getParent() != null && mFAB.getParent() instanceof ViewGroup)
+                TransitionManager.beginDelayedTransition((ViewGroup) mFAB.getParent());
+        }
+
+        if (running) {
+            mFAB.setAnimation(null);
+        } else {
+            mFAB.setVisibility(View.VISIBLE);
+            mFAB.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.pulse));
+        }
     }
 }

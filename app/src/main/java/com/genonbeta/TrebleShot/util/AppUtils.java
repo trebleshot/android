@@ -46,6 +46,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.DbSharablePreferences;
@@ -402,6 +403,23 @@ public class AppUtils
                 .apply();
     }
 
+    public static void startWebShareActivity(Context context, boolean startWebShare) {
+        Intent startIntent = new Intent(context, WebShareActivity.class);
+
+        if (startWebShare)
+            startIntent.putExtra(WebShareActivity.EXTRA_WEBSERVER_START_REQUIRED, true);
+
+        context.startActivity(startIntent);
+    }
+
+    public static void startForegroundService(Context context, Intent intent)
+    {
+        if (Build.VERSION.SDK_INT >= 26)
+            context.startForegroundService(intent);
+        else
+            context.startService(intent);
+    }
+
     public static <T> T quickAction(T clazz, QuickActions<T> quickActions)
     {
         quickActions.onQuickActions(clazz);
@@ -423,21 +441,15 @@ public class AppUtils
         return false;
     }
 
-    public static void startWebShareActivity(Context context, boolean startWebShare) {
-        Intent startIntent = new Intent(context, WebShareActivity.class);
-
-        if (startWebShare)
-            startIntent.putExtra(WebShareActivity.EXTRA_WEBSERVER_START_REQUIRED, true);
-
-        context.startActivity(startIntent);
-    }
-
-    public static void startForegroundService(Context context, Intent intent)
+    public static void toggleWebShare(Context context, boolean forceStart)
     {
-        if (Build.VERSION.SDK_INT >= 26)
-            context.startForegroundService(intent);
-        else
-            context.startService(intent);
+        Intent intent = new Intent(context, CommunicationService.class)
+                .setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE);
+
+        if (forceStart)
+            intent.putExtra(CommunicationService.EXTRA_TOGGLE_WEBSHARE_START_ALWAYS, true);
+
+        AppUtils.startForegroundService(context, intent);
     }
 
     public interface QuickActions<T>

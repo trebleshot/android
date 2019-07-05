@@ -42,22 +42,25 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
-    private boolean mAllowOthers;
+    private List<NetworkDevice.Type> mHiddenDeviceTypes;
 
     public NetworkDeviceListAdapter(Context context, ConnectionUtils connectionUtils,
-                                    boolean allowOthers)
+                                    NetworkDevice.Type[] hiddenDeviceTypes)
     {
         super(context);
 
         mConnectionUtils = connectionUtils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(context);
-        mAllowOthers = allowOthers;
+        mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes)
+                : new ArrayList<NetworkDevice.Type>();
     }
 
     @Override
@@ -96,8 +99,8 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
                 .setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), EditableNetworkDevice.class))
-            if (filterItem(device) && (NetworkDevice.Type.NORMAL.equals(device.type) || mAllowOthers)
-                    && (!device.isLocalAddress || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
+            if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocalAddress
+                    || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
                 list.add(device);
 
         return list;

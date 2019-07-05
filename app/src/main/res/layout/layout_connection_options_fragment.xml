@@ -258,7 +258,7 @@
 
         <fragment
             android:id="@+id/connection_option_device_list"
-            android:name="com.genonbeta.TrebleShot.fragment.CustomNetworkDeviceListFragment"
+            android:name="com.genonbeta.TrebleShot.fragment.QuickSelectNetworkDeviceListFragment"
             android:layout_width="match_parent"
             android:layout_height="260dp"
             android:tag="deviceListFragment" />

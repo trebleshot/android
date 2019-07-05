@@ -246,7 +246,7 @@ public class TransferListFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_pendingTransfers);
+        return context.getString(R.string.text_transfers);
     }
 
     @Override

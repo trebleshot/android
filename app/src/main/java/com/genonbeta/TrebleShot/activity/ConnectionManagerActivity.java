@@ -61,6 +61,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 
+import java.util.ArrayList;
+
 public class ConnectionManagerActivity
         extends Activity
         implements SnackbarSupport
@@ -191,6 +193,13 @@ public class ConnectionManagerActivity
         setResult(RESULT_CANCELED);
         setContentView(R.layout.activity_connection_manager);
 
+        ArrayList<String> hiddenDeviceTypes = new ArrayList<>();
+        hiddenDeviceTypes.add(NetworkDevice.Type.WEB.toString());
+
+        Bundle deviceListArgs = new Bundle();
+        deviceListArgs.putStringArrayList(NetworkDeviceListFragment.ARG_HIDDEN_DEVICES_LIST,
+                hiddenDeviceTypes);
+
         FragmentFactory factory = getSupportFragmentManager().getFragmentFactory();
         Toolbar toolbar = findViewById(R.id.toolbar);
         mAppBarLayout = findViewById(R.id.app_bar);
@@ -201,6 +210,7 @@ public class ConnectionManagerActivity
         mHotspotManagerFragment = (HotspotManagerFragment) factory.instantiate(getClassLoader(), HotspotManagerFragment.class.getName(), null);
         mNetworkManagerFragment = (NetworkManagerFragment) factory.instantiate(getClassLoader(), NetworkManagerFragment.class.getName(), null);
         mDeviceListFragment = (NetworkDeviceListFragment) factory.instantiate(getClassLoader(), NetworkDeviceListFragment.class.getName(), null);
+        mDeviceListFragment.setArguments(deviceListArgs);
 
         mFilter.addAction(ACTION_CHANGE_FRAGMENT);
         mFilter.addAction(CommunicationService.ACTION_DEVICE_ACQUAINTANCE);
@@ -298,7 +308,6 @@ public class ConnectionManagerActivity
         return Snackbar.make(findViewById(R.id.activity_connection_establishing_content_view), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    @IdRes
     public AvailableFragment getShowingFragmentId()
     {
         Fragment fragment = getShowingFragment();

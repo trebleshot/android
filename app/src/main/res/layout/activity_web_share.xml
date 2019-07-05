@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -22,7 +21,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     tools:context=".activity.WebShareActivity">
 
     <com.google.android.material.appbar.AppBarLayout
@@ -31,6 +30,21 @@
         android:layout_height="wrap_content">
         <!-- android:layout_height="@dimen/app_bar_height">-->
 
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?actionBarSize"
+            app:layout_collapseMode="pin" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:minHeight="?attr/actionBarSize"
+            app:tabMode="scrollable" />
+
+        <!--
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/toolbar_layout"
             android:layout_width="match_parent"
@@ -40,10 +54,10 @@
             app:titleEnabled="false"
             app:toolbarId="@+id/toolbar">
 
-            <!--
+
             120sp will automatically adapt when globally bigger fonts are assigned.
             So with 18sp text we should expect 6 lines of text to fit.
-            -->
+
             <TextView
                 style="@style/TextAppearance.Primary.Big"
                 android:layout_width="match_parent"
@@ -62,22 +76,15 @@
                 android:layout_height="?actionBarSize"
                 app:layout_collapseMode="pin" />
 
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.CollapsingToolbarLayout>-->
     </com.google.android.material.appbar.AppBarLayout>
 
-    <fragment
-        android:id="@+id/mainContainer"
-        android:name="com.genonbeta.TrebleShot.fragment.ActiveConnectionListFragment"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/content_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_web_white_24dp" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

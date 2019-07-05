@@ -16,66 +16,71 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/ListContentLayoutStyle.Narrow.WithOverflowButton"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/visitView"
-        style="@style/OverflowButton"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
-
-    <FrameLayout
-        android:id="@+id/layout_image"
-        style="@style/ListContentIconStyle"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true">
+    <RelativeLayout
+        android:id="@+id/container"
+        style="@style/ListContentLayoutStyle.WithOverflowButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?rectSelector">
 
         <ImageView
-            android:id="@+id/image"
+            android:id="@+id/visitView"
+            style="@style/OverflowButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            app:srcCompat="@drawable/ic_open_in_new_white_24dp" />
+
+        <FrameLayout
+            android:id="@+id/layout_image"
+            style="@style/ListContentIconStyle"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true">
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/text_image"
+                app:srcCompat="@drawable/ic_share_white_24dp" />
+
+            <include layout="@layout/generic_view_selection_square" />
+
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:contentDescription="@string/text_image"
-            app:srcCompat="@drawable/ic_share_white_24dp" />
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@id/visitView"
+            android:layout_toLeftOf="@+id/visitView"
+            android:layout_toEndOf="@id/layout_image"
+            android:layout_toRightOf="@id/layout_image"
+            android:orientation="vertical">
 
-        <include layout="@layout/generic_view_selection_square" />
+            <TextView
+                android:id="@+id/text"
+                style="@style/TextAppearance.Primary.Big"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="3" />
 
-    </FrameLayout>
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toStartOf="@id/visitView"
-        android:layout_toLeftOf="@+id/visitView"
-        android:layout_toEndOf="@id/layout_image"
-        android:layout_toRightOf="@id/layout_image"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/text"
-            style="@style/TextAppearance.Primary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="3" />
-
-        <View
-            android:layout_width="wrap_content"
-            android:layout_height="@dimen/padding_list_content_two_lines_separation_height" />
-
-        <TextView
-            android:id="@+id/text2"
-            style="@style/TextAppearance.Secondary"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-</RelativeLayout>
+            <TextView
+                android:id="@+id/text2"
+                style="@style/TextAppearance.Secondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

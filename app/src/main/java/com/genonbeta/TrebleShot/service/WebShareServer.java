@@ -1,4 +1,5 @@
 /*
+/*
  * Copyright (C) 2019 Veli Tasalı
  *
  * This program is free software; you can redistribute it and/or
@@ -254,9 +255,16 @@ public class WebShareServer extends NanoHTTPD
 
                 if (destFile.length() == tmpFile.length() || tmpFile.length() == 0)
                     try {
+                        AccessDatabase database = AppUtils.getDatabase(mContext);
+
                         TransferGroup webShareGroup = new TransferGroup(AppConfig.ID_GROUP_WEB_SHARE);
                         webShareGroup.dateCreated = System.currentTimeMillis();
-                        webShareGroup.savePath = savePath.getUri().toString();
+
+                        try {
+                            database.reconstruct(webShareGroup);
+                        } catch (ReconstructionFailedException e) {
+                            webShareGroup.savePath = savePath.getUri().toString();
+                        }
 
                         TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(),
                                 webShareGroup.groupId, device.deviceId, destFile.getName(), destFile.getName(),
@@ -272,7 +280,7 @@ public class WebShareServer extends NanoHTTPD
                                 device);
                         assignee.connectionAdapter = connection.adapterName;
 
-                        AccessDatabase database = AppUtils.getDatabase(mContext);
+
                         database.publish(webShareGroup);
                         database.publish(assignee);
                         database.publish(connection);

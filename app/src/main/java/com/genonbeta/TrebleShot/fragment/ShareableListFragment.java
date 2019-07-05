@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.app;
+package com.genonbeta.TrebleShot.fragment;
 
 import android.os.Bundle;
 import android.view.Gravity;
@@ -24,10 +24,12 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.SearchView;
 
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
@@ -67,7 +69,7 @@ public abstract class ShareableListFragment<T extends Shareable, V extends Edita
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
 
