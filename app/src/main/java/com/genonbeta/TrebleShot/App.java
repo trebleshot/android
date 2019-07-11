@@ -78,11 +78,6 @@ public class App extends Application
             GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
             UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
         }
-
-        String[] locales = getResources().getAssets().getLocales();
-
-        for (String locale : locales)
-            Log.d(App.class.getSimpleName(), "Locale: " + locale + "; display: " + Locale.forLanguageTag(locale).getDisplayName());
     }
 
     @Override

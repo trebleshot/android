@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.service;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.ContentValues;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -1160,23 +1161,24 @@ public class CommunicationService extends Service
 
                                 // This changes the state of the object to pending from any other
                                 getDatabase().update(processHolder.transferObject);
-                                StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
+
+                                DocumentFile file = FileUtils.fromUri(getApplicationContext(), Uri.parse(processHolder.transferObject.file));
+                                long fileSize = file.length();
 
                                 reply.put(Keyword.RESULT, true);
 
-                                if (streamInfo.size >= 0
-                                        && streamInfo.size != processHolder.transferObject.fileSize) {
-                                    reply.put(Keyword.SIZE_CHANGED, streamInfo.size);
-                                    processHolder.transferObject.fileSize = streamInfo.size;
+                                if (fileSize >= 0 && fileSize != processHolder.transferObject.fileSize) {
+                                    reply.put(Keyword.SIZE_CHANGED, fileSize);
+                                    processHolder.transferObject.fileSize = fileSize;
                                 }
 
                                 getNotificationHelper().notifyFileTransaction(processHolder);
                                 Log.d(TAG, "SeamlessServer.onConnected(): Proceeding to send");
 
                                 sendBuilder.setServerIp(activeConnection.getClientAddress())
-                                        .setInputStream(streamInfo.openInputStream())
+                                        .setInputStream(getContentResolver().openInputStream(file.getUri()))
                                         .setPort(processHolder.transferObject.accessPort)
-                                        .setFileSize(streamInfo.size)
+                                        .setFileSize(fileSize)
                                         .setBuffer(new byte[AppConfig.BUFFER_LENGTH_DEFAULT])
                                         .setExtra(processHolder);
                             } else if (processHolder.builder.getTransferProgress().isInterrupted()) {
