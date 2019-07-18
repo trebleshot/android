@@ -30,6 +30,7 @@ import android.widget.TextView;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -57,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class FileListAdapter
         extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -214,52 +216,42 @@ public class FileListAdapter
             {
                 // It is faster to check the files that are flagged as interrupted.
                 // In this way, we can get rid of incomplete files faster.
-                List<TransferGroup> transferGroups = AppUtils.getDatabase(getContext())
-                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                                .setOrderBy(String.format("%s DESC", AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED)), TransferGroup.class);
+                List<TransferObject> objects = AppUtils.getDatabase(getContext())
+                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+                                String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_FLAG),
+                                TransferObject.Flag.DONE.toString()).setOrderBy(
+                                String.format("%s DESC", AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME)),
+                                TransferObject.class);
+
                 List<DocumentFile> pickedRecentFiles = new ArrayList<>();
+                ArrayMap<Long, TransferGroup> groupMap = new ArrayMap<>();
 
-                try {
-                    for (TransferGroup group : transferGroups) {
-                        int errorLimit = 3;
+                for (TransferGroup group : AppUtils.getDatabase(getContext()).castQuery(
+                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP), TransferGroup.class))
+                    groupMap.put(group.id, group);
+                int errorLimit = 3;
 
-                        List<TransferObject> recentFiles = AppUtils.getDatabase(getContext())
-                                .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                        .setWhere(String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_FLAG,
-                                                AccessDatabase.FIELD_TRANSFER_TYPE, AccessDatabase.FIELD_TRANSFER_GROUPID),
-                                                TransferObject.Flag.DONE.toString(),
-                                                TransferObject.Type.INCOMING.toString(),
-                                                String.valueOf(group.groupId))
-                                        .setOrderBy(String.format("`%s` DESC, `%s` DESC",
-                                                AccessDatabase.FIELD_TRANSFER_DIRECTORY,
-                                                AccessDatabase.FIELD_TRANSFER_NAME)), TransferObject.class);
+                for (TransferObject object : objects) {
+                    TransferGroup group = groupMap.get(object.groupId);
 
-                        for (TransferObject recentFile : recentFiles) {
-                            if (pickedRecentFiles.size() >= 20)
-                                throw new Exception("Reached the threshold for picking recent files");
+                    if (pickedRecentFiles.size() >= 20 || errorLimit == 0 || group == null)
+                        break;
 
-                            if (errorLimit == 0)
-                                break;
+                    try {
+                        DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), object,
+                                group, false);
 
-                            try {
-                                DocumentFile documentFile = FileUtils.getIncomingPseudoFile(getContext(), recentFile,
-                                        group, false);
-
-                                if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
-                                    pickedRecentFiles.add(documentFile);
-                                else
-                                    errorLimit--;
-                            } catch (IOException e) {
-                                errorLimit--;
-                            }
-                        }
+                        if (documentFile.exists() && !pickedRecentFiles.contains(documentFile))
+                            pickedRecentFiles.add(documentFile);
+                        else
+                            errorLimit--;
+                    } catch (IOException e) {
+                        errorLimit--;
                     }
-                } catch (Exception e) {
-                    // This is a more proper way to break the loop.
-                } finally {
-                    for (DocumentFile documentFile : pickedRecentFiles)
-                        lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
                 }
+
+                for (DocumentFile documentFile : pickedRecentFiles)
+                    lister.offerObliged(this, new RecentFileHolder(getContext(), documentFile));
             }
         }
     }
@@ -511,14 +503,14 @@ public class FileListAdapter
             this.info = transferObject == null
                     ? context.getString(R.string.mesg_notValidTransfer)
                     : String.format("%s / %s", FileUtils.sizeExpression(getComparableSize(), false),
-                    FileUtils.sizeExpression(transferObject.fileSize, false));
+                    FileUtils.sizeExpression(transferObject.size, false));
 
             this.iconRes = transferObject == null
                     ? R.drawable.ic_block_white_24dp
-                    : MimeIconUtils.loadMimeIcon(transferObject.fileMimeType);
+                    : MimeIconUtils.loadMimeIcon(transferObject.mimeType);
 
             if (transferObject != null)
-                this.friendlyName = transferObject.friendlyName;
+                this.friendlyName = transferObject.name;
         }
     }
 

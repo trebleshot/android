@@ -63,7 +63,7 @@ public class DeviceChooserService extends ChooserTargetService
 
             Bundle bundle = new Bundle();
 
-            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.deviceId);
+            bundle.putString(ShareActivity.EXTRA_DEVICE_ID, device.id);
 
             TextDrawable textImage = iconBuilder.buildRound(device.nickname);
             Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);

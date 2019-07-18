@@ -43,7 +43,6 @@ import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
@@ -177,7 +176,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public long getId()
         {
-            return deviceId.hashCode();
+            return id.hashCode();
         }
 
         @Override

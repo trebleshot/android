@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -23,16 +22,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/padding_list_content_parent_layout_orientation"
-    android:padding="8dp"
     android:background="?rectSelector"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <com.genonbeta.TrebleShot.view.ComparativeRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="8dp"
         android:orientation="vertical"
-        app:baseOnSmallerLength="false"
-        android:layout_marginBottom="8dp">
+        app:baseOnSmallerLength="false">
 
         <ImageView
             android:id="@+id/image"
@@ -82,6 +81,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:visibility="gone"
             app:srcCompat="@drawable/ic_dots_horizontal_white_24dp" />
 
     </LinearLayout>

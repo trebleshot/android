@@ -91,15 +91,15 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                         try {
                             boolean doPublish = false;
                             final JSONObject jsonRequest = new JSONObject();
-                            final TransferGroup.Assignee assignee = new TransferGroup.Assignee(mGroup, mDevice, mConnection);
-                            final List<TransferObject> pendingRegistry = new ArrayList<>();
+                            final TransferGroup.Assignee assignee = new TransferGroup.Assignee(
+                                    mGroup, mDevice, TransferObject.Type.OUTGOING, mConnection);
 
                             final List<TransferObject> existingRegistry =
                                     new ArrayList<>(AppUtils.getDatabase(context).castQuery(
-                                            new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                                            new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                                                     .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                                     + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                            String.valueOf(mGroup.groupId),
+                                                            String.valueOf(mGroup.id),
                                                             TransferObject.Type.OUTGOING.toString()), TransferObject.class));
                             final SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
                             {
@@ -119,12 +119,11 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
 
                             try {
                                 // Checks if the current assignee is already on the list, if so do publish not insert
-                                AppUtils.getDatabase(context).reconstruct(
-                                        new TransferGroup.Assignee(assignee.groupId,
-                                                assignee.deviceId));
+                                AppUtils.getDatabase(context).reconstruct(new TransferGroup.Assignee(
+                                        assignee.groupId, assignee.deviceId, TransferObject.Type.OUTGOING));
 
                                 doPublish = true;
-                            } catch (Exception e) {
+                            } catch (Exception ignored) {
                             }
 
                             if (mDevice instanceof NetworkDeviceListAdapter.HotspotNetwork
@@ -132,40 +131,33 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
 
                             jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-                            jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.groupId);
+                            jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
 
                             if (existingRegistry.size() == 0)
-                                throw new Exception("Empty share holder id: " + mGroup.groupId);
+                                throw new Exception("Empty share holder id: " + mGroup.id);
 
                             JSONArray filesArray = new JSONArray();
 
                             for (TransferObject transferObject : existingRegistry) {
-                                publishStatusText(transferObject.friendlyName);
-
-                                TransferObject copyObject = new TransferObject(AccessDatabase.convertValues(transferObject.getValues()));
+                                publishStatusText(transferObject.name);
 
                                 if (getInterrupter().interrupted())
                                     throw new InterruptedException("Interrupted by user");
 
-                                copyObject.deviceId = assignee.deviceId; // We will clone the file index with new deviceId
-                                copyObject.flag = TransferObject.Flag.PENDING;
-                                copyObject.accessPort = 0;
-                                copyObject.skippedBytes = 0;
                                 JSONObject thisJson = new JSONObject();
 
                                 try {
-                                    thisJson.put(Keyword.INDEX_FILE_NAME, copyObject.friendlyName);
-                                    thisJson.put(Keyword.INDEX_FILE_SIZE, copyObject.fileSize);
-                                    thisJson.put(Keyword.TRANSFER_REQUEST_ID, copyObject.requestId);
-                                    thisJson.put(Keyword.INDEX_FILE_MIME, copyObject.fileMimeType);
+                                    thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name);
+                                    thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.size);
+                                    thisJson.put(Keyword.TRANSFER_REQUEST_ID, transferObject.id);
+                                    thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
 
-                                    if (copyObject.directory != null)
-                                        thisJson.put(Keyword.INDEX_DIRECTORY, copyObject.directory);
+                                    if (transferObject.directory != null)
+                                        thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
 
                                     filesArray.put(thisJson);
-                                    pendingRegistry.add(copyObject);
                                 } catch (Exception e) {
-                                    Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + copyObject.friendlyName);
+                                    Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.name);
                                 }
                             }
 
@@ -210,11 +202,6 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                     AppUtils.getDatabase(context).publish(assignee);
                                 else
                                     AppUtils.getDatabase(context).insert(assignee);
-
-                                if (doPublish)
-                                    AppUtils.getDatabase(context).publish(pendingRegistry, progressUpdater);
-                                else
-                                    AppUtils.getDatabase(context).insert(pendingRegistry, progressUpdater);
 
                                 if (getAnchorListener() != null) {
                                     getAnchorListener().setResult(RESULT_OK, new Intent()

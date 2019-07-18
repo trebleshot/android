@@ -24,16 +24,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.LocaleList;
-import android.os.Looper;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,24 +44,16 @@ import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
-import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
-import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.util.Interrupter;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.navigation.NavigationView;
-
-import java.io.File;
-import java.util.Locale;
 
 public class HomeActivity
         extends Activity
@@ -104,7 +91,7 @@ public class HomeActivity
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mFilter.addAction(CommunicationService.ACTION_TRUSTZONE_STATUS);
+        mFilter.addAction(CommunicationService.ACTION_FAST_MODE_STATUS);
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
             @Override
@@ -346,13 +333,13 @@ public class HomeActivity
     public void requestTrustZoneStatus()
     {
         AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_REQUEST_TRUSTZONE_STATUS));
+                .setAction(CommunicationService.ACTION_REQUEST_FAST_MODE_STATUS));
     }
 
     public void toggleTrustZone()
     {
         AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_TOGGLE_SEAMLESS_MODE));
+                .setAction(CommunicationService.ACTION_TOGGLE_FAST_MODE));
     }
 
     private class ActivityReceiver extends BroadcastReceiver
@@ -360,7 +347,7 @@ public class HomeActivity
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (CommunicationService.ACTION_TRUSTZONE_STATUS.equals(intent.getAction())
+            if (CommunicationService.ACTION_FAST_MODE_STATUS.equals(intent.getAction())
                     && mTrustZoneToggle != null)
                 mTrustZoneToggle.setTitle(intent.getBooleanExtra(
                         CommunicationService.EXTRA_STATUS_STARTED, false)

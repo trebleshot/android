@@ -104,7 +104,7 @@ public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareAct
             long requestId = AppUtils.getUniqueNumber();
 
             TransferObject transferObject = new TransferObject(requestId,
-                    groupInstance.groupId,
+                    groupInstance.id,
                     selectableStream.getSelectableTitle(),
                     selectableStream.getDocumentFile().getUri().toString(),
                     selectableStream.getDocumentFile().getType(),
@@ -138,12 +138,12 @@ public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareAct
         if (getInterrupter().interrupted()) {
             AppUtils.getDatabase(getService()).remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                     .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                            String.valueOf(groupInstance.groupId)));
+                            String.valueOf(groupInstance.id)));
         } else {
             AppUtils.getDatabase(getService()).insert(groupInstance);
 
-            ViewTransferActivity.startInstance(getService(), groupInstance.groupId);
-            AddDevicesToTransferActivity.startInstance(getService(), groupInstance.groupId);
+            ViewTransferActivity.startInstance(getService(), groupInstance.id);
+            AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id);
         }
 
         if (getAnchorListener() != null)

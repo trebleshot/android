@@ -95,7 +95,7 @@ public class DialogUtils
         int checkBox = TransferObject.Type.INCOMING.equals(object.type)
                 ? R.string.text_alsoDeleteReceivedFiles : 0;
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
-                activity.getString(R.string.text_removeTransferSummary, object.friendlyName),
+                activity.getString(R.string.text_removeTransferSummary, object.name),
                 R.string.butn_remove, checkBox,
                 new ClickListener()
                 {

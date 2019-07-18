@@ -18,10 +18,16 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
+
 /**
  * created by: veli
  * date: 06.04.2018 11:20
  */
-public class AssigneeNotFoundException extends Exception
+public class AssigneeNotFoundException extends ReconstructionFailedException
 {
+    public AssigneeNotFoundException()
+    {
+        super("Assignee not found");
+    }
 }

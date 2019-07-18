@@ -30,7 +30,6 @@ import android.view.ViewGroup;
 import android.widget.PopupMenu;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -43,7 +42,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

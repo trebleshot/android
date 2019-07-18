@@ -94,17 +94,45 @@ public class TextUtils
         return stringBuilder.toString().toUpperCase();
     }
 
-    public static String getTransactionFlagString(Context context, TransferObject transferObject, NumberFormat percentFormat)
+    public static String getTransactionFlagString(Context context, TransferObject object,
+                                                  NumberFormat percentFormat)
     {
-        switch (transferObject.flag) {
+        // Because it takes more arguments when the 'object' is 'Type.OUTGOING', it will be
+        // chosen by the appropriate value that it may contain.
+        TransferObject.Flag flag;
+
+        if (TransferObject.Type.OUTGOING.equals(object.type)) {
+            TransferObject.Flag[] flags = object.getFlags();
+
+            if (flags.length < 1)
+                flag = TransferObject.Flag.PENDING;
+            else if (flags.length == 1)
+                flag = flags[0];
+            else {
+                flag = TransferObject.Flag.PENDING;
+
+                // TODO: 7/17/19 Handle the issue with the
+                /*for (TransferObject.Flag thisFlag : flags) {
+                    if (TransferObject.Flag.IN_PROGRESS.equals(thisFlag)) {
+                        flag = thisFlag;
+                        break;
+                    } else if (TransferObject.Flag.DONE.equals(thisFlag)) {
+
+                    }
+                }*/
+            }
+        } else
+            flag = object.getFlag();
+
+        switch (flag) {
             case DONE:
                 return percentFormat.format(1.0);
             case IN_PROGRESS:
-                return percentFormat.format(transferObject.fileSize == 0 || transferObject.flag.getBytesValue() == 0
+                return percentFormat.format(object.size == 0 || flag.getBytesValue() == 0
                         ? 0
-                        : Long.valueOf(transferObject.flag.getBytesValue()).doubleValue() / Long.valueOf(transferObject.fileSize).doubleValue());
+                        : Long.valueOf(flag.getBytesValue()).doubleValue() / Long.valueOf(object.size).doubleValue());
             default:
-                return context.getString(getTransactionFlagString(transferObject.flag));
+                return context.getString(getTransactionFlagString(flag));
         }
     }
 
@@ -119,9 +147,6 @@ public class TextUtils
                 return R.string.text_flagInterrupted;
             case IN_PROGRESS:
                 return R.string.text_flagRunning;
-				/*
-			case RESUME:
-				return R.string.text_flagResume; */
             case REMOVED:
                 return R.string.text_flagRemoved;
             default:

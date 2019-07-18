@@ -18,11 +18,17 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
+
 /**
  * created by: Veli
  * date: 6.01.2018 22:26
  */
 
-public class TransferNotFoundException extends NotFoundException
+public class TransferNotFoundException extends ReconstructionFailedException
 {
+    public TransferNotFoundException()
+    {
+        super("Transfer not found");
+    }
 }

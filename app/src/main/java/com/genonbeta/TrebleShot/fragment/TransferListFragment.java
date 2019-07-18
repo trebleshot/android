@@ -186,7 +186,7 @@ public class TransferListFragment
     {
         try {
             final TransferObject transferObject = getAdapter().getItem(holder);
-            new TransferInfoDialog(getActivity(), transferObject).show();
+            new TransferInfoDialog(getActivity(), mHeldGroup, transferObject).show();
 
             return true;
         } catch (Exception e) {
@@ -258,7 +258,7 @@ public class TransferListFragment
             if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
                 final TransferListAdapter.StorageStatusItem statusItem = (TransferListAdapter.StorageStatusItem) transferObject;
 
-                if (statusItem.hasIssues()) {
+                if (statusItem.hasIssues(getAdapter())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
                     builder.setMessage(getContext().getString(R.string.mesg_notEnoughSpace));
@@ -276,7 +276,6 @@ public class TransferListFragment
                     builder.show();
                 } else
                     changeSavePath(statusItem.directory);
-
             } else if (transferObject instanceof TransferListAdapter.TransferFolder) {
                 getAdapter().setPath(transferObject.directory);
                 refreshList();
@@ -346,15 +345,16 @@ public class TransferListFragment
                                             @Override
                                             public void onRun()
                                             {
-                                                TransferUtils.pauseTransfer(getContext(), mHeldGroup, null);
+                                                TransferUtils.pauseTransfer(getContext(), mHeldGroup,
+                                                        TransferObject.Type.INCOMING);
 
                                                 List<TransferObject> checkList = AppUtils.getDatabase(getService()).
                                                         castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                                                                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                                                 + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                                        String.valueOf(getTransferGroup().groupId), TransferObject.Type.INCOMING.toString()), TransferObject.class);
+                                                                        String.valueOf(getTransferGroup().id), TransferObject.Type.INCOMING.toString()), TransferObject.class);
 
-                                                TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().groupId);
+                                                TransferGroup pseudoGroup = new TransferGroup(getTransferGroup().id);
 
                                                 try {
                                                     // Illustrate new change to build the structure accordingly
@@ -368,7 +368,7 @@ public class TransferListFragment
                                                         DocumentFile file = null;
                                                         DocumentFile pseudoFile = null;
 
-                                                        publishStatusText(transferObject.friendlyName);
+                                                        publishStatusText(transferObject.name);
 
                                                         try {
                                                             file = FileUtils.getIncomingPseudoFile(getService(), transferObject, getTransferGroup(), false);

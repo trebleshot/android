@@ -79,7 +79,7 @@ public class TransferAssigneeListAdapter extends EditableListAdapter<ShowingAssi
     @Override
     public List<ShowingAssignee> onLoad()
     {
-        return TransferUtils.loadAssigneeList(AppUtils.getDatabase(getContext()), mGroup.groupId);
+        return TransferUtils.loadAssigneeList(AppUtils.getDatabase(getContext()), mGroup.id);
     }
 
     public TransferAssigneeListAdapter setGroup(TransferGroup group)

@@ -25,8 +25,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
 
-import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -40,9 +38,7 @@ import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
 import com.genonbeta.android.database.SQLiteDatabase;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -107,22 +103,18 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_TRANSFERASSIGNEE_GROUPID = "groupId";
     public static final String FIELD_TRANSFERASSIGNEE_DEVICEID = "deviceId";
     public static final String FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER = "connectionAdapter";
-    public static final String FIELD_TRANSFERASSIGNEE_ISCLONE = "isClone";
+    public static final String FIELD_TRANSFERASSIGNEE_TYPE = "type";
 
-    // divisions are a separate containers for items not ready to use
-    public static final String DIVIS_TRANSFER = "divisionTransfer";
     public static final String TABLE_TRANSFER = "transfer";
     public static final String FIELD_TRANSFER_ID = "id";
-    public static final String FIELD_TRANSFER_FILE = "file";
     public static final String FIELD_TRANSFER_NAME = "name";
     public static final String FIELD_TRANSFER_SIZE = "size";
     public static final String FIELD_TRANSFER_MIME = "mime";
     public static final String FIELD_TRANSFER_TYPE = "type";
     public static final String FIELD_TRANSFER_GROUPID = "groupId";
-    public static final String FIELD_TRANSFER_DEVICEID = "deviceId";
+    public static final String FIELD_TRANSFER_FILE = "file";
     public static final String FIELD_TRANSFER_DIRECTORY = "directory";
-    public static final String FIELD_TRANSFER_ACCESSPORT = "accessPort";
-    public static final String FIELD_TRANSFER_SKIPPEDBYTES = "skippedBytes";
+    public static final String FIELD_TRANSFER_LASTCHANGETIME = "lastAccessTime";
     public static final String FIELD_TRANSFER_FLAG = "flag";
 
     public static final String TABLE_TRANSFERGROUP = "transferGroup";
@@ -197,8 +189,9 @@ public class AccessDatabase extends SQLiteDatabase
                 // to allow users distinguish individual transfer file
 
                 try {
+                    // TODO: 7/12/19 Database change
+                    /*
                     SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
-                    SQLValues.Table divisTransfer = databaseTables.getTables().get(DIVIS_TRANSFER);
                     Map<Long, String> mapDist = new ArrayMap<>();
                     List<TransferObject> supportedItems = new ArrayList<>();
                     List<TransferGroup.Assignee> availableAssignees = castQuery(database,
@@ -224,6 +217,7 @@ public class AccessDatabase extends SQLiteDatabase
                     SQLQuery.createTable(database, tableTransfer);
                     SQLQuery.createTable(database, divisTransfer);
                     insert(database, supportedItems, null, null);
+                    */
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -251,6 +245,7 @@ public class AccessDatabase extends SQLiteDatabase
                         + FIELD_DEVICES_EXTRA_TYPE + " " + SQLType.TEXT.toString()
                         + " NOT NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
             }
+            // TODO: 7/14/19 Changes: TransferObject {Added LastChangeTime, Changed Flag as Flag[]}, Assignee {Added Type, Removed isClone]
         }
     }
 
@@ -273,36 +268,36 @@ public class AccessDatabase extends SQLiteDatabase
 
         indexObject.assignees.addAll(TransferUtils.loadAssigneeList(this, groupId));
 
-        if (transactionList.size() == 0)
-            transactionList.addAll(castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
-                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
-                            String.valueOf(groupId)), TransferObject.class));
-
         for (TransferObject transferObject : transactionList) {
             if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
-                indexObject.incoming += transferObject.fileSize;
+                indexObject.incoming += transferObject.size;
                 indexObject.incomingCount++;
 
-                if (TransferObject.Flag.DONE.equals(transferObject.flag)) {
+                if (TransferObject.Flag.DONE.equals(transferObject.getFlag())) {
                     indexObject.incomingCountCompleted++;
-                    indexObject.incomingCompleted += transferObject.fileSize;
-                } else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag))
-                    indexObject.incomingCompleted += transferObject.flag.getBytesValue();
+                    indexObject.incomingCompleted += transferObject.size;
+                } else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.getFlag()))
+                    indexObject.incomingCompleted += transferObject.getFlag().getBytesValue();
             } else {
-                indexObject.outgoing += transferObject.fileSize;
+                indexObject.outgoing += transferObject.size;
                 indexObject.outgoingCount++;
 
+                // FIXME: 7/15/19 Sender flags are multiple and cannot be queried with getFlag()
+                /*
                 if (TransferObject.Flag.DONE.equals(transferObject.flag)) {
                     indexObject.outgoingCountCompleted++;
-                    indexObject.outgoingCompleted += transferObject.fileSize;
+                    indexObject.outgoingCompleted += transferObject.size;
                 } else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag))
                     indexObject.outgoingCompleted += transferObject.flag.getBytesValue();
+                */
             }
 
-            if (!indexObject.hasIssues &&
-                    (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
-                            || TransferObject.Flag.REMOVED.equals(transferObject.flag)))
+            // FIXME: 7/15/19 This is also like above
+            /*
+            if (!indexObject.hasIssues && (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
+                    || TransferObject.Flag.REMOVED.equals(transferObject.flag)))
                 indexObject.hasIssues = true;
+                */
         }
 
         indexObject.calculated = true;
@@ -348,7 +343,8 @@ public class AccessDatabase extends SQLiteDatabase
                 .define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
                 .define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
                 .define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
-                .define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true));
+                .define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true))
+                .define(new SQLValues.Column(FIELD_DEVICES_EXTRA_TYPE, SQLType.TEXT, false));
 
         sqlValues.defineTable(TABLE_DEVICECONNECTION)
                 .define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
@@ -363,36 +359,20 @@ public class AccessDatabase extends SQLiteDatabase
         sqlValues.defineTable(TABLE_TRANSFER)
                 .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
-
-        sqlValues.defineTable(DIVIS_TRANSFER)
-                .define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_DEVICEID, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, true))
+                .define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, false))
                 .define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_ACCESSPORT, SQLType.INTEGER, true))
-                .define(new SQLValues.Column(FIELD_TRANSFER_SKIPPEDBYTES, SQLType.LONG, false))
-                .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, true));
+                .define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFER_LASTCHANGETIME, SQLType.LONG, false));
 
         sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
                 .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-                .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, true))
-                .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_ISCLONE, SQLType.INTEGER, true));
+                .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, false))
+                .define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_TYPE, SQLType.TEXT, false));
 
         sqlValues.defineTable(TABLE_TRANSFERGROUP)
                 .define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))

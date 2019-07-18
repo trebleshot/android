@@ -260,7 +260,7 @@ public class UIConnectionUtils
 
                     if (receivedReply.has(Keyword.RESULT)
                             && receivedReply.getBoolean(Keyword.RESULT)
-                            && device.deviceId != null) {
+                            && device.id != null) {
                         final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(AppUtils.getDatabase(activity), device, ipAddress);
 
                         device.lastUsageTime = System.currentTimeMillis();

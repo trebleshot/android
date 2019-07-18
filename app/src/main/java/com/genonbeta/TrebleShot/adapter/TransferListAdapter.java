@@ -33,6 +33,7 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
@@ -118,66 +119,42 @@ public class TransferListAdapter
         String currentPath = getPath();
         currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
-        Map<String, NetworkDevice> networkDevices = new ArrayMap<>();
-
         {
             List<TransferGroup.Assignee> assignees = AppUtils.getDatabase(getContext())
                     .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                             .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
-                                    String.valueOf(mGroup.groupId)), TransferGroup.Assignee.class);
-
-            for (TransferGroup.Assignee assignee : assignees)
-                try {
-                    NetworkDevice device = new NetworkDevice(assignee.deviceId);
-
-                    AppUtils.getDatabase(getContext()).reconstruct(device);
-                    networkDevices.put(device.deviceId, device);
-                } catch (Exception e) {
-                    // do nothing
-                    e.printStackTrace();
-                }
+                                    String.valueOf(mGroup.id)), TransferGroup.Assignee.class);
         }
 
-        SQLQuery.Select sqlSelect = new SQLQuery.Select(networkDevices.size() < 1
-                ? AccessDatabase.DIVIS_TRANSFER
-                : AccessDatabase.TABLE_TRANSFER);
-
-        StringBuilder whereFormat = new StringBuilder();
-        List<String> whereValues = new ArrayList<>();
         NetworkDevice filterDevice = mDevice;
+        SQLQuery.Select transferSelect = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
+        StringBuilder transferWhere = new StringBuilder(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
+        List<String> transferArgs = new ArrayList<>();
 
-        whereFormat.append(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
-        whereValues.add(String.valueOf(mGroup.groupId));
-
-        if (networkDevices.size() > 0 && filterDevice != null) {
-            whereFormat.append(" AND " + AccessDatabase.FIELD_TRANSFER_DEVICEID + "=?");
-            whereValues.add(filterDevice.deviceId);
-        }
+        transferArgs.add(String.valueOf(mGroup.id));
 
         if (currentPath != null) {
-            whereFormat.append(" AND (" + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
+            transferWhere.append(" AND (" + AccessDatabase.FIELD_TRANSFER_DIRECTORY + "=? OR "
                     + AccessDatabase.FIELD_TRANSFER_DIRECTORY + " LIKE ?)");
 
-            whereValues.add(currentPath);
-            whereValues.add(currentPath + File.separator + "%");
+            transferArgs.add(currentPath);
+            transferArgs.add(currentPath + File.separator + "%");
         }
 
-        sqlSelect.where = whereFormat.toString();
-        sqlSelect.whereArgs = new String[whereValues.size()];
-        whereValues.toArray(sqlSelect.whereArgs);
+        transferSelect.where = transferWhere.toString();
+        transferSelect.whereArgs = new String[transferArgs.size()];
+        transferArgs.toArray(transferSelect.whereArgs);
 
-        List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(sqlSelect, GenericTransferItem.class);
+        List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(
+                transferSelect, GenericTransferItem.class);
 
         // we first get the default files
         for (GenericTransferItem object : derivedList) {
-            NetworkDevice device = networkDevices.get(object.deviceId);
-
+            boolean isIncoming = TransferObject.Type.INCOMING.equals(object.type);
             object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
             if (currentPath != null && object.directory == null)
                 continue;
-
-            object.setDeviceName(device == null ? null : device.nickname);
 
             if ((currentPath == null && object.directory == null)
                     || object.directory.equals(currentPath)) {
@@ -185,14 +162,14 @@ public class TransferListAdapter
                     if (!loadThumbnails)
                         object.setSupportThumbnail(false);
                     else {
-                        String[] format = object.fileMimeType.split(File.separator);
+                        String[] format = object.mimeType.split(File.separator);
 
                         if (format.length > 0 && ("image".equals(format[0]) || "video".equals(format[0]))) {
                             DocumentFile documentFile = null;
 
                             if (TransferObject.Type.OUTGOING.equals(object.type))
                                 documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
-                            else if (TransferObject.Flag.DONE.equals(object.flag))
+                            else if (TransferObject.Flag.DONE.equals(object.getFlag()))
                                 documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, mGroup, false);
 
                             if (documentFile != null && documentFile.exists()) {
@@ -207,8 +184,7 @@ public class TransferListAdapter
                 }
 
                 files.add(object);
-            } else if (currentPath == null
-                    || (object.directory.startsWith(currentPath))) {
+            } else if (currentPath == null || (object.directory.startsWith(currentPath))) {
                 int pathToErase = currentPath == null ? 0 : currentPath.length() + File.separator.length();
                 String cleanedPath = object.directory.substring(pathToErase);
                 int slashPos = cleanedPath.indexOf(File.separator);
@@ -219,28 +195,28 @@ public class TransferListAdapter
                 TransferFolder transferFolder = folders.get(cleanedPath);
 
                 if (transferFolder == null) {
-                    transferFolder = new TransferFolder(mGroup.groupId, cleanedPath, currentPath != null
+                    transferFolder = new TransferFolder(mGroup.id, cleanedPath, currentPath != null
                             ? currentPath + File.separator + cleanedPath
                             : cleanedPath);
 
                     folders.put(cleanedPath, transferFolder);
                 }
 
-                if (object.isComplete()) {
+                if (object.isComplete(this)) {
                     transferFolder.filesReceived++;
-                    transferFolder.bytesReceived += object.fileSize;
-                } else if (TransferObject.Flag.IN_PROGRESS.equals(object.flag)) {
-                    transferFolder.bytesReceived += object.flag.getBytesValue();
-                } else if (object.hasIssues()) {
+                } else if (object.hasIssues(this)) {
                     transferFolder.setHasIssues(true);
+                } else {
+                    if (TransferObject.Type.INCOMING.equals(object.type))
+                        if (TransferObject.Flag.IN_PROGRESS.equals(object.getFlag()))
+                            transferFolder.bytesReceived += object.getFlag().getBytesValue();
                 }
 
                 transferFolder.filesTotal++;
-                transferFolder.bytesTotal += object.fileSize;
+                transferFolder.bytesTotal += object.size;
             }
 
-            if (!hasIncoming
-                    && TransferObject.Type.INCOMING.equals(object.type))
+            if (!hasIncoming && TransferObject.Type.INCOMING.equals(object.type))
                 hasIncoming = true;
         }
 
@@ -249,13 +225,13 @@ public class TransferListAdapter
         if (currentPath == null)
             if (hasIncoming) {
                 try {
-                    TransferGroup group = new TransferGroup(mGroup.groupId);
+                    TransferGroup group = new TransferGroup(mGroup.id);
                     AppUtils.getDatabase(getContext()).reconstruct(group);
                     DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
 
                     storageItem = new StorageStatusItem();
                     storageItem.directory = savePath.getUri().toString();
-                    storageItem.friendlyName = savePath.getName();
+                    storageItem.name = savePath.getName();
 
                     if (savePath instanceof LocalDocumentFile) {
                         File saveFile = ((LocalDocumentFile) savePath).getFile();
@@ -272,7 +248,7 @@ public class TransferListAdapter
                 }
             }
 
-        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.groupId, currentPath == null
+        DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.id, currentPath == null
                 ? (filterDevice == null ? getContext().getString(R.string.text_home) : filterDevice.nickname)
                 : currentPath.contains(File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1) : currentPath, currentPath);
 
@@ -284,24 +260,22 @@ public class TransferListAdapter
             statusItem.bytesTotal += folder.bytesTotal;
             statusItem.bytesReceived += folder.bytesReceived;
 
-            if (folder.hasIssues())
+            if (folder.hasIssues(this))
                 statusItem.setHasIssues(true);
 
             lister.offerObliged(this, folder);
         }
 
         for (GenericTransferItem file : files) {
-            if (file.isComplete()) {
+            if (file.isComplete(this)) {
                 statusItem.filesReceived++;
-                statusItem.bytesReceived += file.fileSize;
-            } else if (TransferObject.Flag.IN_PROGRESS.equals(file.flag)) {
-                statusItem.bytesReceived += file.flag.getBytesValue();
-            } else if (file.hasIssues()) {
+                statusItem.percentage += file.getPercent(this);
+            } else if (file.hasIssues(this)) {
                 statusItem.setHasIssues(true);
             }
 
             statusItem.filesTotal++;
-            statusItem.bytesTotal += file.fileSize;
+            statusItem.bytesTotal += file.size;
 
             lister.offerObliged(this, file);
         }
@@ -320,7 +294,7 @@ public class TransferListAdapter
     public boolean onCustomGroupListing(GroupLister<AbstractGenericItem> lister, int mode, AbstractGenericItem object)
     {
         if (mode == MODE_GROUP_BY_DEFAULT)
-            lister.offer(object, new GroupEditableTransferObjectMerger(object));
+            lister.offer(object, new GroupEditableTransferObjectMerger(object, this));
         else
             return false;
 
@@ -371,12 +345,12 @@ public class TransferListAdapter
 
     public long getGroupId()
     {
-        return mGroup.groupId;
+        return mGroup.id;
     }
 
     public void setGroupId(long groupId)
     {
-        mGroup.groupId = groupId;
+        mGroup.id = groupId;
     }
 
     public String getPath()
@@ -392,7 +366,7 @@ public class TransferListAdapter
             mListener.onPathChange(path);
     }
 
-    public NumberFormat getPercentFormat()
+    private NumberFormat getPercentFormat()
     {
         return mPercentFormat;
     }
@@ -457,7 +431,7 @@ public class TransferListAdapter
 
                 @ColorInt
                 int appliedColor;
-                int percentage = (int) (object.getPercent() * 100);
+                int percentage = (int) (object.getPercent(this) * 100);
                 ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
                 ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
                 ImageView image = parentView.findViewById(R.id.image);
@@ -469,14 +443,14 @@ public class TransferListAdapter
 
                 parentView.setSelected(object.isSelectableSelected());
 
-                if (object.isComplete())
+                if (object.isComplete(this))
                     appliedColor = mColorDone;
-                else if (object.hasIssues())
+                else if (object.hasIssues(this))
                     appliedColor = mColorError;
                 else
                     appliedColor = mColorPending;
 
-                titleText.setText(object.friendlyName);
+                titleText.setText(object.name);
                 firstText.setText(object.getFirstText(this));
                 secondText.setText(object.getSecondText(this));
                 thirdText.setText(object.getThirdText(this));
@@ -499,7 +473,7 @@ public class TransferListAdapter
 
                 boolean supportThumbnail = object.loadThumbnail(thumbnail);
 
-                progressBar.setVisibility(!supportThumbnail || !object.isComplete()
+                progressBar.setVisibility(!supportThumbnail || !object.isComplete(this)
                         ? View.VISIBLE
                         : View.GONE);
 
@@ -511,7 +485,7 @@ public class TransferListAdapter
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -520,7 +494,7 @@ public class TransferListAdapter
         void onPathChange(String path);
     }
 
-    public interface StatusItem
+    interface StatusItem
     {
 
     }
@@ -547,20 +521,20 @@ public class TransferListAdapter
         public boolean applyFilter(String[] filteringKeywords)
         {
             for (String keyword : filteringKeywords)
-                if (friendlyName != null && friendlyName.toLowerCase().contains(keyword.toLowerCase()))
+                if (name != null && name.toLowerCase().contains(keyword.toLowerCase()))
                     return true;
 
             return false;
         }
 
-        abstract public boolean hasIssues();
+        abstract public boolean hasIssues(TransferListAdapter adapter);
 
-        abstract public boolean isComplete();
+        abstract public boolean isComplete(TransferListAdapter adapter);
 
         @DrawableRes
         abstract public int getIconRes();
 
-        abstract public double getPercent();
+        abstract public double getPercent(TransferListAdapter adapter);
 
         abstract public boolean loadThumbnail(ImageView imageView);
 
@@ -617,13 +591,12 @@ public class TransferListAdapter
         @Override
         public void setSize(long size)
         {
-            this.fileSize = size;
+            this.size = size;
         }
     }
 
     public static class GenericTransferItem extends AbstractGenericItem
     {
-        private String mDeviceName;
         private DocumentFile mFile;
         private boolean mSupportThumbnail;
 
@@ -631,7 +604,7 @@ public class TransferListAdapter
         {
         }
 
-        public GenericTransferItem(String representativeText)
+        GenericTransferItem(String representativeText)
         {
             this.viewType = VIEW_TYPE_REPRESENTATIVE;
             setRepresentativeText(representativeText);
@@ -644,40 +617,96 @@ public class TransferListAdapter
                 return true;
 
             for (String keyword : filteringKeywords)
-                if (fileMimeType.toLowerCase().contains(keyword.toLowerCase()))
+                if (mimeType.toLowerCase().contains(keyword.toLowerCase()))
                     return true;
 
             return false;
         }
 
         @Override
-        public boolean hasIssues()
+        public boolean hasIssues(TransferListAdapter adapter)
         {
-            return Flag.INTERRUPTED.equals(flag)
-                    || Flag.REMOVED.equals(flag);
+            if (Type.OUTGOING.equals(type)) {
+                if (adapter.getDevice() == null)
+                    synchronized (mSenderFlagList) {
+                        for (Flag flag : mSenderFlagList.values())
+                            if (Flag.INTERRUPTED.equals(flag))
+                                return true;
+                    }
+                else
+                    return Flag.INTERRUPTED.equals(getFlag(adapter.getDevice().id));
+            } else
+                return Flag.INTERRUPTED.equals(getFlag());
+
+            return false;
         }
 
         @Override
-        public boolean isComplete()
+        public boolean isComplete(TransferListAdapter adapter)
         {
-            return Flag.DONE.equals(flag);
+            if (Type.INCOMING.equals(type))
+                return Flag.DONE.equals(getFlag());
+
+            synchronized (mSenderFlagList) {
+                if (adapter.getDevice() == null) {
+                    for (Flag flag : mSenderFlagList.values())
+                        if (!Flag.DONE.equals(flag))
+                            return false;
+
+                    return mSenderFlagList.size() > 0;
+                } else
+                    return Flag.DONE.equals(getFlag(adapter.getDevice().id));
+            }
         }
 
         @Override
         public int getIconRes()
         {
-            return MimeIconUtils.loadMimeIcon(fileMimeType);
+            return MimeIconUtils.loadMimeIcon(mimeType);
         }
 
         @Override
-        public double getPercent()
+        public double getPercent(TransferListAdapter adapter)
         {
-            if (Flag.DONE.equals(flag))
-                return 1;
+            if (Type.INCOMING.equals(type)) {
+                if (Flag.DONE.equals(getFlag()))
+                    return 1;
 
-            return fileSize == 0 || flag.getBytesValue() == 0
-                    ? 0
-                    : Long.valueOf(flag.getBytesValue()).doubleValue() / Long.valueOf(fileSize).doubleValue();
+                return getFlag().getBytesValue() > 0
+                        ? Long.valueOf(getFlag().getBytesValue()).doubleValue() / Long.valueOf(size).doubleValue()
+                        : 0;
+            }
+
+            if (mSenderFlagList.size() < 1)
+                return 0;
+
+            long receivedSize = 0;
+            int totalFlags;
+            boolean allCompleted = true;
+
+            synchronized (mSenderFlagList) {
+                if (adapter.getDevice() == null) {
+                    totalFlags = mSenderFlagList.size();
+
+                    for (Flag flag : mSenderFlagList.values()) {
+                        receivedSize += flag.getBytesValue();
+                        if (allCompleted && !Flag.DONE.equals(flag))
+                            allCompleted = false;
+                    }
+
+                    if (allCompleted)
+                        return 1;
+
+                    return receivedSize > 1
+                            ? Long.valueOf(receivedSize).doubleValue() / (Long.valueOf(size).doubleValue() * totalFlags)
+                            : 0;
+                } else {
+                    return getFlag(adapter.getDevice().id).getBytesValue() > 0
+                            ? Long.valueOf(getFlag(adapter.getDevice().id).getBytesValue()).doubleValue()
+                            / Long.valueOf(size).doubleValue()
+                            : 0;
+                }
+            }
         }
 
         @Override
@@ -692,14 +721,14 @@ public class TransferListAdapter
         @Override
         public String getFirstText(TransferListAdapter adapter)
         {
-            return FileUtils.sizeExpression(fileSize, false);
+            return FileUtils.sizeExpression(size, false);
         }
 
         @Override
         public String getSecondText(TransferListAdapter adapter)
         {
-            return mDeviceName == null ? adapter.getContext().getString(R.string.text_unknown)
-                    : mDeviceName;
+            // FIXME: 7/17/19 Device name was here
+            return adapter.getContext().getString(R.string.text_unknown);
         }
 
         @Override
@@ -725,17 +754,12 @@ public class TransferListAdapter
             return false;
         }
 
-        public void setDeviceName(String deviceName)
-        {
-            mDeviceName = deviceName;
-        }
-
         public void setFile(DocumentFile file)
         {
             mFile = file;
         }
 
-        public void setSupportThumbnail(boolean support)
+        void setSupportThumbnail(boolean support)
         {
             mSupportThumbnail = support;
         }
@@ -743,27 +767,28 @@ public class TransferListAdapter
 
     public static class TransferFolder extends AbstractGenericItem
     {
-        public int filesTotal = 0;
-        public int filesReceived = 0;
-        public long bytesTotal = 0;
-        public long bytesReceived = 0;
+        int filesTotal = 0;
+        int filesReceived = 0;
+        long bytesTotal = 0;
+        long bytesReceived = 0;
+        double percentage = 0;
         private boolean mHasIssues = false;
 
-        public TransferFolder(long groupId, String friendlyName, String directory)
+        TransferFolder(long groupId, String friendlyName, String directory)
         {
             this.groupId = groupId;
-            this.friendlyName = friendlyName;
+            this.name = friendlyName;
             this.directory = directory;
         }
 
         @Override
-        public boolean hasIssues()
+        public boolean hasIssues(TransferListAdapter adapter)
         {
             return mHasIssues;
         }
 
         @Override
-        public boolean isComplete()
+        public boolean isComplete(TransferListAdapter adapter)
         {
             return filesTotal == filesReceived && filesTotal != 0;
         }
@@ -774,11 +799,15 @@ public class TransferListAdapter
             return R.drawable.ic_folder_white_24dp;
         }
 
-        public double getPercent()
+        @Override
+        public double getPercent(TransferListAdapter adapter)
         {
-            return bytesReceived <= 0 || bytesTotal <= 0
-                    ? 0
-                    : Long.valueOf(bytesReceived).doubleValue() / Long.valueOf(bytesTotal).doubleValue();
+            if (filesTotal == 0 || filesReceived == 0)
+                return 0;
+            else if (filesReceived == filesTotal)
+                return 1;
+
+            return percentage / filesTotal;
         }
 
         @Override
@@ -803,7 +832,7 @@ public class TransferListAdapter
         @Override
         public String getThirdText(TransferListAdapter adapter)
         {
-            return adapter.getPercentFormat().format(getPercent());
+            return adapter.getPercentFormat().format(getPercent(adapter));
         }
 
         @Override
@@ -845,7 +874,7 @@ public class TransferListAdapter
             return false;
         }
 
-        public void setHasIssues(boolean hasIssues)
+        void setHasIssues(boolean hasIssues)
         {
             mHasIssues = hasIssues;
         }
@@ -853,7 +882,7 @@ public class TransferListAdapter
 
     public static class DetailsTransferFolder extends TransferFolder implements StatusItem
     {
-        public DetailsTransferFolder(long groupId, String friendlyName, String directory)
+        DetailsTransferFolder(long groupId, String friendlyName, String directory)
         {
             super(groupId, friendlyName, directory);
         }
@@ -877,7 +906,7 @@ public class TransferListAdapter
         @Override
         public long getId()
         {
-            return (directory != null ? directory : friendlyName).hashCode();
+            return (directory != null ? directory : name).hashCode();
         }
 
         @Override
@@ -895,20 +924,20 @@ public class TransferListAdapter
 
     public static class StorageStatusItem extends AbstractGenericItem implements StatusItem
     {
-        public long bytesTotal = 0;
-        public long bytesFree = 0;
-        public long bytesRequired = 0;
+        long bytesTotal = 0;
+        long bytesFree = 0;
+        long bytesRequired = 0;
 
         @Override
-        public boolean hasIssues()
+        public boolean hasIssues(TransferListAdapter adapter)
         {
             return bytesFree < bytesRequired && bytesFree != -1;
         }
 
         @Override
-        public boolean isComplete()
+        public boolean isComplete(TransferListAdapter adapter)
         {
-            return bytesFree == -1 || !hasIssues();
+            return bytesFree == -1 || !hasIssues(adapter);
         }
 
         @Override
@@ -926,11 +955,11 @@ public class TransferListAdapter
         @Override
         public long getId()
         {
-            return (directory != null ? directory : friendlyName).hashCode();
+            return (directory != null ? directory : name).hashCode();
         }
 
         @Override
-        public double getPercent()
+        public double getPercent(TransferListAdapter adapter)
         {
             return bytesTotal <= 0 || bytesFree <= 0
                     ? 0
@@ -960,7 +989,7 @@ public class TransferListAdapter
         @Override
         public String getThirdText(TransferListAdapter adapter)
         {
-            return adapter.getPercentFormat().format(getPercent());
+            return adapter.getPercentFormat().format(getPercent(adapter));
         }
 
         @Override
@@ -980,19 +1009,28 @@ public class TransferListAdapter
     {
         private Type mType;
 
-        public GroupEditableTransferObjectMerger(AbstractGenericItem holder)
+        GroupEditableTransferObjectMerger(AbstractGenericItem holder, TransferListAdapter adapter)
         {
             if (holder instanceof StatusItem)
                 mType = Type.STATUS;
             else if (holder instanceof TransferFolder)
                 mType = Type.FOLDER;
             else {
-                if (holder.hasIssues())
+                if (holder.hasIssues(adapter))
                     mType = Type.FILE_ERROR;
-                else if (TransferObject.Flag.IN_PROGRESS.equals(holder.flag))
-                    mType = Type.FILE_ONGOING;
-                else
+                else {
                     mType = Type.FILE;
+
+                    if (TransferObject.Type.INCOMING.equals(holder.type)) {
+                        if (TransferObject.Flag.IN_PROGRESS.equals(holder.getFlag()))
+                            mType = Type.FILE_ONGOING;
+                    } else
+                        for (TransferObject.Flag flag : holder.getFlags())
+                            if (TransferObject.Flag.IN_PROGRESS.equals(flag)) {
+                                mType = Type.FILE_ONGOING;
+                                break;
+                            }
+                }
             }
         }
 

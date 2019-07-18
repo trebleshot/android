@@ -129,7 +129,6 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
      * The available path to save {@link TransferGroup} with fallback check
      *
      * @param context
-     * @param preferences
      * @param group
      * @return
      */
@@ -183,7 +182,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
      */
     public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
     {
-        String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.friendlyName, true);
+        String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.name, true);
 
         if (!currentFile.renameTo(uniqueName))
             throw new IOException("Failed to rename object: " + currentFile);

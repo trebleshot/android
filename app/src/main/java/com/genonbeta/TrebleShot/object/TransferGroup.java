@@ -30,6 +30,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.object.Selectable;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +40,7 @@ import java.util.List;
  */
 public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 {
-    public long groupId;
+    public long id;
     public long dateCreated;
     public String savePath;
     public boolean isServedOnWeb;
@@ -51,9 +52,9 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     {
     }
 
-    public TransferGroup(long groupId)
+    public TransferGroup(long id)
     {
-        this.groupId = groupId;
+        this.id = id;
     }
 
     public TransferGroup(CursorItem item)
@@ -64,13 +65,13 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public boolean equals(Object obj)
     {
-        return obj instanceof TransferGroup && ((TransferGroup) obj).groupId == groupId;
+        return obj instanceof TransferGroup && ((TransferGroup) obj).id == id;
     }
 
     @Override
     public void reconstruct(CursorItem item)
     {
-        this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
+        this.id = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
         this.savePath = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
         this.dateCreated = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
         this.isServedOnWeb = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
@@ -85,7 +86,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public String getSelectableTitle()
     {
-        return String.valueOf(groupId);
+        return String.valueOf(id);
     }
 
     @Override
@@ -93,7 +94,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ID, groupId);
+        values.put(AccessDatabase.FIELD_TRANSFERGROUP_ID, id);
         values.put(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
         values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
         values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
@@ -105,7 +106,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
-                .setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(groupId));
+                .setWhere(AccessDatabase.FIELD_TRANSFERGROUP_ID + "=?", String.valueOf(id));
     }
 
     public void setDeleteFilesOnRemoval(boolean delete)
@@ -135,14 +136,14 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
-        database.remove(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
-                .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(groupId)));
+        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(id)));
 
         database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId)));
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(id)));
 
         SQLQuery.Select objectSelection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(groupId));
+                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(id));
 
         if (mDeleteFilesOnRemoval) {
             List<TransferObject> objects = database.castQuery(dbInstance, objectSelection,
@@ -188,40 +189,47 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         public long groupId;
         public String deviceId;
         public String connectionAdapter;
+        public TransferObject.Type type;
 
         public Assignee()
         {
 
         }
 
-        public Assignee(long groupId, String deviceId)
+        public Assignee(long groupId, String deviceId, TransferObject.Type type)
         {
             this.groupId = groupId;
             this.deviceId = deviceId;
+            this.type = type;
         }
 
-        public Assignee(@NonNull TransferGroup group, @NonNull NetworkDevice device)
+        public Assignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
+                        @NonNull TransferObject.Type type)
         {
-            this(group.groupId, device.deviceId);
+            this(group.id, device.id, type);
         }
 
-        public Assignee(long groupId, String deviceId, String connectionAdapter)
+        public Assignee(long groupId, String deviceId, TransferObject.Type type, String connectionAdapter)
         {
-            this(groupId, deviceId);
+            this(groupId, deviceId, type);
             this.connectionAdapter = connectionAdapter;
         }
 
         public Assignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
+                        @NonNull TransferObject.Type type,
                         @NonNull NetworkDevice.Connection connection)
         {
-            this(group.groupId, device.deviceId, connection.adapterName);
+            this(group.id, device.id, type, connection.adapterName);
         }
 
         @Override
         public SQLQuery.Select getWhere()
         {
-            return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                    .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
+            return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(
+                    AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
+                            + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+                            + AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
+                    String.valueOf(groupId), type.toString());
         }
 
         @Override
@@ -232,7 +240,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
             values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
             values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
-            values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
+            values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
 
             return values;
         }
@@ -243,6 +251,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
             this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
             this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
             this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+            this.type = TransferObject.Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
         }
 
         @Override
@@ -260,16 +269,9 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         @Override
         public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
         {
-            SQLQuery.Select selection = TransferUtils.createTransferSelection(groupId, deviceId);
-
-            try {
-                TransferGroup group = new TransferGroup(groupId);
-
-                database.reconstruct(dbInstance, group);
-                database.removeAsObject(dbInstance, selection, TransferObject.class, null, group);
-            } catch (Exception e) {
-                database.remove(selection);
-            }
+            // Removing an assignee would also remove the files belonging to it, however,
+            // new design makes that action obsolete because the files are always held
+            // in one place in the database.
         }
     }
 }

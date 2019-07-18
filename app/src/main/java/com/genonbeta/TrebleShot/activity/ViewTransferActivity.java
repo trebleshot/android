@@ -34,6 +34,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.genonbeta.TrebleShot.R;
@@ -90,6 +91,7 @@ public class ViewTransferActivity
     private TransferObject mTransferObject;
     private PowerfulActionMode mMode;
     private String mDeviceId;
+    private String mDirectory;
     private MenuItem mCnTestMenu;
     private MenuItem mToggleMenu;
     private MenuItem mRetryMenu;
@@ -117,7 +119,7 @@ public class ViewTransferActivity
                     && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)) {
                 long groupId = intent.getLongExtra(CommunicationService.EXTRA_GROUP_ID, -1);
 
-                if (groupId == mGroup.groupId) {
+                if (groupId == mGroup.id) {
                     String deviceId = intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID);
                     int taskChange = intent.getIntExtra(CommunicationService.EXTRA_TASK_CHANGE_TYPE, -1);
 
@@ -144,7 +146,7 @@ public class ViewTransferActivity
                         for (long groupId : groupIds) {
                             String deviceId = deviceIds.get(iterator++);
 
-                            if (groupId == mGroup.groupId)
+                            if (groupId == mGroup.id)
                                 mActiveProcesses.add(deviceId);
                         }
 
@@ -187,27 +189,28 @@ public class ViewTransferActivity
                 Log.d(TAG, "Requested file is: " + streamInfo.friendlyName);
 
                 CursorItem fileIndex = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                        .setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=?", streamInfo.friendlyName));
+                        .setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                                streamInfo.friendlyName, TransferObject.Type.INCOMING.toString()));
 
                 if (fileIndex == null)
                     throw new Exception("File is not found in the database");
 
-                TransferObject transferObject = new TransferObject(fileIndex);
-                TransferGroup transferGroup = new TransferGroup(transferObject.groupId);
+                TransferObject object = new TransferObject(fileIndex);
+                TransferGroup transferGroup = new TransferGroup(object.groupId);
 
-                getDatabase().reconstruct(transferObject);
+                getDatabase().reconstruct(object);
 
                 mGroup = transferGroup;
-                mTransferObject = transferObject;
+                mTransferObject = object;
+                mDirectory = object.directory;
 
                 if (getIntent().getExtras() != null)
                     getIntent().getExtras().clear();
 
-                getIntent()
-                        .setAction(ACTION_LIST_TRANSFERS)
-                        .putExtra(EXTRA_GROUP_ID, mGroup.groupId);
+                getIntent().setAction(ACTION_LIST_TRANSFERS)
+                        .putExtra(EXTRA_GROUP_ID, mGroup.id);
 
-                new TransferInfoDialog(ViewTransferActivity.this, transferObject)
+                new TransferInfoDialog(ViewTransferActivity.this, mGroup, object)
                         .show();
 
                 Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
@@ -232,14 +235,14 @@ public class ViewTransferActivity
                     try {
                         TransferObject.Type type = TransferObject.Type
                                 .valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
-                        TransferObject transferObject = new TransferObject(requestId, deviceId, type);
 
-                        getDatabase().reconstruct(transferObject);
+                        TransferObject object = new TransferObject(group.id, requestId, type);
+                        getDatabase().reconstruct(object);
 
-                        new TransferInfoDialog(ViewTransferActivity.this, transferObject)
+                        new TransferInfoDialog(ViewTransferActivity.this, group, object)
                                 .show();
                     } catch (Exception e) {
-                        // May be it
+                        // do nothing
                     }
                 }
             } catch (Exception e) {
@@ -250,9 +253,9 @@ public class ViewTransferActivity
         if (mGroup == null)
             finish();
         else {
-            Bundle transactionFragmentArgs = new Bundle();
-            transactionFragmentArgs.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.groupId);
-            transactionFragmentArgs.putString(TransferFileExplorerFragment.ARG_PATH,
+            Bundle transferListFragmentBundle = new Bundle();
+            transferListFragmentBundle.putLong(TransferFileExplorerFragment.ARG_GROUP_ID, mGroup.id);
+            transferListFragmentBundle.putString(TransferFileExplorerFragment.ARG_PATH,
                     mTransferObject == null || mTransferObject.directory == null
                             ? null : mTransferObject.directory);
 
@@ -260,8 +263,9 @@ public class ViewTransferActivity
                     .findFragmentById(R.id.activity_transaction_content_frame);
 
             if (fragment == null) {
-                fragment = (TransferFileExplorerFragment) Fragment
-                        .instantiate(ViewTransferActivity.this, TransferFileExplorerFragment.class.getName(), transactionFragmentArgs);
+                fragment = (TransferFileExplorerFragment) getSupportFragmentManager().getFragmentFactory().instantiate(
+                        getClassLoader(), TransferFileExplorerFragment.class.getName(), transferListFragmentBundle);
+                fragment.setArguments(transferListFragmentBundle);
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -360,7 +364,7 @@ public class ViewTransferActivity
         } else if (id == R.id.actions_transfer_remove) {
             DialogUtils.showRemoveDialog(this, mGroup);
         } else if (id == R.id.actions_transfer_receiver_retry_receiving) {
-            TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.groupId);
+            TransferUtils.recoverIncomingInterruptions(ViewTransferActivity.this, mGroup.id);
 
             createSnackbar(R.string.mesg_retryReceivingNotice)
                     .show();
@@ -372,7 +376,7 @@ public class ViewTransferActivity
             startDeviceAddingActivity();
         } else if (id == R.id.actions_transfer_test_connection) {
             final List<ShowingAssignee> assignee = TransferUtils.loadAssigneeList(getDatabase(),
-                    mGroup.groupId);
+                    mGroup.id);
 
             if (assignee.size() == 1)
                 new EstablishConnectionDialog(ViewTransferActivity.this,
@@ -418,7 +422,7 @@ public class ViewTransferActivity
     public void startDeviceAddingActivity()
     {
         startActivityForResult(new Intent(this, AddDevicesToTransferActivity.class)
-                .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.groupId), REQUEST_ADD_DEVICES);
+                .putExtra(ShareActivity.EXTRA_GROUP_ID, mGroup.id), REQUEST_ADD_DEVICES);
     }
 
     @Override
@@ -455,7 +459,7 @@ public class ViewTransferActivity
             for (int i = 0; i < assignees.size(); i++) {
                 ShowingAssignee assignee = assignees.get(i);
 
-                if (device.equals(assignee.device.deviceId))
+                if (device.equals(assignee.device.id))
                     return i;
             }
         }
@@ -560,16 +564,12 @@ public class ViewTransferActivity
     private void toggleTask()
     {
         List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(getDatabase(),
-                mGroup.groupId);
+                mGroup.id);
 
         if (assigneeList.size() > 0) {
-            if (assigneeList.size() == 1
-                    && (getIndex().outgoingCount > 0) != (getIndex().incomingCount > 0)) {
+            if (assigneeList.size() == 1) {
                 ShowingAssignee assignee = assigneeList.get(0);
-
-                toggleTaskForAssignee(assignee, getIndex().incomingCount > 0
-                                ? TransferObject.Type.INCOMING : TransferObject.Type.OUTGOING,
-                        mActiveProcesses.contains(assignee.deviceId));
+                toggleTaskForAssignee(assignee, mActiveProcesses.contains(assignee.deviceId));
             } else
                 new ToggleMultipleTransferDialog(ViewTransferActivity.this,
                         mGroup, assigneeList, mActiveProcesses, getIndex()).show();
@@ -577,15 +577,14 @@ public class ViewTransferActivity
             startDeviceAddingActivity();
     }
 
-    public void toggleTaskForAssignee(final ShowingAssignee assignee, TransferObject.Type type,
-                                      boolean ongoing)
+    public void toggleTaskForAssignee(final ShowingAssignee assignee, boolean ongoing)
     {
         try {
             if (ongoing)
-                TransferUtils.pauseTransfer(this, assignee.groupId, assignee.deviceId);
+                TransferUtils.pauseTransfer(this, assignee);
             else {
                 getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
-                TransferUtils.startTransferWithTest(this, mGroup, assignee, type);
+                TransferUtils.startTransferWithTest(this, mGroup, assignee);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -629,8 +628,9 @@ public class ViewTransferActivity
 
                     if (mTransactionIndex.assignees.size() == 0)
                         if (mTransferObject != null) {
-                            new TransferInfoDialog(ViewTransferActivity.this, mTransferObject).show();
-                            mTransferObject = null;
+                            new TransferInfoDialog(ViewTransferActivity.this, mGroup, mTransferObject)
+                                    .show();
+                            mTransferObject =  null;
                         }
                 }
             });
@@ -659,7 +659,7 @@ public class ViewTransferActivity
                 for (ViewTransferActivity activity : activities) {
                     if (activity.getGroup() != null)
                         activity.getDatabase()
-                                .calculateTransactionSize(activity.getGroup().groupId, activity.getIndex());
+                                .calculateTransactionSize(activity.getGroup().id, activity.getIndex());
                 }
             } while (mRestartRequested && !isCancelled());
 

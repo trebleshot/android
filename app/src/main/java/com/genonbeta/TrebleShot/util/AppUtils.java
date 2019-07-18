@@ -105,7 +105,7 @@ public class AppUtils
         JSONObject deviceInformation = new JSONObject();
         JSONObject appInfo = new JSONObject();
 
-        deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, device.deviceId);
+        deviceInformation.put(Keyword.DEVICE_INFO_SERIAL, device.id);
         deviceInformation.put(Keyword.DEVICE_INFO_BRAND, device.brand);
         deviceInformation.put(Keyword.DEVICE_INFO_MODEL, device.model);
         deviceInformation.put(Keyword.DEVICE_INFO_USER, device.nickname);

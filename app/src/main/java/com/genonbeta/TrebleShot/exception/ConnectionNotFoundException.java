@@ -18,11 +18,17 @@
 
 package com.genonbeta.TrebleShot.exception;
 
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
+
 /**
  * created by: Veli
  * date: 6.01.2018 22:25
  */
 
-public class ConnectionNotFoundException extends NotFoundException
+public class ConnectionNotFoundException extends ReconstructionFailedException
 {
+    public ConnectionNotFoundException()
+    {
+        super("Connection not found");
+    }
 }

@@ -63,7 +63,7 @@ public class QuickSelectNetworkDeviceListFragment extends NetworkDeviceListFragm
             {
                 if (getContext() != null) {
                     getContext().sendBroadcast(new Intent(CommunicationService.ACTION_DEVICE_ACQUAINTANCE)
-                            .putExtra(CommunicationService.EXTRA_DEVICE_ID, networkDevice.deviceId)
+                            .putExtra(CommunicationService.EXTRA_DEVICE_ID, networkDevice.id)
                             .putExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME, connection.adapterName));
 
                     return true;

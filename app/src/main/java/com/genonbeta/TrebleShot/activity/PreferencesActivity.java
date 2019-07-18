@@ -60,7 +60,7 @@ public class PreferencesActivity extends Activity
                         public void onClick(DialogInterface dialog, int which)
                         {
 
-                            // TODO: 10/7/18 This will cause two seperate sync operations to start
+                            // TODO: 10/7/18 This shouldn't cause two separate sync operations to start
                             AppUtils.getDefaultPreferences(getApplicationContext()).edit()
                                     .clear()
                                     .apply();

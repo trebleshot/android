@@ -267,17 +267,17 @@ public class WebShareServer extends NanoHTTPD
                         }
 
                         TransferObject transferObject = new TransferObject(AppUtils.getUniqueNumber(),
-                                webShareGroup.groupId, device.deviceId, destFile.getName(), destFile.getName(),
+                                webShareGroup.id, destFile.getName(), destFile.getName(),
                                 destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
-                        transferObject.flag = TransferObject.Flag.DONE;
+                        transferObject.setFlag(TransferObject.Flag.DONE);
 
                         NetworkDevice.Connection connection = new NetworkDevice.Connection(
-                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.deviceId,
+                                Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.id,
                                 System.currentTimeMillis());
                         AppUtils.applyAdapterName(connection);
 
                         TransferGroup.Assignee assignee = new TransferGroup.Assignee(webShareGroup,
-                                device);
+                                device, TransferObject.Type.INCOMING);
                         assignee.connectionAdapter = connection.adapterName;
 
 
@@ -411,7 +411,7 @@ public class WebShareServer extends NanoHTTPD
                     throw new Exception("Expected 3 args, " + args.length + " given");
 
                 TransferGroup group = new TransferGroup(Long.parseLong(args[1]));
-                TransferObject object = new TransferObject(Long.parseLong(args[2]), null,
+                TransferObject object = new TransferObject(group.id, Long.parseLong(args[2]),
                         TransferObject.Type.OUTGOING);
 
                 AppUtils.getDatabase(mContext).reconstruct(group);
@@ -452,10 +452,10 @@ public class WebShareServer extends NanoHTTPD
                     throw new Exception("The group is not checked as served on the Web");
 
                 List<TransferObject> transferList = AppUtils.getDatabase(mContext)
-                        .castQuery(new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                        .castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                                 .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
                                                 + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                        String.valueOf(group.groupId),
+                                        String.valueOf(group.id),
                                         TransferObject.Type.OUTGOING.toString()), TransferObject.class);
 
                 if (transferList.size() < 1)
@@ -488,7 +488,7 @@ public class WebShareServer extends NanoHTTPD
                 continue;
 
             TransferGroup.Index index = new TransferGroup.Index();
-            AppUtils.getDatabase(mContext).calculateTransactionSize(group.groupId, index);
+            AppUtils.getDatabase(mContext).calculateTransactionSize(group.id, index);
 
             if (index.outgoingCount < 1)
                 continue;
@@ -498,7 +498,7 @@ public class WebShareServer extends NanoHTTPD
                             .getQuantityString(R.plurals.text_files, index.outgoingCount,
                                     index.outgoingCount), FileUtils.sizeExpression(
                     index.outgoing, false)),
-                    R.string.butn_show, "show", group.groupId));
+                    R.string.butn_show, "show", group.id));
         }
 
         if (contentBuilder.length() == 0)
@@ -522,23 +522,23 @@ public class WebShareServer extends NanoHTTPD
 
             StringBuilder contentBuilder = new StringBuilder();
             List<TransferObject> groupList = AppUtils.getDatabase(mContext).castQuery(
-                    new SQLQuery.Select(AccessDatabase.DIVIS_TRANSFER)
+                    new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                             .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
-                                    String.valueOf(group.groupId))
+                                    String.valueOf(group.id))
                             .setOrderBy(AccessDatabase.FIELD_TRANSFER_NAME + " ASC"),
                     TransferObject.class);
 
             if (groupList.size() > 0) {
                 contentBuilder.append(makeContent("list_transfer",
-                        mContext.getString(R.string.butn_downloadAllAsZip), R.string.butn_download, "download-zip", group.groupId,
+                        mContext.getString(R.string.butn_downloadAllAsZip), R.string.butn_download, "download-zip", group.id,
                         mContext.getResources().getQuantityString(R.plurals.text_files,
                                 groupList.size(), groupList.size()) + ".zip"));
 
                 for (TransferObject object : groupList)
                     contentBuilder.append(makeContent("list_transfer",
-                            object.friendlyName + " " + FileUtils.sizeExpression(object.fileSize,
+                            object.name + " " + FileUtils.sizeExpression(object.size,
                                     false), R.string.butn_download, "download", object.groupId,
-                            object.requestId, object.friendlyName));
+                            object.id, object.name));
             }
 
             return makePage("arrow-left.svg", R.string.text_files, contentBuilder.toString());
@@ -897,7 +897,7 @@ public class WebShareServer extends NanoHTTPD
                     InputStream inputStream = streamInfo.openInputStream();
 
                     ZipEntry thisEntry = new ZipEntry((object.directory != null
-                            ? object.directory + File.pathSeparator : "") + object.friendlyName);
+                            ? object.directory + File.pathSeparator : "") + object.name);
 
                     thisEntry.setTime(object.getComparableDate());
 

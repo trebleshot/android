@@ -29,7 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -93,7 +92,7 @@ public class ConnectionManagerActivity
         {
             if (mRequestType.equals(RequestType.RETURN_RESULT)) {
                 setResult(RESULT_OK, new Intent()
-                        .putExtra(EXTRA_DEVICE_ID, networkDevice.deviceId)
+                        .putExtra(EXTRA_DEVICE_ID, networkDevice.id)
                         .putExtra(EXTRA_CONNECTION_ADAPTER, connection.adapterName));
 
                 finish();
@@ -163,7 +162,7 @@ public class ConnectionManagerActivity
                         && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
                         && intent.hasExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME)) {
                     NetworkDevice device = new NetworkDevice(intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID));
-                    NetworkDevice.Connection connection = new NetworkDevice.Connection(device.deviceId, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
+                    NetworkDevice.Connection connection = new NetworkDevice.Connection(device.id, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
 
                     try {
                         AppUtils.getDatabase(ConnectionManagerActivity.this).reconstruct(device);
@@ -469,7 +468,7 @@ public class ConnectionManagerActivity
                     try {
                         NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
                         AppUtils.getDatabase(getContext()).reconstruct(device);
-                        NetworkDevice.Connection connection = new NetworkDevice.Connection(device.deviceId, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
+                        NetworkDevice.Connection connection = new NetworkDevice.Connection(device.id, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
                         AppUtils.getDatabase(getContext()).reconstruct(connection);
 
                         if (mListener != null)

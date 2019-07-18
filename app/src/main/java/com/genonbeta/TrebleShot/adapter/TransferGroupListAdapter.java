@@ -85,7 +85,7 @@ public class TransferGroupListAdapter
         List<Long> activeList = new ArrayList<>(mRunningTasks);
 
         for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class)) {
-            mDatabase.calculateTransactionSize(group.groupId, group.index);
+            mDatabase.calculateTransactionSize(group.id, group.index);
 
             StringBuilder assigneesText = new StringBuilder();
 
@@ -103,7 +103,7 @@ public class TransferGroupListAdapter
                     ? assigneesText.toString()
                     : getContext().getString(R.string.text_emptySymbol);
 
-            group.isRunning = activeList.contains(group.groupId);
+            group.isRunning = activeList.contains(group.id);
             group.totalCount = group.index.incomingCount + group.index.outgoingCount;
             group.totalBytes = group.index.incoming + group.index.outgoing;
             group.totalBytesCompleted = group.index.incomingCompleted + group.index.outgoingCompleted;
@@ -283,13 +283,13 @@ public class TransferGroupListAdapter
         @Override
         public long getId()
         {
-            return groupId;
+            return id;
         }
 
         @Override
         public void setId(long id)
         {
-            this.groupId = id;
+            this.id = id;
         }
 
         @Override

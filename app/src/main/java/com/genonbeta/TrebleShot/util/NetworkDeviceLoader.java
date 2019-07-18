@@ -62,7 +62,7 @@ public class NetworkDeviceLoader
         }
 
         connection.lastCheckedDate = System.currentTimeMillis();
-        connection.deviceId = device.deviceId;
+        connection.deviceId = device.id;
 
         database.remove(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
@@ -92,11 +92,11 @@ public class NetworkDeviceLoader
                 try {
                     NetworkDevice device = client.loadDevice(ipAddress);
 
-                    if (device.deviceId != null) {
+                    if (device.id != null) {
                         NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
                         NetworkDevice.Connection connection = processConnection(database, device, ipAddress);
 
-                        if (!localDevice.deviceId.equals(device.deviceId)) {
+                        if (!localDevice.id.equals(device.id)) {
                             device.lastUsageTime = System.currentTimeMillis();
 
                             database.publish(device);

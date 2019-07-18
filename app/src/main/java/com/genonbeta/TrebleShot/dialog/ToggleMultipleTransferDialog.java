@@ -38,7 +38,6 @@ import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,10 +70,9 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
                 ShowingAssignee assignee = mList.get(which);
 
                 if (mActiveList.contains(assignee.deviceId))
-                    TransferUtils.pauseTransfer(activity, group.groupId, assignee.deviceId);
+                    TransferUtils.pauseTransfer(activity, assignee);
                 else
-                    TransferUtils.startTransfer(activity, group, assignee,
-                            TransferObject.Type.OUTGOING);
+                    TransferUtils.startTransfer(activity, assignee);
             }
         });
 
@@ -90,29 +88,27 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
                 }
             });
 
-        if (transferIndex.incomingCount > 0)
+        ShowingAssignee senderAssignee = null;
+
+        for (ShowingAssignee assignee : deviceList)
+            if (TransferObject.Type.INCOMING.equals(assignee.type)) {
+                senderAssignee = assignee;
+                break;
+            }
+
+        if (transferIndex.incomingCount > 0 && senderAssignee != null) {
+            mList.remove(senderAssignee);
+
+            final ShowingAssignee finalSenderAssignee = senderAssignee;
             setPositiveButton(R.string.butn_receive, new DialogInterface.OnClickListener()
             {
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    TransferObject object = TransferUtils.fetchFirstTransfer(getContext(),
-                            group.groupId, TransferObject.Type.INCOMING);
-
-                    if (object != null) {
-                        TransferGroup.Assignee assignee = new TransferGroup.Assignee(group.groupId,
-                                object.deviceId);
-
-                        try {
-                            AppUtils.getDatabase(getContext()).reconstruct(assignee);
-                            TransferUtils.startTransferWithTest(activity, group,
-                                    assignee, TransferObject.Type.INCOMING);
-                        } catch (ReconstructionFailedException e) {
-                            // Failed, do nothing!
-                        }
-                    }
+                    TransferUtils.startTransferWithTest(activity, group, finalSenderAssignee);
                 }
             });
+        }
     }
 
     private class ActiveListAdapter extends BaseAdapter

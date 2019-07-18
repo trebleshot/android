@@ -223,7 +223,7 @@ public class TransferGroupListFragment
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
-            ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).groupId);
+            ViewTransferActivity.startInstance(getActivity(), getAdapter().getItem(holder).id);
             return true;
         } catch (Exception e) {
         }

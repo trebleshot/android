@@ -87,7 +87,6 @@ public class ConnectionUtils
 
     public boolean disableCurrentNetwork()
     {
-        // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
         // This is because we are only allowed to manipulate the connections that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork()

@@ -34,7 +34,8 @@ public class Keyword
             REQUEST_ACQUAINTANCE = "requestAcquaintance",
             REQUEST_CLIPBOARD = "requestClipboard",
             REQUEST_HANDSHAKE = "requestHandshake",
-            REQUEST_START_TRANSFER = "requestStartTransfer",
+            REQUEST_TRANSFER_JOB = "requestTransferJob", // Introduced in 99
+            TRANSFER_TYPE = "incomingType", // Introduced in 99
             BACK_COMP_REQUEST_SEND_UPDATE = "backCompRequestSendUpdate",
             TRANSFER_REQUEST_ID = "requestId",
             TRANSFER_GROUP_ID = "groupId",

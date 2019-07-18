@@ -59,7 +59,7 @@ public class BarcodeScannerActivity extends Activity
                 public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection)
                 {
                     setResult(RESULT_OK, new Intent()
-                            .putExtra(EXTRA_DEVICE_ID, networkDevice.deviceId)
+                            .putExtra(EXTRA_DEVICE_ID, networkDevice.id)
                             .putExtra(EXTRA_CONNECTION_ADAPTER, connection.adapterName));
                     finish();
 

@@ -33,7 +33,7 @@ public class NetworkDevice implements DatabaseObject<Object>
     public String brand;
     public String model;
     public String nickname;
-    public String deviceId;
+    public String id;
     public String versionName;
     public int versionNumber;
     public int tmpSecureKey;
@@ -47,9 +47,9 @@ public class NetworkDevice implements DatabaseObject<Object>
     {
     }
 
-    public NetworkDevice(String deviceId)
+    public NetworkDevice(String id)
     {
-        this.deviceId = deviceId;
+        this.id = id;
     }
 
     public NetworkDevice(CursorItem item)
@@ -59,21 +59,21 @@ public class NetworkDevice implements DatabaseObject<Object>
 
     public String generatePictureId()
     {
-        return String.format("picture_%s", deviceId);
+        return String.format("picture_%s", id);
     }
 
     @Override
     public SQLQuery.Select getWhere()
     {
         return new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-                .setWhere(AccessDatabase.FIELD_DEVICES_ID + "=?", deviceId);
+                .setWhere(AccessDatabase.FIELD_DEVICES_ID + "=?", id);
     }
 
     public ContentValues getValues()
     {
         ContentValues values = new ContentValues();
 
-        values.put(AccessDatabase.FIELD_DEVICES_ID, deviceId);
+        values.put(AccessDatabase.FIELD_DEVICES_ID, id);
         values.put(AccessDatabase.FIELD_DEVICES_USER, nickname);
         values.put(AccessDatabase.FIELD_DEVICES_BRAND, brand);
         values.put(AccessDatabase.FIELD_DEVICES_MODEL, model);
@@ -92,7 +92,7 @@ public class NetworkDevice implements DatabaseObject<Object>
     @Override
     public void reconstruct(CursorItem item)
     {
-        this.deviceId = item.getString(AccessDatabase.FIELD_DEVICES_ID);
+        this.id = item.getString(AccessDatabase.FIELD_DEVICES_ID);
         this.nickname = item.getString(AccessDatabase.FIELD_DEVICES_USER);
         this.brand = item.getString(AccessDatabase.FIELD_DEVICES_BRAND);
         this.model = item.getString(AccessDatabase.FIELD_DEVICES_MODEL);
@@ -129,10 +129,10 @@ public class NetworkDevice implements DatabaseObject<Object>
         database.getContext().deleteFile(generatePictureId());
 
         database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
+                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", id));
 
         List<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class, null);
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", id), TransferGroup.Assignee.class, null);
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferGroup.Assignee assignee : assignees) {
@@ -143,7 +143,7 @@ public class NetworkDevice implements DatabaseObject<Object>
                 database.reconstruct(dbInstance, transferGroup);
 
                 List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.id)), TransferGroup.Assignee.class);
 
                 if (relatedAssignees.size() == 0)
                     database.remove(transferGroup);

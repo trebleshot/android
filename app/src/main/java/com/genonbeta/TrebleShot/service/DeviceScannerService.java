@@ -71,7 +71,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                     getDatabase().publish(localDevice);
 
                     for (AddressedInterface addressedInterface : interfaceList) {
-                        NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.deviceId, System.currentTimeMillis());
+                        NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.id, System.currentTimeMillis());
                         getDatabase().publish(connection);
                     }
 

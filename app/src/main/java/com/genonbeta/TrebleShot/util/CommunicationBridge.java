@@ -187,7 +187,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             NetworkDevice loadedDevice = loadDevice(activeConnection);
             NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice, activeConnection.getClientAddress());
 
-            if (!targetDevice.deviceId.equals(loadedDevice.deviceId))
+            if (!targetDevice.id.equals(loadedDevice.id))
                 throw new DifferentClientException("The target device did not match with the connected one");
             else {
                 loadedDevice.lastUsageTime = System.currentTimeMillis();

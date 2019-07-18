@@ -29,8 +29,6 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
-import com.genonbeta.TrebleShot.dialog.ConnectionTestDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -80,7 +78,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
                 final List<ConnectionResult> calculatedConnections = new ArrayList<>();
                 final List<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                        .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.deviceId)
+                        .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.id)
                         .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class);
 
                 setMax(connectionList.size());

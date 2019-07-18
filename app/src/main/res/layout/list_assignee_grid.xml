@@ -77,6 +77,7 @@
             android:ellipsize="middle" />
 
         <ImageView
+            android:visibility="gone"
             android:id="@+id/menu"
             style="@style/OverflowButton"
             android:layout_width="wrap_content"
