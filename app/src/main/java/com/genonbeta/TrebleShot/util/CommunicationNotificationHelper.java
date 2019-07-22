@@ -200,6 +200,7 @@ public class CommunicationNotificationHelper
 
         processHolder.notification.setContentTitle(processHolder.object.name);
 
+        processHolder.notification.show();
     }
 
     public void notifyClipboardRequest(NetworkDevice device, TextStreamObject object)

@@ -78,6 +78,7 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
@@ -646,7 +647,7 @@ public class CommunicationService extends Service
 				TASK_STATUS_ONGOING);
 		notifyTaskRunningListChange();
 
-		android.database.sqlite.SQLiteDatabase database = getDatabase().getWritableDatabase();
+		android.database.sqlite.SQLiteDatabase dbInstance = getDatabase().getWritableDatabase();
 		boolean retry = false;
 
 		try {
@@ -670,7 +671,7 @@ public class CommunicationService extends Service
 							getApplicationContext(), processHolder.object, processHolder.group);
 					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(),
 							processHolder.currentFile.getUri());
-					long currentSize = processHolder.currentFile.length();
+					processHolder.currentBytes = processHolder.currentFile.length();
 
 					getNotificationHelper().notifyFileTransaction(processHolder);
 
@@ -679,8 +680,8 @@ public class CommunicationService extends Service
 								.put(Keyword.TRANSFER_REQUEST_ID, processHolder.object.id)
 								.put(Keyword.RESULT, true);
 
-						if (currentSize > 0)
-							reply.put(Keyword.SKIPPED_BYTES, currentSize);
+						if (processHolder.currentBytes > 0)
+							reply.put(Keyword.SKIPPED_BYTES, processHolder.currentBytes);
 
 						Log.d(TAG, "handleTransferAsReceiver(): reply: " + reply.toString());
 						processHolder.activeConnection.reply(reply.toString());
@@ -709,23 +710,75 @@ public class CommunicationService extends Service
 								}
 							}
 						} else {
-							long sizeChanged = response.has(Keyword.SIZE_CHANGED)
-									? response.getLong(Keyword.SIZE_CHANGED)
-									: -1;
-							boolean sizeActuallyChanged = sizeChanged > -1
-									&& processHolder.object.size != sizeChanged;
-							boolean canContinue = !sizeActuallyChanged || currentSize < 1;
+							long sizeChanged = response.has(Keyword.SIZE_CHANGED) ? response.getLong(
+									Keyword.SIZE_CHANGED) : 0;
+							boolean sizeActuallyChanged = sizeChanged > 0 && processHolder.object.size != sizeChanged;
 
 							if (sizeActuallyChanged) {
 								Log.d(TAG, "handleTransferAsReceiver(): Sender says the file has a new size");
 								processHolder.object.size = response.getLong(Keyword.SIZE_CHANGED);
+								boolean canContinue = processHolder.currentBytes < 1;
+
+								processHolder.activeConnection.reply(new JSONObject()
+										.put(Keyword.RESULT, canContinue)
+										.toString());
+
+								if (!canContinue) {
+									Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous file which has a length. Cannot take the risk.");
+									processHolder.object.setFlag(TransferObject.Flag.REMOVED);
+									continue;
+								}
+
+								Log.d(TAG, "handleTransferAsReceiver(): receive: " +
+										processHolder.activeConnection.receive().response);
 							}
 
-							if (canContinue) {
+							OutputStream outputStream = null;
 
-							} else {
-								Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous file which has a length. Cannot take the risk.");
-								processHolder.object.setFlag(TransferObject.Flag.REMOVED);
+							try {
+								Log.d(TAG, "handleTransferAsReceiver(): About to receive the file " +
+										processHolder.object.name);
+								outputStream = streamInfo.openOutputStream();
+								int readLength;
+								long lastReceivedTime = 0;
+								long timeout = processHolder.activeConnection.getTimeout();
+								byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+								InputStream inputStream = processHolder.activeConnection.getSocket()
+										.getInputStream();
+
+								while (processHolder.currentBytes < processHolder.object.size) {
+									Log.d(TAG, "handleTransferAsReceiver(): Still writing");
+									if ((readLength = inputStream.read(buffer)) > 0) {
+										processHolder.currentBytes += readLength;
+										outputStream.write(buffer, 0, readLength);
+										outputStream.flush();
+
+										lastReceivedTime = System.currentTimeMillis();
+									}
+
+									if (processHolder.interrupter.interrupted()) {
+										processHolder.object.putFlag(processHolder.device.id,
+												TransferObject.Flag.INTERRUPTED);
+										break;
+									}
+
+									if (timeout != CoolSocket.NO_TIMEOUT && System.currentTimeMillis() - lastReceivedTime > timeout)
+										break;
+								}
+
+								processHolder.object.putFlag(processHolder.device.id,
+										processHolder.currentBytes != processHolder.object.size
+												? TransferObject.Flag.INTERRUPTED : TransferObject.Flag.DONE);
+
+								Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
+							} catch (Exception e) {
+								e.printStackTrace();
+								processHolder.interrupter.interrupt(false);
+								processHolder.object.putFlag(processHolder.device.id,
+										TransferObject.Flag.INTERRUPTED);
+							} finally {
+								if (outputStream != null)
+									outputStream.close();
 							}
 						}
 					}
@@ -802,8 +855,11 @@ public class CommunicationService extends Service
 				TASK_STATUS_ONGOING);
 		notifyTaskRunningListChange();
 
+		android.database.sqlite.SQLiteDatabase dbInstance = getDatabase().getWritableDatabase();
+
 		try {
 			while (processHolder.activeConnection.getSocket().isConnected()) {
+				processHolder.currentBytes = 0;
 				CoolSocket.ActiveConnection.Response response = processHolder.activeConnection.receive();
 				Log.d(TAG, "handleTransferAsSender(): receive: " + response.response);
 				JSONObject request = new JSONObject(response.response);
@@ -831,46 +887,110 @@ public class CommunicationService extends Service
 				try {
 					Log.d(TAG, "handleTransferAsSender(): " + processHolder.type.toString());
 
-					long skippedBytes = 0;
 					processHolder.object = new TransferObject(processHolder.group.id,
 							request.getInt(Keyword.TRANSFER_REQUEST_ID), processHolder.type);
 
 					getDatabase().reconstruct(processHolder.object);
-
-					if (request.has(Keyword.SKIPPED_BYTES)) {
-						skippedBytes = request.getLong(Keyword.SKIPPED_BYTES);
-						Log.d(TAG, "SeamlessServes.onConnected(): Has skipped bytes: " + skippedBytes);
-					}
 
 					processHolder.currentFile = FileUtils.fromUri(getApplicationContext(),
 							Uri.parse(processHolder.object.file));
 					long fileSize = processHolder.currentFile.length();
 					InputStream inputStream = getContentResolver().openInputStream(
 							processHolder.currentFile.getUri());
+
+					if (inputStream == null)
+						throw new FileNotFoundException("The input stream for the file has failed to open.");
+
+					if (request.has(Keyword.SKIPPED_BYTES)) {
+						long skippedBytes = request.getLong(Keyword.SKIPPED_BYTES);
+						long newPosition = inputStream.skip(skippedBytes);
+						processHolder.currentBytes = 0;
+
+						Log.d(TAG, "handleTransferAsSender(): Has skipped bytes: " + skippedBytes);
+
+						if (skippedBytes > 0 && newPosition != skippedBytes) {
+							inputStream.close();
+							throw new IOException("Failed to skip bytes. The requested is " + skippedBytes
+									+ " and the result is " + newPosition);
+						}
+					}
+
 					JSONObject reply = new JSONObject()
 							.put(Keyword.RESULT, true);
 
-					if (fileSize >= 0 && fileSize != processHolder.object.size) {
-						reply.put(Keyword.SIZE_CHANGED, fileSize);
+					if (fileSize != processHolder.object.size) {
 						processHolder.object.size = fileSize;
+
+						reply.put(Keyword.SIZE_CHANGED, fileSize);
+						processHolder.activeConnection.reply(reply.toString());
+						Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
+
+						JSONObject validityOfChange = new JSONObject(processHolder.activeConnection
+								.receive().response);
+
+						if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
+								Keyword.RESULT)) {
+							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
+							getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+							continue;
+						}
+
+						processHolder.activeConnection.reply(":|");
+					} else {
+						processHolder.activeConnection.reply(reply.toString());
+						Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
 					}
 
 					getNotificationHelper().notifyFileTransaction(processHolder);
+					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
+					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 
-					Log.d(TAG, "handleTransferAsSender(): Proceeding to send with reply: " +
-							reply.toString());
-					processHolder.activeConnection.reply(reply.toString());
+					try {
+						Log.d(TAG, "handleTransferAsReceiver(): About to send the file " +
+								processHolder.object.name);
 
-					/*
-					int readLength;
-					byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
-					OutputStream outputStream = processHolder.activeConnection.getSocket()
-							.getOutputStream();
+						boolean sizeExceeded = false;
+						int readLength;
+						byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
+						OutputStream outputStream = processHolder.activeConnection.getSocket()
+								.getOutputStream();
 
-					while ((readLength = inputStream.read(buffer)) != -1) {
-						outputStream.write(buffer, 0, readLength);
-						outputStream.flush();
-					}*/
+						while ((readLength = inputStream.read(buffer)) != -1) {
+							if (readLength > 0) {
+								if (processHolder.currentBytes + readLength > processHolder.object.size) {
+									sizeExceeded = processHolder.currentBytes < processHolder.object.size;
+									break;
+								}
+
+								processHolder.currentBytes += readLength;
+								outputStream.write(buffer, 0, readLength);
+								outputStream.flush();
+							}
+
+							if (processHolder.interrupter.interrupted()) {
+								processHolder.object.putFlag(processHolder.device.id,
+										TransferObject.Flag.INTERRUPTED);
+								break;
+							}
+						}
+
+						if (processHolder.currentBytes == processHolder.object.size)
+							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.DONE);
+						else if (sizeExceeded || processHolder.currentBytes < processHolder.object.size)
+							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
+
+						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+
+						Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
+					} catch (Exception e) {
+						e.printStackTrace();
+						processHolder.interrupter.interrupt(false);
+						processHolder.object.putFlag(processHolder.device.id,
+								TransferObject.Flag.INTERRUPTED);
+						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+					} finally {
+						inputStream.close();
+					}
 				} catch (ReconstructionFailedException e) {
 					Log.d(TAG, "handleTransferAsSender(): File not found");
 
@@ -881,7 +1001,7 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-					getDatabase().update(processHolder.object);
+					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 				} catch (FileNotFoundException | StreamCorruptedException | StreamInfo.FolderStateException e) {
 					Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + processHolder.object.name);
 
@@ -892,7 +1012,7 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-					getDatabase().update(processHolder.object);
+					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 				} catch (Exception e) {
 					e.printStackTrace();
 
@@ -903,7 +1023,7 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-					getDatabase().update(processHolder.object);
+					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 				}
 			}
 		} catch (Exception e) {
@@ -913,8 +1033,8 @@ public class CommunicationService extends Service
 			if (processHolder.interrupter.interruptedByUser())
 				if (processHolder.notification != null)
 					processHolder.notification.cancel();
-			else if (processHolder.interrupter.interrupted())
-				mNotificationHelper.notifyConnectionError(processHolder, null);
+				else if (processHolder.interrupter.interrupted())
+					mNotificationHelper.notifyConnectionError(processHolder, null);
 
 			synchronized (getActiveProcessList()) {
 				removeProcess(processHolder);
