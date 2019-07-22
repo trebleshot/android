@@ -447,7 +447,7 @@ public class AppUtils
                 .setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE);
 
         if (forceStart)
-            intent.putExtra(CommunicationService.EXTRA_TOGGLE_WEBSHARE_START_ALWAYS, true);
+            intent.putExtra(CommunicationService.EXTRA_ENABLE, true);
 
         AppUtils.startForegroundService(context, intent);
     }

@@ -105,7 +105,7 @@ public class CommunicationNotificationHelper
         Intent acceptIntent = new Intent(getContext(), CommunicationService.class);
         Intent dialogIntent = new Intent(getContext(), DialogEventReceiver.class);
 
-        acceptIntent.setAction(CommunicationService.ACTION_IP)
+        acceptIntent.setAction(CommunicationService.ACTION_DEVICE_APPROVAL)
                 .putExtra(CommunicationService.EXTRA_DEVICE_ID, device.id)
                 .putExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, notification.getNotificationId())
                 .putExtra(CommunicationService.EXTRA_IS_ACCEPTED, true);
