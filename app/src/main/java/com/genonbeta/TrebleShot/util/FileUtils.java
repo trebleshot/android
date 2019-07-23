@@ -94,7 +94,7 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
         return fetchFile(getSavePath(context, group), transferObject.directory, transferObject.file, createIfNotExists);
     }
 
-    public static DocumentFile getIncomingTransactionFile(Context context, TransferObject transferObject, TransferGroup group) throws IOException
+    public static DocumentFile getIncomingFile(Context context, TransferObject transferObject, TransferGroup group) throws IOException
     {
         DocumentFile pseudoFile = getIncomingPseudoFile(context, transferObject, group, true);
 

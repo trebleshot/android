@@ -136,10 +136,10 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     @Override
     public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
     {
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
                 .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(id)));
 
-        database.remove(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+        database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
                 .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(id)));
 
         SQLQuery.Select objectSelection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)

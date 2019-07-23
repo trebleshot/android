@@ -627,8 +627,7 @@ public class CommunicationService extends Service
 
 					if (fastMode)
 						try {
-							startTransferAsClient(group.id, device.id,
-									TransferObject.Type.INCOMING);
+							startTransferAsClient(group.id, device.id, TransferObject.Type.INCOMING);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -667,7 +666,7 @@ public class CommunicationService extends Service
 						Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " +
 								processHolder.object.name);
 
-					processHolder.currentFile = FileUtils.getIncomingTransactionFile(
+					processHolder.currentFile = FileUtils.getIncomingFile(
 							getApplicationContext(), processHolder.object, processHolder.group);
 					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(),
 							processHolder.currentFile.getUri());
@@ -733,11 +732,10 @@ public class CommunicationService extends Service
 										processHolder.activeConnection.receive().response);
 							}
 
+							processHolder.activeConnection.reply(":)");
 							OutputStream outputStream = null;
 
 							try {
-								Log.d(TAG, "handleTransferAsReceiver(): About to receive the file " +
-										processHolder.object.name);
 								outputStream = streamInfo.openOutputStream();
 								int readLength;
 								long lastReceivedTime = 0;
@@ -747,7 +745,6 @@ public class CommunicationService extends Service
 										.getInputStream();
 
 								while (processHolder.currentBytes < processHolder.object.size) {
-									Log.d(TAG, "handleTransferAsReceiver(): Still writing");
 									if ((readLength = inputStream.read(buffer)) > 0) {
 										processHolder.currentBytes += readLength;
 										outputStream.write(buffer, 0, readLength);
@@ -757,8 +754,7 @@ public class CommunicationService extends Service
 									}
 
 									if (processHolder.interrupter.interrupted()) {
-										processHolder.object.putFlag(processHolder.device.id,
-												TransferObject.Flag.INTERRUPTED);
+										processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
 										break;
 									}
 
@@ -766,16 +762,22 @@ public class CommunicationService extends Service
 										break;
 								}
 
-								processHolder.object.putFlag(processHolder.device.id,
-										processHolder.currentBytes != processHolder.object.size
-												? TransferObject.Flag.INTERRUPTED : TransferObject.Flag.DONE);
+								boolean completed = processHolder.currentBytes == processHolder.object.size;
+								processHolder.object.setFlag(completed ? TransferObject.Flag.DONE
+										: TransferObject.Flag.INTERRUPTED);
 
-								Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
+								if (completed && processHolder.currentFile.getParentFile() != null) {
+									processHolder.currentFile = FileUtils.saveReceivedFile(
+											processHolder.currentFile.getParentFile(), processHolder
+													.currentFile, processHolder.object);
+									processHolder.object.file = processHolder.currentFile.getName();
+								}
+
+								Log.d(TAG, "handleTransferAsSender(): File received " + processHolder.object.name);
 							} catch (Exception e) {
 								e.printStackTrace();
 								processHolder.interrupter.interrupt(false);
-								processHolder.object.putFlag(processHolder.device.id,
-										TransferObject.Flag.INTERRUPTED);
+								processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
 							} finally {
 								if (outputStream != null)
 									outputStream.close();
@@ -796,7 +798,7 @@ public class CommunicationService extends Service
 					if (processHolder.object != null) {
 						Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
 								+ processHolder.object.getFlag().toString());
-						getDatabase().update(processHolder.object);
+						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 					}
 				}
 			}
@@ -941,24 +943,23 @@ public class CommunicationService extends Service
 						Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
 					}
 
+					processHolder.activeConnection.receive();
 					getNotificationHelper().notifyFileTransaction(processHolder);
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
 					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
 
 					try {
-						Log.d(TAG, "handleTransferAsReceiver(): About to send the file " +
-								processHolder.object.name);
-
 						boolean sizeExceeded = false;
 						int readLength;
 						byte[] buffer = new byte[AppConfig.BUFFER_LENGTH_DEFAULT];
 						OutputStream outputStream = processHolder.activeConnection.getSocket()
 								.getOutputStream();
 
-						while ((readLength = inputStream.read(buffer)) != -1) {
+						while ((readLength = inputStream.read(buffer)) != -1
+								&& processHolder.currentBytes < processHolder.object.size) {
 							if (readLength > 0) {
 								if (processHolder.currentBytes + readLength > processHolder.object.size) {
-									sizeExceeded = processHolder.currentBytes < processHolder.object.size;
+									sizeExceeded = true;
 									break;
 								}
 
@@ -1283,9 +1284,9 @@ public class CommunicationService extends Service
 							if (TransferObject.Type.INCOMING.equals(holder.type)) {
 								handleTransferAsReceiver(holder);
 							} else if (TransferObject.Type.OUTGOING.equals(holder.type)) {
-								holder.activeConnection.reply(":)");
+								holder.activeConnection.reply(Keyword.STUB);
 								handleTransferAsSender(holder);
-								holder.activeConnection.reply("(:");
+								holder.activeConnection.reply(Keyword.STUB);
 							}
 
 							try {
@@ -1523,6 +1524,13 @@ public class CommunicationService extends Service
 
 									try {
 										TransferObject.Type type = TransferObject.Type.valueOf(typeValue);
+
+										// The type is reversed to match our side
+										if (TransferObject.Type.INCOMING.equals(type))
+											type = TransferObject.Type.OUTGOING;
+										else if (TransferObject.Type.OUTGOING.equals(type))
+											type = TransferObject.Type.INCOMING;
+
 										TransferGroup group = new TransferGroup(groupId);
 										getDatabase().reconstruct(group);
 
@@ -1531,9 +1539,11 @@ public class CommunicationService extends Service
 
 										if (!isProcessRunning(groupId, device.id, type)) {
 											ProcessHolder processHolder = new ProcessHolder();
+
 											processHolder.activeConnection = activeConnection;
 											processHolder.group = group;
 											processHolder.device = device;
+											processHolder.type = type;
 											processHolder.assignee = new TransferGroup.Assignee(
 													group, device, type);
 
@@ -1544,11 +1554,9 @@ public class CommunicationService extends Service
 
 											result = true;
 
-											if (TransferObject.Type.INCOMING.equals(type)) {
-												processHolder.type = TransferObject.Type.OUTGOING;
+											if (TransferObject.Type.OUTGOING.equals(type))
 												handleTransferAsSender(processHolder);
-											} else if (TransferObject.Type.OUTGOING.equals(type)) {
-												processHolder.type = TransferObject.Type.INCOMING;
+											else if (TransferObject.Type.INCOMING.equals(type)) {
 												Log.d(TAG, "CommunicationServer.onConnected(): "
 														+ activeConnection.receive().response);
 												handleTransferAsReceiver(processHolder);
@@ -1604,6 +1612,7 @@ public class CommunicationService extends Service
 		public DynamicNotification notification;
 		public TransferObject object;
 		public DocumentFile currentFile;
+		public long lastProcessingTime;
 		public long currentBytes; // moving
 		public long totalBytes;
 		public long completedBytes;

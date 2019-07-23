@@ -136,17 +136,17 @@ public class NetworkDevice implements DatabaseObject<Object>
 
         // We are ensuring that the transfer group is still valid for other devices
         for (TransferGroup.Assignee assignee : assignees) {
-            database.remove(assignee);
+            database.remove(dbInstance, assignee, this);
 
             try {
                 TransferGroup transferGroup = new TransferGroup(assignee.groupId);
                 database.reconstruct(dbInstance, transferGroup);
 
-                List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.id)), TransferGroup.Assignee.class);
+                List<TransferGroup.Assignee> relatedAssignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                        .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.id)), TransferGroup.Assignee.class, null);
 
                 if (relatedAssignees.size() == 0)
-                    database.remove(transferGroup);
+                    database.remove(dbInstance, transferGroup, this);
             } catch (Exception e) {
 
             }
