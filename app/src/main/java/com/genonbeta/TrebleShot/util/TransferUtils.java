@@ -6,11 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -20,6 +15,7 @@ import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -28,6 +24,7 @@ import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.genonbeta.android.framework.util.Interrupter;
 
@@ -37,415 +34,500 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
+
 /**
  * created by: veli
  * date: 06.04.2018 17:01
  */
 public class TransferUtils
 {
-    public static final String TAG = TransferUtils.class.getSimpleName();
+	public static final String TAG = TransferUtils.class.getSimpleName();
 
-    public static void changeConnection(FragmentActivity activity, final AccessDatabase database, final TransferGroup group, final NetworkDevice device, final ConnectionUpdatedListener listener)
-    {
-        new ConnectionChooserDialog(activity, device, new OnDeviceSelectedListener()
-        {
-            @Override
-            public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> connectionList)
-            {
-                // FIXME: 7/18/19 Changing the connection for a transfer doesn't work anymore because assignee needs Type.
-                /*
-                TransferGroup.Assignee assignee = new TransferGroup.Assignee(group, device, connection);
+	public static void changeConnection(final FragmentActivity activity, final NetworkDevice device,
+										final TransferGroup.Assignee assignee,
+										final ConnectionUpdatedListener listener)
+	{
+		new ConnectionChooserDialog(activity, device, new OnDeviceSelectedListener()
+		{
+			@Override
+			public void onDeviceSelected(NetworkDevice.Connection connection,
+										 List<NetworkDevice.Connection> connectionList)
+			{
+				try {
+					AppUtils.getDatabase(activity).reconstruct(assignee);
+					AppUtils.getDatabase(activity).publish(assignee);
 
-                database.publish(assignee);
+					if (listener != null)
+						listener.onConnectionUpdated(connection, assignee);
+				} catch (ReconstructionFailedException e) {
+					e.printStackTrace();
+				}
+			}
+		}).show();
+	}
 
-                if (listener != null)
-                    listener.onConnectionUpdated(connection, assignee);*/
-            }
-        }).show();
-    }
+	@SuppressLint("DefaultLocale")
+	public static long createUniqueTransferId(long groupId, String deviceId, TransferObject.Type type)
+	{
+		return String.format("%d_%s_%s", groupId, deviceId, type).hashCode();
+	}
 
-    @SuppressLint("DefaultLocale")
-    public static long createUniqueTransferId(long groupId, String deviceId, TransferObject.Type type)
-    {
-        return String.format("%d_%s_%s", groupId, deviceId, type).hashCode();
-    }
+	public static SQLQuery.Select createIncomingSelection(long groupId)
+	{
+		return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+				String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID,
+						AccessDatabase.FIELD_TRANSFER_TYPE), String.valueOf(groupId),
+				TransferObject.Type.INCOMING.toString());
+	}
 
-    public static SQLQuery.Select createIncomingSelection(long groupId)
-    {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID,
-                        AccessDatabase.FIELD_TRANSFER_TYPE), String.valueOf(groupId),
-                TransferObject.Type.INCOMING.toString());
-    }
+	public static SQLQuery.Select createIncomingSelection(long groupId, TransferObject.Flag flag, boolean equals)
+	{
+		return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+				String.format("%s = ? AND %s = ? AND %s " + (equals ? "=" : "!=") + " ?",
+						AccessDatabase.FIELD_TRANSFER_GROUPID, AccessDatabase.FIELD_TRANSFER_TYPE,
+						AccessDatabase.FIELD_TRANSFER_FLAG), String.valueOf(groupId),
+				TransferObject.Type.INCOMING.toString(), flag.toString());
+	}
 
-    public static SQLQuery.Select createIncomingSelection(long groupId, TransferObject.Flag flag, boolean equals)
-    {
-        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
-                String.format("%s = ? AND %s = ? AND %s " + (equals ? "=" : "!=") + " ?",
-                        AccessDatabase.FIELD_TRANSFER_GROUPID, AccessDatabase.FIELD_TRANSFER_TYPE,
-                        AccessDatabase.FIELD_TRANSFER_FLAG), String.valueOf(groupId),
-                TransferObject.Type.INCOMING.toString(), flag.toString());
-    }
+	public static ShowingAssignee fetchFirstAssignee(AccessDatabase database, long groupId)
+	{
+		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
 
-    public static ShowingAssignee fetchFirstAssignee(AccessDatabase database, long groupId)
-    {
-        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+		List<ShowingAssignee> assignees = database
+				.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+				{
+					@Override
+					public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+					{
+						object.device = new NetworkDevice(object.deviceId);
+						object.connection = new NetworkDevice.Connection(object);
 
-        List<ShowingAssignee> assignees = database
-                .castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-                {
-                    @Override
-                    public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-                    {
-                        object.device = new NetworkDevice(object.deviceId);
-                        object.connection = new NetworkDevice.Connection(object);
+						try {
+							db.reconstruct(object.device);
+							db.reconstruct(object.connection);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+				});
 
-                        try {
-                            db.reconstruct(object.device);
-                            db.reconstruct(object.connection);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+		return assignees.size() == 0 ? null : assignees.get(0);
+	}
 
-        return assignees.size() == 0 ? null : assignees.get(0);
-    }
+	public static ShowingAssignee fetchFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, long groupId)
+	{
+		ShowingAssignee assignee = fetchFirstAssignee(database, groupId);
 
-    public static ShowingAssignee fetchFirstAssignee(SnackbarSupport snackbar, AccessDatabase database, long groupId)
-    {
-        ShowingAssignee assignee = fetchFirstAssignee(database, groupId);
+		if (assignee == null) {
+			snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
+					.show();
 
-        if (assignee == null) {
-            snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
-                    .show();
+			return null;
+		}
 
-            return null;
-        }
+		return assignee;
+	}
 
-        return assignee;
-    }
+	public static TransferObject fetchFirstValidIncomingTransfer(Context context, long groupId)
+	{
+		CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(
+				createIncomingSelection(groupId, TransferObject.Flag.PENDING, true)
+						.setOrderBy(String.format("`%s` ASC, `%s` ASC", AccessDatabase.FIELD_TRANSFER_DIRECTORY,
+								AccessDatabase.FIELD_TRANSFER_NAME)));
 
-    public static TransferObject fetchFirstValidIncomingTransfer(Context context, long groupId)
-    {
-        CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(
-                createIncomingSelection(groupId, TransferObject.Flag.PENDING, true)
-                        .setOrderBy(String.format("`%s` ASC, `%s` ASC", AccessDatabase.FIELD_TRANSFER_DIRECTORY,
-                                AccessDatabase.FIELD_TRANSFER_NAME)));
+		return receiverInstance == null
+				? null
+				: new TransferObject(receiverInstance);
+	}
 
-        return receiverInstance == null
-                ? null
-                : new TransferObject(receiverInstance);
-    }
+	public static List<ShowingAssignee> loadAssigneeList(Context context, long groupId,
+														 @Nullable TransferObject.Type type)
+	{
+		SQLQuery.Select selection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE);
 
-    public static List<ShowingAssignee> loadAssigneeList(SQLiteDatabase database, long groupId)
-    {
-        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(groupId));
+		if (type == null)
+			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+					String.valueOf(groupId));
+		else
+			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+							+ AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", String.valueOf(groupId),
+					type.toString());
 
-        return database.castQuery(select, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
-        {
-            @Override
-            public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
-            {
-                object.device = new NetworkDevice(object.deviceId);
-                object.connection = new NetworkDevice.Connection(object);
+		return AppUtils.getDatabase(context).castQuery(selection, ShowingAssignee.class, new SQLiteDatabase.CastQueryListener<ShowingAssignee>()
+		{
+			@Override
+			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
+			{
+				object.device = new NetworkDevice(object.deviceId);
+				object.connection = new NetworkDevice.Connection(object);
 
-                try {
-                    db.reconstruct(object.device);
-                } catch (Exception e) {
-                    // Nope
-                }
+				try {
+					db.reconstruct(object.device);
+				} catch (Exception ignored) {
+				}
 
-                try {
-                    db.reconstruct(object.connection);
-                } catch (Exception e) {
-                    // Nope
-                }
-            }
-        });
-    }
+				try {
+					db.reconstruct(object.connection);
+				} catch (Exception ignored) {
+				}
+			}
+		});
+	}
 
-    public static void pauseTransfer(Context context, TransferGroup group, TransferObject.Type type)
-    {
-        pauseTransfer(context, group.id, null, type);
-    }
+	public static void loadGroupInfo(Context context, PreloadedGroup group,
+									 @Nullable String deviceId, @Nullable TransferObject.Type type)
+	{
+		group.numberOfCompleted = 0;
+		group.numberOfTotal = 0;
+		group.numberOfOutgoing = 0;
+		group.numberOfIncoming = 0;
+		group.bytesInTotal = 0;
+		group.bytesInOutgoing = 0;
+		group.bytesInIncoming = 0;
+		group.percentage = 0;
+		group.isRunning = false;
+		group.hasIssues = false;
+		group.hasOutgoing = false;
+		group.hasIncoming = false;
 
-    public static void pauseTransfer(Context context, TransferGroup.Assignee assignee)
-    {
-        pauseTransfer(context, assignee.groupId, assignee.deviceId, assignee.type);
-    }
+		SQLQuery.Select selection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+				AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
 
-    public static void pauseTransfer(Context context, long groupId, @Nullable String deviceId,
-                                     TransferObject.Type type)
-    {
-        Intent intent = new Intent(context, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_STOP_TRANSFER)
-                .putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
-                .putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
-                .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, type.toString());
+		if (type == null)
+			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+					String.valueOf(group.id));
+		else
+			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+							+ AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", String.valueOf(group.id),
+					type.toString());
 
-        AppUtils.startForegroundService(context, intent);
-    }
+		List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
+		List<TransferObject> objectList = AppUtils.getDatabase(context).castQuery(selection, TransferObject.class);
 
-    @Deprecated
-    public static void requestStartSending(final Activity activity, final TransferGroup.Assignee assignee,
-                                           final NetworkDevice device,
-                                           final NetworkDevice.Connection connection)
-    {
-        final Context context = activity.getApplicationContext();
+		double percentage = 0;
+		group.numberOfTotal = objectList.size();
+		group.assignees = new ShowingAssignee[assigneeList.size()];
 
-        WorkerService.RunningTask task = new WorkerService.RunningTask()
-        {
-            @Override
-            protected void onRun()
-            {
-                CommunicationBridge.Client client = new CommunicationBridge.Client(
-                        AppUtils.getDatabase(activity));
+		assigneeList.toArray(group.assignees);
 
-                try {
-                    final CoolSocket.ActiveConnection activeConnection = client.communicate(device,
-                            connection);
+		for (ShowingAssignee assignee : assigneeList) {
+			if (TransferObject.Type.INCOMING.equals(assignee.type))
+				group.hasIncoming = true;
+			else if (TransferObject.Type.OUTGOING.equals(assignee.type))
+				group.hasOutgoing = true;
 
-                    Interrupter.Closer connectionCloser = new Interrupter.Closer()
-                    {
-                        @Override
-                        public void onClose(boolean userAction)
-                        {
-                            try {
-                                activeConnection.getSocket().close();
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    };
+			if (group.hasIncoming && group.hasOutgoing)
+				break;
+		}
 
-                    getInterrupter().addCloser(connectionCloser);
+		for (TransferObject object : objectList) {
+			group.bytesInTotal += object.size;
+			percentage += object.getPercentage(deviceId);
 
-                    JSONObject jsonRequest = new JSONObject();
+			if (object.isComplete(deviceId))
+				group.numberOfCompleted++;
 
-                    jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB);
-                    jsonRequest.put(Keyword.TRANSFER_GROUP_ID, assignee.groupId);
+			if (!group.hasIssues && object.hasIssues(deviceId))
+				group.hasIssues = true;
 
-                    activeConnection.reply(jsonRequest.toString());
+			if (TransferObject.Type.INCOMING.equals(object.type)) {
+				group.bytesInIncoming += object.size;
+				group.numberOfIncoming++;
+				group.hasIncoming = true;
+			} else if (TransferObject.Type.OUTGOING.equals(object.type)) {
+				group.bytesInOutgoing += object.size;
+				group.numberOfOutgoing++;
+				group.hasOutgoing = true;
+			}
+		}
 
-                    final CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                    activeConnection.getSocket().close();
-                    getInterrupter().removeCloser(connectionCloser);
+		group.percentage = percentage <= 0 || group.numberOfTotal <= 0 ? 0 : percentage / group.numberOfTotal;
+	}
 
-                    final JSONObject responseJSON = new JSONObject(response.response);
+	public static void pauseTransfer(Context context, TransferGroup group, TransferObject.Type type)
+	{
+		pauseTransfer(context, group.id, null, type);
+	}
 
-                    if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
-                        activity.runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-                                @StringRes int msg = R.string.mesg_somethingWentWrong;
-                                String errorMsg = Keyword.ERROR_UNKNOWN;
+	public static void pauseTransfer(Context context, TransferGroup.Assignee assignee)
+	{
+		pauseTransfer(context, assignee.groupId, assignee.deviceId, assignee.type);
+	}
 
-                                try {
-                                    errorMsg = responseJSON.getString(Keyword.ERROR);
-                                } catch (JSONException e) {
-                                    // do nothing
-                                }
+	public static void pauseTransfer(Context context, long groupId, @Nullable String deviceId,
+									 TransferObject.Type type)
+	{
+		Intent intent = new Intent(context, CommunicationService.class)
+				.setAction(CommunicationService.ACTION_STOP_TRANSFER)
+				.putExtra(CommunicationService.EXTRA_GROUP_ID, groupId)
+				.putExtra(CommunicationService.EXTRA_DEVICE_ID, deviceId)
+				.putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, type.toString());
 
-                                switch (errorMsg) {
-                                    case Keyword.ERROR_NOT_FOUND:
-                                        msg = R.string.mesg_notValidTransfer;
-                                        break;
-                                    case Keyword.ERROR_REQUIRE_TRUSTZONE:
-                                        msg = R.string.mesg_errorNotTrustZoneDevice;
-                                        break;
-                                    case Keyword.ERROR_NOT_ALLOWED:
-                                        msg = R.string.mesg_notAllowed;
-                                        break;
-                                }
+		AppUtils.startForegroundService(context, intent);
+	}
 
-                                builder.setMessage(context.getString(msg));
-                                builder.setNegativeButton(R.string.butn_close, null);
-                                builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        requestStartSending(activity, assignee, device,
-                                                connection);
-                                    }
-                                });
+	@Deprecated
+	public static void requestStartSending(final Activity activity, final TransferGroup.Assignee assignee,
+										   final NetworkDevice device,
+										   final NetworkDevice.Connection connection)
+	{
+		final Context context = activity.getApplicationContext();
 
-                                builder.show();
-                            }
-                        });
-                } catch (Exception e) {
-                    if (!activity.isFinishing())
-                        activity.runOnUiThread(new Runnable()
-                        {
-                            @Override
-                            public void run()
-                            {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		WorkerService.RunningTask task = new WorkerService.RunningTask()
+		{
+			@Override
+			protected void onRun()
+			{
+				CommunicationBridge.Client client = new CommunicationBridge.Client(
+						AppUtils.getDatabase(activity));
 
-                                builder.setMessage(context.getString(R.string.mesg_connectionFailure));
-                                builder.setNegativeButton(R.string.butn_close, null);
+				try {
+					final CoolSocket.ActiveConnection activeConnection = client.communicate(device,
+							connection);
 
-                                builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        requestStartSending(activity, assignee, device, connection);
-                                    }
-                                });
+					Interrupter.Closer connectionCloser = new Interrupter.Closer()
+					{
+						@Override
+						public void onClose(boolean userAction)
+						{
+							try {
+								activeConnection.getSocket().close();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					};
 
-                                builder.show();
-                            }
-                        });
-                }
-            }
-        };
+					getInterrupter().addCloser(connectionCloser);
 
-        task.setTitle(activity.getString(R.string.mesg_communicating))
-                .run(activity);
-    }
+					JSONObject jsonRequest = new JSONObject();
 
-    public static void recoverIncomingInterruptions(Context context, long groupId)
-    {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
+					jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB);
+					jsonRequest.put(Keyword.TRANSFER_GROUP_ID, assignee.groupId);
 
-        AppUtils.getDatabase(context).update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
-                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                        String.valueOf(groupId),
-                        TransferObject.Flag.INTERRUPTED.toString(),
-                        TransferObject.Type.INCOMING.toString()), contentValues);
-    }
+					activeConnection.reply(jsonRequest.toString());
 
-    public static void startTransferWithTest(final Activity activity, final TransferGroup group,
-                                             final TransferGroup.Assignee assignee)
-    {
-        final Context context = activity.getApplicationContext();
+					final CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+					activeConnection.getSocket().close();
+					getInterrupter().removeCloser(connectionCloser);
 
-        new WorkerService.RunningTask()
-        {
-            @Override
-            protected void onRun()
-            {
-                if (activity.isFinishing())
-                    return;
+					final JSONObject responseJSON = new JSONObject(response.response);
 
-                if (fetchFirstValidIncomingTransfer(activity, group.id) == null
-                        && TransferObject.Type.INCOMING.equals(assignee.type)) {
-                    activity.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+					if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
+						activity.runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+								@StringRes int msg = R.string.mesg_somethingWentWrong;
+								String errorMsg = Keyword.ERROR_UNKNOWN;
 
-                            builder.setMessage(R.string.mesg_noPendingTransferObjectExists);
-                            builder.setNegativeButton(R.string.butn_close, null);
+								try {
+									errorMsg = responseJSON.getString(Keyword.ERROR);
+								} catch (JSONException e) {
+									// do nothing
+								}
 
-                            builder.setPositiveButton(R.string.butn_retryReceiving, new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    recoverIncomingInterruptions(activity, group.id);
-                                    startTransferWithTest(activity, group, assignee);
-                                }
-                            });
+								switch (errorMsg) {
+									case Keyword.ERROR_NOT_FOUND:
+										msg = R.string.mesg_notValidTransfer;
+										break;
+									case Keyword.ERROR_REQUIRE_TRUSTZONE:
+										msg = R.string.mesg_errorNotTrustZoneDevice;
+										break;
+									case Keyword.ERROR_NOT_ALLOWED:
+										msg = R.string.mesg_notAllowed;
+										break;
+								}
 
-                            builder.show();
-                        }
-                    });
-                } else if (TransferObject.Type.INCOMING.equals(assignee.type) && !FileUtils.getSavePath(
-                        activity, group).getUri().toString().equals(group.savePath)) {
-                    activity.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+								builder.setMessage(context.getString(msg));
+								builder.setNegativeButton(R.string.butn_close, null);
+								builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialog, int which)
+									{
+										requestStartSending(activity, assignee, device,
+												connection);
+									}
+								});
 
-                            builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation, FileUtils.getReadableUri(group.savePath)));
-                            builder.setNegativeButton(R.string.butn_close, null);
+								builder.show();
+							}
+						});
+				} catch (Exception e) {
+					if (!activity.isFinishing())
+						activity.runOnUiThread(new Runnable()
+						{
+							@Override
+							public void run()
+							{
+								AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-                            builder.setPositiveButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which)
-                                {
-                                    startTransfer(activity, assignee);
-                                }
-                            });
+								builder.setMessage(context.getString(R.string.mesg_connectionFailure));
+								builder.setNegativeButton(R.string.butn_close, null);
 
-                            builder.show();
-                        }
-                    });
-                } else
-                    startTransfer(activity, assignee);
-            }
-        }.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
-    }
+								builder.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialog, int which)
+									{
+										requestStartSending(activity, assignee, device, connection);
+									}
+								});
 
-    public static void startTransfer(final Activity activity, final TransferGroup.Assignee assignee)
-    {
-        if (activity != null && !activity.isFinishing())
-            activity.runOnUiThread(new Runnable()
-            {
-                @Override
-                public void run()
-                {
-                    try {
-                        final NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
+								builder.show();
+							}
+						});
+				}
+			}
+		};
 
-                        AppUtils.getDatabase(activity).reconstruct(networkDevice);
+		task.setTitle(activity.getString(R.string.mesg_communicating))
+				.run(activity);
+	}
 
-                        new EstablishConnectionDialog(activity, networkDevice, new OnDeviceSelectedListener()
-                        {
-                            @Override
-                            public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
-                            {
-                                if (!assignee.connectionAdapter.equals(connection.adapterName)) {
-                                    assignee.connectionAdapter = connection.adapterName;
+	public static void recoverIncomingInterruptions(Context context, long groupId)
+	{
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(AccessDatabase.FIELD_TRANSFER_FLAG, TransferObject.Flag.PENDING.toString());
 
-                                    AppUtils.getDatabase(activity)
-                                            .publish(assignee);
-                                }
+		AppUtils.getDatabase(context).update(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+								+ AccessDatabase.FIELD_TRANSFER_FLAG + "=? AND "
+								+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+						String.valueOf(groupId),
+						TransferObject.Flag.INTERRUPTED.toString(),
+						TransferObject.Type.INCOMING.toString()), contentValues);
+	}
 
-                                AppUtils.startForegroundService(activity, new Intent(activity,
-                                        CommunicationService.class)
-                                        .setAction(CommunicationService.ACTION_START_TRANSFER)
-                                        .putExtra(CommunicationService.EXTRA_GROUP_ID, assignee.groupId)
-                                        .putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId)
-                                        .putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, assignee.type.toString()));
-                            }
-                        }).show();
-                    } catch (Exception e) {
-                        new AlertDialog.Builder(activity)
-                                .setMessage(R.string.mesg_somethingWentWrong)
-                                .setNegativeButton(R.string.butn_cancel, null)
-                                .setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which)
-                                    {
-                                        startTransfer(activity, assignee);
-                                    }
-                                })
-                                .show();
-                    }
-                }
-            });
-    }
+	public static void startTransferWithTest(final Activity activity, final TransferGroup group,
+											 final TransferGroup.Assignee assignee)
+	{
+		final Context context = activity.getApplicationContext();
 
-    public interface ConnectionUpdatedListener
-    {
-        void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee);
-    }
+		new WorkerService.RunningTask()
+		{
+			@Override
+			protected void onRun()
+			{
+				if (activity.isFinishing())
+					return;
+
+				if (TransferObject.Type.INCOMING.equals(assignee.type)
+						&& fetchFirstValidIncomingTransfer(activity, group.id) == null) {
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+							builder.setMessage(R.string.mesg_noPendingTransferObjectExists);
+							builder.setNegativeButton(R.string.butn_close, null);
+
+							builder.setPositiveButton(R.string.butn_retryReceiving, new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									recoverIncomingInterruptions(activity, group.id);
+									startTransferWithTest(activity, group, assignee);
+								}
+							});
+
+							builder.show();
+						}
+					});
+				} else if (TransferObject.Type.INCOMING.equals(assignee.type) && !FileUtils.getSavePath(
+						activity, group).getUri().toString().equals(group.savePath)) {
+					activity.runOnUiThread(new Runnable()
+					{
+						@Override
+						public void run()
+						{
+							AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+							builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation, FileUtils.getReadableUri(group.savePath)));
+							builder.setNegativeButton(R.string.butn_close, null);
+
+							builder.setPositiveButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
+							{
+								@Override
+								public void onClick(DialogInterface dialog, int which)
+								{
+									startTransfer(activity, assignee);
+								}
+							});
+
+							builder.show();
+						}
+					});
+				} else
+					startTransfer(activity, assignee);
+			}
+		}.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
+	}
+
+	public static void startTransfer(final Activity activity, final TransferGroup.Assignee assignee)
+	{
+		if (activity != null && !activity.isFinishing())
+			activity.runOnUiThread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					try {
+						final NetworkDevice networkDevice = new NetworkDevice(assignee.deviceId);
+
+						AppUtils.getDatabase(activity).reconstruct(networkDevice);
+
+						new EstablishConnectionDialog(activity, networkDevice, new OnDeviceSelectedListener()
+						{
+							@Override
+							public void onDeviceSelected(NetworkDevice.Connection connection, List<NetworkDevice.Connection> availableInterfaces)
+							{
+								if (!assignee.connectionAdapter.equals(connection.adapterName)) {
+									assignee.connectionAdapter = connection.adapterName;
+
+									AppUtils.getDatabase(activity)
+											.publish(assignee);
+								}
+
+								AppUtils.startForegroundService(activity, new Intent(activity,
+										CommunicationService.class)
+										.setAction(CommunicationService.ACTION_START_TRANSFER)
+										.putExtra(CommunicationService.EXTRA_GROUP_ID, assignee.groupId)
+										.putExtra(CommunicationService.EXTRA_DEVICE_ID, assignee.deviceId)
+										.putExtra(CommunicationService.EXTRA_TRANSFER_TYPE, assignee.type.toString()));
+							}
+						}).show();
+					} catch (Exception e) {
+						new AlertDialog.Builder(activity)
+								.setMessage(R.string.mesg_somethingWentWrong)
+								.setNegativeButton(R.string.butn_cancel, null)
+								.setPositiveButton(R.string.butn_retry, new DialogInterface.OnClickListener()
+								{
+									@Override
+									public void onClick(DialogInterface dialog, int which)
+									{
+										startTransfer(activity, assignee);
+									}
+								})
+								.show();
+					}
+				}
+			});
+	}
+
+	public interface ConnectionUpdatedListener
+	{
+		void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee);
+	}
 }

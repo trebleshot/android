@@ -34,10 +34,6 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
-import androidx.collection.ArrayMap;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -48,7 +44,9 @@ import com.genonbeta.TrebleShot.exception.AssigneeNotFoundException;
 import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
+import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -68,6 +66,7 @@ import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
+import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
 
@@ -87,6 +86,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+import androidx.collection.ArrayMap;
 import fi.iki.elonen.NanoHTTPD;
 
 public class CommunicationService extends Service
@@ -150,10 +152,11 @@ public class CommunicationService extends Service
 	private WifiManager.WifiLock mWifiLock;
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
-
+	private android.database.sqlite.SQLiteDatabase mDbInstance;
 	private boolean mDestroyApproved = false;
 	private boolean mFastMode = false;
 	private boolean mPinAccess = false;
+	private long mTimeTransactionSaved;
 
 	@Override
 	public IBinder onBind(Intent intent)
@@ -170,6 +173,7 @@ public class CommunicationService extends Service
 		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
 		mMediaScanner = new MediaScannerConnection(this, null);
 		mHotspotUtils = HotspotUtils.getInstance(this);
+		mDbInstance = AppUtils.getDatabase(this).getWritableDatabase();
 		mWifiLock = ((WifiManager) getApplicationContext()
 				.getSystemService(Service.WIFI_SERVICE)
 		)
@@ -495,14 +499,52 @@ public class CommunicationService extends Service
 		}
 	}
 
-	public synchronized void addProcess(ProcessHolder processHolder)
+	private synchronized void addProcess(ProcessHolder processHolder)
 	{
 		getActiveProcessList().add(processHolder);
 	}
 
-	public synchronized void removeProcess(ProcessHolder processHolder)
+	private synchronized void removeProcess(ProcessHolder processHolder)
 	{
 		getActiveProcessList().remove(processHolder);
+	}
+
+	private void broadcastTransferState(ProcessHolder processHolder, boolean isLast)
+	{
+		long time = System.currentTimeMillis();
+
+		/*if (isLast || time - mTimeTransactionSaved > AppConfig.DEFAULT_NOTIFICATION_DELAY) {
+			mTimeTransactionSaved = time;
+
+			if (getDbInstance().inTransaction()) {
+				getDbInstance().setTransactionSuccessful();
+				getDbInstance().endTransaction();
+			}
+
+			if (!isLast)
+				getDbInstance().beginTransaction();
+		}*/
+
+		if (time - processHolder.lastProcessingTime < AppConfig.DEFAULT_NOTIFICATION_DELAY || isLast)
+			return;
+
+		processHolder.lastProcessingTime = time;
+
+		try {
+			getNotificationHelper().notifyFileTransfer(processHolder);
+
+			TransferObject.Flag flag = TransferObject.Flag.IN_PROGRESS;
+			flag.setBytesValue(processHolder.currentBytes);
+
+			if (TransferObject.Type.INCOMING.equals(processHolder.type))
+				processHolder.object.setFlag(flag);
+			else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
+				processHolder.object.putFlag(processHolder.device.id, flag);
+
+			getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
@@ -639,40 +681,42 @@ public class CommunicationService extends Service
 		});
 	}
 
-	public void handleTransferAsReceiver(ProcessHolder processHolder)
+	private void handleTransferAsReceiver(ProcessHolder processHolder)
 	{
 		addProcess(processHolder);
 		notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
 				TASK_STATUS_ONGOING);
 		notifyTaskRunningListChange();
 
-		android.database.sqlite.SQLiteDatabase dbInstance = getDatabase().getWritableDatabase();
 		boolean retry = false;
 
 		try {
+			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.device.id,
+					processHolder.type);
+
 			while (processHolder.activeConnection.getSocket().isConnected()) {
+				processHolder.currentBytes = 0;
 				if (processHolder.interrupter.interrupted())
 					break;
 
 				try {
-					processHolder.object = TransferUtils.fetchFirstValidIncomingTransfer(
+					TransferObject object = TransferUtils.fetchFirstValidIncomingTransfer(
 							CommunicationService.this, processHolder.group.id);
 
-					if (processHolder.object == null) {
+					if (object == null) {
 						Log.d(TAG, "handleTransferAsReceiver(): Exiting because there is no " +
 								"pending file instance left");
 						break;
 					} else
-						Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " +
-								processHolder.object.name);
+						Log.d(TAG, "handleTransferAsReceiver(): Starting to receive " + object);
 
+					processHolder.object = object;
 					processHolder.currentFile = FileUtils.getIncomingFile(
 							getApplicationContext(), processHolder.object, processHolder.group);
 					StreamInfo streamInfo = StreamInfo.getStreamInfo(getApplicationContext(),
 							processHolder.currentFile.getUri());
 					processHolder.currentBytes = processHolder.currentFile.length();
-
-					getNotificationHelper().notifyFileTransaction(processHolder);
+					broadcastTransferState(processHolder, false);
 
 					{
 						JSONObject reply = new JSONObject()
@@ -732,7 +776,7 @@ public class CommunicationService extends Service
 										processHolder.activeConnection.receive().response);
 							}
 
-							processHolder.activeConnection.reply(":)");
+							processHolder.activeConnection.reply(Keyword.STUB);
 							OutputStream outputStream = null;
 
 							try {
@@ -753,6 +797,8 @@ public class CommunicationService extends Service
 										lastReceivedTime = System.currentTimeMillis();
 									}
 
+									broadcastTransferState(processHolder, false);
+
 									if (processHolder.interrupter.interrupted()) {
 										processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
 										break;
@@ -766,11 +812,29 @@ public class CommunicationService extends Service
 								processHolder.object.setFlag(completed ? TransferObject.Flag.DONE
 										: TransferObject.Flag.INTERRUPTED);
 
-								if (completed && processHolder.currentFile.getParentFile() != null) {
-									processHolder.currentFile = FileUtils.saveReceivedFile(
-											processHolder.currentFile.getParentFile(), processHolder
-													.currentFile, processHolder.object);
-									processHolder.object.file = processHolder.currentFile.getName();
+								if (completed) {
+									processHolder.completedBytes += processHolder.currentBytes;
+									processHolder.completedCount++;
+
+									if (processHolder.currentFile.getParentFile() != null) {
+										processHolder.currentFile = FileUtils.saveReceivedFile(
+												processHolder.currentFile.getParentFile(),
+												processHolder.currentFile, processHolder.object);
+										processHolder.object.file = processHolder.currentFile.getName();
+
+										sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
+												.putExtra(FileListFragment.EXTRA_FILE_PARENT,
+														processHolder.currentFile.getParentFile().getUri())
+												.putExtra(FileListFragment.EXTRA_FILE_NAME,
+														processHolder.currentFile.getName()));
+									}
+
+									if (processHolder.currentFile instanceof LocalDocumentFile
+											&& mMediaScanner.isConnected())
+										mMediaScanner.scanFile(
+												((LocalDocumentFile) processHolder.currentFile)
+														.getFile().getAbsolutePath(),
+												processHolder.object.mimeType);
 								}
 
 								Log.d(TAG, "handleTransferAsSender(): File received " + processHolder.object.name);
@@ -798,16 +862,17 @@ public class CommunicationService extends Service
 					if (processHolder.object != null) {
 						Log.d(TAG, "handleTransferAsReceiver(): Updating file instances to "
 								+ processHolder.object.getFlag().toString());
-						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+						getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 					}
 				}
 			}
 
 			try {
 				DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
-				boolean areFilesDone = getDatabase().getFirstFromTable(TransferUtils.createIncomingSelection(
-						processHolder.group.id, TransferObject.Flag.DONE, false)) == null;
-				boolean jobDone = !processHolder.interrupter.interrupt() && areFilesDone;
+				boolean areFilesDone = getDatabase().getFirstFromTable(getDbInstance(),
+						TransferUtils.createIncomingSelection(processHolder.group.id,
+								TransferObject.Flag.DONE, false)) == null;
+				boolean jobDone = !processHolder.interrupter.interrupted() && areFilesDone;
 
 				processHolder.activeConnection.reply(new JSONObject()
 						.put(Keyword.RESULT, false)
@@ -822,8 +887,8 @@ public class CommunicationService extends Service
 					} else if (processHolder.interrupter.interrupted()) {
 						getNotificationHelper().notifyReceiveError(processHolder);
 						Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
-					} else {
-						getNotificationHelper().notifyFileReceived(processHolder, processHolder.device, savePath);
+					} else if (processHolder.completedCount > 0) {
+						getNotificationHelper().notifyFileReceived(processHolder, savePath);
 						Log.d(TAG, "handleTransferAsReceiver(): Notify user");
 					}
 			} catch (Exception e) {
@@ -836,6 +901,7 @@ public class CommunicationService extends Service
 			notifyTaskStatusChange(processHolder.group.id, processHolder.assignee.deviceId,
 					processHolder.type, TASK_STATUS_STOPPED);
 			notifyTaskRunningListChange();
+			broadcastTransferState(processHolder, true);
 
 			Log.d(TAG, "We have exited");
 
@@ -850,16 +916,17 @@ public class CommunicationService extends Service
 		}
 	}
 
-	public void handleTransferAsSender(ProcessHolder processHolder)
+	private void handleTransferAsSender(ProcessHolder processHolder)
 	{
 		addProcess(processHolder);
 		notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
 				TASK_STATUS_ONGOING);
 		notifyTaskRunningListChange();
 
-		android.database.sqlite.SQLiteDatabase dbInstance = getDatabase().getWritableDatabase();
-
 		try {
+			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.device.id,
+					processHolder.type);
+
 			while (processHolder.activeConnection.getSocket().isConnected()) {
 				processHolder.currentBytes = 0;
 				CoolSocket.ActiveConnection.Response response = processHolder.activeConnection.receive();
@@ -892,7 +959,7 @@ public class CommunicationService extends Service
 					processHolder.object = new TransferObject(processHolder.group.id,
 							request.getInt(Keyword.TRANSFER_REQUEST_ID), processHolder.type);
 
-					getDatabase().reconstruct(processHolder.object);
+					getDatabase().reconstruct(getDbInstance(), processHolder.object);
 
 					processHolder.currentFile = FileUtils.fromUri(getApplicationContext(),
 							Uri.parse(processHolder.object.file));
@@ -903,10 +970,11 @@ public class CommunicationService extends Service
 					if (inputStream == null)
 						throw new FileNotFoundException("The input stream for the file has failed to open.");
 
+					broadcastTransferState(processHolder, false);
+
 					if (request.has(Keyword.SKIPPED_BYTES)) {
 						long skippedBytes = request.getLong(Keyword.SKIPPED_BYTES);
 						long newPosition = inputStream.skip(skippedBytes);
-						processHolder.currentBytes = 0;
 
 						Log.d(TAG, "handleTransferAsSender(): Has skipped bytes: " + skippedBytes);
 
@@ -933,20 +1001,19 @@ public class CommunicationService extends Service
 						if (!validityOfChange.has(Keyword.RESULT) || !validityOfChange.getBoolean(
 								Keyword.RESULT)) {
 							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-							getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+							getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 							continue;
 						}
 
-						processHolder.activeConnection.reply(":|");
+						processHolder.activeConnection.reply(Keyword.STUB);
 					} else {
 						processHolder.activeConnection.reply(reply.toString());
 						Log.d(TAG, "handleTransferAsSender(): reply: " + reply.toString());
 					}
 
 					processHolder.activeConnection.receive();
-					getNotificationHelper().notifyFileTransaction(processHolder);
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.IN_PROGRESS);
-					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+					getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 
 					try {
 						boolean sizeExceeded = false;
@@ -963,6 +1030,8 @@ public class CommunicationService extends Service
 									break;
 								}
 
+								broadcastTransferState(processHolder, false);
+
 								processHolder.currentBytes += readLength;
 								outputStream.write(buffer, 0, readLength);
 								outputStream.flush();
@@ -975,12 +1044,14 @@ public class CommunicationService extends Service
 							}
 						}
 
-						if (processHolder.currentBytes == processHolder.object.size)
+						if (processHolder.currentBytes == processHolder.object.size) {
+							processHolder.completedBytes += processHolder.currentBytes;
+							processHolder.completedCount++;
 							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.DONE);
-						else if (sizeExceeded || processHolder.currentBytes < processHolder.object.size)
+						} else if (sizeExceeded)
 							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
 
-						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+						getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 
 						Log.d(TAG, "handleTransferAsSender(): File sent " + processHolder.object.name);
 					} catch (Exception e) {
@@ -988,7 +1059,7 @@ public class CommunicationService extends Service
 						processHolder.interrupter.interrupt(false);
 						processHolder.object.putFlag(processHolder.device.id,
 								TransferObject.Flag.INTERRUPTED);
-						getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+						getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 					} finally {
 						inputStream.close();
 					}
@@ -1002,8 +1073,8 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
-					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
-				} catch (FileNotFoundException | StreamCorruptedException | StreamInfo.FolderStateException e) {
+					getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+				} catch (FileNotFoundException | StreamCorruptedException e) {
 					Log.d(TAG, "handleTransferAsSender(): File is not accessible ? " + processHolder.object.name);
 
 					processHolder.activeConnection.reply(new JSONObject()
@@ -1013,7 +1084,7 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+					getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 				} catch (Exception e) {
 					e.printStackTrace();
 
@@ -1024,18 +1095,17 @@ public class CommunicationService extends Service
 							.toString());
 
 					processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
-					getDatabase().update(dbInstance, processHolder.object, processHolder.group);
+					getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			processHolder.interrupter.interrupt();
 		} finally {
-			if (processHolder.interrupter.interruptedByUser())
-				if (processHolder.notification != null)
-					processHolder.notification.cancel();
-				else if (processHolder.interrupter.interrupted())
-					mNotificationHelper.notifyConnectionError(processHolder, null);
+			if (processHolder.notification != null)
+				processHolder.notification.cancel();
+			else if (processHolder.interrupter.interrupted() && !processHolder.interrupter.interruptedByUser())
+				mNotificationHelper.notifyConnectionError(processHolder, null);
 
 			synchronized (getActiveProcessList()) {
 				removeProcess(processHolder);
@@ -1046,10 +1116,12 @@ public class CommunicationService extends Service
 
 				notifyTaskRunningListChange();
 			}
+
+			broadcastTransferState(processHolder, true);
 		}
 	}
 
-	public boolean hasOngoingTasks()
+	private boolean hasOngoingTasks()
 	{
 		return mCommunicationServer.getConnections().size() > 0
 				|| getOngoingIndexList().size() > 0
@@ -1057,7 +1129,7 @@ public class CommunicationService extends Service
 				|| mHotspotUtils.isStarted();
 	}
 
-	public ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
+	private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
 	{
 		synchronized (getActiveProcessList()) {
 			for (ProcessHolder processHolder : getActiveProcessList())
@@ -1069,43 +1141,48 @@ public class CommunicationService extends Service
 		return null;
 	}
 
-	public synchronized List<ProcessHolder> getActiveProcessList()
+	private synchronized List<ProcessHolder> getActiveProcessList()
 	{
 		return mActiveProcessList;
 	}
 
-	public HotspotUtils getHotspotUtils()
+	public android.database.sqlite.SQLiteDatabase getDbInstance()
+	{
+		return mDbInstance;
+	}
+
+	private HotspotUtils getHotspotUtils()
 	{
 		return mHotspotUtils;
 	}
 
-	public CommunicationNotificationHelper getNotificationHelper()
+	private CommunicationNotificationHelper getNotificationHelper()
 	{
 		return mNotificationHelper;
 	}
 
-	public synchronized Map<Long, Interrupter> getOngoingIndexList()
+	private synchronized Map<Long, Interrupter> getOngoingIndexList()
 	{
 		return mOngoingIndexList;
 	}
 
-	public ExecutorService getSelfExecutor()
+	private ExecutorService getSelfExecutor()
 	{
 		return mSelfExecutor;
 	}
 
-	public WifiManager.WifiLock getWifiLock()
+	private WifiManager.WifiLock getWifiLock()
 	{
 		return mWifiLock;
 	}
 
-	public boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
+	private boolean isProcessRunning(long groupId, String deviceId, TransferObject.Type type)
 	{
 		return findProcessById(groupId, deviceId, type) != null;
 	}
 
-	public void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type,
-									   int state)
+	private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type,
+										int state)
 	{
 		Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
 				.putExtra(EXTRA_TASK_CHANGE_TYPE, state)
@@ -1116,7 +1193,7 @@ public class CommunicationService extends Service
 		sendBroadcast(intent);
 	}
 
-	public void notifyTaskRunningListChange()
+	private void notifyTaskRunningListChange()
 	{
 		List<Long> taskList = new ArrayList<>();
 		ArrayList<String> deviceList = new ArrayList<>();
@@ -1140,26 +1217,26 @@ public class CommunicationService extends Service
 				.putStringArrayListExtra(EXTRA_DEVICE_LIST_RUNNING, deviceList));
 	}
 
-	public void refreshServiceState()
+	private void refreshServiceState()
 	{
 		updateServiceState(mFastMode);
 	}
 
-	public void revokePinAccess()
+	private void revokePinAccess()
 	{
 		getDefaultPreferences().edit()
 				.putInt(Keyword.NETWORK_PIN, -1)
 				.apply();
 	}
 
-	public void sendHotspotStatusDisabling()
+	private void sendHotspotStatusDisabling()
 	{
 		sendBroadcast(new Intent(ACTION_HOTSPOT_STATUS)
 				.putExtra(EXTRA_HOTSPOT_ENABLED, false)
 				.putExtra(EXTRA_HOTSPOT_DISABLING, true));
 	}
 
-	public void sendHotspotStatus(WifiConfiguration wifiConfiguration)
+	private void sendHotspotStatus(WifiConfiguration wifiConfiguration)
 	{
 		Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS)
 				.putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null)
@@ -1175,13 +1252,13 @@ public class CommunicationService extends Service
 		sendBroadcast(statusIntent);
 	}
 
-	public void sendWebShareStatus()
+	private void sendWebShareStatus()
 	{
 		sendBroadcast(new Intent(ACTION_WEBSHARE_STATUS)
 				.putExtra(EXTRA_STATUS_STARTED, mWebShareServer.isAlive()));
 	}
 
-	public void setupHotspot()
+	private void setupHotspot()
 	{
 		boolean isEnabled = !getHotspotUtils().isEnabled();
 		boolean overrideFastMode = getDefaultPreferences().getBoolean("hotspot_trust", false);
@@ -1202,38 +1279,39 @@ public class CommunicationService extends Service
 		}
 	}
 
-	public void sendFastModeStatus()
+	private void sendFastModeStatus()
 	{
 		sendBroadcast(new Intent(ACTION_FAST_MODE_STATUS)
 				.putExtra(EXTRA_STATUS_STARTED, mFastMode));
 	}
 
-	public void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type) throws TransferGroupNotFoundException,
+	private void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type) throws TransferGroupNotFoundException,
 			DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
 	{
 		ProcessHolder processHolder = new ProcessHolder();
 		processHolder.type = type;
-		processHolder.group = new TransferGroup(groupId);
-
-		try {
-			getDatabase().reconstruct(processHolder.group);
-		} catch (ReconstructionFailedException e) {
-			throw new TransferGroupNotFoundException();
-		}
 
 		processHolder.device = new NetworkDevice(deviceId);
 
 		try {
-			getDatabase().reconstruct(processHolder.device);
+			getDatabase().reconstruct(getDbInstance(), processHolder.device);
 		} catch (ReconstructionFailedException e) {
 			throw new DeviceNotFoundException();
+		}
+
+		processHolder.group = new PreloadedGroup(groupId);
+
+		try {
+			getDatabase().reconstruct(getDbInstance(), processHolder.group);
+		} catch (ReconstructionFailedException e) {
+			throw new TransferGroupNotFoundException();
 		}
 
 		processHolder.assignee = new TransferGroup.Assignee(processHolder.group, processHolder.device,
 				processHolder.type);
 
 		try {
-			getDatabase().reconstruct(processHolder.assignee);
+			getDatabase().reconstruct(getDbInstance(), processHolder.assignee);
 		} catch (ReconstructionFailedException e) {
 			throw new AssigneeNotFoundException();
 		}
@@ -1241,7 +1319,7 @@ public class CommunicationService extends Service
 		processHolder.connection = new NetworkDevice.Connection(processHolder.assignee);
 
 		try {
-			getDatabase().reconstruct(processHolder.connection);
+			getDatabase().reconstruct(getDbInstance(), processHolder.connection);
 		} catch (ReconstructionFailedException e) {
 			throw new ConnectionNotFoundException();
 		}
@@ -1311,7 +1389,7 @@ public class CommunicationService extends Service
 		});
 	}
 
-	public void updateServiceState(boolean activateFastMode)
+	private void updateServiceState(boolean activateFastMode)
 	{
 		boolean broadcastStatus = mFastMode != activateFastMode;
 		mFastMode = activateFastMode;
@@ -1325,7 +1403,7 @@ public class CommunicationService extends Service
 						mWebShareServer != null && mWebShareServer.isAlive()).build());
 	}
 
-	public void setWebShareEnabled(boolean enable, boolean updateServiceState)
+	private void setWebShareEnabled(boolean enable, boolean updateServiceState)
 	{
 		boolean enabled = mWebShareServer.isAlive();
 
@@ -1345,7 +1423,7 @@ public class CommunicationService extends Service
 		sendWebShareStatus();
 	}
 
-	public void toggleWebShare()
+	private void toggleWebShare()
 	{
 		setWebShareEnabled(!mWebShareServer.isAlive(), true);
 	}
@@ -1531,7 +1609,7 @@ public class CommunicationService extends Service
 										else if (TransferObject.Type.OUTGOING.equals(type))
 											type = TransferObject.Type.INCOMING;
 
-										TransferGroup group = new TransferGroup(groupId);
+										PreloadedGroup group = new PreloadedGroup(groupId);
 										getDatabase().reconstruct(group);
 
 										Log.d(CommunicationService.TAG, "CommunicationServer.onConnected(): "
@@ -1539,7 +1617,6 @@ public class CommunicationService extends Service
 
 										if (!isProcessRunning(groupId, device.id, type)) {
 											ProcessHolder processHolder = new ProcessHolder();
-
 											processHolder.activeConnection = activeConnection;
 											processHolder.group = group;
 											processHolder.device = device;
@@ -1603,7 +1680,7 @@ public class CommunicationService extends Service
 		// Static objects
 		public CoolSocket.ActiveConnection activeConnection;
 		public NetworkDevice device;
-		public TransferGroup group;
+		public PreloadedGroup group;
 		public TransferGroup.Assignee assignee;
 		public NetworkDevice.Connection connection;
 		public TransferObject.Type type;
@@ -1614,15 +1691,17 @@ public class CommunicationService extends Service
 		public DocumentFile currentFile;
 		public long lastProcessingTime;
 		public long currentBytes; // moving
-		public long totalBytes;
 		public long completedBytes;
 		public long timeStarted;
-		public int timePassed;
 		public int completedCount;
-		public int totalCount;
 
 		// Informative objects
 		public boolean recoverInterruptions = false;
 		public int attemptsLeft = 2;
+
+		public ProcessHolder()
+		{
+			timeStarted = System.currentTimeMillis();
+		}
 	}
 }

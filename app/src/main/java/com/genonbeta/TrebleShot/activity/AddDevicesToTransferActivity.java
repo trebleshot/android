@@ -100,6 +100,11 @@ public class AddDevicesToTransferActivity extends Activity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         Bundle assigneeFragmentArgs = new Bundle();
         assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);
         assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);

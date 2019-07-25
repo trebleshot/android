@@ -18,11 +18,23 @@
   -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/ListContentLayoutStyle"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="?rectSelector">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                style="@style/ListContentLayoutStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?rectSelector">
+
+    <ImageView
+        android:id="@+id/indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        app:srcCompat="@drawable/ic_settings_white_24dp"
+        app:tint="?colorPassive"/>
 
     <FrameLayout
         android:id="@+id/layout_image"
@@ -37,24 +49,24 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:contentDescription="@string/text_image"
-            app:srcCompat="@drawable/ic_compare_arrows_white_24dp" />
+            app:srcCompat="@drawable/ic_compare_arrows_white_24dp"/>
 
         <ImageView
             android:id="@+id/thumbnail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:contentDescription="@string/text_image" />
+            android:contentDescription="@string/text_image"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
             style="@style/Widget.TrebleShot.ProgressBar.Horizontal.Oval"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
         <include
             layout="@layout/generic_view_selection_rounded"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
     </FrameLayout>
 
@@ -62,6 +74,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@id/menu"
+        android:layout_toLeftOf="@id/menu"
         android:layout_toEndOf="@id/layout_image"
         android:layout_toRightOf="@id/layout_image"
         android:orientation="vertical">
@@ -71,7 +85,7 @@
             style="@style/TextAppearance.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="3" />
+            android:maxLines="3"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,23 +96,23 @@
                 android:id="@+id/text2"
                 style="@style/TextAppearance.Secondary.SingleLine"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <TextView
                 style="@style/TextSeparatorMiddleDot"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <TextView
                 android:id="@+id/text3"
                 style="@style/TextAppearance.Secondary.SingleLine"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <TextView
                 style="@style/TextSeparatorMiddleDot"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
             <ImageView
                 android:id="@+id/statusIcon"
@@ -106,13 +120,13 @@
                 android:layout_height="@dimen/font_size_secondary"
                 android:layout_gravity="center_vertical"
                 android:layout_marginEnd="5dp"
-                android:layout_marginRight="5dp" />
+                android:layout_marginRight="5dp"/>
 
             <TextView
                 android:id="@+id/text4"
                 style="@style/TextAppearance.Secondary.SingleLine"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"/>
 
         </LinearLayout>
     </LinearLayout>

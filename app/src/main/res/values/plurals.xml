@@ -66,4 +66,8 @@
         <item quantity="one">Single share</item>
         <item quantity="other">Sharing with %d devices</item>
     </plurals>
+    <plurals name="text_devices">
+        <item quantity="one">%d device</item>
+        <item quantity="other">%d devices</item>
+    </plurals>
 </resources>

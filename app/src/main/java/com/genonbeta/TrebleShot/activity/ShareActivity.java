@@ -33,7 +33,7 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.TrebleShot.task.OrganizeShareRunningTask;
+import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.object.Selectable;
@@ -65,11 +65,11 @@ public class ShareActivity extends Activity
     private TextView mTextMain;
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
-    private OrganizeShareRunningTask mTask;
+    private OrganizeSharingRunningTask mTask;
 
     public static void createFolderStructure(DocumentFile file, String folderName,
                                              List<SelectableStream> pendingObjects,
-                                             OrganizeShareRunningTask task)
+                                             OrganizeSharingRunningTask task)
     {
         DocumentFile[] files = file.listFiles();
 
@@ -185,11 +185,11 @@ public class ShareActivity extends Activity
     {
         super.onPreviousRunningTask(task);
 
-        if (task instanceof OrganizeShareRunningTask) {
-            mTask = ((OrganizeShareRunningTask) task);
+        if (task instanceof OrganizeSharingRunningTask) {
+            mTask = ((OrganizeSharingRunningTask) task);
             mTask.setAnchorListener(this);
         } else {
-            mTask = new OrganizeShareRunningTask(mFileUris, mFileNames);
+            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames);
 
             mTask.setTitle(getString(R.string.mesg_organizingFiles))
                     .setAnchorListener(this)

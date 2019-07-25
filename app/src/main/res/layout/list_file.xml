@@ -28,7 +28,7 @@
         style="@style/OverflowButton"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:layout_gravity="center_vertical" />
+        android:layout_centerVertical="true" />
 
     <FrameLayout
         android:id="@+id/layout_image"

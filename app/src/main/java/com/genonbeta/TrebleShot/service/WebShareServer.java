@@ -36,11 +36,13 @@ import androidx.core.app.NotificationCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
+import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -48,6 +50,7 @@ import com.genonbeta.TrebleShot.util.DynamicNotification;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;
 import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
@@ -478,26 +481,24 @@ public class WebShareServer extends NanoHTTPD
     {
         StringBuilder contentBuilder = new StringBuilder();
 
-        List<TransferGroup> groupList = AppUtils.getDatabase(mContext).castQuery(
+        List<PreloadedGroup> groupList = AppUtils.getDatabase(mContext).castQuery(
                 new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP)
                         .setOrderBy(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED + " DESC"),
-                TransferGroup.class);
+                PreloadedGroup.class);
 
-        for (TransferGroup group : groupList) {
+        for (PreloadedGroup group : groupList) {
             if (!group.isServedOnWeb)
                 continue;
 
-            TransferGroup.Index index = new TransferGroup.Index();
-            AppUtils.getDatabase(mContext).calculateTransactionSize(group.id, index);
+            TransferUtils.loadGroupInfo(mContext, group, null, null);
 
-            if (index.outgoingCount < 1)
+            if (!group.hasOutgoing)
                 continue;
 
-            contentBuilder.append(makeContent("list_transfer_group", mContext.getString(R.string
-                            .mode_itemCountedDetailed, mContext.getResources()
-                            .getQuantityString(R.plurals.text_files, index.outgoingCount,
-                                    index.outgoingCount), FileUtils.sizeExpression(
-                    index.outgoing, false)),
+            contentBuilder.append(makeContent("list_transfer_group", mContext.getString(
+                    R.string.mode_itemCountedDetailed, mContext.getResources().getQuantityString(
+                            R.plurals.text_files, group.numberOfOutgoing, group.numberOfOutgoing),
+                    FileUtils.sizeExpression(group.bytesInOutgoing, false)),
                     R.string.butn_show, "show", group.id));
         }
 

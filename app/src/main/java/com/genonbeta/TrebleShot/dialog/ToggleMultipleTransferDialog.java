@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +33,8 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
+import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
@@ -44,112 +45,112 @@ import java.util.List;
 
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 {
-    private List<ShowingAssignee> mList = new ArrayList<>();
-    private List<String> mActiveList = new ArrayList<>();
-    private LayoutInflater mInflater;
-    private TextDrawable.IShapeBuilder mIconBuilder;
+	private ShowingAssignee[] mAssignees;
+	private List<String> mActiveList = new ArrayList<>();
+	private LayoutInflater mInflater;
+	private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity,
-                                        final TransferGroup group,
-                                        final List<ShowingAssignee> deviceList,
-                                        final List<String> activeList,
-                                        TransferGroup.Index transferIndex)
-    {
-        super(activity);
+	public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity,
+										final PreloadedGroup group, final List<String> activeList)
+	{
+		super(activity);
 
-        mInflater = LayoutInflater.from(activity);
-        mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
-        mList.addAll(deviceList);
-        mActiveList.addAll(activeList);
+		mInflater = LayoutInflater.from(activity);
+		mIconBuilder = AppUtils.getDefaultIconBuilder(activity);
+		mAssignees = group.assignees;
+		mActiveList.addAll(activeList);
 
-        setAdapter(new ActiveListAdapter(), new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                ShowingAssignee assignee = mList.get(which);
+		if (mAssignees.length > 0)
+			setAdapter(new ActiveListAdapter(), new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					startTransfer(activity, group, mAssignees[which]);
+				}
+			});
 
-                if (mActiveList.contains(assignee.deviceId))
-                    TransferUtils.pauseTransfer(activity, assignee);
-                else
-                    TransferUtils.startTransfer(activity, assignee);
-            }
-        });
+		setNegativeButton(R.string.butn_close, null);
 
-        setNegativeButton(R.string.butn_close, null);
+		if (group.hasOutgoing)
+			setNeutralButton(R.string.butn_addDevices, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					activity.startDeviceAddingActivity();
+				}
+			});
 
-        if (transferIndex.outgoingCount > 0)
-            setNeutralButton(R.string.butn_addDevices, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    activity.startDeviceAddingActivity();
-                }
-            });
+		ShowingAssignee senderAssignee = null;
 
-        ShowingAssignee senderAssignee = null;
+		for (ShowingAssignee assignee : group.assignees)
+			if (TransferObject.Type.INCOMING.equals(assignee.type)) {
+				senderAssignee = assignee;
+				break;
+			}
 
-        for (ShowingAssignee assignee : deviceList)
-            if (TransferObject.Type.INCOMING.equals(assignee.type)) {
-                senderAssignee = assignee;
-                break;
-            }
+		if (group.hasIncoming && senderAssignee != null) {
+			final ShowingAssignee finalSenderAssignee = senderAssignee;
+			setPositiveButton(R.string.butn_receive, new DialogInterface.OnClickListener()
+			{
+				@Override
+				public void onClick(DialogInterface dialog, int which)
+				{
+					startTransfer(activity, group, finalSenderAssignee);
+				}
+			});
+		}
+	}
 
-        if (transferIndex.incomingCount > 0 && senderAssignee != null) {
-            mList.remove(senderAssignee);
+	private void startTransfer(ViewTransferActivity activity, PreloadedGroup group, ShowingAssignee assignee)
+	{
+		if (mActiveList.contains(assignee.deviceId))
+			TransferUtils.pauseTransfer(activity, assignee);
+		else
+			TransferUtils.startTransferWithTest(activity, group, assignee);
+	}
 
-            final ShowingAssignee finalSenderAssignee = senderAssignee;
-            setPositiveButton(R.string.butn_receive, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    TransferUtils.startTransferWithTest(activity, group, finalSenderAssignee);
-                }
-            });
-        }
-    }
+	private class ActiveListAdapter extends BaseAdapter
+	{
+		@Override
+		public int getCount()
+		{
+			return mAssignees.length;
+		}
 
-    private class ActiveListAdapter extends BaseAdapter
-    {
-        @Override
-        public int getCount()
-        {
-            return mList.size();
-        }
+		@Override
+		public Object getItem(int position)
+		{
+			return mAssignees[position];
+		}
 
-        @Override
-        public Object getItem(int position)
-        {
-            return mList.get(position);
-        }
+		@Override
+		public long getItemId(int position)
+		{
+			return 0;
+		}
 
-        @Override
-        public long getItemId(int position)
-        {
-            return 0;
-        }
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent)
+		{
+			if (convertView == null)
+				convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent,
+						false);
 
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-                convertView = mInflater.inflate(R.layout.list_toggle_transfer, parent,
-                        false);
+			ShowingAssignee assignee = (ShowingAssignee) getItem(position);
+			ImageView image = convertView.findViewById(R.id.image);
+			TextView text = convertView.findViewById(R.id.text);
+			ImageView actionImage = convertView.findViewById(R.id.actionImage);
 
-            ShowingAssignee assignee = (ShowingAssignee) getItem(position);
-            ImageView image = convertView.findViewById(R.id.image);
-            TextView text = convertView.findViewById(R.id.text);
-            ImageView actionImage = convertView.findViewById(R.id.actionImage);
+			text.setText(assignee.device.nickname);
+			actionImage.setImageResource(mActiveList.contains(assignee.deviceId)
+					? R.drawable.ic_pause_white_24dp : (TransferObject.Type.INCOMING.equals(
+					assignee.type) ? R.drawable.ic_arrow_down_white_24dp : R.drawable.ic_arrow_up_white_24dp
+			));
+			NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
 
-            text.setText(assignee.device.nickname);
-            actionImage.setImageResource(mActiveList.contains(assignee.deviceId)
-                    ? R.drawable.ic_pause_white_24dp
-                    : R.drawable.ic_arrow_up_white_24dp);
-            NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
-
-            return convertView;
-        }
-    }
+			return convertView;
+		}
+	}
 }

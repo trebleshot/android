@@ -36,12 +36,12 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrganizeShareRunningTask extends WorkerService.RunningTask<ShareActivity>
+public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareActivity>
 {
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
 
-    public OrganizeShareRunningTask(List<Uri> fileUris, List<CharSequence> fileNames)
+    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames)
     {
         mFileUris = fileUris;
         mFileNames = fileNames;

@@ -22,8 +22,10 @@ import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
+import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.android.database.CursorItem;
@@ -155,6 +157,65 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
+    public double getPercentage(@Nullable String deviceId)
+    {
+        if (Type.INCOMING.equals(type)) {
+            if (Flag.DONE.equals(getFlag()))
+                return 1;
+
+            return getFlag().getBytesValue() > 0
+                    ? Long.valueOf(getFlag().getBytesValue()).doubleValue() / Long.valueOf(size).doubleValue()
+                    : 0;
+        }
+
+        if (mSenderFlagList.size() < 1)
+            return 0;
+
+        long receivedSize = 0;
+        int totalFlags;
+        boolean allCompleted = true;
+
+        synchronized (mSenderFlagList) {
+            if (deviceId == null) {
+                totalFlags = mSenderFlagList.size();
+
+                for (Flag flag : mSenderFlagList.values()) {
+                    receivedSize += flag.getBytesValue();
+                    if (allCompleted && !Flag.DONE.equals(flag))
+                        allCompleted = false;
+                }
+
+                if (allCompleted)
+                    return 1;
+
+                return receivedSize > 1
+                        ? Long.valueOf(receivedSize).doubleValue() / (Long.valueOf(size).doubleValue() * totalFlags)
+                        : 0;
+            } else
+                return getFlag(deviceId).getBytesValue() > 0
+                        ? Long.valueOf(getFlag(deviceId).getBytesValue()).doubleValue()
+                        / Long.valueOf(size).doubleValue()
+                        : 0;
+        }
+    }
+
+    public boolean isComplete(@Nullable String deviceId)
+    {
+        if (Type.INCOMING.equals(type))
+            return Flag.DONE.equals(getFlag());
+
+        synchronized (mSenderFlagList) {
+            if (deviceId == null) {
+                for (Flag flag : mSenderFlagList.values())
+                    if (!Flag.DONE.equals(flag))
+                        return false;
+
+                return mSenderFlagList.size() > 0;
+            } else
+                return Flag.DONE.equals(getFlag(deviceId));
+        }
+    }
+
     public void setFlag(Flag flag) {
         if (!Type.INCOMING.equals(type))
             throw new InvalidParameterException();
@@ -216,6 +277,24 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
 
+    public boolean hasIssues(@Nullable String deviceId)
+    {
+        if (Type.OUTGOING.equals(type)) {
+            if (deviceId == null)
+                synchronized (mSenderFlagList) {
+                    for (Flag flag : mSenderFlagList.values())
+                        if (Flag.INTERRUPTED.equals(flag))
+                            return true;
+                }
+            else
+                return Flag.INTERRUPTED.equals(getFlag(deviceId));
+        } else
+            return Flag.INTERRUPTED.equals(getFlag());
+
+        return false;
+    }
+
+
     @Override
     public void reconstruct(CursorItem item)
     {
@@ -250,7 +329,21 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                     mSenderFlagList.clear();
                     while (iterator.hasNext()) {
                         String key = iterator.next();
-                        mSenderFlagList.put(key, Flag.valueOf(jsonObject.getString(key)));
+                        String value = jsonObject.getString(key);
+                        Flag flag;
+
+                        try {
+                            flag = Flag.valueOf(value);
+                        } catch (Exception e) {
+                            try {
+                                flag = Flag.IN_PROGRESS;
+                                flag.setBytesValue(Long.valueOf(value));
+                            } catch (NumberFormatException e1) {
+                                flag = Flag.PENDING;
+                            }
+                        }
+
+                        mSenderFlagList.put(key, flag);
                     }
                 }
             } catch (JSONException e) {
@@ -267,13 +360,13 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     @Override
     public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
-
+        lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
     public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
     {
-
+        lastChangeDate = System.currentTimeMillis();
     }
 
     @Override

@@ -29,10 +29,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
@@ -43,6 +39,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
+import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
@@ -55,13 +52,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * created by: Veli
  * date: 10.11.2017 00:15
  */
 
 public class TransferGroupListFragment
-        extends GroupEditableListFragment<TransferGroupListAdapter.PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
+        extends GroupEditableListFragment<PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
         implements IconSupport, TitleSupport
 {
     private SQLQuery.Select mSelect;
@@ -254,9 +255,9 @@ public class TransferGroupListFragment
         return this;
     }
 
-    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferGroupListAdapter.PreloadedGroup>
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback<PreloadedGroup>
     {
-        public SelectionCallback(EditableListFragmentImpl<TransferGroupListAdapter.PreloadedGroup> fragment)
+        public SelectionCallback(EditableListFragmentImpl<PreloadedGroup> fragment)
         {
             super(fragment);
         }
@@ -281,7 +282,7 @@ public class TransferGroupListFragment
         {
             int id = item.getItemId();
 
-            List<TransferGroupListAdapter.PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
+            List<PreloadedGroup> selectionList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
             if (id == R.id.action_mode_group_delete)
                 DialogUtils.showRemoveTransferGroupListDialog(getFragment().getActivity(), selectionList);
@@ -289,9 +290,8 @@ public class TransferGroupListFragment
                     || id == R.id.action_mode_group_hide_on_web) {
                 boolean success = false;
 
-                for (TransferGroupListAdapter.PreloadedGroup group : selectionList) {
-                    group.isServedOnWeb = group.index.outgoingCount > 0
-                            && id == R.id.action_mode_group_serve_on_web;
+                for (PreloadedGroup group : selectionList) {
+                    group.isServedOnWeb = group.hasOutgoing && id == R.id.action_mode_group_serve_on_web;
 
                     if (group.isServedOnWeb)
                         success = true;

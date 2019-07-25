@@ -258,51 +258,6 @@ public class AccessDatabase extends SQLiteDatabase
                 .putExtra(EXTRA_AFFECTED_ITEM_COUNT, getAffectedRowCount(database)));
     }
 
-    public void calculateTransactionSize(long groupId, TransferGroup.Index indexObject)
-    {
-        indexObject.reset();
-
-        List<TransferObject> transactionList = castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
-                        String.valueOf(groupId)), TransferObject.class);
-
-        indexObject.assignees.addAll(TransferUtils.loadAssigneeList(this, groupId));
-
-        for (TransferObject transferObject : transactionList) {
-            if (TransferObject.Type.INCOMING.equals(transferObject.type)) {
-                indexObject.incoming += transferObject.size;
-                indexObject.incomingCount++;
-
-                if (TransferObject.Flag.DONE.equals(transferObject.getFlag())) {
-                    indexObject.incomingCountCompleted++;
-                    indexObject.incomingCompleted += transferObject.size;
-                } else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.getFlag()))
-                    indexObject.incomingCompleted += transferObject.getFlag().getBytesValue();
-            } else {
-                indexObject.outgoing += transferObject.size;
-                indexObject.outgoingCount++;
-
-                // FIXME: 7/15/19 Sender flags are multiple and cannot be queried with getFlag()
-                /*
-                if (TransferObject.Flag.DONE.equals(transferObject.flag)) {
-                    indexObject.outgoingCountCompleted++;
-                    indexObject.outgoingCompleted += transferObject.size;
-                } else if (TransferObject.Flag.IN_PROGRESS.equals(transferObject.flag))
-                    indexObject.outgoingCompleted += transferObject.flag.getBytesValue();
-                */
-            }
-
-            // FIXME: 7/15/19 This is also like above
-            /*
-            if (!indexObject.hasIssues && (TransferObject.Flag.INTERRUPTED.equals(transferObject.flag)
-                    || TransferObject.Flag.REMOVED.equals(transferObject.flag)))
-                indexObject.hasIssues = true;
-                */
-        }
-
-        indexObject.calculated = true;
-    }
-
     public long getAffectedRowCount(android.database.sqlite.SQLiteDatabase database)
     {
         Cursor cursor = null;
