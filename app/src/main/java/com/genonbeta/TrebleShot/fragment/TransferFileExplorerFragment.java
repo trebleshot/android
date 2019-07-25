@@ -63,7 +63,7 @@ public class TransferFileExplorerFragment
         mPathView = adaptedView.findViewById(R.id.layout_transfer_explorer_recycler);
         mPathAdapter = new TransferPathResolverRecyclerAdapter(getContext());
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false);
         layoutManager.setStackFromEnd(true);
 
         mPathView.setHasFixedSize(true);

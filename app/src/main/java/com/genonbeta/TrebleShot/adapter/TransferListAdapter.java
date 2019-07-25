@@ -148,7 +148,6 @@ public class TransferListAdapter
 
 		// we first get the default files
 		for (GenericTransferItem object : derivedList) {
-			boolean isIncoming = TransferObject.Type.INCOMING.equals(object.type);
 			object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
 			if (currentPath != null && object.directory == null)
@@ -841,13 +840,13 @@ public class TransferListAdapter
 		public void handleStatusIndicator(ImageView imageView)
 		{
 			imageView.setVisibility(View.VISIBLE);
-			imageView.setImageResource(R.drawable.ic_device_hub_white_24dp);
+			imageView.setImageResource(R.drawable.ic_arrow_right_white_24dp);
 		}
 
 		@Override
 		public int getIconRes()
 		{
-			return R.drawable.ic_info_white_24dp;
+			return R.drawable.ic_device_hub_white_24dp;
 		}
 
 		@Override
@@ -922,7 +921,7 @@ public class TransferListAdapter
 		public void handleStatusIndicator(ImageView imageView)
 		{
 			imageView.setVisibility(View.VISIBLE);
-			imageView.setImageResource(R.drawable.ic_settings_white_24dp);
+			imageView.setImageResource(R.drawable.ic_arrow_right_white_24dp);
 		}
 
 		@Override

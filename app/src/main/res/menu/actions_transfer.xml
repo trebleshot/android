@@ -62,9 +62,9 @@
         android:visible="true" />
 
     <item
-        android:id="@+id/actions_transfer_settings"
+        android:id="@+id/actions_transfer_limit_to"
         android:orderInCategory="110"
-        android:title="@string/butn_settings"
+        android:title="@string/text_limitTo"
         android:visible="false">
         <menu />
     </item>

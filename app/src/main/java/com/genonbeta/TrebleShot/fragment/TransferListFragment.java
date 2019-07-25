@@ -43,7 +43,9 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
+import com.genonbeta.TrebleShot.dialog.SelectAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -254,7 +256,39 @@ public class TransferListFragment
 		try {
 			final TransferObject transferObject = getAdapter().getItem(holder);
 
-			if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
+			if (transferObject instanceof TransferListAdapter.DetailsTransferFolder) {
+				final List<ShowingAssignee> list = TransferUtils.loadAssigneeList(getContext(),
+						getTransferGroup().id, null);
+
+				DialogInterface.OnClickListener listClickListener = new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						setDeviceId(list.get(which).deviceId);
+						getAdapter().setPath(getAdapter().getPath());
+						refreshList();
+					}
+				};
+
+				DialogInterface.OnClickListener noLimitListener = new DialogInterface.OnClickListener()
+				{
+					@Override
+					public void onClick(DialogInterface dialog, int which)
+					{
+						setDeviceId(null);
+						getAdapter().setPath(getAdapter().getPath());
+						refreshList();
+					}
+				};
+
+				SelectAssigneeDialog dialog = new SelectAssigneeDialog(getActivity(), list,
+						listClickListener);
+
+				dialog.setTitle(R.string.text_limitTo)
+						.setNeutralButton(R.string.butn_none, noLimitListener)
+						.show();
+			} else if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
 				final TransferListAdapter.StorageStatusItem statusItem = (TransferListAdapter.StorageStatusItem) transferObject;
 
 				if (statusItem.hasIssues(getAdapter().getDeviceId())) {

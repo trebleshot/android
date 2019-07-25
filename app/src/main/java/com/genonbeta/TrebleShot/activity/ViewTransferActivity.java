@@ -94,7 +94,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	private MenuItem mRetryMenu;
 	private MenuItem mShowFilesMenu;
 	private MenuItem mAddDeviceMenu;
-	private MenuItem mSettingsMenu;
+	private MenuItem mLimitMenu;
 	private MenuItem mWebShareShortcut;
 	private MenuItem mToggleBrowserShare;
 	private CrunchLatestDataTask mDataCruncher;
@@ -319,7 +319,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		mRetryMenu = menu.findItem(R.id.actions_transfer_receiver_retry_receiving);
 		mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
 		mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
-		mSettingsMenu = menu.findItem(R.id.actions_transfer_settings);
+		mLimitMenu = menu.findItem(R.id.actions_transfer_limit_to);
 		mWebShareShortcut = menu.findItem(R.id.actions_transfer_web_share_shortcut);
 		mToggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share);
 
@@ -334,7 +334,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		{
 			int devicePosition = findDevice(mDeviceId);
 
-			Menu thisMenu = menu.findItem(R.id.actions_transfer_settings).getSubMenu();
+			Menu thisMenu = menu.findItem(R.id.actions_transfer_limit_to).getSubMenu();
 
 			MenuItem checkedItem = null;
 
@@ -396,7 +396,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 			if (mGroup.isServedOnWeb)
 				AppUtils.startWebShareActivity(this, true);
-		} else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_settings) {
+		} else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
 			mDeviceId = item.getOrder() < getGroup().assignees.length
 					? getGroup().assignees[item.getOrder()].deviceId
 					: null;
@@ -524,7 +524,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		mShowFilesMenu.setVisible(getGroup().hasIncoming);
 
 		if (getGroup().hasOutgoing && (getGroup().assignees.length > 0 || mDeviceId != null)) {
-			Menu dynamicMenu = mSettingsMenu.setVisible(true).getSubMenu();
+			Menu dynamicMenu = mLimitMenu.setVisible(true).getSubMenu();
 			dynamicMenu.clear();
 
 			int iterator = 0;
@@ -534,17 +534,17 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 				for (; iterator < assignees.length; iterator++) {
 					ShowingAssignee assignee = assignees[iterator];
 
-					dynamicMenu.add(R.id.actions_abs_view_transfer_activity_settings,
+					dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to,
 							0, iterator, assignee.device.nickname);
 				}
 
-			dynamicMenu.add(R.id.actions_abs_view_transfer_activity_settings, 0, iterator,
-					getString(R.string.text_default));
+			dynamicMenu.add(R.id.actions_abs_view_transfer_activity_limit_to, 0, iterator,
+					getString(R.string.text_none));
 
-			dynamicMenu.setGroupCheckable(R.id.actions_abs_view_transfer_activity_settings,
+			dynamicMenu.setGroupCheckable(R.id.actions_abs_view_transfer_activity_limit_to,
 					true, true);
 		} else
-			mSettingsMenu.setVisible(false);
+			mLimitMenu.setVisible(false);
 
 		setTitle(getResources().getQuantityString(R.plurals.text_files, getGroup().numberOfTotal,
 				getGroup().numberOfTotal));

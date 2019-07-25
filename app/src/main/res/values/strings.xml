@@ -492,4 +492,8 @@
     <string name="text_alsoDeleteReceivedFiles">Also delete received files from disk</string>
     <string name="text_removeSelected">This will remove selected items</string>
     <string name="text_clients">Clients</string>
+    <string name="butn_limitTo">Limit to</string>
+    <string name="text_limitTo" translatable="false">@string/butn_limitTo</string>
+    <string name="butn_none">None</string>
+    <string name="text_none" translatable="false">@string/butn_none</string>
 </resources>

@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,9 +31,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
+import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
@@ -96,9 +97,12 @@ public class SelectAssigneeDialog extends AlertDialog.Builder
 
             ShowingAssignee assignee = (ShowingAssignee) getItem(position);
             ImageView image = convertView.findViewById(R.id.image);
+            ImageView actionImage = convertView.findViewById(R.id.actionImage);
             TextView text = convertView.findViewById(R.id.text);
 
             text.setText(assignee.device.nickname);
+            actionImage.setImageResource(TransferObject.Type.INCOMING.equals(assignee.type)
+                    ? R.drawable.ic_arrow_down_white_24dp : R.drawable.ic_arrow_up_white_24dp);
             NetworkDeviceLoader.showPictureIntoView(assignee.device, image, mIconBuilder);
 
             return convertView;

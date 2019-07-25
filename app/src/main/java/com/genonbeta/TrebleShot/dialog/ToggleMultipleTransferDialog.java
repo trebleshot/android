@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +25,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
@@ -42,6 +38,9 @@ import com.genonbeta.TrebleShot.util.TransferUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 
 public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 {
