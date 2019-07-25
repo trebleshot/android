@@ -976,12 +976,16 @@ public class TransferListAdapter
 					if (TransferObject.Type.INCOMING.equals(holder.type)) {
 						if (TransferObject.Flag.IN_PROGRESS.equals(holder.getFlag()))
 							mType = Type.FILE_ONGOING;
-					} else
-						for (TransferObject.Flag flag : holder.getFlags())
-							if (TransferObject.Flag.IN_PROGRESS.equals(flag)) {
-								mType = Type.FILE_ONGOING;
-								break;
-							}
+					} else {
+						if (adapter.getDeviceId() == null) {
+							for (TransferObject.Flag flag : holder.getFlags())
+								if (TransferObject.Flag.IN_PROGRESS.equals(flag)) {
+									mType = Type.FILE_ONGOING;
+									break;
+								}
+						} else if (TransferObject.Flag.IN_PROGRESS.equals(holder.getFlag(adapter.getDeviceId())))
+							mType = Type.FILE_ONGOING;
+					}
 				}
 			}
 		}
