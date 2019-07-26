@@ -157,65 +157,6 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
-    public double getPercentage(@Nullable String deviceId)
-    {
-        if (Type.INCOMING.equals(type)) {
-            if (Flag.DONE.equals(getFlag()))
-                return 1;
-
-            return getFlag().getBytesValue() > 0
-                    ? Long.valueOf(getFlag().getBytesValue()).doubleValue() / Long.valueOf(size).doubleValue()
-                    : 0;
-        }
-
-        if (mSenderFlagList.size() < 1)
-            return 0;
-
-        long receivedSize = 0;
-        int totalFlags;
-        boolean allCompleted = true;
-
-        synchronized (mSenderFlagList) {
-            if (deviceId == null) {
-                totalFlags = mSenderFlagList.size();
-
-                for (Flag flag : mSenderFlagList.values()) {
-                    receivedSize += flag.getBytesValue();
-                    if (allCompleted && !Flag.DONE.equals(flag))
-                        allCompleted = false;
-                }
-
-                if (allCompleted)
-                    return 1;
-
-                return receivedSize > 1
-                        ? Long.valueOf(receivedSize).doubleValue() / (Long.valueOf(size).doubleValue() * totalFlags)
-                        : 0;
-            } else
-                return getFlag(deviceId).getBytesValue() > 0
-                        ? Long.valueOf(getFlag(deviceId).getBytesValue()).doubleValue()
-                        / Long.valueOf(size).doubleValue()
-                        : 0;
-        }
-    }
-
-    public boolean isComplete(@Nullable String deviceId)
-    {
-        if (Type.INCOMING.equals(type))
-            return Flag.DONE.equals(getFlag());
-
-        synchronized (mSenderFlagList) {
-            if (deviceId == null) {
-                for (Flag flag : mSenderFlagList.values())
-                    if (!Flag.DONE.equals(flag))
-                        return false;
-
-                return mSenderFlagList.size() > 0;
-            } else
-                return Flag.DONE.equals(getFlag(deviceId));
-        }
-    }
-
     public void setFlag(Flag flag) {
         if (!Type.INCOMING.equals(type))
             throw new InvalidParameterException();
@@ -315,7 +256,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
             } catch (Exception e) {
                 try {
                     mReceiverFlag = Flag.IN_PROGRESS;
-                    mReceiverFlag.setBytesValue(Long.valueOf(flagString));
+                    mReceiverFlag.setBytesValue(Long.parseLong(flagString));
                 } catch (NumberFormatException e1) {
                     mReceiverFlag = Flag.PENDING;
                 }
@@ -337,7 +278,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                         } catch (Exception e) {
                             try {
                                 flag = Flag.IN_PROGRESS;
-                                flag.setBytesValue(Long.valueOf(value));
+                                flag.setBytesValue(Long.parseLong(value));
                             } catch (NumberFormatException e1) {
                                 flag = Flag.PENDING;
                             }
@@ -383,7 +324,8 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                 database.reconstruct(parent);
             }
 
-            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(), this, parent, false);
+            DocumentFile file = FileUtils.getIncomingPseudoFile(database.getContext(),
+                    this, parent, false);
 
             if (file != null && file.isFile())
                 file.delete();
@@ -473,9 +415,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         @Override
         public String toString()
         {
-            return getBytesValue() > 0
-                    ? String.valueOf(getBytesValue())
-                    : super.toString();
+            return getBytesValue() > 0 ? String.valueOf(getBytesValue()) : super.toString();
         }
     }
 }

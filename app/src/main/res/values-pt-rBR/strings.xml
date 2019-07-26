@@ -297,7 +297,7 @@
     <string name="text_notificationChannelHigh">Notificações importantes</string>
     <string name="text_notificationChannelLow">Notificações de baixa prioridade</string>
     <string name="text_receivedTransfer">Recebido %s em %s</string>
-    <string name="text_yearCountShort">$d ano</string>
+    <string name="text_yearCountShort">%d ano</string>
     <string name="text_monthCountShort">%d mês</string>
     <string name="text_dayCountShort">%d dia</string>
     <string name="text_hourCountShort">%d hora</string>

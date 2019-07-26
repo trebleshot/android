@@ -21,10 +21,8 @@ package com.genonbeta.TrebleShot.util;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
-
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
@@ -40,6 +38,9 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.android.framework.io.DocumentFile;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 /**
  * created by: Veli
@@ -192,6 +193,7 @@ public class CommunicationNotificationHelper
 							.setAction(ViewTransferActivity.ACTION_LIST_TRANSFERS)
 							.putExtra(ViewTransferActivity.EXTRA_GROUP_ID, processHolder.object.groupId), 0))
 					.setOngoing(true)
+					.setWhen(processHolder.timeStarted)
 					.addAction(R.drawable.ic_close_white_24dp_static, getContext().getString(isIncoming ? R.string.butn_cancelReceiving : R.string.butn_cancelSending), PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), cancelIntent, 0));
 		}
 
@@ -199,8 +201,31 @@ public class CommunicationNotificationHelper
 
 		processHolder.notification.setProgress(100, (int) (Math.max(0.01,
 				processHolder.completedBytes + processHolder.currentBytes) / Math.max(0.01,
-				processHolder.group.bytesInTotal) * 100
+				processHolder.group.bytesPending) * 100
 		), false);
+
+		long bytesTransferred  = processHolder.completedBytes + processHolder.currentBytes;
+
+		if (processHolder.lastKnownBytes > 0 && bytesTransferred > 0) {
+			long change = bytesTransferred - processHolder.lastKnownBytes;
+			StringBuilder text = new StringBuilder();
+
+			text.append(FileUtils.sizeExpression(change, false));
+			text.append("/s");
+
+			if (processHolder.group.bytesPending > 0 && change > 0) {
+				long timeNeeded = (processHolder.group.bytesPending - bytesTransferred) / change;
+
+				text.append(" (");
+				text.append(getContext().getString(R.string.text_remainingTime,
+						TimeUtils.getDuration(timeNeeded, false)));
+				text.append(")");
+			}
+
+			processHolder.notification.setSubText(text.toString());
+		}
+
+		processHolder.lastKnownBytes = bytesTransferred;
 
 		processHolder.notification.show();
 	}

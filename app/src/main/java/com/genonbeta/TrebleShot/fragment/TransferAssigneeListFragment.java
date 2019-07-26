@@ -34,6 +34,7 @@ import com.genonbeta.TrebleShot.adapter.TransferAssigneeListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
+import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -152,41 +153,7 @@ public class TransferAssigneeListFragment
 					@Override
 					public void onClick(View v)
 					{
-						final ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
-
-						PopupMenu popupMenu = new PopupMenu(getContext(), v);
-						Menu menu = popupMenu.getMenu();
-
-						popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
-
-						popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-						{
-							@Override
-							public boolean onMenuItemClick(MenuItem item)
-							{
-								int id = item.getItemId();
-
-								if (id == R.id.popup_changeChangeConnection) {
-									TransferUtils.changeConnection(getActivity(), assignee.device,
-											assignee, new TransferUtils.ConnectionUpdatedListener()
-											{
-												@Override
-												public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
-												{
-													createSnackbar(R.string.mesg_connectionUpdated, TextUtils.getAdapterName(getContext(), connection))
-															.show();
-												}
-											});
-								} else if (id == R.id.popup_remove) {
-									AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
-								} else
-									return false;
-
-								return true;
-							}
-						});
-
-						popupMenu.show();
+						showPopupMenu(clazz, v);
 					}
 				});
 			}
@@ -234,6 +201,13 @@ public class TransferAssigneeListFragment
 	}
 
 	@Override
+	public boolean onDefaultLongClickAction(EditableListAdapter.EditableViewHolder holder)
+	{
+		showPopupMenu(holder, holder.getView());
+		return true;
+	}
+
+	@Override
 	public boolean isHorizontalOrientation()
 	{
 		return (getArguments() != null && getArguments().getBoolean(ARG_USE_HORIZONTAL_VIEW))
@@ -255,6 +229,46 @@ public class TransferAssigneeListFragment
 		}
 
 		return mHeldGroup;
+	}
+
+	private void showPopupMenu(EditableListAdapter.EditableViewHolder clazz, View v)
+	{
+		final ShowingAssignee assignee = getAdapter().getList().get(clazz.getAdapterPosition());
+
+		PopupMenu popupMenu = new PopupMenu(getContext(), v);
+		Menu menu = popupMenu.getMenu();
+
+		popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
+
+		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+		{
+			@Override
+			public boolean onMenuItemClick(MenuItem item)
+			{
+				int id = item.getItemId();
+
+				if (id == R.id.popup_changeChangeConnection) {
+					TransferUtils.changeConnection(getActivity(), assignee.device,
+							assignee, new TransferUtils.ConnectionUpdatedListener()
+							{
+								@Override
+								public void onConnectionUpdated(NetworkDevice.Connection connection,
+																TransferGroup.Assignee assignee)
+								{
+									createSnackbar(R.string.mesg_connectionUpdated, TextUtils
+											.getAdapterName(getContext(), connection)).show();
+								}
+							});
+				} else if (id == R.id.popup_remove) {
+					AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
+				} else
+					return false;
+
+				return true;
+			}
+		});
+
+		popupMenu.show();
 	}
 
 	private void updateTransferGroup()

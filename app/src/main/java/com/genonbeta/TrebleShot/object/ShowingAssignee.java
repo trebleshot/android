@@ -30,6 +30,11 @@ public class ShowingAssignee extends TransferGroup.Assignee implements Editable
 
     }
 
+    public ShowingAssignee(long groupId, String deviceId, TransferObject.Type type)
+    {
+        super(groupId, deviceId, type);
+    }
+
     @Override
     public boolean applyFilter(String[] filteringKeywords)
     {

@@ -691,8 +691,7 @@ public class CommunicationService extends Service
 		boolean retry = false;
 
 		try {
-			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.device.id,
-					processHolder.type);
+			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.assignee);
 
 			while (processHolder.activeConnection.getSocket().isConnected()) {
 				processHolder.currentBytes = 0;
@@ -924,8 +923,7 @@ public class CommunicationService extends Service
 		notifyTaskRunningListChange();
 
 		try {
-			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.device.id,
-					processHolder.type);
+			TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.assignee);
 
 			while (processHolder.activeConnection.getSocket().isConnected()) {
 				processHolder.currentBytes = 0;
@@ -1023,7 +1021,8 @@ public class CommunicationService extends Service
 								.getOutputStream();
 
 						while ((readLength = inputStream.read(buffer)) != -1
-								&& processHolder.currentBytes < processHolder.object.size) {
+								&& processHolder.currentBytes < processHolder.object.size
+								&& !processHolder.activeConnection.getSocket().isOutputShutdown()) {
 							if (readLength > 0) {
 								if (processHolder.currentBytes + readLength > processHolder.object.size) {
 									sizeExceeded = true;
@@ -1050,6 +1049,8 @@ public class CommunicationService extends Service
 							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.DONE);
 						} else if (sizeExceeded)
 							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.REMOVED);
+						else
+							processHolder.object.putFlag(processHolder.device.id, TransferObject.Flag.INTERRUPTED);
 
 						getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
 
@@ -1691,6 +1692,7 @@ public class CommunicationService extends Service
 		public DocumentFile currentFile;
 		public long lastProcessingTime;
 		public long currentBytes; // moving
+		public long lastKnownBytes; // completedBytes of 2 secs ago
 		public long completedBytes;
 		public long timeStarted;
 		public int completedCount;

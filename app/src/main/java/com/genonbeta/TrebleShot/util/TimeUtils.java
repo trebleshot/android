@@ -39,11 +39,16 @@ public class TimeUtils
         return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
     }
 
-    public static String getDuration(long milliseconds)
+    public static String getDuration(long milliseconds) {
+        return getDuration(milliseconds, true);
+    }
+
+    public static String getDuration(long time, boolean divideMilliseconds)
     {
         StringBuilder string = new StringBuilder();
 
-        ElapsedTime.ElapsedTimeCalculator calculator = new ElapsedTime.ElapsedTimeCalculator(milliseconds / 1000);
+        ElapsedTime.ElapsedTimeCalculator calculator = new ElapsedTime.ElapsedTimeCalculator(
+                divideMilliseconds ? time / 1000 : time);
 
         long hours = calculator.crop(3600);
         long minutes = calculator.crop(60);

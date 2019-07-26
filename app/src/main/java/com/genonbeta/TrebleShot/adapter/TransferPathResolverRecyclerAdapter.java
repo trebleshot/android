@@ -22,6 +22,7 @@ import android.content.Context;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.ShowingAssignee;
 
 import java.io.File;
 
@@ -31,7 +32,7 @@ import java.io.File;
  */
 public class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAdapter<String>
 {
-    private NetworkDevice mDevice;
+    private ShowingAssignee mAssignee;
     private String mHomeName;
 
     public TransferPathResolverRecyclerAdapter(Context context)
@@ -43,16 +44,16 @@ public class TransferPathResolverRecyclerAdapter extends PathResolverRecyclerAda
     @Override
     public Holder.Index<String> onFirstItem()
     {
-        if (mDevice != null)
-            return new Holder.Index<>(mDevice.nickname, R.drawable.ic_device_hub_white_24dp,
+        if (mAssignee != null)
+            return new Holder.Index<>(mAssignee.device.nickname, R.drawable.ic_device_hub_white_24dp,
                     null);
 
         return new Holder.Index<>(mHomeName, R.drawable.ic_home_white_24dp, null);
     }
 
-    public void goTo(NetworkDevice device, String[] paths)
+    public void goTo(ShowingAssignee assignee, String[] paths)
     {
-        mDevice = device;
+        mAssignee = assignee;
 
         StringBuilder mergedPath = new StringBuilder();
         initAdapter();

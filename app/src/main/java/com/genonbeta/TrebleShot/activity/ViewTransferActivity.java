@@ -87,7 +87,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	private PreloadedGroup mGroup;
 	private TransferObject mTransferObject;
 	private PowerfulActionMode mMode;
-	private String mDeviceId;
+	private ShowingAssignee mAssignee;
 	private String mDirectory;
 	private MenuItem mCnTestMenu;
 	private MenuItem mToggleMenu;
@@ -207,8 +207,8 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 				getIntent().setAction(ACTION_LIST_TRANSFERS)
 						.putExtra(EXTRA_GROUP_ID, mGroup.id);
 
-				new TransferInfoDialog(ViewTransferActivity.this, mGroup, object, mDeviceId)
-						.show();
+				new TransferInfoDialog(ViewTransferActivity.this, mGroup, object,
+						mAssignee == null ? null : mAssignee.deviceId).show();
 
 				Log.d(TAG, "Created instance from an file intent. Original has been cleaned " +
 						"and changed to open intent");
@@ -332,8 +332,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	public boolean onPrepareOptionsMenu(Menu menu)
 	{
 		{
-			int devicePosition = findDevice(mDeviceId);
-
+			int devicePosition = findCurrentDevicePosition();
 			Menu thisMenu = menu.findItem(R.id.actions_transfer_limit_to).getSubMenu();
 
 			MenuItem checkedItem = null;
@@ -397,15 +396,14 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 			if (mGroup.isServedOnWeb)
 				AppUtils.startWebShareActivity(this, true);
 		} else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
-			mDeviceId = item.getOrder() < getGroup().assignees.length
-					? getGroup().assignees[item.getOrder()].deviceId
-					: null;
+			mAssignee = item.getOrder() < getGroup().assignees.length
+					? getGroup().assignees[item.getOrder()] : null;
 
 			TransferFileExplorerFragment fragment = (TransferFileExplorerFragment)
 					getSupportFragmentManager()
 							.findFragmentById(R.id.activity_transaction_content_frame);
 
-			if (fragment != null && fragment.setDeviceId(mDeviceId))
+			if (fragment != null && fragment.getAdapter().setAssignee(mAssignee))
 				fragment.refreshList();
 		} else if (item.getItemId() == R.id.actions_transfer_web_share_shortcut) {
 			AppUtils.startWebShareActivity(this, false);
@@ -447,20 +445,25 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		return Snackbar.make(findViewById(R.id.activity_transaction_content_frame), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
-	public int findDevice(String device)
+	public int findCurrentDevicePosition()
 	{
 		ShowingAssignee[] assignees = getGroup().assignees;
 
-		if (device != null && assignees.length > 0) {
+		if (mAssignee != null && assignees.length > 0) {
 			for (int i = 0; i < assignees.length; i++) {
 				ShowingAssignee assignee = assignees[i];
 
-				if (device.equals(assignee.device.id))
+				if (mAssignee.deviceId.equals(assignee.device.id))
 					return i;
 			}
 		}
 
 		return -1;
+	}
+
+	public ShowingAssignee getAssignee()
+	{
+		return mAssignee;
 	}
 
 	@Nullable
@@ -523,7 +526,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		mRetryMenu.setVisible(getGroup().hasIncoming);
 		mShowFilesMenu.setVisible(getGroup().hasIncoming);
 
-		if (getGroup().hasOutgoing && (getGroup().assignees.length > 0 || mDeviceId != null)) {
+		if (getGroup().hasOutgoing && (getGroup().assignees.length > 0 || mAssignee != null)) {
 			Menu dynamicMenu = mLimitMenu.setVisible(true).getSubMenu();
 			dynamicMenu.clear();
 
@@ -616,7 +619,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 					if (getGroup().assignees.length == 0)
 						if (mTransferObject != null) {
 							new TransferInfoDialog(ViewTransferActivity.this, mGroup,
-									mTransferObject, mDeviceId).show();
+									mTransferObject, mAssignee == null ? null : mAssignee.deviceId).show();
 							mTransferObject = null;
 						}
 				}
@@ -644,8 +647,9 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 				mRestartRequested = false;
 
 				for (ViewTransferActivity activity : activities) {
-					if (activity.getGroup() != null)
-						TransferUtils.loadGroupInfo(activity, activity.getGroup(), null, null);
+					if (activity.getGroup() != null) {
+						TransferUtils.loadGroupInfo(activity, activity.getGroup(), activity.getAssignee());
+					}
 				}
 			} while (mRestartRequested && !isCancelled());
 

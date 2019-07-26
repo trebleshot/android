@@ -145,6 +145,27 @@ public class TransferUtils
 				: new TransferObject(receiverInstance);
 	}
 
+	public static void loadAssigneeInfo(Context context, ShowingAssignee assignee)
+	{
+		loadAssigneeInfo(AppUtils.getDatabase(context), assignee);
+	}
+
+	public static void loadAssigneeInfo(SQLiteDatabase db, ShowingAssignee assignee)
+	{
+		assignee.device = new NetworkDevice(assignee.deviceId);
+		assignee.connection = new NetworkDevice.Connection(assignee);
+
+		try {
+			db.reconstruct(assignee.device);
+		} catch (Exception ignored) {
+		}
+
+		try {
+			db.reconstruct(assignee.connection);
+		} catch (Exception ignored) {
+		}
+	}
+
 	public static List<ShowingAssignee> loadAssigneeList(Context context, long groupId,
 														 @Nullable TransferObject.Type type)
 	{
@@ -163,20 +184,22 @@ public class TransferUtils
 			@Override
 			public void onObjectReconstructed(SQLiteDatabase db, CursorItem item, ShowingAssignee object)
 			{
-				object.device = new NetworkDevice(object.deviceId);
-				object.connection = new NetworkDevice.Connection(object);
-
-				try {
-					db.reconstruct(object.device);
-				} catch (Exception ignored) {
-				}
-
-				try {
-					db.reconstruct(object.connection);
-				} catch (Exception ignored) {
-				}
+				loadAssigneeInfo(db, object);
 			}
 		});
+	}
+
+	public static void loadGroupInfo(Context context, PreloadedGroup group,
+									 @Nullable TransferGroup.Assignee assignee)
+	{
+		if (assignee == null)
+			loadGroupInfo(context, group);
+		else
+			loadGroupInfo(context, group, assignee.deviceId, assignee.type);
+	}
+
+	public static void loadGroupInfo(Context context, PreloadedGroup group) {
+		loadGroupInfo(context, group, null, null);
 	}
 
 	public static void loadGroupInfo(Context context, PreloadedGroup group,
@@ -199,11 +222,11 @@ public class TransferUtils
 				AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
 
 		if (type == null)
-			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?",
+			selection.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?",
 					String.valueOf(group.id));
 		else
-			selection.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
-							+ AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", String.valueOf(group.id),
+			selection.setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+							+ AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(group.id),
 					type.toString());
 
 		List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
@@ -229,7 +252,7 @@ public class TransferUtils
 			group.bytesInTotal += object.size;
 			percentage += object.getPercentage(deviceId);
 
-			if (object.isComplete(deviceId))
+			if (object.hasComplete(deviceId))
 				group.numberOfCompleted++;
 
 			if (!group.hasIssues && object.hasIssues(deviceId))
@@ -239,10 +262,16 @@ public class TransferUtils
 				group.bytesInIncoming += object.size;
 				group.numberOfIncoming++;
 				group.hasIncoming = true;
+
+				if (TransferObject.Flag.PENDING.equals(object.getFlag()))
+					group.bytesPending += object.size;
 			} else if (TransferObject.Type.OUTGOING.equals(object.type)) {
 				group.bytesInOutgoing += object.size;
 				group.numberOfOutgoing++;
 				group.hasOutgoing = true;
+
+				if (deviceId != null && TransferObject.Flag.PENDING.equals(object.getFlag(deviceId)))
+					group.bytesPending += object.size;
 			}
 		}
 

@@ -36,6 +36,7 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 	public int numberOfOutgoing;
 	public int numberOfIncoming;
 	public long bytesInTotal;
+	public long bytesPending;
 	public long bytesInOutgoing;
 	public long bytesInIncoming;
 	public double percentage;

@@ -30,10 +30,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
@@ -55,6 +51,7 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
@@ -64,6 +61,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+
 public class TransferListFragment
 		extends GroupEditableListFragment<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder, TransferListAdapter>
 		implements TitleSupport, Activity.OnBackPressedListener
@@ -72,6 +73,7 @@ public class TransferListFragment
 
 	public static final String ARG_DEVICE_ID = "argDeviceId";
 	public static final String ARG_GROUP_ID = "argGroupId";
+	public static final String ARG_TYPE = "argType";
 	public static final String ARG_PATH = "argPath";
 
 	public static final int REQUEST_CHOOSE_FOLDER = 1;
@@ -114,8 +116,8 @@ public class TransferListFragment
 		Bundle args = getArguments();
 
 		if (args != null && args.containsKey(ARG_GROUP_ID)) {
-			goPath(args.getLong(ARG_GROUP_ID), args.getString(ARG_PATH),
-					args.getString(ARG_DEVICE_ID));
+			goPath(args.getString(ARG_PATH), args.getLong(ARG_GROUP_ID),
+					args.getString(ARG_DEVICE_ID), args.getString(ARG_TYPE));
 		}
 	}
 
@@ -229,8 +231,7 @@ public class TransferListFragment
 
 		int slashPos = path.lastIndexOf(File.separator);
 
-		goPath(getAdapter().getGroupId(), slashPos == -1 && path.length() > 0 ? null
-				: path.substring(0, slashPos));
+		goPath(slashPos == -1 && path.length() > 0 ? null : path.substring(0, slashPos));
 
 		return true;
 	}
@@ -265,7 +266,7 @@ public class TransferListFragment
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						setDeviceId(list.get(which).deviceId);
+						getAdapter().setAssignee(list.get(which));
 						getAdapter().setPath(getAdapter().getPath());
 						refreshList();
 					}
@@ -276,7 +277,7 @@ public class TransferListFragment
 					@Override
 					public void onClick(DialogInterface dialog, int which)
 					{
-						setDeviceId(null);
+						getAdapter().setAssignee(null);
 						getAdapter().setPath(getAdapter().getPath());
 						refreshList();
 					}
@@ -455,23 +456,33 @@ public class TransferListFragment
 		return mHeldGroup;
 	}
 
-	public void goPath(long groupId, String path, String deviceId)
+	public void goPath(String path, long groupId, String deviceId, String type)
 	{
-		setDeviceId(deviceId);
-		goPath(groupId, path);
+		if (deviceId != null && type != null)
+			try {
+				ShowingAssignee assignee = new ShowingAssignee(groupId, deviceId,
+						TransferObject.Type.valueOf(type));
+
+				AppUtils.getDatabase(getContext()).reconstruct(assignee);
+				TransferUtils.loadAssigneeInfo(getContext(), assignee);
+
+				getAdapter().setAssignee(assignee);
+			} catch (Exception ignored) {
+			}
+
+		goPath(path, groupId);
 	}
 
-	public void goPath(long groupId, String path)
+	public void goPath(String path, long groupId)
 	{
 		getAdapter().setGroupId(groupId);
-		getAdapter().setPath(path);
-
-		refreshList();
+		goPath(path);
 	}
 
-	public boolean setDeviceId(String id)
+	public void goPath(String path)
 	{
-		return getAdapter().setDeviceId(id);
+		getAdapter().setPath(path);
+		refreshList();
 	}
 
 	public void updateSavePath(String selectedPath)

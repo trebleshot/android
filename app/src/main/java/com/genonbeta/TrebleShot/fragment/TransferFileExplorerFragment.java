@@ -75,7 +75,7 @@ public class TransferFileExplorerFragment
             @Override
             public void onClick(PathResolverRecyclerAdapter.Holder<String> holder)
             {
-                goPath(getAdapter().getGroupId(), holder.index.object);
+                goPath(holder.index.object);
             }
         });
 
@@ -96,8 +96,7 @@ public class TransferFileExplorerFragment
 
         String path = getAdapter().getPath();
 
-        mPathAdapter.goTo(getAdapter().getDevice(), path == null ? null
-                : path.split(File.separator));
+        mPathAdapter.goTo(getAdapter().getAssignee(), path == null ? null : path.split(File.separator));
         mPathAdapter.notifyDataSetChanged();
 
         if (mPathAdapter.getItemCount() > 0)

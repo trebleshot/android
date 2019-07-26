@@ -21,10 +21,13 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.List;
@@ -151,7 +154,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 			database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, this);
 	}
 
-	public static class Assignee implements DatabaseObject<NetworkDevice>
+	public static class Assignee implements DatabaseObject<TransferGroup>
 	{
 		public long groupId;
 		public String deviceId;
@@ -222,23 +225,39 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 		}
 
 		@Override
-		public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+		public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
 		{
 
 		}
 
 		@Override
-		public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+		public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
 		{
 
 		}
 
 		@Override
-		public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+		public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
 		{
-			// Removing an assignee would also remove the files belonging to it, however,
-			// new design makes that action obsolete because the files are always held
-			// in one place in the database.
+			if (!TransferObject.Type.INCOMING.equals(type))
+				return;
+
+			try {
+				AccessDatabase accessDatabase = AppUtils.getDatabase(database.getContext());
+
+				if (parent == null) {
+					parent = new TransferGroup(groupId);
+					accessDatabase.reconstruct(parent);
+				}
+
+				SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId,
+						TransferObject.Flag.INTERRUPTED, true);
+
+				accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class,
+						null, parent);
+			} catch (ReconstructionFailedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

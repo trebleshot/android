@@ -87,7 +87,7 @@ public class TransferGroupListAdapter
 		List<Long> activeList = new ArrayList<>(mRunningTasks);
 
 		for (PreloadedGroup group : mDatabase.castQuery(getSelect(), PreloadedGroup.class)) {
-			TransferUtils.loadGroupInfo(getContext(), group, null, null);
+			TransferUtils.loadGroupInfo(getContext(), group);
 			group.isRunning = activeList.contains(group.id);
 
 			lister.offerObliged(this, group);
