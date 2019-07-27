@@ -133,7 +133,7 @@ public class TransferGroupListAdapter
 				final View parentView = holder.getView();
 				@ColorInt
 				int appliedColor;
-				int percentage = (int) (object.percentage * 100);
+				int percentage = (int) (object.percentage() * 100);
 				String assigneesText = object.getAssigneesAsTitle();
 				ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
 				ImageView image = parentView.findViewById(R.id.image);
@@ -148,31 +148,31 @@ public class TransferGroupListAdapter
 				if (object.hasIssues)
 					appliedColor = mColorError;
 				else
-					appliedColor = object.numberOfCompleted == object.numberOfTotal
+					appliedColor = object.numberOfCompleted() == object.numberOfTotal()
 							? mColorDone
 							: mColorPending;
 
 				if (object.isRunning) {
 					image.setImageResource(R.drawable.ic_pause_white_24dp);
 				} else {
-					if (object.hasOutgoing == object.hasIncoming)
-						image.setImageResource(object.hasOutgoing
+					if (object.hasOutgoing() == object.hasIncoming())
+						image.setImageResource(object.hasOutgoing()
 								? R.drawable.ic_compare_arrows_white_24dp
 								: R.drawable.ic_error_outline_white_24dp);
 					else
-						image.setImageResource(object.hasOutgoing
+						image.setImageResource(object.hasOutgoing()
 								? R.drawable.ic_arrow_up_white_24dp
 								: R.drawable.ic_arrow_down_white_24dp);
 				}
 
-				statusLayoutWeb.setVisibility(object.hasOutgoing && object.isServedOnWeb
+				statusLayoutWeb.setVisibility(object.hasOutgoing() && object.isServedOnWeb
 						? View.VISIBLE : View.GONE);
 				text1.setText(assigneesText.length() > 0 ? assigneesText : getContext().getString(
 						object.isServedOnWeb ? R.string.text_transferSharedOnBrowser : R.string.text_emptySymbol));
-				text2.setText(FileUtils.sizeExpression(object.bytesInTotal, false));
-				text3.setText(mPercentFormat.format(object.percentage));
+				text2.setText(FileUtils.sizeExpression(object.bytesTotal(), false));
+				text3.setText(mPercentFormat.format(object.percentage()));
 				text4.setText(getContext().getString(R.string.text_transferStatusFiles,
-						object.numberOfCompleted, object.numberOfTotal));
+						object.numberOfCompleted(), object.numberOfTotal()));
 				progressBar.setMax(100);
 				progressBar.setProgress(percentage <= 0 ? 1 : percentage);
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));

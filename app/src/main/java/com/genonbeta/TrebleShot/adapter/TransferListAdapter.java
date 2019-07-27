@@ -65,6 +65,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
+import static com.genonbeta.TrebleShot.util.TransferUtils.TAG;
+
 /**
  * Created by: veli
  * Date: 4/15/17 12:29 PM
@@ -113,21 +115,17 @@ public class TransferListAdapter
 			return;
 		}
 
-		ShowingAssignee assignee = getAssignee();
 		boolean hasIncoming = false;
-		int senderMultiplierBase = 0;
-		Map<String, TransferFolder> folders = new ArrayMap<>();
-		List<GenericTransferItem> files = new ArrayList<>();
 		String currentPath = getPath();
 		currentPath = currentPath == null || currentPath.length() == 0 ? null : currentPath;
 
+		Map<String, TransferFolder> folders = new ArrayMap<>();
+		ShowingAssignee assignee = getAssignee();
 		List<ShowingAssignee> assignees = TransferUtils.loadAssigneeList(getContext(),
 				getGroupId(), null);
+		ShowingAssignee[] assigneeArray = new ShowingAssignee[assignees.size()];
 
-		for (ShowingAssignee showingAssignee : assignees) {
-			if (TransferObject.Type.OUTGOING.equals(showingAssignee.type))
-				senderMultiplierBase++;
-		}
+		assignees.toArray(assigneeArray);
 
 		SQLQuery.Select transferSelect = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER);
 		StringBuilder transferWhere = new StringBuilder(AccessDatabase.FIELD_TRANSFER_GROUPID + "=?");
@@ -151,45 +149,56 @@ public class TransferListAdapter
 		transferSelect.whereArgs = new String[transferArgs.size()];
 		transferArgs.toArray(transferSelect.whereArgs);
 
+		DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.id, currentPath == null
+				? (assignee == null ? getContext().getString(R.string.text_home) : assignee.device.nickname) : currentPath.contains(
+				File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
+				: currentPath, currentPath);
+		lister.offerObliged(this, statusItem);
+
 		List<GenericTransferItem> derivedList = AppUtils.getDatabase(getContext()).castQuery(
 				transferSelect, GenericTransferItem.class);
 
 		// we first get the default files
 		for (GenericTransferItem object : derivedList) {
+			object.assignees = assigneeArray;
 			object.directory = object.directory == null || object.directory.length() == 0 ? null
 					: object.directory;
 
 			if (currentPath != null && object.directory == null)
 				continue;
 
+			TransferFolder transferFolder = null;
+			boolean isIncoming = TransferObject.Type.INCOMING.equals(object.type);
+			boolean isOutgoing = TransferObject.Type.OUTGOING.equals(object.type);
+
 			if ((currentPath == null && object.directory == null)
 					|| object.directory.equals(currentPath)) {
 				try {
 					if (!loadThumbnails)
-						object.setSupportThumbnail(false);
+						object.supportThumbnail = false;
 					else {
 						String[] format = object.mimeType.split(File.separator);
 
 						if (format.length > 0 && ("image".equals(format[0]) || "video".equals(format[0]))) {
 							DocumentFile documentFile = null;
 
-							if (TransferObject.Type.OUTGOING.equals(object.type))
+							if (isOutgoing)
 								documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
 							else if (TransferObject.Flag.DONE.equals(object.getFlag()))
 								documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, mGroup, false);
 
 							if (documentFile != null && documentFile.exists()) {
-								object.setFile(documentFile);
-								object.setSupportThumbnail(true);
+								object.documentFile = documentFile;
+								object.supportThumbnail = true;
 							}
 						} else
-							object.setSupportThumbnail(false);
+							object.supportThumbnail = false;
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 
-				files.add(object);
+				lister.offerObliged(this, object);
 			} else if (currentPath == null || (object.directory.startsWith(currentPath))) {
 				int pathToErase = currentPath == null ? 0 : currentPath.length() + File.separator.length();
 				String cleanedPath = object.directory.substring(pathToErase);
@@ -198,110 +207,47 @@ public class TransferListAdapter
 				if (slashPos != -1)
 					cleanedPath = cleanedPath.substring(0, slashPos);
 
-				TransferFolder transferFolder = folders.get(cleanedPath);
+				transferFolder = folders.get(cleanedPath);
 
 				if (transferFolder == null) {
 					transferFolder = new TransferFolder(mGroup.id, cleanedPath, currentPath != null
 							? currentPath + File.separator + cleanedPath : cleanedPath);
 
 					folders.put(cleanedPath, transferFolder);
+					lister.offerObliged(this, transferFolder);
 				}
-
-				if (object.hasComplete(getDeviceId()))
-					transferFolder.numberOfCompleted++;
-
-				if (!transferFolder.mHasIssues && object.hasIssues(getDeviceId()))
-					transferFolder.setHasIssues(true);
-
-				if (!transferFolder.mHasOngoing && object.hasOngoing(getDeviceId()))
-					transferFolder.setHasOngoing(true);
-
-				if (TransferObject.Type.INCOMING.equals(object.type)) {
-					if (TransferObject.Flag.IN_PROGRESS.equals(object.getFlag()))
-						transferFolder.bytesReceived += object.getFlag().getBytesValue();
-				} else {
-					for (ShowingAssignee showingAssignee : assignees) {
-						if (!TransferObject.Type.OUTGOING.equals(showingAssignee.type))
-							continue;
-
-
-					}
-				}
-
-				transferFolder.numberOfTotal++;
-				transferFolder.bytesTotal += object.size;
 			}
 
-			if (!hasIncoming && TransferObject.Type.INCOMING.equals(object.type))
+			if (!hasIncoming && isIncoming)
 				hasIncoming = true;
+
+			mergeTransferInfo(statusItem, object, isIncoming, transferFolder);
 		}
 
-		StorageStatusItem storageItem = null;
+		if (currentPath == null && hasIncoming)
+			try {
+				TransferGroup group = new TransferGroup(mGroup.id);
+				AppUtils.getDatabase(getContext()).reconstruct(group);
+				DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
 
-		if (currentPath == null)
-			if (hasIncoming) {
-				try {
-					TransferGroup group = new TransferGroup(mGroup.id);
-					AppUtils.getDatabase(getContext()).reconstruct(group);
-					DocumentFile savePath = FileUtils.getSavePath(getContext(), group);
+				StorageStatusItem storageItem = new StorageStatusItem();
+				storageItem.directory = savePath.getUri().toString();
+				storageItem.name = savePath.getName();
+				storageItem.bytesRequired = statusItem.bytesTotal - statusItem.bytesReceived;
 
-					storageItem = new StorageStatusItem();
-					storageItem.directory = savePath.getUri().toString();
-					storageItem.name = savePath.getName();
-
-					if (savePath instanceof LocalDocumentFile) {
-						File saveFile = ((LocalDocumentFile) savePath).getFile();
-						storageItem.bytesTotal = saveFile.getTotalSpace();
-						storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
-					} else {
-						storageItem.bytesTotal = -1;
-						storageItem.bytesFree = -1;
-					}
-
-					lister.offerObliged(this, storageItem);
-				} catch (Exception e) {
-					e.printStackTrace();
+				if (savePath instanceof LocalDocumentFile) {
+					File saveFile = ((LocalDocumentFile) savePath).getFile();
+					storageItem.bytesTotal = saveFile.getTotalSpace();
+					storageItem.bytesFree = saveFile.getFreeSpace(); // return used space
+				} else {
+					storageItem.bytesTotal = -1;
+					storageItem.bytesFree = -1;
 				}
+
+				lister.offerObliged(this, storageItem);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-
-		DetailsTransferFolder statusItem = new DetailsTransferFolder(mGroup.id, currentPath == null
-				? (assignee == null ? getContext().getString(R.string.text_home) : assignee.device.nickname) : currentPath.contains(
-				File.separator) ? currentPath.substring(currentPath.lastIndexOf(File.separator) + 1)
-				: currentPath, currentPath);
-
-		lister.offerObliged(this, statusItem);
-
-		for (TransferFolder folder : folders.values()) {
-			statusItem.numberOfTotal += folder.numberOfTotal;
-			statusItem.numberOfCompleted += folder.numberOfCompleted;
-			statusItem.bytesTotal += folder.bytesTotal;
-			statusItem.bytesReceived += folder.bytesReceived;
-
-			if (folder.hasIssues(getDeviceId()))
-				statusItem.setHasIssues(true);
-
-			if (folder.hasOngoing(getDeviceId()))
-				statusItem.setHasIssues(true);
-
-			lister.offerObliged(this, folder);
-		}
-
-		for (GenericTransferItem file : files) {
-			if (file.hasComplete(getDeviceId())) {
-				statusItem.numberOfCompleted++;
-				statusItem.percentage += file.getPercentage(getDeviceId());
-			} else if (file.hasIssues(getDeviceId())) {
-				statusItem.setHasIssues(true);
-			}
-
-			statusItem.numberOfTotal++;
-			statusItem.bytesTotal += file.size;
-
-			lister.offerObliged(this, file);
-		}
-
-		if (storageItem != null)
-			storageItem.bytesRequired = statusItem.bytesTotal - statusItem.bytesReceived;
 	}
 
 	@Override
@@ -345,6 +291,71 @@ public class TransferListAdapter
 	public String getDeviceId()
 	{
 		return getAssignee() == null ? null : getAssignee().deviceId;
+	}
+
+	public void mergeTransferInfo(DetailsTransferFolder details, GenericTransferItem object,
+								  boolean isIncoming, @Nullable TransferFolder folder)
+	{
+		if (isIncoming) {
+			mergeTransferInfo(details, object, object.getFlag(), true, folder);
+		} else {
+			if (getAssignee() != null)
+				mergeTransferInfo(details, object, object.getFlag(getDeviceId()), false, folder);
+			else if (object.assignees.length < 1)
+				mergeTransferInfo(details, object, TransferObject.Flag.PENDING, false, folder);
+			else
+				for (ShowingAssignee showingAssignee : object.assignees) {
+					if (!TransferObject.Type.OUTGOING.equals(showingAssignee.type))
+						continue;
+
+					mergeTransferInfo(details, object, object.getFlag(showingAssignee.deviceId),
+							false, folder);
+				}
+		}
+	}
+
+	public void mergeTransferInfo(DetailsTransferFolder details, TransferObject object,
+								  TransferObject.Flag flag, boolean isIncoming,
+								  @Nullable TransferFolder folder)
+	{
+		details.bytesTotal += object.size;
+		details.numberOfTotal++;
+
+		if (folder != null) {
+			folder.bytesTotal += object.size;
+			folder.numberOfTotal++;
+		}
+
+		if (TransferObject.Flag.DONE.equals(flag)) {
+			details.numberOfCompleted++;
+			details.bytesCompleted += object.size;
+
+			if (folder != null) {
+				folder.numberOfCompleted++;
+				folder.bytesCompleted += object.size;
+			}
+		} else if (TransferUtils.isError(flag)) {
+			details.hasIssues = true;
+
+			if (folder != null)
+				folder.hasIssues = true;
+		} else if (TransferObject.Flag.IN_PROGRESS.equals(flag)) {
+			long completed = flag.getBytesValue();
+
+			details.bytesCompleted += completed;
+			details.hasOngoing = true;
+
+			if (folder != null) {
+				folder.bytesCompleted += completed;
+				folder.hasOngoing = true;
+			}
+
+			if (isIncoming) {
+				details.bytesReceived += completed;
+				if (folder != null)
+					folder.bytesReceived += completed;
+			}
+		}
 	}
 
 	public boolean setAssignee(ShowingAssignee assignee)
@@ -452,7 +463,7 @@ public class TransferListAdapter
 
 				@ColorInt
 				int appliedColor;
-				int percentage = (int) (object.getPercentage(getDeviceId()) * 100);
+				int percentage = (int) (object.getPercentage(this) * 100);
 				ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
 				ImageView thumbnail = parentView.findViewById(R.id.thumbnail);
 				ImageView image = parentView.findViewById(R.id.image);
@@ -465,10 +476,10 @@ public class TransferListAdapter
 
 				parentView.setSelected(object.isSelectableSelected());
 
-				if (object.hasComplete(getDeviceId()))
-					appliedColor = mColorDone;
-				else if (object.hasIssues(getDeviceId()))
+				if (object.hasIssues(this))
 					appliedColor = mColorError;
+				else if (object.isComplete(this))
+					appliedColor = mColorDone;
 				else
 					appliedColor = mColorPending;
 
@@ -496,7 +507,7 @@ public class TransferListAdapter
 
 				boolean supportThumbnail = object.loadThumbnail(thumbnail);
 
-				progressBar.setVisibility(!supportThumbnail || !object.hasComplete(getDeviceId())
+				progressBar.setVisibility(!supportThumbnail || !object.isComplete(this)
 						? View.VISIBLE
 						: View.GONE);
 
@@ -526,9 +537,6 @@ public class TransferListAdapter
 			implements GroupEditableListAdapter.GroupEditable
 	{
 		public int viewType;
-		public boolean completed = false;
-		public boolean hasIssues = true;
-		public double percentage;
 		public String representativeText;
 
 		public AbstractGenericItem()
@@ -557,6 +565,8 @@ public class TransferListAdapter
 		abstract public boolean loadThumbnail(ImageView imageView);
 
 		abstract public double getPercentage(TransferListAdapter adapter);
+
+		abstract public boolean hasIssues(TransferListAdapter adapter);
 
 		abstract public boolean isComplete(TransferListAdapter adapter);
 
@@ -623,8 +633,10 @@ public class TransferListAdapter
 
 	public static class GenericTransferItem extends AbstractGenericItem
 	{
-		private DocumentFile mFile;
-		private boolean mSupportThumbnail;
+		@Nullable
+		DocumentFile documentFile;
+		ShowingAssignee[] assignees;
+		boolean supportThumbnail;
 
 		public GenericTransferItem()
 		{
@@ -679,6 +691,9 @@ public class TransferListAdapter
 		@Override
 		public String getSecondText(TransferListAdapter adapter)
 		{
+			if (adapter.getAssignee() != null)
+				return adapter.getAssignee().device.nickname;
+
 			int totalDevices = 1;
 
 			if (Type.OUTGOING.equals(type))
@@ -700,9 +715,9 @@ public class TransferListAdapter
 		@Override
 		public boolean loadThumbnail(ImageView imageView)
 		{
-			if (mFile != null && mSupportThumbnail && mFile.exists()) {
+			if (documentFile != null && supportThumbnail && documentFile.exists()) {
 				GlideApp.with(imageView.getContext())
-						.load(mFile.getUri())
+						.load(documentFile.getUri())
 						.error(getIconRes())
 						.override(160)
 						.centerCrop()
@@ -714,19 +729,77 @@ public class TransferListAdapter
 			return false;
 		}
 
-		public void setFile(DocumentFile file)
+		@Override
+		public double getPercentage(TransferListAdapter adapter)
 		{
-			mFile = file;
+			return getPercentage(assignees, adapter.getDeviceId());
 		}
 
-		void setSupportThumbnail(boolean support)
+		@Override
+		public boolean hasIssues(TransferListAdapter adapter)
 		{
-			mSupportThumbnail = support;
+			if (assignees.length == 0)
+				return false;
+
+			if (Type.INCOMING.equals(type))
+				return TransferUtils.isError(getFlag());
+			else if (adapter.getDeviceId() != null) {
+				return TransferUtils.isError(getFlag(adapter.getDeviceId()));
+			} else
+				synchronized (mSenderFlagList) {
+					for (ShowingAssignee assignee : assignees)
+						if (TransferUtils.isError(getFlag(assignee.deviceId)))
+							return true;
+				}
+
+			return false;
+		}
+
+		@Override
+		public boolean isComplete(TransferListAdapter adapter)
+		{
+			if (assignees.length == 0)
+				return false;
+
+			if (Type.INCOMING.equals(type))
+				return Flag.DONE.equals(getFlag());
+			else if (adapter.getDeviceId() != null) {
+				return Flag.DONE.equals(getFlag(adapter.getDeviceId()));
+			} else
+				synchronized (mSenderFlagList) {
+					for (ShowingAssignee assignee : assignees)
+						if (!Flag.DONE.equals(getFlag(assignee.deviceId)))
+							return false;
+				}
+
+			return true;
+		}
+
+		@Override
+		public boolean isOngoing(TransferListAdapter adapter)
+		{
+			if (assignees.length == 0)
+				return false;
+
+			if (Type.INCOMING.equals(type))
+				return Flag.IN_PROGRESS.equals(getFlag());
+			else if (adapter.getDeviceId() != null) {
+				return Flag.IN_PROGRESS.equals(getFlag(adapter.getDeviceId()));
+			} else
+				synchronized (mSenderFlagList) {
+					for (ShowingAssignee assignee : assignees)
+						if (Flag.IN_PROGRESS.equals(getFlag(assignee.deviceId)))
+							return true;
+				}
+
+			return false;
 		}
 	}
 
 	public static class TransferFolder extends AbstractGenericItem
 	{
+		boolean hasIssues;
+		boolean hasOngoing;
 		int numberOfTotal = 0;
 		int numberOfCompleted = 0;
 		long bytesTotal = 0;
@@ -741,33 +814,9 @@ public class TransferListAdapter
 		}
 
 		@Override
-		public boolean hasIssues(String deviceId)
-		{
-			return mHasIssues;
-		}
-
-		@Override
-		public boolean hasOngoing(@Nullable String deviceId)
-		{
-			return mHasOngoing;
-		}
-
-		@Override
-		public boolean hasComplete(String deviceId)
-		{
-			return numberOfTotal == numberOfCompleted && numberOfTotal != 0;
-		}
-
-		@Override
 		public int getIconRes()
 		{
 			return R.drawable.ic_folder_white_24dp;
-		}
-
-		@Override
-		public double getPercentage(String deviceId)
-		{
-			return bytesTotal == 0 || bytesCompleted == 0 ? 0 : (float) bytesCompleted / bytesTotal;
 		}
 
 		@Override
@@ -780,6 +829,12 @@ public class TransferListAdapter
 		public void handleStatusIndicator(ImageView imageView)
 		{
 			imageView.setVisibility(View.GONE);
+		}
+
+		@Override
+		public boolean hasIssues(TransferListAdapter adapter)
+		{
+			return hasIssues;
 		}
 
 		@Override
@@ -798,7 +853,7 @@ public class TransferListAdapter
 		@Override
 		public String getThirdText(TransferListAdapter adapter)
 		{
-			return adapter.getPercentFormat().format(getPercentage(adapter.getDeviceId()));
+			return adapter.getPercentFormat().format(getPercentage(adapter));
 		}
 
 		@Override
@@ -816,9 +871,8 @@ public class TransferListAdapter
 		@Override
 		public boolean equals(Object obj)
 		{
-			return obj instanceof TransferFolder
-					&& directory != null
-					&& directory.equals(((TransferFolder) obj).directory);
+			return obj instanceof TransferFolder && directory != null && directory.equals(
+					((TransferFolder) obj).directory);
 		}
 
 		@Override
@@ -840,14 +894,22 @@ public class TransferListAdapter
 			return false;
 		}
 
-		void setHasIssues(boolean hasIssues)
+		@Override
+		public double getPercentage(TransferListAdapter adapter)
 		{
-			mHasIssues = hasIssues;
+			return bytesTotal == 0 || bytesCompleted == 0 ? 0 : (float) bytesCompleted / bytesTotal;
 		}
 
-		public void setHasOngoing(boolean hasOngoing)
+		@Override
+		public boolean isComplete(TransferListAdapter adapter)
 		{
-			mHasOngoing = hasOngoing;
+			return numberOfTotal == numberOfCompleted && numberOfTotal != 0;
+		}
+
+		@Override
+		public boolean isOngoing(TransferListAdapter adapter)
+		{
+			return hasOngoing;
 		}
 	}
 
@@ -907,15 +969,21 @@ public class TransferListAdapter
 		long bytesRequired = 0;
 
 		@Override
-		public boolean hasIssues(String deviceId)
+		public boolean hasIssues(TransferListAdapter adapter)
 		{
 			return bytesFree < bytesRequired && bytesFree != -1;
 		}
 
 		@Override
-		public boolean hasComplete(String deviceId)
+		public boolean isComplete(TransferListAdapter adapter)
 		{
-			return bytesFree == -1 || !hasIssues(deviceId);
+			return bytesFree == -1 || !hasIssues(adapter);
+		}
+
+		@Override
+		public boolean isOngoing(TransferListAdapter adapter)
+		{
+			return false;
 		}
 
 		@Override
@@ -937,7 +1005,7 @@ public class TransferListAdapter
 		}
 
 		@Override
-		public double getPercentage(String deviceId)
+		public double getPercentage(TransferListAdapter adapter)
 		{
 			return bytesTotal <= 0 || bytesFree <= 0 ? 0 : Long.valueOf(bytesTotal - bytesFree)
 					.doubleValue() / Long.valueOf(bytesTotal).doubleValue();
@@ -972,7 +1040,7 @@ public class TransferListAdapter
 		@Override
 		public String getThirdText(TransferListAdapter adapter)
 		{
-			return adapter.getPercentFormat().format(getPercentage(adapter.getDeviceId()));
+			return adapter.getPercentFormat().format(getPercentage(adapter));
 		}
 
 		@Override
@@ -998,11 +1066,11 @@ public class TransferListAdapter
 				mType = Type.STATUS;
 			else if (holder instanceof TransferFolder)
 				//mType = holder.hasOngoing(adapter.getDeviceId()) ? Type.FOLDER_ONGOING : Type.FOLDER;
-				mType = Type.FOLDER_ONGOING;
+				mType = Type.FOLDER;
 			else {
-				if (holder.hasIssues(adapter.getDeviceId()))
+				if (holder.hasIssues(adapter))
 					mType = Type.FILE_ERROR;
-				else if (holder.hasOngoing(adapter.getDeviceId()))
+				else if (holder.isOngoing(adapter))
 					mType = Type.FILE_ONGOING;
 				else
 					mType = Type.FILE;

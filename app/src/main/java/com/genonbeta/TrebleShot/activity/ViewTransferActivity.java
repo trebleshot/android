@@ -498,8 +498,10 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 	private void showMenus()
 	{
-		boolean hasAnyFiles = getGroup().numberOfTotal > 0;
+		boolean hasAnyFiles = getGroup().numberOfTotal() > 0;
 		boolean hasRunning = mActiveProcesses.size() > 0;
+		boolean hasIncoming = getGroup().hasIncoming();
+		boolean hasOutgoing = getGroup().hasOutgoing();
 
 		if (mToggleMenu == null || mRetryMenu == null || mShowFilesMenu == null)
 			return;
@@ -508,9 +510,9 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 			if (hasRunning)
 				mToggleMenu.setTitle(R.string.butn_pause);
 			else {
-				mToggleMenu.setTitle(getGroup().hasIncoming == getGroup().hasOutgoing
+				mToggleMenu.setTitle(hasIncoming == hasOutgoing
 						? R.string.butn_start
-						: (getGroup().hasIncoming ? R.string.butn_receive : R.string.butn_send));
+						: (hasIncoming ? R.string.butn_receive : R.string.butn_send));
 			}
 
 			mToggleMenu.setVisible(true);
@@ -519,14 +521,14 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 		mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
 				: R.string.butn_shareOnBrowser);
-		mToggleBrowserShare.setVisible(getGroup().hasOutgoing || mGroup.isServedOnWeb);
-		mWebShareShortcut.setVisible(getGroup().hasOutgoing && mGroup.isServedOnWeb);
+		mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
+		mWebShareShortcut.setVisible(hasOutgoing && mGroup.isServedOnWeb);
 		mCnTestMenu.setVisible(hasAnyFiles);
-		mAddDeviceMenu.setVisible(getGroup().hasOutgoing);
-		mRetryMenu.setVisible(getGroup().hasIncoming);
-		mShowFilesMenu.setVisible(getGroup().hasIncoming);
+		mAddDeviceMenu.setVisible(hasOutgoing);
+		mRetryMenu.setVisible(hasIncoming);
+		mShowFilesMenu.setVisible(hasIncoming);
 
-		if (getGroup().hasOutgoing && (getGroup().assignees.length > 0 || mAssignee != null)) {
+		if (hasOutgoing && (getGroup().assignees.length > 0 || mAssignee != null)) {
 			Menu dynamicMenu = mLimitMenu.setVisible(true).getSubMenu();
 			dynamicMenu.clear();
 
@@ -549,8 +551,8 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		} else
 			mLimitMenu.setVisible(false);
 
-		setTitle(getResources().getQuantityString(R.plurals.text_files, getGroup().numberOfTotal,
-				getGroup().numberOfTotal));
+		setTitle(getResources().getQuantityString(R.plurals.text_files, getGroup().numberOfTotal(),
+				getGroup().numberOfTotal()));
 	}
 
 	private void toggleTask()
@@ -565,7 +567,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 			} else
 				new ToggleMultipleTransferDialog(ViewTransferActivity.this, mGroup,
 						mActiveProcesses).show();
-		} else if (getGroup().hasOutgoing)
+		} else if (getGroup().hasOutgoing())
 			startDeviceAddingActivity();
 	}
 

@@ -18,6 +18,8 @@
 
 package com.genonbeta.TrebleShot.object;
 
+import android.util.Log;
+
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -28,22 +30,21 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
  */
 public class PreloadedGroup extends TransferGroup implements GroupEditableListAdapter.GroupEditable
 {
+	public static final String TAG = PreloadedGroup.class.getSimpleName();
+
 	public int viewType;
 	public String representativeText;
 
-	public int numberOfCompleted;
-	public int numberOfTotal;
 	public int numberOfOutgoing;
 	public int numberOfIncoming;
-	public long bytesInTotal;
-	public long bytesPending;
-	public long bytesInOutgoing;
-	public long bytesInIncoming;
-	public double percentage;
+	public int numberOfOutgoingCompleted;
+	public int numberOfIncomingCompleted;
+	public long bytesOutgoing;
+	public long bytesIncoming;
+	public long bytesOutgoingCompleted;
+	public long bytesIncomingCompleted;
 	public boolean isRunning;
 	public boolean hasIssues;
-	public boolean hasOutgoing;
-	public boolean hasIncoming;
 	public ShowingAssignee[] assignees = new ShowingAssignee[0];
 
 	public PreloadedGroup()
@@ -74,10 +75,34 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 		return false;
 	}
 
+	public long bytesTotal()
+	{
+		return bytesOutgoing + bytesIncoming;
+	}
+
+	public long bytesCompleted()
+	{
+		return bytesOutgoingCompleted + bytesIncomingCompleted;
+	}
+
+	public long bytesPending() {
+		return bytesTotal() - bytesCompleted();
+	}
+
 	@Override
 	public boolean comparisonSupported()
 	{
 		return true;
+	}
+
+	public boolean hasIncoming()
+	{
+		return numberOfIncoming > 0;
+	}
+
+	public boolean hasOutgoing()
+	{
+		return numberOfOutgoing > 0;
 	}
 
 	public String getAssigneesAsTitle()
@@ -109,7 +134,7 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 	@Override
 	public long getComparableSize()
 	{
-		return bytesInTotal;
+		return bytesTotal();
 	}
 
 	@Override
@@ -128,7 +153,7 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 	public String getSelectableTitle()
 	{
 		String title = getAssigneesAsTitle();
-		String size = FileUtils.sizeExpression(bytesInTotal, false);
+		String size = FileUtils.sizeExpression(bytesOutgoing + bytesOutgoing, false);
 
 		return title.length() > 0 ? String.format("%s (%s)", title, size) : size;
 	}
@@ -143,6 +168,23 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 	public int getViewType()
 	{
 		return viewType;
+	}
+
+	public int numberOfTotal()
+	{
+		return numberOfOutgoing + numberOfIncoming;
+	}
+
+	public int numberOfCompleted()
+	{
+		return numberOfOutgoingCompleted + numberOfIncomingCompleted;
+	}
+
+	public double percentage()
+	{
+		long total = bytesTotal();
+		long completed = bytesCompleted();
+		return total == 0 ? 1 : (completed == 0 ? 0 : (double) completed / total);
 	}
 
 	@Override
@@ -178,6 +220,6 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 	@Override
 	public void setSize(long size)
 	{
-		bytesInTotal = ((Long) size).intValue();
+		Log.e(TAG, "setSize: This is not implemented");
 	}
 }

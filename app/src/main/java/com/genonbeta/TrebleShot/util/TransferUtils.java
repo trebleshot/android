@@ -47,6 +47,21 @@ public class TransferUtils
 {
 	public static final String TAG = TransferUtils.class.getSimpleName();
 
+	private static void appendOutgoingData(PreloadedGroup group, TransferObject object,
+										   TransferObject.Flag flag)
+	{
+		group.bytesOutgoing += object.size;
+		group.numberOfOutgoing++;
+
+		if (TransferObject.Flag.DONE.equals(flag)) {
+			group.bytesOutgoingCompleted += object.size;
+			group.numberOfOutgoingCompleted++;
+		} else if (TransferObject.Flag.IN_PROGRESS.equals(flag))
+			group.bytesOutgoingCompleted += flag.getBytesValue();
+		else if (TransferUtils.isError(flag))
+			group.hasIssues = true;
+	}
+
 	public static void changeConnection(final FragmentActivity activity, final NetworkDevice device,
 										final TransferGroup.Assignee assignee,
 										final ConnectionUpdatedListener listener)
@@ -93,6 +108,15 @@ public class TransferUtils
 				TransferObject.Type.INCOMING.toString(), flag.toString());
 	}
 
+	public static double getPercentageByFlag(TransferObject.Flag flag, long size)
+	{
+		if (TransferObject.Flag.DONE.equals(flag))
+			return 1;
+
+		long bytesValue = flag.getBytesValue();
+		return bytesValue == 0 || size == 0 ? 0 : (float) bytesValue / size;
+	}
+
 	public static ShowingAssignee fetchFirstAssignee(AccessDatabase database, long groupId)
 	{
 		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
@@ -126,7 +150,6 @@ public class TransferUtils
 		if (assignee == null) {
 			snackbar.createSnackbar(R.string.mesg_noReceiverOrSender)
 					.show();
-
 			return null;
 		}
 
@@ -143,6 +166,11 @@ public class TransferUtils
 		return receiverInstance == null
 				? null
 				: new TransferObject(receiverInstance);
+	}
+
+	public static boolean isError(TransferObject.Flag flag)
+	{
+		return TransferObject.Flag.INTERRUPTED.equals(flag) || TransferObject.Flag.REMOVED.equals(flag);
 	}
 
 	public static void loadAssigneeInfo(Context context, ShowingAssignee assignee)
@@ -198,25 +226,24 @@ public class TransferUtils
 			loadGroupInfo(context, group, assignee.deviceId, assignee.type);
 	}
 
-	public static void loadGroupInfo(Context context, PreloadedGroup group) {
+	public static void loadGroupInfo(Context context, PreloadedGroup group)
+	{
 		loadGroupInfo(context, group, null, null);
 	}
 
 	public static void loadGroupInfo(Context context, PreloadedGroup group,
 									 @Nullable String deviceId, @Nullable TransferObject.Type type)
 	{
-		group.numberOfCompleted = 0;
-		group.numberOfTotal = 0;
 		group.numberOfOutgoing = 0;
 		group.numberOfIncoming = 0;
-		group.bytesInTotal = 0;
-		group.bytesInOutgoing = 0;
-		group.bytesInIncoming = 0;
-		group.percentage = 0;
+		group.numberOfOutgoingCompleted = 0;
+		group.numberOfIncomingCompleted = 0;
+		group.bytesOutgoing = 0;
+		group.bytesIncoming = 0;
+		group.bytesOutgoingCompleted = 0;
+		group.bytesIncomingCompleted = 0;
 		group.isRunning = false;
 		group.hasIssues = false;
-		group.hasOutgoing = false;
-		group.hasIncoming = false;
 
 		SQLQuery.Select selection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
 				AccessDatabase.FIELD_TRANSFER_GROUPID + "=?", String.valueOf(group.id));
@@ -232,50 +259,38 @@ public class TransferUtils
 		List<ShowingAssignee> assigneeList = TransferUtils.loadAssigneeList(context, group.id, type);
 		List<TransferObject> objectList = AppUtils.getDatabase(context).castQuery(selection, TransferObject.class);
 
-		double percentage = 0;
-		group.numberOfTotal = objectList.size();
 		group.assignees = new ShowingAssignee[assigneeList.size()];
 
 		assigneeList.toArray(group.assignees);
 
-		for (ShowingAssignee assignee : assigneeList) {
-			if (TransferObject.Type.INCOMING.equals(assignee.type))
-				group.hasIncoming = true;
-			else if (TransferObject.Type.OUTGOING.equals(assignee.type))
-				group.hasOutgoing = true;
-
-			if (group.hasIncoming && group.hasOutgoing)
-				break;
-		}
-
 		for (TransferObject object : objectList) {
-			group.bytesInTotal += object.size;
-			percentage += object.getPercentage(deviceId);
-
-			if (object.hasComplete(deviceId))
-				group.numberOfCompleted++;
-
-			if (!group.hasIssues && object.hasIssues(deviceId))
-				group.hasIssues = true;
-
 			if (TransferObject.Type.INCOMING.equals(object.type)) {
-				group.bytesInIncoming += object.size;
+				group.bytesIncoming += object.size;
 				group.numberOfIncoming++;
-				group.hasIncoming = true;
 
-				if (TransferObject.Flag.PENDING.equals(object.getFlag()))
-					group.bytesPending += object.size;
+				TransferObject.Flag flag = object.getFlag();
+				if (TransferObject.Flag.DONE.equals(flag)) {
+					group.bytesIncomingCompleted += object.size;
+					group.numberOfIncomingCompleted++;
+				} else if (TransferObject.Flag.IN_PROGRESS.equals(flag))
+					group.bytesIncomingCompleted += flag.getBytesValue();
+				else if (TransferUtils.isError(flag))
+					group.hasIssues = true;
 			} else if (TransferObject.Type.OUTGOING.equals(object.type)) {
-				group.bytesInOutgoing += object.size;
-				group.numberOfOutgoing++;
-				group.hasOutgoing = true;
+				if (deviceId != null)
+					appendOutgoingData(group, object, object.getFlag(deviceId));
+				else if (assigneeList.size() < 1)
+					appendOutgoingData(group, object, TransferObject.Flag.PENDING);
+				else {
+					for (ShowingAssignee assignee : assigneeList) {
+						if (!TransferObject.Type.OUTGOING.equals(assignee.type))
+							continue;
 
-				if (deviceId != null && TransferObject.Flag.PENDING.equals(object.getFlag(deviceId)))
-					group.bytesPending += object.size;
+						appendOutgoingData(group, object, object.getFlag(assignee.deviceId));
+					}
+				}
 			}
 		}
-
-		group.percentage = percentage <= 0 || group.numberOfTotal <= 0 ? 0 : percentage / group.numberOfTotal;
 	}
 
 	public static void pauseTransfer(Context context, TransferGroup group, TransferObject.Type type)

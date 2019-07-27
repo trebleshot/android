@@ -71,7 +71,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 
 		setNegativeButton(R.string.butn_close, null);
 
-		if (group.hasOutgoing)
+		if (group.hasOutgoing())
 			setNeutralButton(R.string.butn_addDevices, new DialogInterface.OnClickListener()
 			{
 				@Override
@@ -89,7 +89,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 				break;
 			}
 
-		if (group.hasIncoming && senderAssignee != null) {
+		if (group.hasIncoming() && senderAssignee != null) {
 			final ShowingAssignee finalSenderAssignee = senderAssignee;
 			setPositiveButton(R.string.butn_receive, new DialogInterface.OnClickListener()
 			{

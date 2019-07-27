@@ -291,7 +291,7 @@ public class TransferGroupListFragment
                 boolean success = false;
 
                 for (PreloadedGroup group : selectionList) {
-                    group.isServedOnWeb = group.hasOutgoing && id == R.id.action_mode_group_serve_on_web;
+                    group.isServedOnWeb = group.hasOutgoing() && id == R.id.action_mode_group_serve_on_web;
 
                     if (group.isServedOnWeb)
                         success = true;

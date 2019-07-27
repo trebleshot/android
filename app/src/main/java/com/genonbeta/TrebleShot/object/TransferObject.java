@@ -21,13 +21,10 @@ package com.genonbeta.TrebleShot.object;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.FileUtils;
+import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -40,6 +37,10 @@ import org.json.JSONObject;
 import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 /**
  * Created by: veli
@@ -173,6 +174,30 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
+    public double getPercentage(ShowingAssignee[] assignees, @Nullable String deviceId)
+    {
+        if (assignees.length == 0)
+            return 0;
+
+        if (Type.INCOMING.equals(type))
+            return TransferUtils.getPercentageByFlag(getFlag(), size);
+        else if (deviceId != null)
+            return TransferUtils.getPercentageByFlag(getFlag(deviceId), size);
+
+        double percentageIndex = 0;
+        int senderAssignees = 0;
+        for (ShowingAssignee assignee : assignees) {
+            if (!Type.OUTGOING.equals(assignee.type))
+                continue;
+
+            senderAssignees++;
+            percentageIndex += TransferUtils.getPercentageByFlag(getFlag(
+                    assignee.deviceId), size);
+        }
+
+        return percentageIndex > 0 ? percentageIndex / senderAssignees : 0;
+    }
+
     @Override
     public SQLQuery.Select getWhere()
     {
@@ -216,25 +241,6 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
 
         return values;
     }
-
-
-    public boolean hasIssues(@Nullable String deviceId)
-    {
-        if (Type.OUTGOING.equals(type)) {
-            if (deviceId == null)
-                synchronized (mSenderFlagList) {
-                    for (Flag flag : mSenderFlagList.values())
-                        if (Flag.INTERRUPTED.equals(flag))
-                            return true;
-                }
-            else
-                return Flag.INTERRUPTED.equals(getFlag(deviceId));
-        } else
-            return Flag.INTERRUPTED.equals(getFlag());
-
-        return false;
-    }
-
 
     @Override
     public void reconstruct(CursorItem item)

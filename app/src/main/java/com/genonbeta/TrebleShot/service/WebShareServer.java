@@ -36,7 +36,6 @@ import androidx.core.app.NotificationCompat;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FileExplorerActivity;
-import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -492,13 +491,13 @@ public class WebShareServer extends NanoHTTPD
 
             TransferUtils.loadGroupInfo(mContext, group);
 
-            if (!group.hasOutgoing)
+            if (!group.hasOutgoing())
                 continue;
 
             contentBuilder.append(makeContent("list_transfer_group", mContext.getString(
                     R.string.mode_itemCountedDetailed, mContext.getResources().getQuantityString(
                             R.plurals.text_files, group.numberOfOutgoing, group.numberOfOutgoing),
-                    FileUtils.sizeExpression(group.bytesInOutgoing, false)),
+                    FileUtils.sizeExpression(group.bytesOutgoing, false)),
                     R.string.butn_show, "show", group.id));
         }
 

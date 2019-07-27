@@ -292,7 +292,7 @@ public class TransferListFragment
 			} else if (transferObject instanceof TransferListAdapter.StorageStatusItem) {
 				final TransferListAdapter.StorageStatusItem statusItem = (TransferListAdapter.StorageStatusItem) transferObject;
 
-				if (statusItem.hasIssues(getAdapter().getDeviceId())) {
+				if (statusItem.hasIssues(getAdapter())) {
 					AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
 					builder.setMessage(getContext().getString(R.string.mesg_notEnoughSpace));

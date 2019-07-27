@@ -201,7 +201,7 @@ public class CommunicationNotificationHelper
 
 		processHolder.notification.setProgress(100, (int) (Math.max(0.01,
 				processHolder.completedBytes + processHolder.currentBytes) / Math.max(0.01,
-				processHolder.group.bytesPending) * 100
+				processHolder.group.bytesPending()) * 100
 		), false);
 
 		long bytesTransferred  = processHolder.completedBytes + processHolder.currentBytes;
@@ -213,8 +213,8 @@ public class CommunicationNotificationHelper
 			text.append(FileUtils.sizeExpression(change, false));
 			text.append("/s");
 
-			if (processHolder.group.bytesPending > 0 && change > 0) {
-				long timeNeeded = (processHolder.group.bytesPending - bytesTransferred) / change;
+			if (processHolder.group.bytesPending() > 0 && change > 0) {
+				long timeNeeded = (processHolder.group.bytesPending() - bytesTransferred) / change;
 
 				text.append(" (");
 				text.append(getContext().getString(R.string.text_remainingTime,

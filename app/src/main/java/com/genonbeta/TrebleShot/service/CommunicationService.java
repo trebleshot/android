@@ -688,6 +688,7 @@ public class CommunicationService extends Service
 				TASK_STATUS_ONGOING);
 		notifyTaskRunningListChange();
 
+		// TODO: 7/27/19 Implement task resuming
 		boolean retry = false;
 
 		try {
@@ -904,12 +905,13 @@ public class CommunicationService extends Service
 
 			Log.d(TAG, "We have exited");
 
-			if (retry && processHolder.attemptsLeft > 0 && !processHolder.interrupter.interrupted()) {
+			if (retry && processHolder.attemptsLeft > 0 && !processHolder.interrupter.interruptedByUser()) {
 				try {
 					startTransferAsClient(processHolder);
 					processHolder.attemptsLeft--;
 				} catch (Exception e) {
-					Log.d(TAG, "handleTransferAsReceiver(): Restart is requested, but transfer instance failed to reconstruct");
+					Log.d(TAG, "handleTransferAsReceiver(): Restart is requested, but transfer" +
+							" instance failed to reconstruct");
 				}
 			}
 		}
