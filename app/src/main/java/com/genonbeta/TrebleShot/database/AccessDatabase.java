@@ -74,6 +74,7 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String FIELD_CLIPBOARD_ID = "id";
     public static final String FIELD_CLIPBOARD_TEXT = "text";
     public static final String FIELD_CLIPBOARD_TIME = "time";
+
     public static final String TABLE_DEVICES = "devices";
     public static final String FIELD_DEVICES_ID = "deviceId";
     public static final String FIELD_DEVICES_USER = "user";

@@ -59,15 +59,14 @@ public class PreferencesActivity extends Activity
                         @Override
                         public void onClick(DialogInterface dialog, int which)
                         {
-
                             // TODO: 10/7/18 This shouldn't cause two separate sync operations to start
                             AppUtils.getDefaultPreferences(getApplicationContext()).edit()
                                     .clear()
                                     .apply();
 
-                            AppUtils.getDefaultLocalPreferences(getApplicationContext()).edit()
+                            /*AppUtils.getDefaultLocalPreferences(getApplicationContext()).edit()
                                     .clear()
-                                    .apply();
+                                    .apply();*/
 
                             finish();
                         }
@@ -90,7 +89,7 @@ public class PreferencesActivity extends Activity
     protected void onPause()
     {
         super.onPause();
-        PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this),
-                AppUtils.getDefaultPreferences(this).getWeakManager());
+        /*PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(this),
+                AppUtils.getDefaultPreferences(this).getWeakManager());*/
     }
 }

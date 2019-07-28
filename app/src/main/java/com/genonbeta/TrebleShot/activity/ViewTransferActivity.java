@@ -261,7 +261,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 			if (fragment == null) {
 				fragment = (TransferFileExplorerFragment) getSupportFragmentManager().getFragmentFactory().instantiate(
-						getClassLoader(), TransferFileExplorerFragment.class.getName(), transferListFragmentBundle);
+						getClassLoader(), TransferFileExplorerFragment.class.getName());
 				fragment.setArguments(transferListFragmentBundle);
 
 				FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

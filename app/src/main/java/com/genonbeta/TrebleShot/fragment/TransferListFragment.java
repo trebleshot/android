@@ -136,13 +136,6 @@ public class TransferListFragment
 	}
 
 	@Override
-	public void onSortingOptions(Map<String, Integer> options)
-	{
-		options.put(getString(R.string.text_sortByName), TransferListAdapter.MODE_SORT_BY_NAME);
-		options.put(getString(R.string.text_sortBySize), TransferGroupListAdapter.MODE_SORT_BY_SIZE);
-	}
-
-	@Override
 	public TransferListAdapter onAdapter()
 	{
 		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()

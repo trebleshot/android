@@ -62,8 +62,8 @@ public class LookPreferencesFragment
     {
         if (("custom_fonts".equals(key) || "dark_theme".equals(key) || "amoled_theme".equals(key))
                 && getActivity() != null) {
-            PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(getContext()),
-                    AppUtils.getDefaultPreferences(getContext()).getWeakManager());
+            /*PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(getContext()),
+                    AppUtils.getDefaultPreferences(getContext()).getWeakManager());*/
 
             getActivity().recreate();
         }

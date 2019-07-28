@@ -56,10 +56,10 @@ public class App extends Application
         {
             if (intent != null)
                 if (ACTION_REQUEST_PREFERENCES_SYNC.equals(intent.getAction())) {
-                    SharedPreferences preferences = AppUtils.getDefaultPreferences(context).getWeakManager();
+                    /*SharedPreferences preferences = AppUtils.getDefaultPreferences(context).getWeakManager();
 
                     if (preferences instanceof DbSharablePreferences)
-                        ((DbSharablePreferences) preferences).sync();
+                        ((DbSharablePreferences) preferences).sync();*/
                 }
         }
     };
@@ -89,7 +89,8 @@ public class App extends Application
 
     private void initializeSettings()
     {
-        SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
+        //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
+        SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
         NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
         boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
         boolean refVersion = defaultPreferences.contains("referral_version");
@@ -108,7 +109,7 @@ public class App extends Application
                     .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
                     .apply();
 
-        PreferenceUtils.syncDefaults(getApplicationContext());
+        //PreferenceUtils.syncDefaults(getApplicationContext());
 
         if (defaultPreferences.contains("migrated_version")) {
             int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);

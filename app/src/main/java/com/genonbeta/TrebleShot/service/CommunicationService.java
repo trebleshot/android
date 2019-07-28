@@ -174,9 +174,7 @@ public class CommunicationService extends Service
 		mMediaScanner = new MediaScannerConnection(this, null);
 		mHotspotUtils = HotspotUtils.getInstance(this);
 		mDbInstance = AppUtils.getDatabase(this).getWritableDatabase();
-		mWifiLock = ((WifiManager) getApplicationContext()
-				.getSystemService(Service.WIFI_SERVICE)
-		)
+		mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
 				.createWifiLock(TAG);
 
 		mMediaScanner.connect();

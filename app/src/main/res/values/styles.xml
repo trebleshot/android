@@ -90,15 +90,19 @@
     </style>
 
     <style name="Widget.TrebleShot.BottomNavigationView"
-        parent="Widget.MaterialComponents.BottomNavigationView">
+        parent="Widget.MaterialComponents.BottomNavigationView.PrimarySurface">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
-        <item name="android:background">@android:color/transparent</item>
+    </style>
+
+    <style name="Widget.TrebleShot.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="itemIconTint">?attr/selectionAccentColor</item>
+        <item name="android:background">?attr/colorPrimary</item>
         <!--<item name="itemTextColor">?attr/selectionAccentColor</item>-->
     </style>
 
@@ -116,8 +120,10 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout.Colored">
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">
         <item name="tabIndicatorColor">?colorSecondary</item>
+        <item name="tabIconTint">?selectionAccentColor</item>
+        <item name="tabTextColor">?selectionAccentColor</item>
     </style>
 
     <style name="TextAppearance">

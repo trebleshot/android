@@ -65,8 +65,6 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.widget.ImageViewCompat;
 
-import static com.genonbeta.TrebleShot.util.TransferUtils.TAG;
-
 /**
  * Created by: veli
  * Date: 4/15/17 12:29 PM
@@ -143,6 +141,11 @@ public class TransferListAdapter
 		if (assignee != null) {
 			transferWhere.append(" AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?");
 			transferArgs.add(assignee.type.toString());
+		}
+
+		if (getSortingCriteria() == MODE_GROUP_BY_DATE) {
+			transferSelect.setOrderBy(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME + " "
+					+ (getSortingOrder() == MODE_SORT_ORDER_ASCENDING ? "ASC" : "DESC"));
 		}
 
 		transferSelect.where = transferWhere.toString();

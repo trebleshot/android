@@ -349,7 +349,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     @Override
     public long getComparableDate()
     {
-        return id;
+        return lastChangeDate;
     }
 
     @Override
