@@ -245,25 +245,20 @@ public class CommunicationService extends Service
 					final NetworkDevice.Connection connection = new NetworkDevice.Connection(assignee);
 					getDatabase().reconstruct(connection);
 
-					CommunicationBridge.connect(getDatabase(), new CommunicationBridge.Client.ConnectionHandler()
-					{
-						@Override
-						public void onConnect(CommunicationBridge.Client client)
-						{
-							try {
-								CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
+					CommunicationBridge.connect(getDatabase(), client -> {
+						try {
+							CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
-								activeConnection.reply(new JSONObject()
-										.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
-										.put(Keyword.TRANSFER_GROUP_ID, groupId)
-										.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
-										.toString());
+							activeConnection.reply(new JSONObject()
+									.put(Keyword.REQUEST, Keyword.REQUEST_RESPONSE)
+									.put(Keyword.TRANSFER_GROUP_ID, groupId)
+									.put(Keyword.TRANSFER_IS_ACCEPTED, isAccepted)
+									.toString());
 
-								activeConnection.receive();
-								activeConnection.getSocket().close();
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+							activeConnection.receive();
+							activeConnection.getSocket().close();
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					});
 
@@ -290,6 +285,7 @@ public class CommunicationService extends Service
 					getDatabase().reconstruct(device);
 					device.isRestricted = !isAccepted;
 					getDatabase().update(device);
+					getDatabase().broadcast();
 				} catch (Exception e) {
 					e.printStackTrace();
 					return START_NOT_STICKY;
@@ -397,18 +393,11 @@ public class CommunicationService extends Service
 				);
 
 				if (mDestroyApproved)
-					new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							if (mDestroyApproved
-									&& !getHotspotUtils().isStarted()
-									&& !hasOngoingTasks()
-									&& getDefaultPreferences().getBoolean("kill_service_on_exit", false)) {
-								stopSelf();
-								Log.d(TAG, "onStartCommand(): Destroy state has been applied");
-							}
+					new Handler(Looper.getMainLooper()).postDelayed(() -> {
+						if (mDestroyApproved && !getHotspotUtils().isStarted() && !hasOngoingTasks()
+								&& getDefaultPreferences().getBoolean("kill_service_on_exit", false)) {
+							stopSelf();
+							Log.d(TAG, "onStartCommand(): Destroy state has been applied");
 						}
 					}, 3000);
 			} else if (ACTION_REQUEST_TASK_STATUS_CHANGE.equals(intent.getAction())
@@ -438,8 +427,8 @@ public class CommunicationService extends Service
 				sendWebShareStatus();
 			} else if (ACTION_TOGGLE_WEBSHARE.equals(intent.getAction())) {
 				if (intent.hasExtra(EXTRA_ENABLE))
-					setWebShareEnabled(intent.getBooleanExtra(EXTRA_ENABLE,
-							false), true);
+					setWebShareEnabled(intent.getBooleanExtra(EXTRA_ENABLE, false),
+							true);
 				else
 					toggleWebShare();
 			}
@@ -495,6 +484,8 @@ public class CommunicationService extends Service
 				Log.d(TAG, "onDestroy(): Killing process: " + processHolder.toString());
 			}
 		}
+
+		getDatabase().broadcast();
 	}
 
 	private synchronized void addProcess(ProcessHolder processHolder)
@@ -522,160 +513,160 @@ public class CommunicationService extends Service
 			if (!isLast)
 				getDbInstance().beginTransaction();
 		}*/
+		boolean delayReached = time - processHolder.lastProcessingTime > AppConfig.DEFAULT_NOTIFICATION_DELAY;
 
-		if (time - processHolder.lastProcessingTime < AppConfig.DEFAULT_NOTIFICATION_DELAY || isLast)
-			return;
+		if (delayReached && !isLast) {
+			processHolder.lastProcessingTime = time;
 
-		processHolder.lastProcessingTime = time;
+			try {
+				getNotificationHelper().notifyFileTransfer(processHolder);
 
-		try {
-			getNotificationHelper().notifyFileTransfer(processHolder);
+				TransferObject.Flag flag = TransferObject.Flag.IN_PROGRESS;
+				flag.setBytesValue(processHolder.currentBytes);
 
-			TransferObject.Flag flag = TransferObject.Flag.IN_PROGRESS;
-			flag.setBytesValue(processHolder.currentBytes);
+				if (TransferObject.Type.INCOMING.equals(processHolder.type))
+					processHolder.object.setFlag(flag);
+				else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
+					processHolder.object.putFlag(processHolder.device.id, flag);
 
-			if (TransferObject.Type.INCOMING.equals(processHolder.type))
-				processHolder.object.setFlag(flag);
-			else if (TransferObject.Type.OUTGOING.equals(processHolder.type))
-				processHolder.object.putFlag(processHolder.device.id, flag);
-
-			getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
-		} catch (Exception e) {
-			e.printStackTrace();
+				getDatabase().update(getDbInstance(), processHolder.object, processHolder.group);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
+
+		if (delayReached || isLast)
+			getDatabase().broadcast();
 	}
 
 	private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
 									   final NetworkDevice.Connection connection, final boolean fastMode)
 	{
-		getSelfExecutor().submit(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				final JSONArray jsonArray;
-				final Interrupter interrupter = new Interrupter();
-				TransferGroup group = new TransferGroup(groupId);
-				TransferGroup.Assignee assignee = new TransferGroup.Assignee(
-						group, device, TransferObject.Type.INCOMING, connection);
-				final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, device);
+		getSelfExecutor().submit(() -> {
+			final JSONArray jsonArray;
+			final Interrupter interrupter = new Interrupter();
+			TransferGroup group = new TransferGroup(groupId);
+			TransferGroup.Assignee assignee = new TransferGroup.Assignee(
+					group, device, TransferObject.Type.INCOMING, connection);
+			final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, device);
 
-				notification.setProgress(0, 0, true);
+			notification.setProgress(0, 0, true);
 
-				try {
-					jsonArray = new JSONArray(jsonIndex);
-				} catch (Exception e) {
-					notification.cancel();
-					e.printStackTrace();
-					return;
-				}
-
-				notification.setProgress(0, 0, false);
-				boolean usePublishing = false;
-
-				try {
-					getDatabase().reconstruct(group);
-					usePublishing = true;
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				getDatabase().publish(group);
-				getDatabase().publish(assignee);
-
-				synchronized (getOngoingIndexList()) {
-					getOngoingIndexList().put(group.id, interrupter);
-				}
-
-				long uniqueId = System.currentTimeMillis(); // The uniqueIds
-				List<TransferObject> pendingRegistry = new ArrayList<>();
-
-				for (int i = 0; i < jsonArray.length(); i++) {
-					if (interrupter.interrupted())
-						break;
-
-					try {
-						if (!(jsonArray.get(i) instanceof JSONObject))
-							continue;
-
-						JSONObject requestIndex = jsonArray.getJSONObject(i);
-
-						if (requestIndex != null
-								&& requestIndex.has(Keyword.INDEX_FILE_NAME)
-								&& requestIndex.has(Keyword.INDEX_FILE_SIZE)
-								&& requestIndex.has(Keyword.INDEX_FILE_MIME)
-								&& requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
-
-							TransferObject transferObject = new TransferObject(
-									requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
-									groupId,
-									requestIndex.getString(Keyword.INDEX_FILE_NAME),
-									"." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
-									requestIndex.getString(Keyword.INDEX_FILE_MIME),
-									requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
-									TransferObject.Type.INCOMING);
-
-							if (requestIndex.has(Keyword.INDEX_DIRECTORY))
-								transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
-
-							pendingRegistry.add(transferObject);
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-					}
-				}
-
-				SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
-				{
-					long lastNotified = System.currentTimeMillis();
-
-					@Override
-					public void onProgressChange(int total, int current)
-					{
-						if ((System.currentTimeMillis() - lastNotified) > 1000) {
-							lastNotified = System.currentTimeMillis();
-							notification.updateProgress(total, current, false);
-						}
-					}
-
-					@Override
-					public boolean onProgressState()
-					{
-						return !interrupter.interrupted();
-					}
-				};
-
-				if (pendingRegistry.size() > 0) {
-					if (usePublishing)
-						getDatabase().publish(pendingRegistry, progressUpdater);
-					else
-						getDatabase().insert(pendingRegistry, progressUpdater);
-				}
-
+			try {
+				jsonArray = new JSONArray(jsonIndex);
+			} catch (Exception e) {
 				notification.cancel();
+				e.printStackTrace();
+				return;
+			}
 
-				synchronized (getOngoingIndexList()) {
-					getOngoingIndexList().remove(group.id);
-				}
+			notification.setProgress(0, 0, false);
+			boolean usePublishing = false;
 
+			try {
+				getDatabase().reconstruct(group);
+				usePublishing = true;
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			getDatabase().publish(group);
+			getDatabase().publish(assignee);
+
+			synchronized (getOngoingIndexList()) {
+				getOngoingIndexList().put(group.id, interrupter);
+			}
+
+			long uniqueId = System.currentTimeMillis(); // The uniqueIds
+			List<TransferObject> pendingRegistry = new ArrayList<>();
+
+			for (int i = 0; i < jsonArray.length(); i++) {
 				if (interrupter.interrupted())
-					getDatabase().remove(group);
-				else if (pendingRegistry.size() > 0) {
-					sendBroadcast(new Intent(ACTION_INCOMING_TRANSFER_READY)
-							.putExtra(EXTRA_GROUP_ID, groupId)
-							.putExtra(EXTRA_DEVICE_ID, device.id));
+					break;
 
-					if (fastMode)
-						try {
-							startTransferAsClient(group.id, device.id, TransferObject.Type.INCOMING);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					else
-						getNotificationHelper().notifyTransferRequest(device, group,
-								TransferObject.Type.INCOMING, pendingRegistry);
+				try {
+					if (!(jsonArray.get(i) instanceof JSONObject))
+						continue;
+
+					JSONObject requestIndex = jsonArray.getJSONObject(i);
+
+					if (requestIndex != null
+							&& requestIndex.has(Keyword.INDEX_FILE_NAME)
+							&& requestIndex.has(Keyword.INDEX_FILE_SIZE)
+							&& requestIndex.has(Keyword.INDEX_FILE_MIME)
+							&& requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
+
+						TransferObject transferObject = new TransferObject(
+								requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
+								groupId,
+								requestIndex.getString(Keyword.INDEX_FILE_NAME),
+								"." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
+								requestIndex.getString(Keyword.INDEX_FILE_MIME),
+								requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
+								TransferObject.Type.INCOMING);
+
+						if (requestIndex.has(Keyword.INDEX_DIRECTORY))
+							transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
+
+						pendingRegistry.add(transferObject);
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
+
+			SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
+			{
+				long lastNotified = System.currentTimeMillis();
+
+				@Override
+				public void onProgressChange(int total, int current)
+				{
+					if ((System.currentTimeMillis() - lastNotified) > 1000) {
+						lastNotified = System.currentTimeMillis();
+						notification.updateProgress(total, current, false);
+					}
+				}
+
+				@Override
+				public boolean onProgressState()
+				{
+					return !interrupter.interrupted();
+				}
+			};
+
+			if (pendingRegistry.size() > 0) {
+				if (usePublishing)
+					getDatabase().publish(pendingRegistry, progressUpdater);
+				else
+					getDatabase().insert(pendingRegistry, progressUpdater);
+			}
+
+			notification.cancel();
+
+			synchronized (getOngoingIndexList()) {
+				getOngoingIndexList().remove(group.id);
+			}
+
+			if (interrupter.interrupted())
+				getDatabase().remove(group);
+			else if (pendingRegistry.size() > 0) {
+				sendBroadcast(new Intent(ACTION_INCOMING_TRANSFER_READY)
+						.putExtra(EXTRA_GROUP_ID, groupId)
+						.putExtra(EXTRA_DEVICE_ID, device.id));
+
+				if (fastMode)
+					try {
+						startTransferAsClient(group.id, device.id, TransferObject.Type.INCOMING);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				else
+					getNotificationHelper().notifyTransferRequest(device, group,
+							TransferObject.Type.INCOMING, pendingRegistry);
+			}
+
+			getDatabase().broadcast();
 		});
 	}
 
@@ -1332,60 +1323,55 @@ public class CommunicationService extends Service
 
 	private void startTransferAsClient(final ProcessHolder holder)
 	{
-		CommunicationBridge.connect(getDatabase(), new CommunicationBridge.Client.ConnectionHandler()
-		{
-			@Override
-			public void onConnect(CommunicationBridge.Client client)
-			{
-				try {
-					holder.activeConnection = client.communicate(holder.device, holder.connection);
+		CommunicationBridge.connect(getDatabase(), client -> {
+			try {
+				holder.activeConnection = client.communicate(holder.device, holder.connection);
 
-					{
-						JSONObject reply = new JSONObject()
-								.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
-								.put(Keyword.TRANSFER_GROUP_ID, holder.group.id)
-								.put(Keyword.TRANSFER_TYPE, holder.type.toString());
+				{
+					JSONObject reply = new JSONObject()
+							.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
+							.put(Keyword.TRANSFER_GROUP_ID, holder.group.id)
+							.put(Keyword.TRANSFER_TYPE, holder.type.toString());
 
-						holder.activeConnection.reply(reply.toString());
-						Log.d(TAG, "startTransferAsClient(): reply: " + reply.toString());
-					}
-
-					{
-						CoolSocket.ActiveConnection.Response response = holder.activeConnection.receive();
-						JSONObject responseJSON = new JSONObject(response.response);
-
-						Log.d(TAG, "startTransferAsClient(): " + holder.type.toString()
-								+ "; About to start with " + response.response);
-
-						if (responseJSON.getBoolean(Keyword.RESULT)) {
-							holder.attemptsLeft = 2;
-
-							if (TransferObject.Type.INCOMING.equals(holder.type)) {
-								handleTransferAsReceiver(holder);
-							} else if (TransferObject.Type.OUTGOING.equals(holder.type)) {
-								holder.activeConnection.reply(Keyword.STUB);
-								handleTransferAsSender(holder);
-								holder.activeConnection.reply(Keyword.STUB);
-							}
-
-							try {
-								CoolSocket.ActiveConnection.Response lastResponse
-										= holder.activeConnection.receive();
-
-								Log.d(TAG, "startTransferAsClient(): Final response before " +
-										"exit: " + lastResponse.response);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
-						} else {
-							getNotificationHelper().notifyConnectionError(holder, responseJSON.has(
-									Keyword.ERROR) ? responseJSON.getString(Keyword.ERROR) : null);
-						}
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					mNotificationHelper.notifyConnectionError(holder, null);
+					holder.activeConnection.reply(reply.toString());
+					Log.d(TAG, "startTransferAsClient(): reply: " + reply.toString());
 				}
+
+				{
+					CoolSocket.ActiveConnection.Response response = holder.activeConnection.receive();
+					JSONObject responseJSON = new JSONObject(response.response);
+
+					Log.d(TAG, "startTransferAsClient(): " + holder.type.toString()
+							+ "; About to start with " + response.response);
+
+					if (responseJSON.getBoolean(Keyword.RESULT)) {
+						holder.attemptsLeft = 2;
+
+						if (TransferObject.Type.INCOMING.equals(holder.type)) {
+							handleTransferAsReceiver(holder);
+						} else if (TransferObject.Type.OUTGOING.equals(holder.type)) {
+							holder.activeConnection.reply(Keyword.STUB);
+							handleTransferAsSender(holder);
+							holder.activeConnection.reply(Keyword.STUB);
+						}
+
+						try {
+							CoolSocket.ActiveConnection.Response lastResponse
+									= holder.activeConnection.receive();
+
+							Log.d(TAG, "startTransferAsClient(): Final response before " +
+									"exit: " + lastResponse.response);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						getNotificationHelper().notifyConnectionError(holder, responseJSON.has(
+								Keyword.ERROR) ? responseJSON.getString(Keyword.ERROR) : null);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				mNotificationHelper.notifyConnectionError(holder, null);
 			}
 		});
 	}
@@ -1453,16 +1439,11 @@ public class CommunicationService extends Service
 						&& Keyword.BACK_COMP_REQUEST_SEND_UPDATE.equals(responseJSON.getString(Keyword.REQUEST))) {
 					activeConnection.reply(replyJSON.put(Keyword.RESULT, true).toString());
 
-					getSelfExecutor().submit(new Runnable()
-					{
-						@Override
-						public void run()
-						{
-							try {
-								UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getClientAddress());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+					getSelfExecutor().submit(() -> {
+						try {
+							UpdateUtils.sendUpdate(getApplicationContext(), activeConnection.getClientAddress());
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					});
 
@@ -1533,6 +1514,8 @@ public class CommunicationService extends Service
 					final boolean isFastModeAvailable = (mFastMode && device.isTrusted)
 							|| (isSecureConnection && getDefaultPreferences().getBoolean("qr_trust", false));
 
+					getDatabase().broadcast();
+
 					if (!shouldContinue)
 						replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 					else if (responseJSON.has(Keyword.REQUEST)) {
@@ -1567,8 +1550,10 @@ public class CommunicationService extends Service
 										getDatabase().reconstruct(group);
 										getDatabase().reconstruct(assignee);
 
-										if (!isAccepted)
+										if (!isAccepted) {
 											getDatabase().remove(assignee);
+											getDatabase().broadcast();
+										}
 
 										result = true;
 									} catch (Exception ignored) {
@@ -1581,6 +1566,7 @@ public class CommunicationService extends Service
 											AppUtils.getUniqueNumber(), responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
 
 									getDatabase().publish(textStreamObject);
+									getDatabase().broadcast();
 									getNotificationHelper().notifyClipboardRequest(device, textStreamObject);
 
 									result = true;

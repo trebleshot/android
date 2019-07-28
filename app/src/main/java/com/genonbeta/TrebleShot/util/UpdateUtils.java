@@ -45,21 +45,16 @@ public class UpdateUtils
 {
     public static void checkForUpdates(final Context context, GitHubUpdater updater, boolean popupDialog, final GitHubUpdater.OnInfoAvailableListener listener)
     {
-        updater.checkForUpdates(popupDialog, new GitHubUpdater.OnInfoAvailableListener()
-        {
-            @Override
-            public void onInfoAvailable(boolean newVersion, String versionName, String title, String description, String releaseDate)
-            {
-                SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
+        updater.checkForUpdates(popupDialog, (newVersion, versionName, title, description, releaseDate) -> {
+            SharedPreferences sharedPreferences = AppUtils.getDefaultPreferences(context);
 
-                sharedPreferences.edit()
-                        .putString("availableVersion", versionName)
-                        .putLong("checkedForUpdatesTime", System.currentTimeMillis())
-                        .apply();
+            sharedPreferences.edit()
+                    .putString("availableVersion", versionName)
+                    .putLong("checkedForUpdatesTime", System.currentTimeMillis())
+                    .apply();
 
-                if (listener != null)
-                    listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
-            }
+            if (listener != null)
+                listener.onInfoAvailable(newVersion, versionName, title, description, releaseDate);
         });
     }
 
@@ -131,17 +126,12 @@ public class UpdateUtils
 
             final ServerSocket finalServer = serverSocket;
 
-            interrupter.addCloser(new Interrupter.Closer()
-            {
-                @Override
-                public void onClose(boolean userAction)
-                {
-                    try {
-                        if (!finalServer.isClosed())
-                            finalServer.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            interrupter.addCloser(userAction -> {
+                try {
+                    if (!finalServer.isClosed())
+                        finalServer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             });
 

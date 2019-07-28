@@ -150,6 +150,7 @@ public class WebShareServer extends NanoHTTPD
 
         device.lastUsageTime = System.currentTimeMillis();
         AppUtils.getDatabase(mContext).publish(device);
+        AppUtils.getDatabase(mContext).broadcast();
 
         if (device.isRestricted)
             return newFixedLengthResponse(Response.Status.ACCEPTED, "text/html",
@@ -287,6 +288,7 @@ public class WebShareServer extends NanoHTTPD
                         database.publish(assignee);
                         database.publish(connection);
                         database.publish(transferObject);
+                        database.broadcast();
 
                         notification = mNotificationUtils.buildDynamicNotification(notificationId,
                                 NotificationUtils.NOTIFICATION_CHANNEL_HIGH);

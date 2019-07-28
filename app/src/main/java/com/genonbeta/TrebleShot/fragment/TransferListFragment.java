@@ -32,7 +32,6 @@ import android.view.ViewGroup;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.FilePickerActivity;
-import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
@@ -51,7 +50,6 @@ import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
@@ -59,7 +57,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -86,11 +83,12 @@ public class TransferListFragment
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())
-					&& (AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
-					|| AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
-			))
-				refreshList();
+			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+				if (AccessDatabase.TABLE_TRANSFER.equals(data.tableName)
+						|| AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
+					refreshList();
+			}
 		}
 	};
 

@@ -185,7 +185,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         public NetworkDevice updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection, NetworkDevice targetDevice) throws IOException, TimeoutException, CommunicationException, DifferentClientException
         {
             NetworkDevice loadedDevice = loadDevice(activeConnection);
-            NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice, activeConnection.getClientAddress());
+            NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice,
+                    activeConnection.getClientAddress());
 
             if (!targetDevice.id.equals(loadedDevice.id))
                 throw new DifferentClientException("The target device did not match with the connected one");
@@ -193,6 +194,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                 loadedDevice.lastUsageTime = System.currentTimeMillis();
 
                 mDatabase.publish(loadedDevice);
+                mDatabase.broadcast();
                 setDevice(loadedDevice);
             }
 

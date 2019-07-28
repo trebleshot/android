@@ -174,7 +174,10 @@ public class TransferGroupListAdapter
 				text4.setText(getContext().getString(R.string.text_transferStatusFiles,
 						object.numberOfCompleted(), object.numberOfTotal()));
 				progressBar.setMax(100);
-				progressBar.setProgress(percentage <= 0 ? 1 : percentage);
+				if (Build.VERSION.SDK_INT >= 24)
+					progressBar.setProgress(percentage <= 0 ? 1 : percentage, true);
+				else
+					progressBar.setProgress(percentage <= 0 ? 1 : percentage);
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
 
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {

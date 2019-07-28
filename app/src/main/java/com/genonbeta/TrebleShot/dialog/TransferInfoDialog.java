@@ -126,50 +126,37 @@ public class TransferInfoDialog extends AlertDialog.Builder
 				});
 			} else if (fileExists) {
 				if (TransferObject.Flag.REMOVED.equals(object.getFlag()) && pseudoFile.getParentFile() != null) {
-					setNeutralButton(R.string.butn_saveAnyway, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialogInterface, int i)
-						{
-							AlertDialog.Builder saveAnyway = new AlertDialog.Builder(getContext());
+					setNeutralButton(R.string.butn_saveAnyway, (dialogInterface, i) -> {
+						AlertDialog.Builder saveAnyway = new AlertDialog.Builder(getContext());
 
-							saveAnyway.setTitle(R.string.ques_saveAnyway);
-							saveAnyway.setMessage(R.string.text_saveAnywaySummary);
-							saveAnyway.setNegativeButton(R.string.butn_cancel, null);
-							saveAnyway.setPositiveButton(R.string.butn_proceed, new DialogInterface.OnClickListener()
-							{
-								@Override
-								public void onClick(DialogInterface dialog, int which)
-								{
-									try {
-										DocumentFile savedFile = FileUtils.saveReceivedFile(pseudoFile.getParentFile(), pseudoFile, object);
-										object.file = savedFile.getName();
-										object.setFlag(TransferObject.Flag.DONE);
+						saveAnyway.setTitle(R.string.ques_saveAnyway);
+						saveAnyway.setMessage(R.string.text_saveAnywaySummary);
+						saveAnyway.setNegativeButton(R.string.butn_cancel, null);
+						saveAnyway.setPositiveButton(R.string.butn_proceed, (dialog, which) -> {
+							try {
+								DocumentFile savedFile = FileUtils.saveReceivedFile(
+										pseudoFile.getParentFile(), pseudoFile, object);
+								object.file = savedFile.getName();
+								object.setFlag(TransferObject.Flag.DONE);
 
-										AppUtils.getDatabase(activity).update(object);
+								AppUtils.getDatabase(activity).update(object);
+								AppUtils.getDatabase(activity).broadcast();
 
-										Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
-									} catch (IOException e) {
-										e.printStackTrace();
-										Toast.makeText(getContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
+								Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
+							} catch (IOException e) {
+								e.printStackTrace();
+								Toast.makeText(getContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+							}
+						});
 
-							saveAnyway.show();
-						}
+						saveAnyway.show();
 					});
 				} else if (TransferObject.Flag.DONE.equals(object.getFlag())) {
-					setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
-					{
-						@Override
-						public void onClick(DialogInterface dialog, int which)
-						{
-							try {
-								FileUtils.openUri(getContext(), pseudoFile);
-							} catch (Exception e) {
-								e.printStackTrace();
-							}
+					setNeutralButton(R.string.butn_open, (dialog, which) -> {
+						try {
+							FileUtils.openUri(getContext(), pseudoFile);
+						} catch (Exception e) {
+							e.printStackTrace();
 						}
 					});
 				}

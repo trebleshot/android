@@ -75,6 +75,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                         getDatabase().publish(connection);
                     }
 
+                    getDatabase().broadcast();
                     result = mDeviceScanner.scan(interfaceList, this) ? STATUS_OK : STATUS_NO_NETWORK_INTERFACE;
                 }
 
@@ -100,6 +101,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
         getDatabase().publish(connection);
 
         NetworkDeviceLoader.load(getDatabase(), address.getHostAddress(), null);
+        getDatabase().broadcast();
     }
 
     @Override

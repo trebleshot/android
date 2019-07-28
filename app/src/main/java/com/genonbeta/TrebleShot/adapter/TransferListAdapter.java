@@ -495,7 +495,11 @@ public class TransferListAdapter
 				object.handleStatusIndicator(indicator);
 				ImageViewCompat.setImageTintList(sIcon, ColorStateList.valueOf(appliedColor));
 				progressBar.setMax(100);
-				progressBar.setProgress(percentage <= 0 ? 1 : percentage);
+
+				if (Build.VERSION.SDK_INT >= 24)
+					progressBar.setProgress(percentage <= 0 ? 1 : percentage, true);
+				else
+					progressBar.setProgress(percentage <= 0 ? 1 : percentage);
 
 				thirdText.setTextColor(appliedColor);
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));

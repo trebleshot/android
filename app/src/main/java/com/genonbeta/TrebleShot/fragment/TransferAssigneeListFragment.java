@@ -64,11 +64,10 @@ public class TransferAssigneeListFragment
 		public void onReceive(Context context, Intent intent)
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-				if (AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(intent.getStringExtra(
-						AccessDatabase.EXTRA_TABLE_NAME)))
+				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+				if (AccessDatabase.TABLE_TRANSFERASSIGNEE.equals(data.tableName))
 					refreshList();
-				else if (AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(
-						AccessDatabase.EXTRA_TABLE_NAME)))
+				else if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
 					updateTransferGroup();
 			}
 		}
@@ -104,27 +103,18 @@ public class TransferAssigneeListFragment
 
 		setEmptyImage(R.drawable.ic_device_hub_white_24dp);
 		setEmptyText(getString(R.string.text_noDeviceForTransfer));
-		useEmptyActionButton(getString(R.string.butn_shareOnBrowser), new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
-				AppUtils.getDatabase(getContext()).update(mHeldGroup);
+		useEmptyActionButton(getString(R.string.butn_shareOnBrowser), v -> {
+			mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
+			AppUtils.getDatabase(getContext()).update(mHeldGroup);
+			AppUtils.getDatabase(getContext()).broadcast();
 
-				if (mHeldGroup.isServedOnWeb)
-					AppUtils.startWebShareActivity(getActivity(), true);
-			}
+			if (mHeldGroup.isServedOnWeb)
+				AppUtils.startWebShareActivity(getActivity(), true);
 		});
 
-		getEmptyActionButton().setOnLongClickListener(new View.OnLongClickListener()
-		{
-			@Override
-			public boolean onLongClick(View v)
-			{
-				AppUtils.startWebShareActivity(getActivity(), false);
-				return true;
-			}
+		getEmptyActionButton().setOnLongClickListener(v -> {
+			AppUtils.startWebShareActivity(getActivity(), false);
+			return true;
 		});
 
 		updateTransferGroup();
@@ -140,24 +130,12 @@ public class TransferAssigneeListFragment
 	@Override
 	public TransferAssigneeListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> actions
-				= new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
-		{
-			@Override
-			public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
-			{
-				registerLayoutViewClicks(clazz);
+		final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> actions = clazz -> {
+					registerLayoutViewClicks(clazz);
 
-				clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
-				{
-					@Override
-					public void onClick(View v)
-					{
-						showPopupMenu(clazz, v);
-					}
-				});
-			}
-		};
+					clazz.getView().findViewById(R.id.menu).setOnClickListener(
+							v -> showPopupMenu(clazz, v));
+				};
 
 		return new TransferAssigneeListAdapter(getContext())
 		{
@@ -240,32 +218,27 @@ public class TransferAssigneeListFragment
 
 		popupMenu.getMenuInflater().inflate(R.menu.popup_fragment_transfer_assignee, menu);
 
-		popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-		{
-			@Override
-			public boolean onMenuItemClick(MenuItem item)
-			{
-				int id = item.getItemId();
+		popupMenu.setOnMenuItemClickListener(item -> {
+			int id = item.getItemId();
 
-				if (id == R.id.popup_changeChangeConnection) {
-					TransferUtils.changeConnection(getActivity(), assignee.device,
-							assignee, new TransferUtils.ConnectionUpdatedListener()
+			if (id == R.id.popup_changeChangeConnection) {
+				TransferUtils.changeConnection(getActivity(), assignee.device,
+						assignee, new TransferUtils.ConnectionUpdatedListener()
+						{
+							@Override
+							public void onConnectionUpdated(NetworkDevice.Connection connection,
+															TransferGroup.Assignee assignee1)
 							{
-								@Override
-								public void onConnectionUpdated(NetworkDevice.Connection connection,
-																TransferGroup.Assignee assignee)
-								{
-									createSnackbar(R.string.mesg_connectionUpdated, TextUtils
-											.getAdapterName(getContext(), connection)).show();
-								}
-							});
-				} else if (id == R.id.popup_remove) {
-					AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
-				} else
-					return false;
+								createSnackbar(R.string.mesg_connectionUpdated, TextUtils
+										.getAdapterName(getContext(), connection)).show();
+							}
+						});
+			} else if (id == R.id.popup_remove) {
+				AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
+			} else
+				return false;
 
-				return true;
-			}
+			return true;
 		});
 
 		popupMenu.show();

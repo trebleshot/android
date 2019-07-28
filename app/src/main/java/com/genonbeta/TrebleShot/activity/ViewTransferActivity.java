@@ -103,14 +103,14 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		@Override
 		public void onReceive(Context context, Intent intent)
 		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction()) && intent.hasExtra(AccessDatabase.EXTRA_TABLE_NAME)) {
-				if (AccessDatabase.TABLE_TRANSFERGROUP.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME)))
+			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+
+				if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName))
 					reconstructGroup();
-				else if (intent.hasExtra(AccessDatabase.EXTRA_CHANGE_TYPE)
-						&& AccessDatabase.TABLE_TRANSFER.equals(intent.getStringExtra(AccessDatabase.EXTRA_TABLE_NAME))
-						&& (AccessDatabase.TYPE_INSERT.equals(intent.getStringExtra(AccessDatabase.EXTRA_CHANGE_TYPE)) || AccessDatabase.TYPE_REMOVE.equals(intent.getStringExtra(AccessDatabase.EXTRA_CHANGE_TYPE)))) {
+				else if (AccessDatabase.TABLE_TRANSFER.equals(data.tableName)
+						&& (data.inserted || data.removed))
 					updateCalculations();
-				}
 			} else if (CommunicationService.ACTION_TASK_STATUS_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)
 					&& intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)) {
@@ -391,6 +391,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		} else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
 			mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
 			getDatabase().update(mGroup);
+			getDatabase().broadcast();
 			showMenus();
 
 			if (mGroup.isServedOnWeb)

@@ -90,7 +90,7 @@
     </style>
 
     <style name="Widget.TrebleShot.BottomNavigationView"
-        parent="Widget.MaterialComponents.BottomNavigationView.PrimarySurface">
+        parent="Widget.MaterialComponents.BottomNavigationView.Colored">
         <item name="itemTextColor">?attr/selectionAccentColor</item>
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:elevation" tools:targetApi="21">5dp</item>
@@ -120,7 +120,7 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
-    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout.PrimarySurface">
+    <style name="Widget.TrebleShot.TabLayout" parent="Widget.MaterialComponents.TabLayout.Colored">
         <item name="tabIndicatorColor">?colorSecondary</item>
         <item name="tabIconTint">?selectionAccentColor</item>
         <item name="tabTextColor">?selectionAccentColor</item>

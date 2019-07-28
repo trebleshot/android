@@ -346,5 +346,6 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
         mTextStreamObject.text = mEditTextEditor.getText().toString();
         getDatabase().publish(mTextStreamObject);
+        getDatabase().broadcast();
     }
 }
