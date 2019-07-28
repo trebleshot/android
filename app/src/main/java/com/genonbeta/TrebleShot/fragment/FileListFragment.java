@@ -379,7 +379,9 @@ public class FileListFragment
 										goPath(fileHolder.file.getParentFile());
 									} else if (id == R.id.action_mode_file_eject_directory
 											&& fileHolder instanceof FileListAdapter.WritablePathHolder) {
-										AppUtils.getDatabase(getContext()).remove(((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+										AppUtils.getDatabase(getContext()).remove(
+												((FileListAdapter.WritablePathHolder) fileHolder).pathObject);
+										AppUtils.getDatabase(getContext()).broadcast();
 									} else if (id == R.id.action_mode_file_toggle_shortcut) {
 										shortcutItem(shortcutObject != null
 												? shortcutObject
@@ -492,6 +494,8 @@ public class FileListFragment
 		} catch (Exception e) {
 			database.insert(shortcutObject);
 			createSnackbar(R.string.mesg_added).show();
+		} finally {
+			database.broadcast();
 		}
 	}
 

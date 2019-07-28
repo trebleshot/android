@@ -164,27 +164,15 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             // so that if the user rejects, it won't be removed from the sender
                             jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
-                            getInterrupter().addCloser(new Interrupter.Closer()
-                            {
-                                @Override
-                                public void onClose(boolean userAction)
-                                {
-                                    AppUtils.getDatabase(context).remove(assignee);
-                                }
-                            });
+                            getInterrupter().addCloser(userAction -> AppUtils.getDatabase(context).remove(assignee));
 
                             final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
-                            getInterrupter().addCloser(new Interrupter.Closer()
-                            {
-                                @Override
-                                public void onClose(boolean userAction)
-                                {
-                                    try {
-                                        activeConnection.getSocket().close();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
+                            getInterrupter().addCloser(userAction -> {
+                                try {
+                                    activeConnection.getSocket().close();
+                                } catch (IOException e) {
+                                    e.printStackTrace();
                                 }
                             });
 
@@ -203,6 +191,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 else
                                     AppUtils.getDatabase(context).insert(assignee);
 
+                                AppUtils.getDatabase(context).broadcast();
+
                                 if (getAnchorListener() != null) {
                                     getAnchorListener().setResult(RESULT_OK, new Intent()
                                             .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
@@ -220,30 +210,16 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 e.printStackTrace();
 
                                 if (getAnchorListener() != null)
-                                    getAnchorListener().runOnUiThread(new Runnable()
-                                    {
-                                        @Override
-                                        public void run()
-                                        {
-                                            new AlertDialog.Builder(getAnchorListener())
-                                                    .setMessage(context.getString(R.string.mesg_fileSendError,
-                                                            context.getString(R.string.mesg_connectionProblem)))
-                                                    .setNegativeButton(R.string.butn_close, null)
-                                                    .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                                    .show();
-                                        }
-                                    });
+                                    getAnchorListener().runOnUiThread(() -> new AlertDialog.Builder(getAnchorListener())
+                                            .setMessage(context.getString(R.string.mesg_fileSendError,
+                                                    context.getString(R.string.mesg_connectionProblem)))
+                                            .setNegativeButton(R.string.butn_close, null)
+                                            .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                            .show());
                             }
                         } finally {
                             if (getAnchorListener() != null)
-                                getAnchorListener().runOnUiThread(new Runnable()
-                                {
-                                    @Override
-                                    public void run()
-                                    {
-                                        getAnchorListener().resetStatusViews();
-                                    }
-                                });
+                                getAnchorListener().runOnUiThread(() -> getAnchorListener().resetStatusViews());
                         }
                     }
                 });

@@ -263,8 +263,10 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
         } else if (id == android.R.id.home) {
             onBackPressed();
         } else if (id == R.id.menu_action_remove) {
-            if (mTextStreamObject != null)
+            if (mTextStreamObject != null) {
                 getDatabase().remove(mTextStreamObject);
+                getDatabase().broadcast();
+            }
 
             mTextStreamObject = null;
         } else

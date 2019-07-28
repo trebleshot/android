@@ -146,6 +146,8 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
             AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id);
         }
 
+        AppUtils.getDatabase(getService()).broadcast();
+
         if (getAnchorListener() != null)
             getAnchorListener().finish();
     }

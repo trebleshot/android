@@ -482,16 +482,10 @@ public class TransferListFragment
 
 		group.savePath = selectedPath;
 		AppUtils.getDatabase(getContext()).publish(group);
+		AppUtils.getDatabase(getContext()).broadcast();
 
 		if (getActivity() != null && isAdded())
-			getActivity().runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					createSnackbar(R.string.mesg_pathSaved).show();
-				}
-			});
+			getActivity().runOnUiThread(() -> createSnackbar(R.string.mesg_pathSaved).show());
 	}
 
 	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TransferListAdapter.AbstractGenericItem>

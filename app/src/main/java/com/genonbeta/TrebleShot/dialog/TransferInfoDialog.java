@@ -101,28 +101,18 @@ public class TransferInfoDialog extends AlertDialog.Builder
 		flagText.setText(TextUtils.getTransactionFlagString(getContext(), object,
 				NumberFormat.getPercentInstance(), deviceId));
 		setPositiveButton(R.string.butn_close, null);
-		setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
-		{
-			@Override
-			public void onClick(DialogInterface dialogInterface, int i)
-			{
-				DialogUtils.showRemoveDialog(activity, object);
-			}
-		});
+		setNegativeButton(R.string.butn_remove,
+				(dialogInterface, i) -> DialogUtils.showRemoveDialog(activity, object));
 
 		if (isIncoming) {
 			incomingDetailsLayout.setVisibility(View.VISIBLE);
 
 			if (TransferObject.Flag.INTERRUPTED.equals(object.getFlag())
 					|| TransferObject.Flag.IN_PROGRESS.equals(object.getFlag())) {
-				setNeutralButton(R.string.butn_retry, new DialogInterface.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialogInterface, int i)
-					{
-						object.setFlag(TransferObject.Flag.PENDING);
-						AppUtils.getDatabase(activity).publish(object);
-					}
+				setNeutralButton(R.string.butn_retry, (dialogInterface, i) -> {
+					object.setFlag(TransferObject.Flag.PENDING);
+					AppUtils.getDatabase(activity).publish(object);
+					AppUtils.getDatabase(activity).broadcast();
 				});
 			} else if (fileExists) {
 				if (TransferObject.Flag.REMOVED.equals(object.getFlag()) && pseudoFile.getParentFile() != null) {

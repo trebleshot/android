@@ -211,6 +211,7 @@ public class TextStreamListFragment
 
 			if (id == R.id.action_mode_text_stream_delete) {
 				AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
+				AppUtils.getDatabase(getFragment().getContext()).broadcast();
 			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
 				if (selectionList.size() == 1) {
 					TextStreamObject streamObject = selectionList.get(0);
