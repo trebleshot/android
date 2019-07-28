@@ -77,8 +77,6 @@ public class AppUtils
 	private static int mUniqueNumber = 0;
 	private static AccessDatabase mDatabase;
 	private static SharedPreferences mDefaultPreferences;
-	//private static SuperPreferences mDefaultPreferences;
-	//private static SuperPreferences mDefaultLocalPreferences;
 	private static SuperPreferences mViewingPreferences;
 
 	public static void applyAdapterName(NetworkDevice.Connection connection)
@@ -234,51 +232,6 @@ public class AppUtils
 		}
 	}
 
-	/*public static SuperPreferences getDefaultPreferences(final Context context)
-	{
-		if (mDefaultPreferences == null) {
-			DbSharablePreferences databasePreferences = new DbSharablePreferences(context, "__default", true)
-					.setUpdateListener(new DbSharablePreferences.AsynchronousUpdateListener()
-					{
-						@Override
-						public void onCommitComplete()
-						{
-							context.sendBroadcast(new Intent(App.ACTION_REQUEST_PREFERENCES_SYNC));
-						}
-					});
-
-			mDefaultPreferences = new SuperPreferences(databasePreferences);
-			mDefaultPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
-			{
-				@Override
-				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
-				{
-					PreferenceUtils.syncPreferences(superPreferences, getDefaultLocalPreferences(context).getWeakManager());
-				}
-			});
-		}
-
-		return mDefaultPreferences;
-	}
-
-	public static SuperPreferences getDefaultLocalPreferences(final Context context)
-	{
-		if (mDefaultLocalPreferences == null) {
-			mDefaultLocalPreferences = new SuperPreferences(PreferenceManager.getDefaultSharedPreferences(context));
-
-			mDefaultLocalPreferences.setOnPreferenceUpdateListener(new SuperPreferences.OnPreferenceUpdateListener()
-			{
-				@Override
-				public void onPreferenceUpdate(SuperPreferences superPreferences, boolean commit)
-				{
-					PreferenceUtils.syncPreferences(superPreferences, getDefaultPreferences(context).getWeakManager());
-				}
-			});
-		}
-
-		return mDefaultLocalPreferences;
-	}*/
-
 	public static SharedPreferences getDefaultPreferences(final Context context)
 	{
 		if (mDefaultPreferences == null)
@@ -412,8 +365,7 @@ public class AppUtils
 		boolean dialogAllowed = preferences.getBoolean("show_changelog_dialog", true);
 
 		return !preferences.contains("previously_migrated_version")
-				|| device.versionNumber == lastSeenChangelog
-				|| !dialogAllowed;
+				|| device.versionNumber == lastSeenChangelog || !dialogAllowed;
 	}
 
 	public static void publishLatestChangelogSeen(Context context)

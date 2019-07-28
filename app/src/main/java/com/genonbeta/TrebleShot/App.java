@@ -47,22 +47,6 @@ import java.util.Locale;
 public class App extends Application
 {
     public static final String TAG = App.class.getSimpleName();
-    public static final String ACTION_REQUEST_PREFERENCES_SYNC = "com.genonbeta.intent.action.REQUEST_PREFERENCES_SYNC";
-
-    private BroadcastReceiver mReceiver = new BroadcastReceiver()
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            if (intent != null)
-                if (ACTION_REQUEST_PREFERENCES_SYNC.equals(intent.getAction())) {
-                    /*SharedPreferences preferences = AppUtils.getDefaultPreferences(context).getWeakManager();
-
-                    if (preferences instanceof DbSharablePreferences)
-                        ((DbSharablePreferences) preferences).sync();*/
-                }
-        }
-    };
 
     @Override
     public void onCreate()
@@ -70,7 +54,6 @@ public class App extends Application
         super.onCreate();
 
         initializeSettings();
-        getApplicationContext().registerReceiver(mReceiver, new IntentFilter(ACTION_REQUEST_PREFERENCES_SYNC));
 
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
                 && !UpdateUtils.hasNewVersion(getApplicationContext())
@@ -78,13 +61,6 @@ public class App extends Application
             GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
             UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
         }
-    }
-
-    @Override
-    public void onTerminate()
-    {
-        super.onTerminate();
-        getApplicationContext().unregisterReceiver(mReceiver);
     }
 
     private void initializeSettings()
@@ -108,8 +84,6 @@ public class App extends Application
             defaultPreferences.edit()
                     .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
                     .apply();
-
-        //PreferenceUtils.syncDefaults(getApplicationContext());
 
         if (defaultPreferences.contains("migrated_version")) {
             int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
