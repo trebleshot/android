@@ -99,7 +99,7 @@ public class WebShareServer extends NanoHTTPD
     private MediaScannerConnection mMediaScanner;
     private NetworkDevice mThisDevice;
 
-    public WebShareServer(Context context, int port) throws IOException
+    public WebShareServer(Context context, int port)
     {
         super(port);
         mContext = context;

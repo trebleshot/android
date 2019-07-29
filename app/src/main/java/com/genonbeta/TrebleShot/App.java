@@ -28,9 +28,11 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.PreferenceUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
@@ -46,64 +48,88 @@ import java.util.Locale;
 
 public class App extends Application
 {
-    public static final String TAG = App.class.getSimpleName();
+	public static final String TAG = App.class.getSimpleName();
 
-    @Override
-    public void onCreate()
-    {
-        super.onCreate();
+	private int mForegroundActivitiesCount = 0;
 
-        initializeSettings();
+	@Override
+	public void onCreate()
+	{
+		super.onCreate();
 
-        if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
-                && !UpdateUtils.hasNewVersion(getApplicationContext())
-                && (System.currentTimeMillis() - UpdateUtils.getLastTimeCheckedForUpdates(getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
-            GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
-            UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
-        }
-    }
+		initializeSettings();
 
-    private void initializeSettings()
-    {
-        //SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
-        SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
-        NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
-        boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
-        boolean refVersion = defaultPreferences.contains("referral_version");
+		if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
+				&& !UpdateUtils.hasNewVersion(getApplicationContext())
+				&& (System.currentTimeMillis() - UpdateUtils.getLastTimeCheckedForUpdates(getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
+			GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
+			UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
+		}
+	}
 
-        PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
+	public static void notifyActivityInForeground(Activity activity, boolean inForeground)
+	{
+		((App) activity.getApplication()).notifyActivityInForeground(inForeground);
+	}
 
-        if (!refVersion)
-            defaultPreferences.edit()
-                    .putInt("referral_version", localDevice.versionNumber)
-                    .apply();
+	public synchronized void notifyActivityInForeground(boolean inForeground)
+	{
+		if (mForegroundActivitiesCount < 0 && !inForeground)
+			return;
 
-        // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
-        // So we will disable it for them and they will still remain an option for the user.
-        if (!nsdDefined)
-            defaultPreferences.edit()
-                    .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
-                    .apply();
+		boolean hadNone = mForegroundActivitiesCount == 0;
+		mForegroundActivitiesCount += inForeground ? 1 : -1;
 
-        if (defaultPreferences.contains("migrated_version")) {
-            int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
+		if ((hadNone && inForeground) || mForegroundActivitiesCount == 0)
+			AppUtils.startForegroundService(this,
+					new Intent(this, CommunicationService.class)
+							.setAction(CommunicationService.ACTION_SERVICE_STATUS)
+							.putExtra(CommunicationService.EXTRA_STATUS_STARTED, inForeground));
 
-            if (migratedVersion < localDevice.versionNumber) {
-                // migrating to a new version
+		Log.d(TAG, "notifyActivityInForeground: Count: " + mForegroundActivitiesCount);
+	}
 
-                if (migratedVersion <= 67)
-                    AppUtils.getViewingPreferences(getApplicationContext()).edit()
-                            .clear()
-                            .apply();
+	private void initializeSettings()
+	{
+		//SharedPreferences defaultPreferences = AppUtils.getDefaultLocalPreferences(this);
+		SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(this);
+		NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
+		boolean nsdDefined = defaultPreferences.contains("nsd_enabled");
+		boolean refVersion = defaultPreferences.contains("referral_version");
 
-                defaultPreferences.edit()
-                        .putInt("migrated_version", localDevice.versionNumber)
-                        .putInt("previously_migrated_version", migratedVersion)
-                        .apply();
-            }
-        } else
-            defaultPreferences.edit()
-                    .putInt("migrated_version", localDevice.versionNumber)
-                    .apply();
-    }
+		PreferenceManager.setDefaultValues(this, R.xml.preferences_defaults_main, false);
+
+		if (!refVersion)
+			defaultPreferences.edit()
+					.putInt("referral_version", localDevice.versionNumber)
+					.apply();
+
+		// Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
+		// So we will disable it for them and they will still remain an option for the user.
+		if (!nsdDefined)
+			defaultPreferences.edit()
+					.putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)
+					.apply();
+
+		if (defaultPreferences.contains("migrated_version")) {
+			int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
+
+			if (migratedVersion < localDevice.versionNumber) {
+				// migrating to a new version
+
+				if (migratedVersion <= 67)
+					AppUtils.getViewingPreferences(getApplicationContext()).edit()
+							.clear()
+							.apply();
+
+				defaultPreferences.edit()
+						.putInt("migrated_version", localDevice.versionNumber)
+						.putInt("previously_migrated_version", migratedVersion)
+						.apply();
+			}
+		} else
+			defaultPreferences.edit()
+					.putInt("migrated_version", localDevice.versionNumber)
+					.apply();
+	}
 }

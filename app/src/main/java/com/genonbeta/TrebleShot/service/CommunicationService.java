@@ -29,7 +29,6 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
@@ -144,7 +143,7 @@ public class CommunicationService extends Service
 
 	private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
 	private CommunicationServer mCommunicationServer = new CommunicationServer();
-	private WebShareServer mWebShareServer = null;
+	private WebShareServer mWebShareServer;
 	private Map<Long, Interrupter> mOngoingIndexList = new ArrayMap<>();
 	private ExecutorService mSelfExecutor = Executors.newFixedThreadPool(10);
 	private NsdDiscovery mNsdDiscovery;
@@ -153,7 +152,7 @@ public class CommunicationService extends Service
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
 	private android.database.sqlite.SQLiteDatabase mDbInstance;
-	private boolean mDestroyApproved = false;
+	private Handler mHandler;
 	private boolean mFastMode = false;
 	private boolean mPinAccess = false;
 	private long mTimeTransactionSaved;
@@ -169,6 +168,7 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
+		mHandler = new Handler();
 		mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
 		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
 		mMediaScanner = new MediaScannerConnection(this, null);
@@ -362,15 +362,13 @@ public class CommunicationService extends Service
 								if (processHolder.activeConnection != null
 										&& processHolder.activeConnection.getSocket() != null)
 									processHolder.activeConnection.getSocket().close();
-							} catch (IOException e) {
-								// do nothing
+							} catch (IOException ignored) {
 							}
 
 							try {
 								if (processHolder.activeConnection != null && processHolder.activeConnection.getSocket() != null)
 									processHolder.activeConnection.getSocket().close();
-							} catch (IOException e) {
-								// do nothing
+							} catch (IOException ignored) {
 							}
 						}
 					}
@@ -388,21 +386,12 @@ public class CommunicationService extends Service
 					&& intent.hasExtra(EXTRA_STATUS_STARTED)) {
 				boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
 
-				mDestroyApproved = !startRequested && !hasOngoingTasks() && (mWebShareServer == null
-						|| !mWebShareServer.isAlive()
-				);
-
-				if (mDestroyApproved)
-					new Handler(Looper.getMainLooper()).postDelayed(() -> {
-						if (mDestroyApproved && !getHotspotUtils().isStarted() && !hasOngoingTasks()
-								&& getDefaultPreferences().getBoolean("kill_service_on_exit", false)) {
-							stopSelf();
-							Log.d(TAG, "onStartCommand(): Destroy state has been applied");
-						}
-					}, 3000);
+				if(!startRequested && !hasOngoingTasks()) {
+					Log.d(TAG, "onStartCommand(): Destroy state has been applied");
+					stopSelf();
+				}
 			} else if (ACTION_REQUEST_TASK_STATUS_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(EXTRA_GROUP_ID)
-					&& intent.hasExtra(EXTRA_DEVICE_ID)
+					&& intent.hasExtra(EXTRA_GROUP_ID) && intent.hasExtra(EXTRA_DEVICE_ID)
 					&& intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
 				long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
 				String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
@@ -1118,7 +1107,8 @@ public class CommunicationService extends Service
 		return mCommunicationServer.getConnections().size() > 0
 				|| getOngoingIndexList().size() > 0
 				|| getActiveProcessList().size() > 0
-				|| mHotspotUtils.isStarted();
+				|| mHotspotUtils.isStarted()
+				|| mWebShareServer.isAlive();
 	}
 
 	private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)
