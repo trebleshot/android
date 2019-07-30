@@ -125,15 +125,14 @@ public class TransferInfoDialog extends AlertDialog.Builder
 						saveAnyway.setPositiveButton(R.string.butn_proceed, (dialog, which) -> {
 							try {
 								DocumentFile savedFile = FileUtils.saveReceivedFile(
-										pseudoFile.getParentFile(), pseudoFile, object);
-								object.file = savedFile.getName();
+										pseudoFile.getParentFile(), pseudoFile, object);;
 								object.setFlag(TransferObject.Flag.DONE);
 
 								AppUtils.getDatabase(activity).update(object);
 								AppUtils.getDatabase(activity).broadcast();
 
 								Toast.makeText(getContext(), R.string.mesg_fileSaved, Toast.LENGTH_SHORT).show();
-							} catch (IOException e) {
+							} catch (Exception e) {
 								e.printStackTrace();
 								Toast.makeText(getContext(), R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
 							}

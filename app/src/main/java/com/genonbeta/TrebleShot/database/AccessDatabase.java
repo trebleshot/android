@@ -129,22 +129,10 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_WRITABLEPATH_PATH = "path";
 
 	private final List<BroadcastData> mBroadcastOverhead = new ArrayList<>();
-	private final Handler mMessenger = new Handler(Looper.getMainLooper());
-	private boolean mMessageQueued = false;
 
 	public AccessDatabase(Context context)
 	{
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-	}
-
-	public static CursorItem convertValues(ContentValues values)
-	{
-		CursorItem cursorItem = new CursorItem();
-
-		for (String key : values.keySet())
-			cursorItem.put(key, values.get(key));
-
-		return cursorItem;
 	}
 
 	@Override
@@ -285,17 +273,6 @@ public class AccessDatabase extends SQLiteDatabase
 		}
 
 		data.affectedRowCount += getAffectedRowCount(dbInstance);
-
-		if (!mMessageQueued) {
-			mMessageQueued = true;
-
-			Log.d(TAG, "append: Message queued");
-			mMessenger.postDelayed(() -> {
-				mMessageQueued = false;
-				Log.d(TAG, "append: Message executed");
-				broadcast();
-			}, 5000);
-		}
 	}
 
 	public synchronized void broadcast()

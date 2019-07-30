@@ -60,52 +60,47 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
                 ? "%d"
                 : mItemList.get(0).fileName);
 
-        setOnProceedClickListener(R.string.butn_rename, new OnProceedClickListener()
-        {
-            @Override
-            public boolean onProceedClick(AlertDialog dialog)
-            {
-                final String renameTo = getEditText().getText().toString();
+        setOnProceedClickListener(R.string.butn_rename, dialog -> {
+            final String renameTo = getEditText().getText().toString();
 
-                if (getItemList().size() == 1
-                        && renameFile(getItemList().get(0), renameTo, renameListener)) {
-                    if (renameListener != null)
-                        renameListener.onFileRenameCompleted(getContext());
-                    return true;
-                }
-
-                try {
-                    String.format(renameTo, getItemList().size());
-                } catch (Exception e) {
-                    return false;
-                }
-
-                new WorkerService.RunningTask()
-                {
-                    @Override
-                    protected void onRun()
-                    {
-                        int fileId = 0;
-
-                        for (T fileHolder : getItemList()) {
-                            publishStatusText(fileHolder.friendlyName);
-
-                            String ext = FileUtils.getFileFormat(fileHolder.file.getName());
-                            ext = ext != null ? String.format(".%s", ext) : "";
-
-                            renameFile(fileHolder, String.format("%s%s", String.format(renameTo, fileId), ext), renameListener);
-                            fileId++;
-                        }
-
-                        if (renameListener != null)
-                            renameListener.onFileRenameCompleted(getService());
-                    }
-                }.setTitle(context.getString(R.string.text_renameMultipleItems))
-                        .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
-                        .run(context);
-
+            if (getItemList().size() == 1
+                    && renameFile(getItemList().get(0), renameTo, renameListener)) {
+                if (renameListener != null)
+                    renameListener.onFileRenameCompleted(getContext());
                 return true;
             }
+
+            try {
+                String.format(renameTo, getItemList().size());
+            } catch (Exception e) {
+                return false;
+            }
+
+            new WorkerService.RunningTask()
+            {
+                @Override
+                protected void onRun()
+                {
+                    int fileId = 0;
+
+                    for (T fileHolder : getItemList()) {
+                        publishStatusText(fileHolder.friendlyName);
+
+                        String ext = FileUtils.getFileFormat(fileHolder.file.getName());
+                        ext = ext != null ? String.format(".%s", ext) : "";
+
+                        renameFile(fileHolder, String.format("%s%s", String.format(renameTo, fileId), ext), renameListener);
+                        fileId++;
+                    }
+
+                    if (renameListener != null)
+                        renameListener.onFileRenameCompleted(getService());
+                }
+            }.setTitle(context.getString(R.string.text_renameMultipleItems))
+                    .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static)
+                    .run(context);
+
+            return true;
         });
     }
 
@@ -140,6 +135,7 @@ public class FileRenameDialog<T extends FileListAdapter.GenericFileHolder> exten
                 return true;
             }
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return false;

@@ -23,6 +23,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -180,12 +181,16 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
      * @return File moved to its actual name
      * @throws IOException Thrown when rename fails
      */
-    public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws IOException
+    public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws Exception
     {
         String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.name, true);
 
+        // FIXME: 7/30/19 The rename always fails when renaming TreeDocumentFile
         if (!currentFile.renameTo(uniqueName))
             throw new IOException("Failed to rename object: " + currentFile);
+
+        transferObject.file = uniqueName;
+        savePath.sync();
 
         return savePath.findFile(uniqueName);
     }

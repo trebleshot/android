@@ -27,7 +27,6 @@ import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.Build;
-import android.os.Handler;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
@@ -152,7 +151,6 @@ public class CommunicationService extends Service
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
 	private android.database.sqlite.SQLiteDatabase mDbInstance;
-	private Handler mHandler;
 	private boolean mFastMode = false;
 	private boolean mPinAccess = false;
 	private long mTimeTransactionSaved;
@@ -168,7 +166,6 @@ public class CommunicationService extends Service
 	{
 		super.onCreate();
 
-		mHandler = new Handler();
 		mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
 		mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
 		mMediaScanner = new MediaScannerConnection(this, null);
@@ -386,7 +383,7 @@ public class CommunicationService extends Service
 					&& intent.hasExtra(EXTRA_STATUS_STARTED)) {
 				boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
 
-				if(!startRequested && !hasOngoingTasks()) {
+				if (!startRequested && !hasOngoingTasks()) {
 					Log.d(TAG, "onStartCommand(): Destroy state has been applied");
 					stopSelf();
 				}
@@ -756,6 +753,7 @@ public class CommunicationService extends Service
 
 							processHolder.activeConnection.reply(Keyword.STUB);
 							OutputStream outputStream = null;
+							boolean completed = false;
 
 							try {
 								outputStream = streamInfo.openOutputStream();
@@ -786,10 +784,21 @@ public class CommunicationService extends Service
 										break;
 								}
 
-								boolean completed = processHolder.currentBytes == processHolder.object.size;
+								completed = processHolder.currentBytes == processHolder.object.size;
 								processHolder.object.setFlag(completed ? TransferObject.Flag.DONE
 										: TransferObject.Flag.INTERRUPTED);
 
+								Log.d(TAG, "handleTransferAsSender(): File received " + processHolder.object.name);
+							} catch (Exception e) {
+								e.printStackTrace();
+								processHolder.interrupter.interrupt(false);
+								processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
+							} finally {
+								if (outputStream != null)
+									outputStream.close();
+							}
+
+							try {
 								if (completed) {
 									processHolder.completedBytes += processHolder.currentBytes;
 									processHolder.completedCount++;
@@ -798,7 +807,10 @@ public class CommunicationService extends Service
 										processHolder.currentFile = FileUtils.saveReceivedFile(
 												processHolder.currentFile.getParentFile(),
 												processHolder.currentFile, processHolder.object);
-										processHolder.object.file = processHolder.currentFile.getName();
+
+										Log.d(TAG, "handleTransferAsReceiver(): The file is "
+												+ processHolder.currentFile.getUri().toString()
+												+ " and the name is " + processHolder.object.file);
 
 										sendBroadcast(new Intent(FileListFragment.ACTION_FILE_LIST_CHANGED)
 												.putExtra(FileListFragment.EXTRA_FILE_PARENT,
@@ -814,15 +826,8 @@ public class CommunicationService extends Service
 														.getFile().getAbsolutePath(),
 												processHolder.object.mimeType);
 								}
-
-								Log.d(TAG, "handleTransferAsSender(): File received " + processHolder.object.name);
-							} catch (Exception e) {
-								e.printStackTrace();
-								processHolder.interrupter.interrupt(false);
-								processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
-							} finally {
-								if (outputStream != null)
-									outputStream.close();
+							} catch (Exception ignored) {
+								Log.e(TAG, "Error occurred during completion of the transfer");
 							}
 						}
 					}
