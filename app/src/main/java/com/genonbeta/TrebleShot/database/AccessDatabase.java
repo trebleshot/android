@@ -24,15 +24,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.SQLException;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.TransferGroup;
+import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLType;
@@ -154,90 +149,9 @@ public class AccessDatabase extends SQLiteDatabase
 		SQLValues databaseTables = getDatabaseTables();
 
 		if (old <= 5) {
-			for (String tableName : getDatabaseTables().getTables().keySet())
-				database.execSQL("DROP TABLE IF EXISTS `" + tableName + "`");
 
-			SQLQuery.createTables(database, databaseTables);
 		} else {
-			if (old <= 6) {
-				SQLValues.Table groupTable = databaseTables.getTables().get(TABLE_TRANSFERGROUP);
-				SQLValues.Table devicesTable = databaseTables.getTables().get(TABLE_DEVICES);
-				SQLValues.Table targetDevicesTable = databaseTables.getTables().get(TABLE_TRANSFERASSIGNEE);
-
-				database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", groupTable.getName()));
-				database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", devicesTable.getName()));
-
-				SQLQuery.createTable(database, groupTable);
-				SQLQuery.createTable(database, devicesTable);
-				SQLQuery.createTable(database, targetDevicesTable);
-			}
-
-			if (old < 7) {
-				// Is there any??
-			}
-
-			if (old < 10) {
-				// With version 9, I added deviceId column to the transfer table
-				// With version 10, DIVISION section added for TABLE_TRANSFER and made deviceId nullable
-				// to allow users distinguish individual transfer file
-
-				try {
-					// TODO: 7/12/19 Database change
-                    /*
-                    SQLValues.Table tableTransfer = databaseTables.getTables().get(TABLE_TRANSFER);
-                    Map<Long, String> mapDist = new ArrayMap<>();
-                    List<TransferObject> supportedItems = new ArrayList<>();
-                    List<TransferGroup.Assignee> availableAssignees = castQuery(database,
-                            new SQLQuery.Select(TABLE_TRANSFERASSIGNEE),
-                            TransferGroup.Assignee.class, null);
-                    List<TransferObject> availableTransfers = castQuery(database,
-                            new SQLQuery.Select(TABLE_TRANSFER), TransferObject.class, null);
-
-                    for (TransferGroup.Assignee assignee : availableAssignees) {
-                        if (!mapDist.containsKey(assignee.groupId))
-                            mapDist.put(assignee.groupId, assignee.deviceId);
-                    }
-
-                    for (TransferObject transferObject : availableTransfers) {
-                        transferObject.deviceId = mapDist.get(transferObject.groupId);
-
-                        if (transferObject.deviceId != null)
-                            supportedItems.add(transferObject);
-                    }
-
-                    database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer
-                            .getName()));
-                    SQLQuery.createTable(database, tableTransfer);
-                    SQLQuery.createTable(database, divisTransfer);
-                    insert(database, supportedItems, null, null);
-                    */
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (old < 11) {
-				SQLValues.Table tableFileBookmark = databaseTables.getTables().get(TABLE_FILEBOOKMARK);
-				SQLQuery.createTable(database, tableFileBookmark);
-			}
-
-			if (old < 12) {
-				List<TransferGroup> totalGroupList = castQuery(database, new SQLQuery.Select(
-						TABLE_TRANSFERGROUP), TransferGroup.class, null);
-				SQLValues.Table tableTransferGroup = databaseTables.getTables()
-						.get(TABLE_TRANSFERGROUP);
-
-				database.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransferGroup
-						.getName()));
-				SQLQuery.createTable(database, tableTransferGroup);
-				insert(database, totalGroupList, null, null);
-			}
-
-			if (old < 13) {
-				database.execSQL("ALTER TABLE " + TABLE_DEVICES + " ADD "
-						+ FIELD_DEVICES_EXTRA_TYPE + " " + SQLType.TEXT.toString()
-						+ " NOT NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
-			}
+			if (Migration.migrate(database, old, current))
 			// TODO: 7/14/19 Changes: TransferObject {Added LastChangeTime, Changed Flag as Flag[]}, Assignee {Added Type, Removed isClone]
 		}
 	}
