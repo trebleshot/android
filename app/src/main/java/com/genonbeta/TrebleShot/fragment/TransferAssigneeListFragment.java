@@ -223,16 +223,8 @@ public class TransferAssigneeListFragment
 
 			if (id == R.id.popup_changeChangeConnection) {
 				TransferUtils.changeConnection(getActivity(), assignee.device,
-						assignee, new TransferUtils.ConnectionUpdatedListener()
-						{
-							@Override
-							public void onConnectionUpdated(NetworkDevice.Connection connection,
-															TransferGroup.Assignee assignee1)
-							{
-								createSnackbar(R.string.mesg_connectionUpdated, TextUtils
-										.getAdapterName(getContext(), connection)).show();
-							}
-						});
+						assignee, (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated, TextUtils
+								.getAdapterName(getContext(), connection)).show());
 			} else if (id == R.id.popup_remove) {
 				AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
 			} else

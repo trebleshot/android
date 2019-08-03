@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.dialog.SelectAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
@@ -578,7 +579,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 			if (ongoing)
 				TransferUtils.pauseTransfer(this, assignee);
 			else {
-				getDatabase().reconstruct(new NetworkDevice.Connection(assignee));
+				getDatabase().reconstruct(new DeviceConnection(assignee));
 				TransferUtils.startTransferWithTest(this, mGroup, assignee);
 			}
 		} catch (Exception e) {
@@ -591,17 +592,10 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 						public void onClick(View v)
 						{
 							TransferUtils.changeConnection(ViewTransferActivity.this,
-									assignee.device, assignee, new TransferUtils.ConnectionUpdatedListener()
-									{
-										@Override
-										public void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee)
-										{
-											createSnackbar(R.string.mesg_connectionUpdated,
-													TextUtils.getAdapterName(
-															getApplicationContext(), connection))
-													.show();
-										}
-									});
+									assignee.device, assignee, (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated,
+											TextUtils.getAdapterName(
+													getApplicationContext(), connection))
+											.show());
 						}
 					}).show();
 		}
@@ -610,22 +604,17 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	public synchronized void updateCalculations()
 	{
 		if (mDataCruncher == null || !mDataCruncher.requestRestart()) {
-			mDataCruncher = new CrunchLatestDataTask(new CrunchLatestDataTask.PostExecuteListener()
-			{
-				@Override
-				public void onPostExecute()
-				{
-					showMenus();
-					findViewById(R.id.activity_transaction_no_devices_warning).setVisibility(
-							getGroup().assignees.length > 0 ? View.GONE : View.VISIBLE);
+			mDataCruncher = new CrunchLatestDataTask(() -> {
+				showMenus();
+				findViewById(R.id.activity_transaction_no_devices_warning).setVisibility(
+						getGroup().assignees.length > 0 ? View.GONE : View.VISIBLE);
 
-					if (getGroup().assignees.length == 0)
-						if (mTransferObject != null) {
-							new TransferInfoDialog(ViewTransferActivity.this, mGroup,
-									mTransferObject, mAssignee == null ? null : mAssignee.deviceId).show();
-							mTransferObject = null;
-						}
-				}
+				if (getGroup().assignees.length == 0)
+					if (mTransferObject != null) {
+						new TransferInfoDialog(ViewTransferActivity.this, mGroup,
+								mTransferObject, mAssignee == null ? null : mAssignee.deviceId).show();
+						mTransferObject = null;
+					}
 			});
 
 			mDataCruncher.execute(this);

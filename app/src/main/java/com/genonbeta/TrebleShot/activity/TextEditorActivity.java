@@ -40,6 +40,7 @@ import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -127,7 +128,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
                 try {
                     NetworkDevice networkDevice = new NetworkDevice(deviceId);
-                    NetworkDevice.Connection connection = new NetworkDevice.Connection(deviceId, connectionAdapter);
+                    DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
 
                     getDatabase().reconstruct(networkDevice);
                     getDatabase().reconstruct(connection);
@@ -281,7 +282,7 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
         return Snackbar.make(findViewById(android.R.id.content), getString(resId, objects), Snackbar.LENGTH_LONG);
     }
 
-    protected void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
+    protected void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
     {
         createSnackbar(R.string.mesg_communicating).show();
 
@@ -299,37 +300,32 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                     }
                 };
 
-                CommunicationBridge.connect(getDatabase(), true, new CommunicationBridge.Client.ConnectionHandler()
-                {
-                    @Override
-                    public void onConnect(CommunicationBridge.Client client)
-                    {
-                        client.setDevice(device);
+                CommunicationBridge.connect(getDatabase(), true, client -> {
+                    client.setDevice(device);
 
-                        try {
-                            final JSONObject jsonRequest = new JSONObject();
-                            final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
+                    try {
+                        final JSONObject jsonRequest = new JSONObject();
+                        final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
-                            jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-                            jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mEditTextEditor.getText().toString());
+                        jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
+                        jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mEditTextEditor.getText().toString());
 
-                            activeConnection.reply(jsonRequest.toString());
+                        activeConnection.reply(jsonRequest.toString());
 
-                            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                            activeConnection.getSocket().close();
+                        CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                        activeConnection.getSocket().close();
 
-                            JSONObject clientResponse = new JSONObject(response.response);
+                        JSONObject clientResponse = new JSONObject(response.response);
 
-                            if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT))
-                                createSnackbar(R.string.mesg_sent).show();
-                            else
-                                UIConnectionUtils.showConnectionRejectionInformation(
-                                        TextEditorActivity.this,
-                                        device, clientResponse, retryButtonListener);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            UIConnectionUtils.showUnknownError(TextEditorActivity.this, retryButtonListener);
-                        }
+                        if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT))
+                            createSnackbar(R.string.mesg_sent).show();
+                        else
+                            UIConnectionUtils.showConnectionRejectionInformation(
+                                    TextEditorActivity.this,
+                                    device, clientResponse, retryButtonListener);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        UIConnectionUtils.showUnknownError(TextEditorActivity.this, retryButtonListener);
                     }
                 });
             }

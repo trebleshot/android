@@ -51,6 +51,7 @@ import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -140,7 +141,7 @@ public class BarcodeConnectFragment
 	private NetworkDeviceLoader.OnDeviceRegisteredListener mRegisteredListener = new NetworkDeviceLoader.OnDeviceRegisteredListener()
 	{
 		@Override
-		public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
+		public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final DeviceConnection connection)
 		{
 			if (mDeviceSelectedListener != null)
 				mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);

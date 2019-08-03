@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.ui.callback;
 
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 /**
@@ -26,7 +27,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
  */
 public interface NetworkDeviceSelectedListener
 {
-    boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection);
+    boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection);
 
     boolean isListenerEffective();
 }

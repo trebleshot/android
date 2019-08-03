@@ -22,6 +22,7 @@ import android.content.Context;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferObject;
 
@@ -55,7 +56,7 @@ public class TextUtils
 		return -1;
 	}
 
-	public static String getAdapterName(Context context, NetworkDevice.Connection connection)
+	public static String getAdapterName(Context context, DeviceConnection connection)
 	{
 		return getAdapterName(context, connection.adapterName);
 	}

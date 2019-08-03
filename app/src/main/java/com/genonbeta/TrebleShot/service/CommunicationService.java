@@ -43,9 +43,11 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
+import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -235,11 +237,11 @@ public class CommunicationService extends Service
 					TransferGroup group = new TransferGroup(groupId);
 					getDatabase().reconstruct(group);
 
-					TransferGroup.Assignee assignee = new TransferGroup.Assignee(groupId, deviceId,
+					TransferAssignee assignee = new TransferAssignee(groupId, deviceId,
 							TransferObject.Type.INCOMING);
 					getDatabase().reconstruct(assignee);
 
-					final NetworkDevice.Connection connection = new NetworkDevice.Connection(assignee);
+					final DeviceConnection connection = new DeviceConnection(assignee);
 					getDatabase().reconstruct(connection);
 
 					CommunicationBridge.connect(getDatabase(), client -> {
@@ -526,14 +528,14 @@ public class CommunicationService extends Service
 	}
 
 	private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
-									   final NetworkDevice.Connection connection, final boolean fastMode)
+									   final DeviceConnection connection, final boolean fastMode)
 	{
 		getSelfExecutor().submit(() -> {
 			final JSONArray jsonArray;
 			final Interrupter interrupter = new Interrupter();
 			TransferGroup group = new TransferGroup(groupId);
-			TransferGroup.Assignee assignee = new TransferGroup.Assignee(
-					group, device, TransferObject.Type.INCOMING, connection);
+			TransferAssignee assignee = new TransferAssignee(group, device,
+					TransferObject.Type.INCOMING, connection);
 			final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, device);
 
 			notification.setProgress(0, 0, true);
@@ -1294,7 +1296,7 @@ public class CommunicationService extends Service
 			throw new TransferGroupNotFoundException();
 		}
 
-		processHolder.assignee = new TransferGroup.Assignee(processHolder.group, processHolder.device,
+		processHolder.assignee = new TransferAssignee(processHolder.group, processHolder.device,
 				processHolder.type);
 
 		try {
@@ -1303,7 +1305,7 @@ public class CommunicationService extends Service
 			throw new AssigneeNotFoundException();
 		}
 
-		processHolder.connection = new NetworkDevice.Connection(processHolder.assignee);
+		processHolder.connection = new DeviceConnection(processHolder.assignee);
 
 		try {
 			getDatabase().reconstruct(getDbInstance(), processHolder.connection);
@@ -1504,7 +1506,7 @@ public class CommunicationService extends Service
 							getNotificationHelper().notifyConnectionRequest(device);
 					}
 
-					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(
+					final DeviceConnection connection = NetworkDeviceLoader.processConnection(
 							getDatabase(), device, activeConnection.getClientAddress());
 					final boolean isFastModeAvailable = (mFastMode && device.isTrusted)
 							|| (isSecureConnection && getDefaultPreferences().getBoolean("qr_trust", false));
@@ -1538,8 +1540,8 @@ public class CommunicationService extends Service
 									boolean isAccepted = responseJSON.getBoolean(Keyword.TRANSFER_IS_ACCEPTED);
 
 									TransferGroup group = new TransferGroup(groupId);
-									TransferGroup.Assignee assignee = new TransferGroup.Assignee(
-											group, device, TransferObject.Type.OUTGOING);
+									TransferAssignee assignee = new TransferAssignee(group, device,
+											TransferObject.Type.OUTGOING);
 
 									try {
 										getDatabase().reconstruct(group);
@@ -1603,7 +1605,7 @@ public class CommunicationService extends Service
 											processHolder.group = group;
 											processHolder.device = device;
 											processHolder.type = type;
-											processHolder.assignee = new TransferGroup.Assignee(
+											processHolder.assignee = new TransferAssignee(
 													group, device, type);
 
 											getDatabase().reconstruct(processHolder.assignee);
@@ -1663,8 +1665,8 @@ public class CommunicationService extends Service
 		public CoolSocket.ActiveConnection activeConnection;
 		public NetworkDevice device;
 		public PreloadedGroup group;
-		public TransferGroup.Assignee assignee;
-		public NetworkDevice.Connection connection;
+		public TransferAssignee assignee;
+		public DeviceConnection connection;
 		public TransferObject.Type type;
 
 		// Changing objects

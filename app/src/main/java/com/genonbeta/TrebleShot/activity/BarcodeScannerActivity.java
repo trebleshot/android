@@ -28,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 
@@ -56,7 +57,7 @@ public class BarcodeScannerActivity extends Activity
             fragment.setDeviceSelectedListener(new NetworkDeviceSelectedListener()
             {
                 @Override
-                public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection)
+                public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
                 {
                     setResult(RESULT_OK, new Intent()
                             .putExtra(EXTRA_DEVICE_ID, networkDevice.id)

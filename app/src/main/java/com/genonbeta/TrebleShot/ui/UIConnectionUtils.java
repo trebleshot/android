@@ -39,6 +39,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -214,7 +215,7 @@ public class UIConnectionUtils
 				if (receivedReply.has(Keyword.RESULT)
 						&& receivedReply.getBoolean(Keyword.RESULT)
 						&& device.id != null) {
-					final NetworkDevice.Connection connection = NetworkDeviceLoader.processConnection(
+					final DeviceConnection connection = NetworkDeviceLoader.processConnection(
 							AppUtils.getDatabase(activity), device, ipAddress);
 
 					device.lastUsageTime = System.currentTimeMillis();

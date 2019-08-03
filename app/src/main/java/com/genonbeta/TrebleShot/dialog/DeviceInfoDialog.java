@@ -41,6 +41,7 @@ import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -131,7 +132,7 @@ public class DeviceInfoDialog extends AlertDialog.Builder
 	}
 
 	protected void runReceiveTask(final Activity activity, final NetworkDevice device,
-								  final NetworkDevice.Connection connection)
+								  final DeviceConnection connection)
 	{
 		new WorkerService.RunningTask()
 		{

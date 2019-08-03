@@ -25,6 +25,7 @@ import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -71,7 +72,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                     getDatabase().publish(localDevice);
 
                     for (AddressedInterface addressedInterface : interfaceList) {
-                        NetworkDevice.Connection connection = new NetworkDevice.Connection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.id, System.currentTimeMillis());
+                        DeviceConnection connection = new DeviceConnection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.id, System.currentTimeMillis());
                         getDatabase().publish(connection);
                     }
 
@@ -97,7 +98,7 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
     @Override
     public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
     {
-        NetworkDevice.Connection connection = new NetworkDevice.Connection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
+        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
         getDatabase().publish(connection);
 
         NetworkDeviceLoader.load(getDatabase(), address.getHostAddress(), null);

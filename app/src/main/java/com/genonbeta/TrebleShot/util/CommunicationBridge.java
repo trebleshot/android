@@ -26,6 +26,7 @@ import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 import org.json.JSONException;
@@ -88,7 +89,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             mDatabase = database;
         }
 
-        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, NetworkDevice.Connection targetConnection) throws IOException, TimeoutException, DifferentClientException, CommunicationException
+        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection) throws IOException, TimeoutException, DifferentClientException, CommunicationException
         {
             CoolSocket.ActiveConnection activeConnection = connectWithHandshake(targetConnection.ipAddress, false);
 
@@ -113,7 +114,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return connect(new InetSocketAddress(ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
         }
 
-        public CoolSocket.ActiveConnection connect(NetworkDevice.Connection connection) throws IOException
+        public CoolSocket.ActiveConnection connect(DeviceConnection connection) throws IOException
         {
             return connect(connection.ipAddress);
         }

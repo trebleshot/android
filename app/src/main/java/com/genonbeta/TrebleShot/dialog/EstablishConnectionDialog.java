@@ -29,6 +29,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -58,14 +59,7 @@ public class EstablishConnectionDialog extends ProgressDialog
         setTitle(R.string.text_automaticNetworkConnectionOngoing);
         setCancelable(false);
         setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
-        setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                interrupter.interrupt();
-            }
-        });
+        setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> interrupter.interrupt());
 
         mTask = new WorkerService.RunningTask()
         {
@@ -77,13 +71,13 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
                 final List<ConnectionResult> calculatedConnections = new ArrayList<>();
-                final List<NetworkDevice.Connection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+                final List<DeviceConnection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                         .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.id)
-                        .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class);
+                        .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class);
 
                 setMax(connectionList.size());
 
-                for (NetworkDevice.Connection connection : connectionList)
+                for (DeviceConnection connection : connectionList)
                     calculatedConnections.add(new ConnectionResult(connection));
 
                 for (final ConnectionResult connectionResult : calculatedConnections) {
@@ -177,14 +171,7 @@ public class EstablishConnectionDialog extends ProgressDialog
                                                     }
                                                 })
                                                 .setNegativeButton(R.string.butn_close, null)
-                                                .setPositiveButton(R.string.butn_retry, new OnClickListener()
-                                                {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which)
-                                                    {
-                                                        show();
-                                                    }
-                                                })
+                                                .setPositiveButton(R.string.butn_retry, (dialog, which) -> show())
                                                 .show();
                                     } else {
                                         listener.onDeviceSelected(reachedConnections.get(0).connection, connectionList);
@@ -207,10 +194,10 @@ public class EstablishConnectionDialog extends ProgressDialog
 
     public static class ConnectionResult
     {
-        public NetworkDevice.Connection connection;
+        public DeviceConnection connection;
         public int pingTime = -1;
 
-        public ConnectionResult(NetworkDevice.Connection connection)
+        public ConnectionResult(DeviceConnection connection)
         {
             this.connection = connection;
         }

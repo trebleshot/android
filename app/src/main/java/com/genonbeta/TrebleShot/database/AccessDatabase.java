@@ -47,11 +47,8 @@ import java.util.Set;
 public class AccessDatabase extends SQLiteDatabase
 {
 	/*
-	 * New database versioning notes;
-	 * A- Do not remove all the available tables whenever the database is updated
-	 * B- Starting with the version 7, it is decided that individual changes to the database are healthier
-	 * C- From now on, the changes to the database will be separated to sections, one of which is belonging to
-	 * 		below version 6 and the other which is new generation 7
+	 * Database migration is an important step when upgrading to an upper version. The user data
+	 * is always preserved.
 	 */
 
 	public static final int DATABASE_VERSION = 13;
@@ -83,7 +80,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_ISLOCALADDRESS = "isLocalAddress";
 	public static final String FIELD_DEVICES_TMPSECUREKEY = "tmpSecureKey";
 	// not required for the desktop version
-	public static final String FIELD_DEVICES_EXTRA_TYPE = "type";
+	public static final String FIELD_DEVICES_TYPE = "type";
 
 	public static final String TABLE_DEVICECONNECTION = "deviceConnection";
 	public static final String FIELD_DEVICECONNECTION_IPADDRESS = "ipAddress";
@@ -133,27 +130,77 @@ public class AccessDatabase extends SQLiteDatabase
 	@Override
 	public void onCreate(android.database.sqlite.SQLiteDatabase db)
 	{
-		SQLQuery.createTables(db, getDatabaseTables());
+		SQLQuery.createTables(db, tables());
 	}
 
 	@Override
 	public void onUpgrade(android.database.sqlite.SQLiteDatabase database, int old, int current)
 	{
-		// Database Migration Rules
+		Migration.migrate(this, database, old, current);
+	}
 
-		/*
-		 * Version 6 was until version 1.2.5.12 and we don't have any new changes compared to version
-		 * 6, so we only included version 5 which we did not note the changes
-		 */
+	public static SQLValues tables()
+	{
+		SQLValues values = new SQLValues();
 
-		SQLValues databaseTables = getDatabaseTables();
+		values.defineTable(TABLE_CLIPBOARD)
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
 
-		if (old <= 5) {
+		values.defineTable(TABLE_DEVICES)
+				.define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true))
+				.define(new SQLValues.Column(FIELD_DEVICES_TYPE, SQLType.TEXT, false));
 
-		} else {
-			if (Migration.migrate(database, old, current))
-			// TODO: 7/14/19 Changes: TransferObject {Added LastChangeTime, Changed Flag as Flag[]}, Assignee {Added Type, Removed isClone]
-		}
+		values.defineTable(TABLE_DEVICECONNECTION)
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
+
+		values.defineTable(TABLE_FILEBOOKMARK)
+				.define(new SQLValues.Column(FIELD_FILEBOOKMARK_TITLE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_FILEBOOKMARK_PATH, SQLType.TEXT, false));
+
+		values.defineTable(TABLE_TRANSFER)
+				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFER_LASTCHANGETIME, SQLType.LONG, false));
+
+		values.defineTable(TABLE_TRANSFERASSIGNEE)
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_TYPE, SQLType.TEXT, false));
+
+		values.defineTable(TABLE_TRANSFERGROUP)
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true));
+
+		values.defineTable(TABLE_WRITABLEPATH)
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
+				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
+
+		return values;
 	}
 
 	public synchronized void append(android.database.sqlite.SQLiteDatabase dbInstance,
@@ -221,70 +268,6 @@ public class AccessDatabase extends SQLiteDatabase
 		return returnCount;
 	}
 
-	public SQLValues getDatabaseTables()
-	{
-		SQLValues sqlValues = new SQLValues();
-
-		sqlValues.defineTable(TABLE_CLIPBOARD)
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_ID, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_TEXT, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_CLIPBOARD_TIME, SQLType.LONG, false));
-
-		sqlValues.defineTable(TABLE_DEVICES)
-				.define(new SQLValues.Column(FIELD_DEVICES_ID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_USER, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BRAND, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_ISLOCALADDRESS, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_DEVICES_TMPSECUREKEY, SQLType.INTEGER, true))
-				.define(new SQLValues.Column(FIELD_DEVICES_EXTRA_TYPE, SQLType.TEXT, false));
-
-		sqlValues.defineTable(TABLE_DEVICECONNECTION)
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_IPADDRESS, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_ADAPTERNAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_DEVICECONNECTION_LASTCHECKEDDATE, SQLType.INTEGER, false));
-
-		sqlValues.defineTable(TABLE_FILEBOOKMARK)
-				.define(new SQLValues.Column(FIELD_FILEBOOKMARK_TITLE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_FILEBOOKMARK_PATH, SQLType.TEXT, false));
-
-		sqlValues.defineTable(TABLE_TRANSFER)
-				.define(new SQLValues.Column(FIELD_TRANSFER_ID, SQLType.LONG, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_GROUPID, SQLType.LONG, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_DIRECTORY, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFER_FILE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_NAME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_SIZE, SQLType.INTEGER, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_MIME, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_TYPE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_FLAG, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFER_LASTCHANGETIME, SQLType.LONG, false));
-
-		sqlValues.defineTable(TABLE_TRANSFERASSIGNEE)
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_GROUPID, SQLType.LONG, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_DEVICEID, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERASSIGNEE_TYPE, SQLType.TEXT, false));
-
-		sqlValues.defineTable(TABLE_TRANSFERGROUP)
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true));
-
-		sqlValues.defineTable(TABLE_WRITABLEPATH)
-				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
-				.define(new SQLValues.Column(FIELD_WRITABLEPATH_PATH, SQLType.TEXT, false));
-
-		return sqlValues;
-	}
-
 	@Override
 	public long insert(android.database.sqlite.SQLiteDatabase database, String tableName, String nullColumnHack, ContentValues contentValues)
 	{
@@ -315,8 +298,8 @@ public class AccessDatabase extends SQLiteDatabase
 	{
 		super.remove(openDatabase, objects, updater, parent);
 		Set<String> tableList = explodePerTable(objects).keySet();
-        for (String tableName : tableList)
-            append(openDatabase, tableName, TYPE_REMOVE);
+		for (String tableName : tableList)
+			append(openDatabase, tableName, TYPE_REMOVE);
 	}
 
 	public void removeAsynchronous(Activity activity, final DatabaseObject object)
@@ -364,11 +347,12 @@ public class AccessDatabase extends SQLiteDatabase
 
 		Set<String> tableList = explodePerTable(objects).keySet();
 
-        for (String tableName : tableList)
-            append(openDatabase, tableName, TYPE_UPDATE);
+		for (String tableName : tableList)
+			append(openDatabase, tableName, TYPE_UPDATE);
 	}
 
-	public static BroadcastData toData(Intent intent) {
+	public static BroadcastData toData(Intent intent)
+	{
 		return (BroadcastData) intent.getSerializableExtra(EXTRA_BROADCAST_DATA);
 	}
 

@@ -31,7 +31,9 @@ import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -55,10 +57,10 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
 {
     private TransferGroup mGroup;
     private NetworkDevice mDevice;
-    private NetworkDevice.Connection mConnection;
+    private DeviceConnection mConnection;
 
     public AddDeviceRunningTask(TransferGroup group, NetworkDevice device,
-                                NetworkDevice.Connection connection)
+                                DeviceConnection connection)
     {
         mGroup = group;
         mDevice = device;
@@ -70,157 +72,134 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
     {
         final Context context = getService().getApplicationContext();
 
-        final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                if (getAnchorListener() != null)
-                    getAnchorListener().doCommunicate(mDevice, mConnection);
-            }
+        final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
+            if (getAnchorListener() != null)
+                getAnchorListener().doCommunicate(mDevice, mConnection);
         };
 
         CommunicationBridge.connect(AppUtils.getDatabase(getService()), true,
-                new CommunicationBridge.Client.ConnectionHandler()
-                {
-                    @Override
-                    public void onConnect(CommunicationBridge.Client client)
-                    {
-                        client.setDevice(mDevice);
+                client -> {
+                    client.setDevice(mDevice);
+
+                    try {
+                        boolean doUpdate = false;
+                        final JSONObject jsonRequest = new JSONObject();
+                        final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice,
+                                TransferObject.Type.OUTGOING, mConnection);
+
+                        final List<TransferObject> existingRegistry =
+                                new ArrayList<>(AppUtils.getDatabase(context).castQuery(
+                                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+                                                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
+                                                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
+                                                        String.valueOf(mGroup.id),
+                                                        TransferObject.Type.OUTGOING.toString()), TransferObject.class));
 
                         try {
-                            boolean doPublish = false;
-                            final JSONObject jsonRequest = new JSONObject();
-                            final TransferGroup.Assignee assignee = new TransferGroup.Assignee(
-                                    mGroup, mDevice, TransferObject.Type.OUTGOING, mConnection);
+                            // Checks if the current assignee is already on the list, if so, update
+                            AppUtils.getDatabase(context).reconstruct(new TransferAssignee(
+                                    assignee.groupId, assignee.deviceId, TransferObject.Type.OUTGOING));
 
-                            final List<TransferObject> existingRegistry =
-                                    new ArrayList<>(AppUtils.getDatabase(context).castQuery(
-                                            new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                                    .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                                    + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                            String.valueOf(mGroup.id),
-                                                            TransferObject.Type.OUTGOING.toString()), TransferObject.class));
-                            final SQLiteDatabase.ProgressUpdater progressUpdater = new SQLiteDatabase.ProgressUpdater()
-                            {
-                                @Override
-                                public void onProgressChange(int total, int current)
-                                {
-                                    if (getAnchorListener() != null)
-                                        getAnchorListener().updateProgress(total, current);
-                                }
+                            doUpdate = true;
+                        } catch (Exception ignored) {
+                        }
 
-                                @Override
-                                public boolean onProgressState()
-                                {
-                                    return !getInterrupter().interrupted();
-                                }
-                            };
+                        if (mDevice instanceof NetworkDeviceListAdapter.HotspotNetwork
+                                && ((NetworkDeviceListAdapter.HotspotNetwork) mDevice).qrConnection)
+                            jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
+
+                        jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
+                        jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
+
+                        if (existingRegistry.size() == 0)
+                            throw new Exception("Empty share holder id: " + mGroup.id);
+
+                        JSONArray filesArray = new JSONArray();
+
+                        for (TransferObject transferObject : existingRegistry) {
+                            publishStatusText(transferObject.name);
+                            transferObject.putFlag(assignee.deviceId, TransferObject.Flag.PENDING);
+
+                            if (getInterrupter().interrupted())
+                                throw new InterruptedException("Interrupted by user");
+
+                            JSONObject thisJson = new JSONObject();
 
                             try {
-                                // Checks if the current assignee is already on the list, if so do publish not insert
-                                AppUtils.getDatabase(context).reconstruct(new TransferGroup.Assignee(
-                                        assignee.groupId, assignee.deviceId, TransferObject.Type.OUTGOING));
+                                thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name);
+                                thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.size);
+                                thisJson.put(Keyword.TRANSFER_REQUEST_ID, transferObject.id);
+                                thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
 
-                                doPublish = true;
-                            } catch (Exception ignored) {
+                                if (transferObject.directory != null)
+                                    thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
+
+                                filesArray.put(thisJson);
+                            } catch (Exception e) {
+                                Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.name);
                             }
-
-                            if (mDevice instanceof NetworkDeviceListAdapter.HotspotNetwork
-                                    && ((NetworkDeviceListAdapter.HotspotNetwork) mDevice).qrConnection)
-                                jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
-
-                            jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-                            jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
-
-                            if (existingRegistry.size() == 0)
-                                throw new Exception("Empty share holder id: " + mGroup.id);
-
-                            JSONArray filesArray = new JSONArray();
-
-                            for (TransferObject transferObject : existingRegistry) {
-                                publishStatusText(transferObject.name);
-
-                                if (getInterrupter().interrupted())
-                                    throw new InterruptedException("Interrupted by user");
-
-                                JSONObject thisJson = new JSONObject();
-
-                                try {
-                                    thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name);
-                                    thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.size);
-                                    thisJson.put(Keyword.TRANSFER_REQUEST_ID, transferObject.id);
-                                    thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
-
-                                    if (transferObject.directory != null)
-                                        thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);
-
-                                    filesArray.put(thisJson);
-                                } catch (Exception e) {
-                                    Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.name);
-                                }
-                            }
-
-                            // so that if the user rejects, it won't be removed from the sender
-                            jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
-
-                            getInterrupter().addCloser(userAction -> AppUtils.getDatabase(context).remove(assignee));
-
-                            final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
-
-                            getInterrupter().addCloser(userAction -> {
-                                try {
-                                    activeConnection.getSocket().close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-
-                            activeConnection.reply(jsonRequest.toString());
-
-                            CoolSocket.ActiveConnection.Response response = activeConnection.receive();
-                            activeConnection.getSocket().close();
-
-                            JSONObject clientResponse = new JSONObject(response.response);
-
-                            if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
-                                publishStatusText(context.getString(R.string.mesg_organizingFiles));
-
-                                if (doPublish)
-                                    AppUtils.getDatabase(context).publish(assignee);
-                                else
-                                    AppUtils.getDatabase(context).insert(assignee);
-
-                                AppUtils.getDatabase(context).broadcast();
-
-                                if (getAnchorListener() != null) {
-                                    getAnchorListener().setResult(RESULT_OK, new Intent()
-                                            .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
-                                            .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
-
-                                    getAnchorListener().finish();
-                                }
-                            } else if (getAnchorListener() != null) {
-                                UIConnectionUtils.showConnectionRejectionInformation(
-                                        getAnchorListener(), mDevice, clientResponse,
-                                        retryButtonListener);
-                            }
-                        } catch (Exception e) {
-                            if (!(e instanceof InterruptedException)) {
-                                e.printStackTrace();
-
-                                if (getAnchorListener() != null)
-                                    getAnchorListener().runOnUiThread(() -> new AlertDialog.Builder(getAnchorListener())
-                                            .setMessage(context.getString(R.string.mesg_fileSendError,
-                                                    context.getString(R.string.mesg_connectionProblem)))
-                                            .setNegativeButton(R.string.butn_close, null)
-                                            .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                                            .show());
-                            }
-                        } finally {
-                            if (getAnchorListener() != null)
-                                getAnchorListener().runOnUiThread(() -> getAnchorListener().resetStatusViews());
                         }
+
+                        // so that if the user rejects, it won't be removed from the sender
+                        jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
+
+                        getInterrupter().addCloser(userAction -> AppUtils.getDatabase(context).remove(assignee));
+
+                        final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
+
+                        getInterrupter().addCloser(userAction -> {
+                            try {
+                                activeConnection.getSocket().close();
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        });
+
+                        activeConnection.reply(jsonRequest.toString());
+
+                        CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                        activeConnection.getSocket().close();
+
+                        JSONObject clientResponse = new JSONObject(response.response);
+
+                        if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT)) {
+                            publishStatusText(context.getString(R.string.mesg_organizingFiles));
+
+                            if (doUpdate)
+                                AppUtils.getDatabase(context).update(assignee);
+                            else
+                                AppUtils.getDatabase(context).insert(assignee);
+
+                            AppUtils.getDatabase(context).update(existingRegistry);
+                            AppUtils.getDatabase(context).broadcast();
+
+                            if (getAnchorListener() != null) {
+                                getAnchorListener().setResult(RESULT_OK, new Intent()
+                                        .putExtra(AddDevicesToTransferActivity.EXTRA_DEVICE_ID, assignee.deviceId)
+                                        .putExtra(AddDevicesToTransferActivity.EXTRA_GROUP_ID, assignee.groupId));
+
+                                getAnchorListener().finish();
+                            }
+                        } else if (getAnchorListener() != null) {
+                            UIConnectionUtils.showConnectionRejectionInformation(
+                                    getAnchorListener(), mDevice, clientResponse,
+                                    retryButtonListener);
+                        }
+                    } catch (Exception e) {
+                        if (!(e instanceof InterruptedException)) {
+                            e.printStackTrace();
+
+                            if (getAnchorListener() != null)
+                                getAnchorListener().runOnUiThread(() -> new AlertDialog.Builder(getAnchorListener())
+                                        .setMessage(context.getString(R.string.mesg_fileSendError,
+                                                context.getString(R.string.mesg_connectionProblem)))
+                                        .setNegativeButton(R.string.butn_close, null)
+                                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                                        .show());
+                        }
+                    } finally {
+                        if (getAnchorListener() != null)
+                            getAnchorListener().runOnUiThread(() -> getAnchorListener().resetStatusViews());
                     }
                 });
     }

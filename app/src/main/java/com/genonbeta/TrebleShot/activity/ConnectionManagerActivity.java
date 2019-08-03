@@ -44,6 +44,7 @@ import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkDeviceListFragment;
 import com.genonbeta.TrebleShot.fragment.NetworkManagerFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -88,7 +89,7 @@ public class ConnectionManagerActivity
     private final NetworkDeviceSelectedListener mDeviceSelectionListener = new NetworkDeviceSelectedListener()
     {
         @Override
-        public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, NetworkDevice.Connection connection)
+        public boolean onNetworkDeviceSelected(NetworkDevice networkDevice, DeviceConnection connection)
         {
             if (mRequestType.equals(RequestType.RETURN_RESULT)) {
                 setResult(RESULT_OK, new Intent()
@@ -115,14 +116,7 @@ public class ConnectionManagerActivity
                     }
                 };
 
-                NetworkDeviceLoader.OnDeviceRegisteredListener registeredListener = new NetworkDeviceLoader.OnDeviceRegisteredListener()
-                {
-                    @Override
-                    public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final NetworkDevice.Connection connection)
-                    {
-                        createSnackbar(R.string.mesg_completing).show();
-                    }
-                };
+                NetworkDeviceLoader.OnDeviceRegisteredListener registeredListener = (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
 
                 uiConnectionUtils.makeAcquaintance(ConnectionManagerActivity.this, uiTask,
                         connection.ipAddress, -1, registeredListener);
@@ -162,7 +156,7 @@ public class ConnectionManagerActivity
                         && intent.hasExtra(CommunicationService.EXTRA_DEVICE_ID)
                         && intent.hasExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME)) {
                     NetworkDevice device = new NetworkDevice(intent.getStringExtra(CommunicationService.EXTRA_DEVICE_ID));
-                    NetworkDevice.Connection connection = new NetworkDevice.Connection(device.id, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
+                    DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
 
                     try {
                         AppUtils.getDatabase(ConnectionManagerActivity.this).reconstruct(device);
@@ -468,7 +462,7 @@ public class ConnectionManagerActivity
                     try {
                         NetworkDevice device = new NetworkDevice(data.getStringExtra(BarcodeScannerActivity.EXTRA_DEVICE_ID));
                         AppUtils.getDatabase(getContext()).reconstruct(device);
-                        NetworkDevice.Connection connection = new NetworkDevice.Connection(device.id, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
+                        DeviceConnection connection = new DeviceConnection(device.id, data.getStringExtra(BarcodeScannerActivity.EXTRA_CONNECTION_ADAPTER));
                         AppUtils.getDatabase(getContext()).reconstruct(connection);
 
                         if (mListener != null)

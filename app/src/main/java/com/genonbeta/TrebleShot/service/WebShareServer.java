@@ -40,8 +40,10 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
+import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -274,12 +276,12 @@ public class WebShareServer extends NanoHTTPD
                                 destFile.getType(), destFile.length(), TransferObject.Type.INCOMING);
                         transferObject.setFlag(TransferObject.Flag.DONE);
 
-                        NetworkDevice.Connection connection = new NetworkDevice.Connection(
+                        DeviceConnection connection = new DeviceConnection(
                                 Keyword.Local.NETWORK_INTERFACE_UNKNOWN, clientAddress, device.id,
                                 System.currentTimeMillis());
                         AppUtils.applyAdapterName(connection);
 
-                        TransferGroup.Assignee assignee = new TransferGroup.Assignee(webShareGroup,
+                        TransferAssignee assignee = new TransferAssignee(webShareGroup,
                                 device, TransferObject.Type.INCOMING);
                         assignee.connectionAdapter = connection.adapterName;
 

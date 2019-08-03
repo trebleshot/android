@@ -20,10 +20,10 @@ package com.genonbeta.TrebleShot.object;
 
 import java.util.Locale;
 
-public class ShowingAssignee extends TransferGroup.Assignee implements Editable
+public class ShowingAssignee extends TransferAssignee implements Editable
 {
     public NetworkDevice device;
-    public NetworkDevice.Connection connection;
+    public DeviceConnection connection;
 
     public ShowingAssignee()
     {

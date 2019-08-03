@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.migration.db.v13;
+package com.genonbeta.TrebleShot.migration.db.object;
 
 /**
  * created by: veli
@@ -35,7 +35,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import androidx.annotation.NonNull;
 
 
-public class TransferObject implements DatabaseObject<TransferGroup>
+public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
 {
 	public String friendlyName;
 	public String file;
@@ -50,16 +50,16 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 	public Type type = Type.INCOMING;
 	public Flag flag = Flag.PENDING;
 
-	public TransferObject()
+	public TransferObjectV12()
 	{
 	}
 
-	public TransferObject(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+	public TransferObjectV12(long requestId, long groupId, String friendlyName, String file, String fileMime, long fileSize, Type type)
 	{
 		this(requestId, groupId, null, friendlyName, file, fileMime, fileSize, type);
 	}
 
-	public TransferObject(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
+	public TransferObjectV12(long requestId, long groupId, String deviceId, String friendlyName, String file, String fileMime, long fileSize, Type type)
 	{
 		this.friendlyName = friendlyName;
 		this.file = file;
@@ -71,14 +71,14 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 		this.type = type;
 	}
 
-	public TransferObject(long requestId, String deviceId, Type type)
+	public TransferObjectV12(long requestId, String deviceId, Type type)
 	{
 		this.requestId = requestId;
 		this.deviceId = deviceId;
 		this.type = type;
 	}
 
-	public TransferObject(CursorItem item)
+	public TransferObjectV12(CursorItem item)
 	{
 		reconstruct(item);
 	}
@@ -86,10 +86,10 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 	@Override
 	public boolean equals(Object obj)
 	{
-		if (!(obj instanceof TransferObject))
+		if (!(obj instanceof TransferObjectV12))
 			return super.equals(obj);
 
-		TransferObject otherObject = (TransferObject) obj;
+		TransferObjectV12 otherObject = (TransferObjectV12) obj;
 
 		return otherObject.requestId == requestId
 				&& type.equals(otherObject.type) && ((deviceId == null
@@ -108,10 +108,10 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 		String whereClause = isDivisionObject()
 				? String.format("%s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID, AccessDatabase.FIELD_TRANSFER_TYPE)
 				: String.format("%s = ? AND %s = ? AND %s = ?", AccessDatabase.FIELD_TRANSFER_ID,
-				AccessDatabase.FIELD_TRANSFER_TYPE, Migration.FIELD_TRANSFER_DEVICEID);
+				AccessDatabase.FIELD_TRANSFER_TYPE, Migration.v12.FIELD_TRANSFER_DEVICEID);
 
 		return isDivisionObject()
-				? new SQLQuery.Select(Migration.DIVIS_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString())
+				? new SQLQuery.Select(Migration.v12.TABLE_DIVISTRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString())
 				: new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(whereClause, String.valueOf(requestId), type.toString(), deviceId);
 	}
 
@@ -122,15 +122,15 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 
 		values.put(AccessDatabase.FIELD_TRANSFER_ID, requestId);
 		values.put(AccessDatabase.FIELD_TRANSFER_GROUPID, groupId);
-		values.put(Migration.FIELD_TRANSFER_DEVICEID, deviceId);
+		values.put(Migration.v12.FIELD_TRANSFER_DEVICEID, deviceId);
 		values.put(AccessDatabase.FIELD_TRANSFER_NAME, friendlyName);
 		values.put(AccessDatabase.FIELD_TRANSFER_SIZE, fileSize);
 		values.put(AccessDatabase.FIELD_TRANSFER_MIME, fileMimeType);
 		values.put(AccessDatabase.FIELD_TRANSFER_FLAG, flag.toString());
 		values.put(AccessDatabase.FIELD_TRANSFER_TYPE, type.toString());
 		values.put(AccessDatabase.FIELD_TRANSFER_FILE, file);
-		values.put(Migration.FIELD_TRANSFER_ACCESSPORT, accessPort);
-		values.put(Migration.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
+		values.put(Migration.v12.FIELD_TRANSFER_ACCESSPORT, accessPort);
+		values.put(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES, skippedBytes);
 		values.put(AccessDatabase.FIELD_TRANSFER_DIRECTORY, directory);
 
 		return values;
@@ -145,7 +145,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 		this.fileMimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
 		this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
 		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
-		this.deviceId = item.getString(Migration.FIELD_TRANSFER_DEVICEID);
+		this.deviceId = item.getString(Migration.v12.FIELD_TRANSFER_DEVICEID);
 		this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
 
 		// We may have put long in that field indicating that the file was / is in progress so generate
@@ -156,25 +156,25 @@ public class TransferObject implements DatabaseObject<TransferGroup>
 			this.flag.setBytesValue(item.getLong(AccessDatabase.FIELD_TRANSFER_FLAG));
 		}
 
-		this.accessPort = item.getInt(Migration.FIELD_TRANSFER_ACCESSPORT);
-		this.skippedBytes = item.getLong(Migration.FIELD_TRANSFER_SKIPPEDBYTES);
+		this.accessPort = item.getInt(Migration.v12.FIELD_TRANSFER_ACCESSPORT);
+		this.skippedBytes = item.getLong(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES);
 		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
 	}
 
 	@Override
-	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
 	{
 
 	}
 
 	@Override
-	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
 	{
 
 	}
 
 	@Override
-	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroupV12 parent)
 	{
 
 	}

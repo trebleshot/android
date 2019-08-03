@@ -130,7 +130,7 @@ dependencies {
 
     //implementation 'com.genonbeta.android:framework:1.0.2.6-local69'
     implementation 'com.genonbeta.android:framework:1.0.2.8'
-    implementation 'com.genonbeta.android:gdatabase:1.0.2.6.1'
+    implementation 'com.genonbeta.android:gdatabase:1.0.2.6.2'
     implementation 'com.genonbeta.coolsocket:main:1.0.3.2'
 
     // 3.3.2 requires minimum Android SDK 16, so core version changes should be made in accordance

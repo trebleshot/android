@@ -45,6 +45,7 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
@@ -79,7 +80,7 @@ public class AppUtils
 	private static SharedPreferences mDefaultPreferences;
 	private static SuperPreferences mViewingPreferences;
 
-	public static void applyAdapterName(NetworkDevice.Connection connection)
+	public static void applyAdapterName(DeviceConnection connection)
 	{
 		if (connection.ipAddress == null) {
 			Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");

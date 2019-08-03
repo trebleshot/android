@@ -36,6 +36,7 @@ import com.genonbeta.TrebleShot.activity.ManageDevicesActivity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -54,7 +55,7 @@ import java.util.List;
 
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
-    final private List<NetworkDevice.Connection> mConnections = new ArrayList<>();
+    final private List<DeviceConnection> mConnections = new ArrayList<>();
     final private List<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
 
     private NetworkDevice mNetworkDevice;
@@ -81,7 +82,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
                 @Override
                 public void onClick(DialogInterface dialog, int which)
                 {
-                    List<NetworkDevice.Connection> connections = getConnections();
+                    List<DeviceConnection> connections = getConnections();
                     listener.onDeviceSelected(connections.get(which), connections);
                 }
             });
@@ -90,17 +91,10 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
         setTitle(getContext().getString(R.string.text_availableNetworks, networkDevice.nickname));
         setNegativeButton(R.string.butn_cancel, null);
-        setNeutralButton(R.string.text_manageDevices, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                activity.startActivity(new Intent(activity, ManageDevicesActivity.class));
-            }
-        });
+        setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity, ManageDevicesActivity.class)));
     }
 
-    public synchronized List<NetworkDevice.Connection> getConnections()
+    public synchronized List<DeviceConnection> getConnections()
     {
         return new ArrayList<>(mConnections);
     }
@@ -112,7 +106,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         {
             mConnections.addAll(AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                     .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
-                    .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), NetworkDevice.Connection.class));
+                    .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class));
 
             mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
         }
@@ -141,7 +135,7 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
             if (convertView == null)
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent, false);
 
-            NetworkDevice.Connection address = (NetworkDevice.Connection) getItem(position);
+            DeviceConnection address = (DeviceConnection) getItem(position);
 
             TextView textView1 = convertView.findViewById(R.id.pending_available_interface_text1);
             TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);

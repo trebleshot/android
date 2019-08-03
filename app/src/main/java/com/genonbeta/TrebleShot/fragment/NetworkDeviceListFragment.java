@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
@@ -32,22 +31,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
-import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
-import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
+import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -62,7 +54,13 @@ import com.genonbeta.TrebleShot.util.NsdDiscovery;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import java.util.List;
-import java.util.function.Function;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class NetworkDeviceListFragment
 		extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
@@ -219,7 +217,7 @@ public class NetworkDeviceListFragment
 							}
 
 							@Override
-							public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+							public void onDeviceRegistered(AccessDatabase database, NetworkDevice device, DeviceConnection connection)
 							{
 								mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
 							}

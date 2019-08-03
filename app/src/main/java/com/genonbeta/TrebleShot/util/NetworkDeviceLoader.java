@@ -30,6 +30,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.android.database.SQLQuery;
 
@@ -44,16 +45,16 @@ import java.net.ConnectException;
 
 public class NetworkDeviceLoader
 {
-	public static NetworkDevice.Connection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
+	public static DeviceConnection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
 	{
-		NetworkDevice.Connection connection = new NetworkDevice.Connection(ipAddress);
+		DeviceConnection connection = new DeviceConnection(ipAddress);
 
 		processConnection(database, device, connection);
 
 		return connection;
 	}
 
-	public static void processConnection(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection)
+	public static void processConnection(AccessDatabase database, NetworkDevice device, DeviceConnection connection)
 	{
 		try {
 			database.reconstruct(connection);
@@ -87,7 +88,7 @@ public class NetworkDeviceLoader
 
 				if (device.id != null) {
 					NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
-					NetworkDevice.Connection connection = processConnection(database, device, ipAddress);
+					DeviceConnection connection = processConnection(database, device, ipAddress);
 
 					if (!localDevice.id.equals(device.id)) {
 						device.lastUsageTime = System.currentTimeMillis();
@@ -212,7 +213,7 @@ public class NetworkDeviceLoader
 
 	public interface OnDeviceRegisteredListener
 	{
-		void onDeviceRegistered(AccessDatabase database, NetworkDevice device, NetworkDevice.Connection connection);
+		void onDeviceRegistered(AccessDatabase database, NetworkDevice device, DeviceConnection connection);
 	}
 
 	public interface OnDeviceRegisteredErrorListener extends OnDeviceRegisteredListener

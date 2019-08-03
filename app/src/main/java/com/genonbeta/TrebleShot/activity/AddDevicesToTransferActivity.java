@@ -41,6 +41,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.fragment.TransferAssigneeListFragment;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -178,7 +179,7 @@ public class AddDevicesToTransferActivity extends Activity
 
 				try {
 					NetworkDevice networkDevice = new NetworkDevice(deviceId);
-					NetworkDevice.Connection connection = new NetworkDevice.Connection(deviceId, connectionAdapter);
+					DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
 
 					getDatabase().reconstruct(networkDevice);
 					getDatabase().reconstruct(connection);
@@ -262,7 +263,7 @@ public class AddDevicesToTransferActivity extends Activity
 		return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
 	}
 
-	public void doCommunicate(final NetworkDevice device, final NetworkDevice.Connection connection)
+	public void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
 	{
 		AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
 

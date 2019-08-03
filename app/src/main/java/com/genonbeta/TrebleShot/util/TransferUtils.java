@@ -14,9 +14,11 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
+import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
+import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
@@ -63,7 +65,7 @@ public class TransferUtils
 	}
 
 	public static void changeConnection(final FragmentActivity activity, final NetworkDevice device,
-										final TransferGroup.Assignee assignee,
+										final TransferAssignee assignee,
 										final ConnectionUpdatedListener listener)
 	{
 		new ConnectionChooserDialog(activity, device, (connection, connectionList) -> {
@@ -120,7 +122,7 @@ public class TransferUtils
 		List<ShowingAssignee> assignees = database
 				.castQuery(select, ShowingAssignee.class, (db, item, object) -> {
 					object.device = new NetworkDevice(object.deviceId);
-					object.connection = new NetworkDevice.Connection(object);
+					object.connection = new DeviceConnection(object);
 
 					try {
 						db.reconstruct(object.device);
@@ -171,7 +173,7 @@ public class TransferUtils
 	public static void loadAssigneeInfo(SQLiteDatabase db, ShowingAssignee assignee)
 	{
 		assignee.device = new NetworkDevice(assignee.deviceId);
-		assignee.connection = new NetworkDevice.Connection(assignee);
+		assignee.connection = new DeviceConnection(assignee);
 
 		try {
 			db.reconstruct(assignee.device);
@@ -202,7 +204,7 @@ public class TransferUtils
 	}
 
 	public static void loadGroupInfo(Context context, PreloadedGroup group,
-									 @Nullable TransferGroup.Assignee assignee)
+									 @Nullable TransferAssignee assignee)
 	{
 		if (assignee == null)
 			loadGroupInfo(context, group);
@@ -282,7 +284,7 @@ public class TransferUtils
 		pauseTransfer(context, group.id, null, type);
 	}
 
-	public static void pauseTransfer(Context context, TransferGroup.Assignee assignee)
+	public static void pauseTransfer(Context context, TransferAssignee assignee)
 	{
 		pauseTransfer(context, assignee.groupId, assignee.deviceId, assignee.type);
 	}
@@ -300,9 +302,8 @@ public class TransferUtils
 	}
 
 	@Deprecated
-	public static void requestStartSending(final Activity activity, final TransferGroup.Assignee assignee,
-										   final NetworkDevice device,
-										   final NetworkDevice.Connection connection)
+	public static void requestStartSending(final Activity activity, final TransferAssignee assignee,
+										   final NetworkDevice device, final DeviceConnection connection)
 	{
 		final Context context = activity.getApplicationContext();
 
@@ -318,16 +319,11 @@ public class TransferUtils
 					final CoolSocket.ActiveConnection activeConnection = client.communicate(device,
 							connection);
 
-					Interrupter.Closer connectionCloser = new Interrupter.Closer()
-					{
-						@Override
-						public void onClose(boolean userAction)
-						{
-							try {
-								activeConnection.getSocket().close();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
+					Interrupter.Closer connectionCloser = userAction -> {
+						try {
+							activeConnection.getSocket().close();
+						} catch (IOException e) {
+							e.printStackTrace();
 						}
 					};
 
@@ -416,7 +412,7 @@ public class TransferUtils
 	}
 
 	public static void startTransferWithTest(final Activity activity, final TransferGroup group,
-											 final TransferGroup.Assignee assignee)
+											 final TransferAssignee assignee)
 	{
 		final Context context = activity.getApplicationContext();
 
@@ -462,7 +458,7 @@ public class TransferUtils
 		}.setTitle(activity.getString(R.string.mesg_completing)).run(activity);
 	}
 
-	public static void startTransfer(final Activity activity, final TransferGroup.Assignee assignee)
+	public static void startTransfer(final Activity activity, final TransferAssignee assignee)
 	{
 		if (activity != null && !activity.isFinishing())
 			activity.runOnUiThread(() -> {
@@ -499,6 +495,6 @@ public class TransferUtils
 
 	public interface ConnectionUpdatedListener
 	{
-		void onConnectionUpdated(NetworkDevice.Connection connection, TransferGroup.Assignee assignee);
+		void onConnectionUpdated(DeviceConnection connection, TransferAssignee assignee);
 	}
 }

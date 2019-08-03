@@ -16,7 +16,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
-package com.genonbeta.TrebleShot.migration.db.v13;
+package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
 
@@ -32,7 +32,7 @@ import java.util.List;
  * created by: veli
  * date: 7/31/19 11:03 AM
  */
-public class NetworkDevice implements DatabaseObject<Object>
+public class NetworkDeviceV12 implements DatabaseObject<Object>
 {
 	public String brand;
 	public String model;
@@ -46,16 +46,16 @@ public class NetworkDevice implements DatabaseObject<Object>
 	public boolean isRestricted = false;
 	public boolean isLocalAddress = false;
 
-	public NetworkDevice()
+	public NetworkDeviceV12()
 	{
 	}
 
-	public NetworkDevice(String deviceId)
+	public NetworkDeviceV12(String deviceId)
 	{
 		this.deviceId = deviceId;
 	}
 
-	public NetworkDevice(CursorItem item)
+	public NetworkDeviceV12(CursorItem item)
 	{
 		reconstruct(item);
 	}
@@ -127,117 +127,25 @@ public class NetworkDevice implements DatabaseObject<Object>
 		database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
 				.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", deviceId));
 
-		List<TransferGroup.Assignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferGroup.Assignee.class, null);
+		List<TransferAssigneeV12> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", deviceId), TransferAssigneeV12.class, null);
 
 		// We are ensuring that the transfer group is still valid for other devices
-		for (TransferGroup.Assignee assignee : assignees) {
+		for (TransferAssigneeV12 assignee : assignees) {
 			database.remove(assignee);
 
 			try {
-				TransferGroup transferGroup = new TransferGroup(assignee.groupId);
+				TransferGroupV12 transferGroup = new TransferGroupV12(assignee.groupId);
 				database.reconstruct(dbInstance, transferGroup);
 
-				List<TransferGroup.Assignee> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferGroup.Assignee.class);
+				List<TransferAssigneeV12> relatedAssignees = database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+						.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", String.valueOf(transferGroup.groupId)), TransferAssigneeV12.class);
 
 				if (relatedAssignees.size() == 0)
 					database.remove(transferGroup);
 			} catch (Exception e) {
 
 			}
-		}
-	}
-
-	public static class Connection implements DatabaseObject<NetworkDevice>
-	{
-		public String adapterName;
-		public String ipAddress;
-		public String deviceId;
-		public long lastCheckedDate;
-
-		public Connection()
-		{
-		}
-
-		public Connection(String adapterName, String ipAddress, String deviceId, long lastCheckedDate)
-		{
-			this.adapterName = adapterName;
-			this.ipAddress = ipAddress;
-			this.deviceId = deviceId;
-			this.lastCheckedDate = lastCheckedDate;
-		}
-
-		public Connection(String deviceId, String adapterName)
-		{
-			this.deviceId = deviceId;
-			this.adapterName = adapterName;
-		}
-
-		public Connection(TransferGroup.Assignee assignee)
-		{
-			this(assignee.deviceId, assignee.connectionAdapter);
-		}
-
-		public Connection(String ipAddress)
-		{
-			this.ipAddress = ipAddress;
-		}
-
-		public Connection(CursorItem item)
-		{
-			reconstruct(item);
-		}
-
-		@Override
-		public SQLQuery.Select getWhere()
-		{
-			SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION);
-
-			return ipAddress == null
-					? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-					+ AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
-					: select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
-		}
-
-		@Override
-		public ContentValues getValues()
-		{
-			ContentValues values = new ContentValues();
-
-			values.put(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
-			values.put(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
-			values.put(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
-			values.put(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
-
-			return values;
-		}
-
-		@Override
-		public void reconstruct(CursorItem item)
-		{
-			this.adapterName = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
-			this.ipAddress = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
-			this.deviceId = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
-			this.lastCheckedDate = item.getLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
-		}
-
-		@Override
-		public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-		{
-
-		}
-
-		@Override
-		public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-		{
-
-		}
-
-		@Override
-		public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-		{
-
 		}
 	}
 }
