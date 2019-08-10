@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="other">Apakah Anda ingin menghapus file %d\?</item>
+    </plurals>
+</resources>
