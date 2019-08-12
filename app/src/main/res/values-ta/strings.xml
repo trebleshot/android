@@ -216,4 +216,21 @@
     <string name="mesg_textStreamSaved">Text சேமிக்கப்பட்டது</string>
     <string name="mesg_qrScannerTextMode">QR codes Text-ஆக காண்பிக்கப்படும்</string>
     <string name="butn_showAsQrCode">QR codeஆக காண்பிக்கவும்</string>
+    <string name="text_useVibration">அதிர்வு மற்றும் அறிவிப்புகள்</string>
+    <string name="text_useVibrationSummary">அதிர்வை பயன்படுத்தி அறிவிப்புகளை காண்பிக்கவும்</string>
+    <string name="text_autoStartSummary">இணைப்பு தெரிந்தவுடன் தொடர்பை செயல்படுத்தவும்</string>
+    <string name="text_aboutSummary">Genonbeta Libre Software Org வால் இந்த மென்பொருள் உருவாக்கப்பட்டது</string>
+    <string name="text_textEditor">உரை தொகுப்பி</string>
+    <string name="text_textStream">உரை தொடர்</string>
+    <string name="text_pendingTransfers">நிலுவையிலுள்ள பரிமாற்றங்கள்</string>
+    <string name="mesg_groupOngoingNotice">கோப்பு பரிமாற்றத்திற்க்கு முன் %s முடியும் வரை காத்திருக்கிறது</string>
+    <string name="text_removeCertainPendingTransfersSummary">இது நிலுவையிலுள்ள அனைத்து பரிமாற்றங்களையும் நீக்கிவிடும்</string>
+    <string name="text_chooserTargetService">Device தேர்வை வழங்குபவர்</string>
+    <string name="text_requestPermissionStorageSummary">இந்த அனுமதி TrebleShot ற்க்கு உங்கள் கருவி சேமிப்பை சேர்க்கவும் எடுக்கவும் பயன்படுத்தப்படும்.</string>
+    <string name="text_defaultFolder">பொதுவான அடைவு</string>
+    <string name="text_fileExplorer">கோப்புகளை கண்டுபிடி</string>
+    <string name="text_checkOldFiles">முழுவதுமாகவும், பாதியும் முடிந்த கோப்புகளை இங்கு சேர்க்கலாம். இது கோப்பு அளவினை பொறுத்தவரை சில நேரங்கள் எடுக்கும்</string>
+    <string name="text_longAgo">முன்னொரு நாள்</string>
+    <string name="text_interfaceEthernet">Cable இணைப்பு</string>
+    <string name="text_automaticNetworkConnectionFailed">Device உடன் இணைய முடியவில்லை. அதன் முகவரி மாற்றப்பட்டிருக்கலாம். TrebleShot ஐ on செய்து முயற்சி செய்யவும்.</string>
 </resources>
