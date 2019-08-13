@@ -233,4 +233,18 @@
     <string name="text_longAgo">முன்னொரு நாள்</string>
     <string name="text_interfaceEthernet">Cable இணைப்பு</string>
     <string name="text_automaticNetworkConnectionFailed">Device உடன் இணைய முடியவில்லை. அதன் முகவரி மாற்றப்பட்டிருக்கலாம். TrebleShot ஐ on செய்து முயற்சி செய்யவும்.</string>
+    <string name="text_mediaDirectory">மீடியா அடைவு</string>
+    <string name="text_transactionGroupDetails">பரிமாற்ற குழு விவரம்</string>
+    <string name="text_communicationServiceStop">Session-ஐ முடிக்க இங்கு தட்டவும்</string>
+    <string name="butn_turnTrustZoneOn">TrustZone ஆன் செய்யவும்</string>
+    <string name="butn_turnTrustZoneOff">Trustzone நிறுத்தவும்</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="text_trustZoneEnabledSummary">TrustZone ஆரம்பத்தில் துவக்கப்படுகிறது</string>
+    <string name="butn_typeNewEntry">புதிய வரைவை உள்ளிடவும்</string>
+    <string name="mesg_textSaveNotice">தொடரை சேமி அல்லது மீண்டும் அழுத்தி வெளியேறு</string>
+    <string name="mesg_textShareLimit">ஒரு சமயத்தில் ஒரு தொடரை மட்டுமே பகிர முடியும்</string>
+    <string name="mesg_errorHotspotPermission">Hotspot Setup செய்ய TrebleShot-ற்க்கு அனுமதி தேவை</string>
+    <string name="text_trebleshotHotspot">TrebleShot hotspot</string>
+    <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot-உடன் இணைக்கிறது</string>
+    <string name="butn_skip">தவிர்</string>
 </resources>
