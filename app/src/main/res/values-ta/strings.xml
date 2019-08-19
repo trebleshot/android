@@ -247,4 +247,17 @@
     <string name="text_trebleshotHotspot">TrebleShot hotspot</string>
     <string name="mesg_connectingToSelfHotspot">TrebleShot Hotspot-உடன் இணைக்கிறது</string>
     <string name="butn_skip">தவிர்</string>
+    <string name="text_emulatedMediaDirectory">Emulated (%s)</string>
+    <string name="butn_trustZoneDevice">TrustZone கருவியாக ஆக்கு</string>
+    <string name="mesg_scanningSelfHotspot">Trebleshot Hotspot-ஐ தேடுகிறது</string>
+    <string name="mesg_suggestSelfHotspot">நீங்கள் Trebleshot Hotspot-ஐ தேடுவதற்க்கு Wi-Fi-ஐ ஆன் செய்யலாம்</string>
+    <string name="mesg_locationPermissionRequiredSelfHotspot">Trebleshot Hotspot-ஐ தேடி உருவாக்குவதற்க்கு அனுமதிக்கவும்</string>
+    <string name="mesg_stoppingSelfHotspot">Trebleshot Hotspot-ஐ நிறுத்துகிறது</string>
+    <string name="mesg_startingSelfHotspot">Trebleshot Hotspot-ஐ தொடங்குகிறது</string>
+    <string name="text_previewAndEditList">சரிபார் மற்றும் தொகு</string>
+    <string name="mesg_ongoingUpdateDownload">புதிய version-ஐ தரவிறக்குகிறது</string>
+    <string name="butn_gotIt">சரி</string>
+    <string name="butn_selectAll">அனைத்தயும் தேர்ந்தெடு</string>
+    <string name="butn_check">குறி இடு</string>
+    <string name="butn_uncheck">குறி நீக்கு</string>
 </resources>
