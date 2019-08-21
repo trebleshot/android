@@ -260,4 +260,11 @@
     <string name="butn_selectAll">அனைத்தயும் தேர்ந்தெடு</string>
     <string name="butn_check">குறி இடு</string>
     <string name="butn_uncheck">குறி நீக்கு</string>
+    <string name="ques_connectionWizardUseHotspot">மற்ற கருவிகளுடன் Hotspot மூலம் இணைய வேண்டுமா\? Hotspot என்னவென்று தெரியவில்லை என்றால் Yes-ஐ அழுத்தவும்.</string>
+    <string name="ques_connectionWizardUseNetwork">நீங்கள் Router அல்லது Wi-Fi பயன்படுத்த வேண்டுமா\?</string>
+    <string name="ques_connectionWizardUseKnownDevices">முன்னே இணைந்த கருவிகளை பார்க்க வேண்டுமா\?</string>
+    <string name="butn_yes">ஆம்</string>
+    <string name="butn_no">இல்லை</string>
+    <string name="text_manageDevices">கருவிகள்</string>
+    <string name="mesg_locationPermissionRequiredAny">உங்கள் Location சேவையை ஆன் செய்யவும்</string>
 </resources>
