@@ -267,4 +267,26 @@
     <string name="butn_no">இல்லை</string>
     <string name="text_manageDevices">கருவிகள்</string>
     <string name="mesg_locationPermissionRequiredAny">உங்கள் Location சேவையை ஆன் செய்யவும்</string>
+    <string name="text_saveAnywaySummary">அனுப்பியவருக்கு கோப்பு எங்கு இருக்கிறது என தெரியவில்லை. இருப்பினும் நீங்கள் அதை சேமிக்கலாம்</string>
+    <string name="butn_sortOrder">வரிசைப்படுத்தும் விதம்</string>
+    <string name="text_sortOrderAscending">பெரியன முதல்</string>
+    <string name="text_sortOrderDescending">சிறியன முதல்</string>
+    <string name="text_allowingToConnectNotice">இந்த சாதனத்தில் இருந்து இணைப்புகளை ஏற்றுக்கொள்</string>
+    <string name="text_resetPreferencesToDefaultSummary">இது முதன்மை அமைப்புகளை உண்டாக்கும்</string>
+    <string name="text_taskCompleted">வேலை முடிந்துவிட்டது</string>
+    <string name="text_deletingFilesOngoing">தேர்ந்தெடுத்த கோப்புகளை அழிக்கிறது</string>
+    <string name="text_taskOngoing">நடந்துகொண்டிருக்கும் வேலை</string>
+    <string name="text_notificationChannelHigh">முக்கியமான அறிவிப்புகள்</string>
+    <string name="text_notificationChannelLow">முக்கிய குறைவான அறிவிப்புகள்</string>
+    <string name="text_monthCountShort">%d மாதம்</string>
+    <string name="text_minuteCountShort">%d நிமிடம்</string>
+    <string name="butn_exit">வெளியேறு</string>
+    <string name="text_listEmptyFiles">இங்கு கோப்புகள் இல்லை</string>
+    <string name="text_listEmptyImage">இங்கு புகைப்படங்கள் இல்லை</string>
+    <string name="text_listEmptyApp">இங்கு செயலிகள் இல்லை</string>
+    <string name="text_listEmptyVideo">இங்கு காணொளிகள் இல்லை</string>
+    <string name="text_listEmptyTextStream">எழுத்துக்களை இங்கு காணலாம்</string>
+    <string name="text_listEmptyMusic">இங்கு பாடல்கள் இல்லை</string>
+    <string name="butn_qrScanToSend">அனுப்புவதற்க்கு OR Code-ஐ Scan செய்யவும்</string>
+    <string name="text_notificationSettings">அறிவிப்பு அமைப்புகள்</string>
 </resources>
