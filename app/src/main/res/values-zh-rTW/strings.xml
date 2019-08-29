@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources><string name="text_navigationDrawerOpen">開啟導航面板</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">開啟導航面板</string>n
     <string name="text_navigationDrawerClose">關閉導航面板</string>
     <string name="text_preferences">喜好設定</string>
     <string name="mesg_connectionFailure">連線失敗</string>
@@ -160,7 +161,7 @@
     <string name="text_chooseFile">選擇檔案</string>
     <string name="mesg_pathSameError">您不能選擇以前的資料夾</string>
     <string name="ques_checkOldFiles">移動文件\?</string>
-    <string name="text_checkOldFiles">您可以把完成和部分完成已連結的檔案移動到這個資料夾，這將會需要一些時間基於它們的檔案大小</string>
+    <string name="text_checkOldFiles">您可以把部分與已完成的檔案關聯移動到此資料夾，這將依照它們的大小來決定處理時間</string>
     <string name="mesg_newFilesReceived">新檔案已經接收</string>
     <string name="butn_show">顯示</string>
     <string name="text_preparingFiles">準備檔案中</string>
@@ -269,4 +270,32 @@
     <string name="text_allowingToConnectNotice">允許從此裝置的連線</string>
     <string name="butn_resetToDefault">回復預設值</string>
     <string name="text_resetPreferencesToDefaultSummary">這將會套用初始設定</string>
+    <string name="text_interfaceWireless">Wi-Fi</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="text_taskCompleted">工作已完成</string>
+    <string name="text_deletingFilesOngoing">刪除選取的檔案</string>
+    <string name="text_networkServiceDiscovery">啟用 NSD</string>
+    <string name="text_notificationChannelHigh">重要通知</string>
+    <string name="text_notificationChannelLow">低優先度通知</string>
+    <string name="text_yearCountShort">%d 年</string>
+    <string name="text_monthCountShort">%d 月</string>
+    <string name="text_dayCountShort">%d 日</string>
+    <string name="text_hourCountShort">%d 小時</string>
+    <string name="text_minuteCountShort">%d 分鐘</string>
+    <string name="text_secondCountShort">%d 秒</string>
+    <string name="text_listEmptyFiles">這邊沒有檔案</string>
+    <string name="text_listEmptyImage">這邊沒有照片</string>
+    <string name="text_listEmptyApp">這邊沒有應用程式</string>
+    <string name="text_listEmptyVideo">這邊沒有影片</string>
+    <string name="text_listEmptyTextStream">將會在這邊顯示輸入的文字</string>
+    <string name="text_listEmptyMusic">這邊沒有音樂</string>
+    <string name="text_internalStorage">內部儲存空間</string>
+    <string name="mesg_errorReadFolder">不能存取 \"%s\"</string>
+    <string name="butn_mountDirectory">掛接資料夾</string>
+    <string name="mesg_mountDirectoryHelp">選擇您想要存取的資料夾</string>
+    <string name="butn_ejectDirectory">解除資料夾掛接</string>
+    <string name="text_movedCacheFiles">已移動暫存檔案</string>
+    <string name="text_hotspotStartsTrustZone">熱點開啟時也打開 TrustZone</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone 將會一起打開</string>
+    <string name="text_qrCodeAvailableHelp">掃描 QRcode 來連接裝置</string>
 </resources>
