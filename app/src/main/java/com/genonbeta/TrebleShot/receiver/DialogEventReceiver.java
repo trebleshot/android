@@ -43,7 +43,9 @@ public class DialogEventReceiver extends BroadcastReceiver
     public void onReceive(Context context, Intent intent)
     {
         if (ACTION_DIALOG.equals(intent.getAction()) && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP)
-            showDialog(context, intent.getStringExtra(EXTRA_TITLE), intent.getStringExtra(EXTRA_MESSAGE), (PendingIntent) intent.getParcelableExtra(EXTRA_POSITIVE_INTENT), (PendingIntent) intent.getParcelableExtra(EXTRA_NEGATIVE_INTENT));
+            showDialog(context, intent.getStringExtra(EXTRA_TITLE), intent.getStringExtra(EXTRA_MESSAGE),
+                    intent.getParcelableExtra(EXTRA_POSITIVE_INTENT),
+                    intent.getParcelableExtra(EXTRA_NEGATIVE_INTENT));
     }
 
     public void showDialog(Context context, String title, String message, final PendingIntent accept, final PendingIntent reject)
@@ -57,33 +59,21 @@ public class DialogEventReceiver extends BroadcastReceiver
             dialogBuilder.setMessage(message);
 
         if (accept != null)
-            dialogBuilder.setPositiveButton(android.R.string.ok,
-                    new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2)
-                        {
-                            try {
-                                accept.send();
-                            } catch (PendingIntent.CanceledException e) {
-                                e.printStackTrace();
-                            }
+            dialogBuilder.setPositiveButton(android.R.string.ok, (p1, p2) -> {
+                        try {
+                            accept.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
                         }
                     }
             );
 
         if (reject != null)
-            dialogBuilder.setNegativeButton(android.R.string.cancel,
-                    new DialogInterface.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(DialogInterface p1, int p2)
-                        {
-                            try {
-                                reject.send();
-                            } catch (PendingIntent.CanceledException e) {
-                                e.printStackTrace();
-                            }
+            dialogBuilder.setNegativeButton(android.R.string.cancel, (p1, p2) -> {
+                        try {
+                            reject.send();
+                        } catch (PendingIntent.CanceledException e) {
+                            e.printStackTrace();
                         }
                     }
             );

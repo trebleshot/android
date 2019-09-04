@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -65,7 +64,7 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
 		this.ipAddress = ipAddress;
 	}
 
-	public DeviceConnection(CursorItem item)
+	public DeviceConnection(ContentValues item)
 	{
 		reconstruct(item);
 	}
@@ -95,12 +94,12 @@ public class DeviceConnection implements DatabaseObject<NetworkDevice>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.adapterName = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
-		this.ipAddress = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
-		this.deviceId = item.getString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
-		this.lastCheckedDate = item.getLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
+		this.adapterName = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
+		this.ipAddress = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
+		this.deviceId = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
+		this.lastCheckedDate = item.getAsLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
 	}
 
 	@Override

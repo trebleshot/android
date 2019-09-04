@@ -25,14 +25,13 @@ package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
-
-import androidx.annotation.NonNull;
 
 
 public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
@@ -78,7 +77,7 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
 		this.type = type;
 	}
 
-	public TransferObjectV12(CursorItem item)
+	public TransferObjectV12(ContentValues item)
 	{
 		reconstruct(item);
 	}
@@ -137,28 +136,28 @@ public class TransferObjectV12 implements DatabaseObject<TransferGroupV12>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.friendlyName = item.getString(AccessDatabase.FIELD_TRANSFER_NAME);
-		this.file = item.getString(AccessDatabase.FIELD_TRANSFER_FILE);
-		this.fileSize = item.getLong(AccessDatabase.FIELD_TRANSFER_SIZE);
-		this.fileMimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
-		this.requestId = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
-		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
-		this.deviceId = item.getString(Migration.v12.FIELD_TRANSFER_DEVICEID);
-		this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
+		this.friendlyName = item.getAsString(AccessDatabase.FIELD_TRANSFER_NAME);
+		this.file = item.getAsString(AccessDatabase.FIELD_TRANSFER_FILE);
+		this.fileSize = item.getAsLong(AccessDatabase.FIELD_TRANSFER_SIZE);
+		this.fileMimeType = item.getAsString(AccessDatabase.FIELD_TRANSFER_MIME);
+		this.requestId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_ID);
+		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
+		this.deviceId = item.getAsString(Migration.v12.FIELD_TRANSFER_DEVICEID);
+		this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_TYPE));
 
 		// We may have put long in that field indicating that the file was / is in progress so generate
 		try {
-			this.flag = Flag.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_FLAG));
+			this.flag = Flag.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_FLAG));
 		} catch (Exception e) {
 			this.flag = Flag.IN_PROGRESS;
-			this.flag.setBytesValue(item.getLong(AccessDatabase.FIELD_TRANSFER_FLAG));
+			this.flag.setBytesValue(item.getAsLong(AccessDatabase.FIELD_TRANSFER_FLAG));
 		}
 
-		this.accessPort = item.getInt(Migration.v12.FIELD_TRANSFER_ACCESSPORT);
-		this.skippedBytes = item.getLong(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES);
-		this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
+		this.accessPort = item.getAsInteger(Migration.v12.FIELD_TRANSFER_ACCESSPORT);
+		this.skippedBytes = item.getAsLong(Migration.v12.FIELD_TRANSFER_SKIPPEDBYTES);
+		this.directory = item.getAsString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
 	}
 
 	@Override

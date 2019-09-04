@@ -22,7 +22,6 @@ import android.content.ContentValues;
 import android.net.Uri;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -67,10 +66,10 @@ public class FileShortcutObject implements DatabaseObject<Object>
     }
 
     @Override
-    public void reconstruct(CursorItem item)
+    public void reconstruct(ContentValues item)
     {
-        this.title = item.getString(AccessDatabase.FIELD_FILEBOOKMARK_TITLE);
-        this.path = Uri.parse(item.getString(AccessDatabase.FIELD_FILEBOOKMARK_PATH));
+        this.title = item.getAsString(AccessDatabase.FIELD_FILEBOOKMARK_TITLE);
+        this.path = Uri.parse(item.getAsString(AccessDatabase.FIELD_FILEBOOKMARK_PATH));
     }
 
     @Override

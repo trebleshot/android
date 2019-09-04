@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -52,7 +51,7 @@ public class NetworkDevice implements DatabaseObject<Object>
 		this.id = id;
 	}
 
-	public NetworkDevice(CursorItem item)
+	public NetworkDevice(ContentValues item)
 	{
 		reconstruct(item);
 	}
@@ -90,22 +89,22 @@ public class NetworkDevice implements DatabaseObject<Object>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.id = item.getString(AccessDatabase.FIELD_DEVICES_ID);
-		this.nickname = item.getString(AccessDatabase.FIELD_DEVICES_USER);
-		this.brand = item.getString(AccessDatabase.FIELD_DEVICES_BRAND);
-		this.model = item.getString(AccessDatabase.FIELD_DEVICES_MODEL);
-		this.versionName = item.getString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
-		this.versionNumber = item.getInt(AccessDatabase.FIELD_DEVICES_BUILDNUMBER);
-		this.lastUsageTime = item.getLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
-		this.isTrusted = item.getInt(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
-		this.isRestricted = item.getInt(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
-		this.isLocalAddress = item.getInt(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-		this.tmpSecureKey = item.getInt(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
+		this.id = item.getAsString(AccessDatabase.FIELD_DEVICES_ID);
+		this.nickname = item.getAsString(AccessDatabase.FIELD_DEVICES_USER);
+		this.brand = item.getAsString(AccessDatabase.FIELD_DEVICES_BRAND);
+		this.model = item.getAsString(AccessDatabase.FIELD_DEVICES_MODEL);
+		this.versionName = item.getAsString(AccessDatabase.FIELD_DEVICES_BUILDNAME);
+		this.versionNumber = item.getAsInteger(AccessDatabase.FIELD_DEVICES_BUILDNUMBER);
+		this.lastUsageTime = item.getAsLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
+		this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
+		this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
+		this.isLocalAddress = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
+		this.tmpSecureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
 
 		try {
-			this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_DEVICES_TYPE));
+			this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_DEVICES_TYPE));
 		} catch (Exception e) {
 			this.type = Type.NORMAL;
 		}

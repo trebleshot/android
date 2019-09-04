@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
@@ -26,6 +27,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
@@ -40,7 +46,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.MimeIconUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.util.MathUtils;
@@ -53,11 +58,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 
 public class FileListAdapter
 		extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
@@ -100,12 +100,12 @@ public class FileListAdapter
 							TransferObject existingObject = null;
 
 							try {
-								CursorItem cursorItem = AppUtils.getDatabase(getContext())
+								ContentValues data = AppUtils.getDatabase(getContext())
 										.getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 												.setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=?", file.getName()));
 
-								if (cursorItem != null)
-									existingObject = new TransferObject(cursorItem);
+								if (data != null)
+									existingObject = new TransferObject(data);
 							} catch (Exception e) {
 							}
 

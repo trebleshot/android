@@ -417,14 +417,7 @@ public abstract class Activity extends AppCompatActivity
 	public void notifyUserProfileChanged()
 	{
 		if (!isFinishing())
-			runOnUiThread(new Runnable()
-			{
-				@Override
-				public void run()
-				{
-					onUserProfileUpdated();
-				}
-			});
+			runOnUiThread(this::onUserProfileUpdated);
 	}
 
 	public void setSkipPermissionRequest(boolean skip)
@@ -461,7 +454,6 @@ public abstract class Activity extends AppCompatActivity
 
 	public interface OnBackPressedListener
 	{
-
 		boolean onBackPressed();
 	}
 

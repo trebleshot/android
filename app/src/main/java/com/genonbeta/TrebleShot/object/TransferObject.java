@@ -21,11 +21,13 @@ package com.genonbeta.TrebleShot.object;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 
-import com.genonbeta.TrebleShot.adapter.TransferListAdapter;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.collection.ArrayMap;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -37,10 +39,6 @@ import org.json.JSONObject;
 import java.security.InvalidParameterException;
 import java.util.Iterator;
 import java.util.Map;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.collection.ArrayMap;
 
 /**
  * Created by: veli
@@ -91,7 +89,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         this.type = type;
     }
 
-    public TransferObject(CursorItem item)
+    public TransferObject(ContentValues item)
     {
         reconstruct(item);
     }
@@ -243,18 +241,18 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void reconstruct(CursorItem item)
+    public void reconstruct(ContentValues item)
     {
-        this.name = item.getString(AccessDatabase.FIELD_TRANSFER_NAME);
-        this.file = item.getString(AccessDatabase.FIELD_TRANSFER_FILE);
-        this.size = item.getLong(AccessDatabase.FIELD_TRANSFER_SIZE);
-        this.mimeType = item.getString(AccessDatabase.FIELD_TRANSFER_MIME);
-        this.id = item.getLong(AccessDatabase.FIELD_TRANSFER_ID);
-        this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
-        this.type = Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFER_TYPE));
-        this.directory = item.getString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
-        this.lastChangeDate = item.getLong(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME);
-        String flagString = item.getString(AccessDatabase.FIELD_TRANSFER_FLAG);
+        this.name = item.getAsString(AccessDatabase.FIELD_TRANSFER_NAME);
+        this.file = item.getAsString(AccessDatabase.FIELD_TRANSFER_FILE);
+        this.size = item.getAsLong(AccessDatabase.FIELD_TRANSFER_SIZE);
+        this.mimeType = item.getAsString(AccessDatabase.FIELD_TRANSFER_MIME);
+        this.id = item.getAsLong(AccessDatabase.FIELD_TRANSFER_ID);
+        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
+        this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_TYPE));
+        this.directory = item.getAsString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
+        this.lastChangeDate = item.getAsLong(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME);
+        String flagString = item.getAsString(AccessDatabase.FIELD_TRANSFER_FLAG);
 
         if (Type.INCOMING.equals(this.type)) {
             try {

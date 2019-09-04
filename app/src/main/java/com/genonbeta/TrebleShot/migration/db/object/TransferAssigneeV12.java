@@ -20,15 +20,14 @@ package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
-
-import androidx.annotation.NonNull;
 
 /**
  * created by: veli
@@ -89,11 +88,11 @@ public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-		this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+		this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
+		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
+		this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
 	}
 
 	@Override

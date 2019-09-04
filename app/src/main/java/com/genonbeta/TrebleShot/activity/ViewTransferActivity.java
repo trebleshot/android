@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -41,10 +47,8 @@ import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.PreloadedGroup;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
@@ -52,7 +56,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
@@ -61,11 +64,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 
 /**
  * Created by: veli
@@ -186,14 +184,14 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 				Log.d(TAG, "Requested file is: " + streamInfo.friendlyName);
 
-				CursorItem fileIndex = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
+				ContentValues fileData = getDatabase().getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
 						.setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
 								streamInfo.friendlyName, TransferObject.Type.INCOMING.toString()));
 
-				if (fileIndex == null)
+				if (fileData == null)
 					throw new Exception("File is not found in the database");
 
-				TransferObject object = new TransferObject(fileIndex);
+				TransferObject object = new TransferObject(fileData);
 				PreloadedGroup transferGroup = new PreloadedGroup(object.groupId);
 
 				getDatabase().reconstruct(object);

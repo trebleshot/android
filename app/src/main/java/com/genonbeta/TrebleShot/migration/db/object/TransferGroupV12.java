@@ -22,7 +22,6 @@ import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.Migration;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -47,7 +46,7 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
 		this.groupId = groupId;
 	}
 
-	public TransferGroupV12(CursorItem item)
+	public TransferGroupV12(ContentValues item)
 	{
 		reconstruct(item);
 	}
@@ -59,12 +58,12 @@ public class TransferGroupV12 implements DatabaseObject<NetworkDeviceV12>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-		this.savePath = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
-		this.dateCreated = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
-		this.isServedOnWeb = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
+		this.savePath = item.getAsString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
+		this.dateCreated = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
+		this.isServedOnWeb = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
 	}
 
 	@Override

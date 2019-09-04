@@ -3,13 +3,16 @@ package com.genonbeta.TrebleShot.util;
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.FragmentActivity;
 
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ConnectionChooserDialog;
@@ -23,7 +26,6 @@ import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.WorkerService;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -35,11 +37,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.List;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.FragmentActivity;
 
 /**
  * created by: veli
@@ -150,7 +147,7 @@ public class TransferUtils
 
 	public static TransferObject fetchFirstValidIncomingTransfer(Context context, long groupId)
 	{
-		CursorItem receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(
+		ContentValues receiverInstance = AppUtils.getDatabase(context).getFirstFromTable(
 				createIncomingSelection(groupId, TransferObject.Flag.PENDING, true)
 						.setOrderBy(String.format("`%s` ASC, `%s` ASC", AccessDatabase.FIELD_TRANSFER_DIRECTORY,
 								AccessDatabase.FIELD_TRANSFER_NAME)));

@@ -20,16 +20,15 @@ package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
 
+import androidx.annotation.NonNull;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
-
-import androidx.annotation.NonNull;
 
 /**
  * created by: veli
@@ -97,12 +96,12 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.deviceId = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-		this.groupId = item.getLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-		this.connectionAdapter = item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
-		this.type = TransferObject.Type.valueOf(item.getString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
+		this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
+		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
+		this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+		this.type = TransferObject.Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
 	}
 
 	@Override

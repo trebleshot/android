@@ -21,18 +21,12 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.android.database.CursorItem;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
-import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import com.genonbeta.android.framework.object.Selectable;
 
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 /**
  * created by: veli
@@ -57,7 +51,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 		this.id = id;
 	}
 
-	public TransferGroup(CursorItem item)
+	public TransferGroup(ContentValues item)
 	{
 		reconstruct(item);
 	}
@@ -69,12 +63,12 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 	}
 
 	@Override
-	public void reconstruct(CursorItem item)
+	public void reconstruct(ContentValues item)
 	{
-		this.id = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
-		this.savePath = item.getString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
-		this.dateCreated = item.getLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
-		this.isServedOnWeb = item.getInt(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+		this.id = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_ID);
+		this.savePath = item.getAsString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
+		this.dateCreated = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
+		this.isServedOnWeb = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
 	}
 
 	@Override
