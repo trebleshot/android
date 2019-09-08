@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.object;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -120,14 +121,16 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         return otherObject.id == id && type.equals(otherObject.type);
     }
 
-    public Flag getFlag() {
+    public Flag getFlag()
+    {
         if (!Type.INCOMING.equals(type))
             throw new InvalidParameterException();
 
         return mReceiverFlag;
     }
 
-    public Flag getFlag(String deviceId) {
+    public Flag getFlag(String deviceId)
+    {
         if (!Type.OUTGOING.equals(type))
             throw new InvalidParameterException();
 
@@ -140,7 +143,8 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         return flag == null ? Flag.PENDING : flag;
     }
 
-    public Flag[] getFlags() {
+    public Flag[] getFlags()
+    {
         synchronized (mSenderFlagList) {
             Flag[] flags = new Flag[mSenderFlagList.size()];
             mSenderFlagList.values().toArray(flags);
@@ -148,7 +152,8 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
-    public Map<String, Flag> getSenderFlagList() {
+    public Map<String, Flag> getSenderFlagList()
+    {
         synchronized (mSenderFlagList) {
             Map<String, Flag> map = new ArrayMap<>();
             map.putAll(mSenderFlagList);
@@ -156,14 +161,16 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         }
     }
 
-    public void setFlag(Flag flag) {
+    public void setFlag(Flag flag)
+    {
         if (!Type.INCOMING.equals(type))
             throw new InvalidParameterException();
 
         mReceiverFlag = flag;
     }
 
-    public void putFlag(String deviceId, Flag flag) {
+    public void putFlag(String deviceId, Flag flag)
+    {
         if (!Type.OUTGOING.equals(type))
             throw new InvalidParameterException();
 
@@ -251,7 +258,11 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFER_GROUPID);
         this.type = Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFER_TYPE));
         this.directory = item.getAsString(AccessDatabase.FIELD_TRANSFER_DIRECTORY);
-        this.lastChangeDate = item.getAsLong(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME);
+
+        // Added with DB version 13
+        if (item.containsKey(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME))
+            this.lastChangeDate = item.getAsLong(AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME);
+
         String flagString = item.getAsString(AccessDatabase.FIELD_TRANSFER_FLAG);
 
         if (Type.INCOMING.equals(this.type)) {
@@ -291,8 +302,7 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
                         mSenderFlagList.put(key, flag);
                     }
                 }
-            } catch (JSONException e) {
-                // do nothing
+            } catch (JSONException ignored) {
             }
         }
     }

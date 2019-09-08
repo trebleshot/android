@@ -20,6 +20,8 @@ package com.genonbeta.TrebleShot.migration.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import androidx.collection.ArrayMap;
+
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
@@ -32,10 +34,9 @@ import com.genonbeta.android.database.SQLType;
 import com.genonbeta.android.database.SQLValues;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import androidx.collection.ArrayMap;
 
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_TYPE;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER;
@@ -200,48 +201,99 @@ public class Migration
                 }
 
                 {
-                    SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
-                    SQLValues.Column column = table.getColumn(FIELD_TRANSFER_LASTCHANGETIME);
+                    List<TransferAssigneeV12> oldList = db.castQuery(instance, new SQLQuery.Select(
+                            TABLE_TRANSFERASSIGNEE), TransferAssigneeV12.class, null);
 
-                    // Added: LastChangeTime
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
-                            + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
-                            + " NULL DEFAULT 0");
+                    // Added: Type, Removed: IsClone
+                    instance.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFERASSIGNEE + "`");
+                    SQLQuery.createTable(instance, tables.getTable(TABLE_TRANSFERASSIGNEE));
 
-                    List<TransferObjectV12> oldObjects = db.castQuery(instance, new SQLQuery.Select(
-                            TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
-                            TransferObject.Type.OUTGOING.toString()), TransferObjectV12.class, null);
+                    List<TransferAssignee> newAssignees = new ArrayList<>();
 
-                    if (oldObjects.size() > 0) {
-                        List<TransferObject> alteredObjects = new ArrayList<>();
+                    // The `transfer` table will be removed below. We can use the old versions
+                    // columns still.
+                    for (TransferAssigneeV12 assigneeV12 : oldList) {
+                        SQLQuery.Select selection = new SQLQuery.Select(TABLE_TRANSFER);
+                        selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
+                                + FIELD_TRANSFER_GROUPID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                + "=?", TransferObjectV12.Type.INCOMING.toString(), String.valueOf(
+                                assigneeV12.groupId), assigneeV12.deviceId);
 
-                        for (TransferObjectV12 objectV12 : oldObjects) {
-                            TransferObject object = new TransferObject();
-                            object.reconstruct(objectV12.getValues());
-                            // where I left off
+                        if (db.getFirstFromTable(instance, selection) != null) {
+                            TransferAssignee incomingAssignee = new TransferAssignee();
+                            incomingAssignee.reconstruct(assigneeV12.getValues());
+                            incomingAssignee.type = TransferObject.Type.INCOMING;
+                            newAssignees.add(incomingAssignee);
+                        }
+
+                        selection.setWhere(FIELD_TRANSFER_TYPE + "=? AND "
+                                + FIELD_TRANSFER_GROUPID + "=? AND " + v12.FIELD_TRANSFER_DEVICEID
+                                + "=?", TransferObjectV12.Type.OUTGOING.toString(), String.valueOf(
+                                assigneeV12.groupId), assigneeV12.deviceId);
+
+                        if (db.getFirstFromTable(instance, selection) != null) {
+                            TransferAssignee outgoingAssignee = new TransferAssignee();
+                            outgoingAssignee.reconstruct(assigneeV12.getValues());
+                            outgoingAssignee.type = TransferObject.Type.OUTGOING;
+                            newAssignees.add(outgoingAssignee);
                         }
                     }
+
+                    if (newAssignees.size() > 0)
+                        db.insert(instance, newAssignees, null, null);
                 }
 
                 {
-                    SQLValues.Table table = tables.getTable(TABLE_TRANSFERASSIGNEE);
-                    SQLValues.Column column = table.getColumn(FIELD_TRANSFERASSIGNEE_TYPE);
+                    SQLValues.Table table = tables.getTable(TABLE_TRANSFER);
 
-                    // Added: Type
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
-                            + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
-                            + " NULL DEFAULT 0");
+                    // Changed Flag as Flag[] for Type.OUTGOING objects
+                    List<TransferObjectV12> outgoingBaseObjects = db.castQuery(instance, new SQLQuery.Select(
+                            v12.TABLE_DIVISTRANSFER), TransferObjectV12.class, null);
 
-                    // Removed: IsClone
-                    instance.execSQL("ALTER TABLE " + table.getName() + " DELETE " + column.getName()
-                            + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
-                            + " NULL DEFAULT 0");
+                    List<TransferObjectV12> outgoingMirrorObjects = db.castQuery(instance, new SQLQuery.Select(
+                            TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TransferObjectV12.Type.OUTGOING.toString()), TransferObjectV12.class, null);
+
+                    // Remove: Table `divisTransfer`
+                    instance.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`");
+
+                    // Added: LastChangeTime, Removed: AccessPort, SkippedBytes
+                    instance.execSQL("DROP TABLE IF EXISTS `" + TABLE_TRANSFER + "`");
+                    SQLQuery.createTable(instance, table);
+
+                    if (outgoingBaseObjects.size() > 0) {
+                        Map<Long, TransferObject> newObjects = new HashMap<>();
+
+                        for (TransferObjectV12 objectV12 : outgoingBaseObjects) {
+                            TransferObject object = newObjects.get(objectV12.requestId);
+
+                            if (object != null)
+                                continue;
+
+                            object = new TransferObject();
+                            object.reconstruct(objectV12.getValues());
+
+                            newObjects.put(objectV12.requestId, object);
+                        }
+
+                        for (TransferObjectV12 objectV12 : outgoingMirrorObjects) {
+                            TransferObject object = newObjects.get(objectV12.requestId);
+
+                            if (object == null)
+                                continue;
+
+                            try {
+                                object.putFlag(objectV12.deviceId, TransferObject.Flag.valueOf(
+                                        objectV12.flag.toString()));
+                            } catch (Exception ignored) {
+                            }
+                        }
+
+                        if (newObjects.size() > 0)
+                            db.insert(instance, new ArrayList<>(newObjects.values()), null, null);
+                    }
                 }
             }
-
-
-            // TODO: 7/14/19 Changes: TransferObject {Added LastChangeTime, Changed Flag as Flag[]}
         }
     }
-
 }

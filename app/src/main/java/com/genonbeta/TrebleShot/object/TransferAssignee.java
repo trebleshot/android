@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.object;
 import android.content.ContentValues;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -36,107 +37,123 @@ import com.genonbeta.android.database.exception.ReconstructionFailedException;
  */
 public class TransferAssignee implements DatabaseObject<TransferGroup>
 {
-	public long groupId;
-	public String deviceId;
-	public String connectionAdapter;
-	public TransferObject.Type type;
+    public long groupId;
+    public String deviceId;
+    public String connectionAdapter;
+    public TransferObject.Type type;
 
-	public TransferAssignee()
-	{
+    public TransferAssignee()
+    {
 
-	}
+    }
 
-	public TransferAssignee(long groupId, String deviceId, TransferObject.Type type)
-	{
-		this.groupId = groupId;
-		this.deviceId = deviceId;
-		this.type = type;
-	}
+    public TransferAssignee(long groupId, String deviceId, TransferObject.Type type)
+    {
+        this.groupId = groupId;
+        this.deviceId = deviceId;
+        this.type = type;
+    }
 
-	public TransferAssignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
-					@NonNull TransferObject.Type type)
-	{
-		this(group.id, device.id, type);
-	}
+    public TransferAssignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
+                            @NonNull TransferObject.Type type)
+    {
+        this(group.id, device.id, type);
+    }
 
-	public TransferAssignee(long groupId, String deviceId, TransferObject.Type type, String connectionAdapter)
-	{
-		this(groupId, deviceId, type);
-		this.connectionAdapter = connectionAdapter;
-	}
+    public TransferAssignee(long groupId, String deviceId, TransferObject.Type type, String connectionAdapter)
+    {
+        this(groupId, deviceId, type);
+        this.connectionAdapter = connectionAdapter;
+    }
 
-	public TransferAssignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
-					@NonNull TransferObject.Type type,
-					@NonNull DeviceConnection connection)
-	{
-		this(group.id, device.id, type, connection.adapterName);
-	}
+    public TransferAssignee(@NonNull TransferGroup group, @NonNull NetworkDevice device,
+                            @NonNull TransferObject.Type type,
+                            @NonNull DeviceConnection connection)
+    {
+        this(group.id, device.id, type, connection.adapterName);
+    }
 
-	@Override
-	public SQLQuery.Select getWhere()
-	{
-		return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(
-				AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
-						+ AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
-						+ AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
-				String.valueOf(groupId), type.toString());
-	}
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof TransferAssignee) {
+            TransferAssignee otherAssignee = (TransferAssignee) obj;
+            return otherAssignee.groupId == groupId && deviceId.equals(otherAssignee.deviceId)
+                    && type.equals(otherAssignee.type);
+        }
 
-	@Override
-	public ContentValues getValues()
-	{
-		ContentValues values = new ContentValues();
+        return super.equals(obj);
+    }
 
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
+    @Override
+    public SQLQuery.Select getWhere()
+    {
+        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(
+                AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND "
+                        + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=? AND "
+                        + AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE + "=?", deviceId,
+                String.valueOf(groupId), type.toString());
+    }
 
-		return values;
-	}
+    @Override
+    public ContentValues getValues()
+    {
+        ContentValues values = new ContentValues();
 
-	@Override
-	public void reconstruct(ContentValues item)
-	{
-		this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-		this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
-		this.type = TransferObject.Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
-	}
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE, type.toString());
 
-	@Override
-	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
-	{
+        return values;
+    }
 
-	}
+    @Override
+    public void reconstruct(ContentValues item)
+    {
+        this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
+        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
 
-	@Override
-	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
-	{
+        // Added in DB version 13 and might be null and may throw an error since the null check
+        // doesn't seem to work
+        if (item.containsKey(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE))
+            this.type = TransferObject.Type.valueOf(item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE));
+    }
 
-	}
+    @Override
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    {
 
-	@Override
-	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
-	{
-		if (!TransferObject.Type.INCOMING.equals(type))
-			return;
+    }
 
-		try {
-			AccessDatabase accessDatabase = AppUtils.getDatabase(database.getContext());
+    @Override
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    {
 
-			if (parent == null) {
-				parent = new TransferGroup(groupId);
-				accessDatabase.reconstruct(parent);
-			}
+    }
 
-			SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId,
-					TransferObject.Flag.INTERRUPTED, true);
+    @Override
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    {
+        if (!TransferObject.Type.INCOMING.equals(type))
+            return;
 
-			accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class,
-					null, parent);
-		} catch (ReconstructionFailedException e) {
-			e.printStackTrace();
-		}
-	}
+        try {
+            AccessDatabase accessDatabase = AppUtils.getDatabase(database.getContext());
+
+            if (parent == null) {
+                parent = new TransferGroup(groupId);
+                accessDatabase.reconstruct(parent);
+            }
+
+            SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId,
+                    TransferObject.Flag.INTERRUPTED, true);
+
+            accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class,
+                    null, parent);
+        } catch (ReconstructionFailedException e) {
+            e.printStackTrace();
+        }
+    }
 }
