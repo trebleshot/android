@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.config;
 
 /**
  * Created by: veli
- * Created by: veli
  * Date: 4/28/17 8:29 PM
  */
 
@@ -91,6 +90,7 @@ public class Keyword
 	{
 		public static final String
 				NETWORK_INTERFACE_UNKNOWN = "unk0",
+				FILENAME_UNHANDLED_CRASH_LOG = "unhandled_crash_log.txt",
 				SETTINGS_VIEWING = "sorting_settings";
 	}
 }

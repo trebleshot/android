@@ -26,6 +26,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -95,6 +96,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
     private String mSearchText;
+    private MenuItem mTwoRowLayoutItem;
     private FilteringDelegate<T> mDefaultFilteringDelegate = new FilteringDelegate<T>()
     {
         @Override
@@ -157,7 +159,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
         getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 
-        // We have to recreate the provider class because old one lose doesn't work when
+        // We have to recreate the provider class because old doesn't work when
         // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
@@ -289,12 +291,18 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         menu.findItem(R.id.actions_abs_editable_sort_by)
                 .setEnabled(isSortingSupported());
 
+        {
+            MenuItem twoRowItem = menu.findItem(R.id.actions_abs_editable_two_row_layout);
+            twoRowItem.setVisible(canShowWideView());
+            twoRowItem.setChecked(isTwoRowLayout());
+        }
+
         MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
 
-        if (multiSelect != null
-                && (getSelectionConnection() == null
+        if (multiSelect != null && (getSelectionConnection() == null
                 || !getSelectionConnection().getMode().getEngineToolbar().isFinishAllowed()))
             multiSelect.setVisible(false);
+
 
         if (!getAdapter().isGridSupported())
             menu.findItem(R.id.actions_abs_editable_grid_size)
@@ -341,6 +349,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             changeOrderingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_grid_size)
             changeGridViewSize(item.getOrder());
+        else if (id == R.id.actions_abs_editable_two_row_layout) {
+            toggleTwoRowLayout();
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -376,18 +387,15 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public RecyclerView.LayoutManager onLayoutManager()
     {
         final RecyclerView.LayoutManager defaultLayoutManager = super.onLayoutManager();
-        final int preferredGridSize = getViewingGridSize();
-        final int optimalGridSize = preferredGridSize > 1 ? preferredGridSize
-                : !getAdapter().isGridSupported() && isScreenLarge()
-                && !isHorizontalOrientation() ? 2 : 1;
+        final int optimumGridSize = getOptimumGridSize();
 
         final GridLayoutManager layoutManager;
 
         if (defaultLayoutManager instanceof GridLayoutManager) {
             layoutManager = (GridLayoutManager) defaultLayoutManager;
-            layoutManager.setSpanCount(optimalGridSize);
+            layoutManager.setSpanCount(optimumGridSize);
         } else
-            layoutManager = new GridLayoutManager(getContext(), optimalGridSize);
+            layoutManager = new GridLayoutManager(getContext(), optimumGridSize);
 
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup()
         {
@@ -398,13 +406,14 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 int viewType = getAdapter().getItemViewType(position);
 
                 return viewType == EditableListAdapter.VIEW_TYPE_DEFAULT
-                        ? 1
-                        : onGridSpanSize(viewType, optimalGridSize);
+                        ? 1 : onGridSpanSize(viewType, optimumGridSize);
             }
         });
 
         return layoutManager;
     }
+
+
 
     protected void applyDynamicMenuItems(MenuItem mainItem, int groupId,
                                          Map<String, Integer> options)
@@ -423,9 +432,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         }
     }
 
-    public boolean applyViewingChanges(int gridSize)
+    public boolean applyViewingChanges(int gridSize) {
+        return applyViewingChanges(gridSize, false);
+    }
+
+    public boolean applyViewingChanges(int gridSize, boolean override)
     {
-        if (!getAdapter().isGridSupported())
+        if (!getAdapter().isGridSupported() && !override)
             return false;
 
         getAdapter().notifyGridSizeUpdate(gridSize, isScreenLarge());
@@ -436,6 +449,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         refreshList();
 
         return true;
+    }
+
+    public boolean canShowWideView()
+    {
+        return !getAdapter().isGridSupported() && isScreenLarge() && !isHorizontalOrientation();
     }
 
     public void changeGridViewSize(int gridSize)
@@ -548,6 +566,13 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
                 mDefaultOrderingCriteria);
     }
 
+    private int getOptimumGridSize()
+    {
+        final int preferredGridSize = getViewingGridSize();
+        return preferredGridSize > 1 ? preferredGridSize : canShowWideView()
+                && isTwoRowLayout() ? 2 : 1;
+    }
+
     public String getUniqueSettingKey(String setting)
     {
         return getClass().getSimpleName() + "_" + setting;
@@ -606,6 +631,11 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return getListView().getLayoutManager() instanceof GridLayoutManager
                 ? ((GridLayoutManager) getListView().getLayoutManager()).getSpanCount()
                 : 1;
+    }
+
+    public boolean isTwoRowLayout()
+    {
+        return getViewPreferences().getBoolean("two_row_layout", true);
     }
 
     public boolean isRefreshLocked()
@@ -682,23 +712,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public void registerLayoutViewClicks(final V holder)
     {
-        holder.getClickableView().setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                performLayoutClick(holder);
-            }
-        });
-
-        holder.getClickableView().setOnLongClickListener(new View.OnLongClickListener()
-        {
-            @Override
-            public boolean onLongClick(View v)
-            {
-                return performLayoutLongClick(holder);
-            }
-        });
+        holder.getClickableView().setOnClickListener(v -> performLayoutClick(holder));
+        holder.getClickableView().setOnLongClickListener(v -> performLayoutLongClick(holder));
     }
 
     @Override
@@ -797,6 +812,17 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public void setUseDefaultPaddingDecorationSpaceForEdges(boolean use)
     {
         mUseDefaultPaddingDecorationSpaceForEdges = use;
+    }
+
+    public void toggleTwoRowLayout()
+    {
+        boolean state = isTwoRowLayout();
+
+        getViewPreferences().edit()
+                .putBoolean("two_row_layout", !state)
+                .apply();
+
+        applyViewingChanges(getOptimumGridSize(), true);
     }
 
     public interface LayoutClickListener<V extends EditableListAdapter.EditableViewHolder>

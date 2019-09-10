@@ -18,8 +18,11 @@
 
 package com.genonbeta.TrebleShot.activity;
 
+import android.app.Service;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -29,6 +32,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.LocaleList;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -48,12 +52,19 @@ import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.TrebleShot.object.TextStreamObject;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.navigation.NavigationView;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 
 public class HomeActivity
         extends Activity
@@ -106,6 +117,51 @@ public class HomeActivity
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
+
+
+        try (InputStream inputStream = openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)) {
+            File logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            int len;
+            byte[] buffer = new byte[8196];
+            while ((len = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, len);
+                outputStream.flush();
+            }
+
+            String report = outputStream.toString();
+            final TextStreamObject streamObject = new TextStreamObject();
+
+            streamObject.text = report;
+            streamObject.date = logFile.lastModified();
+            streamObject.id = AppUtils.getUniqueNumber();
+
+            logFile.delete();
+
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+
+            dialogBuilder.setTitle(R.string.text_crashReport);
+            dialogBuilder.setMessage(R.string.text_crashInfo);
+            dialogBuilder.setNegativeButton(R.string.butn_dismiss, null);
+            dialogBuilder.setNeutralButton(android.R.string.copy, (dialog, which) -> {
+                ClipboardManager clipboardManager = (ClipboardManager) getSystemService(
+                        Service.CLIPBOARD_SERVICE);
+
+                clipboardManager.setPrimaryClip(ClipData.newPlainText(getString(R.string.text_crashReport),
+                        outputStream.toString()));
+
+                Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
+            });
+
+            dialogBuilder.setPositiveButton(R.string.butn_save, (dialog, which) -> {
+                getDatabase().insert(streamObject);
+                Toast.makeText(this, R.string.mesg_textStreamSaved, Toast.LENGTH_SHORT).show();
+            });
+
+            dialogBuilder.show();
+        } catch (IOException ignored) {
+
+        }
 
         if (!AppUtils.isLatestChangeLogSeen(this)) {
             new AlertDialog.Builder(this)
@@ -184,6 +240,24 @@ public class HomeActivity
             mExitPressTime = System.currentTimeMillis();
             Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        menu.add(0, -1, 1, "Crash now");
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        if (item.getItemId() == -1) {
+            Activity sa = null;
+            sa.finish();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

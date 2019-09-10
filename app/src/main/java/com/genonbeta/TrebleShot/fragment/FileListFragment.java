@@ -106,14 +106,7 @@ public class FileListFragment
 
 							mUpdateSnackbar
 									.setText(getString(R.string.mesg_fileReceived, intent.getStringExtra(EXTRA_FILE_NAME)))
-									.setAction(R.string.butn_show, new View.OnClickListener()
-									{
-										@Override
-										public void onClick(View v)
-										{
-											goPath(parentFile);
-										}
-									})
+									.setAction(R.string.butn_show, v -> goPath(parentFile))
 									.show();
 						}
 					}
@@ -243,7 +236,7 @@ public class FileListFragment
 	}
 
 	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+	public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
 	{
 		super.onCreateOptionsMenu(menu, inflater);
 		inflater.inflate(R.menu.actions_file_list, menu);
@@ -271,7 +264,7 @@ public class FileListFragment
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu)
+	public void onPrepareOptionsMenu(@NonNull Menu menu)
 	{
 		super.onPrepareOptionsMenu(menu);
 

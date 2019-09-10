@@ -254,6 +254,10 @@ public class Migration
                             TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
                             TransferObjectV12.Type.OUTGOING.toString()), TransferObjectV12.class, null);
 
+                    List<TransferObjectV12> incomingObjects = db.castQuery(instance, new SQLQuery.Select(
+                            TABLE_TRANSFER).setWhere(FIELD_TRANSFER_TYPE + "=?",
+                            TransferObjectV12.Type.INCOMING.toString()), TransferObjectV12.class, null);
+
                     // Remove: Table `divisTransfer`
                     instance.execSQL("DROP TABLE IF EXISTS `" + v12.TABLE_DIVISTRANSFER + "`");
 
@@ -291,6 +295,17 @@ public class Migration
 
                         if (newObjects.size() > 0)
                             db.insert(instance, new ArrayList<>(newObjects.values()), null, null);
+                    }
+
+                    if (incomingObjects.size() > 0) {
+                        List<TransferObject> newIncomingInstances = new ArrayList<>();
+
+                        for (TransferObjectV12 objectV12 : incomingObjects) {
+                            TransferObject newObject = new TransferObject();
+                            newObject.reconstruct(objectV12.getValues());
+                        }
+
+                        db.insert(instance, newIncomingInstances, null, null);
                     }
                 }
             }
