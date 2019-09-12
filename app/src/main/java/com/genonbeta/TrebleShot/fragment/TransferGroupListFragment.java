@@ -74,8 +74,8 @@ public class TransferGroupListFragment
 		{
 			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
 				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-				if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName)
-						|| AccessDatabase.TABLE_TRANSFER.equals(data.tableName))
+				if (data != null && (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName)
+						|| AccessDatabase.TABLE_TRANSFER.equals(data.tableName)))
 					refreshList();
 			} else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
 					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
@@ -106,7 +106,7 @@ public class TransferGroupListFragment
 		View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null, false);
 		((ViewGroup) mainContainer).addView(adaptedView);
 
-		return super.onListView(mainContainer, (FrameLayout) adaptedView.findViewById(R.id.fragmentContainer));
+		return super.onListView(mainContainer, adaptedView.findViewById(R.id.fragmentContainer));
 	}
 
 	@Override
@@ -120,25 +120,11 @@ public class TransferGroupListFragment
 		View viewSend = view.findViewById(R.id.sendLayoutButton);
 		View viewReceive = view.findViewById(R.id.receiveLayoutButton);
 
-		viewSend.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				startActivity(new Intent(getContext(), ContentSharingActivity.class));
-			}
-		});
+		viewSend.setOnClickListener(v -> startActivity(new Intent(getContext(), ContentSharingActivity.class)));
 
-		viewReceive.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
-						.putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
-						.putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString()));
-			}
-		});
+		viewReceive.setOnClickListener(v -> startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
+                .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
+                .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString())));
 	}
 
 	@Override
@@ -187,26 +173,16 @@ public class TransferGroupListFragment
 	@Override
 	public TransferGroupListAdapter onAdapter()
 	{
-		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
-		{
-			@Override
-			public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
-			{
-				if (!clazz.isRepresentative()) {
-					registerLayoutViewClicks(clazz);
+		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
+            if (!clazz.isRepresentative()) {
+                registerLayoutViewClicks(clazz);
 
-					clazz.getView().findViewById(R.id.layout_image).setOnClickListener(new View.OnClickListener()
-					{
-						@Override
-						public void onClick(View v)
-						{
-							if (getSelectionConnection() != null)
-								getSelectionConnection().setSelected(clazz.getAdapterPosition());
-						}
-					});
-				}
-			}
-		};
+                clazz.getView().findViewById(R.id.layout_image).setOnClickListener(v -> {
+                    if (getSelectionConnection() != null)
+                        getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                });
+            }
+        };
 
 		return new TransferGroupListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
 		{
