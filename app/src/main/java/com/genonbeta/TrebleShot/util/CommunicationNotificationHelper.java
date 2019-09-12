@@ -58,9 +58,7 @@ public class CommunicationNotificationHelper
 		mNotificationUtils = notificationUtils;
 	}
 
-	public DynamicNotification getCommunicationServiceNotification(boolean seamlessMode,
-																   boolean pinAccess,
-																   boolean webShare)
+	public DynamicNotification getCommunicationServiceNotification(boolean webShare)
 	{
 		DynamicNotification notification = getUtils().buildDynamicNotification(SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID, NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 		StringBuilder builder = new StringBuilder();
@@ -77,14 +75,8 @@ public class CommunicationNotificationHelper
 				.setContentTitle(builder.toString())
 				.setContentText(getContext().getString(R.string.text_communicationServiceStop))
 				.setAutoCancel(true)
-				.addAction(R.drawable.ic_compare_arrows_white_24dp_static, getContext().getString(seamlessMode ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn),
-						PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_FAST_MODE), PendingIntent.FLAG_CANCEL_CURRENT))
 				.setContentIntent(PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class)
 						.setAction(CommunicationService.ACTION_END_SESSION), 0));
-
-		if (pinAccess)
-			notification.addAction(R.drawable.ic_autorenew_white_24dp_static, getContext().getString(R.string.butn_revokePin),
-					PendingIntent.getService(getContext(), AppUtils.getUniqueNumber(), new Intent(getContext(), CommunicationService.class).setAction(CommunicationService.ACTION_REVOKE_ACCESS_PIN), PendingIntent.FLAG_CANCEL_CURRENT));
 
 		return notification.show();
 	}

@@ -102,8 +102,6 @@ public class CommunicationService extends Service
 	public static final String ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION";
 	public static final String ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER";
 	public static final String ACTION_STOP_TRANSFER = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
-	public static final String ACTION_TOGGLE_FAST_MODE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_FAST_MODE";
-	public static final String ACTION_REVOKE_ACCESS_PIN = "com.genonbeta.TrebleShot.transaction.action.REVOKE_ACCESS_PIN";
 	public static final String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
 	public static final String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
 	public static final String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
@@ -114,8 +112,6 @@ public class CommunicationService extends Service
 	public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
 	public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
 	public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
-	public static final String ACTION_FAST_MODE_STATUS = "com.genonbeta.TrebleShot.transaction.action.FAST_MODE_STATUS";
-	public static final String ACTION_REQUEST_FAST_MODE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_FAST_MODE_STATUS";
 	public static final String ACTION_TOGGLE_WEBSHARE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_WEBSHARE";
 	public static final String ACTION_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.WEBSHARE_STATUS";
 	public static final String ACTION_REQUEST_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_WEBSHARE_STATUS";
@@ -153,8 +149,6 @@ public class CommunicationService extends Service
 	private MediaScannerConnection mMediaScanner;
 	private HotspotUtils mHotspotUtils;
 	private android.database.sqlite.SQLiteDatabase mDbInstance;
-	private boolean mFastMode = false;
-	private boolean mPinAccess = false;
 	private long mTimeTransactionSaved;
 
 	@Override
@@ -182,7 +176,7 @@ public class CommunicationService extends Service
 		if (getWifiLock() != null)
 			getWifiLock().acquire();
 
-		updateServiceState(getDefaultPreferences().getBoolean("trust_always", false));
+		refreshServiceState();
 
 		if (!AppUtils.checkRunningConditions(this) || !mCommunicationServer.start())
 			stopSelf();
@@ -195,11 +189,7 @@ public class CommunicationService extends Service
 				public void onStarted(WifiManager.LocalOnlyHotspotReservation reservation)
 				{
 					super.onStarted(reservation);
-
 					sendHotspotStatus(reservation.getWifiConfiguration());
-
-					if (getDefaultPreferences().getBoolean("hotspot_trust", false))
-						updateServiceState(true);
 				}
 			});
 
@@ -374,8 +364,6 @@ public class CommunicationService extends Service
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			} else if (ACTION_TOGGLE_FAST_MODE.equals(intent.getAction())) {
-				updateServiceState(!mFastMode);
 			} else if (ACTION_TOGGLE_HOTSPOT.equals(intent.getAction())
 					&& (Build.VERSION.SDK_INT < 23 || Settings.System.canWrite(this))) {
 				setupHotspot();
@@ -406,11 +394,6 @@ public class CommunicationService extends Service
 				}
 			} else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
 				notifyTaskRunningListChange();
-			} else if (ACTION_REVOKE_ACCESS_PIN.equals(intent.getAction())) {
-				revokePinAccess();
-				refreshServiceState();
-			} else if (ACTION_REQUEST_FAST_MODE_STATUS.equals(intent.getAction())) {
-				sendFastModeStatus();
 			} else if (ACTION_REQUEST_WEBSHARE_STATUS.equals(intent.getAction())) {
 				sendWebShareStatus();
 			} else if (ACTION_TOGGLE_WEBSHARE.equals(intent.getAction())) {
@@ -444,7 +427,6 @@ public class CommunicationService extends Service
 		}
 
 		setWebShareEnabled(false, false);
-		sendFastModeStatus();
 
 		if (getHotspotUtils().unloadPreviousConfig()) {
 			getHotspotUtils().disable();
@@ -456,7 +438,6 @@ public class CommunicationService extends Service
 			Log.d(TAG, "onDestroy(): Releasing Wi-Fi lock");
 		}
 
-		revokePinAccess();
 		stopForeground(true);
 
 		synchronized (getOngoingIndexList()) {
@@ -1208,14 +1189,9 @@ public class CommunicationService extends Service
 
 	private void refreshServiceState()
 	{
-		updateServiceState(mFastMode);
-	}
-
-	private void revokePinAccess()
-	{
-		getDefaultPreferences().edit()
-				.putInt(Keyword.NETWORK_PIN, -1)
-				.apply();
+		startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
+				getNotificationHelper().getCommunicationServiceNotification(
+						mWebShareServer != null && mWebShareServer.isAlive()).build());
 	}
 
 	private void sendHotspotStatusDisabling()
@@ -1249,29 +1225,13 @@ public class CommunicationService extends Service
 
 	private void setupHotspot()
 	{
-		boolean isEnabled = !getHotspotUtils().isEnabled();
-		boolean overrideFastMode = getDefaultPreferences().getBoolean("hotspot_trust", false);
-
-		// On Oreo devices, we will use platform specific code.
-		if (overrideFastMode && (!isEnabled || Build.VERSION.SDK_INT < 26)) {
-			updateServiceState(isEnabled);
-			Log.d(TAG, "setupHotspot(): Start with Fast Mode");
-		}
-
-		if (isEnabled)
-			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
-		else {
+		if (getHotspotUtils().isEnabled()) {
 			getHotspotUtils().disable();
 
 			if (Build.VERSION.SDK_INT >= 26)
 				sendHotspotStatusDisabling();
-		}
-	}
-
-	private void sendFastModeStatus()
-	{
-		sendBroadcast(new Intent(ACTION_FAST_MODE_STATUS)
-				.putExtra(EXTRA_STATUS_STARTED, mFastMode));
+		} else
+			getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
 	}
 
 	private void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type) throws TransferGroupNotFoundException,
@@ -1373,20 +1333,6 @@ public class CommunicationService extends Service
 		});
 	}
 
-	private void updateServiceState(boolean activateFastMode)
-	{
-		boolean broadcastStatus = mFastMode != activateFastMode;
-		mFastMode = activateFastMode;
-		mPinAccess = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1) != -1;
-
-		if (broadcastStatus)
-			sendFastModeStatus();
-
-		startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
-				getNotificationHelper().getCommunicationServiceNotification(mFastMode, mPinAccess,
-						mWebShareServer != null && mWebShareServer.isAlive()).build());
-	}
-
 	private void setWebShareEnabled(boolean enable, boolean updateServiceState)
 	{
 		boolean enabled = mWebShareServer.isAlive();
@@ -1403,7 +1349,7 @@ public class CommunicationService extends Service
 		}
 
 		if (updateServiceState)
-			updateServiceState(mFastMode);
+			refreshServiceState();
 		sendWebShareStatus();
 	}
 
@@ -1508,19 +1454,14 @@ public class CommunicationService extends Service
 
 					final DeviceConnection connection = NetworkDeviceLoader.processConnection(
 							getDatabase(), device, activeConnection.getClientAddress());
-					final boolean isFastModeAvailable = (mFastMode && device.isTrusted)
-							|| (isSecureConnection && getDefaultPreferences().getBoolean("qr_trust", false));
+					// TODO: 9/12/19 Per device pin is needed
+					final boolean isFastModeAvailable = true;
 
 					getDatabase().broadcast();
 
 					if (!shouldContinue)
 						replyJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ALLOWED);
 					else if (responseJSON.has(Keyword.REQUEST)) {
-						if (isSecureConnection && !mPinAccess)
-							// Probably pin access has just been activated, so we should update
-							// the service state.
-							refreshServiceState();
-
 						switch (responseJSON.getString(Keyword.REQUEST)) {
 							case (Keyword.REQUEST_TRANSFER):
 								if (responseJSON.has(Keyword.FILES_INDEX) && responseJSON.has(Keyword.TRANSFER_GROUP_ID)

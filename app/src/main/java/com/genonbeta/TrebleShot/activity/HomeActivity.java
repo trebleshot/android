@@ -76,9 +76,6 @@ public class HomeActivity
     private DrawerLayout mDrawerLayout;
     private PowerfulActionMode mActionMode;
     private HomeFragment mHomeFragment;
-    private MenuItem mTrustZoneToggle;
-    private IntentFilter mFilter = new IntentFilter();
-    private BroadcastReceiver mReceiver = null;
 
     private long mExitPressTime;
     private int mChosenMenuItemId;
@@ -97,12 +94,10 @@ public class HomeActivity
         mActionMode = findViewById(R.id.content_powerful_action_mode);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        mTrustZoneToggle = mNavigationView.getMenu().findItem(R.id.menu_activity_trustzone);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
-        mFilter.addAction(CommunicationService.ACTION_FAST_MODE_STATUS);
         mDrawerLayout.addDrawerListener(new DrawerLayout.SimpleDrawerListener()
         {
             @Override
@@ -197,25 +192,6 @@ public class HomeActivity
     }
 
     @Override
-    protected void onResume()
-    {
-        super.onResume();
-        registerReceiver(mReceiver = new ActivityReceiver(), mFilter);
-        requestTrustZoneStatus();
-    }
-
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-
-        if (mReceiver != null)
-            unregisterReceiver(mReceiver);
-
-        mReceiver = null;
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item)
     {
         mChosenMenuItemId = item.getItemId();
@@ -252,10 +228,8 @@ public class HomeActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        if (item.getItemId() == -1) {
-            Activity sa = null;
-            sa.finish();
-        }
+        if (item.getItemId() == -1)
+            throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
 
         return super.onOptionsItemSelected(item);
     }
@@ -315,8 +289,6 @@ public class HomeActivity
             builder.show();
         } else if (R.id.menu_activity_feedback == mChosenMenuItemId) {
             AppUtils.createFeedbackIntent(HomeActivity.this);
-        } else if (R.id.menu_activity_trustzone == mChosenMenuItemId) {
-            toggleTrustZone();
         }
 
         mChosenMenuItemId = 0;
@@ -366,30 +338,5 @@ public class HomeActivity
     {
         MenuItem item = mNavigationView.getMenu().findItem(R.id.menu_activity_main_about);
         item.setTitle(R.string.text_newVersionAvailable);
-    }
-
-    public void requestTrustZoneStatus()
-    {
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_REQUEST_FAST_MODE_STATUS));
-    }
-
-    public void toggleTrustZone()
-    {
-        AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-                .setAction(CommunicationService.ACTION_TOGGLE_FAST_MODE));
-    }
-
-    private class ActivityReceiver extends BroadcastReceiver
-    {
-        @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            if (CommunicationService.ACTION_FAST_MODE_STATUS.equals(intent.getAction())
-                    && mTrustZoneToggle != null)
-                mTrustZoneToggle.setTitle(intent.getBooleanExtra(
-                        CommunicationService.EXTRA_STATUS_STARTED, false)
-                        ? R.string.butn_turnTrustZoneOff : R.string.butn_turnTrustZoneOn);
-        }
     }
 }

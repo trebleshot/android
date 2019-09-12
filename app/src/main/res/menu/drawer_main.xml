@@ -68,15 +68,6 @@
 
     </group>
 
-    <group android:id="@+id/nav_group_quick_settings">
-        <item
-            android:id="@+id/menu_activity_trustzone"
-            android:icon="@drawable/ic_compare_arrows_white_24dp"
-            android:orderInCategory="15"
-            android:title="@string/butn_turnTrustZoneOff" />
-
-    </group>
-
     <group android:id="@+id/nav_group_support">
         <item
             android:id="@+id/menu_activity_feedback"
