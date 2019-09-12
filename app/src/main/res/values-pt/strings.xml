@@ -210,7 +210,7 @@
     <string name="text_communicationServiceStop">Toque para terminar a sessão</string>
     <string name="text_remainingTime">Tempo restante estimado %s</string>
     <string name="butn_showFiles">Mostrar ficheiros</string>
-    <string name="butn_trustZoneDevice">Definir como dispositivo TrustZone</string>
+    <string name="butn_trustDevice">Definir como dispositivo TrustZone</string>
     <string name="butn_turnTrustZoneOn">Ativar o TrustZone</string>
     <string name="butn_turnTrustZoneOff">Desativar TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -441,7 +441,7 @@
     <string name="mesg_waiting">A aguardar</string>
     <string name="text_amoledOptimizedBlackTheme">Otimizar para ecrãs AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Usar cores mais escuras</string>
-    <string name="mesg_errorNotTrustZoneDevice">Este dispositivo precisa de ser configurado como dispositivo TrustZone no dispositivo recetor para fazer esta operação.</string>
+    <string name="mesg_errorNotTrusted">Este dispositivo precisa de ser configurado como dispositivo TrustZone no dispositivo recetor para fazer esta operação.</string>
     <string name="butn_enterIpAddress">Introduza o endereço IP</string>
     <string name="butn_webShare">Partilhar via navegador</string>
     <string name="text_webShareNoContentNotice">Use a opção \"Partilhar no navegador\" para ver as transferências aqui!</string>
@@ -451,7 +451,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">ou</string>
     <string name="text_visitWebShareAddress">Visite esta hiperligação com o seu navegador</string>
-    <string name="text_webShareInfo">Abaixo vê as hiperligações que os dispositivos na mesma rede se podem conectar com um navegador. Em seguida, ative a partilha através da Internet para transferências individuais.</string>
+    <string name="text_webShareInfo">Ative o compartilhamento web para transferências individuais e visite qualquer link web abaixo com um aparelho conectado à mesma rede.</string>
     <string name="text_dowloadTrebleshotAndroid">Descarregar o TrebleShot para Android</string>
     <string name="text_listEmptyConnection">As redes às quais se conecta aparecem aqui</string>
     <string name="mesg_errorNotAnIpAddress">Não é um endereço IP 
@@ -460,4 +460,12 @@
     <string name="butn_asApk">Como APK</string>
     <string name="butn_asLink">Como hiperligação</string>
     <string name="text_linkTrebleshot">Partilhe ficheiros com o TrebleShot! Descarregue em: %s</string>
+    <string name="butn_downloadAllAsZip">Descarregar tudo como ZIP (único, não comprimido)</string>
+    <string name="text_interfaceVPN">Servidor VPN</string>
+    <string name="text_unrecognizedQrCode">Código não reconhecido</string>
+    <string name="mesg_textStreamSaved">Texto gravado</string>
+    <string name="butn_changeMode">Alterar o modo</string>
+    <string name="mesg_qrScannerTextMode">Os códigos QR serão mostrados como texto</string>
+    <string name="mesg_qrScannerDefaultMode">Voltar às acções predefinidas para os códigos QR</string>
+    <string name="butn_showAsQrCode">Mostrar como código QR</string>
 </resources>

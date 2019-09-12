@@ -356,7 +356,7 @@ public class TransferUtils
 									msg = R.string.mesg_notValidTransfer;
 									break;
 								case Keyword.ERROR_REQUIRE_TRUSTZONE:
-									msg = R.string.mesg_errorNotTrustZoneDevice;
+									msg = R.string.mesg_errorNotTrusted;
 									break;
 								case Keyword.ERROR_NOT_ALLOWED:
 									msg = R.string.mesg_notAllowed;

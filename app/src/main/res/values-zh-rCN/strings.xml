@@ -95,7 +95,7 @@
     <string name="text_video">视频</string>
     <string name="text_showSystemApps">显示系统应用</string>
     <string name="text_showSystemAppsSummary">在“分享”区域显示系统应用</string>
-    <string name="mesg_notAllowed">你不被允许</string>
+    <string name="mesg_notAllowed">你已被禁止访问</string>
     <string name="mesg_connectionProblem">连接问题</string>
     <string name="text_communicationProblem">通信问题</string>
     <string name="butn_multiSelect">多选</string>
@@ -234,7 +234,7 @@
     <string name="text_communicationServiceStop">轻触以停止</string>
     <string name="text_remainingTime">剩余时间 %s</string>
     <string name="butn_showFiles">显示文件</string>
-    <string name="butn_trustZoneDevice">设置为信任域设备</string>
+    <string name="butn_trustDevice">设置为信任域设备</string>
     <string name="butn_turnTrustZoneOn">打开信任域</string>
     <string name="butn_turnTrustZoneOff">关闭信任域</string>
     <string name="text_trustZoneEnabled">信任域</string>
@@ -466,7 +466,7 @@
     <string name="mesg_waiting">等待中</string>
     <string name="text_amoledOptimizedBlackTheme">为AMOLED屏优化</string>
     <string name="text_amoledOptimizedBlackThemeSummary">使用更黑的配色</string>
-    <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
+    <string name="mesg_errorNotTrusted">将本设备在接收方设置为信任域设备方可进行此操作。</string>
     <string name="butn_enterIpAddress">输入IP地址</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">通过浏览器(网页)分享</string>
@@ -479,7 +479,7 @@
     <string name="text_or">或</string>
     <string name="text_visitWebShareAddress">使用你的浏览器访问该链接</string>
     <string name="text_webShareInfo">单独地为传输启用网页分享，然后使用连接至同一网络的设备访问以下任意的网页链接。</string>
-    <string name="text_dowloadTrebleshotAndroid">下载运行于Android上的TrebleShot</string>
+    <string name="text_dowloadTrebleshotAndroid">下载运行于Android的TrebleShot</string>
     <string name="text_listEmptyConnection">你连接的网络在此出现</string>
     <string name="mesg_errorNotAnIpAddress">不是IP地址
 \n(如 192.168.1.2)</string>

@@ -317,7 +317,7 @@
     <string name="butn_appLaunch">Khởi động</string>
     <string name="ques_saveAnyway">Vẫn lưu\?</string>
     <string name="text_textStream">Văn bản</string>
-    <string name="mesg_errorNotTrustZoneDevice">Thiết bị này cần được đặt làm thiết bị TrustZone trên thiết bị nhận để thực hiện thao tác này.</string>
+    <string name="mesg_errorNotTrusted">Thiết bị này cần được đặt làm thiết bị TrustZone trên thiết bị nhận để thực hiện thao tác này.</string>
     <string name="text_emptySymbol">-</string>
     <string name="text_photo">Ảnh</string>
     <string name="butn_hideOnBrowser">Dấu trên trình duyệt</string>
@@ -420,7 +420,7 @@
     <string name="ques_connectionWizardIsOtherDeviceReady">Bạn đã cài đặt thiết bị đầu kia chưa\?</string>
     <string name="ques_removeDevice">Xoá thiết bị này\?</string>
     <string name="text_shareTextShort">Văn bản</string>
-    <string name="butn_trustZoneDevice">Đặt làm thiết bị TrustZone</string>
+    <string name="butn_trustDevice">Đặt làm thiết bị TrustZone</string>
     <string name="butn_clearQueue">Dọn danh sách chờ</string>
     <string name="text_connectionPermission">Quyền kết nối</string>
     <string name="mesg_noReceiverOrSender">Bạn cần thêm thiết bị trước</string>

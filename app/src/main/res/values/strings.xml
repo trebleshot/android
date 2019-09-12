@@ -217,11 +217,7 @@
     <string name="text_communicationServiceStop">Tap to end session</string>
     <string name="text_remainingTime">ETA %s</string>
     <string name="butn_showFiles">Show files</string>
-    <string name="butn_trustZoneDevice">Set as TrustZone device</string>
-    <string name="butn_turnTrustZoneOn">Turn TrustZone on</string>
-    <string name="butn_turnTrustZoneOff">Turn TrustZone off</string>
-    <string name="text_trustZoneEnabled">TrustZone</string>
-    <string name="text_trustZoneEnabledSummary">TrustZone is activated on start</string>
+    <string name="butn_trustDevice">Trust this device</string>
     <string name="butn_typeNewEntry">Type new entry</string>
     <string name="butn_download">Download</string>
     <string name="mesg_clipboardUpdateNotice">Revise the text or press again to exit</string>
@@ -281,7 +277,6 @@
     <string name="text_sortByName">Name</string>
     <string name="text_sortByDate">Date</string>
     <string name="text_sortBySize">Size</string>
-    <string name="text_trustZoneDeviceNotice">Automatically accepts incoming items when TrustZone is on</string>
     <string name="text_allowingToConnectNotice">Allow connections from this device</string>
     <string name="butn_resetToDefault">Reset to default</string>
     <string name="text_resetPreferencesToDefaultSummary">This will apply initial settings</string>
@@ -319,8 +314,6 @@
     <string name="text_movedCacheFiles">Cache files moved</string>
     <string name="mode_itemCounted" translatable="false">%s (%d)</string>
     <string name="mode_itemCountedDetailed" translatable="false">%s (%s)</string>
-    <string name="text_hotspotStartsTrustZone">Hotspot also turns TrustZone on</string>
-    <string name="text_hotspotStartsTrustZoneSummary">TrustZone will also be started accordingly</string>
     <string name="text_qrCodeAvailableHelp">Scan this code to share and connect devices</string>
     <string name="text_qrCodeHotspotDisabledHelp">Set up a hotspot so that others can connect to you</string>
     <string name="text_scanQRCodeHelp">Scan the QR code on the screen of the host device</string>
@@ -332,8 +325,6 @@
     <string name="text_rename">Rename</string>
     <string name="butn_rename">Rename</string>
     <string name="butn_copyHere">Copy here</string>
-    <string name="text_qrAllowTrustZone">TrustZone for QR code</string>
-    <string name="text_qrAllowTrustZoneSummary">Allow TrustZone for QR code connections</string>
     <string name="text_translateTrebleshot">Help us translate</string>
     <string name="text_contributors">Made possible by</string>
     <string name="butn_gridSize">Grid size</string>
@@ -459,7 +450,7 @@
     <string name="mesg_waiting">Waiting</string>
     <string name="text_amoledOptimizedBlackTheme">Optimize for AMOLED Screens</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Use darker colors</string>
-    <string name="mesg_errorNotTrustZoneDevice">This device needs to be set as TrustZone device on the receiver device to do this operation.</string>
+    <string name="mesg_errorNotTrusted">This device is not trusted on the other device. Set as trusted to use this.</string>
     <string name="butn_enterIpAddress">Enter IP Address</string>
     <string name="text_enterIpAddress" translatable="false">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Share via browser</string>

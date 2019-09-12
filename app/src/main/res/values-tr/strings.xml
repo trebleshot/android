@@ -210,7 +210,7 @@
     <string name="text_communicationServiceStop">Sona erdirmek için dokunun</string>
     <string name="text_remainingTime">Kalan %s</string>
     <string name="butn_showFiles">Dosyaları göster</string>
-    <string name="butn_trustZoneDevice">GüvenliBölge cihazı</string>
+    <string name="butn_trustDevice">GüvenliBölge cihazı</string>
     <string name="butn_turnTrustZoneOn">GüvenliBölge\'yi etkinleştir</string>
     <string name="butn_turnTrustZoneOff">GüvenliBölge\'yi sonlandır</string>
     <string name="text_trustZoneEnabled">GüvenliBölge</string>
@@ -442,7 +442,7 @@
     <string name="mesg_waiting">Bekliyor</string>
     <string name="text_amoledOptimizedBlackTheme">AMOLED Ekranlar için iyileştir</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Daha karanlık renkler kullan</string>
-    <string name="mesg_errorNotTrustZoneDevice">Bu cihaz, bu işlemi gerçekleştimek için alıcı cihaz üzerinde GüvenliBölge cihazı olarak işaretlenmelidir.</string>
+    <string name="mesg_errorNotTrusted">Bu cihaz, bu işlemi gerçekleştimek için alıcı cihaz üzerinde GüvenliBölge cihazı olarak işaretlenmelidir.</string>
     <string name="butn_enterIpAddress">"IP Adresi girin "</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Tarayıcı ile gönder</string>

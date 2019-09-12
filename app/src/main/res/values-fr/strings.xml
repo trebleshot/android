@@ -193,7 +193,7 @@
     <string name="text_communicationServiceStop">Appuyez pour mettre fin à la session</string>
     <string name="text_remainingTime">ETA %s</string>
     <string name="butn_showFiles">Afficher les fichiers</string>
-    <string name="butn_trustZoneDevice">Définir en tant qu’appareil de TrustZone</string>
+    <string name="butn_trustDevice">Définir en tant qu’appareil de TrustZone</string>
     <string name="butn_turnTrustZoneOn">Activer TrustZone</string>
     <string name="butn_turnTrustZoneOff">Désactiver TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -438,7 +438,7 @@
     <string name="mesg_waiting">En attente</string>
     <string name="text_amoledOptimizedBlackTheme">Optimiser pour les écrans AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Utilisez des couleurs plus foncées</string>
-    <string name="mesg_errorNotTrustZoneDevice">Cet appareil doit être configuré en tant qu\'appareil TrustZone sur l\'appareil récepteur pour effectuer cette opération.</string>
+    <string name="mesg_errorNotTrusted">Cet appareil doit être configuré en tant qu\'appareil TrustZone sur l\'appareil récepteur pour effectuer cette opération.</string>
     <string name="butn_enterIpAddress">Entrez l’adresse IP</string>
     <string name="butn_webShare">Partager via le navigateur</string>
     <string name="butn_shareOnBrowser">Partager sur le navigateur</string>
@@ -468,4 +468,18 @@
     <string name="mesg_locationPermissionRequiredAny">Activez d’abord le service de localisation pour continuer</string>
     <string name="mesg_openFailure">Impossible d\'afficher \"%s\"</string>
     <string name="text_webShareNoContentNotice">Utilisez l\'option « Partager via le navigateur » pour voir les transferts ici !</string>
+    <string name="text_checkOldFiles">"Vous pouvez déplacer les fichiers associés complétés ainsi que ceux partiellement complétés vers ce dossier. Ceci peut prendre un certain temps,  en fonction des volumes"</string>
+    <string name="text_sortOrderAscending">Plus volumineux en premier ↑</string>
+    <string name="text_sortOrderDescending">Moins volumineux en premier ↓</string>
+    <string name="text_movedCacheFiles">Fichiers du cache déplacés</string>
+    <string name="ques_connectionWizardIsOtherDeviceReady">Avez-vous tout bien configuré sur l\'autre appareil \?</string>
+    <string name="text_webShareInfo">Activez le partage Web pour les transferts individuels et visitez le lien Web affiché ci-dessous avec un appareil connecté au même réseau.</string>
+    <string name="butn_downloadAllAsZip">Télécharger tout en tant que ZIP (unique, non compressé)</string>
+    <string name="text_interfaceVPN">Serveur VPN</string>
+    <string name="text_unrecognizedQrCode">Code non reconnu</string>
+    <string name="mesg_textStreamSaved">Texte sauvegardé</string>
+    <string name="butn_changeMode">Changer de mode</string>
+    <string name="mesg_qrScannerTextMode">Les codes QR seront affichés sous forme de texte</string>
+    <string name="mesg_qrScannerDefaultMode">Retour aux actions par défaut pour les codes QR</string>
+    <string name="butn_showAsQrCode">Afficher comme code QR</string>
 </resources>

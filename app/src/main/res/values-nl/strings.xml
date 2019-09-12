@@ -249,7 +249,7 @@
     <string name="text_reaminingTime">Verwacht over %s</string>
     <string name="butn_showFiles">Bestanden tonen</string>
     <string name="text_remainingTime">Afgerond over %s</string>
-    <string name="butn_trustZoneDevice">Instellen als TrustZone-apparaat</string>
+    <string name="butn_trustDevice">Instellen als TrustZone-apparaat</string>
     <string name="butn_turnTrustZoneOn">TrustZone inschakelen</string>
     <string name="butn_turnTrustZoneOff">TrustZone uitschakelen</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -487,7 +487,7 @@
     <string name="mesg_waiting">Bezig met wachten...</string>
     <string name="text_amoledOptimizedBlackTheme">Optimaliseren voor AMOLED-schermen</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Donkerder kleuren gebruiken</string>
-    <string name="mesg_errorNotTrustZoneDevice">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
+    <string name="mesg_errorNotTrusted">Dit apparaat moet worden ingesteld als TrustZone-apparaat op het ontvangende apparaat.</string>
     <string name="butn_enterIpAddress">IP-adres invoeren</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Delen via browser</string>

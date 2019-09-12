@@ -37,12 +37,10 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
-import com.genonbeta.TrebleShot.receiver.NetworkStatusReceiver;
 import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;

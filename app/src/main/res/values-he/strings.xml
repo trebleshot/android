@@ -223,7 +223,7 @@
     <string name="text_communicationServiceStop">יש לגעת כדי לסיים הפעלה</string>
     <string name="text_remainingTime">זמן סיום משוער %s</string>
     <string name="butn_showFiles">הצגת קבצים</string>
-    <string name="butn_trustZoneDevice">הגדרה כמכשיר באיזור מהימן</string>
+    <string name="butn_trustDevice">הגדרה כמכשיר באיזור מהימן</string>
     <string name="butn_turnTrustZoneOn">הפעלת תכונת איזור מהימן</string>
     <string name="butn_turnTrustZoneOff">כיבוי תכונת איזור מהימן</string>
     <string name="text_trustZoneEnabled">איזור מהימן</string>
@@ -458,7 +458,7 @@
     <string name="mesg_waiting">בהמתנה</string>
     <string name="text_amoledOptimizedBlackTheme">מיטוב למסכי AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">שימוש בצבעים כהים יותר</string>
-    <string name="mesg_errorNotTrustZoneDevice">יש להגדיר את המכשיר הזה כאיזור מהימן במכשיר המקבל כדי לבצע פעולה זו.</string>
+    <string name="mesg_errorNotTrusted">יש להגדיר את המכשיר הזה כאיזור מהימן במכשיר המקבל כדי לבצע פעולה זו.</string>
     <string name="butn_enterIpAddress">נא להקליד כתובת IP</string>
     <string name="butn_webShare">שיתוף דרך דפדפן</string>
     <string name="text_webShareNoContentNotice">יש להשתמש באפשרות ‚שיתוף בדפדפן’ כדי לצפות בהעברות כאן!</string>

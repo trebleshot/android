@@ -1,23 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-  ~ Copyright (C) 2019 Veli Tasalı
-  ~
-  ~ This program is free software; you can redistribute it and/or
-  ~ modify it under the terms of the GNU General Public License
-  ~ as published by the Free Software Foundation; either version 2
-  ~ of the License, or (at your option) any later version.
-  ~
-  ~ This program is distributed in the hope that it will be useful,
-  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
-  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  ~ GNU General Public License for more details.
-  ~
-  ~ You should have received a copy of the GNU General Public License
-  ~ along with this program; if not, write to the Free Software
-  ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
-  -->
-
-<resources><string name="text_navigationDrawerOpen">開啟導航面板</string>n
+<resources>
+    <string name="text_navigationDrawerOpen">開啟導航面板</string>n
     <string name="text_navigationDrawerClose">關閉導航面板</string>
     <string name="text_preferences">喜好設定</string>
     <string name="mesg_connectionFailure">連線失敗</string>
@@ -125,14 +108,14 @@
     <string name="butn_killNow">現在終止</string>
     <string name="mesg_groupOngoingNotice">"正在傳送這個檔案前等待 %s  來完成"</string>
     <string name="butn_proceed">繼續</string>
-    <string name="ques_removeTransfer">移除傳送項目\?</string>
+    <string name="ques_removeQueue">移除傳送項目\?</string>
     <string name="butn_remove">移除</string>
     <string name="butn_removeAll">全部移除</string>
     <string name="ques_removeDevice">移除這個裝置\?</string>
     <string name="text_removeDeviceNotice">當您移除一個裝置，它的傳輸項目也會被移除</string>
-    <string name="text_removeTransferSummary">這將會從列表中 %s</string>
+    <string name="text_removePendingTransferSummary">這將會從列表中 %s</string>
     <string name="ques_removeAll">全部移除\?</string>
-    <string name="text_removeTransferGroupSummary">這將會移除您在這邊看到的所有待辦傳輸</string>
+    <string name="text_removeCertainPendingTransfersSummary">這將會移除您在這邊看到的所有待辦傳輸</string>
     <string name="text_availableNetworks">選擇網路 - %s</string>
     <string name="text_noNetworkAvailable">沒有可用網路</string>
     <string name="text_savedConnections">已儲存的連線</string>
@@ -178,7 +161,7 @@
     <string name="text_chooseFile">選擇檔案</string>
     <string name="mesg_pathSameError">您不能選擇以前的資料夾</string>
     <string name="ques_checkOldFiles">移動文件\?</string>
-    <string name="text_checkOldFiles">您可以把完成和部分完成已連結的檔案移動到這個資料夾，這將會需要一些時間基於它們的檔案大小</string>
+    <string name="text_checkOldFiles">您可以把部分與已完成的檔案關聯移動到此資料夾，這將依照它們的大小來決定處理時間</string>
     <string name="mesg_newFilesReceived">新檔案已經接收</string>
     <string name="butn_show">顯示</string>
     <string name="text_preparingFiles">準備檔案中</string>
@@ -220,7 +203,7 @@
     <string name="text_communicationServiceStop">點擊來終止任務</string>
     <string name="text_remainingTime">預計時間 %s</string>
     <string name="butn_showFiles">顯示檔案</string>
-    <string name="butn_trustZoneDevice">設定為 TrustZone 裝置</string>
+    <string name="butn_trustDevice">設定為 TrustZone 裝置</string>
     <string name="butn_turnTrustZoneOn">開啟 TrustZone</string>
     <string name="butn_turnTrustZoneOff">關閉 TrustZone</string>
     <string name="text_trustZoneEnabledSummary">啟動時會開啟 TrustZone</string>
@@ -287,4 +270,32 @@
     <string name="text_allowingToConnectNotice">允許從此裝置的連線</string>
     <string name="butn_resetToDefault">回復預設值</string>
     <string name="text_resetPreferencesToDefaultSummary">這將會套用初始設定</string>
+    <string name="text_interfaceWireless">Wi-Fi</string>
+    <string name="text_trustZoneEnabled">TrustZone</string>
+    <string name="text_taskCompleted">工作已完成</string>
+    <string name="text_deletingFilesOngoing">刪除選取的檔案</string>
+    <string name="text_networkServiceDiscovery">啟用 NSD</string>
+    <string name="text_notificationChannelHigh">重要通知</string>
+    <string name="text_notificationChannelLow">低優先度通知</string>
+    <string name="text_yearCountShort">%d 年</string>
+    <string name="text_monthCountShort">%d 月</string>
+    <string name="text_dayCountShort">%d 日</string>
+    <string name="text_hourCountShort">%d 小時</string>
+    <string name="text_minuteCountShort">%d 分鐘</string>
+    <string name="text_secondCountShort">%d 秒</string>
+    <string name="text_listEmptyFiles">這邊沒有檔案</string>
+    <string name="text_listEmptyImage">這邊沒有照片</string>
+    <string name="text_listEmptyApp">這邊沒有應用程式</string>
+    <string name="text_listEmptyVideo">這邊沒有影片</string>
+    <string name="text_listEmptyTextStream">將會在這邊顯示輸入的文字</string>
+    <string name="text_listEmptyMusic">這邊沒有音樂</string>
+    <string name="text_internalStorage">內部儲存空間</string>
+    <string name="mesg_errorReadFolder">不能存取 \"%s\"</string>
+    <string name="butn_mountDirectory">掛接資料夾</string>
+    <string name="mesg_mountDirectoryHelp">選擇您想要存取的資料夾</string>
+    <string name="butn_ejectDirectory">解除資料夾掛接</string>
+    <string name="text_movedCacheFiles">已移動暫存檔案</string>
+    <string name="text_hotspotStartsTrustZone">熱點開啟時也打開 TrustZone</string>
+    <string name="text_hotspotStartsTrustZoneSummary">TrustZone 將會一起打開</string>
+    <string name="text_qrCodeAvailableHelp">掃描 QRcode 來連接裝置</string>
 </resources>

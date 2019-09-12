@@ -221,7 +221,7 @@
     <string name="text_communicationServiceRunning">TrebleShot può condividere file</string>
     <string name="text_communicationServiceStop">Premi per terminare la sessione</string>
     <string name="butn_showFiles">Mostra File</string>
-    <string name="butn_trustZoneDevice">Imposta come dispositivo TrustZone</string>
+    <string name="butn_trustDevice">Imposta come dispositivo TrustZone</string>
     <string name="butn_turnTrustZoneOn">Attiva TrustZone</string>
     <string name="butn_turnTrustZoneOff">Disattiva TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -466,7 +466,7 @@
     <string name="mesg_waiting">In attesa</string>
     <string name="text_amoledOptimizedBlackTheme">Ottimizza per schermi AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Usa colori più scuri</string>
-    <string name="mesg_errorNotTrustZoneDevice">Per eseguire questa operazione, questo dispositivo deve essere impostato come TrustZone sul dispositivo ricevente.</string>
+    <string name="mesg_errorNotTrusted">Per eseguire questa operazione, questo dispositivo deve essere impostato come TrustZone sul dispositivo ricevente.</string>
     <string name="butn_enterIpAddress">Inserisci Indirizzo IP</string>
     <string name="butn_webShare">Condivisione tramite Browser (HTTP)</string>
     <string name="text_webShareNoContentNotice">Usa \"Condividi tramite Browser\" per vedere i trasferimenti!</string>

@@ -285,7 +285,7 @@
     <string name="text_emulatedMediaDirectory">Эмулировать (%s)</string>
     <string name="text_savePath">Сохранить в</string>
     <string name="text_transactionGroupDetails">Детали группы операции</string>
-    <string name="butn_trustZoneDevice">Установить как устройство TrustZone</string>
+    <string name="butn_trustDevice">Установить как устройство TrustZone</string>
     <string name="text_uncheckedItemsNotice">Снимите метки с предметов, чтобы удалить их</string>
     <string name="mesg_connectionUpdated">Переключаюсь на \"%s\"</string>
     <string name="mesg_hotspotCreatedInfo">Подключитесь к \"%s\" в \"Настройках Wi-Fi\" или отправляйте файлы через \"%s\" внутри TrebleShot</string>
@@ -440,7 +440,7 @@
     <string name="mesg_waiting">Ожидания</string>
     <string name="text_amoledOptimizedBlackTheme">Оптимизировать для AMOLED-экранов</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Используйте более темные цвета</string>
-    <string name="mesg_errorNotTrustZoneDevice">Это устройство должно быть установлено как устройство TrustZone на приемном устройстве для выполнения этой операции.</string>
+    <string name="mesg_errorNotTrusted">Это устройство должно быть установлено как устройство TrustZone на приемном устройстве для выполнения этой операции.</string>
     <string name="butn_enterIpAddress">Введите IP-адрес</string>
     <string name="butn_webShare">Поделиться через браузер</string>
     <string name="text_webShareNoContentNotice">Используйте опцию «Поделиться в браузере», чтобы увидеть здесь передачу!</string>

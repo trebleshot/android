@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="15dp"
             android:paddingBottom="15dp"
-            android:text="@string/butn_trustZoneDevice" />
+            android:text="@string/butn_trustDevice" />
 
     </LinearLayout>
 </ScrollView>

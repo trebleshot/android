@@ -247,7 +247,7 @@
     <string name="text_communicationServiceRunning">TrebleShot kan dele filer nå</string>
     <string name="text_communicationServiceStop">Trykk for å sluttføre økt</string>
     <string name="butn_showFiles">Vis filer</string>
-    <string name="butn_trustZoneDevice">Sett som TrustZone-enhet</string>
+    <string name="butn_trustDevice">Sett som TrustZone-enhet</string>
     <string name="butn_turnTrustZoneOn">Skru på TrustZone</string>
     <string name="butn_turnTrustZoneOff">Skru av TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -497,7 +497,7 @@
     <string name="mesg_errorNotAnIpAddress">Ikke en IP-adresse
 \n(som f.eks. 192.168.1.2)</string>
     <string name="ques_shareAsApkOrLink">Del som APK eller lenke\?</string>
-    <string name="mesg_errorNotTrustZoneDevice">Denne enheten må settes som TrustZone-enhet på mottakerenheten for å gjøre dette.</string>
+    <string name="mesg_errorNotTrusted">Denne enheten må settes som TrustZone-enhet på mottakerenheten for å gjøre dette.</string>
     <string name="text_webShareNoContentNotice">Bruk \"Del på nettleser\"-valget for å se overføringer her.</string>
     <string name="butn_shareOnBrowser">Del på nettleser</string>
     <string name="butn_hideOnBrowser">Skjul på nettleser</string>

@@ -17,4 +17,8 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<resources></resources>
+<resources>
+    <plurals name="ques_deleteFile">
+        <item quantity="other">Apakah Anda ingin menghapus file %d\?</item>
+    </plurals>
+</resources>

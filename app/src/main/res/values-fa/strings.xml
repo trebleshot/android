@@ -212,7 +212,7 @@
     <string name="text_communicationServiceRunning">اکنون TrebleShot می‌تواند پرونده‌ها را هم‌رسانی کند</string>
     <string name="text_communicationServiceStop">برای اتمام جلسه، لمس کنید</string>
     <string name="butn_showFiles">نمایش پرونده‌ها</string>
-    <string name="butn_trustZoneDevice">تنظیم به عنوان دستگاه منطقه‌مطمئن</string>
+    <string name="butn_trustDevice">تنظیم به عنوان دستگاه منطقه‌مطمئن</string>
     <string name="butn_turnTrustZoneOn">روشن کردن منطقه‌مطمئن</string>
     <string name="butn_turnTrustZoneOff">خاموش کردن منطقه‌مطمئن</string>
     <string name="text_trustZoneEnabled">منطقه‌مطمئن</string>
@@ -444,7 +444,7 @@
     <string name="text_visitWebShareAddress">مشاهده این لینک با مرورگر</string>
     <string name="text_dowloadTrebleshotAndroid">دانلود TrebleShot برای اندروید</string>
     <string name="text_listEmptyConnection">شبکه هایی که به آنها متصل می شوید اینجا نمایش داده می شوند</string>
-    <string name="mesg_errorNotAnIpAddress">آدرس IP نیست 
+    <string name="mesg_errorNotAnIpAddress">نشانی IP نامعتبر است
 \n(مثل 192.168.1.2)</string>
     <string name="text_trebleshotHotspot">هات اسپات TrebleShot</string>
     <string name="mesg_scanningDevicesSelfHotspot">به دنبال دستگاه هایی روی یک شبکه هات اسپات TrebleShot هستیم</string>
@@ -468,14 +468,22 @@
     <string name="ques_connectionWizardUseHotspot">آیا می‌خواهید سایر دستگاه‌ها با هات‌اسپات به این دستگاه وصل شوند؟ اگر نمی‌دانید که هات‌اسپات چیست، بله را بفشارید.</string>
     <string name="text_hotspotStartedExternallyNotice">هات‌اسپات از بیرون شروع شده است. برای استفاده کد QR، شما باید اینجا آن را شروع کنید.</string>
     <string name="butn_revokePin">ابطال PIN</string>
-    <string name="mesg_errorNotTrustZoneDevice">این دستگاه نیاز است که به‌عنوان دستگاه TrustZone در دستگاه دریافت کنده تنظیم شده باشد که این عملیات را انجام دهد.</string>
+    <string name="mesg_errorNotTrusted">این دستگاه نیاز است که به‌عنوان دستگاه TrustZone در دستگاه دریافت کنده تنظیم شده باشد که این عملیات را انجام دهد.</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="text_webShare">@string/butn_webShare</string>
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">یا</string>
     <string name="text_webShareInfo">در زیر پیوندهایی می‌بینید که دستگاه‌های در شبکهٔ مشترک می‌توانند به یک مرورگر وصل شوند. در ادامه، اشتراک‌گذاری وبی را برای تک‌تک انتقال‌ها فعال کنید.</string>
-    <string name="ques_shareAsApkOrLink"></string>
-    <string name="butn_asApk"></string>
-    <string name="butn_asLink"></string>
-    <string name="text_linkTrebleshot"></string>
+    <string name="ques_shareAsApkOrLink">هم‌رسانی به صورت پیوند یا APK؟</string>
+    <string name="butn_asApk">به صورت APK</string>
+    <string name="butn_asLink">به صورت یک پیوند</string>
+    <string name="text_linkTrebleshot">"با تربل‌شات پرونده‌ها را هم‌رسانی کنید! بارگیری از:  %s"</string>
+    <string name="butn_downloadAllAsZip">همه را به صورت ZIP بارگیری کنید (تکی، فشرده‌نشده)</string>
+    <string name="text_interfaceVPN">سرور VPN</string>
+    <string name="text_unrecognizedQrCode">کد شناسایی نشده</string>
+    <string name="mesg_textStreamSaved">متن ذخیره شد</string>
+    <string name="butn_changeMode">تغییر حالت</string>
+    <string name="mesg_qrScannerTextMode">کدهای QR به صورت متنی نمایش خواهند یافت</string>
+    <string name="mesg_qrScannerDefaultMode">بازگشتن به کنش‌های پیش‌فرض برای کدهای QR</string>
+    <string name="butn_showAsQrCode">نمایش به صورت کد QR</string>
 </resources>

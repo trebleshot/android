@@ -223,7 +223,7 @@
     <string name="text_communicationServiceStop">Toque para finalizar la sesión</string>
     <string name="text_remainingTime">Tiempo estimado de llegada %s</string>
     <string name="butn_showFiles">Mostrar archivos</string>
-    <string name="butn_trustZoneDevice">Establecer como dispositivo TrustZone</string>
+    <string name="butn_trustDevice">Establecer como dispositivo TrustZone</string>
     <string name="butn_turnTrustZoneOn">Activar TrustZone</string>
     <string name="butn_turnTrustZoneOff">Desactivar TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -458,7 +458,7 @@
     <string name="mesg_waiting">Esperando</string>
     <string name="text_amoledOptimizedBlackTheme">Optimizar para pantallas AMOLED</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Usar colores más oscuros</string>
-    <string name="mesg_errorNotTrustZoneDevice">Este dispositivo debe configurarse como dispositivo TrustZone en el dispositivo receptor para realizar esta operación.</string>
+    <string name="mesg_errorNotTrusted">Este dispositivo debe configurarse como dispositivo TrustZone en el dispositivo receptor para realizar esta operación.</string>
     <string name="butn_enterIpAddress">Introduzca la dirección IP</string>
     <string name="butn_webShare">Compartir a través del navegador</string>
     <string name="text_webShareNoContentNotice">Utilice la opción \'Compartir en el navegador\' para ver las transferencias aquí!</string>

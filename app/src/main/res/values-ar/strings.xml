@@ -224,7 +224,7 @@
     <string name="text_communicationServiceStop">انقر لإنهاء جلسة العمل</string>
     <string name="text_remainingTime">الوقت المتبقي %s</string>
     <string name="butn_showFiles">إظهار الملفات</string>
-    <string name="butn_trustZoneDevice">تعيين كجهاز موثوق</string>
+    <string name="butn_trustDevice">تعيين كجهاز موثوق</string>
     <string name="butn_turnTrustZoneOn">تشغيل المنطقة الموثوقة</string>
     <string name="butn_turnTrustZoneOff">إيقاف المنطقة الموثوقة</string>
     <string name="text_trustZoneEnabled">المنطقة الموثوقة</string>

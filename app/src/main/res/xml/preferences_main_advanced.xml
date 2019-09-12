@@ -45,12 +45,6 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="allow_autoconnect"
-            android:summary="@string/text_autoStartSummary"
-            android:title="@string/text_autoStart" />
-
-        <CheckBoxPreference
-            android:defaultValue="false"
             android:key="show_system_apps"
             android:summary="@string/text_showSystemAppsSummary"
             android:title="@string/text_showSystemApps" />

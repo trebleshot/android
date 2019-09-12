@@ -225,7 +225,7 @@
     <string name="text_communicationServiceStop">Tippen zum Beenden der Sitzung</string>
     <string name="text_remainingTime">%s bleiben</string>
     <string name="butn_showFiles">Dateien zeigen</string>
-    <string name="butn_trustZoneDevice">Als TrustZone-Gerät festlegen</string>
+    <string name="butn_trustDevice">Als TrustZone-Gerät festlegen</string>
     <string name="butn_turnTrustZoneOn">TrustZone aktivieren</string>
     <string name="butn_turnTrustZoneOff">TrustZone deaktivieren</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -460,7 +460,7 @@
     <string name="mesg_waiting">Warten</string>
     <string name="text_amoledOptimizedBlackTheme">Optimiert für AMOLED Bildschirm</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Benutze dunklere Farben</string>
-    <string name="mesg_errorNotTrustZoneDevice">Dieses Gerät muss als TrustZone-Gerät auf dem Empfängergerät eingestellt sein, um diesen Vorgang durchzuführen.</string>
+    <string name="mesg_errorNotTrusted">Dieses Gerät muss als TrustZone-Gerät auf dem Empfängergerät eingestellt sein, um diesen Vorgang durchzuführen.</string>
     <string name="butn_enterIpAddress">IP-Adresse eingeben</string>
     <string name="butn_webShare">Freigabe über den Browser</string>
     <string name="text_webShareNoContentNotice">Verwenden Sie die Option \'Im Browser freigeben\', um die Übertragungen hier zu sehen!</string>

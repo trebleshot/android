@@ -223,7 +223,7 @@
     <string name="text_communicationServiceStop">Sakatu saioa amaitzeko</string>
     <string name="text_remainingTime">Falta den denbora: %s</string>
     <string name="butn_showFiles">Erakutsi fitxategiak</string>
-    <string name="butn_trustZoneDevice">Ezarri area fidagarriko gailu gisa</string>
+    <string name="butn_trustDevice">Ezarri area fidagarriko gailu gisa</string>
     <string name="butn_turnTrustZoneOn">Aktibatu area fidagarria</string>
     <string name="butn_turnTrustZoneOff">Desaktibatu area fidagarria</string>
     <string name="text_trustZoneEnabled">Area fidagarria</string>

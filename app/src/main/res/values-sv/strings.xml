@@ -214,7 +214,7 @@
     <string name="text_communicationServiceStop">Tryck för att avsluta sessionen</string>
     <string name="text_remainingTime">Beräknad sluttid %s</string>
     <string name="butn_showFiles">Visa filer</string>
-    <string name="butn_trustZoneDevice">Ange som TrustZone-enhet</string>
+    <string name="butn_trustDevice">Ange som TrustZone-enhet</string>
     <string name="butn_turnTrustZoneOn">Aktivera TrustZone</string>
     <string name="butn_turnTrustZoneOff">Inaktivera TrustZone</string>
     <string name="text_trustZoneEnabled">TrustZone</string>
@@ -458,7 +458,7 @@
     <string name="mesg_waiting">Väntar</string>
     <string name="text_amoledOptimizedBlackTheme">Optimera för AMOLED-skärmar</string>
     <string name="text_amoledOptimizedBlackThemeSummary">Använd mörkare färger</string>
-    <string name="mesg_errorNotTrustZoneDevice">Denna enhet måste ställas in som TrustZone-enhet på mottagarenheten för att kunna utföra denna operationen.</string>
+    <string name="mesg_errorNotTrusted">Denna enhet måste ställas in som TrustZone-enhet på mottagarenheten för att kunna utföra denna operationen.</string>
     <string name="butn_enterIpAddress">Ange IP-adress</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
     <string name="butn_webShare">Dela via webbläsare</string>

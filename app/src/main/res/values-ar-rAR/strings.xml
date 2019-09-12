@@ -226,7 +226,7 @@
     <string name="text_communicationServiceStop">انقر لإنهاء جلسة العمل</string>
     <string name="text_remainingTime">الوقت المتبقي %s</string>
     <string name="butn_showFiles">إظهار الملفات</string>
-    <string name="butn_trustZoneDevice">تعيين كجهاز موثوق</string>
+    <string name="butn_trustDevice">تعيين كجهاز موثوق</string>
     <string name="butn_turnTrustZoneOn">تشغيل المنطقة الموثوقة</string>
     <string name="butn_turnTrustZoneOff">إيقاف المنطقة الموثوقة</string>
     <string name="text_trustZoneEnabled">المنطقة الموثوقة</string>
@@ -471,7 +471,7 @@
     <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ، يجب ان تبدا هنا.</string>
     <string name="text_textMillisecond">% d مللي ثانيه</string>
     <string name="text_amoledOptimizedBlackTheme">تحسين شاشات AMOLED</string>
-    <string name="mesg_errorNotTrustZoneDevice">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
+    <string name="mesg_errorNotTrusted">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
     <string name="text_webShareNoContentNotice">استخدم خيار \"مشاركه علي المتصفح\" لرؤية عمليات النقل هنا!</string>
     <string name="text_webShareInfo">تمكين مشاركه الويب لعمليات النقل بشكل فردي وزيارة اي ارتباط ويب موضح أدناه مع جهاز متصل بنفس الشبكة.</string>
     <string name="text_listEmptyConnection">تظهر الشبكات التي تتصل بها هنا</string>
