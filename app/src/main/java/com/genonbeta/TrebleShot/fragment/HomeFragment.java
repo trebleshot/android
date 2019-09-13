@@ -54,8 +54,9 @@ public class HomeFragment
         mAdapter = new SmartFragmentPagerAdapter(getContext(), getChildFragmentManager());
 
         mAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, TransferGroupListFragment.class, null));
-        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, null));
-        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, TextStreamListFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, ActiveConnectionListFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, FileExplorerFragment.class, null));
+        mAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, TextStreamListFragment.class, null));
 
         mAdapter.createTabs(bottomNavigationView);
         mViewPager.setAdapter(mAdapter);
@@ -81,14 +82,9 @@ public class HomeFragment
             }
         });
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener()
-        {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
-            {
-                mViewPager.setCurrentItem(menuItem.getOrder());
-                return true;
-            }
+        bottomNavigationView.setOnNavigationItemSelectedListener(menuItem -> {
+            mViewPager.setCurrentItem(menuItem.getOrder());
+            return true;
         });
 
         return view;

@@ -449,10 +449,8 @@ public class TransferListAdapter
 	@Override
 	public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
 	{
-		if (viewType == VIEW_TYPE_REPRESENTATIVE)
-			return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
-
-		return new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(R.layout.list_transfer, parent, false));
+		return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+				R.layout.list_transfer, parent, false)) : createDefaultViews(parent, viewType, false);
 	}
 
 	@Override

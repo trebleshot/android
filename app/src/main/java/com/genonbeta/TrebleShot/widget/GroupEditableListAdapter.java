@@ -21,10 +21,12 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.net.Uri;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -47,6 +49,7 @@ import java.util.List;
 abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder>
         extends EditableListAdapter<T, V>
 {
+
     public static final int VIEW_TYPE_REPRESENTATIVE = 100;
     public static final int VIEW_TYPE_ACTION_BUTTON = 110;
 
@@ -74,14 +77,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         onLoad(groupLister);
 
         if (groupLister.getList().size() > 0) {
-            Collections.sort(groupLister.getList(), new Comparator<ComparableMerger<T>>()
-            {
-                @Override
-                public int compare(ComparableMerger<T> o1, ComparableMerger<T> o2)
-                {
-                    return o2.compareTo(o1);
-                }
-            });
+            Collections.sort(groupLister.getList(), (o1, o2) -> o2.compareTo(o1));
 
             for (ComparableMerger<T> thisMerger : groupLister.getList()) {
                 Collections.sort(thisMerger.getBelongings(), getDefaultComparator());
@@ -107,6 +103,17 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
     public GroupLister<T> createLister(List<T> loadedList, int groupBy)
     {
         return new GroupLister<>(loadedList, groupBy);
+    }
+
+    protected GroupViewHolder createDefaultViews(ViewGroup parent, int viewType, boolean noPadding)
+    {
+        if (viewType == VIEW_TYPE_REPRESENTATIVE)
+            return new GroupViewHolder(getInflater().inflate(noPadding ? R.layout.layout_list_title_no_padding
+                    : R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+        else if (viewType == VIEW_TYPE_ACTION_BUTTON)
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_action_button, parent, false), R.id.text);
+
+        throw new IllegalArgumentException(viewType + " is not defined in defaults");
     }
 
     public int getGroupBy()
@@ -332,7 +339,7 @@ abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapte
         public void offer(T object)
         {
             if (mMode == MODE_GROUP_BY_DATE)
-                offer(object, new DateMerger<T>(object.getComparableDate()));
+                offer(object, new DateMerger<>(object.getComparableDate()));
             else if (mMode == MODE_GROUP_BY_NOTHING
                     || mCustomLister == null
                     || !mCustomLister.onCustomGroupListing(this, mMode, object))

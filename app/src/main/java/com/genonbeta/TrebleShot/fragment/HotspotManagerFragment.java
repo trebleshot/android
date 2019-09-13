@@ -55,6 +55,7 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
 import com.genonbeta.TrebleShot.util.HotspotUtils;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -73,6 +74,8 @@ public class HotspotManagerFragment
         implements TitleSupport, IconSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT = 643;
+
+    public static final String WIFI_AP_STATE_CHANGED = "android.net.wifi.WIFI_AP_STATE_CHANGED";
 
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
@@ -116,7 +119,7 @@ public class HotspotManagerFragment
         super.onCreate(savedInstanceState);
 
         mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
-        mIntentFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
+        mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
 
         setHasOptionsMenu(true);
     }
@@ -137,14 +140,7 @@ public class HotspotManagerFragment
         mText2 = view.findViewById(R.id.layout_hotspot_manager_info_container_text2);
         mText3 = view.findViewById(R.id.layout_hotspot_manager_info_container_text3);
 
-        mToggleButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                toggleHotspot();
-            }
-        });
+        mToggleButton.setOnClickListener(v -> toggleHotspot());
 
         return view;
     }
@@ -259,7 +255,7 @@ public class HotspotManagerFragment
     }
 
     // for hotspot
-    private void updateViews(String networkName, String password, BitSet keyManagement)
+    private void updateViews(String networkName, String password, int keyManagement)
     {
         mHotspotStartedExternally = false;
 
@@ -341,7 +337,7 @@ public class HotspotManagerFragment
         } else if (getConnectionUtils().getHotspotUtils() instanceof HotspotUtils.HackAPI
                 && wifiConfiguration != null) {
             updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey,
-                    wifiConfiguration.allowedKeyManagement);
+                    NetworkUtils.getAllowedKeyManagement(wifiConfiguration.allowedKeyManagement));
         } else if (Build.VERSION.SDK_INT >= 26)
             AppUtils.startForegroundService(getActivity(),
                     new Intent(getActivity(), CommunicationService.class)
@@ -353,13 +349,13 @@ public class HotspotManagerFragment
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
+            if (WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
                 updateState();
             else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
                 if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
                     updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
                             intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
-                            (BitSet)intent.getSerializableExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT));
+                            intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, -1));
                 else if (getConnectionUtils().getHotspotUtils().isEnabled()
                         && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false)) {
                     updateViewsStartedExternally();

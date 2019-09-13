@@ -33,7 +33,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 
 public class TextStreamObject
         extends GroupEditableListAdapter.GroupShareable
-        implements DatabaseObject<Object>, Editable
+        implements DatabaseObject<Object>
 {
     public String text;
 

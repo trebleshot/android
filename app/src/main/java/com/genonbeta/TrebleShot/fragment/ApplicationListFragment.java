@@ -35,21 +35,29 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
+import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
+
+import java.util.Map;
 
 public class ApplicationListFragment
-        extends EditableListFragment<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder, ApplicationListAdapter>
+        extends GroupEditableListFragment<ApplicationListAdapter.PackageHolder, GroupEditableListAdapter.GroupViewHolder, ApplicationListAdapter>
         implements TitleSupport
 {
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
+    public void onCreate(@Nullable Bundle savedInstanceState)
     {
-        super.onActivityCreated(savedInstanceState);
+        super.onCreate(savedInstanceState);
         setFilteringSupported(true);
         setHasOptionsMenu(true);
+        setDefaultOrderingCriteria(ApplicationListAdapter.MODE_SORT_ORDER_DESCENDING);
+        setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
+        setDefaultViewingGridSize(3, 5);
     }
 
     @Override
@@ -62,34 +70,27 @@ public class ApplicationListFragment
     }
 
     @Override
+    public void onGroupingOptions(Map<String, Integer> options)
+    {
+        super.onGroupingOptions(options);
+        options.put(getString(R.string.text_groupByNothing), ApplicationListAdapter.MODE_GROUP_BY_NOTHING);
+        options.put(getString(R.string.text_groupByDate), ApplicationListAdapter.MODE_GROUP_BY_DATE);
+    }
+
+    @Override
     public ApplicationListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
-            {
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
+            if (!clazz.isRepresentative()) {
                 registerLayoutViewClicks(clazz);
 
                 clazz.getView().findViewById(R.id.visitView).setOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                performLayoutClickOpen(clazz);
-                            }
-                        });
+                        v -> performLayoutClickOpen(clazz));
 
                 clazz.getView().findViewById(R.id.selector).setOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                if (getSelectionConnection() != null)
-                                    getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                            }
+                        v -> {
+                            if (getSelectionConnection() != null)
+                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
                         });
             }
         };
@@ -98,7 +99,7 @@ public class ApplicationListFragment
         {
             @NonNull
             @Override
-            public EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
@@ -106,7 +107,7 @@ public class ApplicationListFragment
     }
 
     @Override
-    public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
+    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
         return getSelectionConnection() != null
                 ? getSelectionConnection().setSelected(holder)
@@ -153,7 +154,7 @@ public class ApplicationListFragment
     }
 
     @Override
-    public boolean performLayoutClickOpen(EditableListAdapter.EditableViewHolder holder)
+    public boolean performLayoutClickOpen(GroupEditableListAdapter.GroupViewHolder holder)
     {
         try {
             final ApplicationListAdapter.PackageHolder appInfo = getAdapter().getItem(holder);
@@ -164,14 +165,7 @@ public class ApplicationListFragment
 
                 dialogBuilder.setMessage(R.string.ques_launchApplication);
                 dialogBuilder.setNegativeButton(R.string.butn_cancel, null);
-                dialogBuilder.setPositiveButton(R.string.butn_appLaunch, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        startActivity(launchIntent);
-                    }
-                });
+                dialogBuilder.setPositiveButton(R.string.butn_appLaunch, (dialog, which) -> startActivity(launchIntent));
 
                 dialogBuilder.show();
             } else

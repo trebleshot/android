@@ -509,7 +509,7 @@ public class CommunicationService extends Service
 	}
 
 	private void handleTransferRequest(final long groupId, final String jsonIndex, final NetworkDevice device,
-									   final DeviceConnection connection, final boolean fastMode)
+									   final DeviceConnection connection, final boolean noPrompt)
 	{
 		getSelfExecutor().submit(() -> {
 			final JSONArray jsonArray;
@@ -624,7 +624,7 @@ public class CommunicationService extends Service
 						.putExtra(EXTRA_GROUP_ID, groupId)
 						.putExtra(EXTRA_DEVICE_ID, device.id));
 
-				if (fastMode)
+				if (noPrompt)
 					try {
 						startTransferAsClient(group.id, device.id, TransferObject.Type.INCOMING);
 					} catch (Exception e) {
@@ -1211,7 +1211,7 @@ public class CommunicationService extends Service
 			statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
 					.putExtra(EXTRA_HOTSPOT_PASSWORD, wifiConfiguration.preSharedKey)
 					.putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(
-							wifiConfiguration));
+							wifiConfiguration.allowedKeyManagement));
 		}
 
 		sendBroadcast(statusIntent);
@@ -1454,8 +1454,6 @@ public class CommunicationService extends Service
 
 					final DeviceConnection connection = NetworkDeviceLoader.processConnection(
 							getDatabase(), device, activeConnection.getClientAddress());
-					// TODO: 9/12/19 Per device pin is needed
-					final boolean isFastModeAvailable = true;
 
 					getDatabase().broadcast();
 
@@ -1471,8 +1469,7 @@ public class CommunicationService extends Service
 
 									result = true;
 
-									handleTransferRequest(groupId, jsonIndex, device, connection,
-											isFastModeAvailable);
+									handleTransferRequest(groupId, jsonIndex, device, connection, false);
 								}
 								break;
 							case (Keyword.REQUEST_RESPONSE):

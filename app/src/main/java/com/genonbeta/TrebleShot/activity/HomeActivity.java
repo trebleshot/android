@@ -20,13 +20,9 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.app.Service;
 import android.content.ActivityNotFoundException;
-import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.ClipboardManager;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
@@ -49,11 +45,12 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ShareAppDialog;
 import com.genonbeta.TrebleShot.fragment.HomeFragment;
+import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.UpdateUtils;
@@ -62,7 +59,6 @@ import com.google.android.material.navigation.NavigationView;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -221,15 +217,26 @@ public class HomeActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        menu.add(0, -1, 1, "Crash now");
+        Menu devMenu = menu.addSubMenu("Dev. options");
+        devMenu.add(-100, -2, 1, "Crash test");
+        devMenu.add(-100, -3, 2, "Run migration");
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        if (item.getItemId() == -1)
+        if (item.getItemId() == -2) {
+            Toast.makeText(this, "Crashing the app", Toast.LENGTH_SHORT).show();
             throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
+        } else if (item.getItemId() == -3) {
+            AccessDatabase db = AppUtils.getDatabase(this);
+            int dbVersion = AccessDatabase.DATABASE_VERSION;
+
+            Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show();
+            Migration.migrate(db, db.getWritableDatabase(), dbVersion, dbVersion);
+        }
 
         return super.onOptionsItemSelected(item);
     }

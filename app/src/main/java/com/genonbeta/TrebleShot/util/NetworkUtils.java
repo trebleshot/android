@@ -146,9 +146,9 @@ public class NetworkUtils
      * that as if it is only one and fails when the first supported method is not equal to 1
      */
     @Deprecated
-    public static int getAllowedKeyManagement(WifiConfiguration wifiConfiguration)
+    public static int getAllowedKeyManagement(BitSet key)
     {
-        String keyManagement = wifiConfiguration.allowedKeyManagement.toString();
+        String keyManagement = key.toString();
 
         try {
             return Integer.valueOf(keyManagement.substring(1, keyManagement.length() - 1));

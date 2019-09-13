@@ -42,6 +42,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.dialog.WebShareDetailsDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.service.CommunicationService;
+import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
@@ -56,6 +57,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 
+import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_STATE_CHANGED;
+
 /**
  * created by: veli
  * date: 4/7/19 10:59 PM
@@ -63,7 +66,7 @@ import androidx.transition.TransitionManager;
 public class ActiveConnectionListFragment
         extends EditableListFragment<ActiveConnectionListAdapter.AddressedEditableInterface,
         EditableListAdapter.EditableViewHolder, ActiveConnectionListAdapter>
-        implements TitleSupport
+        implements TitleSupport, IconSupport
 {
     private FloatingActionButton mFAB;
     private IntentFilter mFilter = new IntentFilter();
@@ -73,7 +76,7 @@ public class ActiveConnectionListFragment
         public void onReceive(Context context, Intent intent)
         {
             if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())
-                    || NetworkStatusReceiver.WIFI_AP_STATE_CHANGED.equals(intent.getAction())
+                    || WIFI_AP_STATE_CHANGED.equals(intent.getAction())
                     || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
                     || WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
                     || WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(intent.getAction())
@@ -97,7 +100,7 @@ public class ActiveConnectionListFragment
 
         mFilter.addAction(CommunicationService.ACTION_WEBSHARE_STATUS);
         mFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
-        mFilter.addAction(NetworkStatusReceiver.WIFI_AP_STATE_CHANGED);
+        mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
         mFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -115,32 +118,20 @@ public class ActiveConnectionListFragment
 
         if (AppUtils.getDefaultPreferences(getContext()).getBoolean(helpWebShareInfo, true)) {
             webShareInfo.setVisibility(View.VISIBLE);
-            webShareInfoHideButton.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    webShareInfo.setVisibility(View.GONE);
-                    TransitionManager.beginDelayedTransition((ViewGroup) webShareInfo.getParent());
+            webShareInfoHideButton.setOnClickListener(v -> {
+                webShareInfo.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition((ViewGroup) webShareInfo.getParent());
 
-                    AppUtils.getDefaultPreferences(getContext()).edit()
-                            .putBoolean(helpWebShareInfo, false)
-                            .apply();
-                }
+                AppUtils.getDefaultPreferences(getContext()).edit()
+                        .putBoolean(helpWebShareInfo, false)
+                        .apply();
             });
         }
 
         listViewContainer.addView(view);
-        mFAB.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                AppUtils.toggleWebShare(getContext(), false);
-            }
-        });
+        mFAB.setOnClickListener(v -> AppUtils.toggleWebShare(getContext(), false));
 
-        return super.onListView(mainContainer, (FrameLayout) view.findViewById(R.id.container));
+        return super.onListView(mainContainer, view.findViewById(R.id.container));
     }
 
     @Override
@@ -171,34 +162,17 @@ public class ActiveConnectionListFragment
     @Override
     public ActiveConnectionListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = new AppUtils.QuickActions<EditableListAdapter.EditableViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final EditableListAdapter.EditableViewHolder clazz)
-            {
-                registerLayoutViewClicks(clazz);
+        final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = clazz -> {
+            registerLayoutViewClicks(clazz);
 
-                clazz.getView().findViewById(R.id.visitView).setOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                performLayoutClickOpen(clazz);
-                            }
-                        });
+            clazz.getView().findViewById(R.id.visitView).setOnClickListener(
+                    v -> performLayoutClickOpen(clazz));
 
-                clazz.getView().findViewById(R.id.selector).setOnClickListener(
-                        new View.OnClickListener()
-                        {
-                            @Override
-                            public void onClick(View v)
-                            {
-                                if (getSelectionConnection() != null)
-                                    getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                            }
-                        });
-            }
+            clazz.getView().findViewById(R.id.selector).setOnClickListener(
+                    v -> {
+                        if (getSelectionConnection() != null)
+                            getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                    });
         };
 
         return new ActiveConnectionListAdapter(getActivity())
@@ -227,6 +201,12 @@ public class ActiveConnectionListFragment
         }
 
         return true;
+    }
+
+    @Override
+    public int getIconRes()
+    {
+        return R.drawable.ic_web_white_24dp;
     }
 
     @Override

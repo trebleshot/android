@@ -71,14 +71,7 @@ abstract public class PathResolverRecyclerAdapter<T> extends RecyclerView.Adapte
         holder.image.setImageResource(holder.index.imgRes);
 
         if (mClickListener != null)
-            holder.text.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
-                {
-                    mClickListener.onClick(holder);
-                }
-            });
+            holder.text.setOnClickListener(view -> mClickListener.onClick(holder));
     }
 
     public void initAdapter()

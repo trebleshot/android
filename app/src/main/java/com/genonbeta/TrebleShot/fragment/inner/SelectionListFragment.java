@@ -155,23 +155,9 @@ public class SelectionListFragment
             final ViewHolder holder = new ViewHolder(getInflater().inflate(R.layout.list_selection, parent, false));
             final AppCompatCheckBox checkBox = holder.getView().findViewById(R.id.checkbox);
 
-            holder.getView().setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    checkReversed(checkBox, getList().get(holder.getAdapterPosition()));
-                }
-            });
+            holder.getView().setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
 
-            checkBox.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    checkReversed(checkBox, getList().get(holder.getAdapterPosition()));
-                }
-            });
+            checkBox.setOnClickListener(v -> checkReversed(checkBox, getList().get(holder.getAdapterPosition())));
 
             return holder;
         }

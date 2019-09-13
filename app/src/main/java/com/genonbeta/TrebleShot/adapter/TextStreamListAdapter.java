@@ -65,10 +65,8 @@ public class TextStreamListAdapter
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        if (viewType == VIEW_TYPE_REPRESENTATIVE)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
-
-        return new GroupViewHolder(getInflater().inflate(R.layout.list_text_stream, parent, false));
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
+                R.layout.list_text_stream, parent, false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override
@@ -79,6 +77,7 @@ public class TextStreamListAdapter
 
             if (!holder.tryBinding(object)) {
                 View parentView = holder.getView();
+                String text = object.text.replace("\n", " ");
 
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
@@ -86,7 +85,7 @@ public class TextStreamListAdapter
 
                 parentView.setSelected(object.isSelectableSelected());
 
-                text1.setText(object.text);
+                text1.setText(text);
                 text2.setText(DateUtils.formatDateTime(getContext(), object.date, DateUtils.FORMAT_SHOW_TIME));
                 text3.setVisibility(getGroupBy() != MODE_GROUP_BY_DATE ? View.VISIBLE : View.GONE);
 

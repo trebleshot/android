@@ -33,32 +33,27 @@ import androidx.annotation.NonNull;
 
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
+import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ApplicationListAdapter
-        extends EditableListAdapter<ApplicationListAdapter.PackageHolder, EditableListAdapter.EditableViewHolder>
+        extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder, GroupEditableListAdapter.GroupViewHolder>
 {
     private SharedPreferences mPreferences;
     private PackageManager mManager;
 
     public ApplicationListAdapter(Context context, SharedPreferences preferences)
     {
-        super(context);
+        super(context, MODE_GROUP_BY_DATE);
         mPreferences = preferences;
         mManager = context.getPackageManager();
     }
 
     @Override
-    public List<PackageHolder> onLoad()
+    protected void onLoad(GroupLister<PackageHolder> lister)
     {
-        List<PackageHolder> list = new ArrayList<>();
         boolean showSystemApps = mPreferences.getBoolean("show_system_apps", false);
 
         for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
@@ -72,47 +67,62 @@ public class ApplicationListAdapter
                         new File(appInfo.sourceDir));
 
                 if (filterItem(packageHolder))
-                    list.add(packageHolder);
+                    lister.offer(packageHolder);
             }
         }
+    }
 
-        Collections.sort(list, getDefaultComparator());
-
-        return list;
+    @Override
+    protected PackageHolder onGenerateRepresentative(String representativeText)
+    {
+        return new PackageHolder(VIEW_TYPE_REPRESENTATIVE, representativeText);
     }
 
     @NonNull
     @Override
-    public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+    public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return new EditableListAdapter.EditableViewHolder(getInflater().inflate(R.layout.list_application, parent, false));
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupEditableListAdapter.GroupViewHolder(
+                getInflater().inflate(isGridLayoutRequested() ? R.layout.list_application_grid
+                        : R.layout.list_application, parent, false))
+                : createDefaultViews(parent, viewType, false);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final EditableListAdapter.EditableViewHolder holder, final int position)
+    public void onBindViewHolder(@NonNull final GroupEditableListAdapter.GroupViewHolder holder, final int position)
     {
         try {
             final View parentView = holder.getView();
             final PackageHolder object = getItem(position);
-            ImageView image = parentView.findViewById(R.id.image);
-            TextView text1 = parentView.findViewById(R.id.text);
-            TextView text2 = parentView.findViewById(R.id.text2);
 
-            text1.setText(object.friendlyName);
-            text2.setText(object.version);
+            if (!holder.tryBinding(object)) {
+                ImageView image = parentView.findViewById(R.id.image);
+                TextView text1 = parentView.findViewById(R.id.text);
+                TextView text2 = parentView.findViewById(R.id.text2);
 
-            parentView.setSelected(object.isSelectableSelected());
+                text1.setText(object.friendlyName);
+                text2.setText(object.version);
 
-            GlideApp.with(getContext())
-                    .load(object.appInfo)
-                    .override(160)
-                    .centerCrop()
-                    .into(image);
+                parentView.setSelected(object.isSelectableSelected());
+
+                GlideApp.with(getContext())
+                        .load(object.appInfo)
+                        .override(160)
+                        .centerCrop()
+                        .into(image);
+            }
         } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
-    public static class PackageHolder extends Shareable
+    @Override
+    public boolean isGridSupported()
+    {
+        return true;
+    }
+
+    public static class PackageHolder extends GroupEditableListAdapter.GroupShareable
     {
         public static final String FORMAT = ".apk";
         public static final String MIME_TYPE = FileUtils.getFileContentType(FORMAT);
@@ -120,6 +130,11 @@ public class ApplicationListAdapter
         public ApplicationInfo appInfo;
         public String version;
         public String packageName;
+
+        public PackageHolder(int viewType, String representativeText)
+        {
+            super(viewType, representativeText);
+        }
 
         public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
         {

@@ -62,12 +62,9 @@ public class VideoListAdapter
     @Override
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        if (viewType == VIEW_TYPE_REPRESENTATIVE)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
-
-        return new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
                 ? R.layout.list_video_grid
-                : R.layout.list_video, parent, false));
+                : R.layout.list_video, parent, false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override

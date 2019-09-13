@@ -42,13 +42,12 @@ import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_TYP
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_TYPE;
+import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_DIRECTORY;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_FILE;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_FLAG;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_GROUPID;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_ID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_LASTCHANGETIME;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_MIME;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_NAME;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_SIZE;
@@ -307,6 +306,16 @@ public class Migration
 
                         db.insert(instance, newIncomingInstances, null, null);
                     }
+                }
+
+                {
+                    SQLValues.Table table = tables.getTable(TABLE_TRANSFERGROUP);
+                    SQLValues.Column column = table.getColumn(FIELD_TRANSFERGROUP_ISPAUSED);
+
+                    // Added: IsPaused
+                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
+                            + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
+                            + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
                 }
             }
         }

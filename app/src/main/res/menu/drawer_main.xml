@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ Copyright (C) 2019 Veli Tasalı
   ~
   ~ This program is free software; you can redistribute it and/or
@@ -33,7 +32,8 @@
             android:id="@+id/menu_activity_main_web_share"
             android:icon="@drawable/ic_web_white_24dp"
             android:orderInCategory="11"
-            android:title="@string/butn_webShare" />
+            android:title="@string/butn_webShare"
+            android:visible="false" />
 
         <item
             android:id="@+id/menu_activity_main_send_application"

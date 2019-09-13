@@ -115,6 +115,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_TRANSFERGROUP_SAVEPATH = "savePath";
 	public static final String FIELD_TRANSFERGROUP_DATECREATED = "dateCreated";
 	public static final String FIELD_TRANSFERGROUP_ISSHAREDONWEB = "isSharedOnWeb";
+	public static final String FIELD_TRANSFERGROUP_ISPAUSED = "isPaused";
 
 	public static final String TABLE_WRITABLEPATH = "writablePath";
 	public static final String FIELD_WRITABLEPATH_TITLE = "title";
@@ -194,7 +195,8 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ID, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_DATECREATED, SQLType.LONG, false))
 				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_SAVEPATH, SQLType.TEXT, true))
-				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true));
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISSHAREDONWEB, SQLType.INTEGER, true))
+				.define(new SQLValues.Column(FIELD_TRANSFERGROUP_ISPAUSED, SQLType.INTEGER, false));
 
 		values.defineTable(TABLE_WRITABLEPATH)
 				.define(new SQLValues.Column(FIELD_WRITABLEPATH_TITLE, SQLType.TEXT, false))
