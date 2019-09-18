@@ -68,7 +68,6 @@ public class ActiveConnectionListFragment
         EditableListAdapter.EditableViewHolder, ActiveConnectionListAdapter>
         implements TitleSupport, IconSupport
 {
-    private FloatingActionButton mFAB;
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
     {
@@ -82,9 +81,6 @@ public class ActiveConnectionListFragment
                     || WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(intent.getAction())
                     || BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED.equals(intent.getAction()))
                 refreshList();
-            else if (CommunicationService.ACTION_WEBSHARE_STATUS.equals(intent.getAction()))
-                updateWebShareStatus(intent.getBooleanExtra(CommunicationService.EXTRA_STATUS_STARTED,
-                        false));
         }
     };
 
@@ -98,7 +94,6 @@ public class ActiveConnectionListFragment
         setUseDefaultPaddingDecorationSpaceForEdges(true);
         setDefaultPaddingDecorationSize(getResources().getDimension(R.dimen.padding_list_content_parent_layout));
 
-        mFilter.addAction(CommunicationService.ACTION_WEBSHARE_STATUS);
         mFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
         mFilter.addAction(WIFI_AP_STATE_CHANGED);
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
@@ -113,7 +108,6 @@ public class ActiveConnectionListFragment
         CoordinatorLayout view = (CoordinatorLayout) getLayoutInflater().inflate(R.layout.layout_active_connection, null, false);
         final CardView webShareInfo = view.findViewById(R.id.card_web_share_info);
         Button webShareInfoHideButton = view.findViewById(R.id.card_web_share_info_hide_button);
-        mFAB = view.findViewById(R.id.content_fab);
         final String helpWebShareInfo = "help_webShareInfo";
 
         if (AppUtils.getDefaultPreferences(getContext()).getBoolean(helpWebShareInfo, true)) {
@@ -129,7 +123,6 @@ public class ActiveConnectionListFragment
         }
 
         listViewContainer.addView(view);
-        mFAB.setOnClickListener(v -> AppUtils.toggleWebShare(getContext(), false));
 
         return super.onListView(mainContainer, view.findViewById(R.id.container));
     }
@@ -139,7 +132,6 @@ public class ActiveConnectionListFragment
     {
         super.onResume();
         getActivity().registerReceiver(mReceiver, mFilter);
-        requestWebShareStatus();
     }
 
     @Override
@@ -147,7 +139,6 @@ public class ActiveConnectionListFragment
     {
         super.onPause();
         getActivity().unregisterReceiver(mReceiver);
-        mFAB.setAnimation(null);
     }
 
     @Override
@@ -233,37 +224,5 @@ public class ActiveConnectionListFragment
         }
 
         return true;
-    }
-
-    public void requestWebShareStatus()
-    {
-        AppUtils.startForegroundService(getContext(), new Intent(getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_REQUEST_WEBSHARE_STATUS));
-    }
-
-    public void updateWebShareStatus(boolean running)
-    {
-        mFAB.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(getContext(),
-                running ? R.color.colorError : R.color.colorSecondary)));
-        mFAB.setImageResource(running ? R.drawable.ic_pause_white_24dp
-                : R.drawable.ic_play_arrow_white_24dp);
-
-        if (mFAB.getLayoutParams() instanceof CoordinatorLayout.LayoutParams) {
-            ((CoordinatorLayout.LayoutParams) mFAB.getLayoutParams()).gravity = running
-                    ? Gravity.BOTTOM | Gravity.END
-                    : Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
-
-            mFAB.setLayoutParams(mFAB.getLayoutParams());
-
-            if (mFAB.getParent() != null && mFAB.getParent() instanceof ViewGroup)
-                TransitionManager.beginDelayedTransition((ViewGroup) mFAB.getParent());
-        }
-
-        if (running) {
-            mFAB.setAnimation(null);
-        } else {
-            mFAB.setVisibility(View.VISIBLE);
-            mFAB.setAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.pulse));
-        }
     }
 }

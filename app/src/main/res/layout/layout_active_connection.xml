@@ -66,14 +66,4 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/content_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_margin="@dimen/fab_margin"
-        app:srcCompat="@drawable/ic_web_white_24dp" />
-
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

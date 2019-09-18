@@ -112,9 +112,6 @@ public class CommunicationService extends Service
 	public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
 	public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
 	public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
-	public static final String ACTION_TOGGLE_WEBSHARE = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_WEBSHARE";
-	public static final String ACTION_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.WEBSHARE_STATUS";
-	public static final String ACTION_REQUEST_WEBSHARE_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_WEBSHARE_STATUS";
 
 	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
 	public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
@@ -198,6 +195,7 @@ public class CommunicationService extends Service
 			mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
 			mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(
 					Executors.newFixedThreadPool(AppConfig.WEB_SHARE_CONNECTION_MAX)));
+			mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
 		} catch (Throwable t) {
 			Log.e(TAG, "Failed to start Web Share Server");
 		}
@@ -394,14 +392,6 @@ public class CommunicationService extends Service
 				}
 			} else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
 				notifyTaskRunningListChange();
-			} else if (ACTION_REQUEST_WEBSHARE_STATUS.equals(intent.getAction())) {
-				sendWebShareStatus();
-			} else if (ACTION_TOGGLE_WEBSHARE.equals(intent.getAction())) {
-				if (intent.hasExtra(EXTRA_ENABLE))
-					setWebShareEnabled(intent.getBooleanExtra(EXTRA_ENABLE, false),
-							true);
-				else
-					toggleWebShare();
 			}
 		}
 
@@ -416,6 +406,7 @@ public class CommunicationService extends Service
 		mCommunicationServer.stop();
 		mMediaScanner.disconnect();
 		mNsdDiscovery.unregisterService();
+		mWebShareServer.stop();
 
 		{
 			ContentValues values = new ContentValues();
@@ -425,8 +416,6 @@ public class CommunicationService extends Service
 					.setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB),
 							String.valueOf(1)), values);
 		}
-
-		setWebShareEnabled(false, false);
 
 		if (getHotspotUtils().unloadPreviousConfig()) {
 			getHotspotUtils().disable();
@@ -1217,12 +1206,6 @@ public class CommunicationService extends Service
 		sendBroadcast(statusIntent);
 	}
 
-	private void sendWebShareStatus()
-	{
-		sendBroadcast(new Intent(ACTION_WEBSHARE_STATUS)
-				.putExtra(EXTRA_STATUS_STARTED, mWebShareServer.isAlive()));
-	}
-
 	private void setupHotspot()
 	{
 		if (getHotspotUtils().isEnabled()) {
@@ -1331,31 +1314,6 @@ public class CommunicationService extends Service
 				mNotificationHelper.notifyConnectionError(holder, null);
 			}
 		});
-	}
-
-	private void setWebShareEnabled(boolean enable, boolean updateServiceState)
-	{
-		boolean enabled = mWebShareServer.isAlive();
-
-		if (enable != enabled) {
-			if (enable)
-				try {
-					mWebShareServer.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			else
-				mWebShareServer.stop();
-		}
-
-		if (updateServiceState)
-			refreshServiceState();
-		sendWebShareStatus();
-	}
-
-	private void toggleWebShare()
-	{
-		setWebShareEnabled(!mWebShareServer.isAlive(), true);
 	}
 
 	public class CommunicationServer extends CoolSocket

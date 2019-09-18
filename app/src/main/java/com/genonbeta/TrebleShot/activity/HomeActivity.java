@@ -62,8 +62,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HomeActivity
-        extends Activity
+public class HomeActivity extends Activity
         implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
@@ -266,8 +265,6 @@ public class HomeActivity
         } else if (R.id.menu_activity_main_send_application == mChosenMenuItemId) {
             new ShareAppDialog(HomeActivity.this)
                     .show();
-        } else if (R.id.menu_activity_main_web_share == mChosenMenuItemId) {
-            startActivity(new Intent(this, WebShareActivity.class));
         } else if (R.id.menu_activity_main_preferences == mChosenMenuItemId) {
             startActivity(new Intent(this, PreferencesActivity.class));
         } else if (R.id.menu_activity_main_exit == mChosenMenuItemId) {
@@ -286,7 +283,8 @@ public class HomeActivity
             builder.setPositiveButton(R.string.butn_temp_doIt, (dialog, which) -> {
                 try {
                     startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(
-                            "https://docs.google.com/forms/d/e/1FAIpQLScmwX923MACmHvZTpEyZMDCxRQjrd8b67u9p9MOjV1qFVp-_A/viewform?usp=sf_link"
+                            "https://docs.google.com/forms/d/e/1FAIpQLScmwX923MACmHvZTpEyZMDCxRQj" +
+                                    "rd8b67u9p9MOjV1qFVp-_A/viewform?usp=sf_link"
                     )));
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(HomeActivity.this, R.string.mesg_temp_noBrowser,
@@ -304,20 +302,23 @@ public class HomeActivity
     private void createHeaderView()
     {
         View headerView = mNavigationView.getHeaderView(0);
-        MenuItem surveyItem = mNavigationView.getMenu().findItem(R.id.menu_activity_main_dev_survey);
-        Configuration configuration = getApplication().getResources().getConfiguration();
 
-        if (Build.VERSION.SDK_INT >= 24) {
-            LocaleList list = configuration.getLocales();
+        {
+            /*MenuItem surveyItem = mNavigationView.getMenu().findItem(R.id.menu_activity_main_dev_survey);
+            Configuration configuration = getApplication().getResources().getConfiguration();
 
-            if (list.size() > 0)
-                for (int pos = 0; pos < list.size(); pos++)
-                    if (list.get(pos).toLanguageTag().startsWith("en")) {
-                        surveyItem.setVisible(true);
-                        break;
-                    }
-        } else
-            surveyItem.setVisible(configuration.locale.toString().startsWith("en"));
+            if (Build.VERSION.SDK_INT >= 24) {
+                LocaleList list = configuration.getLocales();
+
+                if (list.size() > 0)
+                    for (int pos = 0; pos < list.size(); pos++)
+                        if (list.get(pos).toLanguageTag().startsWith("en")) {
+                            surveyItem.setVisible(true);
+                            break;
+                        }
+            } else
+                surveyItem.setVisible(configuration.locale.toString().startsWith("en"));*/
+        }
 
         if (headerView != null) {
             NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());

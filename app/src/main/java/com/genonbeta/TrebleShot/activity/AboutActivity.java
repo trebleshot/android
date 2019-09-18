@@ -53,75 +53,34 @@ public class AboutActivity extends Activity
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        findViewById(R.id.orgIcon).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_ORG)));
-            }
+        findViewById(R.id.orgIcon).setOnClickListener(v -> startActivity(new Intent(
+                Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_ORG))));
+
+        findViewById(R.id.activity_about_see_source_layout).setOnClickListener(
+                view -> startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_APP))));
+
+        findViewById(R.id.activity_about_translate_layout).setOnClickListener(view -> startActivity(
+                new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE))));
+
+        findViewById(R.id.activity_about_changelog_layout).setOnClickListener(view -> startActivity(
+                new Intent(AboutActivity.this, ChangelogActivity.class)));
+
+        findViewById(R.id.activity_about_telegram_layout).setOnClickListener(view -> startActivity(
+                new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL))));
+
+        findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(view -> {
+            if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
+                try {
+                    startActivity(new Intent(AboutActivity.this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            } else
+                UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(AboutActivity.this), true, null);
         });
 
-        findViewById(R.id.activity_about_see_source_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_REPO_APP)));
-            }
-        });
-
-        findViewById(R.id.activity_about_translate_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TRANSLATE)));
-            }
-        });
-
-        findViewById(R.id.activity_about_changelog_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                startActivity(new Intent(AboutActivity.this, ChangelogActivity.class));
-            }
-        });
-
-        findViewById(R.id.activity_about_telegram_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(AppConfig.URI_TELEGRAM_CHANNEL)));
-            }
-        });
-
-        findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
-                    try {
-                        startActivity(new Intent(AboutActivity.this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(AboutActivity.this), true, null);
-            }
-        });
-
-        findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                startActivity(new Intent(AboutActivity.this, ThirdPartyLibrariesActivity.class));
-            }
-        });
+        findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(
+                v -> startActivity(new Intent(AboutActivity.this, ThirdPartyLibrariesActivity.class)));
 
         GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
 
@@ -159,7 +118,7 @@ public class AboutActivity extends Activity
         // calling this in the onCreate sequence causes theming issues
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
                 && UpdateUtils.hasNewVersion(getApplicationContext()))
-            highlightUpdater((TextView) findViewById(R.id.activity_about_option_fourth_text),
+            highlightUpdater(findViewById(R.id.activity_about_option_fourth_text),
                     UpdateUtils.getAvailableVersion(getApplicationContext()));
     }
 

@@ -79,7 +79,7 @@
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
         <activity
-            android:name=".activity.ConnectionManagerActivity"
+            android:name=".activity.AddDeviceActivity"
             android:label="@string/text_connectDevices"
             android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
 
@@ -163,10 +163,7 @@
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
-        <activity
-            android:name=".activity.WebShareActivity"
-            android:label="@string/text_webShare"
-            android:theme="@style/Theme.TrebleShot.NoActionBar.StaticStatusBar" />
+        <activity android:name=".activity.SelectDeviceActivity" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

@@ -335,10 +335,6 @@ public class WebShareServer extends NanoHTTPD
             }
         }
 
-        if ("/kill".equals(session.getUri()))
-            AppUtils.startForegroundService(mContext, new Intent(mContext,
-                    CommunicationService.class).setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE));
-
         String[] args = new String[]{};
 
         if (session.getUri().length() > 1) {

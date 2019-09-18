@@ -172,10 +172,10 @@ public class AddDevicesToTransferActivity extends Activity
 		if (resultCode == android.app.Activity.RESULT_OK) {
 			if (requestCode == REQUEST_CODE_CHOOSE_DEVICE
 					&& data != null
-					&& data.hasExtra(ConnectionManagerActivity.EXTRA_DEVICE_ID)
-					&& data.hasExtra(ConnectionManagerActivity.EXTRA_CONNECTION_ADAPTER)) {
-				String deviceId = data.getStringExtra(ConnectionManagerActivity.EXTRA_DEVICE_ID);
-				String connectionAdapter = data.getStringExtra(ConnectionManagerActivity.EXTRA_CONNECTION_ADAPTER);
+					&& data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
+					&& data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
+				String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
+				String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
 
 				try {
 					NetworkDevice networkDevice = new NetworkDevice(deviceId);
@@ -301,22 +301,17 @@ public class AddDevicesToTransferActivity extends Activity
 
 	private void startConnectionManagerActivity()
 	{
-		startActivityForResult(new Intent(AddDevicesToTransferActivity.this, ConnectionManagerActivity.class)
-				.putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_addDevicesToTransfer)), REQUEST_CODE_CHOOSE_DEVICE);
+		startActivityForResult(new Intent(AddDevicesToTransferActivity.this,
+				AddDeviceActivity.class), REQUEST_CODE_CHOOSE_DEVICE);
 	}
 
 	public void takeOnProcessMode()
 	{
 		mLayoutStatusContainer.setVisibility(View.VISIBLE);
 		mActionButton.setImageResource(R.drawable.ic_close_white_24dp);
-		mActionButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				if (mTask != null)
-					mTask.getInterrupter().interrupt();
-			}
+		mActionButton.setOnClickListener(v -> {
+			if (mTask != null)
+				mTask.getInterrupter().interrupt();
 		});
 	}
 

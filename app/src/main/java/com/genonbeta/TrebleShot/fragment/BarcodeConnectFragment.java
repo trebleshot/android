@@ -46,7 +46,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -85,7 +85,7 @@ import androidx.core.content.ContextCompat;
  */
 public class BarcodeConnectFragment
 		extends com.genonbeta.android.framework.app.Fragment
-		implements TitleSupport, UITask, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
+		implements TitleSupport, UITask, IconSupport, AddDeviceActivity.DeviceSelectionSupport
 {
 	public static final String TAG = "BarcodeConnectFragment";
 

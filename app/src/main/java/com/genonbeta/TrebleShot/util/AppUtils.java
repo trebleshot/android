@@ -36,10 +36,8 @@ import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
 
-import com.genonbeta.TrebleShot.App;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -47,10 +45,8 @@ import com.genonbeta.TrebleShot.dialog.RationalePermissionRequest;
 import com.genonbeta.TrebleShot.graphics.drawable.TextDrawable;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
-import com.genonbeta.android.framework.preference.DbSharablePreferences;
 import com.genonbeta.android.framework.preference.SuperPreferences;
 
 import org.json.JSONException;
@@ -378,16 +374,6 @@ public class AppUtils
 				.apply();
 	}
 
-	public static void startWebShareActivity(Context context, boolean startWebShare)
-	{
-		Intent startIntent = new Intent(context, WebShareActivity.class);
-
-		if (startWebShare)
-			startIntent.putExtra(WebShareActivity.EXTRA_WEBSERVER_START_REQUIRED, true);
-
-		context.startActivity(startIntent);
-	}
-
 	public static void startForegroundService(Context context, Intent intent)
 	{
 		if (Build.VERSION.SDK_INT >= 26)
@@ -415,17 +401,6 @@ public class AppUtils
 				.interrupt();
 
 		return false;
-	}
-
-	public static void toggleWebShare(Context context, boolean forceStart)
-	{
-		Intent intent = new Intent(context, CommunicationService.class)
-				.setAction(CommunicationService.ACTION_TOGGLE_WEBSHARE);
-
-		if (forceStart)
-			intent.putExtra(CommunicationService.EXTRA_ENABLE, true);
-
-		AppUtils.startForegroundService(context, intent);
 	}
 
 	public interface QuickActions<T>

@@ -27,10 +27,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.ContentSharingActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
@@ -122,9 +121,8 @@ public class TransferGroupListFragment
 
 		viewSend.setOnClickListener(v -> startActivity(new Intent(getContext(), ContentSharingActivity.class)));
 
-		viewReceive.setOnClickListener(v -> startActivity(new Intent(getContext(), ConnectionManagerActivity.class)
-                .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_receive))
-                .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.MAKE_ACQUAINTANCE.toString())));
+		viewReceive.setOnClickListener(v -> startActivity(new Intent(getContext(), AddDeviceActivity.class)
+                .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.MAKE_ACQUAINTANCE)));
 	}
 
 	@Override
@@ -274,9 +272,6 @@ public class TransferGroupListFragment
 
 				AppUtils.getDatabase(getFragment().getContext()).update(selectionList);
 				AppUtils.getDatabase(getFragment().getContext()).broadcast();
-
-				if (success)
-					AppUtils.startWebShareActivity(getFragment().getActivity(), true);
 			} else
 				return super.onActionMenuItemSelected(context, actionMode, item);
 

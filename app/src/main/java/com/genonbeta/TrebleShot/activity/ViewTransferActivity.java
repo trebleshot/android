@@ -94,7 +94,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	private MenuItem mShowFilesMenu;
 	private MenuItem mAddDeviceMenu;
 	private MenuItem mLimitMenu;
-	private MenuItem mWebShareShortcut;
 	private MenuItem mToggleBrowserShare;
 	private CrunchLatestDataTask mDataCruncher;
 	private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -271,14 +270,8 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 			attachListeners(fragment);
 
-			mMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
-			{
-				@Override
-				public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
-				{
-					toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
-				}
-			});
+			mMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(
+					!started ? View.VISIBLE : View.GONE));
 		}
 	}
 
@@ -319,7 +312,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		mShowFilesMenu = menu.findItem(R.id.actions_transfer_receiver_show_files);
 		mAddDeviceMenu = menu.findItem(R.id.actions_transfer_sender_add_device);
 		mLimitMenu = menu.findItem(R.id.actions_transfer_limit_to);
-		mWebShareShortcut = menu.findItem(R.id.actions_transfer_web_share_shortcut);
 		mToggleBrowserShare = menu.findItem(R.id.actions_transfer_toggle_browser_share);
 
 		showMenus();
@@ -376,25 +368,15 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 				new EstablishConnectionDialog(ViewTransferActivity.this,
 						assignees.get(0).device, null).show();
 			else if (assignees.size() > 1) {
-				new SelectAssigneeDialog(this, assignees, new DialogInterface
-						.OnClickListener()
-				{
-					@Override
-					public void onClick(DialogInterface dialog, int which)
-					{
+				new SelectAssigneeDialog(this, assignees, (dialog, which) ->
 						new EstablishConnectionDialog(ViewTransferActivity.this,
-								assignees.get(which).device, null).show();
-					}
-				}).show();
+						assignees.get(which).device, null).show()).show();
 			}
 		} else if (item.getItemId() == R.id.actions_transfer_toggle_browser_share) {
 			mGroup.isServedOnWeb = !mGroup.isServedOnWeb;
 			getDatabase().update(mGroup);
 			getDatabase().broadcast();
 			showMenus();
-
-			if (mGroup.isServedOnWeb)
-				AppUtils.startWebShareActivity(this, true);
 		} else if (item.getGroupId() == R.id.actions_abs_view_transfer_activity_limit_to) {
 			mAssignee = item.getOrder() < getGroup().assignees.length
 					? getGroup().assignees[item.getOrder()] : null;
@@ -405,8 +387,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 			if (fragment != null && fragment.getAdapter().setAssignee(mAssignee))
 				fragment.refreshList();
-		} else if (item.getItemId() == R.id.actions_transfer_web_share_shortcut) {
-			AppUtils.startWebShareActivity(this, false);
 		} else
 			return super.onOptionsItemSelected(item);
 
@@ -522,7 +502,6 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 		mToggleBrowserShare.setTitle(mGroup.isServedOnWeb ? R.string.butn_hideOnBrowser
 				: R.string.butn_shareOnBrowser);
 		mToggleBrowserShare.setVisible(hasOutgoing || mGroup.isServedOnWeb);
-		mWebShareShortcut.setVisible(hasOutgoing && mGroup.isServedOnWeb);
 		mCnTestMenu.setVisible(hasAnyFiles);
 		mAddDeviceMenu.setVisible(hasOutgoing);
 		mRetryMenu.setVisible(hasIncoming);

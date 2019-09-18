@@ -26,7 +26,7 @@ import android.content.Intent;
 import androidx.appcompat.app.AlertDialog;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 
 public class ConnectionSetUpAssistant
 {
@@ -59,7 +59,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // use barcode scanner
-                        updateFragment(ConnectionManagerActivity.AvailableFragment.ScanQrCode);
+                        updateFragment(AddDeviceActivity.AvailableFragment.ScanQrCode);
                     }
                 })
                 .setNegativeButton(R.string.butn_no, new DialogInterface.OnClickListener()
@@ -84,7 +84,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // open network settings
-                        updateFragment(ConnectionManagerActivity.AvailableFragment.UseExistingNetwork);
+                        updateFragment(AddDeviceActivity.AvailableFragment.UseExistingNetwork);
                     }
                 })
                 .setNegativeButton(R.string.butn_no, new DialogInterface.OnClickListener()
@@ -109,7 +109,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // open known devices settings
-                        updateFragment(ConnectionManagerActivity.AvailableFragment.UseKnownDevice);
+                        updateFragment(AddDeviceActivity.AvailableFragment.UseKnownDevice);
                     }
                 })
                 .setNegativeButton(R.string.butn_retry, new DialogInterface.OnClickListener()
@@ -134,7 +134,7 @@ public class ConnectionSetUpAssistant
                     public void onClick(DialogInterface dialog, int which)
                     {
                         // open hotspot settings
-                        updateFragment(ConnectionManagerActivity.AvailableFragment.CreateHotspot);
+                        updateFragment(AddDeviceActivity.AvailableFragment.CreateHotspot);
                     }
                 })
                 .setNegativeButton(R.string.butn_no, new DialogInterface.OnClickListener()
@@ -177,9 +177,9 @@ public class ConnectionSetUpAssistant
         isOtherDeviceReady();
     }
 
-    public void updateFragment(ConnectionManagerActivity.AvailableFragment fragment)
+    public void updateFragment(AddDeviceActivity.AvailableFragment fragment)
     {
-        getContext().sendBroadcast(new Intent(ConnectionManagerActivity.ACTION_CHANGE_FRAGMENT)
-                .putExtra(ConnectionManagerActivity.EXTRA_FRAGMENT_ENUM, fragment.toString()));
+        getContext().sendBroadcast(new Intent(AddDeviceActivity.ACTION_CHANGE_FRAGMENT)
+                .putExtra(AddDeviceActivity.EXTRA_FRAGMENT_ENUM, fragment.toString()));
     }
 }

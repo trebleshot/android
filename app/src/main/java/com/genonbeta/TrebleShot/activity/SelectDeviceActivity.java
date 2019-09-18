@@ -18,43 +18,23 @@
 
 package com.genonbeta.TrebleShot.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 
 import androidx.annotation.Nullable;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 
-public class ManageDevicesActivity extends Activity
+/**
+ * created by: veli
+ * date: 9/18/19 7:41 PM
+ */
+public class SelectDeviceActivity extends Activity
 {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_devices);
-
-        findViewById(R.id.fixConnectionButton).setOnClickListener(v -> startActivity(new Intent(
-                ManageDevicesActivity.this, AddDeviceActivity.class).putExtra(
-                        AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT)));
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-        }
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        int id = item.getItemId();
-
-        if (id == android.R.id.home)
-            finish();
-        else
-            return super.onOptionsItemSelected(item);
-
-        return true;
+        setContentView(R.layout.activity_select_device);
     }
 }

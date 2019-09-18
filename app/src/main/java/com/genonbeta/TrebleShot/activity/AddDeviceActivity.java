@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.ManualIpAddressConnectionDialog;
 import com.genonbeta.TrebleShot.fragment.BarcodeConnectFragment;
 import com.genonbeta.TrebleShot.fragment.HotspotManagerFragment;
@@ -63,7 +62,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 
-public class ConnectionManagerActivity
+public class AddDeviceActivity
         extends Activity
         implements SnackbarSupport
 {
@@ -72,7 +71,6 @@ public class ConnectionManagerActivity
     public static final String EXTRA_DEVICE_ID = "extraDeviceId";
     public static final String EXTRA_CONNECTION_ADAPTER = "extraConnectionAdapter";
     public static final String EXTRA_REQUEST_TYPE = "extraRequestType";
-    public static final String EXTRA_ACTIVITY_SUBTITLE = "extraActivitySubtitle";
 
     private final IntentFilter mFilter = new IntentFilter();
     private HotspotManagerFragment mHotspotManagerFragment;
@@ -83,7 +81,6 @@ public class ConnectionManagerActivity
     private AppBarLayout mAppBarLayout;
     private CollapsingToolbarLayout mToolbarLayout;
     private ProgressBar mProgressBar;
-    private String mTitleProvided;
     private RequestType mRequestType = RequestType.RETURN_RESULT;
 
     private final NetworkDeviceSelectedListener mDeviceSelectionListener = new NetworkDeviceSelectedListener()
@@ -98,8 +95,8 @@ public class ConnectionManagerActivity
 
                 finish();
             } else {
-                ConnectionUtils connectionUtils = ConnectionUtils.getInstance(ConnectionManagerActivity.this);
-                UIConnectionUtils uiConnectionUtils = new UIConnectionUtils(connectionUtils, ConnectionManagerActivity.this);
+                ConnectionUtils connectionUtils = ConnectionUtils.getInstance(AddDeviceActivity.this);
+                UIConnectionUtils uiConnectionUtils = new UIConnectionUtils(connectionUtils, AddDeviceActivity.this);
 
                 UITask uiTask = new UITask()
                 {
@@ -118,7 +115,7 @@ public class ConnectionManagerActivity
 
                 NetworkDeviceLoader.OnDeviceRegisteredListener registeredListener = (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
 
-                uiConnectionUtils.makeAcquaintance(ConnectionManagerActivity.this, uiTask,
+                uiConnectionUtils.makeAcquaintance(AddDeviceActivity.this, uiTask,
                         connection.ipAddress, -1, registeredListener);
             }
 
@@ -159,8 +156,8 @@ public class ConnectionManagerActivity
                     DeviceConnection connection = new DeviceConnection(device.id, intent.getStringExtra(CommunicationService.EXTRA_CONNECTION_ADAPTER_NAME));
 
                     try {
-                        AppUtils.getDatabase(ConnectionManagerActivity.this).reconstruct(device);
-                        AppUtils.getDatabase(ConnectionManagerActivity.this).reconstruct(connection);
+                        AppUtils.getDatabase(AddDeviceActivity.this).reconstruct(device);
+                        AppUtils.getDatabase(AddDeviceActivity.this).reconstruct(connection);
 
                         mDeviceSelectionListener.onNetworkDeviceSelected(device, connection);
                     } catch (Exception e) {
@@ -170,7 +167,7 @@ public class ConnectionManagerActivity
             } else if (mRequestType.equals(RequestType.MAKE_ACQUAINTANCE)) {
                 if (CommunicationService.ACTION_INCOMING_TRANSFER_READY.equals(intent.getAction())
                         && intent.hasExtra(CommunicationService.EXTRA_GROUP_ID)) {
-                    ViewTransferActivity.startInstance(ConnectionManagerActivity.this,
+                    ViewTransferActivity.startInstance(AddDeviceActivity.this,
                             intent.getLongExtra(CommunicationService.EXTRA_GROUP_ID, -1));
                     finish();
                 }
@@ -217,13 +214,10 @@ public class ConnectionManagerActivity
         if (getIntent() != null) {
             if (getIntent().hasExtra(EXTRA_REQUEST_TYPE))
                 try {
-                    mRequestType = RequestType.valueOf(getIntent().getStringExtra(EXTRA_REQUEST_TYPE));
+                    mRequestType = (RequestType) getIntent().getSerializableExtra(EXTRA_REQUEST_TYPE);
                 } catch (Exception e) {
                     // do nothing
                 }
-
-            if (getIntent().hasExtra(EXTRA_ACTIVITY_SUBTITLE))
-                mTitleProvided = getIntent().getStringExtra(EXTRA_ACTIVITY_SUBTITLE);
         }
     }
 
@@ -264,7 +258,7 @@ public class ConnectionManagerActivity
         return true;
     }
 
-    public void applyViewChanges(Fragment fragment, String mTitleProvided)
+    public void applyViewChanges(Fragment fragment)
     {
         boolean isOptions = fragment instanceof OptionsFragment;
 
@@ -272,14 +266,9 @@ public class ConnectionManagerActivity
             ((DeviceSelectionSupport) fragment).setDeviceSelectedListener(mDeviceSelectionListener);
 
         if (getSupportActionBar() != null) {
-            CharSequence titleCurrent = fragment instanceof TitleSupport
-                    ? ((TitleSupport) fragment).getTitle(ConnectionManagerActivity.this)
-                    : getString(R.string.text_connectDevices);
-
-            if (isOptions)
-                mToolbarLayout.setTitle(mTitleProvided != null ? mTitleProvided : titleCurrent);
-            else
-                mToolbarLayout.setTitle(titleCurrent);
+            mToolbarLayout.setTitle(fragment instanceof TitleSupport
+                    ? ((TitleSupport) fragment).getTitle(AddDeviceActivity.this)
+                    : getString(R.string.text_connectDevices));
         }
 
         mAppBarLayout.setExpanded(isOptions, true);
@@ -292,7 +281,7 @@ public class ConnectionManagerActivity
         if (currentFragment == null)
             setFragment(AvailableFragment.Options);
         else
-            applyViewChanges(currentFragment, mTitleProvided);
+            applyViewChanges(currentFragment);
     }
 
     @Override
@@ -328,7 +317,7 @@ public class ConnectionManagerActivity
     {
         @Nullable
         Fragment activeFragment = getShowingFragment();
-        Fragment fragmentCandidate = null;
+        Fragment fragmentCandidate;
 
         switch (fragment) {
             case ScanQrCode:
@@ -363,7 +352,7 @@ public class ConnectionManagerActivity
             transaction.add(R.id.activity_connection_establishing_content_view, fragmentCandidate);
             transaction.commit();
 
-            applyViewChanges(fragmentCandidate, mTitleProvided);
+            applyViewChanges(fragmentCandidate);
         }
     }
 
@@ -409,27 +398,22 @@ public class ConnectionManagerActivity
         {
             View view = inflater.inflate(R.layout.layout_connection_options_fragment, container, false);
 
-            View.OnClickListener listener = new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    switch (v.getId()) {
-                        case R.id.connection_option_devices:
-                            updateFragment(AvailableFragment.UseKnownDevice);
-                            break;
-                        case R.id.connection_option_hotspot:
-                            updateFragment(AvailableFragment.CreateHotspot);
-                            break;
-                        case R.id.connection_option_network:
-                            updateFragment(AvailableFragment.UseExistingNetwork);
-                            break;
-                        case R.id.connection_option_manual_ip:
-                            updateFragment(AvailableFragment.EnterIpAddress);
-                            break;
-                        case R.id.connection_option_scan:
-                            startCodeScanner();
-                    }
+            View.OnClickListener listener = v -> {
+                switch (v.getId()) {
+                    case R.id.connection_option_devices:
+                        updateFragment(AvailableFragment.UseKnownDevice);
+                        break;
+                    case R.id.connection_option_hotspot:
+                        updateFragment(AvailableFragment.CreateHotspot);
+                        break;
+                    case R.id.connection_option_network:
+                        updateFragment(AvailableFragment.UseExistingNetwork);
+                        break;
+                    case R.id.connection_option_manual_ip:
+                        updateFragment(AvailableFragment.EnterIpAddress);
+                        break;
+                    case R.id.connection_option_scan:
+                        startCodeScanner();
                 }
             };
 
@@ -439,15 +423,8 @@ public class ConnectionManagerActivity
             view.findViewById(R.id.connection_option_scan).setOnClickListener(listener);
             view.findViewById(R.id.connection_option_manual_ip).setOnClickListener(listener);
 
-            view.findViewById(R.id.connection_option_guide).setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    new ConnectionSetUpAssistant(getActivity())
-                            .startShowing();
-                }
-            });
+            view.findViewById(R.id.connection_option_guide).setOnClickListener(v ->
+                    new ConnectionSetUpAssistant(getActivity()).startShowing());
 
             return view;
         }

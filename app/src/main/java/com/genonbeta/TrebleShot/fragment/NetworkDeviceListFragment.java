@@ -39,7 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.activity.ConnectionManagerActivity;
+import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -64,7 +64,7 @@ import java.util.List;
 
 public class NetworkDeviceListFragment
 		extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
-		implements TitleSupport, DetachListener, IconSupport, ConnectionManagerActivity.DeviceSelectionSupport
+		implements TitleSupport, DetachListener, IconSupport, AddDeviceActivity.DeviceSelectionSupport
 {
 	public static final int REQUEST_LOCATION_PERMISSION = 643;
 

@@ -107,14 +107,6 @@ public class TransferAssigneeListFragment
 			mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
 			AppUtils.getDatabase(getContext()).update(mHeldGroup);
 			AppUtils.getDatabase(getContext()).broadcast();
-
-			if (mHeldGroup.isServedOnWeb)
-				AppUtils.startWebShareActivity(getActivity(), true);
-		});
-
-		getEmptyActionButton().setOnLongClickListener(v -> {
-			AppUtils.startWebShareActivity(getActivity(), false);
-			return true;
 		});
 
 		updateTransferGroup();

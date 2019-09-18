@@ -121,10 +121,10 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
         if (resultCode == android.app.Activity.RESULT_OK) {
             if (requestCode == REQUEST_CODE_CHOOSE_DEVICE
                     && data != null
-                    && data.hasExtra(ConnectionManagerActivity.EXTRA_DEVICE_ID)
-                    && data.hasExtra(ConnectionManagerActivity.EXTRA_CONNECTION_ADAPTER)) {
-                String deviceId = data.getStringExtra(ConnectionManagerActivity.EXTRA_DEVICE_ID);
-                String connectionAdapter = data.getStringExtra(ConnectionManagerActivity.EXTRA_CONNECTION_ADAPTER);
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
+                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
+                String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
+                String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
 
                 try {
                     NetworkDevice networkDevice = new NetworkDevice(deviceId);
@@ -162,14 +162,9 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             super.onBackPressed();
         else
             createSnackbar(hasObject ? R.string.mesg_clipboardUpdateNotice : R.string.mesg_textSaveNotice)
-                    .setAction(hasObject ? R.string.butn_update : R.string.butn_save, new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            saveText();
-                            finish();
-                        }
+                    .setAction(hasObject ? R.string.butn_update : R.string.butn_save, v -> {
+                        saveText();
+                        finish();
                     })
                     .show();
 
@@ -227,9 +222,8 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
             startActivityForResult(
-                    new Intent(TextEditorActivity.this, ConnectionManagerActivity.class)
-                            .putExtra(ConnectionManagerActivity.EXTRA_REQUEST_TYPE, ConnectionManagerActivity.RequestType.RETURN_RESULT.toString())
-                            .putExtra(ConnectionManagerActivity.EXTRA_ACTIVITY_SUBTITLE, getString(R.string.text_sendText)),
+                    new Intent(TextEditorActivity.this, AddDeviceActivity.class)
+                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
                     REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
@@ -291,14 +285,8 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
             @Override
             public void onRun()
             {
-                final DialogInterface.OnClickListener retryButtonListener = new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
+                final DialogInterface.OnClickListener retryButtonListener = (dialog, which) ->
                         doCommunicate(device, connection);
-                    }
-                };
 
                 CommunicationBridge.connect(getDatabase(), true, client -> {
                     client.setDevice(device);
