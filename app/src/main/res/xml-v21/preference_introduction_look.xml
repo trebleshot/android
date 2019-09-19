@@ -20,13 +20,13 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="dark_theme"
         android:title="@string/text_applyDarkTheme"
         app:icon="@drawable/ic_palette_white_24dp" />
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:dependency="dark_theme"
         android:defaultValue="false"
         android:icon="@drawable/ic_invert_colors_black_24dp"
@@ -38,5 +38,13 @@
         android:key="custom_fonts"
         android:title="@string/const_text_useAppFonts"
         app:icon="@drawable/ic_short_text_white_24dp" />
+
+    <androidx.preference.CheckBoxPreference
+        android:defaultValue="@bool/genfw_screen_isLarge"
+        android:icon="@drawable/ic_view_column_white_24dp"
+        android:key="two_row_layout"
+        android:summary="@string/text_twoRowLayoutSummary"
+        android:title="@string/text_twoRowLayout"
+        app:isPreferenceVisible="@bool/genfw_screen_isLarge" />
 
 </PreferenceScreen>

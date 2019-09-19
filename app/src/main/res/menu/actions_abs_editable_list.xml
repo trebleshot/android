@@ -55,12 +55,4 @@
             </item>
         </menu>
     </item>
-
-    <item
-        android:id="@+id/actions_abs_editable_two_row_layout"
-        android:checkable="true"
-        android:checked="false"
-        android:orderInCategory="110"
-        android:title="@string/text_twoRowLayout"
-        android:visible="false" />
 </menu>

@@ -268,7 +268,7 @@ public class AddDeviceActivity
         if (getSupportActionBar() != null) {
             mToolbarLayout.setTitle(fragment instanceof TitleSupport
                     ? ((TitleSupport) fragment).getTitle(AddDeviceActivity.this)
-                    : getString(R.string.text_connectDevices));
+                    : getString(R.string.butn_addDevices));
         }
 
         mAppBarLayout.setExpanded(isOptions, true);

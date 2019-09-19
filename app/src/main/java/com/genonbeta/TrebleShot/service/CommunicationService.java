@@ -1081,11 +1081,9 @@ public class CommunicationService extends Service
 
 	private boolean hasOngoingTasks()
 	{
-		return mCommunicationServer.getConnections().size() > 0
-				|| getOngoingIndexList().size() > 0
-				|| getActiveProcessList().size() > 0
-				|| mHotspotUtils.isStarted()
-				|| mWebShareServer.isAlive();
+		return mCommunicationServer.getConnections().size() > 0 || getOngoingIndexList().size() > 0
+				|| getActiveProcessList().size() > 0 || mHotspotUtils.isStarted()
+				|| mWebShareServer.hadClients();
 	}
 
 	private ProcessHolder findProcessById(long groupId, @Nullable String deviceId, TransferObject.Type type)

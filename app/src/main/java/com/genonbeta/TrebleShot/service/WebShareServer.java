@@ -100,6 +100,7 @@ public class WebShareServer extends NanoHTTPD
     private Context mContext;
     private MediaScannerConnection mMediaScanner;
     private NetworkDevice mThisDevice;
+    private boolean mHadClients = false;
 
     public WebShareServer(Context context, int port)
     {
@@ -129,6 +130,8 @@ public class WebShareServer extends NanoHTTPD
     @Override
     public Response serve(IHTTPSession session)
     {
+        mHadClients = true;
+
         Map<String, String> files = new HashMap<>();
         NanoHTTPD.Method method = session.getMethod();
         long receiveTimeElapsed = System.currentTimeMillis();
@@ -647,6 +650,10 @@ public class WebShareServer extends NanoHTTPD
         // Android Studio may say the escape characters at the end are redundant.
         // They are not in Java 1.7.
         return Pattern.compile("\\$\\{([a-zA-Z_]+)\\}");
+    }
+
+    public boolean hadClients() {
+        return mHadClients;
     }
 
     private InputStream openFile(String fileName) throws IOException

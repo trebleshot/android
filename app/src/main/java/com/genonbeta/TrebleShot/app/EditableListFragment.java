@@ -84,6 +84,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private boolean mFilteringSupported = false;
     private boolean mUseDefaultPaddingDecoration = false;
     private boolean mUseDefaultPaddingDecorationSpaceForEdges = true;
+    private boolean mTwoRowLayoutState = false;
     private float mDefaultPaddingDecorationSize = -1;
     private int mDefaultOrderingCriteria = EditableListAdapter.MODE_SORT_ORDER_ASCENDING;
     private int mDefaultSortingCriteria = EditableListAdapter.MODE_SORT_BY_NAME;
@@ -96,7 +97,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
     private String mSearchText;
-    private MenuItem mTwoRowLayoutItem;
     private FilteringDelegate<T> mDefaultFilteringDelegate = new FilteringDelegate<T>()
     {
         @Override
@@ -129,6 +129,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     {
         super.onCreate(savedInstanceState);
         getAdapter().setFragment(this);
+        mTwoRowLayoutState = isTwoRowLayout();
     }
 
     @Override
@@ -159,7 +160,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         getAdapter().notifyGridSizeUpdate(getViewingGridSize(), isScreenLarge());
         getAdapter().setSortingCriteria(getSortingCriteria(), getOrderingCriteria());
 
-        // We have to recreate the provider class because old doesn't work when
+        // We have to recreate the provider class because old one doesn't work when
         // same instance is used.
         getFastScroller().setViewProvider(new LongTextBubbleFastScrollViewProvider());
         setDividerVisible(true);
@@ -210,6 +211,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     {
         super.onResume();
         refreshList();
+
+        if (mTwoRowLayoutState != isTwoRowLayout())
+            toggleTwoRowLayout();
     }
 
     @Override
@@ -291,12 +295,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         menu.findItem(R.id.actions_abs_editable_sort_by)
                 .setEnabled(isSortingSupported());
 
-        {
-            MenuItem twoRowItem = menu.findItem(R.id.actions_abs_editable_two_row_layout);
-            twoRowItem.setVisible(canShowWideView());
-            twoRowItem.setChecked(isTwoRowLayout());
-        }
-
         MenuItem multiSelect = menu.findItem(R.id.actions_abs_editable_multi_select);
 
         if (multiSelect != null && (getSelectionConnection() == null
@@ -349,9 +347,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
             changeOrderingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_grid_size)
             changeGridViewSize(item.getOrder());
-        else if (id == R.id.actions_abs_editable_two_row_layout) {
-            toggleTwoRowLayout();
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -414,7 +409,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     }
 
 
-
     protected void applyDynamicMenuItems(MenuItem mainItem, int groupId,
                                          Map<String, Integer> options)
     {
@@ -432,7 +426,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         }
     }
 
-    public boolean applyViewingChanges(int gridSize) {
+    public boolean applyViewingChanges(int gridSize)
+    {
         return applyViewingChanges(gridSize, false);
     }
 
@@ -635,7 +630,8 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public boolean isTwoRowLayout()
     {
-        return getViewPreferences().getBoolean("two_row_layout", true);
+        return AppUtils.getDefaultPreferences(getContext()).getBoolean("two_row_layout",
+                true);
     }
 
     public boolean isRefreshLocked()
@@ -816,12 +812,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
 
     public void toggleTwoRowLayout()
     {
-        boolean state = isTwoRowLayout();
-
-        getViewPreferences().edit()
-                .putBoolean("two_row_layout", !state)
-                .apply();
-
+        mTwoRowLayoutState = isTwoRowLayout();
         applyViewingChanges(getOptimumGridSize(), true);
     }
 

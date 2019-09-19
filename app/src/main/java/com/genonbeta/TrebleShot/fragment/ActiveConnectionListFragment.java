@@ -203,7 +203,7 @@ public class ActiveConnectionListFragment
     @Override
     public CharSequence getTitle(Context context)
     {
-        return context.getString(R.string.text_connect);
+        return context.getString(R.string.text_webShare);
     }
 
     @Override

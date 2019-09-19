@@ -42,6 +42,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -107,7 +108,6 @@ public class HomeActivity extends Activity
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
-
 
         try (InputStream inputStream = openFileInput(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG)) {
             File logFile = getFileStreamPath(Keyword.Local.FILENAME_UNHANDLED_CRASH_LOG);
@@ -177,6 +177,8 @@ public class HomeActivity extends Activity
             if (donateItem != null)
                 donateItem.setVisible(true);
         }
+
+        mNavigationView.getMenu().setGroupEnabled(R.id.nav_group_dev_options, BuildConfig.DEBUG);
     }
 
     @Override
@@ -211,33 +213,6 @@ public class HomeActivity extends Activity
             mExitPressTime = System.currentTimeMillis();
             Toast.makeText(this, R.string.mesg_secureExit, Toast.LENGTH_SHORT).show();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        Menu devMenu = menu.addSubMenu("Dev. options");
-        devMenu.add(-100, -2, 1, "Crash test");
-        devMenu.add(-100, -3, 2, "Run migration");
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if (item.getItemId() == -2) {
-            Toast.makeText(this, "Crashing the app", Toast.LENGTH_SHORT).show();
-            throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
-        } else if (item.getItemId() == -3) {
-            AccessDatabase db = AppUtils.getDatabase(this);
-            int dbVersion = AccessDatabase.DATABASE_VERSION;
-
-            Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show();
-            Migration.migrate(db, db.getWritableDatabase(), dbVersion, dbVersion);
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -294,6 +269,14 @@ public class HomeActivity extends Activity
             builder.show();
         } else if (R.id.menu_activity_feedback == mChosenMenuItemId) {
             AppUtils.createFeedbackIntent(HomeActivity.this);
+        } else if (R.id.menu_activity_main_crash_test == mChosenMenuItemId) {
+            throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
+        } else if (R.id.menu_activity_main_db_migration == mChosenMenuItemId) {
+            AccessDatabase db = AppUtils.getDatabase(this);
+            int dbVersion = AccessDatabase.DATABASE_VERSION;
+
+            Toast.makeText(this, "Running migration rules again", Toast.LENGTH_SHORT).show();
+            Migration.migrate(db, db.getWritableDatabase(), dbVersion, dbVersion);
         }
 
         mChosenMenuItemId = 0;

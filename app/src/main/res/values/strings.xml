@@ -341,6 +341,7 @@
     <string name="text_files">Files</string>
     <string name="mesg_noReceiverOrSender">You should add devices first</string>
     <string name="butn_addDevices">Add devices</string>
+    <string name="text_addDevices" translatable="false">@string/butn_addDevices</string>
     <string name="text_connectDevices">Connect devices</string>
     <string name="text_network">Network</string>
     <string name="text_connect">Connect</string>
@@ -451,7 +452,7 @@
     <string name="mesg_errorNotTrusted">This device is not trusted on the other device. Set as trusted to use this.</string>
     <string name="butn_enterIpAddress">Enter IP Address</string>
     <string name="text_enterIpAddress" translatable="false">@string/butn_enterIpAddress</string>
-    <string name="butn_webShare">Share via browser</string>
+    <string name="butn_webShare">Web Share</string>
     <string name="text_webShare" translatable="false">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">Use \'Share on browser\' option to see transfers here!</string>
     <string name="butn_shareOnBrowser">Share on browser</string>
@@ -492,4 +493,5 @@
     </string>
     <string name="butn_dismiss">Dismiss</string>
     <string name="text_twoRowLayout">Two-row layout</string>
+    <string name="text_twoRowLayoutSummary">Display two rows next to each other</string>
 </resources>
