@@ -41,7 +41,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.ConnectException;
 
 public class NetworkDeviceLoader
 {
@@ -131,8 +130,10 @@ public class NetworkDeviceLoader
 		device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
 		device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
 		device.lastUsageTime = System.currentTimeMillis();
-		device.versionNumber = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
+		device.versionCode = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
 		device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);
+		device.clientVersion = appInfo.has(Keyword.APP_INFO_CLIENT_VERSION)
+				? appInfo.getInt(Keyword.APP_INFO_CLIENT_VERSION) : 0;
 
 		if (device.nickname.length() > AppConfig.NICKNAME_LENGTH_MAX)
 			device.nickname = device.nickname.substring(0, AppConfig.NICKNAME_LENGTH_MAX - 1);
@@ -159,8 +160,8 @@ public class NetworkDeviceLoader
 	{
 		try {
 			return saveProfilePicture(context, device, loadProfilePictureFrom(object));
-		} catch (Exception e) {
-			// do nothing
+		} catch (Exception ignored) {
+
 		}
 
 		return false;

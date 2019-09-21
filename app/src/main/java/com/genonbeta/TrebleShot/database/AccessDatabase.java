@@ -74,6 +74,7 @@ public class AccessDatabase extends SQLiteDatabase
 	public static final String FIELD_DEVICES_MODEL = "model";
 	public static final String FIELD_DEVICES_BUILDNAME = "buildName";
 	public static final String FIELD_DEVICES_BUILDNUMBER = "buildNumber";
+	public static final String FIELD_DEVICES_CLIENTVERSION = "clientVersion";
 	public static final String FIELD_DEVICES_LASTUSAGETIME = "lastUsedTime";
 	public static final String FIELD_DEVICES_ISRESTRICTED = "isRestricted";
 	public static final String FIELD_DEVICES_ISTRUSTED = "isTrusted";
@@ -156,6 +157,7 @@ public class AccessDatabase extends SQLiteDatabase
 				.define(new SQLValues.Column(FIELD_DEVICES_MODEL, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNAME, SQLType.TEXT, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_BUILDNUMBER, SQLType.INTEGER, false))
+				.define(new SQLValues.Column(FIELD_DEVICES_CLIENTVERSION, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_LASTUSAGETIME, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISRESTRICTED, SQLType.INTEGER, false))
 				.define(new SQLValues.Column(FIELD_DEVICES_ISTRUSTED, SQLType.INTEGER, false))

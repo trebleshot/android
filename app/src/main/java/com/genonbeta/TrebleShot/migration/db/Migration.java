@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_CLIENTVERSION;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_TYPE;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER;
 import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID;
@@ -191,12 +192,18 @@ public class Migration
             case 13: {
                 {
                     SQLValues.Table table = tables.getTable(TABLE_DEVICES);
-                    SQLValues.Column column = table.getColumn(FIELD_DEVICES_TYPE);
+                    SQLValues.Column typeColumn = table.getColumn(FIELD_DEVICES_TYPE);
+                    SQLValues.Column clientVerCol = table.getColumn(FIELD_DEVICES_CLIENTVERSION);
 
                     // Added: Type
-                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + column.getName()
-                            + " " + column.getType().toString() + (column.isNullable() ? " NOT" : "")
+                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + typeColumn.getName()
+                            + " " + typeColumn.getType().toString() + (typeColumn.isNullable() ? " NOT" : "")
                             + " NULL DEFAULT " + NetworkDevice.Type.NORMAL.toString());
+
+                    // Added: ClientVersion
+                    instance.execSQL("ALTER TABLE " + table.getName() + " ADD " + clientVerCol.getName()
+                            + " " + clientVerCol.getType().toString() + (clientVerCol.isNullable() ? " NOT" : "")
+                            + " NULL DEFAULT 0");
                 }
 
                 {

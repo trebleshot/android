@@ -132,7 +132,7 @@ public class TransferGroupListAdapter
 				@ColorInt
 				int appliedColor;
 				int percentage = (int) (object.percentage() * 100);
-				String assigneesText = object.getAssigneesAsTitle();
+				String assigneesText = object.getAssigneesAsTitle(getContext());
 				ProgressBar progressBar = parentView.findViewById(R.id.progressBar);
 				ImageView image = parentView.findViewById(R.id.image);
 				View statusLayoutWeb = parentView.findViewById(R.id.statusLayoutWeb);
@@ -165,9 +165,9 @@ public class TransferGroupListAdapter
 
 				statusLayoutWeb.setVisibility(object.hasOutgoing() && object.isServedOnWeb
 						? View.VISIBLE : View.GONE);
-				text1.setText(assigneesText.length() > 0 ? assigneesText : getContext().getString(
+				text1.setText(FileUtils.sizeExpression(object.bytesTotal(), false));
+				text2.setText(assigneesText.length() > 0 ? assigneesText : getContext().getString(
 						object.isServedOnWeb ? R.string.text_transferSharedOnBrowser : R.string.text_emptySymbol));
-				text2.setText(FileUtils.sizeExpression(object.bytesTotal(), false));
 				text3.setText(mPercentFormat.format(object.percentage()));
 				text4.setText(getContext().getString(R.string.text_transferStatusFiles,
 						object.numberOfCompleted(), object.numberOfTotal()));
@@ -177,7 +177,6 @@ public class TransferGroupListAdapter
 				else
 					progressBar.setProgress(percentage <= 0 ? 1 : percentage);
 				ImageViewCompat.setImageTintList(image, ColorStateList.valueOf(appliedColor));
-
 				if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
 					Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
 

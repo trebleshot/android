@@ -18,8 +18,10 @@
 
 package com.genonbeta.TrebleShot.object;
 
+import android.content.Context;
 import android.util.Log;
 
+import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.TransferGroupListAdapter;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
@@ -117,6 +119,17 @@ public class PreloadedGroup extends TransferGroup implements GroupEditableListAd
 		}
 
 		return title.toString();
+	}
+
+	public String getAssigneesAsTitle(Context context)
+	{
+		ShowingAssignee[] copyAssignees = assignees;
+
+		if (copyAssignees.length == 1)
+			return copyAssignees[0].device.nickname;
+
+		return context.getResources().getQuantityString(R.plurals.text_devices,
+				copyAssignees.length, copyAssignees.length);
 	}
 
 	@Override

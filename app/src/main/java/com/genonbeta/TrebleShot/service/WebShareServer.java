@@ -146,7 +146,7 @@ public class WebShareServer extends NanoHTTPD
         } catch (ReconstructionFailedException e) {
             device.brand = "TrebleShot";
             device.model = "Web";
-            device.versionNumber = mThisDevice.versionNumber;
+            device.versionCode = mThisDevice.versionCode;
             device.versionName = mThisDevice.versionName;
             device.nickname = clientAddress;
             device.isRestricted = false;

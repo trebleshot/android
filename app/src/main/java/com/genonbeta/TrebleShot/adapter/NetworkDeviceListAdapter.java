@@ -28,6 +28,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -59,7 +60,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         mConnectionUtils = connectionUtils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(context);
         mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes)
-                : new ArrayList<NetworkDevice.Type>();
+                : new ArrayList<>();
     }
 
     @Override
@@ -146,16 +147,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
-    public static class EditableNetworkDevice
-            extends NetworkDevice
-            implements Editable
+    public static class EditableNetworkDevice extends NetworkDevice implements Editable
     {
         private boolean mIsSelected = false;
-
-        public EditableNetworkDevice()
-        {
-            super();
-        }
 
         @Override
         public boolean applyFilter(String[] filteringKeywords)
@@ -235,8 +229,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         {
             super();
 
+            this.clientVersion = BuildConfig.CLIENT_VERSION;
             this.versionName = "stamp";
-            this.versionNumber = -1;
+            this.versionCode = -1;
         }
 
         @Override

@@ -71,14 +71,7 @@ public class GitHubChangelogListFragment
 
         useEmptyActionButton(true);
         getEmptyActionButton().setText(R.string.butn_refresh);
-        getEmptyActionButton().setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                refreshList();
-            }
-        });
+        getEmptyActionButton().setOnClickListener(v -> refreshList());
 
         onEnsureList();
     }

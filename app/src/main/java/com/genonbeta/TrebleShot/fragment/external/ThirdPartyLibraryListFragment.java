@@ -53,54 +53,38 @@ public class ThirdPartyLibraryListFragment
     @Override
     public LicencesAdapter onAdapter()
     {
-        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions = new AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final RecyclerViewAdapter.ViewHolder clazz)
-            {
-                clazz.getView().findViewById(R.id.menu).setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        final ModuleItem moduleItem = getAdapter().getList().get(clazz.getAdapterPosition());
+        final AppUtils.QuickActions<RecyclerViewAdapter.ViewHolder> quickActions =
+                clazz -> clazz.getView().findViewById(R.id.menu).setOnClickListener(v -> {
+            final ModuleItem moduleItem = getAdapter().getList().get(clazz.getAdapterPosition());
 
-                        PopupMenu popupMenu = new PopupMenu(getContext(), v);
-                        popupMenu.getMenuInflater().inflate(R.menu.popup_third_party_library_item, popupMenu.getMenu());
+            PopupMenu popupMenu = new PopupMenu(getContext(), v);
+            popupMenu.getMenuInflater().inflate(R.menu.popup_third_party_library_item, popupMenu.getMenu());
 
-                        popupMenu.getMenu()
-                                .findItem(R.id.popup_visitWebPage)
-                                .setEnabled(moduleItem.moduleUrl != null);
+            popupMenu.getMenu()
+                    .findItem(R.id.popup_visitWebPage)
+                    .setEnabled(moduleItem.moduleUrl != null);
 
-                        popupMenu.getMenu()
-                                .findItem(R.id.popup_goToLicenceURL)
-                                .setEnabled(moduleItem.licenceUrl != null);
+            popupMenu.getMenu()
+                    .findItem(R.id.popup_goToLicenceURL)
+                    .setEnabled(moduleItem.licenceUrl != null);
 
-                        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
-                        {
-                            @Override
-                            public boolean onMenuItemClick(MenuItem item)
-                            {
-                                int id = item.getItemId();
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
 
-                                if (id == R.id.popup_goToLicenceURL)
-                                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                                            .setData(Uri.parse(moduleItem.licenceUrl)));
-                                else if (id == R.id.popup_visitWebPage)
-                                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
-                                            .setData(Uri.parse(moduleItem.moduleUrl)));
-                                else
-                                    return false;
+                if (id == R.id.popup_goToLicenceURL)
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(moduleItem.licenceUrl)));
+                else if (id == R.id.popup_visitWebPage)
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW)
+                            .setData(Uri.parse(moduleItem.moduleUrl)));
+                else
+                    return false;
 
-                                return true;
-                            }
-                        });
+                return true;
+            });
 
-                        popupMenu.show();
-                    }
-                });
-            }
-        };
+            popupMenu.show();
+        });
 
         return new LicencesAdapter(getContext())
         {

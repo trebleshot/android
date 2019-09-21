@@ -37,6 +37,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 	public long id;
 	public long dateCreated;
 	public String savePath;
+	public boolean isPaused;
 	public boolean isServedOnWeb;
 
 	private boolean mIsSelected = false;
@@ -69,6 +70,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 		this.savePath = item.getAsString(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH);
 		this.dateCreated = item.getAsLong(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED);
 		this.isServedOnWeb = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB) == 1;
+		this.isPaused = item.getAsInteger(AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED) == 1;
 	}
 
 	@Override
@@ -92,6 +94,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 		values.put(AccessDatabase.FIELD_TRANSFERGROUP_SAVEPATH, savePath);
 		values.put(AccessDatabase.FIELD_TRANSFERGROUP_DATECREATED, dateCreated);
 		values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISSHAREDONWEB, isServedOnWeb ? 1 : 0);
+		values.put(AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED, isPaused ? 1 : 0);
 
 		return values;
 	}

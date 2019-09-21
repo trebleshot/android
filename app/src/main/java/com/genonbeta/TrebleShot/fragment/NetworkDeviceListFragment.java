@@ -122,7 +122,8 @@ public class NetworkDeviceListFragment
 		mIntentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION);
 		mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
 
-		mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getDatabase(getContext()), AppUtils.getDefaultPreferences(getContext()));
+		mNsdDiscovery = new NsdDiscovery(getContext(), AppUtils.getDatabase(getContext()),
+				AppUtils.getDefaultPreferences(getContext()));
 	}
 
 	@Override
@@ -201,7 +202,7 @@ public class NetworkDeviceListFragment
 		final NetworkDevice device = getAdapter().getList().get(holder.getAdapterPosition());
 
 		if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
-			if (device.versionNumber != -1 && device.versionNumber < AppConfig.SUPPORTED_MIN_VERSION)
+			if (device.versionCode != -1 && device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
 				createSnackbar(R.string.mesg_versionNotSupported).show();
 			else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
 				mConnectionUtils.makeAcquaintance(getActivity(),

@@ -158,7 +158,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
 
         if (!refVersion)
             defaultPreferences.edit()
-                    .putInt("referral_version", localDevice.versionNumber)
+                    .putInt("referral_version", localDevice.versionCode)
                     .apply();
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
@@ -169,9 +169,9 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
                     .apply();
 
         if (defaultPreferences.contains("migrated_version")) {
-            int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionNumber);
+            int migratedVersion = defaultPreferences.getInt("migrated_version", localDevice.versionCode);
 
-            if (migratedVersion < localDevice.versionNumber) {
+            if (migratedVersion < localDevice.versionCode) {
                 // migrating to a new version
 
                 if (migratedVersion <= 67)
@@ -180,13 +180,13 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
                             .apply();
 
                 defaultPreferences.edit()
-                        .putInt("migrated_version", localDevice.versionNumber)
+                        .putInt("migrated_version", localDevice.versionCode)
                         .putInt("previously_migrated_version", migratedVersion)
                         .apply();
             }
         } else
             defaultPreferences.edit()
-                    .putInt("migrated_version", localDevice.versionNumber)
+                    .putInt("migrated_version", localDevice.versionCode)
                     .apply();
     }
 }

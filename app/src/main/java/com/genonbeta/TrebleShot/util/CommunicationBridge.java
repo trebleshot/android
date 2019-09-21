@@ -148,12 +148,15 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection, boolean handshakeOnly) throws IOException, TimeoutException, CommunicationException
         {
             try {
-                activeConnection.reply(new JSONObject()
+                JSONObject reply = new JSONObject()
                         .put(Keyword.HANDSHAKE_REQUIRED, true)
                         .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
                         .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceSerial(getContext()))
-                        .put(Keyword.DEVICE_SECURE_KEY, mDevice == null ? mSecureKey : mDevice.tmpSecureKey)
-                        .toString());
+                        .put(Keyword.DEVICE_SECURE_KEY, mDevice == null ? mSecureKey : mDevice.tmpSecureKey);
+
+                AppUtils.applyDeviceToJSON(getContext(), reply);
+
+                activeConnection.reply(reply.toString());
             } catch (JSONException e) {
                 throw new CommunicationException("Failed to open connection between devices");
             }

@@ -57,6 +57,7 @@ public class ApplicationListFragment
         setHasOptionsMenu(true);
         setDefaultOrderingCriteria(ApplicationListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
+        setDefaultGroupingCriteria(ApplicationListAdapter.MODE_GROUP_BY_DATE);
         setDefaultViewingGridSize(3, 5);
     }
 
