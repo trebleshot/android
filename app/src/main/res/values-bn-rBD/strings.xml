@@ -16,4 +16,6 @@
     <string name="butn_cancelReceiving">গ্রহণ বাতিল করুন</string>
     <string name="mesg_fileReceived">% s প্রাপ্ত হয়েছে</string>
     <string name="butn_scan">স্ক্যান</string>
+    <string name="mesg_fileSendError">ফাইল পাঠানো যায়নি। %s</string>
+    <string name="mesg_notAllowed">"আপনাকে  অনুমতি দেওয়া হয় না"</string>
 </resources>
