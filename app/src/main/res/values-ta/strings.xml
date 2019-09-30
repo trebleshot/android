@@ -316,4 +316,43 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">அல்லது</string>
     <string name="text_visitWebShareAddress">உலாவி மூலம் இந்த Link-ஐ பார்க்கவும்</string>
+    <string name="text_notAllowedHelp">"%1$s  ற்க்கு நீங்கள் அனுமதிக்கப்ப்ட்டுள்ளீர்களா
+\n
+\nசாதனங்கள் &gt; %2$s &gt; இணைக்க அனுமதி &gt; (பாருங்கள்)"</string>
+    <string name="text_requestPermissionReadPhoneStateSummary">Trebleshot உங்கள் கைபேசியின் சீரியல் எண்ணை எடுக்க அனுமதி தேவை</string>
+    <string name="mesg_clipboardUpdateNotice">தொடரை மாற்றுங்கள் அல்லது வெளியேற மீண்டும் அழுத்துங்கள்</string>
+    <string name="mesg_providerNotAllowedError">முதன்மை அடைவு மற்ற செயலிகளுக்கு அனுமதி இல்லை</string>
+    <string name="text_trebleshotHotspotDescription">நீங்கள் இந்த இணைப்பின் மூலம் கோப்புகளை பரிமாற்றிக்கொள்ளலாம்.</string>
+    <string name="mesg_warningHotspotMobileActive">இணைக்கப்பட்டுள்ள சாதனங்கள் உங்கள் மொபைல் டேடாவை பயன்படுத்தக்கூடும். நீங்கள் அதை முடக்குங்கள்.</string>
+    <string name="mesg_scanningDevicesSelfHotspot">Trebleshot Hotspot மூலம் சாதனங்களை தேடுகிறது</string>
+    <string name="text_fileRoot">கோப்பு மூலம்</string>
+    <string name="mesg_versionNotSupported">பரிந்துரைக்கப்பட்ட Versionற்க்கு பதிவேற்றம் செய்யுங்கள்.</string>
+    <string name="mesg_connectionUpdated">%s இணைப்பு மூலம் தொடர்பு கொள்கிறது</string>
+    <string name="mesg_helpFolderSelection">இந்த அடைவை தேர்வு செய்ய தட்டவும்</string>
+    <string name="mesg_hotspotCreatedInfo">Wifi Settings-ல் %s-ல் இணையவும்</string>
+    <string name="butn_selectNone">ஏதுமில்லை</string>
+    <string name="mesg_transferConnectionNotSetUpFix">தொடர்பு முறையை தேர்ந்தெடுங்கள்</string>
+    <string name="text_yearCountShort">%d வருடம்</string>
+    <string name="text_hourCountShort">%d மணி</string>
+    <string name="text_secondCountShort">%d நொடி</string>
+    <string name="butn_queueCounted">வரிசை (%d)</string>
+    <string name="text_movedCacheFiles">தற்காலிக கோப்புகள் நீக்கப்பட்டது</string>
+    <string name="text_hotspotStartsTrustZone">Hotspot TrustZone-ஐ துவக்கிவைக்கும்</string>
+    <string name="text_hotspotStartsTrustZoneSummary">Trustzoneம் துவக்கிவைக்கப்படும்</string>
+    <string name="text_scanQRCodeHelp">மற்றொரு சாதனத்திலுள்ள QR Code-ஐ Scan செய்யவும்</string>
+    <string name="butn_qrToggle">QR Code காண்பிப்பதை மாற்று</string>
+    <string name="text_notificationSettingsSummary">அறிவிப்பு அமைப்புகளை திற</string>
+    <string name="text_rename">பெயர்மாற்று</string>
+    <string name="butn_rename">பெயர்மாற்று</string>
+    <string name="text_qrAllowTrustZone">QR Code-ற்கான TrustZone</string>
+    <string name="text_qrAllowTrustZoneSummary">QR Code இணைப்பிற்க்கான TrustZoneஐ அனுமதிக்கவும்</string>
+    <string name="text_translateTrebleshot">மொழிபெயர்க்க உதவவும்</string>
+    <string name="text_contributors">உருவாக்க உதவியவர்கள்</string>
+    <string name="butn_singleRow">தனி வரிசை</string>
+    <string name="text_photo">புகைப்படம்</string>
+    <string name="text_groupByNothing">ஒன்றுமில்லை</string>
+    <string name="text_groupByDate">தேதி</string>
+    <string name="text_groupByArtist">ஓவியர்</string>
+    <string name="text_groupByFolder">அடைவு</string>
+    <string name="text_home">முதற்பக்கம்</string>
 </resources>
