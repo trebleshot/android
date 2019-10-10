@@ -402,4 +402,36 @@
     <string name="butn_changelog">மாற்றக்குறிப்புகள்</string>
     <string name="text_uncheckedItemsNotice">உள்ளீட்டை நீக்க Uncheck செய்யவும்</string>
     <string name="mesg_retryReceivingNotice">பாதியில் முடிந்த பரிமாற்றங்களை Trebleshot மீண்டும் இயக்கும்</string>
+    <string name="text_trustZoneDeviceNotice">TrustZone ஆன் செய்யப்படும்போது, கோப்புகளை அனுமதிக்கவும்</string>
+    <string name="mesg_updateDownloadComplete">Update பெறப்பட்டது. உங்கள் Received Filesல் சேமிக்கப்பட்டது</string>
+    <string name="mesg_listRefreshSnoozed">இந்த பட்டியல் புதுப்பிக்கப்படும்</string>
+    <string name="mesg_errorReadFolder">\"%s\" ஐ அடைய முடியவில்லை</string>
+    <string name="mesg_errorNotSameNetwork">இரண்டு சாதனங்களும் வெவ்வேறு இணைப்புகளில் உள்ளன</string>
+    <string name="text_addDevicesToTransfer">சாதனங்களை சேர்த்து, பரிமாறவும்</string>
+    <string name="text_noDeviceForTransfer">பரிமாற்றத்திற்க்காக எந்த சாதனமும் சேர்க்கப்படவில்லை</string>
+    <string name="text_changelog">மாற்றக்குறிப்புகள்</string>
+    <string name="mesg_versionUpdatedChangelogRejected">மாற்றக்குறிப்புகளை \"எங்களைப் பற்றி\" பிரிவிலிருந்து பெறலாம்</string>
+    <string name="mesg_noInternetConnection">இதற்கு இணைய சேவை தேவை</string>
+    <string name="text_applyDarkTheme">Dark mode</string>
+    <string name="text_applyDarkThemeSummary">Dark Style Theme-ஐ பயன்படுத்தவும்</string>
+    <string name="butn_allow">அனுமதி</string>
+    <string name="butn_telegram_channel">Telegram குழு</string>
+    <string name="text_listEmptyTransfer">பரிமாற்றங்களை இங்கே காணலாம்</string>
+    <string name="text_transfers">பரிமாற்றங்கள்</string>
+    <string name="butn_connectionDetails">இணைப்பு விவரங்கள்</string>
+    <string name="butn_useKnownDevice">தெரிந்த சாதனங்களை பயன்படுத்தவும்</string>
+    <string name="butn_scanQrCode">QR Code-ஐ செய்யவும்</string>
+    <string name="butn_feedbackContact">கருத்துகள் மற்றும் தொடர்புக்கு</string>
+    <string name="mesg_sent">அனுப்பியது</string>
+    <string name="text_sendText">தொடரை அனுப்பு</string>
+    <string name="butn_start">துவங்கு</string>
+    <string name="text_downloads">தரவிறக்கப்பட்டவை</string>
+    <string name="text_documents">கோப்புகள்</string>
+    <string name="text_recentFiles">சமீபத்திய</string>
+    <string name="text_send">அனுப்பு</string>
+    <string name="ques_needHelp">உதவி வேண்டுமா\?</string>
+    <string name="text_connectionWizard">இணைப்பு உதவி</string>
+    <string name="mesg_errorNotAnIpAddress">IP Address இல்லை
+\n(192.168.1.2 போல)</string>
+    <string name="butn_changeMode">நிலையை மாற்று</string>
 </resources>
