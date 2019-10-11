@@ -25,7 +25,7 @@
     <string name="text_developerModeSummary">பயனர் உள்ளமைப்பை முடக்குகிறது</string>
     <string name="text_deviceNameSummary">பிற சாதனங்களில் இந்த பெயர் காட்டப்படும்</string>
     <string name="mesg_formatNotSupported">ஆதரிக்கப்படாத கோப்புவகை</string>
-    <string name="mesg_fileSendError">%s - கோப்பை அனுப்ப முடியவில்லை.</string>
+    <string name="mesg_fileSendError">கோப்பை அனுப்ப முடியவில்லை. %s</string>
     <string name="mesg_fileReceiveError">%s கோப்பை அனுப்ப முடியவில்லை.</string>
     <string name="text_multipleFileReceiveCompleted">கோப்புகள் பெறப்பட்டது</string>
     <string name="text_deviceList">சாதனங்கள்</string>
@@ -434,4 +434,22 @@
     <string name="mesg_errorNotAnIpAddress">IP Address இல்லை
 \n(192.168.1.2 போல)</string>
     <string name="butn_changeMode">நிலையை மாற்று</string>
+    <string name="text_networkServiceDiscoverySummary">NSD கண்டறிதலை அதிகரிக்கும்</string>
+    <string name="text_easyDiscoveryHelp">இரண்டு சாதனங்களும் ஒரே நெட்வொர்கில் இருந்தால் Scan செய்யவும்</string>
+    <string name="mesg_noPendingTransferObjectExists">நிலுவையிலுள்ள பரிமாற்றங்கள் ஏதுமில்லை. நிருத்தப்பட்ட கோப்புகளை மீண்டும் தொடர, \'Retry Receiving\'ஐ பயன் படுத்தவும்.</string>
+    <string name="mesg_notSavingToChosenLocation">கோப்புகள் பொதுவான அடைவில் சேமிக்கப்படும்
+\n
+\n%s</string>
+    <string name="mesg_versionUpdatedChangelog">TrebleShot புதுப்பிக்கப்பட்டது, புதிதாக என்ன இருக்கிறது என பார்க்க வேண்டுமா\?</string>
+    <string name="butn_useExistingNetwork">ஏற்கனவே இருக்கும் நெட்வொர்குகளை பயன்படுத்தவும்</string>
+    <string name="text_addDeviceHelp">சாதனங்களை சேர்ப்பதன் மூலம், நீங்கள் பல்வேறு சாதனங்களுடன் பகிர முடியும்.</string>
+    <string name="text_shortcuts">குறுக்கு வழிகள்</string>
+    <string name="butn_changeSavePath">சேமிப்பு பாதையை மாற்று</string>
+    <string name="mesg_fileReceiveFilesLeftError">சில கோப்புகள் பரிமாற்றம் தோல்வியடைந்தது</string>
+    <string name="text_connectionHelp">மற்ற சாதனங்களுடன் இணைப்பதற்க்கு நீங்கள் ஏதேனும் ஒரு வழியை தேர்வு செய்யவும்.</string>
+    <string name="mesg_errorNotTrustZoneDevice">சாதனம் TrustZone-ஆக அமைக்கப்பட வேண்டும்.</string>
+    <string name="text_webShareNoContentNotice">உலாவியில் பகிரும் சேவையை பயன்படுத்தவும்!</string>
+    <string name="text_webShareInfo">தனிப்பட்ட பரிமாற்றத்திற்காக Web Sharing துவக்கிவைக்கவும்.</string>
+    <string name="text_linkTrebleshot">TrebleShot வைத்து கோப்புகளை பரிமாறவும். இங்கே தரவிறக்கவும்: %s</string>
+    <string name="mesg_qrScannerDefaultMode">QR Codes-ற்க்கு பொதுவான செயல்பாட்டிற்கு போகவும்</string>
 </resources>
