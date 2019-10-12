@@ -464,4 +464,6 @@
     <string name="mesg_qrScannerTextMode">Les codes QR seront affichés sous forme de texte</string>
     <string name="mesg_qrScannerDefaultMode">Retour aux actions par défaut pour les codes QR</string>
     <string name="butn_showAsQrCode">Afficher comme code QR</string>
+    <string name="text_workerService">Service aux travailleurs</string>
+    <string name="mesg_completing">Complétion</string>
 </resources>
