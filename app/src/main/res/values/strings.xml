@@ -284,7 +284,7 @@
     <string name="text_secondCountShort">%d sec</string>
     <string name="butn_exit">Exit</string>
     <string name="butn_queueCounted">Queue (%d)</string>
-    <string name="mesg_updateDownloadComplete">Update received successfully and saved to your received files</string>
+    <string name="mesg_updateDownloadComplete">Update received and saved in your received files</string>
     <string name="text_listEmptyFiles">No files here</string>
     <string name="text_listEmptyImage">No photos here</string>
     <string name="text_listEmptyApp">No apps here</string>
