@@ -132,8 +132,8 @@ public class Migration
                 SQLValues.Table devicesTable = tables12.getTable(TABLE_DEVICES);
                 SQLValues.Table targetDevicesTable = tables12.getTable(TABLE_TRANSFERASSIGNEE);
 
-                instance.execSQL(String.format("DROP TABLE IF EXISTS `%s`", groupTable.getName()));
-                instance.execSQL(String.format("DROP TABLE IF EXISTS `%s`", devicesTable.getName()));
+                instance.execSQL("DROP TABLE IF EXISTS `" + groupTable.getName() + "`");
+                instance.execSQL("DROP TABLE IF EXISTS `" + devicesTable.getName() + "`");
 
                 SQLQuery.createTable(instance, groupTable);
                 SQLQuery.createTable(instance, devicesTable);
@@ -169,8 +169,7 @@ public class Migration
                             supportedItems.add(transferObject);
                     }
 
-                    instance.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransfer
-                            .getName()));
+                    instance.execSQL("DROP TABLE IF EXISTS `" + tableTransfer.getName() + "`");
                     SQLQuery.createTable(instance, tableTransfer);
                     SQLQuery.createTable(instance, divisTransfer);
                     db.insert(instance, supportedItems, null, null);
@@ -185,8 +184,7 @@ public class Migration
                         TABLE_TRANSFERGROUP), TransferGroup.class, null);
                 SQLValues.Table tableTransferGroup = tables12.getTable(TABLE_TRANSFERGROUP);
 
-                instance.execSQL(String.format("DROP TABLE IF EXISTS `%s`", tableTransferGroup
-                        .getName()));
+                instance.execSQL("DROP TABLE IF EXISTS `" + tableTransferGroup.getName() + "`");
                 SQLQuery.createTable(instance, tableTransferGroup);
                 db.insert(instance, totalGroupList, null, null);
             case 13: {

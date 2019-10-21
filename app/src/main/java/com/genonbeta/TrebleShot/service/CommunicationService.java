@@ -132,7 +132,6 @@ public class CommunicationService extends Service
     public static final String EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType";
     public static final String EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning";
     public static final String EXTRA_DEVICE_LIST_RUNNING = "extraDeviceListRunning";
-    public static final String EXTRA_ENABLE = "extraEnable";
     public static final String EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int TASK_STATUS_ONGOING = 0;
@@ -254,8 +253,10 @@ public class CommunicationService extends Service
 
                     if (isAccepted)
                         startTransferAsClient(groupId, deviceId, TransferObject.Type.INCOMING);
-                    else
+                    else {
                         getDatabase().remove(group);
+                        getDatabase().broadcast();
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
 
@@ -303,7 +304,8 @@ public class CommunicationService extends Service
                     getDatabase().reconstruct(textStreamObject);
 
                     if (isAccepted) {
-                        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(ClipData.newPlainText("receivedText", textStreamObject.text));
+                        ((ClipboardManager) getSystemService(CLIPBOARD_SERVICE)).setPrimaryClip(
+                                ClipData.newPlainText("receivedText", textStreamObject.text));
                         Toast.makeText(this, R.string.mesg_textCopiedToClipboard, Toast.LENGTH_SHORT).show();
                     }
                 } catch (Exception e) {

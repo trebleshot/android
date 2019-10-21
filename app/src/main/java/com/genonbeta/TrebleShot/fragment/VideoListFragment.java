@@ -80,46 +80,22 @@ public class VideoListFragment
     @Override
     public VideoListAdapter onAdapter()
     {
-        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = new AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder>()
-        {
-            @Override
-            public void onQuickActions(final GroupEditableListAdapter.GroupViewHolder clazz)
-            {
-                if (!clazz.isRepresentative()) {
-                    registerLayoutViewClicks(clazz);
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
+            if (!clazz.isRepresentative()) {
+                registerLayoutViewClicks(clazz);
 
-                    View visitView = clazz.getView().findViewById(R.id.visitView);
-                    visitView.setOnClickListener(
-                            new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    performLayoutClickOpen(clazz);
-                                }
-                            });
+                View visitView = clazz.getView().findViewById(R.id.visitView);
+                visitView.setOnClickListener(
+                        v -> performLayoutClickOpen(clazz));
 
-                    visitView.setOnLongClickListener(new View.OnLongClickListener()
-                    {
-                        @Override
-                        public boolean onLongClick(View v)
-                        {
-                            return performLayoutLongClick(clazz);
-                        }
-                    });
+                visitView.setOnLongClickListener(v -> performLayoutLongClick(clazz));
 
-                    clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
-                            ? R.id.selectorContainer : R.id.selector)
-                            .setOnClickListener(new View.OnClickListener()
-                            {
-                                @Override
-                                public void onClick(View v)
-                                {
-                                    if (getSelectionConnection() != null)
-                                        getSelectionConnection().setSelected(clazz.getAdapterPosition());
-                                }
-                            });
-                }
+                clazz.getView().findViewById(getAdapter().isGridLayoutRequested()
+                        ? R.id.selectorContainer : R.id.selector)
+                        .setOnClickListener(v -> {
+                            if (getSelectionConnection() != null)
+                                getSelectionConnection().setSelected(clazz.getAdapterPosition());
+                        });
             }
         };
 

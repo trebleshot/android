@@ -24,14 +24,12 @@
     <application
         android:name=".App"
         android:allowBackup="true"
-        android:appComponentFactory="@string/app_name"
         android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/text_appName"
         android:supportsRtl="true"
         android:theme="@style/Theme.TrebleShot"
-        tools:ignore="GoogleAppIndexingWarning"
-        tools:replace="android:appComponentFactory">
+        tools:ignore="GoogleAppIndexingWarning">
 
         <activity
             android:name=".activity.HomeActivity"

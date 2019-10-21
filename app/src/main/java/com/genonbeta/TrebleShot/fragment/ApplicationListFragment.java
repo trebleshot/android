@@ -59,6 +59,7 @@ public class ApplicationListFragment
         setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(ApplicationListAdapter.MODE_GROUP_BY_DATE);
         setDefaultViewingGridSize(3, 5);
+        setUseDefaultPaddingDecoration(false);
     }
 
     @Override
