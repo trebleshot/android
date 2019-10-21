@@ -19,6 +19,12 @@
 
 <resources>
     <plurals name="ques_deleteFile">
-        <item quantity="other">Apakah Anda ingin menghapus file %d\?</item>
+        <item quantity="other">Apakah Anda ingin menghapus file %d ini\?</item>
+    </plurals>
+    <plurals name="text_fileReceiveCompletedSummary">
+        <item quantity="other">%d file telah diterima</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="other">%d file telah dihapus</item>
     </plurals>
 </resources>

@@ -26,4 +26,44 @@
         <item quantity="one">%dটি ফাইল গ্রহণ করা হয়েছে</item>
         <item quantity="other">%dটি ফাইল গ্রহণ করা হয়েছে</item>
     </plurals>
+    <plurals name="text_itemSelected">
+        <item quantity="one">%d ফাইল নির্বাচন করা হয়েছে</item>
+        <item quantity="other">"%d ফাইলটি  নির্বাচন করা হয়েছে"</item>
+    </plurals>
+    <plurals name="text_removeQueueSummary">
+        <item quantity="one">এই মুলতুবি স্থানান্তর সরানো হবে</item>
+        <item quantity="other">%d মুলতুবি স্থানান্তরগুলি সরানো হবে</item>
+    </plurals>
+    <plurals name="text_availableConnections">
+        <item quantity="one">%d সংযোগ</item>
+        <item quantity="other">%d সংযোগগুলি</item>
+    </plurals>
+    <plurals name="ques_receiveMultipleFiles">
+        <item quantity="one">এই ফাইলটি পাবেন\?</item>
+        <item quantity="other">%d ফাইল পাবেন\?</item>
+    </plurals>
+    <plurals name="text_files">
+        <item quantity="one">%d ফাইল</item>
+        <item quantity="other">%d ফাইলগুলো</item>
+    </plurals>
+    <plurals name="text_secondsAgo">
+        <item quantity="one">এক সেকেন্ড আগে</item>
+        <item quantity="other">%d সেকেন্ড আগে</item>
+    </plurals>
+    <plurals name="text_minutesAgo">
+        <item quantity="one">এক মিনিট আগে</item>
+        <item quantity="other">%d মিনিট আগে</item>
+    </plurals>
+    <plurals name="text_fileDeletionCompleted">
+        <item quantity="one">%d ফাইল মোছা হয়েছে</item>
+        <item quantity="other">"%d ফাইলগুলো  মোছা হয়েছে"</item>
+    </plurals>
+    <plurals name="text_gridRow">
+        <item quantity="one">একক সারি</item>
+        <item quantity="other">%d সারি</item>
+    </plurals>
+    <plurals name="text_devicesShared">
+        <item quantity="one">একক শেয়ার</item>
+        <item quantity="other">%d ডিভাইসগুলির সাথে শেয়ার হচ্ছে</item>
+    </plurals>
 </resources>

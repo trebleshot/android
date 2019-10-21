@@ -326,7 +326,7 @@
     <string name="butn_ejectDirectory">Desmuntatu karpeta</string>
     <string name="text_movedCacheFiles">Cache-ko fitxategiak lekualdatuta</string>
     <string name="mesg_wifiEnableRequired">Gaitu Wi-Fia konektatzeko</string>
-    <string name="text_hotspotStartsTrustZone">Wifigunean area fidagarria aktibatzen du ere</string>
+    <string name="text_hotspotStartsTrustZone">Wifiguneak area fidagarria aktibatzen du ere</string>
     <string name="text_hotspotStartsTrustZoneSummary">Area fidagarria ere abiatuko da ondorioz</string>
     <string name="text_qrCodeAvailableHelp">Eskaneatu kode hau partekatzeko eta gailuak konektatzeko</string>
     <string name="text_qrCodeHotspotDisabledHelp">Ezarri Wifigunea besteek zurekin konektatu ahal izateko</string>
@@ -462,4 +462,29 @@
     <string name="text_amoledOptimizedBlackThemeSummary">Erabili kolore ilunagoak</string>
     <string name="butn_enterIpAddress">Sartu IP helbidea</string>
     <string name="butn_webShare">Partekatu nabigatzailearen bidez</string>
+    <string name="mesg_errorNotTrustZoneDevice">Gailu hau area fidagarri gisa ezarri behar da gailu jasotzailean eragiketa hau egiteko.</string>
+    <string name="text_webShareNoContentNotice">Erabili \'Partekatu nabigatzailean\' aukera hemen transferentziak ikusteko!</string>
+    <string name="butn_shareOnBrowser">Partekatu nabigatzailean</string>
+    <string name="butn_hideOnBrowser">Ezkutatu nabigatzailean</string>
+    <string name="text_transferSharedOnBrowser">Nabigatzailean partekatuta</string>
+    <string name="mode_webShareAddress">http://%s:%d/</string>
+    <string name="text_or">edo</string>
+    <string name="text_visitWebShareAddress">Bisitatu esteka hau zure nabigatzailean</string>
+    <string name="text_webShareInfo">Gaitu web partekatzea transferentzia bakoitzeko eta joan erakutsitako estekara sare berera konektatuta dagoen gailu batekin.</string>
+    <string name="text_dowloadTrebleshotAndroid">Deskargatu TrebleShot Android-erako</string>
+    <string name="text_listEmptyConnection">Konektatutako sareak hemen agertzen dira</string>
+    <string name="mesg_errorNotAnIpAddress">Ez da IP helbide bat
+\n(honen gisakoa 192.168.1.2)</string>
+    <string name="ques_shareAsApkOrLink">Partekatu APK ala esteka gisa\?</string>
+    <string name="butn_asApk">APK gisa</string>
+    <string name="butn_asLink">Esteka gisa</string>
+    <string name="text_linkTrebleshot">Partekatu fitxategiak TrebleShot erabilita! Deskargatu hemen: %s</string>
+    <string name="butn_downloadAllAsZip">Deskargatu denak ZIP batean (bakarra, konprimitu gabe)</string>
+    <string name="text_interfaceVPN">VPN zerbitzaria</string>
+    <string name="text_unrecognizedQrCode">Kode ezezaguna</string>
+    <string name="mesg_textStreamSaved">Testua gordeta</string>
+    <string name="butn_changeMode">Aldatu modua</string>
+    <string name="mesg_qrScannerTextMode">QR kodeak testu gisa erakutsiko dira</string>
+    <string name="mesg_qrScannerDefaultMode">Itzuli QR kodeen lehenetsitako ekintzetara</string>
+    <string name="butn_showAsQrCode">Erakutsi QR kode gisa</string>
 </resources>
