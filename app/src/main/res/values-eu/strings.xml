@@ -290,7 +290,7 @@
     <string name="butn_exit">Irten</string>
     <string name="butn_queueCounted">Ilara (%d)</string>
     <string name="text_previewThenProceedNotice">Markatu zure hautaketak \"Ilara\" sakatuz jarraitzeko</string>
-    <string name="mesg_updateDownloadComplete">Eguneraketa ongi jaso da eta zure jasotako fitxategietan gorde da</string>
+    <string name="mesg_updateDownloadComplete">Eguneraketa jaso da eta zure jasotako fitxategietan gorde da</string>
     <string name="text_listEmptyFiles">Ez dago fitxategirik hemen</string>
     <string name="text_listEmptyImage">Ez dago argazkirik hemen</string>
     <string name="text_listEmptyApp">Ez dago aplikaziorik hemen</string>
