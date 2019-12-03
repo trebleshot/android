@@ -468,6 +468,10 @@ public class UIConnectionUtils
         return true;
     }
 
+    public static boolean isOSAbove(int value) {
+        return Build.VERSION.SDK_INT >= value;
+    }
+
     public interface RequestWatcher
     {
         void onResultReturned(boolean result, boolean shouldWait);
