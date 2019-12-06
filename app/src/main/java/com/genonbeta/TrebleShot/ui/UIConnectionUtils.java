@@ -137,7 +137,7 @@ public class UIConnectionUtils
                                     @Override
                                     public boolean onTimePassed(int delimiter, long timePassed)
                                     {
-                                        return timePassed >= 20000;
+                                        return timePassed >= 30000;
                                     }
                                 });
                     } else if (object instanceof String)
@@ -466,6 +466,10 @@ public class UIConnectionUtils
         watcher.onResultReturned(true, false);
 
         return true;
+    }
+
+    public static boolean isOSAbove(int value) {
+        return Build.VERSION.SDK_INT >= value;
     }
 
     public interface RequestWatcher
