@@ -82,9 +82,24 @@ public class ConnectionUtils {
 
         String remoteAddress = null;
         boolean connectionToggled = false;
+        boolean secondAttempt = false;
+        boolean thirdAttempt = false;
 
         while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
+
+            // retry code will be here.
+            if (passedTime >= 10000 && !secondAttempt) {
+                secondAttempt = true;
+                disableCurrentNetwork();
+                connectionToggled = false;
+            }
+
+            if (passedTime >= 20000 && !thirdAttempt) {
+                thirdAttempt = true;
+                disableCurrentNetwork();
+                connectionToggled = false;
+            }
 
             if (!getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
@@ -101,8 +116,9 @@ public class ConnectionUtils {
             } else {
                 Log.d(TAG, "establishHotspotConnection(): Waiting to connect to the server");
                 final DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
+                //Log.w(TAG, String.format("establishHotspotConnection(): DHCP: %s", routeInfo));
 
-                if (routeInfo != null && routeInfo.gateway > 0) {
+                if (routeInfo != null && routeInfo.gateway != 0) {
                     final String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
 
                     Log.d(TAG, String.format("establishHotspotConnection(): DhcpInfo: gateway: %s dns1: %s dns2: %s ipAddr: %s serverAddr: %s netMask: %s",
@@ -294,10 +310,11 @@ public class ConnectionUtils {
             getWifiManager().enableNetwork(netId, true);
 
             return getWifiManager().reconnect();*/
+
             try {
                 int netId = getWifiManager().addNetwork(config);
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (/*Build.VERSION.SDK_INT >= */UIConnectionUtils.isOSAbove(Build.VERSION_CODES.M)) {
                     List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
                     for (WifiConfiguration hotspotWifi : list) {
                         if (hotspotWifi.SSID != null && hotspotWifi.SSID.equalsIgnoreCase(config.SSID)) {
