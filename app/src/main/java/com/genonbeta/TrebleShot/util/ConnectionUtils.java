@@ -36,7 +36,10 @@ import androidx.core.content.ContextCompat;
 
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.android.framework.util.Interrupter;
+
+import java.util.List;
 
 /**
  * created by: veli
@@ -87,6 +90,7 @@ public class ConnectionUtils
 
     public boolean disableCurrentNetwork()
     {
+        // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
         // This is because we are only allowed to manipulate the connections that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork()
@@ -104,9 +108,24 @@ public class ConnectionUtils
 
         String remoteAddress = null;
         boolean connectionToggled = false;
+        boolean secondAttempt = false;
+        boolean thirdAttempt = false;
 
         while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
+
+            // retry code will be here.
+            if (passedTime >= 10000 && !secondAttempt) {
+                secondAttempt = true;
+                disableCurrentNetwork();
+                connectionToggled = false;
+            }
+
+            if (passedTime >= 20000 && !thirdAttempt) {
+                thirdAttempt = true;
+                disableCurrentNetwork();
+                connectionToggled = false;
+            }
 
             if (!getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
@@ -123,8 +142,9 @@ public class ConnectionUtils
             } else {
                 Log.d(TAG, "establishHotspotConnection(): Waiting to connect to the server");
                 final DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
+                //Log.w(TAG, String.format("establishHotspotConnection(): DHCP: %s", routeInfo));
 
-                if (routeInfo != null && routeInfo.gateway > 0) {
+                if (routeInfo != null && routeInfo.gateway != 0) {
                     final String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
 
                     Log.d(TAG, String.format("establishHotspotConnection(): DhcpInfo: gateway: %s dns1: %s dns2: %s ipAddr: %s serverAddr: %s netMask: %s",
@@ -137,7 +157,16 @@ public class ConnectionUtils
 
                     Log.d(TAG, "establishHotspotConnection(): There is DHCP info provided waiting to reach the address " + testedRemoteAddress);
 
-                    if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
+                    /*if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
+                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+                        remoteAddress = testedRemoteAddress;
+                        break;
+                    } else
+                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");*/
+
+                    if (UIConnectionUtils.isOSAbove(Build.VERSION_CODES.P)
+                            ? NetworkUtils.ping(testedRemoteAddress, pingTimeout)
+                            : NetworkUtils.ping(testedRemoteAddress)) {
                         Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
                         remoteAddress = testedRemoteAddress;
                         break;
@@ -301,12 +330,36 @@ public class ConnectionUtils
                     break;
             }
 
+            /*
+            old wifi connectivity code works for below M
             int netId = getWifiManager().addNetwork(config);
 
             getWifiManager().disconnect();
             getWifiManager().enableNetwork(netId, true);
 
-            return getWifiManager().reconnect();
+            return getWifiManager().reconnect();*/
+
+            try {
+                int netId = getWifiManager().addNetwork(config);
+
+                if (/*Build.VERSION.SDK_INT >= */UIConnectionUtils.isOSAbove(Build.VERSION_CODES.M)) {
+                    List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
+                    for (WifiConfiguration hotspotWifi : list) {
+                        if (hotspotWifi.SSID != null && hotspotWifi.SSID.equalsIgnoreCase(config.SSID)) {
+                            getWifiManager().disconnect();
+                            getWifiManager().enableNetwork(hotspotWifi.networkId, true);
+                            return getWifiManager().reconnect();
+                        }
+                    }
+                } else {
+                    getWifiManager().disconnect();
+                    getWifiManager().enableNetwork(netId, true);
+                    return getWifiManager().reconnect();
+                }
+            } catch (Exception exp) {
+                disableCurrentNetwork();
+                return false;
+            }
         }
 
         disableCurrentNetwork();

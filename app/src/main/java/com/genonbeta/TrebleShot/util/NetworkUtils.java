@@ -199,14 +199,27 @@ public class NetworkUtils
         }
     }
 
-    public static boolean ping(String ipAddress, int timeout)
-    {
+    public static boolean ping(String ipAddress, int timeout) {
         try {
             return InetAddress.getByName(ipAddress).isReachable(timeout);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+        return false;
+    }
+
+    public static boolean ping(String ipAddress) {
+        try {
+            Process process = Runtime.getRuntime()
+                    .exec("/system/bin/ping -c 1 -w 100 " + ipAddress);
+            int status = process.waitFor();
+            return status == 0;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return false;
     }
 
