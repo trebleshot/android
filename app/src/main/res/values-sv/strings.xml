@@ -391,7 +391,7 @@
     <string name="text_requestPermissionStorageSummary">Denna behörighet tillåter att TrebleShot att läsa och skriva till enhetens lagringsutrymme för att kunna ta emot och dela ut filer.</string>
     <string name="text_savePath">Sökväg för sparade filer</string>
     <string name="butn_previewSelections">Förhandsgranska markerade</string>
-    <string name="mesg_updateDownloadComplete">Mottagna filer har uppdaterats och sparats till dina mottagna filer</string>
+    <string name="mesg_updateDownloadComplete">Uppdatering mottagen och sparad i dina mottagna filer</string>
     <string name="text_qrCodeHotspotDisabledHelp">Ställ in en hotspot så att andra kan ansluta till dig</string>
     <string name="text_noDeviceForTransfer">Inga enheter tillagda för denna överföringen</string>
     <string name="mesg_noPendingTransferObjectExists">Ingen väntande överföring kvar. För att återuppta avbrutna filer, använd alternativet \'Försök igen med alla\'.</string>

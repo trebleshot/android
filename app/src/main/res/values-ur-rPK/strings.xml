@@ -1,2 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="text_navigationDrawerOpen">سمت شناسی کی دراز کھولیں</string>n
+    <string name="text_navigationDrawerClose">سمت شناسی کی دراز بند کریں</string>
+    <string name="text_preferences">پیشگی حوالہ</string>
+    <string name="mesg_connectionFailure">رابطہ منقطع ہو گیا</string>
+    <string name="mesg_noNetwork">کوئ رابطے کا ذریعہ جیسا کہ Wi-Fi نزدیکی آلات کو ڈھوونڈنے کے لیے مووجود نہیں</string>
+    <string name="mesg_scanningDevices">نزدیکی آلات کو ڈھونڈا جا رہا ہے</string>
+    <string name="ques_receiveFile">کیا فائل مووصول کی جائے؟</string>
+    <string name="butn_accept">قبول کریں</string>
+    <string name="butn_reject">مسترد کریں</string>
+    <string name="butn_stop">روکیں</string>
+    <string name="text_sending">بھیجا جا رہا ہے</string>
+    <string name="butn_cancelSending">بھیجنا بند کریں</string>
+    <string name="text_receiving">موصول کیا جا رہا ہے</string>
+    <string name="butn_cancelReceiving">موصول ہونے کو بند کریں</string>
+    <string name="mesg_fileReceived">%s موصول کیا جا چکا</string>
+    <string name="butn_scan">تلاش کریں</string>
+    <string name="text_listEmpty">کوئی مواد نہیں</string>
+    <string name="text_developerMode">ڈوویلپر موڈ</string>
+    <string name="text_developerModeSummary">استعمال کنندہ کی ترتیب کو غیر فعال کرتا ہے</string>
+    <string name="text_deviceName">آلہ کا نام</string>
+    <string name="text_deviceNameSummary">یہ نام دیگر آلات پر نظر آئے گا</string>
+    <string name="text_deviceNameTitle">ایک آلہ کا نام درج کریں</string>
+    <string name="mesg_formatNotSupported">غیر تعاون یافتہ آراستگی</string>
+    <string name="mesg_fileSendError">فائل نی بھیجی جا سکی۔ %s</string>
+    <string name="mesg_fileReceiveError">موصول نہ کر سکا‬ %s.</string>
+    <string name="text_multipleFileReceiveCompleted">فائلیں موصول کر لی گئیں</string>
+    <string name="text_deviceList">آلات</string>
+    <string name="text_fileOpenAppChoose">کھولنے کا ذریعہ</string>
+    <string name="text_fileShareAppChoose">تقسیم کرنے لے لیے ایک ایپ منتخب کریں</string>
+    <string name="ques_resetToDefault">پہلے سے طے شدہ ترتیبات پر مرتب کیا جائے؟</string>
+    <string name="text_receivedFiles">مووصوول کی گئی فائلیں</string>
+    <string name="butn_edit">ترمیم کریں</string>
+    <string name="butn_share">تقسیم کریں</string>
+    <string name="butn_delete">ختم کریں</string>
+    <string name="text_deleteConfirm">سفہِ ہستی سے متائے جانے کی تصدیق کریں</string>
+    <string name="butn_cancel">منسوخ کریں</string>
+    <string name="butn_refresh">تروتازہ کریں</string>
+    <string name="butn_shareTrebleshot">اس ایپ کے برے میں دوسروں کو بتا ئیں</string>
+    <string name="text_about">ایپ کے بارے میں</string>
+    <string name="butn_close">بند کریں</string>
+    <string name="text_deviceModelInfo">آلہ کا نام</string>
+    <string name="butn_clearQueue">قطار کو خالی کریں</string>
+    <string name="butn_shareWithTrebleshot">ٹریبل شاٹ کے ذریعے تقسیم کریں</string>
+    <string name="mesg_somethingWentWrong">کچھ گڑبڑ ہو گئی ہے</string>
+    <string name="text_findDevicesHint">کوئی جانا پہچانا آلہ نہیں</string>
+    <string name="text_autoScanDevices">آلات کو خودکار طور پر طلاش کریں</string>
+    <string name="text_autoScanDevicesSummary">آلات کو ضروت پر تلاش کرے گا</string>
+    <string name="mesg_stillScanning">ابھی بھی تلاش کر رہا ہے</string>
+    <string name="text_advanced">پیچیدہ اور اعلیٰ درجے کی</string>
+    <string name="text_storagePath">محفوظ کرنے کا راستہ</string>
+    <string name="text_storagePathSummary">نئی فائلیں اس فولڈر میں محفوظ کی جائیں گی</string>
+    <string name="mesg_pathUnavailable">%s ابھی دستیاب نہیں</string>
+</resources>
