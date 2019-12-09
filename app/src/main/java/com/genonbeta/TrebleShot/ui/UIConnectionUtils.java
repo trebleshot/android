@@ -127,7 +127,7 @@ public class UIConnectionUtils
                     if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
                         mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
                                 (NetworkDeviceListAdapter.HotspotNetwork) object,
-                                (delimiter, timePassed) -> timePassed >= 20000);
+                                (delimiter, timePassed) -> timePassed >= 30000);
                     } else if (object instanceof String)
                         mRemoteAddress = (String) object;
 
@@ -372,6 +372,11 @@ public class UIConnectionUtils
         watcher.onResultReturned(true, false);
 
         return true;
+    }
+
+    public static boolean isOSAbove(int value)
+    {
+        return Build.VERSION.SDK_INT >= value;
     }
 
     public interface RequestWatcher
