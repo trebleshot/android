@@ -5,7 +5,7 @@ Send and receive files over available connections. [FAQ](https://github.com/geno
 [<img src="https://f-droid.org/badge/get-it-on.png" width="230">](https://f-droid.org/packages/com.genonbeta.TrebleShot/) [<img src="assets/google-play-badge.png" width="230">](https://play.google.com/store/apps/details?id=com.genonbeta.TrebleShot)
 
 ## Main features
-* Pause, resume and reconnect transfers
+* Pause and resume transfers
 * Share large files
 * Share all kinds of content, video, photo, music and app libraries
 * No Internet connection is required: Set up a hotspot and connect to it using a QR code
@@ -29,11 +29,44 @@ Bitcoin [`1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8`](https://blockchain.info/address/1
 ![BitcoinQR](assets/1DBsq8aZjn54hnDYsRY7pTLb3HfsE1mSv8.png)
 
 ## Build from source
-Required tools;
-* Build tools: 28.0.3
-* Support library: 1.0.0 - androidx
-* Gradle plugin: 3.2.1
-* Android Studio: 3.2.1
+Run the following command. This will build `fossReliant` variant in debug mode.  
+```sh
+./gradlew -Dorg.gradle.jvmargs=-Xmx1536m assembleFossReliantDebug lintFossReliantDebug testFossReliantDebugUnitTest
+``` 
+If you are facing errors, checkout the latest stable release using its tag name. 
+
+## Pull requests
+Before making a pull request, please make sure your commits follow the requirements below.
+* Make sure you are on the `dev` branch. `master` branch is updated before releasing a new stable release.  
+* Open an issue regarding the pull request you are about to make if possible.
+* Use spaces instead of tabs.
+* Use LF (Unix and Linux) line separator.
+* The right margin is limited to 120 chars and overflowing lines wrapped in a meaningful way. That is: 
+    * logic statements are wrapped before `&&` or `||`.
+    * method calls are wrapped after the most fitting parameter.
+    * inner logic statements with parenthesis should be together if they can fit a single line.
+* The opening braces `{` after the class and method declarations should come with the next line.
+* When you reformat code, please make sure the previously untouched code does not change in an undefined way.
+* Do not create simple methods for the sake of creating methods. For instance, do not a create a method 
+that compares two booleans like `function isTrue(boolean a, bolean b) { return a == b; }`.
+* If you plan ignore an exception make sure the parameter name in the `catch` block is *ignored*. This will silence the
+warnings.
+* Add `todo` and `fixme` comments when needed. In short, add `// todo: What to do` or `// fixme: What is the problem`
+before the appropriate code. This will ensure they are not forgotten.
+* Do not duplicate code blocks. Create methods or classes when needed.
+* Variable names should follow the pattern below:
+    * Constants are `SOME_VARIABLE`.
+    * Global variables are `mSomeVariable` if not public or `someVariable` if public.
+    * Local variables are `someVariable`.
+* If blocks (do, while, for, if) will contain a single line, they can be free of braces. Also, make sure they are 
+wrapped. 
+* Headless braces `{}` can be used for scoping.
+* When creating strings for localization, please follow the patterns suggested in 
+[Language contribution](https://github.com/genonbeta/TrebleShot/wiki/Language-contribution) wiki.
+* Other than that some other good practises that you can follow would be:
+    * making sure your code backward compatible with the minimum SDK version defined in the main module.
+    * committing your changes when you are about to change something unrelated.  
+     
 
 ## Screenshots
 [<img src="fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png" width=160>](fastlane/metadata/android/en-US/images/phoneScreenshots/shot_1.png)

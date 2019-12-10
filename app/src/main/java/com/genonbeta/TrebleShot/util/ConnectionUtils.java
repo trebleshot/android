@@ -100,34 +100,27 @@ public class ConnectionUtils
                 && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
     }
 
-    @WorkerThread
     public String establishHotspotConnection(final Interrupter interrupter,
                                              final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
-                                             final ConnectionCallback connectionCallback)
+                                             final ConnectionCallback connectionCallback) {
+        return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
+    }
+
+    @WorkerThread
+    private String establishHotspotConnection(final Interrupter interrupter,
+                                             final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                             final ConnectionCallback connectionCallback, short leftAttempts)
     {
+        leftAttempts--;
+
         final int pingTimeout = 1000; // ms
         final long startTime = System.currentTimeMillis();
 
         String remoteAddress = null;
         boolean connectionToggled = false;
-        boolean secondAttempt = false;
-        boolean thirdAttempt = false;
 
         while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
-
-            // retry code will be here.
-            if (passedTime >= 10000 && !secondAttempt) {
-                secondAttempt = true;
-                disableCurrentNetwork();
-                connectionToggled = false;
-            }
-
-            if (passedTime >= 20000 && !thirdAttempt) {
-                thirdAttempt = true;
-                disableCurrentNetwork();
-                connectionToggled = false;
-            }
 
             if (!getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
@@ -184,7 +177,8 @@ public class ConnectionUtils
             }
         }
 
-        return remoteAddress;
+        return remoteAddress != null || leftAttempts <= 0 ? remoteAddress:
+                establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, leftAttempts);
     }
 
     public boolean hasLocationPermission(Context context)
@@ -228,10 +222,7 @@ public class ConnectionUtils
     public boolean isConnectedToAnyNetwork()
     {
         NetworkInfo info = getConnectivityManager().getActiveNetworkInfo();
-
-        return info != null
-                && info.getType() == ConnectivityManager.TYPE_WIFI
-                && info.isConnected();
+        return info != null && info.getType() == ConnectivityManager.TYPE_WIFI && info.isConnected();
     }
 
     public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
