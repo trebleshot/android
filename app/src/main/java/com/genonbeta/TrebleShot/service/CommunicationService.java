@@ -85,9 +85,9 @@ public class CommunicationService extends Service
             ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
             ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS",
             ACTION_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
-            ACTION_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE",
-            ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE",
-            ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE",
+            ACTION_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE",
+            ACTION_REQUEST_TASK_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS",
+            ACTION_REQUEST_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_LIST",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
             EXTRA_DEVICE_ID = "extraDeviceId",
             EXTRA_STATUS_STARTED = "extraStatusStarted",
@@ -103,8 +103,8 @@ public class CommunicationService extends Service
             EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement",
             EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword",
             EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType",
-            EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning",
-            EXTRA_DEVICE_LIST_RUNNING = "extraDeviceListRunning",
+            EXTRA_TASK_LIST = "extraTaskListRunning",
+            EXTRA_DEVICE_LIST = "extraDeviceListRunning",
             EXTRA_TRANSFER_TYPE = "extraTransferType";
 
     public static final int
@@ -135,19 +135,22 @@ public class CommunicationService extends Service
     {
         super.onCreate();
 
+        WifiManager wifiManager = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE));
+
         mNotificationHelper = new CommunicationNotificationHelper(getNotificationUtils());
         mNsdDiscovery = new NsdDiscovery(getApplicationContext(), getDatabase(), getDefaultPreferences());
         mMediaScanner = new MediaScannerConnection(this, null);
         mHotspotUtils = HotspotUtils.getInstance(this);
         mDbInstance = AppUtils.getDatabase(this).getWritableDatabase();
-        mWifiLock = ((WifiManager) getApplicationContext().getSystemService(Service.WIFI_SERVICE))
-                .createWifiLock(TAG);
+
+        if (wifiManager != null)
+            mWifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, TAG);
 
         mMediaScanner.connect();
         mNsdDiscovery.registerService();
 
-        if (getWifiLock() != null)
-            getWifiLock().acquire();
+        if (mWifiLock != null)
+            mWifiLock.acquire();
 
         refreshServiceState();
 
@@ -201,8 +204,7 @@ public class CommunicationService extends Service
                     TransferGroup group = new TransferGroup(groupId);
                     getDatabase().reconstruct(group);
 
-                    TransferAssignee assignee = new TransferAssignee(groupId, deviceId,
-                            TransferObject.Type.INCOMING);
+                    TransferAssignee assignee = new TransferAssignee(groupId, deviceId, TransferObject.Type.INCOMING);
                     getDatabase().reconstruct(assignee);
 
                     final DeviceConnection connection = new DeviceConnection(assignee);
@@ -356,7 +358,7 @@ public class CommunicationService extends Service
                     Log.d(TAG, "onStartCommand(): Destroy state has been applied");
                     stopSelf();
                 }
-            } else if (ACTION_REQUEST_TASK_STATUS_CHANGE.equals(intent.getAction())
+            } else if (ACTION_REQUEST_TASK_STATUS.equals(intent.getAction())
                     && intent.hasExtra(EXTRA_GROUP_ID) && intent.hasExtra(EXTRA_DEVICE_ID)
                     && intent.hasExtra(EXTRA_TRANSFER_TYPE)) {
                 long groupId = intent.getLongExtra(EXTRA_GROUP_ID, -1);
@@ -371,8 +373,8 @@ public class CommunicationService extends Service
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            } else if (ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
-                notifyTaskRunningListChange();
+            } else if (ACTION_REQUEST_TASK_LIST.equals(intent.getAction())) {
+                notifyTaskList();
             }
         }
 
@@ -489,8 +491,7 @@ public class CommunicationService extends Service
             final JSONArray jsonArray;
             final Interrupter interrupter = new Interrupter();
             TransferGroup group = new TransferGroup(groupId);
-            TransferAssignee assignee = new TransferAssignee(group, device,
-                    TransferObject.Type.INCOMING, connection);
+            TransferAssignee assignee = new TransferAssignee(group, device, TransferObject.Type.INCOMING, connection);
             final DynamicNotification notification = getNotificationHelper().notifyPrepareFiles(group, device);
 
             notification.setProgress(0, 0, true);
@@ -533,20 +534,16 @@ public class CommunicationService extends Service
 
                     JSONObject requestIndex = jsonArray.getJSONObject(i);
 
-                    if (requestIndex != null
-                            && requestIndex.has(Keyword.INDEX_FILE_NAME)
-                            && requestIndex.has(Keyword.INDEX_FILE_SIZE)
-                            && requestIndex.has(Keyword.INDEX_FILE_MIME)
+                    if (requestIndex != null && requestIndex.has(Keyword.INDEX_FILE_NAME)
+                            && requestIndex.has(Keyword.INDEX_FILE_SIZE) && requestIndex.has(Keyword.INDEX_FILE_MIME)
                             && requestIndex.has(Keyword.TRANSFER_REQUEST_ID)) {
 
                         TransferObject transferObject = new TransferObject(
                                 requestIndex.getLong(Keyword.TRANSFER_REQUEST_ID),
-                                groupId,
-                                requestIndex.getString(Keyword.INDEX_FILE_NAME),
+                                groupId, requestIndex.getString(Keyword.INDEX_FILE_NAME),
                                 "." + (uniqueId++) + "." + AppConfig.EXT_FILE_PART,
                                 requestIndex.getString(Keyword.INDEX_FILE_MIME),
-                                requestIndex.getLong(Keyword.INDEX_FILE_SIZE),
-                                TransferObject.Type.INCOMING);
+                                requestIndex.getLong(Keyword.INDEX_FILE_SIZE), TransferObject.Type.INCOMING);
 
                         if (requestIndex.has(Keyword.INDEX_DIRECTORY))
                             transferObject.directory = requestIndex.getString(Keyword.INDEX_DIRECTORY);
@@ -618,7 +615,7 @@ public class CommunicationService extends Service
         addProcess(processHolder);
         notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
                 TASK_STATUS_ONGOING);
-        notifyTaskRunningListChange();
+        notifyTaskList();
 
         // TODO: 7/27/19 Implement task resuming
         boolean retry = false;
@@ -800,7 +797,8 @@ public class CommunicationService extends Service
                     retry = true;
 
                     if (!processHolder.recoverInterruptions) {
-                        TransferUtils.recoverIncomingInterruptions(CommunicationService.this, processHolder.group.id);
+                        TransferUtils.recoverIncomingInterruptions(CommunicationService.this,
+                                processHolder.group.id);
                         processHolder.recoverInterruptions = true;
                     }
 
@@ -830,7 +828,8 @@ public class CommunicationService extends Service
                 if (!retry)
                     if (processHolder.interrupter.interruptedByUser()) {
                         processHolder.notification.cancel();
-                        Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already notified");
+                        Log.d(TAG, "handleTransferAsReceiver(): Removing notification an error is already " +
+                                "notified");
                     } else if (processHolder.interrupter.interrupted()) {
                         getNotificationHelper().notifyReceiveError(processHolder);
                         Log.d(TAG, "handleTransferAsReceiver(): Some files was not received");
@@ -847,7 +846,7 @@ public class CommunicationService extends Service
             removeProcess(processHolder);
             notifyTaskStatusChange(processHolder.group.id, processHolder.assignee.deviceId,
                     processHolder.type, TASK_STATUS_STOPPED);
-            notifyTaskRunningListChange();
+            notifyTaskList();
             broadcastTransferState(processHolder, true);
 
             Log.d(TAG, "We have exited");
@@ -869,7 +868,7 @@ public class CommunicationService extends Service
         addProcess(processHolder);
         notifyTaskStatusChange(processHolder.group.id, processHolder.device.id, processHolder.type,
                 TASK_STATUS_ONGOING);
-        notifyTaskRunningListChange();
+        notifyTaskList();
 
         try {
             TransferUtils.loadGroupInfo(this, processHolder.group, processHolder.assignee);
@@ -1064,7 +1063,7 @@ public class CommunicationService extends Service
                     notifyTaskStatusChange(processHolder.group.id, processHolder.device.id,
                             processHolder.type, TASK_STATUS_STOPPED);
 
-                notifyTaskRunningListChange();
+                notifyTaskList();
             }
 
             broadcastTransferState(processHolder, true);
@@ -1142,7 +1141,7 @@ public class CommunicationService extends Service
         sendBroadcast(intent);
     }
 
-    private void notifyTaskRunningListChange()
+    private void notifyTaskList()
     {
         List<Long> taskList = new ArrayList<>();
         ArrayList<String> deviceList = new ArrayList<>();
@@ -1161,9 +1160,9 @@ public class CommunicationService extends Service
         for (int i = 0; i < taskList.size(); i++)
             taskArray[i] = taskList.get(i);
 
-        sendBroadcast(new Intent(ACTION_TASK_RUNNING_LIST_CHANGE)
-                .putExtra(EXTRA_TASK_LIST_RUNNING, taskArray)
-                .putStringArrayListExtra(EXTRA_DEVICE_LIST_RUNNING, deviceList));
+        sendBroadcast(new Intent(ACTION_TASK_LIST)
+                .putExtra(EXTRA_TASK_LIST, taskArray)
+                .putStringArrayListExtra(EXTRA_DEVICE_LIST, deviceList));
     }
 
     private void refreshServiceState()
@@ -1207,8 +1206,9 @@ public class CommunicationService extends Service
             getHotspotUtils().enableConfigured(AppUtils.getHotspotName(this), null);
     }
 
-    private void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type) throws TransferGroupNotFoundException,
-            DeviceNotFoundException, ConnectionNotFoundException, AssigneeNotFoundException
+    private void startTransferAsClient(long groupId, String deviceId, TransferObject.Type type)
+            throws TransferGroupNotFoundException, DeviceNotFoundException, ConnectionNotFoundException,
+            AssigneeNotFoundException
     {
         ProcessHolder processHolder = new ProcessHolder();
         processHolder.type = type;
@@ -1341,7 +1341,8 @@ public class CommunicationService extends Service
                 NetworkDevice device = null;
                 AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
 
-                if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED) && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
+                if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED)
+                        && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
                     pushReply(activeConnection, replyJSON, true);
 
                     if (!responseJSON.has(Keyword.HANDSHAKE_ONLY) || !responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY)) {
@@ -1359,8 +1360,7 @@ public class CommunicationService extends Service
                 }
 
                 try {
-                    NetworkDevice testDevice = new NetworkDevice(device == null ? deviceSerial
-                            : device.id);
+                    NetworkDevice testDevice = new NetworkDevice(device == null ? deviceSerial : device.id);
 
                     getDatabase().reconstruct(testDevice);
 

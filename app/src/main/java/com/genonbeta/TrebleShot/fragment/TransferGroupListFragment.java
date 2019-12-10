@@ -76,9 +76,9 @@ public class TransferGroupListFragment
 				if (data != null && (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName)
 						|| AccessDatabase.TABLE_TRANSFER.equals(data.tableName)))
 					refreshList();
-			} else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())
-					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING)) {
-				getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING));
+			} else if (CommunicationService.ACTION_TASK_LIST.equals(intent.getAction())
+					&& intent.hasExtra(CommunicationService.EXTRA_TASK_LIST)) {
+				getAdapter().updateActiveList(intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST));
 				refreshList();
 			}
 		}
@@ -131,7 +131,7 @@ public class TransferGroupListFragment
 		super.onActivityCreated(savedInstanceState);
 
 		mFilter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
-		mFilter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
+		mFilter.addAction(CommunicationService.ACTION_TASK_LIST);
 
 		if (getSelect() == null)
 			setSelect(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERGROUP));
@@ -144,7 +144,7 @@ public class TransferGroupListFragment
 		getActivity().registerReceiver(mReceiver, mFilter);
 
 		AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
-				.setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
+				.setAction(CommunicationService.ACTION_REQUEST_TASK_LIST));
 	}
 
 	@Override

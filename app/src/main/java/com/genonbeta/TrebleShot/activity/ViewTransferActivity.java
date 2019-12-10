@@ -21,7 +21,6 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.AsyncTask;
@@ -127,9 +126,9 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 					showMenus();
 				}
-			} else if (CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE.equals(intent.getAction())) {
-				long[] groupIds = intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST_RUNNING);
-				List<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST_RUNNING);
+			} else if (CommunicationService.ACTION_TASK_LIST.equals(intent.getAction())) {
+				long[] groupIds = intent.getLongArrayExtra(CommunicationService.EXTRA_TASK_LIST);
+				List<String> deviceIds = intent.getStringArrayListExtra(CommunicationService.EXTRA_DEVICE_LIST);
 
 				if (groupIds != null && deviceIds != null
 						&& groupIds.length == deviceIds.size()) {
@@ -284,7 +283,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 
 		filter.addAction(AccessDatabase.ACTION_DATABASE_CHANGE);
 		filter.addAction(CommunicationService.ACTION_TASK_STATUS_CHANGE);
-		filter.addAction(CommunicationService.ACTION_TASK_RUNNING_LIST_CHANGE);
+		filter.addAction(CommunicationService.ACTION_TASK_LIST);
 
 		registerReceiver(mReceiver, filter);
 		reconstructGroup();
@@ -473,7 +472,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 	{
 		if (mGroup != null)
 			AppUtils.startForegroundService(this, new Intent(this, CommunicationService.class)
-					.setAction(CommunicationService.ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE));
+					.setAction(CommunicationService.ACTION_REQUEST_TASK_LIST));
 	}
 
 	private void showMenus()

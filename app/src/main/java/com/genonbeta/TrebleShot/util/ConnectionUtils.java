@@ -28,14 +28,10 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
-import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.util.Log;
-
-import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
-
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
@@ -102,14 +98,15 @@ public class ConnectionUtils
 
     public String establishHotspotConnection(final Interrupter interrupter,
                                              final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
-                                             final ConnectionCallback connectionCallback) {
+                                             final ConnectionCallback connectionCallback)
+    {
         return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
     }
 
     @WorkerThread
     private String establishHotspotConnection(final Interrupter interrupter,
-                                             final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
-                                             final ConnectionCallback connectionCallback, short leftAttempts)
+                                              final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                              final ConnectionCallback connectionCallback, short leftAttempts)
     {
         leftAttempts--;
 
@@ -175,7 +172,7 @@ public class ConnectionUtils
             }
         }
 
-        return remoteAddress != null || leftAttempts <= 0 ? remoteAddress:
+        return remoteAddress != null || leftAttempts <= 0 ? remoteAddress :
                 establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, leftAttempts);
     }
 
