@@ -20,16 +20,14 @@ package com.genonbeta.TrebleShot.util;
 
 import android.annotation.SuppressLint;
 import android.net.wifi.WifiConfiguration;
+import android.os.Build;
+import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.Socket;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
@@ -55,7 +53,8 @@ public class NetworkUtils
     @SuppressLint("DefaultLocale")
     public static String convertInet4Address(int address)
     {
-        return String.format("%d.%d.%d.%d", (address & 0xff), (address >> 8 & 0xff), (address >> 16 & 0xff), (address >> 24 & 0xff));
+        return String.format("%d.%d.%d.%d", (address & 0xff), (address >> 8 & 0xff), (address >> 16 & 0xff),
+                (address >> 24 & 0xff));
     }
 
     public static String getAddressPrefix(String ipv4Address)
@@ -127,7 +126,8 @@ public class NetworkUtils
                             filteredInterfaceList.add(new AddressedInterface(interfaceInstance, interfaceAddress));
                         } else if (!useIPv4) {
                             int delim = interfaceAddress.indexOf('%'); // drop ip6 port suffix
-                            filteredInterfaceList.add(new AddressedInterface(interfaceInstance, (delim < 0 ? interfaceAddress : interfaceAddress.substring(0, delim))));
+                            filteredInterfaceList.add(new AddressedInterface(interfaceInstance,
+                                    (delim < 0 ? interfaceAddress : interfaceAddress.substring(0, delim))));
                         }
                     }
                 }
@@ -140,7 +140,8 @@ public class NetworkUtils
 
     /**
      * Return the integet value of an allowed passphrase types for {@link WifiConfiguration}
-     * @param wifiConfiguration Configuration object to extra the value from
+     *
+     * @param key KeySet to the key from.
      * @return The integer representation of the connection
      * @deprecated A WifiConfiguration can support more than one encryption methods and this assumes
      * that as if it is only one and fails when the first supported method is not equal to 1
@@ -199,27 +200,27 @@ public class NetworkUtils
         }
     }
 
-    public static boolean ping(String ipAddress, int timeout) {
-        try {
-            return InetAddress.getByName(ipAddress).isReachable(timeout);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static boolean ping(String ipAddress, int timeout)
+    {
+        if (UIConnectionUtils.isOSAbove(Build.VERSION_CODES.P)) {
+            try {
+                return InetAddress.getByName(ipAddress).isReachable(timeout);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w " + (timeout / 1000) +
+                        " " + ipAddress);
+                int status = process.waitFor();
+                return status == 0;
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
-        return false;
-    }
-
-    public static boolean ping(String ipAddress) {
-        try {
-            Process process = Runtime.getRuntime()
-                    .exec("/system/bin/ping -c 1 -w 100 " + ipAddress);
-            int status = process.waitFor();
-            return status == 0;
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return false;
     }
 
