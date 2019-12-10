@@ -51,9 +51,8 @@ import androidx.annotation.Nullable;
  * created by: veli
  * date: 06.04.2018 12:58
  */
-public class TransferAssigneeListFragment
-		extends EditableListFragment<ShowingAssignee, EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter>
-		implements TitleSupport
+public class TransferAssigneeListFragment extends EditableListFragment<ShowingAssignee,
+		EditableListAdapter.EditableViewHolder, TransferAssigneeListAdapter> implements TitleSupport
 {
 	public static final String ARG_GROUP_ID = "groupId";
 	public static final String ARG_USE_HORIZONTAL_VIEW = "useHorizontalView";
@@ -103,11 +102,6 @@ public class TransferAssigneeListFragment
 
 		setEmptyImage(R.drawable.ic_device_hub_white_24dp);
 		setEmptyText(getString(R.string.text_noDeviceForTransfer));
-		useEmptyActionButton(getString(R.string.butn_shareOnBrowser), v -> {
-			mHeldGroup.isServedOnWeb = !mHeldGroup.isServedOnWeb;
-			AppUtils.getDatabase(getContext()).update(mHeldGroup);
-			AppUtils.getDatabase(getContext()).broadcast();
-		});
 
 		updateTransferGroup();
 

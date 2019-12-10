@@ -97,9 +97,10 @@ public class ContentSharingActivity extends Activity
         Bundle fileExplorerArgs = new Bundle();
         fileExplorerArgs.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
 
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class, fileExplorerArgs)
-                .setTitle(getString(R.string.text_files)));
+        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class,
+                null));
+        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class,
+                fileExplorerArgs).setTitle(getString(R.string.text_files)));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, MusicListFragment.class, null));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, ImageListFragment.class, null));
         pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(4, VideoListFragment.class, null));
@@ -120,14 +121,8 @@ public class ContentSharingActivity extends Activity
                 attachListeners(fragment);
 
                 if (fragment.getAdapterImpl() != null)
-                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            fragment.getAdapterImpl().notifyAllSelectionChanges();
-                        }
-                    }, 200);
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> fragment.getAdapterImpl()
+                            .notifyAllSelectionChanges(), 200);
             }
 
             @Override

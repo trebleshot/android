@@ -267,13 +267,13 @@
 
     <style name="CustomListFragmentEmptyTextStyle" parent="TextAppearance.Primary.Big">
         <item name="android:text">@string/text_listEmpty</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
     </style>
 
     <style name="CondensedTitleStyle">
         <item name="fontFamily">sans-serif</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:textColor">?android:textColorSecondary</item>
         <item name="android:textStyle">bold</item>
     </style>
 

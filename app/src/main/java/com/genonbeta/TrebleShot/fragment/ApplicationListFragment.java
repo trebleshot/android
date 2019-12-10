@@ -19,35 +19,24 @@
 package com.genonbeta.TrebleShot.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ApplicationListAdapter;
-import com.genonbeta.TrebleShot.adapter.ImageListAdapter;
-import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.util.Map;
 
-public class ApplicationListFragment
-        extends GroupEditableListFragment<ApplicationListAdapter.PackageHolder, GroupEditableListAdapter.GroupViewHolder, ApplicationListAdapter>
-        implements TitleSupport
+public class ApplicationListFragment extends GroupEditableListFragment<ApplicationListAdapter.PackageHolder,
+        GroupEditableListAdapter.GroupViewHolder, ApplicationListAdapter> implements TitleSupport
 {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -58,7 +47,7 @@ public class ApplicationListFragment
         setDefaultOrderingCriteria(ApplicationListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(ApplicationListAdapter.MODE_GROUP_BY_DATE);
-        setDefaultViewingGridSize(3, 5);
+        setDefaultViewingGridSize(1, 2);
         setUseDefaultPaddingDecoration(false);
     }
 

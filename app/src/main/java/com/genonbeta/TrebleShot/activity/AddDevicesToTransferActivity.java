@@ -50,15 +50,15 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
-public class AddDevicesToTransferActivity extends Activity
-		implements SnackbarSupport, WorkerService.OnAttachListener
+public class AddDevicesToTransferActivity extends Activity implements SnackbarSupport, WorkerService.OnAttachListener
 {
 	public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
 	public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
 
-	public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-	public static final String EXTRA_GROUP_ID = "extraGroupId";
+	public static final String
+			EXTRA_DEVICE_ID = "extraDeviceId",
+			EXTRA_GROUP_ID = "extraGroupId";
 
 	private TransferGroup mGroup = null;
 	private AddDeviceRunningTask mTask;
