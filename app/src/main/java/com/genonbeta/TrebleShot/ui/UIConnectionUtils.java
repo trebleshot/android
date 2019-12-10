@@ -249,20 +249,20 @@ public class UIConnectionUtils
         watcher.onResultReturned(true, false);
     }
 
-    public boolean toggleHotspot(boolean conditional, final FragmentActivity activity,
-                                 final int locationPermRequestId, final RequestWatcher watcher)
+    public boolean toggleHotspot(boolean conditional, final FragmentActivity activity, final int locationPermRequestId,
+                                 final RequestWatcher watcher)
     {
         if (!HotspotUtils.isSupported())
             return false;
 
-        DialogInterface.OnClickListener defaultNegativeListener = (dialog, which) -> watcher.onResultReturned(false, false);
+        DialogInterface.OnClickListener defaultNegativeListener = (dialog, which) -> watcher.onResultReturned(
+                false, false);
 
         if (conditional) {
             if (Build.VERSION.SDK_INT >= 26 && !validateLocationPermission(activity, locationPermRequestId, watcher))
                 return false;
 
-            if (Build.VERSION.SDK_INT >= 23
-                    && !Settings.System.canWrite(getConnectionUtils().getContext())) {
+            if (Build.VERSION.SDK_INT >= 23 && !Settings.System.canWrite(getConnectionUtils().getContext())) {
                 new AlertDialog.Builder(getConnectionUtils().getContext())
                         .setMessage(R.string.mesg_errorHotspotPermission)
                         .setNegativeButton(R.string.butn_cancel, defaultNegativeListener)
@@ -276,8 +276,7 @@ public class UIConnectionUtils
                         .show();
 
                 return false;
-            } else if (Build.VERSION.SDK_INT < 26
-                    && !getConnectionUtils().getHotspotUtils().isEnabled()
+            } else if (Build.VERSION.SDK_INT < 26 && !getConnectionUtils().getHotspotUtils().isEnabled()
                     && getConnectionUtils().isMobileDataActive()) {
                 new AlertDialog.Builder(getConnectionUtils().getContext())
                         .setMessage(R.string.mesg_warningHotspotMobileActive)
@@ -294,20 +293,22 @@ public class UIConnectionUtils
 
         WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
 
-        if (!getConnectionUtils().getHotspotUtils().isEnabled()
-                || (wifiConfiguration != null && AppUtils.getHotspotName(getConnectionUtils().getContext()).equals(wifiConfiguration.SSID)))
+        if (!getConnectionUtils().getHotspotUtils().isEnabled() || (wifiConfiguration != null
+                && AppUtils.getHotspotName(getConnectionUtils().getContext()).equals(wifiConfiguration.SSID)))
             getSnackbarSupport().createSnackbar(getConnectionUtils().getHotspotUtils().isEnabled()
                     ? R.string.mesg_stoppingSelfHotspot
                     : R.string.mesg_startingSelfHotspot)
                     .show();
 
-        AppUtils.startForegroundService(getConnectionUtils().getContext(), new Intent(getConnectionUtils().getContext(), CommunicationService.class)
-                .setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
+        AppUtils.startForegroundService(getConnectionUtils().getContext(),
+                new Intent(getConnectionUtils().getContext(), CommunicationService.class)
+                        .setAction(CommunicationService.ACTION_TOGGLE_HOTSPOT));
 
         watcher.onResultReturned(true, false);
 
         return true;
     }
+
 
     public boolean turnOnWiFi(final Activity activity, final int requestId, final RequestWatcher watcher)
     {

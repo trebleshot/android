@@ -28,9 +28,11 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 
@@ -140,22 +142,15 @@ public class ConnectionUtils
 
                 connectionToggled = true;
             } else {
-                Log.d(TAG, "establishHotspotConnection(): Waiting to connect to the server");
                 final DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
-                //Log.w(TAG, String.format("establishHotspotConnection(): DHCP: %s", routeInfo));
 
-                if (routeInfo != null && routeInfo.gateway != 0) {
+                Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
+                        + routeInfo.toString());
+
+                if (routeInfo.gateway != 0 && routeInfo.dns2 != 0) {
                     final String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
-
-                    Log.d(TAG, String.format("establishHotspotConnection(): DhcpInfo: gateway: %s dns1: %s dns2: %s ipAddr: %s serverAddr: %s netMask: %s",
-                            testedRemoteAddress,
-                            NetworkUtils.convertInet4Address(routeInfo.dns1),
-                            NetworkUtils.convertInet4Address(routeInfo.dns2),
-                            NetworkUtils.convertInet4Address(routeInfo.ipAddress),
-                            NetworkUtils.convertInet4Address(routeInfo.serverAddress),
-                            NetworkUtils.convertInet4Address(routeInfo.netmask)));
-
-                    Log.d(TAG, "establishHotspotConnection(): There is DHCP info provided waiting to reach the address " + testedRemoteAddress);
+                    Log.d(TAG, "establishHotspotConnection(): There is valid DHCP info provided. Waiting to " +
+                            "reach the address " + testedRemoteAddress);
 
                     /*if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
                         Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
@@ -281,8 +276,7 @@ public class ConnectionUtils
                     config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
                     config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
 
-                    if (hotspotNetwork.password != null
-                            && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
+                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
                         config.wepKeys[0] = hotspotNetwork.password;
                     } else
                         Log.d(TAG, "Please type hex pair for the password");
@@ -306,8 +300,7 @@ public class ConnectionUtils
                     config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
                     config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
 
-                    if (hotspotNetwork.password != null
-                            && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
+                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
                         config.preSharedKey = hotspotNetwork.password;
                     } else {
                         config.preSharedKey = '"' + hotspotNetwork.password + '"';
@@ -321,8 +314,7 @@ public class ConnectionUtils
                     config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
                     config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
 
-                    if (hotspotNetwork.password != null
-                            && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
+                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
                         config.preSharedKey = hotspotNetwork.password;
                     } else {
                         config.preSharedKey = '"' + hotspotNetwork.password + '"';

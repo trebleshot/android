@@ -31,11 +31,9 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.collection.ArrayMap;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
@@ -47,25 +45,8 @@ import com.genonbeta.TrebleShot.exception.ConnectionNotFoundException;
 import com.genonbeta.TrebleShot.exception.DeviceNotFoundException;
 import com.genonbeta.TrebleShot.exception.TransferGroupNotFoundException;
 import com.genonbeta.TrebleShot.fragment.FileListFragment;
-import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.object.PreloadedGroup;
-import com.genonbeta.TrebleShot.object.TextStreamObject;
-import com.genonbeta.TrebleShot.object.TransferAssignee;
-import com.genonbeta.TrebleShot.object.TransferGroup;
-import com.genonbeta.TrebleShot.object.TransferObject;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.CommunicationBridge;
-import com.genonbeta.TrebleShot.util.CommunicationNotificationHelper;
-import com.genonbeta.TrebleShot.util.DynamicNotification;
-import com.genonbeta.TrebleShot.util.FileUtils;
-import com.genonbeta.TrebleShot.util.HotspotUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.TrebleShot.util.NotificationUtils;
-import com.genonbeta.TrebleShot.util.NsdDiscovery;
-import com.genonbeta.TrebleShot.util.TransferUtils;
-import com.genonbeta.TrebleShot.util.UpdateUtils;
+import com.genonbeta.TrebleShot.object.*;
+import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.database.exception.ReconstructionFailedException;
@@ -73,18 +54,12 @@ import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.io.LocalDocumentFile;
 import com.genonbeta.android.framework.io.StreamInfo;
 import com.genonbeta.android.framework.util.Interrupter;
-
+import fi.iki.elonen.NanoHTTPD;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StreamCorruptedException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -92,50 +67,49 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeoutException;
 
-import fi.iki.elonen.NanoHTTPD;
-
 public class CommunicationService extends Service
 {
     public static final String TAG = "CommunicationService";
 
-    public static final String ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER";
-    public static final String ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD";
-    public static final String ACTION_CANCEL_INDEXING = "com.genonbeta.TrebleShot.action.CANCEL_INDEXING";
-    public static final String ACTION_DEVICE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL";
-    public static final String ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION";
-    public static final String ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER";
-    public static final String ACTION_STOP_TRANSFER = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB";
-    public static final String ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT";
-    public static final String ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS";
-    public static final String ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS";
-    public static final String ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE";
-    public static final String ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS";
-    public static final String ACTION_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE";
-    public static final String ACTION_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE";
-    public static final String ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE";
-    public static final String ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE";
-    public static final String ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY";
+    public static final String
+            ACTION_FILE_TRANSFER = "com.genonbeta.TrebleShot.action.FILE_TRANSFER",
+            ACTION_CLIPBOARD = "com.genonbeta.TrebleShot.action.CLIPBOARD",
+            ACTION_CANCEL_INDEXING = "com.genonbeta.TrebleShot.action.CANCEL_INDEXING",
+            ACTION_DEVICE_APPROVAL = "com.genonbeta.TrebleShot.action.DEVICE_APPROVAL",
+            ACTION_END_SESSION = "com.genonbeta.TrebleShot.action.END_SESSION",
+            ACTION_START_TRANSFER = "com.genonbeta.intent.action.START_TRANSFER",
+            ACTION_STOP_TRANSFER = "com.genonbeta.TrebleShot.transaction.action.CANCEL_JOB",
+            ACTION_TOGGLE_HOTSPOT = "com.genonbeta.TrebleShot.transaction.action.TOGGLE_HOTSPOT",
+            ACTION_REQUEST_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_HOTSPOT_STATUS",
+            ACTION_HOTSPOT_STATUS = "com.genonbeta.TrebleShot.transaction.action.HOTSPOT_STATUS",
+            ACTION_DEVICE_ACQUAINTANCE = "com.genonbeta.TrebleShot.transaction.action.DEVICE_ACQUAINTANCE",
+            ACTION_SERVICE_STATUS = "com.genonbeta.TrebleShot.transaction.action.SERVICE_STATUS",
+            ACTION_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_STATUS_CHANGE",
+            ACTION_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.TASK_RUNNNIG_LIST_CHANGE",
+            ACTION_REQUEST_TASK_STATUS_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS_CHANGE",
+            ACTION_REQUEST_TASK_RUNNING_LIST_CHANGE = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_RUNNING_LIST_CHANGE",
+            ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
+            EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_STATUS_STARTED = "extraStatusStarted",
+            EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
+            EXTRA_REQUEST_ID = "extraRequestId",
+            EXTRA_CLIPBOARD_ID = "extraTextId",
+            EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_IS_ACCEPTED = "extraAccepted",
+            EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
+            EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled",
+            EXTRA_HOTSPOT_DISABLING = "extraHotspotDisabling",
+            EXTRA_HOTSPOT_NAME = "extraHotspotName",
+            EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement",
+            EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword",
+            EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType",
+            EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning",
+            EXTRA_DEVICE_LIST_RUNNING = "extraDeviceListRunning",
+            EXTRA_TRANSFER_TYPE = "extraTransferType";
 
-    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-    public static final String EXTRA_STATUS_STARTED = "extraStatusStarted";
-    public static final String EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName";
-    public static final String EXTRA_REQUEST_ID = "extraRequestId";
-    public static final String EXTRA_CLIPBOARD_ID = "extraTextId";
-    public static final String EXTRA_GROUP_ID = "extraGroupId";
-    public static final String EXTRA_IS_ACCEPTED = "extraAccepted";
-    public static final String EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted";
-    public static final String EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled";
-    public static final String EXTRA_HOTSPOT_DISABLING = "extraHotspotDisabling";
-    public static final String EXTRA_HOTSPOT_NAME = "extraHotspotName";
-    public static final String EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement";
-    public static final String EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword";
-    public static final String EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType";
-    public static final String EXTRA_TASK_LIST_RUNNING = "extraTaskListRunning";
-    public static final String EXTRA_DEVICE_LIST_RUNNING = "extraDeviceListRunning";
-    public static final String EXTRA_TRANSFER_TYPE = "extraTransferType";
-
-    public static final int TASK_STATUS_ONGOING = 0;
-    public static final int TASK_STATUS_STOPPED = 1;
+    public static final int
+            TASK_STATUS_ONGOING = 0,
+            TASK_STATUS_STOPPED = 1;
 
     private List<ProcessHolder> mActiveProcessList = new ArrayList<>();
     private CommunicationServer mCommunicationServer = new CommunicationServer();
@@ -326,7 +300,8 @@ public class CommunicationService extends Service
                     if (process == null)
                         startTransferAsClient(groupId, deviceId, type);
                     else
-                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.object.name), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.mesg_groupOngoingNotice, process.object.name),
+                                Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -358,7 +333,8 @@ public class CommunicationService extends Service
                             }
 
                             try {
-                                if (processHolder.activeConnection != null && processHolder.activeConnection.getSocket() != null)
+                                if (processHolder.activeConnection != null
+                                        && processHolder.activeConnection.getSocket() != null)
                                     processHolder.activeConnection.getSocket().close();
                             } catch (IOException ignored) {
                             }
@@ -696,14 +672,19 @@ public class CommunicationService extends Service
                                 processHolder.interrupter.interrupt(true);
                                 Log.d(TAG, "handleTransferAsReceiver(): Transfer should be closed, babe!");
                                 break;
-                            } else if (response.has(Keyword.FLAG) && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
-                                if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
+                            } else if (response.has(Keyword.FLAG)
+                                    && Keyword.FLAG_GROUP_EXISTS.equals(response.getString(Keyword.FLAG))) {
+                                if (response.has(Keyword.ERROR)
+                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_FOUND)) {
                                     processHolder.object.setFlag(TransferObject.Flag.REMOVED);
-                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it does not have the file defined");
-                                } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
+                                    Log.d(TAG, "handleTransferAsReceiver(): Sender says it does not have the " +
+                                            "file defined");
+                                } else if (response.has(Keyword.ERROR)
+                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_NOT_ACCESSIBLE)) {
                                     processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
                                     Log.d(TAG, "handleTransferAsReceiver(): Sender says it can't open the file");
-                                } else if (response.has(Keyword.ERROR) && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
+                                } else if (response.has(Keyword.ERROR)
+                                        && response.getString(Keyword.ERROR).equals(Keyword.ERROR_UNKNOWN)) {
                                     processHolder.object.setFlag(TransferObject.Flag.INTERRUPTED);
                                     Log.d(TAG, "handleTransferAsReceiver(): Sender says an unknown error occurred");
                                 }
@@ -723,7 +704,8 @@ public class CommunicationService extends Service
                                         .toString());
 
                                 if (!canContinue) {
-                                    Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous file which has a length. Cannot take the risk.");
+                                    Log.d(TAG, "handleTransferAsReceiver(): The change may broke the previous " +
+                                            "file which has a length. Cannot take the risk.");
                                     processHolder.object.setFlag(TransferObject.Flag.REMOVED);
                                     continue;
                                 }
@@ -761,7 +743,8 @@ public class CommunicationService extends Service
                                         break;
                                     }
 
-                                    if (timeout != CoolSocket.NO_TIMEOUT && System.currentTimeMillis() - lastReceivedTime > timeout)
+                                    if (timeout != CoolSocket.NO_TIMEOUT
+                                            && System.currentTimeMillis() - lastReceivedTime > timeout)
                                         break;
                                 }
 
