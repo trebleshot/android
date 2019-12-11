@@ -494,4 +494,6 @@
     <string name="butn_dismiss">Dismiss</string>
     <string name="text_twoRowLayout">Two-row layout</string>
     <string name="text_twoRowLayoutSummary">Display two rows next to each other</string>
+    <string name="text_selectSharingMethod">Select sharing method</string>
+    <string name="mesg_noActivityFound">No activity found that can do this action</string>
 </resources>

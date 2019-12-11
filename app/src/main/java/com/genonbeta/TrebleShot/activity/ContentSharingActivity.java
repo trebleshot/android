@@ -74,7 +74,8 @@ public class ContentSharingActivity extends Activity
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
         mSelectionCallback = new SharingActionModeCallback(null);
-        final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(mMode, mSelectionCallback);
+        final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(
+                mMode, mSelectionCallback);
 
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
         {

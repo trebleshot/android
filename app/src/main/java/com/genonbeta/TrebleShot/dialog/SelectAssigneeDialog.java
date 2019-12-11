@@ -92,8 +92,7 @@ public class SelectAssigneeDialog extends AlertDialog.Builder
         public View getView(int position, View convertView, ViewGroup parent)
         {
             if (convertView == null)
-                convertView = mInflater.inflate(R.layout.list_assignee_selector, parent,
-                        false);
+                convertView = mInflater.inflate(R.layout.list_assignee_selector, parent, false);
 
             ShowingAssignee assignee = (ShowingAssignee) getItem(position);
             ImageView image = convertView.findViewById(R.id.image);

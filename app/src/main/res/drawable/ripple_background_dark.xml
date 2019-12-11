@@ -3,5 +3,5 @@
     android:innerRadiusRatio="2.5"
     android:shape="oval"
     android:useLevel="false">
-    <solid android:color="@color/dark_colorPassive" />
+    <solid android:color="@color/dark_contentShowingBackground" />
 </shape>

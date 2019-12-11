@@ -60,9 +60,8 @@ import androidx.recyclerview.widget.RecyclerView;
  * date: 10.11.2017 00:15
  */
 
-public class TransferGroupListFragment
-		extends GroupEditableListFragment<PreloadedGroup, GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter>
-		implements IconSupport, TitleSupport
+public class TransferGroupListFragment extends GroupEditableListFragment<PreloadedGroup,
+		GroupEditableListAdapter.GroupViewHolder, TransferGroupListAdapter> implements IconSupport, TitleSupport
 {
 	private SQLQuery.Select mSelect;
 	private IntentFilter mFilter = new IntentFilter();
@@ -102,7 +101,8 @@ public class TransferGroupListFragment
 	@Override
 	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
 	{
-		View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null, false);
+		View adaptedView = getLayoutInflater().inflate(R.layout.layout_transfer_group_list, null,
+				false);
 		((ViewGroup) mainContainer).addView(adaptedView);
 
 		return super.onListView(mainContainer, adaptedView.findViewById(R.id.fragmentContainer));

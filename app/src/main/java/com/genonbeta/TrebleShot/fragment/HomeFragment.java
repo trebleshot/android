@@ -36,9 +36,8 @@ import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class HomeFragment
-        extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, SnackbarSupport, com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
+public class HomeFragment extends com.genonbeta.android.framework.app.Fragment implements TitleSupport, SnackbarSupport,
+        com.genonbeta.android.framework.app.FragmentImpl, Activity.OnBackPressedListener
 {
     private ViewPager mViewPager;
     private SmartFragmentPagerAdapter mAdapter;

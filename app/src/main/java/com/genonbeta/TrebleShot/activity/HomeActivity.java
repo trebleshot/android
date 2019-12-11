@@ -23,25 +23,19 @@ import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.LocaleList;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
@@ -63,8 +57,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HomeActivity extends Activity
-        implements NavigationView.OnNavigationItemSelectedListener, PowerfulActionModeSupport
+public class HomeActivity extends Activity implements NavigationView.OnNavigationItemSelectedListener,
+        PowerfulActionModeSupport
 {
     public static final int REQUEST_PERMISSION_ALL = 1;
 

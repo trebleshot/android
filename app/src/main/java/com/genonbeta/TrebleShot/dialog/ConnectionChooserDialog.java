@@ -19,18 +19,15 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
 import androidx.annotation.ColorInt;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ManageDevicesActivity;
 import com.genonbeta.TrebleShot.callback.OnDeviceSelectedListener;
@@ -38,11 +35,7 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.util.AddressedInterface;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
-import com.genonbeta.TrebleShot.util.TextUtils;
-import com.genonbeta.TrebleShot.util.TimeUtils;
+import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
 
 import java.util.ArrayList;
@@ -77,14 +70,9 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         ConnectionListAdapter adapter = new ConnectionListAdapter();
 
         if (mConnections.size() > 0)
-            setAdapter(adapter, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    List<DeviceConnection> connections = getConnections();
-                    listener.onDeviceSelected(connections.get(which), connections);
-                }
+            setAdapter(adapter, (dialog, which) -> {
+                List<DeviceConnection> connections = getConnections();
+                listener.onDeviceSelected(connections.get(which), connections);
             });
         else
             setMessage(R.string.text_noNetworkAvailable);
@@ -104,9 +92,11 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     {
         public ConnectionListAdapter()
         {
-            mConnections.addAll(AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                    .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
-                    .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class));
+            mConnections.addAll(AppUtils.getDatabase(getContext()).castQuery(
+                    new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+                            .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", mNetworkDevice.id)
+                            .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
+                    DeviceConnection.class));
 
             mNetworkInterfaces.addAll(NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES));
         }
