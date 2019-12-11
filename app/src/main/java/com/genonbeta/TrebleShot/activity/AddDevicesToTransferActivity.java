@@ -35,6 +35,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.genonbeta.TrebleShot.R;
@@ -120,9 +121,12 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 				(TransferAssigneeListFragment) getSupportFragmentManager()
 						.findFragmentById(R.id.assigneeListFragment);
 
+
+
 		if (assigneeListFragment == null) {
-			assigneeListFragment = (TransferAssigneeListFragment) Fragment
-					.instantiate(this, TransferAssigneeListFragment.class.getName(), assigneeFragmentArgs);
+			assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager().getFragmentFactory()
+					.instantiate(this.getClassLoader(), TransferAssigneeListFragment.class.getName());
+			assigneeListFragment.setArguments(assigneeFragmentArgs);
 
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
@@ -289,14 +293,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 		//mTextMain.setText(R.string.text_addDevicesToTransfer);
 		mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
 		mLayoutStatusContainer.setVisibility(View.GONE);
-		mActionButton.setOnClickListener(new View.OnClickListener()
-		{
-			@Override
-			public void onClick(View v)
-			{
-				startConnectionManagerActivity();
-			}
-		});
+		mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
 	}
 
 	private void startConnectionManagerActivity()
@@ -320,14 +317,9 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 		if (isFinishing())
 			return;
 
-		runOnUiThread(new Runnable()
-		{
-			@Override
-			public void run()
-			{
-				mProgressTextLeft.setText(String.valueOf(current));
-				mProgressTextRight.setText(String.valueOf(total));
-			}
+		runOnUiThread(() -> {
+			mProgressTextLeft.setText(String.valueOf(current));
+			mProgressTextRight.setText(String.valueOf(total));
 		});
 
 		mProgressBar.setProgress(current);

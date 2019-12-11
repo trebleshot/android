@@ -35,12 +35,12 @@ import com.genonbeta.TrebleShot.object.Shareable;
 
 import java.util.ArrayList;
 
-public class SelectSharingMethodDialog<T extends Shareable> extends AlertDialog.Builder
+public class ChooseSharingMethodDialog<T extends Shareable> extends AlertDialog.Builder
 {
     private LayoutInflater mLayoutInflater;
     private final ArrayList<SharingMethod> mSharingMethodList = new ArrayList<>();
 
-    public SelectSharingMethodDialog(Context context, Intent p2pIntent)
+    public ChooseSharingMethodDialog(Context context, Intent p2pIntent)
     {
         super(context);
 
@@ -55,11 +55,10 @@ public class SelectSharingMethodDialog<T extends Shareable> extends AlertDialog.
 
         }));
 
-        mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp, R.string.text_appName, () -> {
-            getContext().startActivity(p2pIntent);
-        }));
+        mSharingMethodList.add(new SharingMethod(R.drawable.ic_compare_arrows_white_24dp,
+                R.string.text_devicesWithAppInstalled, () -> getContext().startActivity(p2pIntent)));
 
-        setTitle(R.string.text_selectSharingMethod);
+        setTitle(R.string.text_chooseSharingMethod);
         setAdapter(new SharingMethodsListAdapter(), clickListener);
     }
 

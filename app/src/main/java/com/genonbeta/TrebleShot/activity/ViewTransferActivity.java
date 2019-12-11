@@ -41,7 +41,7 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
 import com.genonbeta.TrebleShot.dialog.EstablishConnectionDialog;
-import com.genonbeta.TrebleShot.dialog.SelectAssigneeDialog;
+import com.genonbeta.TrebleShot.dialog.ChooseAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.ToggleMultipleTransferDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.fragment.TransferFileExplorerFragment;
@@ -367,7 +367,7 @@ public class ViewTransferActivity extends Activity implements PowerfulActionMode
 				new EstablishConnectionDialog(ViewTransferActivity.this,
 						assignees.get(0).device, null).show();
 			else if (assignees.size() > 1) {
-				new SelectAssigneeDialog(this, assignees, (dialog, which) ->
+				new ChooseAssigneeDialog(this, assignees, (dialog, which) ->
 						new EstablishConnectionDialog(ViewTransferActivity.this,
 						assignees.get(which).device, null).show()).show();
 			}

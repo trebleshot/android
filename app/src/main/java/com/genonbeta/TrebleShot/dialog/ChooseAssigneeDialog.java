@@ -44,13 +44,13 @@ import java.util.List;
  * created by: veli
  * date: 4/4/19 10:06 AM
  */
-public class SelectAssigneeDialog extends AlertDialog.Builder
+public class ChooseAssigneeDialog extends AlertDialog.Builder
 {
     private List<ShowingAssignee> mList = new ArrayList<>();
     private LayoutInflater mInflater;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public SelectAssigneeDialog(@NonNull Activity activity, List<ShowingAssignee> assigneeList,
+    public ChooseAssigneeDialog(@NonNull Activity activity, List<ShowingAssignee> assigneeList,
                                 DialogInterface.OnClickListener clickListener)
     {
         super(activity);

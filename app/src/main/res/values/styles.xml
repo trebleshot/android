@@ -103,7 +103,7 @@
     <style name="Widget.TrebleShot.NavigationView" parent="Widget.MaterialComponents.NavigationView">
         <item name="itemIconTint">?attr/selectionAccentColor</item>
         <item name="android:background">?attr/colorPrimary</item>
-        <!--<item name="itemTextColor">?attr/selectionAccentColor</item>-->
+        <item name="itemTextColor">?attr/selectionAccentColor</item>
     </style>
 
     <style name="Widget.TrebleShot.CardView" parent="Widget.MaterialComponents.CardView">

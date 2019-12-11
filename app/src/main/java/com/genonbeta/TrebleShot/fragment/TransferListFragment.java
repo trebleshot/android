@@ -38,7 +38,7 @@ import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.GroupEditableListFragment;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DialogUtils;
-import com.genonbeta.TrebleShot.dialog.SelectAssigneeDialog;
+import com.genonbeta.TrebleShot.dialog.ChooseAssigneeDialog;
 import com.genonbeta.TrebleShot.dialog.TransferInfoDialog;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -274,7 +274,7 @@ public class TransferListFragment
 					}
 				};
 
-				SelectAssigneeDialog dialog = new SelectAssigneeDialog(getActivity(), list,
+				ChooseAssigneeDialog dialog = new ChooseAssigneeDialog(getActivity(), list,
 						listClickListener);
 
 				dialog.setTitle(R.string.text_limitTo)

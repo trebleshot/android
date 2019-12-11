@@ -29,7 +29,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
-import com.genonbeta.TrebleShot.dialog.SelectSharingMethodDialog;
+import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.fragment.ShareableListFragment;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
@@ -108,7 +108,7 @@ public class SharingActionModeCallback<T extends Shareable> extends EditableList
 
             try {
                 if (isLocalShare)
-                    new SelectSharingMethodDialog<T>(getFragment().getActivity(), shareIntent).show();
+                    new ChooseSharingMethodDialog<T>(getFragment().getActivity(), shareIntent).show();
                 else
                     context.startActivity(Intent.createChooser(shareIntent, context.getString(
                             R.string.text_fileShareAppChoose)));

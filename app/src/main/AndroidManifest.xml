@@ -161,8 +161,6 @@
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
-        <activity android:name=".activity.SelectDeviceActivity" />
-
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
