@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    <style name="TextAppearance.Ubuntu">
-        <item name="android:fontFamily">@font/ubuntu_formatted</item>
+    <style name="TextAppearance.Cantarell">
+        <item name="android:fontFamily">@font/cantarell_formatted</item>
     </style>
 </resources>
