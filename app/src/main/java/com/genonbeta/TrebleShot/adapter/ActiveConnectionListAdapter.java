@@ -27,11 +27,11 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
-import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,8 +41,7 @@ import androidx.annotation.NonNull;
  * created by: veli
  * date: 4/7/19 10:35 PM
  */
-public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConnectionListAdapter
-        .AddressedEditableInterface, EditableListAdapter.EditableViewHolder>
+public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConnectionListAdapter.EditableNetworkInterface, EditableListAdapter.EditableViewHolder>
 {
     public ActiveConnectionListAdapter(Context context)
     {
@@ -50,15 +49,14 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
     }
 
     @Override
-    public List<AddressedEditableInterface> onLoad()
+    public List<EditableNetworkInterface> onLoad()
     {
-        List<AddressedEditableInterface> resultList = new ArrayList<>();
-        List<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true,
-                AppConfig.DEFAULT_DISABLED_INTERFACES);
+        List<EditableNetworkInterface> resultList = new ArrayList<>();
+        List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
 
-        for (AddressedInterface addressedInterface : interfaceList) {
-            AddressedEditableInterface editableInterface = new AddressedEditableInterface(
-                    addressedInterface, TextUtils.getAdapterName(getContext(), addressedInterface));
+        for (NetworkInterface addressedInterface : interfaceList) {
+            EditableNetworkInterface editableInterface = new EditableNetworkInterface(addressedInterface,
+                    TextUtils.getAdapterName(getContext(), addressedInterface));
 
             if (filterItem(editableInterface))
                 resultList.add(editableInterface);
@@ -79,27 +77,27 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
     public void onBindViewHolder(@NonNull EditableViewHolder holder, int position)
     {
         try {
-            AddressedEditableInterface object = getItem(position);
+            EditableNetworkInterface object = getItem(position);
             View parentView = holder.getView();
 
             TextView text1 = parentView.findViewById(R.id.text);
             TextView text2 = parentView.findViewById(R.id.text2);
 
             text1.setText(object.getSelectableTitle());
-            text2.setText(TextUtils.makeWebShareLink(getContext(), object.getInterface()
-                    .getAssociatedAddress()));
+            text2.setText(TextUtils.makeWebShareLink(getContext(), NetworkUtils.getFirstInet4Address(object)
+                    .getHostAddress()));
         } catch (NotReadyException e) {
             e.printStackTrace();
         }
     }
 
-    public static class AddressedEditableInterface implements Editable
+    public static class EditableNetworkInterface implements Editable
     {
-        private AddressedInterface mInterface;
+        private NetworkInterface mInterface;
         private String mName;
         private boolean mSelected = false;
 
-        public AddressedEditableInterface(AddressedInterface addressedInterface, String name)
+        public EditableNetworkInterface(NetworkInterface addressedInterface, String name)
         {
             mInterface = addressedInterface;
             mName = name;
@@ -111,8 +109,7 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
             for (String word : filteringKeywords) {
                 String wordLC = word.toLowerCase();
 
-                if (mInterface.getNetworkInterface().getDisplayName().toLowerCase().contains(wordLC)
-                        || mInterface.getAssociatedAddress().toLowerCase().contains(wordLC)
+                if (mInterface.getDisplayName().toLowerCase().contains(wordLC)
                         || mName.toLowerCase().contains(wordLC))
                     return true;
             }
@@ -123,7 +120,7 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
         @Override
         public long getId()
         {
-            return mInterface.getAssociatedAddress().hashCode();
+            return mInterface.hashCode();
         }
 
         @Override
@@ -156,7 +153,7 @@ public class ActiveConnectionListAdapter extends EditableListAdapter<ActiveConne
             return 0;
         }
 
-        public AddressedInterface getInterface()
+        public NetworkInterface getInterface()
         {
             return mInterface;
         }

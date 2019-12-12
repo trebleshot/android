@@ -47,7 +47,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
         setDefaultOrderingCriteria(ApplicationListAdapter.MODE_SORT_ORDER_DESCENDING);
         setDefaultSortingCriteria(ApplicationListAdapter.MODE_SORT_BY_DATE);
         setDefaultGroupingCriteria(ApplicationListAdapter.MODE_GROUP_BY_DATE);
-        setDefaultViewingGridSize(1, 2);
+        setDefaultViewingGridSize(1, 4);
         setUseDefaultPaddingDecoration(false);
     }
 

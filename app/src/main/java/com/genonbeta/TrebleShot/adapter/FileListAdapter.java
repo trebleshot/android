@@ -27,12 +27,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -93,9 +91,13 @@ public class FileListAdapter
                     if ((mFileMatch != null && !file.getName().matches(mFileMatch)))
                         continue;
 
-                    if (file.isDirectory() && mShowDirectories)
-                        lister.offerObliged(this, new DirectoryHolder(file, getContext().getString(R.string.text_folder), R.drawable.ic_folder_white_24dp));
-                    else if (file.isFile() && mShowFiles) {
+                    if (file.isDirectory() && mShowDirectories) {
+                        DocumentFile[] files = file.listFiles();
+                        String totalFiles = getContext().getResources().getQuantityString(R.plurals.text_items,
+                                files.length, files.length);
+                        lister.offerObliged(this, new DirectoryHolder(file, totalFiles,
+                                R.drawable.ic_folder_white_24dp));
+                    } else if (file.isFile() && mShowFiles) {
                         if (AppConfig.EXT_FILE_PART.equals(FileUtils.getFileFormat(file.getName()))) {
                             TransferObject existingObject = null;
 

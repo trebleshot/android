@@ -28,14 +28,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.dialog.ManualIpAddressConnectionDialog;
@@ -96,7 +94,7 @@ public class AddDeviceActivity
                 finish();
             } else {
                 ConnectionUtils connectionUtils = ConnectionUtils.getInstance(AddDeviceActivity.this);
-                UIConnectionUtils uiConnectionUtils = new UIConnectionUtils(connectionUtils, AddDeviceActivity.this);
+                UIConnectionUtils uiUtils = new UIConnectionUtils(connectionUtils, AddDeviceActivity.this);
 
                 UITask uiTask = new UITask()
                 {
@@ -113,10 +111,10 @@ public class AddDeviceActivity
                     }
                 };
 
-                NetworkDeviceLoader.OnDeviceRegisteredListener registeredListener = (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
+                NetworkDeviceLoader.OnDeviceRegisteredListener listener =
+                        (database, device, connection1) -> createSnackbar(R.string.mesg_completing).show();
 
-                uiConnectionUtils.makeAcquaintance(AddDeviceActivity.this, uiTask,
-                        connection.ipAddress, -1, registeredListener);
+                uiUtils.makeAcquaintance(AddDeviceActivity.this, uiTask, connection, -1, listener);
             }
 
             return true;

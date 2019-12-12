@@ -19,11 +19,14 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
+
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * created by: veli
@@ -31,92 +34,96 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 public class DeviceConnection implements DatabaseObject<NetworkDevice>
 {
-	public String adapterName;
-	public String ipAddress;
-	public String deviceId;
-	public long lastCheckedDate;
+    public String adapterName;
+    public String ipAddress;
+    public String deviceId;
+    public long lastCheckedDate;
 
-	public DeviceConnection()
-	{
-	}
+    public DeviceConnection()
+    {
+    }
 
-	public DeviceConnection(String adapterName, String ipAddress, String deviceId, long lastCheckedDate)
-	{
-		this.adapterName = adapterName;
-		this.ipAddress = ipAddress;
-		this.deviceId = deviceId;
-		this.lastCheckedDate = lastCheckedDate;
-	}
+    public DeviceConnection(String adapterName, String ipAddress, String deviceId, long lastCheckedDate)
+    {
+        this.adapterName = adapterName;
+        this.ipAddress = ipAddress;
+        this.deviceId = deviceId;
+        this.lastCheckedDate = lastCheckedDate;
+    }
 
-	public DeviceConnection(String deviceId, String adapterName)
-	{
-		this.deviceId = deviceId;
-		this.adapterName = adapterName;
-	}
+    public DeviceConnection(String deviceId, String adapterName)
+    {
+        this.deviceId = deviceId;
+        this.adapterName = adapterName;
+    }
 
-	public DeviceConnection(TransferAssignee assignee)
-	{
-		this(assignee.deviceId, assignee.connectionAdapter);
-	}
+    public DeviceConnection(TransferAssignee assignee)
+    {
+        this(assignee.deviceId, assignee.connectionAdapter);
+    }
 
-	public DeviceConnection(String ipAddress)
-	{
-		this.ipAddress = ipAddress;
-	}
+    public DeviceConnection(String ipAddress)
+    {
+        this.ipAddress = ipAddress;
+    }
 
-	public DeviceConnection(ContentValues item)
-	{
-		reconstruct(item);
-	}
+    public DeviceConnection(ContentValues item)
+    {
+        reconstruct(item);
+    }
 
-	@Override
-	public SQLQuery.Select getWhere()
-	{
-		SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION);
+    @Override
+    public SQLQuery.Select getWhere()
+    {
+        SQLQuery.Select select = new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION);
 
-		return ipAddress == null
-				? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
-				+ AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
-				: select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
-	}
+        return ipAddress == null ? select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=? AND "
+                + AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME + "=?", deviceId, adapterName)
+                : select.setWhere(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS + "=?", ipAddress);
+    }
 
-	@Override
-	public ContentValues getValues()
-	{
-		ContentValues values = new ContentValues();
+    @Override
+    public ContentValues getValues()
+    {
+        ContentValues values = new ContentValues();
 
-		values.put(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
-		values.put(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
-		values.put(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
-		values.put(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
+        values.put(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID, deviceId);
+        values.put(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME, adapterName);
+        values.put(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS, ipAddress);
+        values.put(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE, lastCheckedDate);
 
-		return values;
-	}
+        return values;
+    }
 
-	@Override
-	public void reconstruct(ContentValues item)
-	{
-		this.adapterName = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
-		this.ipAddress = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
-		this.deviceId = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
-		this.lastCheckedDate = item.getAsLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
-	}
+    @Override
+    public void reconstruct(ContentValues item)
+    {
+        this.adapterName = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_ADAPTERNAME);
+        this.ipAddress = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_IPADDRESS);
+        this.deviceId = item.getAsString(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID);
+        this.lastCheckedDate = item.getAsLong(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE);
+    }
 
-	@Override
-	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-	{
+    public Inet4Address toInet4Address() throws UnknownHostException
+    {
+        return (Inet4Address) InetAddress.getByName(ipAddress);
+    }
 
-	}
+    @Override
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    {
 
-	@Override
-	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-	{
+    }
 
-	}
+    @Override
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    {
 
-	@Override
-	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
-	{
+    }
 
-	}
+    @Override
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    {
+
+    }
 }

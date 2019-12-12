@@ -39,7 +39,7 @@
             app:srcCompat="@drawable/ic_check_white_24dp"
             app:tint="?colorSecondary" />
 
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/layout_welcome_page_3_request_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

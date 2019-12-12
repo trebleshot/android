@@ -36,13 +36,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.core.content.ContextCompat;
 import androidx.core.widget.ImageViewCompat;
-
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -57,8 +55,9 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
-
 import org.json.JSONObject;
+
+import java.net.UnknownHostException;
 
 public class NetworkManagerFragment
         extends Fragment
@@ -264,9 +263,16 @@ public class NetworkManagerFragment
         } else if (!getConnectionUtils().isConnectedToAnyNetwork())
             updateViewsWithBlank();
         else {
-            updateViews(ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID()),
-                    NetworkUtils.convertInet4Address(connectionInfo.getIpAddress()),
-                    connectionInfo.getBSSID());
+            String networkName = ConnectionUtils.getCleanNetworkName(connectionInfo.getSSID());
+            String hostAddress;
+
+            try {
+                hostAddress = NetworkUtils.convertInet4Address(connectionInfo.getIpAddress()).getHostAddress();
+            } catch (UnknownHostException e) {
+                hostAddress = "0.0.0.0";
+            }
+
+            updateViews(networkName, hostAddress, connectionInfo.getBSSID());
         }
     }
 

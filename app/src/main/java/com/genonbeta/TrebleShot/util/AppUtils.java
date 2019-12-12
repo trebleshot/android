@@ -25,7 +25,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
@@ -35,7 +34,12 @@ import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
-
+import androidx.annotation.AnyRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -48,24 +52,16 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.service.DeviceScannerService;
 import com.genonbeta.android.framework.io.DocumentFile;
 import com.genonbeta.android.framework.preference.SuperPreferences;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.Inet4Address;
+import java.net.NetworkInterface;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-
-import androidx.annotation.AnyRes;
-import androidx.annotation.AttrRes;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 
 public class AppUtils
 {
@@ -79,21 +75,23 @@ public class AppUtils
     public static void applyAdapterName(DeviceConnection connection)
     {
         if (connection.ipAddress == null) {
-            Log.e(AppUtils.class.getSimpleName(), "Connection should be provided with IP address");
+            Log.e(TAG, "Connection should be provided with IP address");
             return;
         }
 
-        List<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+        try {
+            NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(connection.toInet4Address());
 
-        for (AddressedInterface addressedInterface : interfaceList) {
-            if (NetworkUtils.getAddressPrefix(addressedInterface.getAssociatedAddress())
-                    .equals(NetworkUtils.getAddressPrefix(connection.ipAddress))) {
-                connection.adapterName = addressedInterface.getNetworkInterface().getDisplayName();
-                return;
-            }
+            if (networkInterface != null)
+                connection.adapterName = networkInterface.getDisplayName();
+            else
+                Log.d(TAG, "applyAdapterName(): No network interface found");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
 
-        connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
+        if (connection.adapterName == null)
+            connection.adapterName = Keyword.Local.NETWORK_INTERFACE_UNKNOWN;
     }
 
     public static void applyDeviceToJSON(Context context, JSONObject object) throws JSONException
@@ -159,10 +157,8 @@ public class AppUtils
         DocumentFile saveDirectory = FileUtils.getApplicationDirectory(context);
         String fileName = FileUtils.getUniqueFileName(saveDirectory, "trebleshot_log.txt", true);
         DocumentFile logFile = saveDirectory.createFile(null, fileName);
-        ActivityManager activityManager = (ActivityManager) context.getSystemService(
-                Service.ACTIVITY_SERVICE);
-        List<ActivityManager.RunningAppProcessInfo> processList = activityManager
-                .getRunningAppProcesses();
+        ActivityManager activityManager = (ActivityManager) context.getSystemService(Service.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningAppProcessInfo> processList = activityManager.getRunningAppProcesses();
 
         try {
             String command = "logcat -d -v threadtime *:*";

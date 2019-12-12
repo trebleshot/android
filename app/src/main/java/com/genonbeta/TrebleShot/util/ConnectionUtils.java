@@ -34,9 +34,10 @@ import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.android.framework.util.Interrupter;
 
+import java.io.IOException;
+import java.net.*;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public class ConnectionUtils
     private LocationManager mLocationManager;
     private ConnectivityManager mConnectivityManager;
 
-    ConnectionUtils(Context context)
+    private ConnectionUtils(Context context)
     {
         mContext = context;
 
@@ -96,24 +97,24 @@ public class ConnectionUtils
                 && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
     }
 
-    public String establishHotspotConnection(final Interrupter interrupter,
-                                             final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
-                                             final ConnectionCallback connectionCallback)
+    public InetAddress establishHotspotConnection(final Interrupter interrupter,
+                                                  final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                                  final ConnectionCallback connectionCallback)
     {
         return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
     }
 
     @WorkerThread
-    private String establishHotspotConnection(final Interrupter interrupter,
-                                              final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
-                                              final ConnectionCallback connectionCallback, short leftAttempts)
+    private InetAddress establishHotspotConnection(final Interrupter interrupter,
+                                                   final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                                   final ConnectionCallback connectionCallback, short leftAttempts)
     {
         leftAttempts--;
 
         final int pingTimeout = 1000; // ms
         final long startTime = System.currentTimeMillis();
 
-        String remoteAddress = null;
+        InetAddress address = null;
         boolean connectionToggled = false;
 
         while (true) {
@@ -132,29 +133,28 @@ public class ConnectionUtils
 
                 connectionToggled = true;
             } else {
-                final DhcpInfo routeInfo = getWifiManager().getDhcpInfo();
+                final DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
                 Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
-                        + routeInfo.toString());
+                        + wifiDhcpInfo.toString());
 
-                if (routeInfo.gateway != 0 && routeInfo.dns2 != 0) {
-                    final String testedRemoteAddress = NetworkUtils.convertInet4Address(routeInfo.gateway);
-                    Log.d(TAG, "establishHotspotConnection(): There is valid DHCP info provided. Waiting to " +
-                            "reach the address " + testedRemoteAddress);
+                if (wifiDhcpInfo.gateway != 0) {
+                    try {
+                        Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
+                        NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(testAddress);
 
-                    /*if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
-                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                        remoteAddress = testedRemoteAddress;
-                        break;
-                    } else
-                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");*/
+                        address = testAddress;
 
-                    if (NetworkUtils.ping(testedRemoteAddress, pingTimeout)) {
-                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                        remoteAddress = testedRemoteAddress;
-                        break;
-                    } else
-                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
+                        if (testAddress.isReachable(pingTimeout) || testAddress.isReachable(networkInterface,
+                                3600, pingTimeout)) {
+                            Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
+                            address = testAddress;
+                            break;
+                        } else
+                            Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 } else
                     Log.d(TAG, "establishHotspotConnection(): No DHCP provided. Looping...");
             }
@@ -172,13 +172,14 @@ public class ConnectionUtils
             }
         }
 
-        return remoteAddress != null || leftAttempts <= 0 ? remoteAddress :
-                establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, leftAttempts);
+        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(
+                interrupter, hotspotNetwork, connectionCallback, leftAttempts);
     }
 
     public boolean hasLocationPermission(Context context)
     {
-        return ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(context,
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
     }
 
     public Context getContext()
@@ -209,9 +210,7 @@ public class ConnectionUtils
     public boolean isConnectionSelfNetwork()
     {
         WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
-
-        return wifiInfo != null
-                && getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
+        return wifiInfo != null && getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
     }
 
     public boolean isConnectedToAnyNetwork()
@@ -320,7 +319,7 @@ public class ConnectionUtils
             try {
                 int netId = getWifiManager().addNetwork(config);
 
-                if (/*Build.VERSION.SDK_INT >= */UIConnectionUtils.isOSAbove(Build.VERSION_CODES.M)) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
                     for (WifiConfiguration hotspotWifi : list) {
                         if (hotspotWifi.SSID != null && hotspotWifi.SSID.equalsIgnoreCase(config.SSID)) {

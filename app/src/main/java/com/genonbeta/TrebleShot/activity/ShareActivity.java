@@ -45,20 +45,25 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ShareActivity extends Activity
-        implements SnackbarSupport, Activity.OnPreloadArgumentWatcher, WorkerService.OnAttachListener
+public class ShareActivity extends Activity implements SnackbarSupport, Activity.OnPreloadArgumentWatcher,
+        WorkerService.OnAttachListener
 {
     public static final String TAG = "ShareActivity";
 
     public static final String ACTION_SEND = "genonbeta.intent.action.TREBLESHOT_SEND";
     public static final String ACTION_SEND_MULTIPLE = "genonbeta.intent.action.TREBLESHOT_SEND_MULTIPLE";
 
-    public static final String EXTRA_FILENAME_LIST = "extraFileNames";
-    public static final String EXTRA_DEVICE_ID = "extraDeviceId";
-    public static final String EXTRA_GROUP_ID = "extraGroupId";
+    public static final String
+            EXTRA_FILENAME_LIST = "extraFileNames",
+            EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_FLAGS = "extraFlags";
+
+    public static final int
+            FLAG_WEBSHARE = 1,
+            FLAG_LAUNCH_DEVICE_ADDING = 2;
 
     private Bundle mPreLoadingBundle = new Bundle();
-    private Button mCancelButton;
     private ProgressBar mProgressBar;
     private TextView mProgressTextLeft;
     private TextView mProgressTextRight;
@@ -68,8 +73,7 @@ public class ShareActivity extends Activity
     private OrganizeSharingRunningTask mTask;
 
     public static void createFolderStructure(DocumentFile file, String folderName,
-                                             List<SelectableStream> pendingObjects,
-                                             OrganizeSharingRunningTask task)
+                                             List<SelectableStream> pendingObjects, OrganizeSharingRunningTask task)
     {
         DocumentFile[] files = file.listFiles();
 
@@ -88,10 +92,8 @@ public class ShareActivity extends Activity
                     break;
 
                 if (thisFile.isDirectory()) {
-                    createFolderStructure(thisFile, (
-                                    folderName != null ? folderName + File.separator : null)
-                                    + thisFile.getName(),
-                            pendingObjects, task);
+                    createFolderStructure(thisFile, (folderName != null ? folderName + File.separator
+                                    : null) + thisFile.getName(), pendingObjects, task);
                     continue;
                 }
 
@@ -112,9 +114,7 @@ public class ShareActivity extends Activity
 
         String action = getIntent() != null ? getIntent().getAction() : null;
 
-        if (ACTION_SEND.equals(action)
-                || ACTION_SEND_MULTIPLE.equals(action)
-                || Intent.ACTION_SEND.equals(action)
+        if (ACTION_SEND.equals(action) || ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND.equals(action)
                 || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
             if (getIntent().hasExtra(Intent.EXTRA_TEXT)) {
                 startActivity(new Intent(ShareActivity.this, TextEditorActivity.class)
@@ -125,14 +125,14 @@ public class ShareActivity extends Activity
                 ArrayList<Uri> fileUris = new ArrayList<>();
                 ArrayList<CharSequence> fileNames = null;
 
-                if (ACTION_SEND_MULTIPLE.equals(action)
-                        || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
+                if (ACTION_SEND_MULTIPLE.equals(action) || Intent.ACTION_SEND_MULTIPLE.equals(action)) {
                     List<Uri> pendingFileUris = getIntent().getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-                    fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(EXTRA_FILENAME_LIST) : null;
+                    fileNames = getIntent().hasExtra(EXTRA_FILENAME_LIST) ? getIntent().getCharSequenceArrayListExtra(
+                            EXTRA_FILENAME_LIST) : null;
 
                     fileUris.addAll(pendingFileUris);
                 } else {
-                    fileUris.add((Uri) getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
+                    fileUris.add(getIntent().getParcelableExtra(Intent.EXTRA_STREAM));
 
                     if (getIntent().hasExtra(EXTRA_FILENAME_LIST)) {
                         fileNames = new ArrayList<>();
@@ -150,16 +150,10 @@ public class ShareActivity extends Activity
                     mProgressTextLeft = findViewById(R.id.text1);
                     mProgressTextRight = findViewById(R.id.text2);
                     mTextMain = findViewById(R.id.textMain);
-                    mCancelButton = findViewById(R.id.cancelButton);
 
-                    mCancelButton.setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            if (mTask != null)
-                                mTask.getInterrupter().interrupt(true);
-                        }
+                    findViewById(R.id.cancelButton).setOnClickListener(v -> {
+                        if (mTask != null)
+                            mTask.getInterrupter().interrupt(true);
                     });
 
                     mFileUris = fileUris;
@@ -189,7 +183,7 @@ public class ShareActivity extends Activity
             mTask = ((OrganizeSharingRunningTask) task);
             mTask.setAnchorListener(this);
         } else {
-            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames);
+            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames, getIntent());
 
             mTask.setTitle(getString(R.string.mesg_organizingFiles))
                     .setAnchorListener(this)
@@ -221,14 +215,9 @@ public class ShareActivity extends Activity
         if (isFinishing())
             return;
 
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                mProgressTextLeft.setText(String.valueOf(current));
-                mProgressTextRight.setText(String.valueOf(total));
-            }
+        runOnUiThread(() -> {
+            mProgressTextLeft.setText(String.valueOf(current));
+            mProgressTextRight.setText(String.valueOf(total));
         });
 
         mProgressBar.setProgress(current);
@@ -242,14 +231,7 @@ public class ShareActivity extends Activity
 
         runningTask.publishStatusText(text);
 
-        runOnUiThread(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                mTextMain.setText(text);
-            }
-        });
+        runOnUiThread(() -> mTextMain.setText(text));
     }
 
     public static class SelectableStream implements Selectable

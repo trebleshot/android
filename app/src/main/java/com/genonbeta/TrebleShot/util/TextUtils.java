@@ -26,6 +26,7 @@ import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.TransferObject;
 
+import java.net.NetworkInterface;
 import java.text.NumberFormat;
 import java.util.HashMap;
 
@@ -61,9 +62,9 @@ public class TextUtils
 		return getAdapterName(context, connection.adapterName);
 	}
 
-	public static String getAdapterName(Context context, AddressedInterface addressedInterface)
+	public static String getAdapterName(Context context, NetworkInterface networkInterface)
 	{
-		return getAdapterName(context, addressedInterface.getNetworkInterface().getDisplayName());
+		return getAdapterName(context, networkInterface.getDisplayName());
 	}
 
 	public static String getAdapterName(Context context, String adapterName)

@@ -47,9 +47,7 @@ public class NetworkDeviceLoader
 	public static DeviceConnection processConnection(AccessDatabase database, NetworkDevice device, String ipAddress)
 	{
 		DeviceConnection connection = new DeviceConnection(ipAddress);
-
 		processConnection(database, device, connection);
-
 		return connection;
 	}
 

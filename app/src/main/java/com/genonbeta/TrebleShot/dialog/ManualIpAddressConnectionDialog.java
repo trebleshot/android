@@ -19,7 +19,7 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
-
+import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -28,7 +28,8 @@ import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 
-import androidx.appcompat.app.AlertDialog;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * created by: veli
@@ -75,11 +76,15 @@ public class ManualIpAddressConnectionDialog extends AbstractSingleTextInputDial
 
     private void doTask(final Activity activity, final UIConnectionUtils utils)
     {
-
         final String ipAddress = getEditText().getText().toString();
 
         if (ipAddress.matches("([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})")) {
-            utils.makeAcquaintance(activity, null, ipAddress, -1, mSelfListener);
+            try {
+                InetAddress inetAddress = InetAddress.getByName(ipAddress);
+                utils.makeAcquaintance(activity, null, inetAddress, -1, mSelfListener);
+            } catch (UnknownHostException e) {
+                getEditText().setError(getContext().getString(R.string.mesg_unknownHostError));
+            }
         } else
             getEditText().setError(getContext().getString(R.string.mesg_errorNotAnIpAddress));
     }

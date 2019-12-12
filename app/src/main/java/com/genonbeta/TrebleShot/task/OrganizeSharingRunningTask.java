@@ -18,8 +18,11 @@
 
 package com.genonbeta.TrebleShot.task;
 
+import android.content.Intent;
 import android.net.Uri;
-
+import android.os.Handler;
+import android.os.Looper;
+import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
@@ -40,11 +43,13 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
 {
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
+    private Intent mOriginalIntent;
 
-    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames)
+    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent)
     {
         mFileUris = fileUris;
         mFileNames = fileNames;
+        mOriginalIntent = originalIntent;
     }
 
     @Override
@@ -140,10 +145,22 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
                     .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
                             String.valueOf(groupInstance.id)));
         } else {
-            AppUtils.getDatabase(getService()).insert(groupInstance);
+            int flags = mOriginalIntent.getIntExtra(ShareActivity.EXTRA_FLAGS, 0);
+            boolean flagAddNewDevice = (flags & ShareActivity.FLAG_LAUNCH_DEVICE_ADDING) != 0;
+            boolean flagWebShare = (flags & ShareActivity.FLAG_WEBSHARE) != 0;
 
+            if (flagWebShare) {
+                groupInstance.isServedOnWeb = true;
+
+                new Handler(Looper.getMainLooper()).post(() -> Toast.makeText(getService(),
+                        R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
+            }
+
+            if (!flagAddNewDevice)
+                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id);
+
+            AppUtils.getDatabase(getService()).insert(groupInstance);
             ViewTransferActivity.startInstance(getService(), groupInstance.id);
-            AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id);
         }
 
         AppUtils.getDatabase(getService()).broadcast();

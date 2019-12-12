@@ -38,6 +38,7 @@ import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.*;
 import com.genonbeta.android.database.SQLQuery;
 
+import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ import java.util.List;
 public class ConnectionChooserDialog extends AlertDialog.Builder
 {
     final private List<DeviceConnection> mConnections = new ArrayList<>();
-    final private List<AddressedInterface> mNetworkInterfaces = new ArrayList<>();
+    final private List<NetworkInterface> mNetworkInterfaces = new ArrayList<>();
 
     private NetworkDevice mNetworkDevice;
 
@@ -133,8 +134,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
             boolean accessible = false;
 
-            for (AddressedInterface addressedInterface : mNetworkInterfaces)
-                if (address.adapterName.equals(addressedInterface.getNetworkInterface().getDisplayName())) {
+            for (NetworkInterface networkInterface : mNetworkInterfaces)
+                if (address.adapterName.equals(networkInterface.getDisplayName())) {
                     accessible = true;
                     break;
                 }

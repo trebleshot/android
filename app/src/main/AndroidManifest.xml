@@ -150,7 +150,6 @@
             android:name=".activity.ChangelogActivity"
             android:label="@string/text_changelog" />
 
-        <!-- todo: Remember, we are always using dark theme for this for better effects-->
         <activity
             android:name=".activity.BarcodeScannerActivity"
             android:label="@string/text_scanQrCode"

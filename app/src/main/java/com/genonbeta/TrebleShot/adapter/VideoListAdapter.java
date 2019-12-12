@@ -43,8 +43,8 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
  * date: 18.11.2017 13:32
  */
 
-public class VideoListAdapter
-        extends GalleryGroupEditableListAdapter<VideoListAdapter.VideoHolder, GroupEditableListAdapter.GroupViewHolder>
+public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListAdapter.VideoHolder,
+        GroupEditableListAdapter.GroupViewHolder>
 {
     public static final int VIEW_TYPE_TITLE = 1;
 
@@ -114,16 +114,11 @@ public class VideoListAdapter
                 int typeIndex = cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE);
 
                 do {
-                    VideoHolder holder = new VideoHolder(
-                            cursor.getInt(idIndex),
-                            cursor.getString(titleIndex),
-                            cursor.getString(displayIndex),
-                            cursor.getString(albumIndex),
-                            cursor.getString(typeIndex),
-                            cursor.getLong(lengthIndex),
-                            cursor.getLong(dateIndex) * 1000,
-                            cursor.getLong(sizeIndex),
-                            Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
+                    VideoHolder holder = new VideoHolder(cursor.getInt(idIndex), cursor.getString(titleIndex),
+                            cursor.getString(displayIndex), cursor.getString(albumIndex), cursor.getString(typeIndex),
+                            cursor.getLong(lengthIndex), cursor.getLong(dateIndex) * 1000,
+                            cursor.getLong(sizeIndex), Uri.parse(MediaStore.Video.Media.EXTERNAL_CONTENT_URI + "/"
+                            + cursor.getInt(idIndex)));
 
                     lister.offerObliged(this, holder);
                 }

@@ -19,11 +19,7 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
-import android.content.DialogInterface;
-
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.ProgressDialog;
@@ -48,8 +44,7 @@ public class EstablishConnectionDialog extends ProgressDialog
 {
     private WorkerService.RunningTask mTask;
 
-    public EstablishConnectionDialog(final Activity activity,
-                                     final NetworkDevice networkDevice,
+    public EstablishConnectionDialog(final Activity activity, final NetworkDevice networkDevice,
                                      @Nullable final OnDeviceSelectedListener listener)
     {
         super(activity);
@@ -58,8 +53,8 @@ public class EstablishConnectionDialog extends ProgressDialog
 
         setTitle(R.string.text_automaticNetworkConnectionOngoing);
         setCancelable(false);
-        setProgressStyle(android.app.ProgressDialog.STYLE_HORIZONTAL);
-        setButton(android.app.ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> interrupter.interrupt());
+        setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+        setButton(ProgressDialog.BUTTON_NEGATIVE, getContext().getString(R.string.butn_cancel), (dialogInterface, i) -> interrupter.interrupt());
 
         mTask = new WorkerService.RunningTask()
         {
@@ -87,44 +82,36 @@ public class EstablishConnectionDialog extends ProgressDialog
                     publishStatusText(connectionResult.connection.adapterName);
                     setProgress(getProgress() + 1);
 
-                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class, new CommunicationBridge.Client.ConnectionHandler()
-                    {
-                        @Override
-                        public void onConnect(CommunicationBridge.Client client)
-                        {
-                            connectionResult.pingTime = -1;
+                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class,
+                            client -> {
+                                connectionResult.pingTime = -1;
 
-                            try {
-                                final long startTime = System.currentTimeMillis();
-                                final CoolSocket.ActiveConnection activeConnection = client.connect(connectionResult.connection);
-                                final Interrupter.Closer selfCloser = new Interrupter.Closer()
-                                {
-                                    @Override
-                                    public void onClose(boolean userAction)
-                                    {
+                                try {
+                                    final long startTime = System.currentTimeMillis();
+                                    final CoolSocket.ActiveConnection activeConnection = client.connect(
+                                            connectionResult.connection);
+                                    final Interrupter.Closer selfCloser = userAction -> {
                                         try {
                                             activeConnection.getSocket().close();
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-                                    }
-                                };
+                                    };
 
-                                getInterrupter().addCloser(selfCloser);
+                                    getInterrupter().addCloser(selfCloser);
 
-                                client.handshake(activeConnection, true);
-                                client.updateDeviceIfOkay(activeConnection, networkDevice);
+                                    client.handshake(activeConnection, true);
+                                    client.updateDeviceIfOkay(activeConnection, networkDevice);
 
-                                getInterrupter().removeCloser(selfCloser);
+                                    getInterrupter().removeCloser(selfCloser);
 
-                                connectionResult.pingTime = (int) (System.currentTimeMillis() - startTime);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            } finally {
-                                client.setReturn(connectionResult.pingTime);
-                            }
-                        }
-                    });
+                                    connectionResult.pingTime = (int) (System.currentTimeMillis() - startTime);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                } finally {
+                                    client.setReturn(connectionResult.pingTime);
+                                }
+                            });
 
                     if (calculatedTime != null && calculatedTime > -1)
                         reachedConnections.add(connectionResult);
@@ -132,52 +119,37 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                 dismiss();
 
-                Comparator<ConnectionResult> connectionComparator = new Comparator<ConnectionResult>()
-                {
-                    @Override
-                    public int compare(ConnectionResult resultFirst, ConnectionResult resultLast)
-                    {
-                        if (resultFirst.pingTime < 0 || resultLast.pingTime < 0)
-                            return MathUtils.compare(resultFirst.pingTime, resultLast.pingTime);
+                Comparator<ConnectionResult> connectionComparator = (resultFirst, resultLast) -> {
+                    if (resultFirst.pingTime < 0 || resultLast.pingTime < 0)
+                        return MathUtils.compare(resultFirst.pingTime, resultLast.pingTime);
 
-                        return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime); // reverse: the smaller is the fastest
-                    }
+                    // reverse: the smaller is the fastest
+                    return MathUtils.compare(resultLast.pingTime, resultFirst.pingTime);
                 };
 
                 Collections.sort(reachedConnections, connectionComparator);
                 Collections.sort(calculatedConnections, connectionComparator);
 
                 if (activity != null && !activity.isFinishing())
-                    activity.runOnUiThread(new Runnable()
-                    {
-                        @Override
-                        public void run()
-                        {
-                            if (listener == null) {
-                                new ConnectionTestDialog(activity, networkDevice, calculatedConnections).show();
-                            } else {
-                                if (!getInterrupter().interrupted())
-                                    if (reachedConnections.size() < 1) {
-                                        new AlertDialog.Builder(activity)
-                                                .setTitle(R.string.text_error)
-                                                .setMessage(R.string.text_automaticNetworkConnectionFailed)
-                                                .setNeutralButton(R.string.butn_choose, new OnClickListener()
-                                                {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialog, int which)
-                                                    {
-                                                        new ConnectionChooserDialog(activity, networkDevice, listener)
-                                                                .show();
-                                                    }
-                                                })
-                                                .setNegativeButton(R.string.butn_close, null)
-                                                .setPositiveButton(R.string.butn_retry, (dialog, which) -> show())
-                                                .show();
-                                    } else {
-                                        listener.onDeviceSelected(reachedConnections.get(0).connection, connectionList);
-                                        dismiss();
-                                    }
-                            }
+                    activity.runOnUiThread(() -> {
+                        if (listener == null) {
+                            new ConnectionTestDialog(activity, networkDevice, calculatedConnections).show();
+                        } else {
+                            if (!getInterrupter().interrupted())
+                                if (reachedConnections.size() < 1) {
+                                    new Builder(activity)
+                                            .setTitle(R.string.text_error)
+                                            .setMessage(R.string.text_automaticNetworkConnectionFailed)
+                                            .setNeutralButton(R.string.butn_choose, (dialog, which) ->
+                                                    new ConnectionChooserDialog(activity, networkDevice, listener)
+                                                            .show())
+                                            .setNegativeButton(R.string.butn_close, null)
+                                            .setPositiveButton(R.string.butn_retry, (dialog, which) -> show())
+                                            .show();
+                                } else {
+                                    listener.onDeviceSelected(reachedConnections.get(0).connection, connectionList);
+                                    dismiss();
+                                }
                         }
                     });
             }

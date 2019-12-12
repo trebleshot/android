@@ -126,8 +126,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.preference:preference:1.1.0'
-    implementation 'androidx.recyclerview:recyclerview:1.0.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.google.android.material:material:1.1.0-beta02'
 
     //implementation 'com.genonbeta.android:framework:1.0.2.6-local69'
     implementation 'com.genonbeta.android:framework:1.0.2.8'
@@ -140,10 +140,10 @@ dependencies {
     implementation 'org.nanohttpd:nanohttpd:2.2.0'
     implementation 'com.velitasali.tools.android:zxing:3.6.3'
 
-    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
     annotationProcessor 'androidx.annotation:annotation:1.1.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
-    implementation 'com.github.bumptech.glide:okhttp3-integration:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+    implementation 'com.github.bumptech.glide:okhttp3-integration:4.10.0'
 
     googlePlayImplementation 'com.anjlab.android.iab.v3:library:1.0.44'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'

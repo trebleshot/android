@@ -20,14 +20,11 @@ package com.genonbeta.TrebleShot.service;
 
 import android.content.Intent;
 import android.os.IBinder;
-
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-import com.genonbeta.TrebleShot.util.AddressedInterface;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.TrebleShot.util.NetworkDeviceScanner;
@@ -66,13 +63,16 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
                 String result = SCANNER_NOT_AVAILABLE;
 
                 if (mDeviceScanner.isScannerAvailable()) {
-                    List<AddressedInterface> interfaceList = NetworkUtils.getInterfaces(true, AppConfig.DEFAULT_DISABLED_INTERFACES);
+                    List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true,
+                            AppConfig.DEFAULT_DISABLED_INTERFACES);
 
                     NetworkDevice localDevice = AppUtils.getLocalDevice(getApplicationContext());
                     getDatabase().publish(localDevice);
 
-                    for (AddressedInterface addressedInterface : interfaceList) {
-                        DeviceConnection connection = new DeviceConnection(addressedInterface.getNetworkInterface().getDisplayName(), addressedInterface.getAssociatedAddress(), localDevice.id, System.currentTimeMillis());
+                    for (NetworkInterface networkInterface : interfaceList) {
+                        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(),
+                                NetworkUtils.getFirstInet4Address(networkInterface).getHostAddress(), localDevice.id,
+                                System.currentTimeMillis());
                         getDatabase().publish(connection);
                     }
 
@@ -98,7 +98,8 @@ public class DeviceScannerService extends Service implements NetworkDeviceScanne
     @Override
     public void onDeviceFound(InetAddress address, NetworkInterface networkInterface)
     {
-        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(), address.getHostAddress(), "-", System.currentTimeMillis());
+        DeviceConnection connection = new DeviceConnection(networkInterface.getDisplayName(), address.getHostAddress(),
+                "-", System.currentTimeMillis());
         getDatabase().publish(connection);
 
         NetworkDeviceLoader.load(getDatabase(), address.getHostAddress(), null);

@@ -44,6 +44,8 @@ import com.genonbeta.android.framework.ui.callback.SnackbarSupport;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.InetAddress;
+
 /**
  * created by: veli
  * date: 15/04/18 18:44
@@ -115,7 +117,7 @@ public class UIConnectionUtils
         WorkerService.RunningTask runningTask = new WorkerService.RunningTask()
         {
             private boolean mConnected = false;
-            private String mRemoteAddress;
+            private InetAddress mAddress;
 
             @Override
             public void onRun()
@@ -124,16 +126,17 @@ public class UIConnectionUtils
                         activity, task, object, accessPin, registerListener);
 
                 try {
-                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-                        mRemoteAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
+                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork)
+                        mAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
                                 (NetworkDeviceListAdapter.HotspotNetwork) object,
                                 (delimiter, timePassed) -> timePassed >= 30000);
-                    } else if (object instanceof String)
-                        mRemoteAddress = (String) object;
+                    else if (object instanceof InetAddress)
+                        mAddress = (InetAddress) object;
+                    else if (object instanceof DeviceConnection)
+                        mAddress = ((DeviceConnection) object).toInet4Address();
 
-                    if (mRemoteAddress != null) {
-                        mConnected = setupConnection(activity, mRemoteAddress, accessPin, (database, device,
-                                                                                           connection) -> {
+                    if (mAddress != null) {
+                        mConnected = setupConnection(activity, mAddress, accessPin, (database, device, connection) -> {
                             // we may be working with direct IP scan
                             new Handler(Looper.getMainLooper()).post(() -> {
                                 if (registerListener != null)
@@ -156,7 +159,7 @@ public class UIConnectionUtils
                                 dialogBuilder.show();
                             }
                         });
-                } catch (Exception e) {
+                } catch (Exception ignored) {
 
                 } finally {
                     new Handler(Looper.getMainLooper()).post(() -> {
@@ -164,7 +167,6 @@ public class UIConnectionUtils
                             task.updateTaskStopped();
                     });
                 }
-                // We can't add dialog outside of the else statement as it may close other dialogs as well
             }
         }.setTitle(activity.getString(R.string.mesg_completing))
                 .setIconRes(R.drawable.ic_compare_arrows_white_24dp_static);
@@ -185,7 +187,7 @@ public class UIConnectionUtils
     }
 
     @WorkerThread
-    public NetworkDevice setupConnection(final Activity activity, final String ipAddress, final int accessPin,
+    public NetworkDevice setupConnection(final Activity activity, final InetAddress inetAddress, final int accessPin,
                                          final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
                                          final DialogInterface.OnClickListener retryButtonListener)
     {
@@ -193,7 +195,7 @@ public class UIConnectionUtils
             try {
                 client.setSecureKey(accessPin);
 
-                CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(ipAddress,
+                CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(inetAddress,
                         false);
                 NetworkDevice device = client.loadDevice(activeConnection);
 
@@ -203,10 +205,10 @@ public class UIConnectionUtils
 
                 JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
-                if (receivedReply.has(Keyword.RESULT)
-                        && receivedReply.getBoolean(Keyword.RESULT)
+                if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
                         && device.id != null) {
-                    final DeviceConnection connection = NetworkDeviceLoader.processConnection(AppUtils.getDatabase(activity), device, ipAddress);
+                    final DeviceConnection connection = NetworkDeviceLoader.processConnection(
+                            AppUtils.getDatabase(activity), device, inetAddress.getHostAddress());
 
                     device.lastUsageTime = System.currentTimeMillis();
                     device.tmpSecureKey = accessPin;
@@ -373,11 +375,6 @@ public class UIConnectionUtils
         watcher.onResultReturned(true, false);
 
         return true;
-    }
-
-    public static boolean isOSAbove(int value)
-    {
-        return Build.VERSION.SDK_INT >= value;
     }
 
     public interface RequestWatcher

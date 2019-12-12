@@ -121,8 +121,6 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 				(TransferAssigneeListFragment) getSupportFragmentManager()
 						.findFragmentById(R.id.assigneeListFragment);
 
-
-
 		if (assigneeListFragment == null) {
 			assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager().getFragmentFactory()
 					.instantiate(this.getClassLoader(), TransferAssigneeListFragment.class.getName());
@@ -174,8 +172,7 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if (resultCode == android.app.Activity.RESULT_OK) {
-			if (requestCode == REQUEST_CODE_CHOOSE_DEVICE
-					&& data != null
+			if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
 					&& data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
 					&& data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
 				String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
@@ -251,6 +248,8 @@ public class AddDevicesToTransferActivity extends Activity implements SnackbarSu
 			} catch (Exception e) {
 				throw new Exception(getString(R.string.mesg_notValidTransfer));
 			}
+
+
 
 			return true;
 		} catch (Exception e) {

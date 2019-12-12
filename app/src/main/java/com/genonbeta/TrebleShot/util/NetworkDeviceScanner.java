@@ -18,6 +18,8 @@
 
 package com.genonbeta.TrebleShot.util;
 
+import android.util.Log;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
@@ -26,7 +28,7 @@ import java.util.concurrent.Executor;
 
 public class NetworkDeviceScanner
 {
-    private List<AddressedInterface> mInterfaces = new ArrayList<>();
+    private List<NetworkInterface> mInterfaces = new ArrayList<>();
     private ScannerExecutor mExecutor = new ScannerExecutor();
     private Scanner mScanner = new Scanner();
     private boolean mIsBreakRequested = false;
@@ -84,7 +86,7 @@ public class NetworkDeviceScanner
         }
     }
 
-    public boolean scan(List<AddressedInterface> interfaceList, ScannerHandler handler)
+    public boolean scan(List<NetworkInterface> interfaceList, ScannerHandler handler)
     {
         if (!isScannerAvailable() || interfaceList.size() < 1)
             return false;
@@ -111,8 +113,8 @@ public class NetworkDeviceScanner
 
     protected class Scanner implements Runnable
     {
-        private String mAddressPrefix = "192.168.0.";
-        private boolean[] mDevices = new boolean[256];
+        private volatile byte[] mAddressPrefix = new byte[4];
+        private volatile boolean[] mDevices = new boolean[256];
         private int mThreadsExited = 0;
 
         public Scanner()
@@ -121,8 +123,7 @@ public class NetworkDeviceScanner
 
         public void updateScanner()
         {
-            mAddressPrefix = NetworkUtils.getAddressPrefix(mInterfaces.get(0).getAssociatedAddress());
-            mDevices = new boolean[256];
+            mAddressPrefix = NetworkUtils.getFirstInet4Address(mInterfaces.get(0)).getAddress();
             mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
         }
 
@@ -130,18 +131,17 @@ public class NetworkDeviceScanner
         public void run()
         {
             for (int mPosition = 0; mPosition < mDevices.length; mPosition++) {
-                synchronized (mDevices) {
-                    if (mDevices[mPosition] || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested)
-                        continue;
+                if (mDevices[mPosition] || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested)
+                    continue;
 
-                    mDevices[mPosition] = true;
-                }
+                mDevices[mPosition] = true;
 
                 try {
-                    InetAddress inetAddress = InetAddress.getByName(mAddressPrefix + mPosition);
+                    mAddressPrefix[3] = (byte) mPosition;
+                    InetAddress inetAddress = InetAddress.getByAddress(mAddressPrefix);
 
-                    if (inetAddress.isReachable(300) && NetworkDeviceScanner.this.mHandler != null)
-                        NetworkDeviceScanner.this.mHandler.onDeviceFound(inetAddress, mInterfaces.get(0).getNetworkInterface());
+                    if (inetAddress.isReachable(300) && mHandler != null)
+                        mHandler.onDeviceFound(inetAddress, mInterfaces.get(0));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -150,8 +150,8 @@ public class NetworkDeviceScanner
             mThreadsExited--;
 
             if (mThreadsExited == 0) {
-                NetworkDeviceScanner.this.mInterfaces.remove(0);
-                NetworkDeviceScanner.this.nextThread();
+                mInterfaces.remove(0);
+                nextThread();
             }
         }
     }

@@ -53,14 +53,9 @@ public class PreferencesActivity extends Activity
 					.setMessage(R.string.text_resetPreferencesToDefaultSummary)
 					.setNegativeButton(R.string.butn_cancel, null)
 					.setPositiveButton(R.string.butn_proceed, (dialog, which) -> {
-						// TODO: 10/7/18 This shouldn't cause two separate sync operations to start
 						AppUtils.getDefaultPreferences(getApplicationContext()).edit()
 								.clear()
 								.apply();
-
-                        /*AppUtils.getDefaultLocalPreferences(getApplicationContext()).edit()
-                                .clear()
-                                .apply();*/
 
 						finish();
 					})

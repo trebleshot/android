@@ -20,46 +20,66 @@ package com.genonbeta.TrebleShot.util;
 
 import android.annotation.SuppressLint;
 import android.net.wifi.WifiConfiguration;
-import android.os.Build;
-import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
+import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
+import com.genonbeta.TrebleShot.config.AppConfig;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class NetworkUtils
 {
-    public static String bytesToHex(byte[] bytes)
+    public static boolean compareAddressRanges(NetworkInterface networkInterface, Inet4Address b)
     {
-        StringBuilder stringBuilder = new StringBuilder();
+        Enumeration<InetAddress> addressList = networkInterface.getInetAddresses();
 
-        for (byte aByte : bytes) {
-            int intVal = aByte & 0xff;
-
-            if (intVal < 0x10)
-                stringBuilder.append("0");
-
-            stringBuilder.append(Integer.toHexString(intVal).toUpperCase());
+        while (addressList.hasMoreElements()) {
+            InetAddress address = addressList.nextElement();
+            if (!address.isLoopbackAddress() && (address instanceof Inet4Address)
+                    && compareAddressRanges((Inet4Address) address, b))
+                return true;
         }
-        return stringBuilder.toString();
+
+        return false;
+    }
+
+    public static boolean compareAddressRanges(Inet4Address a, Inet4Address b)
+    {
+        byte[] ba = a.getAddress();
+        byte[] bb = b.getAddress();
+
+        for (int i = 0; i < 2; i++)
+            if (ba[i] != bb[i])
+                return false;
+
+        return true;
     }
 
     @SuppressLint("DefaultLocale")
-    public static String convertInet4Address(int address)
+    public static Inet4Address convertInet4Address(int address) throws UnknownHostException
     {
-        return String.format("%d.%d.%d.%d", (address & 0xff), (address >> 8 & 0xff), (address >> 16 & 0xff),
-                (address >> 24 & 0xff));
+        return (Inet4Address) InetAddress.getByAddress(new byte[]{(byte) (address & 0xff), (byte) (address >> 8 & 0xff),
+                (byte) (address >> 16 & 0xff), (byte) (address >> 24 & 0xff)});
     }
 
-    public static String getAddressPrefix(String ipv4Address)
+    @Nullable
+    public static NetworkInterface findNetworkInterface(Inet4Address address)
     {
-        return ipv4Address.substring(0, ipv4Address.lastIndexOf(".") + 1);
+        List<NetworkInterface> interfaceList = NetworkUtils.getInterfaces(true,
+                AppConfig.DEFAULT_DISABLED_INTERFACES);
+
+        for (NetworkInterface networkInterface : interfaceList) {
+            if (NetworkUtils.compareAddressRanges(networkInterface, address))
+                return networkInterface;
+        }
+
+        return null;
     }
 
     public static List<String> getMACAddressList(String interfaceName)
@@ -97,38 +117,50 @@ public class NetworkUtils
         return macAddressList;
     }
 
-    public static List<AddressedInterface> getInterfaces(boolean useIPv4, String[] avoidedInterfaces)
+    public static Inet4Address getFirstInet4Address(
+            @NonNull ActiveConnectionListAdapter.EditableNetworkInterface networkInterface) {
+        return getFirstInet4Address(networkInterface.getInterface());
+    }
+    public static Inet4Address getFirstInet4Address(@NonNull NetworkInterface networkInterface)
     {
-        List<AddressedInterface> filteredInterfaceList = new ArrayList<>();
+        Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+
+        while (addresses.hasMoreElements()) {
+            InetAddress address = addresses.nextElement();
+
+            if (address instanceof Inet4Address)
+                return (Inet4Address) address;
+        }
+
+        return null;
+    }
+
+    public static List<NetworkInterface> getInterfaces(boolean ipV4only, String[] avoidedInterfaces)
+    {
+        List<NetworkInterface> filteredInterfaceList = new ArrayList<>();
 
         try {
-            List<NetworkInterface> interfaceList = Collections.list(NetworkInterface.getNetworkInterfaces());
+            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 
-            for (NetworkInterface interfaceInstance : interfaceList) {
+            while (networkInterfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = networkInterfaces.nextElement();
                 boolean avoidedInterface = false;
 
                 if (avoidedInterfaces != null && avoidedInterfaces.length > 0)
                     for (String match : avoidedInterfaces)
-                        if (interfaceInstance.getDisplayName().contains(match))
+                        if (networkInterface.getDisplayName().startsWith(match))
                             avoidedInterface = true;
 
                 if (avoidedInterface)
                     continue;
 
-                List<InetAddress> inetAddressList = Collections.list(interfaceInstance.getInetAddresses());
+                Enumeration<InetAddress> addressList = networkInterface.getInetAddresses();
 
-                for (InetAddress address : inetAddressList) {
-                    if (!address.isLoopbackAddress()) {
-                        String interfaceAddress = address.getHostAddress().toUpperCase();
-                        boolean isIPv4 = address instanceof Inet4Address;
-
-                        if (useIPv4 && isIPv4) {
-                            filteredInterfaceList.add(new AddressedInterface(interfaceInstance, interfaceAddress));
-                        } else if (!useIPv4) {
-                            int delim = interfaceAddress.indexOf('%'); // drop ip6 port suffix
-                            filteredInterfaceList.add(new AddressedInterface(interfaceInstance,
-                                    (delim < 0 ? interfaceAddress : interfaceAddress.substring(0, delim))));
-                        }
+                while (addressList.hasMoreElements()) {
+                    InetAddress address = addressList.nextElement();
+                    if (!address.isLoopbackAddress() && (address instanceof Inet4Address || !ipV4only)) {
+                        filteredInterfaceList.add(networkInterface);
+                        break;
                     }
                 }
             }
@@ -151,6 +183,7 @@ public class NetworkUtils
     {
         String keyManagement = key.toString();
 
+
         try {
             return Integer.valueOf(keyManagement.substring(1, keyManagement.length() - 1));
         } catch (Exception e) {
@@ -168,57 +201,22 @@ public class NetworkUtils
         }
     }
 
-    public static String loadFileAsString(String filename) throws IOException
+    public static boolean ping(String ipV4address, int timeout)
     {
-        final int BUFLEN = 1024;
-
-        BufferedInputStream is = new BufferedInputStream(new FileInputStream(filename), BUFLEN);
-
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFLEN);
-            byte[] bytes = new byte[BUFLEN];
-            boolean isUTF8 = false;
-            int read, count = 0;
-
-            while ((read = is.read(bytes)) != -1) {
-                if (count == 0 && bytes[0] == (byte) 0xEF && bytes[1] == (byte) 0xBB && bytes[2] == (byte) 0xBF) {
-                    isUTF8 = true;
-                    baos.write(bytes, 3, read - 3); // drop UTF8 bom marker
-                } else {
-                    baos.write(bytes, 0, read);
-                }
-
-                count += read;
-            }
-            return isUTF8 ? new String(baos.toByteArray(), "UTF-8") : new String(baos.toByteArray());
-        } finally {
-            try {
-                is.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            return ping(InetAddress.getByName(ipV4address), timeout);
+        } catch (UnknownHostException e) {
+            Log.d(NetworkUtils.class.getSimpleName(), "ping: Unknown host " + ipV4address);
         }
+
+        return false;
     }
 
-    public static boolean ping(String ipAddress, int timeout)
+    public static boolean ping(InetAddress inetAddress, int timeout)
     {
-        if (UIConnectionUtils.isOSAbove(Build.VERSION_CODES.P)) {
-            try {
-                return InetAddress.getByName(ipAddress).isReachable(timeout);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                Process process = Runtime.getRuntime().exec("/system/bin/ping -c 1 -w " + (timeout / 1000) +
-                        " " + ipAddress);
-                int status = process.waitFor();
-                return status == 0;
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            return inetAddress.isReachable(timeout);
+        } catch (IOException ignored) {
         }
 
         return false;

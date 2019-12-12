@@ -19,16 +19,13 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-
 import androidx.annotation.Nullable;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,6 +41,8 @@ import java.util.concurrent.TimeoutException;
 
 abstract public class CommunicationBridge implements CoolSocket.Client.ConnectionHandler
 {
+    public static final String TAG = CommunicationBridge.class.getSimpleName();
+
     public static Client connect(AccessDatabase database, final Client.ConnectionHandler handler)
     {
         return connect(database, false, handler);
@@ -89,39 +88,43 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             mDatabase = database;
         }
 
-        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection) throws IOException, TimeoutException, DifferentClientException, CommunicationException
+        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
+                throws IOException, TimeoutException, DifferentClientException, CommunicationException
         {
-            CoolSocket.ActiveConnection activeConnection = connectWithHandshake(targetConnection.ipAddress, false);
+            CoolSocket.ActiveConnection activeConnection = connectWithHandshake(targetConnection.toInet4Address(),
+                    false);
 
             communicate(activeConnection, targetDevice);
 
             return activeConnection;
         }
 
-        public CoolSocket.ActiveConnection communicate(CoolSocket.ActiveConnection activeConnection, NetworkDevice targetDevice) throws IOException, TimeoutException, DifferentClientException, CommunicationException
+        public CoolSocket.ActiveConnection communicate(CoolSocket.ActiveConnection activeConnection,
+                                                       NetworkDevice targetDevice) throws IOException, TimeoutException,
+                DifferentClientException, CommunicationException
         {
             updateDeviceIfOkay(activeConnection, targetDevice);
             return activeConnection;
         }
 
-        public CoolSocket.ActiveConnection connect(String ipAddress) throws IOException
+        public CoolSocket.ActiveConnection connect(InetAddress inetAddress) throws IOException
         {
-            InetAddress inetAddress = InetAddress.getByName(ipAddress);
-
             if (!inetAddress.isReachable(1000))
                 throw new IOException("Ping test before connection to the address has failed");
 
-            return connect(new InetSocketAddress(ipAddress, AppConfig.SERVER_PORT_COMMUNICATION), AppConfig.DEFAULT_SOCKET_TIMEOUT);
+            return connect(new InetSocketAddress(inetAddress, AppConfig.SERVER_PORT_COMMUNICATION),
+                    AppConfig.DEFAULT_SOCKET_TIMEOUT);
         }
 
         public CoolSocket.ActiveConnection connect(DeviceConnection connection) throws IOException
         {
-            return connect(connection.ipAddress);
+            return connect(connection.toInet4Address());
         }
 
-        public CoolSocket.ActiveConnection connectWithHandshake(String ipAddress, boolean handshakeOnly) throws IOException, TimeoutException, CommunicationException
+        public CoolSocket.ActiveConnection connectWithHandshake(InetAddress inetAddress, boolean handshakeOnly)
+                throws IOException, TimeoutException, CommunicationException
         {
-            return handshake(connect(ipAddress), handshakeOnly);
+            return handshake(connect(inetAddress), handshakeOnly);
         }
 
         public Context getContext()
@@ -164,9 +167,16 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return activeConnection;
         }
 
-        public NetworkDevice loadDevice(String ipAddress) throws TimeoutException, IOException, CommunicationException
+        public NetworkDevice loadDevice(String ipAddress) throws TimeoutException, IOException,
+                CommunicationException
         {
-            return loadDevice(connectWithHandshake(ipAddress, true));
+            return loadDevice(InetAddress.getByName(ipAddress));
+        }
+
+        public NetworkDevice loadDevice(InetAddress inetAddress) throws TimeoutException, IOException,
+                CommunicationException
+        {
+            return loadDevice(connectWithHandshake(inetAddress, true));
         }
 
         public NetworkDevice loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException, IOException, CommunicationException

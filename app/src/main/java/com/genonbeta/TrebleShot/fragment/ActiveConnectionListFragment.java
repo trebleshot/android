@@ -23,18 +23,14 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.res.ColorStateList;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
-import android.widget.FrameLayout;
 
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
@@ -45,15 +41,14 @@ import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
+import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.genonbeta.TrebleShot.util.TextUtils;
 import com.genonbeta.TrebleShot.widget.EditableListAdapter;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 
@@ -63,10 +58,9 @@ import static com.genonbeta.TrebleShot.fragment.HotspotManagerFragment.WIFI_AP_S
  * created by: veli
  * date: 4/7/19 10:59 PM
  */
-public class ActiveConnectionListFragment
-        extends EditableListFragment<ActiveConnectionListAdapter.AddressedEditableInterface,
-        EditableListAdapter.EditableViewHolder, ActiveConnectionListAdapter>
-        implements TitleSupport, IconSupport
+public class ActiveConnectionListFragment extends EditableListFragment<
+        ActiveConnectionListAdapter.EditableNetworkInterface, EditableListAdapter.EditableViewHolder,
+        ActiveConnectionListAdapter> implements TitleSupport, IconSupport
 {
     private IntentFilter mFilter = new IntentFilter();
     private BroadcastReceiver mReceiver = new BroadcastReceiver()
@@ -156,9 +150,7 @@ public class ActiveConnectionListFragment
         final AppUtils.QuickActions<EditableListAdapter.EditableViewHolder> quickActions = clazz -> {
             registerLayoutViewClicks(clazz);
 
-            clazz.getView().findViewById(R.id.visitView).setOnClickListener(
-                    v -> performLayoutClickOpen(clazz));
-
+            clazz.getView().findViewById(R.id.visitView).setOnClickListener(v -> performLayoutClickOpen(clazz));
             clazz.getView().findViewById(R.id.selector).setOnClickListener(
                     v -> {
                         if (getSelectionConnection() != null)
@@ -170,8 +162,7 @@ public class ActiveConnectionListFragment
         {
             @NonNull
             @Override
-            public EditableListAdapter.EditableViewHolder onCreateViewHolder(
-                    @NonNull ViewGroup parent, int viewType)
+            public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
             {
                 return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
             }
@@ -182,11 +173,10 @@ public class ActiveConnectionListFragment
     public boolean onDefaultClickAction(EditableListAdapter.EditableViewHolder holder)
     {
         try {
-            ActiveConnectionListAdapter.AddressedEditableInterface editableInterface =
-                    getAdapter().getItem(holder);
+            ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
 
             new WebShareDetailsDialog(getContext(), TextUtils.makeWebShareLink(getContext(),
-                    editableInterface.getInterface().getAssociatedAddress())).show();
+                    NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())).show();
         } catch (NotReadyException e) {
             return false;
         }
@@ -211,11 +201,10 @@ public class ActiveConnectionListFragment
     {
         if (!super.performLayoutClickOpen(holder)) {
             try {
-                ActiveConnectionListAdapter.AddressedEditableInterface editableInterface =
-                        getAdapter().getItem(holder);
-                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(
-                        TextUtils.makeWebShareLink(getContext(), editableInterface.getInterface()
-                                .getAssociatedAddress())));
+                ActiveConnectionListAdapter.EditableNetworkInterface editableInterface = getAdapter().getItem(holder);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(TextUtils.makeWebShareLink(
+                        getContext(), NetworkUtils.getFirstInet4Address(editableInterface).getHostAddress())));
 
                 startActivity(intent);
             } catch (NotReadyException e) {
