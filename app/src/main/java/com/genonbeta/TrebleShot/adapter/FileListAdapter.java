@@ -57,9 +57,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FileListAdapter
-        extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<FileListAdapter.GenericFileHolder>
+public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.GenericFileHolder,
+        GroupEditableListAdapter.GroupViewHolder> implements GroupEditableListAdapter.GroupLister.CustomGroupLister<
+        FileListAdapter.GenericFileHolder>
 {
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;
     public static final int REQUEST_CODE_MOUNT_FOLDER = 1;
@@ -78,8 +78,8 @@ public class FileListAdapter
     @Override
     protected void onLoad(GroupLister<GenericFileHolder> lister)
     {
-        mShowThumbnails = AppUtils.getDefaultPreferences(getContext())
-                .getBoolean("load_thumbnails", true);
+        mShowThumbnails = AppUtils.getDefaultPreferences(getContext()).getBoolean("load_thumbnails",
+                true);
 
         DocumentFile path = getPath();
 
@@ -102,9 +102,9 @@ public class FileListAdapter
                             TransferObject existingObject = null;
 
                             try {
-                                ContentValues data = AppUtils.getDatabase(getContext())
-                                        .getFirstFromTable(new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                                .setWhere(AccessDatabase.FIELD_TRANSFER_FILE + "=?", file.getName()));
+                                ContentValues data = AppUtils.getDatabase(getContext()).getFirstFromTable(
+                                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
+                                                AccessDatabase.FIELD_TRANSFER_FILE + "=?", file.getName()));
 
                                 if (data != null)
                                     existingObject = new TransferObject(data);
@@ -121,7 +121,8 @@ public class FileListAdapter
             List<File> referencedDirectoryList = new ArrayList<>();
             DocumentFile defaultFolder = FileUtils.getApplicationDirectory(getContext());
 
-            lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles), R.drawable.ic_trebleshot_rounded_white_24dp_static));
+            lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles),
+                    R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
             lister.offerObliged(this, new PublicDirectoryHolder(Environment
                     .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
@@ -159,7 +160,8 @@ public class FileListAdapter
                 if (mediaDir == null || !mediaDir.canWrite())
                     continue;
 
-                StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir), getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
+                StorageHolder fileHolder = new StorageHolder(DocumentFile.fromFile(mediaDir),
+                        getContext().getString(R.string.text_storage), R.drawable.ic_save_white_24dp);
                 String[] splitPath = mediaDir.getAbsolutePath().split(File.separator);
 
                 if (splitPath.length >= 2 && splitPath[1].equals("storage")) {
@@ -203,15 +205,15 @@ public class FileListAdapter
             if (Build.VERSION.SDK_INT >= 21) {
                 for (WritablePathObject pathObject : mountedPathList)
                     try {
-                        lister.offerObliged(this, new WritablePathHolder(DocumentFile.fromUri(getContext(), pathObject.path, true),
-                                pathObject,
-                                getContext().getString(R.string.text_storage)));
+                        lister.offerObliged(this, new WritablePathHolder(DocumentFile.fromUri(getContext(),
+                                pathObject.path, true), pathObject, getContext().getString(R.string.text_storage)));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
 
                 lister.offerObliged(this, new WritablePathHolder(GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON,
-                        R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory), REQUEST_CODE_MOUNT_FOLDER));
+                        R.drawable.ic_folder_network_white_24dp, getContext().getString(R.string.butn_mountDirectory),
+                        REQUEST_CODE_MOUNT_FOLDER));
             }
 
             {
@@ -607,9 +609,9 @@ public class FileListAdapter
         @Override
         public long getId()
         {
-            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON
-                    ? super.getId()
-                    : String.format("%s_%s_%s", getClass().getName(), String.valueOf(iconRes), getRepresentativeText().hashCode()).hashCode();
+            return getViewType() != GroupEditableListAdapter.VIEW_TYPE_ACTION_BUTTON ? super.getId() : String.format(
+                    "%s_%s_%s", getClass().getName(), String.valueOf(iconRes),
+                    getRepresentativeText().hashCode()).hashCode();
         }
 
         // Don't let these folders to be selected

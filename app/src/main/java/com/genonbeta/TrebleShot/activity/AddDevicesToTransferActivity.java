@@ -30,14 +30,10 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentFactory;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
@@ -53,276 +49,281 @@ import com.google.android.material.snackbar.Snackbar;
 
 public class AddDevicesToTransferActivity extends Activity implements SnackbarSupport, WorkerService.OnAttachListener
 {
-	public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
+    public static final String TAG = AddDevicesToTransferActivity.class.getSimpleName();
 
-	public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
+    public static final int REQUEST_CODE_CHOOSE_DEVICE = 0;
 
-	public static final String
-			EXTRA_DEVICE_ID = "extraDeviceId",
-			EXTRA_GROUP_ID = "extraGroupId";
+    public static final String
+            EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_GROUP_ID = "extraGroupId",
+            EXTRA_FLAGS = "extraFlags";
 
-	private TransferGroup mGroup = null;
-	private AddDeviceRunningTask mTask;
-	private FloatingActionButton mActionButton;
-	private ProgressBar mProgressBar;
-	private ViewGroup mLayoutStatusContainer;
-	private TextView mProgressTextLeft;
-	private TextView mProgressTextRight;
-	private IntentFilter mFilter = new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE);
-	private BroadcastReceiver mReceiver = new BroadcastReceiver()
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-				if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName) && !checkGroupIntegrity())
-					finish();
-			}
-		}
-	};
+    public static final int
+            FLAG_LAUNCH_DEVICE_CHOOSER = 1;
 
-	public static void startInstance(Context context, long groupId)
-	{
-		context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
-				.putExtra(EXTRA_GROUP_ID, groupId)
-				.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-	}
+    private TransferGroup mGroup = null;
+    private AddDeviceRunningTask mTask;
+    private FloatingActionButton mActionButton;
+    private ProgressBar mProgressBar;
+    private ViewGroup mLayoutStatusContainer;
+    private TextView mProgressTextLeft;
+    private TextView mProgressTextRight;
+    private IntentFilter mFilter = new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE);
+    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+                if (AccessDatabase.TABLE_TRANSFERGROUP.equals(data.tableName) && !checkGroupIntegrity())
+                    finish();
+            }
+        }
+    };
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    public static void startInstance(Context context, long groupId, boolean addingNewDevice)
+    {
+        context.startActivity(new Intent(context, AddDevicesToTransferActivity.class)
+                .putExtra(EXTRA_GROUP_ID, groupId)
+                .putExtra(EXTRA_FLAGS, addingNewDevice ? FLAG_LAUNCH_DEVICE_CHOOSER : 0)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+    }
 
-		setContentView(R.layout.activity_add_devices_to_transfer);
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-		if (!checkGroupIntegrity())
-			return;
+        setContentView(R.layout.activity_add_devices_to_transfer);
 
-		Toolbar toolbar = findViewById(R.id.toolbar);
-		setSupportActionBar(toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-		if (getSupportActionBar() != null) {
-			getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
-			getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		}
+        if (checkGroupIntegrity()) {
+            int flags = getIntent().getIntExtra(EXTRA_FLAGS, 0);
+            if ((flags & FLAG_LAUNCH_DEVICE_CHOOSER) != 0)
+                startConnectionManagerActivity();
+        } else
+            return;
 
-		Bundle assigneeFragmentArgs = new Bundle();
-		assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);
-		assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close_white_24dp);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
-		mProgressBar = findViewById(R.id.progressBar);
-		mProgressTextLeft = findViewById(R.id.text1);
-		mProgressTextRight = findViewById(R.id.text2);
-		mActionButton = findViewById(R.id.content_fab);
-		mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
+        Bundle assigneeFragmentArgs = new Bundle();
+        assigneeFragmentArgs.putLong(TransferAssigneeListFragment.ARG_GROUP_ID, mGroup.id);
+        assigneeFragmentArgs.putBoolean(TransferAssigneeListFragment.ARG_USE_HORIZONTAL_VIEW, false);
 
-		TransferAssigneeListFragment assigneeListFragment =
-				(TransferAssigneeListFragment) getSupportFragmentManager()
-						.findFragmentById(R.id.assigneeListFragment);
+        mProgressBar = findViewById(R.id.progressBar);
+        mProgressTextLeft = findViewById(R.id.text1);
+        mProgressTextRight = findViewById(R.id.text2);
+        mActionButton = findViewById(R.id.content_fab);
+        mLayoutStatusContainer = findViewById(R.id.layoutStatusContainer);
 
-		if (assigneeListFragment == null) {
-			assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager().getFragmentFactory()
-					.instantiate(this.getClassLoader(), TransferAssigneeListFragment.class.getName());
-			assigneeListFragment.setArguments(assigneeFragmentArgs);
+        TransferAssigneeListFragment assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.assigneeListFragment);
 
-			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        if (assigneeListFragment == null) {
+            assigneeListFragment = (TransferAssigneeListFragment) getSupportFragmentManager().getFragmentFactory()
+                    .instantiate(this.getClassLoader(), TransferAssigneeListFragment.class.getName());
+            assigneeListFragment.setArguments(assigneeFragmentArgs);
 
-			transaction.add(R.id.assigneeListFragment, assigneeListFragment);
-			transaction.commit();
-		}
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
-		resetStatusViews();
-	}
+            transaction.add(R.id.assigneeListFragment, assigneeListFragment);
+            transaction.commit();
+        }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		int id = item.getItemId();
+        resetStatusViews();
+    }
 
-		if (id == android.R.id.home || id == R.id.actions_add_devices_done) {
-			if (mTask != null)
-				mTask.getInterrupter().interrupt();
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int id = item.getItemId();
 
-			finish();
-		} else if (id == R.id.actions_add_devices_help) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (id == android.R.id.home || id == R.id.actions_add_devices_done) {
+            if (mTask != null)
+                mTask.getInterrupter().interrupt();
 
-			builder.setTitle(R.string.text_help)
-					.setMessage(R.string.text_addDeviceHelp)
-					.setPositiveButton(R.string.butn_close, null);
+            finish();
+        } else if (id == R.id.actions_add_devices_help) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-			builder.show();
-		} else
-			return super.onOptionsItemSelected(item);
+            builder.setTitle(R.string.text_help)
+                    .setMessage(R.string.text_addDeviceHelp)
+                    .setPositiveButton(R.string.butn_close, null);
 
-		return true;
-	}
+            builder.show();
+        } else
+            return super.onOptionsItemSelected(item);
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		getMenuInflater().inflate(R.menu.actions_add_devices, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+        return true;
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-	{
-		super.onActivityResult(requestCode, resultCode, data);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.actions_add_devices, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
 
-		if (resultCode == android.app.Activity.RESULT_OK) {
-			if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
-					&& data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
-					&& data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
-				String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
-				String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
 
-				try {
-					NetworkDevice networkDevice = new NetworkDevice(deviceId);
-					DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
+        if (resultCode == android.app.Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_CHOOSE_DEVICE && data != null
+                    && data.hasExtra(AddDeviceActivity.EXTRA_DEVICE_ID)
+                    && data.hasExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER)) {
+                String deviceId = data.getStringExtra(AddDeviceActivity.EXTRA_DEVICE_ID);
+                String connectionAdapter = data.getStringExtra(AddDeviceActivity.EXTRA_CONNECTION_ADAPTER);
 
-					getDatabase().reconstruct(networkDevice);
-					getDatabase().reconstruct(connection);
+                try {
+                    NetworkDevice networkDevice = new NetworkDevice(deviceId);
+                    DeviceConnection connection = new DeviceConnection(deviceId, connectionAdapter);
 
-					doCommunicate(networkDevice, connection);
-				} catch (Exception e) {
-					Toast.makeText(AddDevicesToTransferActivity.this,
-							R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
-				}
-			}
-		}
-	}
+                    getDatabase().reconstruct(networkDevice);
+                    getDatabase().reconstruct(connection);
 
-	@Override
-	protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
-	{
-		super.onPreviousRunningTask(task);
+                    doCommunicate(networkDevice, connection);
+                } catch (Exception e) {
+                    Toast.makeText(AddDevicesToTransferActivity.this,
+                            R.string.mesg_somethingWentWrong, Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
 
-		if (task instanceof AddDeviceRunningTask) {
-			mTask = ((AddDeviceRunningTask) task);
-			mTask.setAnchorListener(this);
-		}
-	}
+    @Override
+    protected void onPreviousRunningTask(@Nullable WorkerService.RunningTask task)
+    {
+        super.onPreviousRunningTask(task);
 
-	@Override
-	protected void onStart()
-	{
-		super.onStart();
-		checkForTasks();
-	}
+        if (task instanceof AddDeviceRunningTask) {
+            mTask = ((AddDeviceRunningTask) task);
+            mTask.setAnchorListener(this);
+        }
+    }
 
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-		registerReceiver(mReceiver, mFilter);
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        checkForTasks();
+    }
 
-		if (!checkGroupIntegrity())
-			finish();
-	}
+    @Override
+    protected void onResume()
+    {
+        super.onResume();
+        registerReceiver(mReceiver, mFilter);
 
-	@Override
-	protected void onPause()
-	{
-		super.onPause();
-		unregisterReceiver(mReceiver);
-	}
+        if (!checkGroupIntegrity())
+            finish();
+    }
 
-	@Override
-	public void onAttachedToTask(WorkerService.RunningTask task)
-	{
-		takeOnProcessMode();
-	}
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        unregisterReceiver(mReceiver);
+    }
 
-	public boolean checkGroupIntegrity()
-	{
-		try {
-			if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP_ID))
-				throw new Exception(getString(R.string.text_empty));
+    @Override
+    public void onAttachedToTask(WorkerService.RunningTask task)
+    {
+        takeOnProcessMode();
+    }
 
-			mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
+    public boolean checkGroupIntegrity()
+    {
+        try {
+            if (getIntent() == null || !getIntent().hasExtra(EXTRA_GROUP_ID))
+                throw new Exception(getString(R.string.text_empty));
 
-			try {
-				getDatabase().reconstruct(mGroup);
-			} catch (Exception e) {
-				throw new Exception(getString(R.string.mesg_notValidTransfer));
-			}
+            mGroup = new TransferGroup(getIntent().getLongExtra(EXTRA_GROUP_ID, -1));
 
+            try {
+                getDatabase().reconstruct(mGroup);
+            } catch (Exception e) {
+                throw new Exception(getString(R.string.mesg_notValidTransfer));
+            }
 
+            return true;
+        } catch (Exception e) {
+            Toast.makeText(AddDevicesToTransferActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+            finish();
+        }
 
-			return true;
-		} catch (Exception e) {
-			Toast.makeText(AddDevicesToTransferActivity.this,
-					e.getMessage(), Toast.LENGTH_LONG).show();
-			finish();
-		}
+        return false;
+    }
 
-		return false;
-	}
+    public Snackbar createSnackbar(final int resId, final Object... objects)
+    {
+        return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
+    }
 
-	public Snackbar createSnackbar(final int resId, final Object... objects)
-	{
-		return Snackbar.make(findViewById(R.id.container), getString(resId, objects), Snackbar.LENGTH_LONG);
-	}
+    public void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
+    {
+        AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
 
-	public void doCommunicate(final NetworkDevice device, final DeviceConnection connection)
-	{
-		AddDeviceRunningTask task = new AddDeviceRunningTask(mGroup, device, connection);
+        task.setTitle(getString(R.string.mesg_communicating))
+                .setAnchorListener(this)
+                .setContentIntent(this, getIntent())
+                .run(this);
 
-		task.setTitle(getString(R.string.mesg_communicating))
-				.setAnchorListener(this)
-				.setContentIntent(this, getIntent())
-				.run(this);
+        attachRunningTask(task);
+    }
 
-		attachRunningTask(task);
-	}
+    @Override
+    public Intent getIntent()
+    {
+        return super.getIntent();
+    }
 
-	@Override
-	public Intent getIntent()
-	{
-		return super.getIntent();
-	}
+    public void resetStatusViews()
+    {
+        mProgressBar.setMax(0);
+        mProgressBar.setProgress(0);
 
-	public void resetStatusViews()
-	{
-		mProgressBar.setMax(0);
-		mProgressBar.setProgress(0);
+        //mTextMain.setText(R.string.text_addDevicesToTransfer);
+        mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
+        mLayoutStatusContainer.setVisibility(View.GONE);
+        mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
+    }
 
-		//mTextMain.setText(R.string.text_addDevicesToTransfer);
-		mActionButton.setImageResource(R.drawable.ic_add_white_24dp);
-		mLayoutStatusContainer.setVisibility(View.GONE);
-		mActionButton.setOnClickListener(v -> startConnectionManagerActivity());
-	}
+    private void startConnectionManagerActivity()
+    {
+        startActivityForResult(new Intent(AddDevicesToTransferActivity.this, AddDeviceActivity.class),
+                REQUEST_CODE_CHOOSE_DEVICE);
+    }
 
-	private void startConnectionManagerActivity()
-	{
-		startActivityForResult(new Intent(AddDevicesToTransferActivity.this,
-				AddDeviceActivity.class), REQUEST_CODE_CHOOSE_DEVICE);
-	}
+    public void takeOnProcessMode()
+    {
+        mLayoutStatusContainer.setVisibility(View.VISIBLE);
+        mActionButton.setImageResource(R.drawable.ic_close_white_24dp);
+        mActionButton.setOnClickListener(v -> {
+            if (mTask != null)
+                mTask.getInterrupter().interrupt();
+        });
+    }
 
-	public void takeOnProcessMode()
-	{
-		mLayoutStatusContainer.setVisibility(View.VISIBLE);
-		mActionButton.setImageResource(R.drawable.ic_close_white_24dp);
-		mActionButton.setOnClickListener(v -> {
-			if (mTask != null)
-				mTask.getInterrupter().interrupt();
-		});
-	}
+    public void updateProgress(final int total, final int current)
+    {
+        if (isFinishing())
+            return;
 
-	public void updateProgress(final int total, final int current)
-	{
-		if (isFinishing())
-			return;
+        runOnUiThread(() -> {
+            mProgressTextLeft.setText(String.valueOf(current));
+            mProgressTextRight.setText(String.valueOf(total));
+        });
 
-		runOnUiThread(() -> {
-			mProgressTextLeft.setText(String.valueOf(current));
-			mProgressTextRight.setText(String.valueOf(total));
-		});
-
-		mProgressBar.setProgress(current);
-		mProgressBar.setMax(total);
-	}
+        mProgressBar.setProgress(current);
+        mProgressBar.setMax(total);
+    }
 }
 

@@ -62,6 +62,7 @@ public class ChooseSharingMethodDialog<T extends Shareable> extends AlertDialog.
 
         setTitle(R.string.text_chooseSharingMethod);
         setAdapter(new SharingMethodsListAdapter(), clickListener);
+        setNegativeButton(R.string.butn_cancel, null);
     }
 
     private class SharingMethodsListAdapter extends BaseAdapter

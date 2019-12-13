@@ -108,12 +108,10 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
 
             long requestId = AppUtils.getUniqueNumber();
 
-            TransferObject transferObject = new TransferObject(requestId,
-                    groupInstance.id,
-                    selectableStream.getSelectableTitle(),
-                    selectableStream.getDocumentFile().getUri().toString(),
-                    selectableStream.getDocumentFile().getType(),
-                    selectableStream.getDocumentFile().length(), TransferObject.Type.OUTGOING);
+            TransferObject transferObject = new TransferObject(requestId, groupInstance.id,
+                    selectableStream.getSelectableTitle(), selectableStream.getDocumentFile().getUri().toString(),
+                    selectableStream.getDocumentFile().getType(), selectableStream.getDocumentFile().length(),
+                    TransferObject.Type.OUTGOING);
 
             if (selectableStream.getDirectory() != null)
                 transferObject.directory = selectableStream.getDirectory();
@@ -156,11 +154,11 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
                         R.string.text_transferSharedOnBrowser, Toast.LENGTH_SHORT).show());
             }
 
-            if (!flagAddNewDevice)
-                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id);
-
             AppUtils.getDatabase(getService()).insert(groupInstance);
             ViewTransferActivity.startInstance(getService(), groupInstance.id);
+
+            if (!flagWebShare || flagAddNewDevice)
+                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id, true);
         }
 
         AppUtils.getDatabase(getService()).broadcast();

@@ -36,15 +36,13 @@ import java.util.List;
 
 public class DeviceScannerService extends Service implements NetworkDeviceScanner.ScannerHandler
 {
-    public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES";
-    public static final String ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED";
-    public static final String ACTION_DEVICE_SCAN_COMPLETED = "genonbeta.intent.action.DEVICE_SCAN_COMPLETED";
-
-    public static final String EXTRA_SCAN_STATUS = "genonbeta.intent.extra.SCAN_STATUS";
-
-    public static final String STATUS_OK = "genonbeta.intent.status.OK";
-    public static final String STATUS_NO_NETWORK_INTERFACE = "genonbeta.intent.status.NO_NETWORK_INTERFACE";
-    public static final String SCANNER_NOT_AVAILABLE = "genonbeta.intent.status.SCANNER_NOT_AVAILABLE";
+    public static final String ACTION_SCAN_DEVICES = "genonbeta.intent.action.SCAN_DEVICES",
+            ACTION_SCAN_STARTED = "genonbeta.intent.action.SCAN_STARTED",
+            ACTION_DEVICE_SCAN_COMPLETED = "genonbeta.intent.action.DEVICE_SCAN_COMPLETED",
+            EXTRA_SCAN_STATUS = "genonbeta.intent.extra.SCAN_STATUS",
+            STATUS_OK = "genonbeta.intent.status.OK",
+            STATUS_NO_NETWORK_INTERFACE = "genonbeta.intent.status.NO_NETWORK_INTERFACE",
+            SCANNER_NOT_AVAILABLE = "genonbeta.intent.status.SCANNER_NOT_AVAILABLE";
 
     private static NetworkDeviceScanner mDeviceScanner = new NetworkDeviceScanner();
 
