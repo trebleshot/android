@@ -18,16 +18,14 @@
 
 package com.genonbeta.TrebleShot.fragment;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.*;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,6 +34,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
+import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.dialog.DeviceInfoDialog;
@@ -56,9 +55,12 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 
 import java.util.List;
 
-public class NetworkDeviceListFragment
-        extends EditableListFragment<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter>
-        implements TitleSupport, DetachListener, IconSupport, AddDeviceActivity.DeviceSelectionSupport
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.EditableNetworkDevice;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.HotspotNetwork;
+
+public class NetworkDeviceListFragment extends EditableListFragment<EditableNetworkDevice,
+        EditableListAdapter.EditableViewHolder, NetworkDeviceListAdapter> implements TitleSupport, DetachListener,
+        IconSupport, AddDeviceActivity.DeviceSelectionSupport
 {
     public static final int REQUEST_LOCATION_PERMISSION = 643;
 
@@ -69,15 +71,33 @@ public class NetworkDeviceListFragment
     private NetworkDeviceSelectedListener mDeviceSelectedListener;
     private IntentFilter mIntentFilter = new IntentFilter();
     private StatusReceiver mStatusReceiver = new StatusReceiver();
-    @Nullable
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private UIConnectionUtils mConnectionUtils;
     private NetworkDevice.Type[] mHiddenDeviceTypes;
     private boolean mWaitForWiFi = false;
     private boolean mSwipeRefreshEnabled = true;
     private boolean mDeviceScanAllowed = true;
+    private DeviceScannerService mService;
 
-    OnDeviceRegisteredErrorListener mDeviceErrorListener = new OnDeviceRegisteredErrorListener()
+    private ServiceConnection mScannerConnection = new ServiceConnection()
+    {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service)
+        {
+            mService = ((DeviceScannerService.Binder) service).getService();
+            checkRefreshing();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name)
+        {
+            mService = null;
+        }
+
+
+    };
+
+    private OnDeviceRegisteredErrorListener mDeviceErrorListener = new OnDeviceRegisteredErrorListener()
     {
         @Override
         public void onError(Exception error)
@@ -147,7 +167,8 @@ public class NetworkDeviceListFragment
         mSwipeRefreshLayout.setColorSchemeColors(ContextCompat
                 .getColor(context, AppUtils.getReference(getActivity(), R.attr.colorAccent)));
 
-        mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        mSwipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
 
         mSwipeRefreshLayout.setProgressBackgroundColorSchemeColor(
                 ContextCompat.getColor(context, AppUtils.getReference(context, R.attr.colorSurface))
@@ -212,7 +233,7 @@ public class NetworkDeviceListFragment
         if (mDeviceSelectedListener != null && mDeviceSelectedListener.isListenerEffective()) {
             if (device.versionCode != -1 && device.versionCode < AppConfig.SUPPORTED_MIN_VERSION)
                 createSnackbar(R.string.mesg_versionNotSupported).show();
-            else if (device instanceof NetworkDeviceListAdapter.HotspotNetwork)
+            else if (device instanceof HotspotNetwork)
                 mConnectionUtils.makeAcquaintance(getActivity(), null, device, -1, mDeviceErrorListener);
             else
                 new EstablishConnectionDialog(getActivity(), device,
@@ -231,9 +252,9 @@ public class NetworkDeviceListFragment
     {
         super.onResume();
         getActivity().registerReceiver(mStatusReceiver, mIntentFilter);
-
+        getActivity().bindService(new Intent(getContext(), DeviceScannerService.class), mScannerConnection,
+                Service.BIND_AUTO_CREATE);
         refreshList();
-        checkRefreshing();
 
         mNsdDiscovery.startDiscovering();
     }
@@ -243,8 +264,10 @@ public class NetworkDeviceListFragment
     {
         super.onPause();
         getActivity().unregisterReceiver(mStatusReceiver);
+        getActivity().unbindService(mScannerConnection);
 
         mNsdDiscovery.stopDiscovering();
+
     }
 
     @Override
@@ -287,8 +310,13 @@ public class NetworkDeviceListFragment
     public void checkRefreshing()
     {
         if (mSwipeRefreshLayout != null)
-            mSwipeRefreshLayout.setRefreshing(!DeviceScannerService.getDeviceScanner()
-                    .isScannerAvailable());
+            mSwipeRefreshLayout.setRefreshing(mService != null && mService.getDeviceScanner().isBusy());
+
+        if (mService == null)
+            Log.d(TAG, "checkRefreshing: Service is null");
+        else {
+            Log.d(TAG, "checkRefreshing: isBusy " + mService.getDeviceScanner().isBusy());
+        }
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -325,15 +353,17 @@ public class NetworkDeviceListFragment
 
     private void openInfo(NetworkDevice device)
     {
-        if (device instanceof NetworkDeviceListAdapter.HotspotNetwork) {
-            final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = (NetworkDeviceListAdapter.HotspotNetwork) device;
+        if (device instanceof HotspotNetwork) {
+            final HotspotNetwork hotspotNetwork = (HotspotNetwork) device;
 
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
             builder.setTitle(hotspotNetwork.nickname);
             builder.setMessage(R.string.text_trebleshotHotspotDescription);
             builder.setNegativeButton(R.string.butn_close, null);
-            builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork) ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) -> getConnectionUtils().toggleConnection(hotspotNetwork));
+            builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
+                    ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) -> getConnectionUtils().toggleConnection(
+                    hotspotNetwork));
 
             builder.show();
         } else
@@ -359,7 +389,7 @@ public class NetworkDeviceListFragment
     {
         getConnectionUtils().getWifiManager().startScan();
 
-        if (!AppUtils.toggleDeviceScanning(getContext()))
+        if (!AppUtils.toggleDeviceScanning(mService))
             Toast.makeText(getContext(), R.string.mesg_stopping, Toast.LENGTH_SHORT).show();
     }
 
@@ -375,10 +405,12 @@ public class NetworkDeviceListFragment
         {
             checkRefreshing();
 
-            if (DeviceScannerService.ACTION_SCAN_STARTED.equals(intent.getAction()) && intent.hasExtra(DeviceScannerService.EXTRA_SCAN_STATUS)) {
+            if (DeviceScannerService.ACTION_SCAN_STARTED.equals(intent.getAction())
+                    && intent.hasExtra(DeviceScannerService.EXTRA_SCAN_STATUS)) {
                 String scanStatus = intent.getStringExtra(DeviceScannerService.EXTRA_SCAN_STATUS);
 
-                if (DeviceScannerService.STATUS_OK.equals(scanStatus) || DeviceScannerService.SCANNER_NOT_AVAILABLE.equals(scanStatus)) {
+                if (DeviceScannerService.STATUS_OK.equals(scanStatus)
+                        || DeviceScannerService.SCANNER_NOT_AVAILABLE.equals(scanStatus)) {
                     boolean selfNetwork = getConnectionUtils().isConnectionSelfNetwork();
 
                     if (!selfNetwork)
@@ -388,17 +420,11 @@ public class NetworkDeviceListFragment
                                 .show();
                     else
                         createSnackbar(R.string.mesg_scanningDevicesSelfHotspot)
-                                .setAction(R.string.butn_disconnect, new View.OnClickListener()
-                                {
-                                    @Override
-                                    public void onClick(View v)
-                                    {
-                                        getConnectionUtils().getWifiManager().disconnect();
-                                    }
-                                })
+                                .setAction(R.string.butn_disconnect, v -> getConnectionUtils().getWifiManager().disconnect())
                                 .show();
                 } else if (DeviceScannerService.STATUS_NO_NETWORK_INTERFACE.equals(scanStatus))
-                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION, mWiFiWatcher);
+                    getUIConnectionUtils().showConnectionOptions(getActivity(), REQUEST_LOCATION_PERMISSION,
+                            mWiFiWatcher);
             } else if (DeviceScannerService.ACTION_DEVICE_SCAN_COMPLETED.equals(intent.getAction())) {
                 createSnackbar(R.string.mesg_scanCompleted)
                         .show();
@@ -410,7 +436,8 @@ public class NetworkDeviceListFragment
                     refreshList();
             } else if (getUIConnectionUtils().notifyWirelessRequestHandled()
                     && WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-                    && WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, -1)) {
+                    && WifiManager.WIFI_STATE_ENABLED == intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE,
+                    -1)) {
                 requestRefresh();
             }
         }

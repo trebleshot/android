@@ -18,21 +18,28 @@
 
 package com.genonbeta.TrebleShot.util;
 
+import android.util.Log;
+import androidx.annotation.NonNull;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 
-public class NetworkDeviceScanner
+public class NetworkDeviceScanner implements Runnable
 {
-    private List<NetworkInterface> mInterfaces = new ArrayList<>();
-    private ScannerExecutor mExecutor = new ScannerExecutor();
-    private Scanner mScanner = new Scanner();
-    private boolean mIsBreakRequested = false;
-    private boolean mIsLockRequested = false;
-    private ScannerHandler mHandler;
-    private int mNumberOfThreads = 6;
+    public static final String TAG = NetworkDeviceScanner.class.getSimpleName();
+
+    private final List<NetworkInterface> mInterfaces = new ArrayList<>();
+    private final ScannerExecutor mExecutor = new ScannerExecutor();
+    private boolean mInterrupted = false;
+    private volatile ScannerHandler mHandler;
+    private int mMaxThreads = 6;
+    private NetworkInterface mActiveInterface;
+    private volatile short mActiveThreads = 0;
+    private volatile byte[] mAddressPrefix = new byte[4];
+    private volatile boolean[] mIPRange = new boolean[256];
 
     public NetworkDeviceScanner()
     {
@@ -40,66 +47,109 @@ public class NetworkDeviceScanner
 
     public NetworkDeviceScanner(int numberOfThreads)
     {
-        mNumberOfThreads = numberOfThreads;
+        mMaxThreads = numberOfThreads;
     }
 
     public boolean interrupt()
     {
-        if (!mIsBreakRequested)
-            mIsBreakRequested = true;
-        else
+        if (mInterrupted)
             return false;
 
+        mInterrupted = true;
         return true;
     }
 
-    public boolean isScannerAvailable()
+    public boolean isBusy()
     {
-        return (mInterfaces.size() == 0 && !mIsLockRequested);
+        synchronized (mInterfaces) {
+            return mInterfaces.size() > 0;
+        }
     }
 
-    private void nextThread()
+    private synchronized boolean nextThread()
     {
-        if (mIsLockRequested)
-            return;
-
-        if (isScannerAvailable()) {
-            // this sequence only works when threads complete the job
-
-            mIsBreakRequested = false;
-
-            if (mHandler != null) {
-                setLock(true); // lock scanner
-                mHandler.onThreadsCompleted();
-                setLock(false); // release lock
-            }
-
-            return;
+        synchronized (mInterfaces) {
+            mActiveInterface = mInterfaces.size() > 0 ? mInterfaces.get(0) : null;
         }
 
-        mScanner.updateScanner();
+        if (mActiveInterface == null)
+            return false;
 
-        for (int threadsStarted = mNumberOfThreads; threadsStarted > 0; threadsStarted--) {
-            mExecutor.execute(mScanner);
-        }
+        mAddressPrefix = NetworkUtils.getFirstInet4Address(mActiveInterface).getAddress();
+
+        for (short i = 0; i < mIPRange.length; i++)
+            mIPRange[i] = false;
+
+        for (int i = 0; i < mMaxThreads; i++)
+            mExecutor.execute(this);
+
+        return true;
     }
 
     public boolean scan(List<NetworkInterface> interfaceList, ScannerHandler handler)
     {
-        if (!isScannerAvailable() || interfaceList.size() < 1)
+        if (isBusy() || interfaceList.size() <= 0)
             return false;
 
-        mInterfaces.addAll(interfaceList);
         mHandler = handler;
 
-        nextThread();
+        synchronized (mInterfaces) {
+            mInterfaces.clear();
+            mInterfaces.addAll(interfaceList);
+        }
 
-        return true;
+        return nextThread();
     }
 
-    public void setLock(boolean lock)
+    private synchronized short updateThreadCounter(boolean add) {
+        if (add)
+            return ++mActiveThreads;
+        else
+            return --mActiveThreads;
+    }
+
+    @Override
+    public void run()
     {
-        mIsLockRequested = lock;
+        updateThreadCounter(true);
+
+        byte[] prefix = mAddressPrefix;
+        NetworkInterface networkInterface = mActiveInterface;
+
+        for (short pos = 1; pos < mIPRange.length; pos++) {
+            if (mInterrupted)
+                break;
+
+            if (mIPRange[pos])
+                continue;
+
+            mIPRange[pos] = true;
+
+            try {
+                prefix[3] = (byte) pos;
+                InetAddress inetAddress = InetAddress.getByAddress(prefix);
+
+                if (inetAddress.isReachable(300) && mHandler != null)
+                    mHandler.onDeviceFound(inetAddress, networkInterface);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (mActiveThreads > 0 && updateThreadCounter(false) == 0) {
+            synchronized (mInterfaces) {
+                if (mInterrupted) {
+                    mInterfaces.clear();
+                    mInterrupted = false;
+                } else
+                    mInterfaces.remove(0);
+            }
+
+            if (mHandler != null)
+                mHandler.onThreadsCompleted();
+
+            nextThread();
+        }
     }
 
     public interface ScannerHandler
@@ -109,55 +159,10 @@ public class NetworkDeviceScanner
         void onThreadsCompleted();
     }
 
-    protected class Scanner implements Runnable
-    {
-        private volatile byte[] mAddressPrefix = new byte[4];
-        private volatile boolean[] mDevices = new boolean[256];
-        private int mThreadsExited = 0;
-
-        public Scanner()
-        {
-        }
-
-        public void updateScanner()
-        {
-            mAddressPrefix = NetworkUtils.getFirstInet4Address(mInterfaces.get(0)).getAddress();
-            mThreadsExited = NetworkDeviceScanner.this.mNumberOfThreads;
-        }
-
-        @Override
-        public void run()
-        {
-            for (int mPosition = 0; mPosition < mDevices.length; mPosition++) {
-                if (mDevices[mPosition] || mPosition == 0 || NetworkDeviceScanner.this.mIsBreakRequested)
-                    continue;
-
-                mDevices[mPosition] = true;
-
-                try {
-                    mAddressPrefix[3] = (byte) mPosition;
-                    InetAddress inetAddress = InetAddress.getByAddress(mAddressPrefix);
-
-                    if (inetAddress.isReachable(300) && mHandler != null)
-                        mHandler.onDeviceFound(inetAddress, mInterfaces.get(0));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            mThreadsExited--;
-
-            if (mThreadsExited == 0) {
-                mInterfaces.remove(0);
-                nextThread();
-            }
-        }
-    }
-
-    protected class ScannerExecutor implements Executor
+    protected static class ScannerExecutor implements Executor
     {
         @Override
-        public void execute(Runnable scanner)
+        public void execute(@NonNull Runnable scanner)
         {
             new Thread(scanner).start();
         }

@@ -376,18 +376,15 @@ public class AppUtils
         return clazz;
     }
 
-    public static boolean toggleDeviceScanning(Context context)
+    public static boolean toggleDeviceScanning(DeviceScannerService service)
     {
-        if (DeviceScannerService.getDeviceScanner().isScannerAvailable()) {
-            context.startService(new Intent(context, DeviceScannerService.class)
+        if (!service.getDeviceScanner().isBusy()) {
+            service.startService(new Intent(service, DeviceScannerService.class)
                     .setAction(DeviceScannerService.ACTION_SCAN_DEVICES));
-
             return true;
         }
 
-        DeviceScannerService.getDeviceScanner()
-                .interrupt();
-
+        service.getDeviceScanner().interrupt();
         return false;
     }
 
