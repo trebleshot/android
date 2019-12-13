@@ -160,6 +160,10 @@
             android:label="@string/text_welcome"
             android:theme="@style/Theme.TrebleShot.NoActionBar" />
 
+        <activity
+            android:name=".activity.WebShareActivity"
+            android:label="@string/text_webShare" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
+import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
@@ -157,8 +158,11 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
             AppUtils.getDatabase(getService()).insert(groupInstance);
             ViewTransferActivity.startInstance(getService(), groupInstance.id);
 
-            if (!flagWebShare || flagAddNewDevice)
-                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id, true);
+            if (flagWebShare)
+                getService().startActivity(new Intent(getService(), WebShareActivity.class).addFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK));
+            else
+                AddDevicesToTransferActivity.startInstance(getService(), groupInstance.id, flagAddNewDevice);
         }
 
         AppUtils.getDatabase(getService()).broadcast();
