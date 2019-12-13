@@ -427,7 +427,8 @@ public abstract class Activity extends AppCompatActivity
             return false;
 
         for (RationalePermissionRequest.PermissionRequest request : AppUtils.getRequiredPermissions(this))
-            if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request, killActivityOtherwise)) != null)
+            if ((mOngoingRequest = RationalePermissionRequest.requestIfNecessary(this, request,
+                    killActivityOtherwise)) != null)
                 return false;
 
         return true;

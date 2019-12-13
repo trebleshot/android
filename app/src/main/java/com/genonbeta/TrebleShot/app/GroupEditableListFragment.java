@@ -37,7 +37,8 @@ import java.util.Map;
  * date: 30.03.2018 16:10
  */
 
-public abstract class GroupEditableListFragment<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
+public abstract class GroupEditableListFragment<T extends GroupEditableListAdapter.GroupEditable,
+        V extends GroupEditableListAdapter.GroupViewHolder, E extends GroupEditableListAdapter<T, V>>
         extends EditableListFragment<T, V, E>
 {
     private Map<String, Integer> mGroupingOptions = new ArrayMap<>();
@@ -55,8 +56,7 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     {
         return viewType == ImageListAdapter.VIEW_TYPE_REPRESENTATIVE
                 || viewType == ImageListAdapter.VIEW_TYPE_ACTION_BUTTON
-                ? currentSpanSize
-                : super.onGridSpanSize(viewType, currentSpanSize);
+                ? currentSpanSize : super.onGridSpanSize(viewType, currentSpanSize);
     }
 
     @Override
@@ -84,7 +84,8 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
     public void onPrepareOptionsMenu(@NonNull Menu menu)
     {
         super.onPrepareOptionsMenu(menu);
-        checkPreferredDynamicItem(menu.findItem(R.id.actions_abs_group_shareable_grouping), getGroupingCriteria(), mGroupingOptions);
+        checkPreferredDynamicItem(menu.findItem(R.id.actions_abs_group_shareable_grouping), getGroupingCriteria(),
+                mGroupingOptions);
     }
 
     @Override
@@ -115,8 +116,7 @@ public abstract class GroupEditableListFragment<T extends GroupEditableListAdapt
 
     public int getGroupingCriteria()
     {
-        return getViewPreferences()
-                .getInt(getUniqueSettingKey("GroupBy"), mDefaultGroupingCriteria);
+        return getViewPreferences().getInt(getUniqueSettingKey("GroupBy"), mDefaultGroupingCriteria);
     }
 
     public void setDefaultGroupingCriteria(int groupingCriteria)

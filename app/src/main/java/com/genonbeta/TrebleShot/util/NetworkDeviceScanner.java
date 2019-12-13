@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.util;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 
 import java.net.InetAddress;

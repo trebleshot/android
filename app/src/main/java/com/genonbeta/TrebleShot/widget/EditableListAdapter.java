@@ -44,8 +44,7 @@ import java.util.List;
  */
 
 abstract public class EditableListAdapter<T extends Editable, V extends EditableListAdapter.EditableViewHolder>
-        extends RecyclerViewAdapter<T, V>
-        implements EditableListAdapterImpl<T>, SectionTitleProvider
+        extends RecyclerViewAdapter<T, V> implements EditableListAdapterImpl<T>, SectionTitleProvider
 {
     public static final int VIEW_TYPE_DEFAULT = 0;
 
@@ -91,9 +90,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
                 .getFilteringDelegate()
                 .getFilteringKeyword(getFragment());
 
-        return filteringKeywords == null
-                || filteringKeywords.length <= 0
-                || item.applyFilter(filteringKeywords);
+        return filteringKeywords == null || filteringKeywords.length <= 0 || item.applyFilter(filteringKeywords);
     }
 
     @Override

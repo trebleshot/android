@@ -67,6 +67,7 @@ public class SwipeTouchSelectionListener<T extends Editable>
     @Override
     public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e)
     {
+        // TODO: 13.12.2019 Once began, keep scrolling unless user performs ACTION_UP
         if (MotionEvent.ACTION_UP == e.getAction()) {
             rv.requestDisallowInterceptTouchEvent(true);
         } else if (MotionEvent.ACTION_MOVE == e.getAction() && mSelectionActivated) {
@@ -100,16 +101,13 @@ public class SwipeTouchSelectionListener<T extends Editable>
 
                                 try {
                                     for (int i = startPos; i < endPos + 1; i++) {
-                                        boolean selected = currentPos > mLastPosition
-                                                ? mStartPosition <= i
+                                        boolean selected = currentPos > mLastPosition ? mStartPosition <= i
                                                 : mStartPosition >= i;
 
-                                        boolean selectionResult = mListFragment
-                                                .getSelectionConnection().setSelected(mListFragment
-                                                        .getAdapterImpl().getItem(i), selected);
+                                        boolean selectionResult = mListFragment.getSelectionConnection().setSelected(
+                                                mListFragment.getAdapterImpl().getItem(i), selected);
 
-                                        EditableListAdapter.ViewHolder viewHolder
-                                                = (EditableListAdapter.ViewHolder)
+                                        EditableListAdapter.ViewHolder viewHolder = (EditableListAdapter.ViewHolder)
                                                 rv.findViewHolderForAdapterPosition(i);
 
                                         if (viewHolder != null)

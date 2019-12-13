@@ -43,10 +43,9 @@ import java.util.List;
  * created by: Veli
  * date: 29.03.2018 08:00
  */
-abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapter.GroupEditable, V extends GroupEditableListAdapter.GroupViewHolder>
-        extends EditableListAdapter<T, V>
+abstract public class GroupEditableListAdapter<T extends GroupEditableListAdapter.GroupEditable,
+        V extends GroupEditableListAdapter.GroupViewHolder> extends EditableListAdapter<T, V>
 {
-
     public static final int VIEW_TYPE_REPRESENTATIVE = 100;
     public static final int VIEW_TYPE_ACTION_BUTTON = 110;
 

@@ -36,8 +36,8 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
 
-public class ApplicationListAdapter
-        extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder, GroupEditableListAdapter.GroupViewHolder>
+public class ApplicationListAdapter extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder,
+        GroupEditableListAdapter.GroupViewHolder>
 {
     private SharedPreferences mPreferences;
     private PackageManager mManager;
@@ -54,18 +54,15 @@ public class ApplicationListAdapter
     {
         boolean showSystemApps = mPreferences.getBoolean("show_system_apps", false);
 
-        for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(PackageManager.GET_META_DATA)) {
+        for (PackageInfo packageInfo : getContext().getPackageManager().getInstalledPackages(
+                PackageManager.GET_META_DATA)) {
             ApplicationInfo appInfo = packageInfo.applicationInfo;
 
             if ((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) != 1 || showSystemApps) {
-                PackageHolder packageHolder = new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)),
-                        appInfo,
-                        packageInfo.versionName,
-                        packageInfo.packageName,
-                        new File(appInfo.sourceDir));
+                PackageHolder packageHolder = new PackageHolder(String.valueOf(appInfo.loadLabel(mManager)), appInfo,
+                        packageInfo.versionName, packageInfo.packageName, new File(appInfo.sourceDir));
 
-                if (filterItem(packageHolder))
-                    lister.offer(packageHolder);
+                lister.offerObliged(this, packageHolder);
             }
         }
     }
@@ -80,10 +77,9 @@ public class ApplicationListAdapter
     @Override
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupEditableListAdapter.GroupViewHolder(
-                getInflater().inflate(isGridLayoutRequested() ? R.layout.list_application_grid
-                        : R.layout.list_application, parent, false))
-                : createDefaultViews(parent, viewType, false);
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupEditableListAdapter.GroupViewHolder(getInflater().inflate(
+                isGridLayoutRequested() ? R.layout.list_application_grid : R.layout.list_application, parent,
+                false)) : createDefaultViews(parent, viewType, false);
     }
 
     @Override
@@ -134,7 +130,8 @@ public class ApplicationListAdapter
             super(viewType, representativeText);
         }
 
-        public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName, File executableFile)
+        public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName,
+                             File executableFile)
         {
             super(appInfo.packageName.hashCode(),
                     friendlyName,

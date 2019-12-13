@@ -36,6 +36,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.transition.TransitionManager;
@@ -71,7 +72,8 @@ public class WelcomeActivity extends Activity
 
         {
             @ColorInt
-            int appliedColor = ContextCompat.getColor(this, AppUtils.getReference(this, R.attr.colorSecondary));
+            int appliedColor = ContextCompat.getColor(this, AppUtils.getReference(this,
+                    R.attr.colorSecondary));
 
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                 Drawable wrapDrawable = DrawableCompat.wrap(progressBar.getProgressDrawable());
@@ -83,28 +85,24 @@ public class WelcomeActivity extends Activity
         }
 
         {
-            mSplashView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_1, null, false);
+            mSplashView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_1, null,
+                    false);
             pagerAdapter.addView(mSplashView);
         }
 
         if (Build.VERSION.SDK_INT >= 23) {
-            mPermissionsView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_3, null, false);
+            mPermissionsView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_3, null,
+                    false);
             pagerAdapter.addView(mPermissionsView);
             checkPermissionsState();
 
             mPermissionsView.findViewById(R.id.layout_welcome_page_3_request_button)
-                    .setOnClickListener(new View.OnClickListener()
-                    {
-                        @Override
-                        public void onClick(View v)
-                        {
-                            requestRequiredPermissions(false);
-                        }
-                    });
+                    .setOnClickListener(v -> requestRequiredPermissions(false));
         }
 
         {
-            mProfileView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_2, null, false);
+            mProfileView = (ViewGroup) getLayoutInflater().inflate(R.layout.layout_welcome_page_2, null,
+                    false);
             pagerAdapter.addView(mProfileView);
             setUserProfile();
         }
@@ -124,34 +122,25 @@ public class WelcomeActivity extends Activity
 
             pagerAdapter.addView(view);
         }
+
         progressBar.setMax((pagerAdapter.getCount() - 1) * 100);
 
-        previousButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (viewPager.getCurrentItem() - 1 >= 0)
-                    viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
-            }
+        previousButton.setOnClickListener(v -> {
+            if (viewPager.getCurrentItem() - 1 >= 0)
+                viewPager.setCurrentItem(viewPager.getCurrentItem() - 1, true);
         });
 
-        nextButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (viewPager.getCurrentItem() + 1 < pagerAdapter.getCount())
-                    viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-                else {
-                    // end presentation
-                    getDefaultPreferences().edit()
-                            .putBoolean("introduction_shown", true)
-                            .apply();
+        nextButton.setOnClickListener(v -> {
+            if (viewPager.getCurrentItem() + 1 < pagerAdapter.getCount())
+                viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
+            else {
+                // end presentation
+                getDefaultPreferences().edit()
+                        .putBoolean("introduction_shown", true)
+                        .apply();
 
-                    startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
-                    finish();
-                }
+                startActivity(new Intent(WelcomeActivity.this, HomeActivity.class));
+                finish();
             }
         });
 
@@ -242,14 +231,7 @@ public class WelcomeActivity extends Activity
             versionText.setText(localDevice.versionName);
             loadProfilePictureInto(localDevice.nickname, imageView);
 
-            editImageView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    startProfileEditor();
-                }
-            });
+            editImageView.setOnClickListener(v -> startProfileEditor());
 
             TransitionManager.beginDelayedTransition(mProfileView);
         }

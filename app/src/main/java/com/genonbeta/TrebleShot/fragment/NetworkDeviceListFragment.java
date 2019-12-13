@@ -311,12 +311,6 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
     {
         if (mSwipeRefreshLayout != null)
             mSwipeRefreshLayout.setRefreshing(mService != null && mService.getDeviceScanner().isBusy());
-
-        if (mService == null)
-            Log.d(TAG, "checkRefreshing: Service is null");
-        else {
-            Log.d(TAG, "checkRefreshing: isBusy " + mService.getDeviceScanner().isBusy());
-        }
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -414,10 +408,8 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
                     boolean selfNetwork = getConnectionUtils().isConnectionSelfNetwork();
 
                     if (!selfNetwork)
-                        createSnackbar(DeviceScannerService.STATUS_OK.equals(scanStatus) ?
-                                R.string.mesg_scanningDevices
-                                : R.string.mesg_stillScanning)
-                                .show();
+                        createSnackbar(DeviceScannerService.STATUS_OK.equals(scanStatus) ? R.string.mesg_scanningDevices
+                                : R.string.mesg_stillScanning).show();
                     else
                         createSnackbar(R.string.mesg_scanningDevicesSelfHotspot)
                                 .setAction(R.string.butn_disconnect, v -> getConnectionUtils().getWifiManager().disconnect())

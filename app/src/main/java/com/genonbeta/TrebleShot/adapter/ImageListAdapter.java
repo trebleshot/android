@@ -39,8 +39,8 @@ import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
  * date: 18.11.2017 13:32
  */
 
-public class ImageListAdapter
-        extends GalleryGroupEditableListAdapter<ImageListAdapter.ImageHolder, GroupEditableListAdapter.GroupViewHolder>
+public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListAdapter.ImageHolder,
+        GroupEditableListAdapter.GroupViewHolder>
 {
     private ContentResolver mResolver;
     private int mSelectedInset;
@@ -68,14 +68,9 @@ public class ImageListAdapter
                 int typeIndex = cursor.getColumnIndex(MediaStore.Images.Media.MIME_TYPE);
 
                 do {
-                    ImageHolder holder = new ImageHolder(
-                            cursor.getLong(idIndex),
-                            cursor.getString(titleIndex),
-                            cursor.getString(displayIndex),
-                            cursor.getString(albumIndex),
-                            cursor.getString(typeIndex),
-                            cursor.getLong(dateAddedIndex) * 1000,
-                            cursor.getLong(sizeIndex),
+                    ImageHolder holder = new ImageHolder(cursor.getLong(idIndex), cursor.getString(titleIndex),
+                            cursor.getString(displayIndex), cursor.getString(albumIndex), cursor.getString(typeIndex),
+                            cursor.getLong(dateAddedIndex) * 1000, cursor.getLong(sizeIndex),
                             Uri.parse(MediaStore.Images.Media.EXTERNAL_CONTENT_URI + "/" + cursor.getInt(idIndex)));
 
                     holder.dateTakenString = String.valueOf(TimeUtils.formatDateTime(getContext(), holder.date));
@@ -94,11 +89,11 @@ public class ImageListAdapter
     public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         if (viewType == VIEW_TYPE_REPRESENTATIVE)
-            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false), R.id.layout_list_title_text);
+            return new GroupViewHolder(getInflater().inflate(R.layout.layout_list_title, parent, false),
+                    R.id.layout_list_title_text);
 
         return new GroupViewHolder(getInflater().inflate(isGridLayoutRequested()
-                ? R.layout.list_image_grid
-                : R.layout.list_image, parent, false));
+                ? R.layout.list_image_grid : R.layout.list_image, parent, false));
     }
 
     @Override
