@@ -26,9 +26,7 @@ package com.genonbeta.TrebleShot.util;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.provider.DocumentsContract;
-
 import androidx.core.content.ContextCompat;
-
 import com.genonbeta.TrebleShot.R;
 
 import java.util.HashMap;

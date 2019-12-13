@@ -21,9 +21,7 @@ package com.genonbeta.TrebleShot.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 
@@ -37,7 +35,7 @@ public class ManageDevicesActivity extends Activity
 
         findViewById(R.id.fixConnectionButton).setOnClickListener(v -> startActivity(new Intent(
                 ManageDevicesActivity.this, AddDeviceActivity.class).putExtra(
-                        AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT)));
+                AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT)));
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

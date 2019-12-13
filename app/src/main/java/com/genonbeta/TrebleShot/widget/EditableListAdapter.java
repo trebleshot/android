@@ -21,9 +21,7 @@ package com.genonbeta.TrebleShot.widget;
 import android.content.Context;
 import android.text.format.DateUtils;
 import android.view.View;
-
 import androidx.annotation.NonNull;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.exception.NotReadyException;

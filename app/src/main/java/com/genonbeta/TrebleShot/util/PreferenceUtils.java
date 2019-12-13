@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 
 /**
  * created by: veli

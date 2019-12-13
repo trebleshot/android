@@ -22,24 +22,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
-import com.genonbeta.TrebleShot.app.EditableListFragmentModelImpl;
-import com.genonbeta.TrebleShot.fragment.ApplicationListFragment;
-import com.genonbeta.TrebleShot.fragment.FileExplorerFragment;
-import com.genonbeta.TrebleShot.fragment.ImageListFragment;
-import com.genonbeta.TrebleShot.fragment.MusicListFragment;
-import com.genonbeta.TrebleShot.fragment.VideoListFragment;
+import com.genonbeta.TrebleShot.fragment.*;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
-import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.tabs.TabLayout;
 

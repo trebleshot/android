@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.NetworkDevice;

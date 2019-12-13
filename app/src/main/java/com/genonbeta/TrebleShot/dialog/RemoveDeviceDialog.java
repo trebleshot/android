@@ -20,10 +20,8 @@ package com.genonbeta.TrebleShot.dialog;
 
 import android.app.Activity;
 import android.content.DialogInterface;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.util.AppUtils;

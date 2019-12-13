@@ -23,10 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.AppUtils;
@@ -79,7 +77,7 @@ public class ProfileEditorDialog extends AlertDialog.Builder
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-               saveNickname(activity, editText);
+                saveNickname(activity, editText);
             }
         });
 
@@ -102,7 +100,8 @@ public class ProfileEditorDialog extends AlertDialog.Builder
         return mDialog = super.show();
     }
 
-    public void saveNickname(Activity activity, EditText editText) {
+    public void saveNickname(Activity activity, EditText editText)
+    {
         AppUtils.getDefaultPreferences(getContext()).edit()
                 .putString("device_name", editText.getText().toString())
                 .apply();

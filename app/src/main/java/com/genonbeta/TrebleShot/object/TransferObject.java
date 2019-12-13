@@ -20,12 +20,9 @@ package com.genonbeta.TrebleShot.object;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;
@@ -33,7 +30,6 @@ import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
 import com.genonbeta.android.framework.io.DocumentFile;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 

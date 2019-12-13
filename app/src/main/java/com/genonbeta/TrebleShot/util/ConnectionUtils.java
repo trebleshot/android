@@ -37,7 +37,9 @@ import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.android.framework.util.Interrupter;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.List;
 
 /**

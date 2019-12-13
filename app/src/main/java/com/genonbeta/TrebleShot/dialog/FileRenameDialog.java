@@ -19,9 +19,6 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-
-import androidx.appcompat.app.AlertDialog;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.FileListAdapter;
 import com.genonbeta.TrebleShot.object.FileShortcutObject;

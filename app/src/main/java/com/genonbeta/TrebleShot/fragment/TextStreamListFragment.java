@@ -29,11 +29,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
@@ -59,190 +57,190 @@ import java.util.Map;
  */
 
 public class TextStreamListFragment
-		extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
-		implements IconSupport, TitleSupport
+        extends GroupEditableListFragment<TextStreamObject, GroupEditableListAdapter.GroupViewHolder, TextStreamListAdapter>
+        implements IconSupport, TitleSupport
 {
-	private StatusReceiver mStatusReceiver = new StatusReceiver();
+    private StatusReceiver mStatusReceiver = new StatusReceiver();
 
-	@Override
-	public void onCreate(@Nullable Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
 
-		setFilteringSupported(true);
-		setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
-		setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
-		setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
-		setDefaultSelectionCallback(new SelectionCallback(this));
-	}
+        setFilteringSupported(true);
+        setDefaultOrderingCriteria(TextStreamListAdapter.MODE_SORT_ORDER_DESCENDING);
+        setDefaultSortingCriteria(TextStreamListAdapter.MODE_SORT_BY_DATE);
+        setDefaultGroupingCriteria(TextStreamListAdapter.MODE_GROUP_BY_DATE);
+        setDefaultSelectionCallback(new SelectionCallback(this));
+    }
 
-	@Override
-	protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
-	{
-		FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null, false);
-		FloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
+    @Override
+    protected RecyclerView onListView(View mainContainer, ViewGroup listViewContainer)
+    {
+        FrameLayout view = (FrameLayout) getLayoutInflater().inflate(R.layout.layout_text_stream, null, false);
+        FloatingActionButton actionButton = view.findViewById(R.id.layout_text_stream_fab);
 
-		listViewContainer.addView(view);
+        listViewContainer.addView(view);
 
-		actionButton.setOnClickListener(v -> startActivity(new Intent(getActivity(),
-				TextEditorActivity.class).setAction(TextEditorActivity.ACTION_EDIT_TEXT)));
+        actionButton.setOnClickListener(v -> startActivity(new Intent(getActivity(),
+                TextEditorActivity.class).setAction(TextEditorActivity.ACTION_EDIT_TEXT)));
 
-		return super.onListView(mainContainer, view.findViewById(R.id.layout_text_stream_content));
-	}
+        return super.onListView(mainContainer, view.findViewById(R.id.layout_text_stream_content));
+    }
 
-	@Override
-	public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
-	{
-		super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
+    {
+        super.onViewCreated(view, savedInstanceState);
 
-		setEmptyImage(R.drawable.ic_forum_white_24dp);
-		setEmptyText(getString(R.string.text_listEmptyTextStream));
-		getListView().setClipToPadding(false);
-		getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
-	}
+        setEmptyImage(R.drawable.ic_forum_white_24dp);
+        setEmptyText(getString(R.string.text_listEmptyTextStream));
+        getListView().setClipToPadding(false);
+        getListView().setPadding(0, 0, 0, (int) (getResources().getDimension(R.dimen.fab_margin) * 6));
+    }
 
-	@Override
-	public void onSortingOptions(Map<String, Integer> options)
-	{
-		options.put(getString(R.string.text_sortByName), TextStreamListAdapter.MODE_SORT_BY_NAME);
-		options.put(getString(R.string.text_sortByDate), TextStreamListAdapter.MODE_SORT_BY_DATE);
-	}
+    @Override
+    public void onSortingOptions(Map<String, Integer> options)
+    {
+        options.put(getString(R.string.text_sortByName), TextStreamListAdapter.MODE_SORT_BY_NAME);
+        options.put(getString(R.string.text_sortByDate), TextStreamListAdapter.MODE_SORT_BY_DATE);
+    }
 
-	@Override
-	public void onGroupingOptions(Map<String, Integer> options)
-	{
-		options.put(getString(R.string.text_groupByNothing), TextStreamListAdapter.MODE_GROUP_BY_NOTHING);
-		options.put(getString(R.string.text_groupByDate), TextStreamListAdapter.MODE_GROUP_BY_DATE);
-	}
+    @Override
+    public void onGroupingOptions(Map<String, Integer> options)
+    {
+        options.put(getString(R.string.text_groupByNothing), TextStreamListAdapter.MODE_GROUP_BY_NOTHING);
+        options.put(getString(R.string.text_groupByDate), TextStreamListAdapter.MODE_GROUP_BY_DATE);
+    }
 
-	@Override
-	public int onGridSpanSize(int viewType, int currentSpanSize)
-	{
-		return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE ? currentSpanSize
-				: super.onGridSpanSize(viewType, currentSpanSize);
-	}
+    @Override
+    public int onGridSpanSize(int viewType, int currentSpanSize)
+    {
+        return viewType == TextStreamListAdapter.VIEW_TYPE_REPRESENTATIVE ? currentSpanSize
+                : super.onGridSpanSize(viewType, currentSpanSize);
+    }
 
-	@Override
-	public TextStreamListAdapter onAdapter()
-	{
-		final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
-			if (!clazz.isRepresentative())
-				registerLayoutViewClicks(clazz);
-		};
+    @Override
+    public TextStreamListAdapter onAdapter()
+    {
+        final AppUtils.QuickActions<GroupEditableListAdapter.GroupViewHolder> quickActions = clazz -> {
+            if (!clazz.isRepresentative())
+                registerLayoutViewClicks(clazz);
+        };
 
-		return new TextStreamListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
-		{
-			@NonNull
-			@Override
-			public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-			{
-				return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
-			}
-		};
-	}
+        return new TextStreamListAdapter(getActivity(), AppUtils.getDatabase(getContext()))
+        {
+            @NonNull
+            @Override
+            public GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
+            {
+                return AppUtils.quickAction(super.onCreateViewHolder(parent, viewType), quickActions);
+            }
+        };
+    }
 
-	@Override
-	public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
-	{
-		try {
-			TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
+    @Override
+    public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
+    {
+        try {
+            TextStreamObject object = getAdapter().getItem(holder.getAdapterPosition());
 
-			startActivity(new Intent(getContext(), TextEditorActivity.class)
-					.setAction(TextEditorActivity.ACTION_EDIT_TEXT)
-					.putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
-					.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(getContext(), TextEditorActivity.class)
+                    .setAction(TextEditorActivity.ACTION_EDIT_TEXT)
+                    .putExtra(TextEditorActivity.EXTRA_CLIPBOARD_ID, object.id)
+                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
-			return true;
-		} catch (Exception ignored) {
-		}
+            return true;
+        } catch (Exception ignored) {
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public void onResume()
-	{
-		super.onResume();
+    @Override
+    public void onResume()
+    {
+        super.onResume();
 
-		getActivity().registerReceiver(mStatusReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
-		refreshList();
-	}
+        getActivity().registerReceiver(mStatusReceiver, new IntentFilter(AccessDatabase.ACTION_DATABASE_CHANGE));
+        refreshList();
+    }
 
-	@Override
-	public void onPause()
-	{
-		super.onPause();
-		getActivity().unregisterReceiver(mStatusReceiver);
-	}
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        getActivity().unregisterReceiver(mStatusReceiver);
+    }
 
-	@Override
-	public int getIconRes()
-	{
-		return R.drawable.ic_short_text_white_24dp;
-	}
+    @Override
+    public int getIconRes()
+    {
+        return R.drawable.ic_short_text_white_24dp;
+    }
 
-	@Override
-	public CharSequence getTitle(Context context)
-	{
-		return context.getString(R.string.text_textStream);
-	}
+    @Override
+    public CharSequence getTitle(Context context)
+    {
+        return context.getString(R.string.text_textStream);
+    }
 
-	private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
-	{
-		public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
-		{
-			super(fragment);
-		}
+    private static class SelectionCallback extends EditableListFragment.SelectionCallback<TextStreamObject>
+    {
+        public SelectionCallback(EditableListFragmentImpl<TextStreamObject> fragment)
+        {
+            super(fragment);
+        }
 
-		@Override
-		public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
-		{
-			super.onCreateActionMenu(context, actionMode, menu);
-			actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
-			return true;
-		}
+        @Override
+        public boolean onCreateActionMenu(Context context, PowerfulActionMode actionMode, Menu menu)
+        {
+            super.onCreateActionMenu(context, actionMode, menu);
+            actionMode.getMenuInflater().inflate(R.menu.action_mode_text_stream, menu);
+            return true;
+        }
 
-		@Override
-		public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
-		{
-			int id = item.getItemId();
+        @Override
+        public boolean onActionMenuItemSelected(Context context, PowerfulActionMode actionMode, MenuItem item)
+        {
+            int id = item.getItemId();
 
-			List<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
+            List<TextStreamObject> selectionList = getFragment().getSelectionConnection().getSelectedItemList();
 
-			if (id == R.id.action_mode_text_stream_delete) {
-				AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
-				AppUtils.getDatabase(getFragment().getContext()).broadcast();
-			} else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
-				if (selectionList.size() == 1) {
-					TextStreamObject streamObject = selectionList.get(0);
+            if (id == R.id.action_mode_text_stream_delete) {
+                AppUtils.getDatabase(getFragment().getContext()).remove(selectionList);
+                AppUtils.getDatabase(getFragment().getContext()).broadcast();
+            } else if (id == R.id.action_mode_share_all_apps || id == R.id.action_mode_share_trebleshot) {
+                if (selectionList.size() == 1) {
+                    TextStreamObject streamObject = selectionList.get(0);
 
-					Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
-							? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
-							.putExtra(Intent.EXTRA_TEXT, streamObject.text)
-							.setType("text/*");
+                    Intent shareIntent = new Intent(item.getItemId() == R.id.action_mode_share_all_apps
+                            ? Intent.ACTION_SEND : ShareActivity.ACTION_SEND)
+                            .putExtra(Intent.EXTRA_TEXT, streamObject.text)
+                            .setType("text/*");
 
-					getAdapter().getContext().startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getFragment().getContext().getString(R.string.text_fileShareAppChoose)) : shareIntent);
-				} else {
-					Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
-					return false;
-				}
-			} else
-				return super.onActionMenuItemSelected(context, actionMode, item);
+                    getAdapter().getContext().startActivity((item.getItemId() == R.id.action_mode_share_all_apps) ? Intent.createChooser(shareIntent, getFragment().getContext().getString(R.string.text_fileShareAppChoose)) : shareIntent);
+                } else {
+                    Toast.makeText(context, R.string.mesg_textShareLimit, Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+            } else
+                return super.onActionMenuItemSelected(context, actionMode, item);
 
-			return true;
-		}
-	}
+            return true;
+        }
+    }
 
-	private class StatusReceiver extends BroadcastReceiver
-	{
-		@Override
-		public void onReceive(Context context, Intent intent)
-		{
-			if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
-				AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
-				if (AccessDatabase.TABLE_CLIPBOARD.equals(data.tableName))
-					refreshList();
-			}
-		}
-	}
+    private class StatusReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (AccessDatabase.ACTION_DATABASE_CHANGE.equals(intent.getAction())) {
+                AccessDatabase.BroadcastData data = AccessDatabase.toData(intent);
+                if (AccessDatabase.TABLE_CLIPBOARD.equals(data.tableName))
+                    refreshList();
+            }
+        }
+    }
 }

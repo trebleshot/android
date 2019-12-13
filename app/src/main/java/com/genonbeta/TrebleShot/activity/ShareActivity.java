@@ -22,14 +22,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.service.WorkerService;
@@ -93,7 +89,7 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
 
                 if (thisFile.isDirectory()) {
                     createFolderStructure(thisFile, (folderName != null ? folderName + File.separator
-                                    : null) + thisFile.getName(), pendingObjects, task);
+                            : null) + thisFile.getName(), pendingObjects, task);
                     continue;
                 }
 

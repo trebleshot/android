@@ -19,10 +19,8 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.TransferUtils;

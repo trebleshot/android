@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.activity;
 
 import android.content.Intent;
 import android.widget.Toast;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.util.FileUtils;

@@ -24,11 +24,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SwitchCompat;
-
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
@@ -42,7 +40,6 @@ import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.io.DocumentFile;
-
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -227,7 +224,8 @@ public class DeviceInfoDialog extends AlertDialog.Builder
                 .run(activity);
     }
 
-    public void showDialog(Activity activity, AlertDialog.Builder builder) {
+    public void showDialog(Activity activity, AlertDialog.Builder builder)
+    {
         if (activity == null || activity.isFinishing())
             return;
 

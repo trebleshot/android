@@ -22,7 +22,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import androidx.annotation.NonNull;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
@@ -34,8 +34,6 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapter;
 import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
 
 /**
  * created by: veli

@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.callback;
 
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 
 import java.util.List;
 

@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
 import android.text.format.DateUtils;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.util.date.ElapsedTime;
 
@@ -39,7 +38,8 @@ public class TimeUtils
         return DateUtils.formatDateTime(context, millis, DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE);
     }
 
-    public static String getDuration(long milliseconds) {
+    public static String getDuration(long milliseconds)
+    {
         return getDuration(milliseconds, true);
     }
 

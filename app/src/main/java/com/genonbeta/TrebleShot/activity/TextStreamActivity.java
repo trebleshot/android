@@ -21,10 +21,8 @@ package com.genonbeta.TrebleShot.activity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;

@@ -19,9 +19,7 @@
 package com.genonbeta.TrebleShot.migration.db;
 
 import android.database.sqlite.SQLiteDatabase;
-
 import androidx.collection.ArrayMap;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.object.TransferAssigneeV12;
 import com.genonbeta.TrebleShot.migration.db.object.TransferObjectV12;
@@ -38,26 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_CLIENTVERSION;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_DEVICES_TYPE;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFERGROUP_ISPAUSED;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_DIRECTORY;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_FILE;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_FLAG;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_GROUPID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_ID;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_MIME;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_NAME;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_SIZE;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.FIELD_TRANSFER_TYPE;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.TABLE_DEVICES;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.TABLE_FILEBOOKMARK;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.TABLE_TRANSFER;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.TABLE_TRANSFERASSIGNEE;
-import static com.genonbeta.TrebleShot.database.AccessDatabase.TABLE_TRANSFERGROUP;
+import static com.genonbeta.TrebleShot.database.AccessDatabase.*;
 
 /**
  * created by: veli

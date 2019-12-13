@@ -23,9 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.core.content.ContextCompat;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.Utils;
 import com.genonbeta.android.framework.widget.recyclerview.fastscroll.provider.DefaultBubbleBehavior;

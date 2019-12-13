@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;

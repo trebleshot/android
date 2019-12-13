@@ -20,7 +20,6 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 

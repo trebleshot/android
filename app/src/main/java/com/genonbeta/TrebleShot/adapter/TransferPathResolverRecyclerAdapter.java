@@ -19,9 +19,7 @@
 package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
-
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.object.NetworkDevice;
 import com.genonbeta.TrebleShot.object.ShowingAssignee;
 
 import java.io.File;

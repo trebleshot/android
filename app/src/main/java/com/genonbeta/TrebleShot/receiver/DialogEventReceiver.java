@@ -23,11 +23,9 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.view.WindowManager;
-
 import com.genonbeta.TrebleShot.R;
 
 public class DialogEventReceiver extends BroadcastReceiver

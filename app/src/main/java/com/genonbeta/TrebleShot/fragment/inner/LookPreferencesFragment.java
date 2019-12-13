@@ -20,12 +20,8 @@ package com.genonbeta.TrebleShot.fragment.inner;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-
 import androidx.preference.PreferenceFragmentCompat;
-
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.util.AppUtils;
-import com.genonbeta.TrebleShot.util.PreferenceUtils;
 
 public class LookPreferencesFragment
         extends PreferenceFragmentCompat

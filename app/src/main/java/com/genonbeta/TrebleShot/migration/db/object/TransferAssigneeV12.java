@@ -19,14 +19,11 @@
 package com.genonbeta.TrebleShot.migration.db.object;
 
 import android.content.ContentValues;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
-import com.genonbeta.TrebleShot.object.TransferAssignee;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
 import com.genonbeta.android.database.SQLiteDatabase;
@@ -37,92 +34,92 @@ import com.genonbeta.android.database.SQLiteDatabase;
  */
 public class TransferAssigneeV12 implements DatabaseObject<NetworkDeviceV12>
 {
-	public long groupId;
-	public String deviceId;
-	public String connectionAdapter;
+    public long groupId;
+    public String deviceId;
+    public String connectionAdapter;
 
-	public TransferAssigneeV12()
-	{
+    public TransferAssigneeV12()
+    {
 
-	}
+    }
 
-	public TransferAssigneeV12(long groupId, String deviceId)
-	{
-		this.groupId = groupId;
-		this.deviceId = deviceId;
-	}
+    public TransferAssigneeV12(long groupId, String deviceId)
+    {
+        this.groupId = groupId;
+        this.deviceId = deviceId;
+    }
 
-	public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device)
-	{
-		this(group.groupId, device.deviceId);
-	}
+    public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device)
+    {
+        this(group.groupId, device.deviceId);
+    }
 
-	public TransferAssigneeV12(long groupId, String deviceId, String connectionAdapter)
-	{
-		this(groupId, deviceId);
-		this.connectionAdapter = connectionAdapter;
-	}
+    public TransferAssigneeV12(long groupId, String deviceId, String connectionAdapter)
+    {
+        this(groupId, deviceId);
+        this.connectionAdapter = connectionAdapter;
+    }
 
-	public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device,
-							   @NonNull DeviceConnection connection)
-	{
-		this(group.groupId, device.deviceId, connection.adapterName);
-	}
+    public TransferAssigneeV12(@NonNull TransferGroupV12 group, @NonNull NetworkDeviceV12 device,
+                               @NonNull DeviceConnection connection)
+    {
+        this(group.groupId, device.deviceId, connection.adapterName);
+    }
 
-	@Override
-	public boolean equals(@Nullable Object obj)
-	{
-		if (obj instanceof TransferAssigneeV12) {
-			TransferAssigneeV12 otherAssignee = (TransferAssigneeV12) obj;
-			return otherAssignee.groupId == groupId && deviceId.equals(otherAssignee.deviceId);
-		}
+    @Override
+    public boolean equals(@Nullable Object obj)
+    {
+        if (obj instanceof TransferAssigneeV12) {
+            TransferAssigneeV12 otherAssignee = (TransferAssigneeV12) obj;
+            return otherAssignee.groupId == groupId && deviceId.equals(otherAssignee.deviceId);
+        }
 
-		return super.equals(obj);
-	}
+        return super.equals(obj);
+    }
 
-	@Override
-	public SQLQuery.Select getWhere()
-	{
-		return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-				.setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
-	}
+    @Override
+    public SQLQuery.Select getWhere()
+    {
+        return new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
+                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=? AND " + AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID + "=?", deviceId, String.valueOf(groupId));
+    }
 
-	@Override
-	public ContentValues getValues()
-	{
-		ContentValues values = new ContentValues();
+    @Override
+    public ContentValues getValues()
+    {
+        ContentValues values = new ContentValues();
 
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
-		values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
-		values.put(Migration.v12.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID, deviceId);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID, groupId);
+        values.put(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER, connectionAdapter);
+        values.put(Migration.v12.FIELD_TRANSFERASSIGNEE_ISCLONE, 1);
 
-		return values;
-	}
+        return values;
+    }
 
-	@Override
-	public void reconstruct(ContentValues item)
-	{
-		this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
-		this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
-		this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
-	}
+    @Override
+    public void reconstruct(ContentValues item)
+    {
+        this.deviceId = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID);
+        this.groupId = item.getAsLong(AccessDatabase.FIELD_TRANSFERASSIGNEE_GROUPID);
+        this.connectionAdapter = item.getAsString(AccessDatabase.FIELD_TRANSFERASSIGNEE_CONNECTIONADAPTER);
+    }
 
-	@Override
-	public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
-	{
+    @Override
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
+    {
 
-	}
+    }
 
-	@Override
-	public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
-	{
+    @Override
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
+    {
 
-	}
+    }
 
-	@Override
-	public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
-	{
+    @Override
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDeviceV12 parent)
+    {
 
-	}
+    }
 }

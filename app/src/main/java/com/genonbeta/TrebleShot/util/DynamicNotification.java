@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 

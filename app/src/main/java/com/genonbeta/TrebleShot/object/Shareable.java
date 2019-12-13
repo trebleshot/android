@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.net.Uri;
-
 import com.genonbeta.TrebleShot.util.TextUtils;
 
 /**

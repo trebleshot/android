@@ -20,9 +20,7 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.content.Context;
 import android.net.Uri;
-
 import androidx.annotation.NonNull;
-
 import com.genonbeta.android.framework.util.listing.merger.StringMerger;
 
 import java.util.List;

@@ -26,9 +26,6 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -118,9 +115,11 @@ public class NetworkUtils
     }
 
     public static Inet4Address getFirstInet4Address(
-            @NonNull ActiveConnectionListAdapter.EditableNetworkInterface networkInterface) {
+            @NonNull ActiveConnectionListAdapter.EditableNetworkInterface networkInterface)
+    {
         return getFirstInet4Address(networkInterface.getInterface());
     }
+
     public static Inet4Address getFirstInet4Address(@NonNull NetworkInterface networkInterface)
     {
         Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();

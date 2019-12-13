@@ -25,10 +25,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.IBinder;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Service;
 import com.genonbeta.TrebleShot.util.AppUtils;

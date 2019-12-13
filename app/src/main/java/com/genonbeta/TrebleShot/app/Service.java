@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.app;
 
 import android.content.SharedPreferences;
-
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.NotificationUtils;

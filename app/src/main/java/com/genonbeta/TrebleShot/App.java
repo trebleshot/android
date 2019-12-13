@@ -25,7 +25,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.util.Log;
-
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -69,7 +68,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
         if (!Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())
                 && !UpdateUtils.hasNewVersion(getApplicationContext())
                 && (System.currentTimeMillis() - UpdateUtils.getLastTimeCheckedForUpdates(
-                        getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
+                getApplicationContext())) >= AppConfig.DELAY_CHECK_FOR_UPDATES) {
             GitHubUpdater updater = UpdateUtils.getDefaultUpdater(getApplicationContext());
             UpdateUtils.checkForUpdates(getApplicationContext(), updater, false, null);
         }

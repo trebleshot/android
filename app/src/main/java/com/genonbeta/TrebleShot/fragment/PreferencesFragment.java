@@ -20,9 +20,7 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.os.Build;
 import android.os.Bundle;
-
 import androidx.preference.PreferenceFragmentCompat;
-
 import com.genonbeta.TrebleShot.R;
 
 public class PreferencesFragment extends PreferenceFragmentCompat
