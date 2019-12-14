@@ -44,7 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice, EditableListAdapter.EditableViewHolder>
+public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceListAdapter.EditableNetworkDevice,
+        EditableListAdapter.EditableViewHolder>
 {
     private ConnectionUtils mConnectionUtils;
     private TextDrawable.IShapeBuilder mIconBuilder;
@@ -95,8 +96,9 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
             list.add(hotspotNetwork);
         }
 
-        for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES)
-                .setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"), EditableNetworkDevice.class))
+        for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(
+                AccessDatabase.TABLE_DEVICES).setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
+                EditableNetworkDevice.class))
             if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocalAddress
                     || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
                 list.add(device);

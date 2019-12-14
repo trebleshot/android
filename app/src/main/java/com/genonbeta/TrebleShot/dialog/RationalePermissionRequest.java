@@ -41,8 +41,7 @@ public class RationalePermissionRequest extends AlertDialog.Builder
 {
     public PermissionRequest mPermissionQueue;
 
-    public RationalePermissionRequest(final Activity activity,
-                                      @NonNull PermissionRequest permission,
+    public RationalePermissionRequest(final Activity activity, @NonNull PermissionRequest permission,
                                       boolean killActivityOtherwise)
     {
         super(activity);
@@ -54,48 +53,29 @@ public class RationalePermissionRequest extends AlertDialog.Builder
         setMessage(permission.message);
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, mPermissionQueue.permission))
-            setNeutralButton(R.string.butn_settings, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    Intent intent = new Intent()
-                            .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            .setData(Uri.fromParts("package", activity.getPackageName(), null));
+            setNeutralButton(R.string.butn_settings, (dialogInterface, i) -> {
+                Intent intent = new Intent()
+                        .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                        .setData(Uri.fromParts("package", activity.getPackageName(), null));
 
-                    activity.startActivity(intent);
-                }
+                activity.startActivity(intent);
             });
 
-        setPositiveButton(R.string.butn_ask, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                ActivityCompat.requestPermissions(activity, new String[]{mPermissionQueue.permission}, REQUEST_PERMISSION_ALL);
-            }
-        });
+        setPositiveButton(R.string.butn_ask, (dialogInterface, i) -> ActivityCompat.requestPermissions(activity,
+                new String[]{mPermissionQueue.permission}, REQUEST_PERMISSION_ALL));
 
         if (killActivityOtherwise)
-            setNegativeButton(R.string.butn_reject, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i)
-                {
-                    activity.finish();
-                }
-            });
+            setNegativeButton(R.string.butn_reject, (dialogInterface, i) -> activity.finish());
         else
             setNegativeButton(R.string.butn_close, null);
     }
 
-    public static AlertDialog requestIfNecessary(Activity activity,
-                                                 PermissionRequest permissionQueue,
+    public static AlertDialog requestIfNecessary(Activity activity, PermissionRequest permissionQueue,
                                                  boolean killActivityOtherwise)
     {
-        return ActivityCompat.checkSelfPermission(activity, permissionQueue.permission) == PackageManager.PERMISSION_GRANTED
-                ? null
-                : new RationalePermissionRequest(activity, permissionQueue, killActivityOtherwise).show();
+        return ActivityCompat.checkSelfPermission(activity, permissionQueue.permission)
+                == PackageManager.PERMISSION_GRANTED ? null : new RationalePermissionRequest(activity, permissionQueue,
+                killActivityOtherwise).show();
     }
 
     public static class PermissionRequest

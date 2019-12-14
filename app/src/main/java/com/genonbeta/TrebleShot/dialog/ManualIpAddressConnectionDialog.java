@@ -63,14 +63,9 @@ public class ManualIpAddressConnectionDialog extends AbstractSingleTextInputDial
 
         setTitle(R.string.butn_enterIpAddress);
 
-        setOnProceedClickListener(R.string.butn_connect, new OnProceedClickListener()
-        {
-            @Override
-            public boolean onProceedClick(AlertDialog dialog)
-            {
-                doTask(activity, utils);
-                return false;
-            }
+        setOnProceedClickListener(R.string.butn_connect, dialog -> {
+            doTask(activity, utils);
+            return false;
         });
     }
 

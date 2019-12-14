@@ -40,10 +40,9 @@ import java.util.List;
  */
 public class DialogUtils
 {
-    public static void showGenericCheckBoxDialog(final Activity activity, @StringRes int title,
-                                                 String content, @StringRes int positiveButton,
-                                                 @StringRes int checkBox, final ClickListener positiveListener,
-                                                 String... textArgs)
+    public static void showGenericCheckBoxDialog(final Activity activity, @StringRes int title, String content,
+                                                 @StringRes int positiveButton, @StringRes int checkBox,
+                                                 final ClickListener positiveListener, String... textArgs)
     {
         View view = LayoutInflater.from(activity).inflate(R.layout.abstract_layout_dialog_text_option,
                 null);
@@ -61,14 +60,8 @@ public class DialogUtils
                 .setTitle(title)
                 .setView(view)
                 .setNegativeButton(R.string.butn_cancel, null)
-                .setPositiveButton(positiveButton, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        positiveListener.onClick(dialog, which, checkBox1);
-                    }
-                })
+                .setPositiveButton(positiveButton, (dialog, which) -> positiveListener.onClick(dialog, which,
+                        checkBox1))
                 .show();
     }
 
@@ -77,32 +70,20 @@ public class DialogUtils
         showGenericCheckBoxDialog(activity, R.string.ques_removeAll,
                 activity.getString(R.string.text_removeTransferGroupSummary),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
-                new ClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, CheckBox checkBox)
-                    {
-                        group.setDeleteFilesOnRemoval(checkBox.isChecked());
-                        AppUtils.getDatabase(activity).removeAsynchronous(activity, group);
-                    }
+                (dialog, which, checkBox) -> {
+                    group.setDeleteFilesOnRemoval(checkBox.isChecked());
+                    AppUtils.getDatabase(activity).removeAsynchronous(activity, group);
                 });
     }
 
     public static void showRemoveDialog(final Activity activity, final TransferObject object)
     {
-        int checkBox = TransferObject.Type.INCOMING.equals(object.type)
-                ? R.string.text_alsoDeleteReceivedFiles : 0;
-        showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
-                activity.getString(R.string.text_removeTransferSummary, object.name),
-                R.string.butn_remove, checkBox,
-                new ClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, CheckBox checkBox)
-                    {
-                        object.setDeleteOnRemoval(checkBox.isChecked());
-                        AppUtils.getDatabase(activity).removeAsynchronous(activity, object);
-                    }
+        int checkBox = TransferObject.Type.INCOMING.equals(object.type) ? R.string.text_alsoDeleteReceivedFiles : 0;
+        showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer, activity.getString(
+                R.string.text_removeTransferSummary, object.name), R.string.butn_remove, checkBox,
+                (dialog, which, checkBox1) -> {
+                    object.setDeleteOnRemoval(checkBox1.isChecked());
+                    AppUtils.getDatabase(activity).removeAsynchronous(activity, object);
                 });
     }
 
@@ -113,18 +94,13 @@ public class DialogUtils
         showGenericCheckBoxDialog(activity, R.string.ques_removeTransfer,
                 activity.getResources().getQuantityString(R.plurals.text_removeQueueSummary, objects.size(), objects.size()),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
-                new ClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, CheckBox checkBox)
-                    {
-                        boolean isChecked = checkBox.isChecked();
+                (dialog, which, checkBox) -> {
+                    boolean isChecked = checkBox.isChecked();
 
-                        for (TransferObject object : copiedObjects)
-                            object.setDeleteOnRemoval(isChecked);
+                    for (TransferObject object : copiedObjects)
+                        object.setDeleteOnRemoval(isChecked);
 
-                        AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedObjects);
-                    }
+                    AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedObjects);
                 });
     }
 
@@ -133,21 +109,15 @@ public class DialogUtils
     {
         final List<TransferGroup> copiedGroups = new ArrayList<>(groups);
 
-        showGenericCheckBoxDialog(activity, R.string.ques_removeAll,
-                activity.getString(R.string.text_removeSelected),
+        showGenericCheckBoxDialog(activity, R.string.ques_removeAll, activity.getString(R.string.text_removeSelected),
                 R.string.butn_remove, R.string.text_alsoDeleteReceivedFiles,
-                new ClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which, CheckBox checkBox)
-                    {
-                        boolean isChecked = checkBox.isChecked();
+                (dialog, which, checkBox) -> {
+                    boolean isChecked = checkBox.isChecked();
 
-                        for (TransferGroup group : copiedGroups)
-                            group.setDeleteFilesOnRemoval(isChecked);
+                    for (TransferGroup group : copiedGroups)
+                        group.setDeleteFilesOnRemoval(isChecked);
 
-                        AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedGroups);
-                    }
+                    AppUtils.getDatabase(activity).removeAsynchronous(activity, copiedGroups);
                 });
     }
 

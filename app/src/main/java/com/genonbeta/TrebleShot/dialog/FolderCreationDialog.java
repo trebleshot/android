@@ -31,34 +31,29 @@ import com.genonbeta.android.framework.io.DocumentFile;
 
 public class FolderCreationDialog extends AbstractSingleTextInputDialog
 {
-    public FolderCreationDialog(final Context context, final DocumentFile currentFolder, final OnFolderCreatedListener createdListener)
+    public FolderCreationDialog(final Context context, final DocumentFile currentFolder,
+                                final OnFolderCreatedListener createdListener)
     {
         super(context);
 
         setTitle(R.string.text_createFolder);
+        setOnProceedClickListener(R.string.butn_create, dialog -> {
+            String fileName = getEditText().getText().toString();
 
-        setOnProceedClickListener(R.string.butn_create, new OnProceedClickListener()
-        {
-            @Override
-            public boolean onProceedClick(AlertDialog dialog)
-            {
-                String fileName = getEditText().getText().toString();
+            if (fileName.length() == 0)
+                return false;
 
-                if (fileName.length() == 0)
-                    return false;
+            DocumentFile createdFile = currentFolder.createDirectory(fileName);
 
-                DocumentFile createdFile = currentFolder.createDirectory(fileName);
-
-                if (createdFile == null) {
-                    Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-
-                createdListener.onFolderCreated(createdFile);
-                dialog.dismiss();
-
-                return true;
+            if (createdFile == null) {
+                Toast.makeText(getContext(), R.string.mesg_folderCreateError, Toast.LENGTH_SHORT).show();
+                return false;
             }
+
+            createdListener.onFolderCreated(createdFile);
+            dialog.dismiss();
+
+            return true;
         });
     }
 

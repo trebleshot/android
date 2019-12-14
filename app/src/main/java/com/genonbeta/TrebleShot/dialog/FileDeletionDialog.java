@@ -39,7 +39,8 @@ import java.util.List;
 
 public class FileDeletionDialog extends AlertDialog.Builder
 {
-    public FileDeletionDialog(final Context context, final List<FileListAdapter.GenericFileHolder> items, final Listener listener)
+    public FileDeletionDialog(final Context context, final List<FileListAdapter.GenericFileHolder> items,
+                              final Listener listener)
     {
         super(context);
 

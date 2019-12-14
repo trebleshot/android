@@ -44,8 +44,7 @@ public class ConnectionTestDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionTestDialog(Context context,
-                                NetworkDevice device,
+    public ConnectionTestDialog(Context context, NetworkDevice device,
                                 List<EstablishConnectionDialog.ConnectionResult> resultList)
     {
         super(context);
@@ -87,9 +86,11 @@ public class ConnectionTestDialog extends AlertDialog.Builder
         public View getView(int position, View convertView, ViewGroup parent)
         {
             if (convertView == null)
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent,
+                        false);
 
-            EstablishConnectionDialog.ConnectionResult address = (EstablishConnectionDialog.ConnectionResult) getItem(position);
+            EstablishConnectionDialog.ConnectionResult address = (EstablishConnectionDialog.ConnectionResult) getItem(
+                    position);
 
             TextView textView1 = convertView.findViewById(R.id.pending_available_interface_text1);
             TextView textView2 = convertView.findViewById(R.id.pending_available_interface_text2);

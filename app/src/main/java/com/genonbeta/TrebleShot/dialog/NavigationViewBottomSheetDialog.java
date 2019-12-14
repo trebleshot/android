@@ -37,7 +37,8 @@ public class NavigationViewBottomSheetDialog extends BottomSheetDialog
     {
         super(activity);
 
-        View view = LayoutInflater.from(activity).inflate(R.layout.layout_navigation_view_bottom_sheet, null, false);
+        View view = LayoutInflater.from(activity).inflate(R.layout.layout_navigation_view_bottom_sheet,
+                null, false);
         NavigationView navigationView = view.findViewById(R.id.nav_view);
 
         activity.getMenuInflater().inflate(menu, navigationView.getMenu());

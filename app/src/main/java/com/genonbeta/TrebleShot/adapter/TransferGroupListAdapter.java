@@ -50,8 +50,8 @@ import java.util.List;
  * date: 9.11.2017 23:39
  */
 
-public class TransferGroupListAdapter
-        extends GroupEditableListAdapter<PreloadedGroup, GroupEditableListAdapter.GroupViewHolder>
+public class TransferGroupListAdapter extends GroupEditableListAdapter<PreloadedGroup,
+        GroupEditableListAdapter.GroupViewHolder>
 {
     final private List<Long> mRunningTasks = new ArrayList<>();
 
@@ -113,8 +113,8 @@ public class TransferGroupListAdapter
     @Override
     public GroupEditableListAdapter.GroupViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
-        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(
-                R.layout.list_transfer_group, parent, false)) : createDefaultViews(parent, viewType, true);
+        return viewType == VIEW_TYPE_DEFAULT ? new GroupViewHolder(getInflater().inflate(R.layout.list_transfer_group,
+                parent, false)) : createDefaultViews(parent, viewType, true);
     }
 
     @Override
@@ -142,9 +142,7 @@ public class TransferGroupListAdapter
                 if (object.hasIssues)
                     appliedColor = mColorError;
                 else
-                    appliedColor = object.numberOfCompleted() == object.numberOfTotal()
-                            ? mColorDone
-                            : mColorPending;
+                    appliedColor = object.numberOfCompleted() == object.numberOfTotal() ? mColorDone : mColorPending;
 
                 if (object.isRunning) {
                     image.setImageResource(R.drawable.ic_pause_white_24dp);
@@ -159,8 +157,7 @@ public class TransferGroupListAdapter
                                 : R.drawable.ic_arrow_down_white_24dp);
                 }
 
-                statusLayoutWeb.setVisibility(object.hasOutgoing() && object.isServedOnWeb
-                        ? View.VISIBLE : View.GONE);
+                statusLayoutWeb.setVisibility(object.hasOutgoing() && object.isServedOnWeb ? View.VISIBLE : View.GONE);
                 text1.setText(FileUtils.sizeExpression(object.bytesTotal(), false));
                 text2.setText(assigneesText.length() > 0 ? assigneesText : getContext().getString(
                         object.isServedOnWeb ? R.string.text_transferSharedOnBrowser : R.string.text_emptySymbol));

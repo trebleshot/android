@@ -133,13 +133,8 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         public PackageHolder(String friendlyName, ApplicationInfo appInfo, String version, String packageName,
                              File executableFile)
         {
-            super(appInfo.packageName.hashCode(),
-                    friendlyName,
-                    friendlyName + "_" + version + ".apk",
-                    MIME_TYPE,
-                    executableFile.lastModified(),
-                    executableFile.length(),
-                    Uri.fromFile(executableFile));
+            super(appInfo.packageName.hashCode(), friendlyName, friendlyName + "_" + version + ".apk",
+                    MIME_TYPE, executableFile.lastModified(), executableFile.length(), Uri.fromFile(executableFile));
 
             this.appInfo = appInfo;
             this.version = version;

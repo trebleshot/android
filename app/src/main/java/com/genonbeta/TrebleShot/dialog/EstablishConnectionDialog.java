@@ -66,9 +66,12 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                 final List<ConnectionResult> reachedConnections = new ArrayList<>();
                 final List<ConnectionResult> calculatedConnections = new ArrayList<>();
-                final List<DeviceConnection> connectionList = AppUtils.getDatabase(activity).castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
-                        .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", networkDevice.id)
-                        .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"), DeviceConnection.class);
+                final List<DeviceConnection> connectionList = AppUtils.getDatabase(activity).castQuery(
+                        new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
+                                .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?",
+                                        networkDevice.id)
+                                .setOrderBy(AccessDatabase.FIELD_DEVICECONNECTION_LASTCHECKEDDATE + " DESC"),
+                        DeviceConnection.class);
 
                 setMax(connectionList.size());
 
@@ -82,8 +85,8 @@ public class EstablishConnectionDialog extends ProgressDialog
                     publishStatusText(connectionResult.connection.adapterName);
                     setProgress(getProgress() + 1);
 
-                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity), Integer.class,
-                            client -> {
+                    final Integer calculatedTime = CommunicationBridge.connect(AppUtils.getDatabase(activity),
+                            Integer.class, client -> {
                                 connectionResult.pingTime = -1;
 
                                 try {

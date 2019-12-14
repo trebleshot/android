@@ -58,14 +58,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
         mActiveList.addAll(activeList);
 
         if (mAssignees.length > 0)
-            setAdapter(new ActiveListAdapter(), new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    startTransfer(activity, group, mAssignees[which]);
-                }
-            });
+            setAdapter(new ActiveListAdapter(), (dialog, which) -> startTransfer(activity, group, mAssignees[which]));
 
         setNegativeButton(R.string.butn_close, null);
 
@@ -89,14 +82,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
 
         if (group.hasIncoming() && senderAssignee != null) {
             final ShowingAssignee finalSenderAssignee = senderAssignee;
-            setPositiveButton(R.string.butn_receive, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    startTransfer(activity, group, finalSenderAssignee);
-                }
-            });
+            setPositiveButton(R.string.butn_receive, (dialog, which) -> startTransfer(activity, group, finalSenderAssignee));
         }
     }
 

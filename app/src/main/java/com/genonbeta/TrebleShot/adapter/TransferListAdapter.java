@@ -64,9 +64,9 @@ import java.util.Map;
  * Date: 4/15/17 12:29 PM
  */
 
-public class TransferListAdapter
-        extends GroupEditableListAdapter<TransferListAdapter.AbstractGenericItem, GroupEditableListAdapter.GroupViewHolder>
-        implements GroupEditableListAdapter.GroupLister.CustomGroupLister<TransferListAdapter.AbstractGenericItem>
+public class TransferListAdapter extends GroupEditableListAdapter<TransferListAdapter.AbstractGenericItem,
+        GroupEditableListAdapter.GroupViewHolder> implements GroupEditableListAdapter.GroupLister.CustomGroupLister<
+        TransferListAdapter.AbstractGenericItem>
 {
     //public static final int MODE_SORT_BY_DEFAULT = MODE_SORT_BY_NAME - 1;
     public static final int MODE_GROUP_BY_DEFAULT = MODE_GROUP_BY_NOTHING + 1;

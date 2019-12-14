@@ -89,23 +89,9 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
     {
         final AlertDialog dialog = super.show();
 
-        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                massCheck(true);
-            }
-        });
+        dialog.getButton(AlertDialog.BUTTON_NEUTRAL).setOnClickListener(v -> massCheck(true));
 
-        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                massCheck(false);
-            }
-        });
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setOnClickListener(v -> massCheck(false));
 
         return dialog;
     }
@@ -144,14 +130,7 @@ public class SelectionEditorDialog<T extends Selectable> extends AlertDialog.Bui
             removalSignView.setVisibility(selectable.isSelectableSelected() ? View.GONE : View.VISIBLE);
 
             convertView.setClickable(true);
-            convertView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    checkReversed(removalSignView, selectable);
-                }
-            });
+            convertView.setOnClickListener(v -> checkReversed(removalSignView, selectable));
 
             return convertView;
         }

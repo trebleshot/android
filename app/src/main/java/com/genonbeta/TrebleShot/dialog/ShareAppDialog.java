@@ -46,85 +46,63 @@ public class ShareAppDialog extends AlertDialog.Builder
         setMessage(R.string.ques_shareAsApkOrLink);
 
         setNegativeButton(R.string.butn_cancel, null);
-        setNeutralButton(R.string.butn_asApk, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                shareAsApk(context);
-            }
-        });
-
-        setPositiveButton(R.string.butn_asLink, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i)
-            {
-                shareAsLink(context);
-            }
-        });
+        setNeutralButton(R.string.butn_asApk, (dialogInterface, i) -> shareAsApk(context));
+        setPositiveButton(R.string.butn_asLink, (dialogInterface, i) -> shareAsLink(context));
     }
 
     private void shareAsApk(@NonNull final Context context)
     {
-        new Handler(Looper.myLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
+        new Handler(Looper.myLooper()).post(() -> {
+            try {
+                Interrupter interrupter = new Interrupter();
+
+                PackageManager pm = context.getPackageManager();
+                PackageInfo packageInfo = pm.getPackageInfo(context.getApplicationInfo().packageName, 0);
+
+                String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
+
+                DocumentFile storageDirectory = FileUtils.getApplicationDirectory(context.getApplicationContext());
+                DocumentFile codeFile = DocumentFile.fromFile(new File(context.getApplicationInfo().sourceDir));
+                DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(
+                        storageDirectory, fileName, true));
+
+                FileUtils.copy(context, codeFile, cloneFile, interrupter);
+
                 try {
-                    Interrupter interrupter = new Interrupter();
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND)
+                            .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
+                            .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(context, cloneFile))
+                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            .setType(cloneFile.getType());
 
-                    PackageManager pm = context.getPackageManager();
-                    PackageInfo packageInfo = pm.getPackageInfo(context.getApplicationInfo().packageName, 0);
-
-                    String fileName = packageInfo.applicationInfo.loadLabel(pm) + "_" + packageInfo.versionName + ".apk";
-
-                    DocumentFile storageDirectory = FileUtils.getApplicationDirectory(context.getApplicationContext());
-                    DocumentFile codeFile = DocumentFile.fromFile(new File(context.getApplicationInfo().sourceDir));
-                    DocumentFile cloneFile = storageDirectory.createFile(null, FileUtils.getUniqueFileName(storageDirectory, fileName, true));
-
-                    FileUtils.copy(context, codeFile, cloneFile, interrupter);
-
-                    try {
-                        Intent sendIntent = new Intent(Intent.ACTION_SEND)
-                                .putExtra(ShareActivity.EXTRA_FILENAME_LIST, fileName)
-                                .putExtra(Intent.EXTRA_STREAM, FileUtils.getSecureUri(context, cloneFile))
-                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                .setType(cloneFile.getType());
-
-                        context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.text_fileShareAppChoose)));
-                    } catch (IllegalArgumentException e) {
-                        Toast.makeText(context, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
-                        e.printStackTrace();
-                    }
-                } catch (Exception e) {
+                    context.startActivity(Intent.createChooser(sendIntent, context.getString(
+                            R.string.text_fileShareAppChoose)));
+                } catch (IllegalArgumentException e) {
+                    Toast.makeText(context, R.string.mesg_providerNotAllowedError, Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }
 
     private void shareAsLink(@NonNull final Context context)
     {
-        new Handler(Looper.myLooper()).post(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try {
-                    String textToShare = context.getString(R.string.text_linkTrebleshot,
-                            AppConfig.URI_GOOGLE_PLAY);
+        new Handler(Looper.myLooper()).post(() -> {
+            try {
+                String textToShare = context.getString(R.string.text_linkTrebleshot,
+                        AppConfig.URI_GOOGLE_PLAY);
 
-                    Intent sendIntent = new Intent(Intent.ACTION_SEND)
-                            .putExtra(Intent.EXTRA_TEXT, textToShare)
-                            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            .setType("text/plain");
+                Intent sendIntent = new Intent(Intent.ACTION_SEND)
+                        .putExtra(Intent.EXTRA_TEXT, textToShare)
+                        .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        .setType("text/plain");
 
-                    context.startActivity(Intent.createChooser(sendIntent, context.getString(R.string.text_fileShareAppChoose)));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                context.startActivity(Intent.createChooser(sendIntent, context.getString(
+                        R.string.text_fileShareAppChoose)));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

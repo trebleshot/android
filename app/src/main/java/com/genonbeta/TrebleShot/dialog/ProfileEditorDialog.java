@@ -48,38 +48,20 @@ public class ProfileEditorDialog extends AlertDialog.Builder
         activity.loadProfilePictureInto(deviceName, image);
         editText.requestFocus();
 
-        editImage.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                activity.requestProfilePictureChange();
-                saveNickname(activity, editText);
-                closeIfPossible();
-            }
+        editImage.setOnClickListener(v -> {
+            activity.requestProfilePictureChange();
+            saveNickname(activity, editText);
+            closeIfPossible();
         });
 
         setView(view);
 
-
-        setNegativeButton(R.string.butn_remove, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                activity.deleteFile("profilePicture");
-                activity.notifyUserProfileChanged();
-            }
+        setNegativeButton(R.string.butn_remove, (dialog, which) -> {
+            activity.deleteFile("profilePicture");
+            activity.notifyUserProfileChanged();
         });
 
-        setPositiveButton(R.string.butn_save, new DialogInterface.OnClickListener()
-        {
-            @Override
-            public void onClick(DialogInterface dialog, int which)
-            {
-                saveNickname(activity, editText);
-            }
-        });
+        setPositiveButton(R.string.butn_save, (dialog, which) -> saveNickname(activity, editText));
 
         setNeutralButton(R.string.butn_close, null);
     }

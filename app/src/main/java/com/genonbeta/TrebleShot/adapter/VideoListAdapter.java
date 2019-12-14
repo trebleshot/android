@@ -98,7 +98,8 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
     @Override
     protected void onLoad(GroupLister<VideoHolder> lister)
     {
-        Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        Cursor cursor = mResolver.query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null, null,
+                null, null);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {
@@ -148,7 +149,8 @@ public class VideoListAdapter extends GalleryGroupEditableListAdapter<VideoListA
             super(VIEW_TYPE_REPRESENTATIVE, representativeText);
         }
 
-        public VideoHolder(long id, String friendlyName, String fileName, String albumName, String mimeType, long duration, long date, long size, Uri uri)
+        public VideoHolder(long id, String friendlyName, String fileName, String albumName, String mimeType,
+                           long duration, long date, long size, Uri uri)
         {
             super(id, friendlyName, fileName, albumName, mimeType, date, size, uri);
             this.duration = TimeUtils.getDuration(duration);

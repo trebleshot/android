@@ -63,7 +63,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
     @ColorInt
     private int mPassiveColor;
 
-    public ConnectionChooserDialog(final Activity activity, NetworkDevice networkDevice, final OnDeviceSelectedListener listener)
+    public ConnectionChooserDialog(final Activity activity, NetworkDevice networkDevice,
+                                   final OnDeviceSelectedListener listener)
     {
         super(activity);
 
@@ -83,7 +84,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
 
         setTitle(getContext().getString(R.string.text_availableNetworks, networkDevice.nickname));
         setNegativeButton(R.string.butn_cancel, null);
-        setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity, ManageDevicesActivity.class)));
+        setNeutralButton(R.string.text_manageDevices, (dialog, which) -> activity.startActivity(new Intent(activity,
+                ManageDevicesActivity.class)));
     }
 
     public synchronized List<DeviceConnection> getConnections()
@@ -127,7 +129,8 @@ public class ConnectionChooserDialog extends AlertDialog.Builder
         public View getView(int position, View convertView, ViewGroup parent)
         {
             if (convertView == null)
-                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent, false);
+                convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_available_interface, parent,
+                        false);
 
             DeviceConnection address = (DeviceConnection) getItem(position);
 

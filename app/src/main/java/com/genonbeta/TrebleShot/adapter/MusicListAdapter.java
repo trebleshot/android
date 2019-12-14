@@ -237,7 +237,8 @@ public class MusicListAdapter
             super(VIEW_TYPE_REPRESENTATIVE, representativeText);
         }
 
-        public SongHolder(long id, String displayName, String artist, String song, String folder, String mimeType, int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
+        public SongHolder(long id, String displayName, String artist, String song, String folder, String mimeType,
+                          int albumId, AlbumHolder albumHolder, long date, long size, Uri uri)
         {
             super(id, song + " - " + artist, displayName, mimeType, date, size, uri);
 
@@ -273,8 +274,7 @@ public class MusicListAdapter
             if (isGroupRepresentative())
                 return super.searchMatches(searchWord);
 
-            return TextUtils.searchWord(artist, searchWord)
-                    || TextUtils.searchWord(song, searchWord)
+            return TextUtils.searchWord(artist, searchWord) || TextUtils.searchWord(song, searchWord)
                     || TextUtils.searchWord(albumHolder.title, searchWord);
         }
     }

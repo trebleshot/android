@@ -152,16 +152,11 @@ public class TransferInfoDialog extends AlertDialog.Builder
             try {
                 final Intent startIntent = FileUtils.getOpenIntent(getContext(), attemptedFile);
 
-                setNeutralButton(R.string.butn_open, new DialogInterface.OnClickListener()
-                {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which)
-                    {
-                        try {
-                            getContext().startActivity(startIntent);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                setNeutralButton(R.string.butn_open, (dialog, which) -> {
+                    try {
+                        getContext().startActivity(startIntent);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 });
             } catch (Exception ignored) {
