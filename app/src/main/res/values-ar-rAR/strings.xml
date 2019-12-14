@@ -469,7 +469,7 @@
     <string name="ques_connectionWizardUseNetwork">هل تريد استخدام جهاز التوجيه الخاص بك أو اي شبكه Wi-fi تتصل بها أنت وصديقك ؟</string>
     <string name="ques_connectionWizardUseKnownDevices">هل تريد الوصول إلى أجهزتك التي تم الاتصال بها مسبقا ؟</string>
     <string name="text_hotspotStartedExternallyNotice">وقد بدات النقطة الساخنة خارجيا. لاستخدام رمز الاستجابة السريعة ، يجب ان تبدا هنا.</string>
-    <string name="text_textMillisecond">% d مللي ثانيه</string>
+    <string name="text_textMillisecond">%d مللي ثانيه</string>
     <string name="text_amoledOptimizedBlackTheme">تحسين شاشات AMOLED</string>
     <string name="mesg_errorNotTrusted">"يجب تعيين هذا الجهاز علي انه جهاز trustzone  علي جهاز الاستقبال للقيام بهذه العملية."</string>
     <string name="text_webShareNoContentNotice">استخدم خيار \"مشاركه علي المتصفح\" لرؤية عمليات النقل هنا!</string>
@@ -478,7 +478,7 @@
     <string name="ques_shareAsApkOrLink">مشاركة ملف التثبيت او الرابط؟</string>
     <string name="butn_asApk">ملف التثبيت</string>
     <string name="butn_asLink">كرابط</string>
-    <string name="text_linkTrebleshot">مشاركه الملفات مع TrebleShot! تحميل هنا:% s</string>
+    <string name="text_linkTrebleshot">مشاركه الملفات مع TrebleShot! تحميل هنا:%s</string>
     <string name="butn_downloadAllAsZip">تحميل الجميع كملف ZIP (واحد ، غير مضغوط)</string>
     <string name="text_interfaceVPN">خادم VPN</string>
     <string name="text_unrecognizedQrCode">رمز غير معروف</string>

@@ -429,7 +429,7 @@
     <string name="mesg_openFailure">امکان مشاهده نیست «%s»</string>
     <string name="text_connectionTest">آزمایش اتصال - %s</string>
     <string name="butn_connectionTest">آزمایش اتصال</string>
-    <string name="text_textMillisecond">%s میلی ثانیه</string>
+    <string name="text_textMillisecond">%d میلی ثانیه</string>
     <string name="const_text_useAppFonts">تنظیم فونت پیشنهادی</string>
     <string name="const_text_useAppFontsSummary">از فونت سفارشی ارائه شده استفاده کنید</string>
     <string name="mesg_waiting">در انتظار</string>
