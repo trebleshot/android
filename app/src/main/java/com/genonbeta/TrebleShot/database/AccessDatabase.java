@@ -268,7 +268,8 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public long insert(android.database.sqlite.SQLiteDatabase database, String tableName, String nullColumnHack, ContentValues contentValues)
+    public long insert(android.database.sqlite.SQLiteDatabase database, String tableName, String nullColumnHack,
+                       ContentValues contentValues)
     {
         long returnedItems = super.insert(database, tableName, nullColumnHack, contentValues);
         append(database, tableName, TYPE_INSERT);
@@ -276,7 +277,8 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public <T, V extends DatabaseObject<T>> void insert(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
+    public <T, V extends DatabaseObject<T>> void insert(android.database.sqlite.SQLiteDatabase openDatabase,
+                                                        List<V> objects, ProgressUpdater updater, T parent)
     {
         super.insert(openDatabase, objects, updater, parent);
         Set<String> tableList = explodePerTable(objects).keySet();
@@ -293,7 +295,8 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public <T, V extends DatabaseObject<T>> void remove(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
+    public <T, V extends DatabaseObject<T>> void remove(android.database.sqlite.SQLiteDatabase openDatabase,
+                                                        List<V> objects, ProgressUpdater updater, T parent)
     {
         super.remove(openDatabase, objects, updater, parent);
         Set<String> tableList = explodePerTable(objects).keySet();
@@ -340,7 +343,8 @@ public class AccessDatabase extends SQLiteDatabase
     }
 
     @Override
-    public <T, V extends DatabaseObject<T>> void update(android.database.sqlite.SQLiteDatabase openDatabase, List<V> objects, ProgressUpdater updater, T parent)
+    public <T, V extends DatabaseObject<T>> void update(android.database.sqlite.SQLiteDatabase openDatabase,
+                                                        List<V> objects, ProgressUpdater updater, T parent)
     {
         super.update(openDatabase, objects, updater, parent);
 
