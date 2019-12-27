@@ -148,8 +148,8 @@ public class TransferAssignee implements DatabaseObject<TransferGroup>
             SQLQuery.Select selection = TransferUtils.createIncomingSelection(groupId,
                     TransferObject.Flag.INTERRUPTED, true);
 
-            accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class,
-                    null, parent);
+            accessDatabase.removeAsObject(dbInstance, selection, TransferObject.class, null, null,
+                    parent);
         } catch (ReconstructionFailedException e) {
             e.printStackTrace();
         }

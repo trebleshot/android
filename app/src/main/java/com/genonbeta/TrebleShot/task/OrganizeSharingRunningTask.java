@@ -123,20 +123,11 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
         if (getAnchorListener() != null)
             getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_completing));
 
-        AppUtils.getDatabase(getService()).insert(pendingObjects, new SQLiteDatabase.ProgressUpdater()
-        {
-            @Override
-            public void onProgressChange(int total, int current)
-            {
-                if (getAnchorListener() != null)
-                    getAnchorListener().updateProgress(total, current);
-            }
+        AppUtils.getDatabase(getService()).insert(pendingObjects, (total, current) -> {
+            if (getAnchorListener() != null)
+                getAnchorListener().updateProgress(total, current);
 
-            @Override
-            public boolean onProgressState()
-            {
-                return !getInterrupter().interrupted();
-            }
+            return !getInterrupter().interrupted();
         });
 
         if (getInterrupter().interrupted()) {

@@ -147,6 +147,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
 
             database.remove(dbInstance, objects, null, this);
         } else
-            database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, this);
+            database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, null,
+                    this);
     }
 }

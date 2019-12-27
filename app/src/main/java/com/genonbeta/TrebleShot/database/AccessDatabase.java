@@ -19,20 +19,14 @@
 package com.genonbeta.TrebleShot.database;
 
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.SQLException;
+import androidx.annotation.StringRes;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.migration.db.Migration;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.android.database.*;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by: veli
@@ -50,12 +44,6 @@ public class AccessDatabase extends SQLiteDatabase
 
     public static final String TAG = AccessDatabase.class.getSimpleName();
     public static final String DATABASE_NAME = AccessDatabase.class.getSimpleName() + ".db";
-
-    public static final String ACTION_DATABASE_CHANGE = "com.genonbeta.intent.action.DATABASE_CHANGE";
-    public static final String EXTRA_BROADCAST_DATA = "extraBroadcastData";
-    public static final String TYPE_REMOVE = "typeRemove";
-    public static final String TYPE_INSERT = "typeInsert";
-    public static final String TYPE_UPDATE = "typeUpdate";
 
     public static final String TABLE_CLIPBOARD = "clipboard";
     public static final String FIELD_CLIPBOARD_ID = "id";
@@ -116,8 +104,6 @@ public class AccessDatabase extends SQLiteDatabase
     public static final String TABLE_WRITABLEPATH = "writablePath";
     public static final String FIELD_WRITABLEPATH_TITLE = "title";
     public static final String FIELD_WRITABLEPATH_PATH = "path";
-
-    private final List<BroadcastData> mBroadcastOverhead = new ArrayList<>();
 
     public AccessDatabase(Context context)
     {
@@ -202,119 +188,7 @@ public class AccessDatabase extends SQLiteDatabase
         return values;
     }
 
-    public synchronized void append(android.database.sqlite.SQLiteDatabase dbInstance,
-                                    String tableName, String changeType)
-    {
-        BroadcastData data = null;
-
-        synchronized (mBroadcastOverhead) {
-            for (BroadcastData testedData : mBroadcastOverhead) {
-                if (tableName.equals(testedData.tableName)) {
-                    data = testedData;
-                    break;
-                }
-            }
-
-            if (data == null) {
-                data = new BroadcastData(tableName);
-                mBroadcastOverhead.add(data);
-            }
-        }
-
-        switch (changeType) {
-            case TYPE_INSERT:
-                data.inserted = true;
-                break;
-            case TYPE_REMOVE:
-                data.removed = true;
-                break;
-            case TYPE_UPDATE:
-                data.updated = true;
-        }
-
-        data.affectedRowCount += getAffectedRowCount(dbInstance);
-    }
-
-    public synchronized void broadcast()
-    {
-        synchronized (mBroadcastOverhead) {
-            for (BroadcastData data : mBroadcastOverhead) {
-                getContext().sendBroadcast(new Intent(ACTION_DATABASE_CHANGE)
-                        .putExtra(EXTRA_BROADCAST_DATA, data));
-            }
-
-            mBroadcastOverhead.clear();
-        }
-    }
-
-    public long getAffectedRowCount(android.database.sqlite.SQLiteDatabase database)
-    {
-        Cursor cursor = null;
-        long returnCount = 0;
-
-        try {
-            cursor = database.rawQuery("SELECT changes() AS affected_row_count", null);
-
-            if (cursor != null && cursor.getCount() > 0 && cursor.moveToFirst())
-                returnCount = cursor.getLong(cursor.getColumnIndex("affected_row_count"));
-        } catch (SQLException e) {
-            // Handle exception here.
-        } finally {
-            if (cursor != null)
-                cursor.close();
-        }
-
-        return returnCount;
-    }
-
-    @Override
-    public long insert(android.database.sqlite.SQLiteDatabase database, String tableName, String nullColumnHack,
-                       ContentValues contentValues)
-    {
-        long returnedItems = super.insert(database, tableName, nullColumnHack, contentValues);
-        append(database, tableName, TYPE_INSERT);
-        return returnedItems;
-    }
-
-    @Override
-    public <T, V extends DatabaseObject<T>> void insert(android.database.sqlite.SQLiteDatabase openDatabase,
-                                                        List<V> objects, ProgressUpdater updater, T parent)
-    {
-        super.insert(openDatabase, objects, updater, parent);
-        Set<String> tableList = explodePerTable(objects).keySet();
-        for (String tableName : tableList)
-            append(openDatabase, tableName, TYPE_INSERT);
-    }
-
-    @Override
-    public int remove(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select)
-    {
-        int returnedItems = super.remove(database, select);
-        append(database, select.tableName, TYPE_REMOVE);
-        return returnedItems;
-    }
-
-    @Override
-    public <T, V extends DatabaseObject<T>> void remove(android.database.sqlite.SQLiteDatabase openDatabase,
-                                                        List<V> objects, ProgressUpdater updater, T parent)
-    {
-        super.remove(openDatabase, objects, updater, parent);
-        Set<String> tableList = explodePerTable(objects).keySet();
-        for (String tableName : tableList)
-            append(openDatabase, tableName, TYPE_REMOVE);
-    }
-
-    public void removeAsynchronous(Activity activity, final DatabaseObject object)
-    {
-        removeAsynchronous(activity, () -> remove(object));
-    }
-
-    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject> objects)
-    {
-        removeAsynchronous(activity, () -> remove(objects));
-    }
-
-    private void removeAsynchronous(Activity activity, final Runnable runnable)
+    private void doAsynchronous(Activity activity, final AsynchronousTask asynchronousTask, @StringRes int textRes)
     {
         if (activity == null || activity.isFinishing())
             return;
@@ -327,50 +201,25 @@ public class AccessDatabase extends SQLiteDatabase
                 if (getService() != null)
                     publishStatusText("-");
 
-                runnable.run();
+                asynchronousTask.perform(this);
                 broadcast();
             }
-        }.setTitle(activity.getString(R.string.mesg_removing))
-                .run(activity);
+        }.setTitle(activity.getString(textRes)).run(activity);
     }
 
-    @Override
-    public int update(android.database.sqlite.SQLiteDatabase database, SQLQuery.Select select, ContentValues values)
+    public void removeAsynchronous(Activity activity, final DatabaseObject object)
     {
-        int returnedItems = super.update(database, select, values);
-        append(database, select.tableName, TYPE_UPDATE);
-        return returnedItems;
+        doAsynchronous(activity, (task) -> remove(object), R.string.mesg_removing);
     }
 
-    @Override
-    public <T, V extends DatabaseObject<T>> void update(android.database.sqlite.SQLiteDatabase openDatabase,
-                                                        List<V> objects, ProgressUpdater updater, T parent)
+    public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject> objects)
     {
-        super.update(openDatabase, objects, updater, parent);
-
-        Set<String> tableList = explodePerTable(objects).keySet();
-
-        for (String tableName : tableList)
-            append(openDatabase, tableName, TYPE_UPDATE);
+        doAsynchronous(activity, (task) -> remove(objects), R.string.mesg_removing);
     }
 
-    public static BroadcastData toData(Intent intent)
+    public interface AsynchronousTask
     {
-        return (BroadcastData) intent.getSerializableExtra(EXTRA_BROADCAST_DATA);
-    }
-
-    public static class BroadcastData implements Serializable
-    {
-        public int affectedRowCount = 0;
-        public boolean inserted = false;
-        public boolean removed = false;
-        public boolean updated = false;
-        public String tableName;
-
-        BroadcastData(String tableName)
-        {
-            this.tableName = tableName;
-        }
+        void perform(WorkerService.RunningTask task);
     }
 }
 

@@ -560,17 +560,13 @@ public class CommunicationService extends Service
                 long lastNotified = System.currentTimeMillis();
 
                 @Override
-                public void onProgressChange(int total, int current)
+                public boolean onProgressChange(int total, int current)
                 {
                     if ((System.currentTimeMillis() - lastNotified) > 1000) {
                         lastNotified = System.currentTimeMillis();
                         notification.updateProgress(total, current, false);
                     }
-                }
 
-                @Override
-                public boolean onProgressState()
-                {
                     return !interrupter.interrupted();
                 }
             };
