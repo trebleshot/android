@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.widget;
 
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -36,7 +37,7 @@ public class DynamicViewPagerAdapter extends PagerAdapter
     // page should be displayed, from left-to-right.  If the page no longer exists,
     // return POSITION_NONE.
     @Override
-    public int getItemPosition(Object object)
+    public int getItemPosition(@NonNull Object object)
     {
         int index = views.indexOf(object);
         if (index == -1)
@@ -49,6 +50,7 @@ public class DynamicViewPagerAdapter extends PagerAdapter
     // Used by ViewPager.  Called when ViewPager needs a page to display; it is our job
     // to add the page to the container, which is normally the ViewPager itself.  Since
     // all our pages are persistent, we simply retrieve it from our "views" ArrayList.
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position)
     {
@@ -81,7 +83,7 @@ public class DynamicViewPagerAdapter extends PagerAdapter
     //-----------------------------------------------------------------------------
     // Used by ViewPager.
     @Override
-    public boolean isViewFromObject(View view, Object object)
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object)
     {
         return view == object;
     }
