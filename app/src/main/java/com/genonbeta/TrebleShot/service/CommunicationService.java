@@ -613,7 +613,6 @@ public class CommunicationService extends Service
                 TASK_STATUS_ONGOING);
         notifyTaskList();
 
-        // TODO: 7/27/19 Implement task resuming
         boolean retry = false;
 
         try {
