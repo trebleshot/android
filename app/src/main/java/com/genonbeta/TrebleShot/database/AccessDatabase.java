@@ -188,7 +188,7 @@ public class AccessDatabase extends SQLiteDatabase
         return values;
     }
 
-    private void doAsynchronous(Activity activity, final AsynchronousTask asynchronousTask, @StringRes int textRes)
+    private void doAsynchronous(Activity activity, @StringRes int textRes, final AsynchronousTask asynchronousTask)
     {
         if (activity == null || activity.isFinishing())
             return;
@@ -209,12 +209,15 @@ public class AccessDatabase extends SQLiteDatabase
 
     public void removeAsynchronous(Activity activity, final DatabaseObject object)
     {
-        doAsynchronous(activity, (task) -> remove(object), R.string.mesg_removing);
+        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(object));
     }
 
     public void removeAsynchronous(Activity activity, final List<? extends DatabaseObject> objects)
     {
-        doAsynchronous(activity, (task) -> remove(objects), R.string.mesg_removing);
+        doAsynchronous(activity, R.string.mesg_removing, (task) -> remove(objects, (total, current) -> {
+            task.publishStatusText(getContext().getString(R.string.text_transferStatusFiles, current, total));
+            return !task.getInterrupter().interrupted();
+        }));
     }
 
     public interface AsynchronousTask
