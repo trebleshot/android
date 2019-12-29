@@ -1326,37 +1326,26 @@ public class CommunicationService extends Service
 
                 boolean result = false;
                 boolean shouldContinue = false;
+                boolean isLegacyDevice = false; // For this type of devices, we only try to send our identity.
 
                 final int networkPin = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
-                final boolean isSecureConnection = networkPin != -1
-                        && responseJSON.has(Keyword.DEVICE_SECURE_KEY)
+                final boolean isSecureConnection = networkPin != -1 && responseJSON.has(Keyword.DEVICE_SECURE_KEY)
                         && responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) == networkPin;
 
-                String deviceSerial = null;
                 NetworkDevice device = null;
-                AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
 
-                if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED)
-                        && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
-                    pushReply(activeConnection, replyJSON, true);
-
-                    if (!responseJSON.has(Keyword.HANDSHAKE_ONLY) || !responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY)) {
-                        try {
-                            device = NetworkDeviceLoader.loadFrom(getDatabase(), responseJSON);
-                        } catch (JSONException ignored) {
-                            deviceSerial = responseJSON.getString(Keyword.DEVICE_INFO_SERIAL);
-                        }
-
-                        clientRequest = activeConnection.receive();
-                        responseJSON = analyzeResponse(clientRequest);
-                        replyJSON = new JSONObject();
-                    } else
-                        return;
+                try {
+                    device = NetworkDeviceLoader.loadFrom(getDatabase(), responseJSON);
+                } catch (JSONException e) {
+                    // Deprecated: This is a fallback option to generate device information.
+                    // Clients must send the device info with every request they make, which is asked for
+                    // in the above try block beginning with version 2.0 of Android.
+                    device = new NetworkDevice(responseJSON.getString(Keyword.DEVICE_INFO_SERIAL));
+                    isLegacyDevice = true;
                 }
 
                 try {
-                    NetworkDevice testDevice = new NetworkDevice(device == null ? deviceSerial : device.id);
-
+                    NetworkDevice testDevice = new NetworkDevice(device.id);
                     getDatabase().reconstruct(testDevice);
 
                     if (isSecureConnection)
@@ -1365,12 +1354,9 @@ public class CommunicationService extends Service
                     if (!testDevice.isRestricted)
                         shouldContinue = true;
 
-                    if (device == null)
-                        device = testDevice;
-                    else
-                        device.applyPreferences(testDevice);
+                    device.applyPreferences(testDevice);
                 } catch (ReconstructionFailedException ignored) {
-                    if (device == null) {
+                    if (isLegacyDevice) {
                         device = NetworkDeviceLoader.load(true, getDatabase(),
                                 activeConnection.getClientAddress(), null);
 
@@ -1391,8 +1377,22 @@ public class CommunicationService extends Service
                         getNotificationHelper().notifyConnectionRequest(device);
                 }
 
-                DeviceConnection connection = NetworkDeviceLoader.processConnection(getDatabase(),
-                        device, activeConnection.getClientAddress());
+                AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
+
+                if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED)
+                        && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
+                    pushReply(activeConnection, replyJSON, true);
+
+                    if (responseJSON.has(Keyword.HANDSHAKE_ONLY) && responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY))
+                        return;
+
+                    clientRequest = activeConnection.receive();
+                    responseJSON = analyzeResponse(clientRequest);
+                    replyJSON = new JSONObject();
+                }
+
+                DeviceConnection connection = NetworkDeviceLoader.processConnection(getDatabase(), device,
+                        activeConnection.getClientAddress());
 
                 getDatabase().broadcast();
 
@@ -1483,8 +1483,7 @@ public class CommunicationService extends Service
                                         processHolder.group = group;
                                         processHolder.device = device;
                                         processHolder.type = type;
-                                        processHolder.assignee = new TransferAssignee(
-                                                group, device, type);
+                                        processHolder.assignee = new TransferAssignee(group, device, type);
 
                                         getDatabase().reconstruct(processHolder.assignee);
                                         pushReply(activeConnection, new JSONObject(), true);

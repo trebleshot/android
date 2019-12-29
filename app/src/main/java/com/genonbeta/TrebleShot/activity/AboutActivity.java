@@ -68,18 +68,21 @@ public class AboutActivity extends Activity
         findViewById(R.id.activity_about_option_fourth_layout).setOnClickListener(view -> {
             if (Keyword.Flavor.googlePlay.equals(AppUtils.getBuildFlavor())) {
                 try {
-                    startActivity(new Intent(AboutActivity.this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+                    startActivity(new Intent(AboutActivity.this, Class.forName(
+                            "com.genonbeta.TrebleShot.activity.DonationActivity")));
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             } else
-                UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(AboutActivity.this), true, null);
+                UpdateUtils.checkForUpdates(AboutActivity.this, UpdateUtils.getDefaultUpdater(
+                        AboutActivity.this), true, null);
         });
 
         findViewById(R.id.activity_about_third_party_libraries_layout).setOnClickListener(
                 v -> startActivity(new Intent(AboutActivity.this, ThirdPartyLibrariesActivity.class)));
 
-        GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment) getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
+        GitHubContributorsListFragment contributorsListFragment = (GitHubContributorsListFragment)
+                getSupportFragmentManager().findFragmentById(R.id.activity_about_contributors_fragment);
 
         if (contributorsListFragment != null)
             contributorsListFragment.getListView().setNestedScrollingEnabled(false);
@@ -121,7 +124,8 @@ public class AboutActivity extends Activity
 
     private void highlightUpdater(TextView textView, String availableVersion)
     {
-        textView.setTextColor(ContextCompat.getColor(getApplicationContext(), AppUtils.getReference(AboutActivity.this, R.attr.colorAccent)));
+        textView.setTextColor(ContextCompat.getColor(getApplicationContext(), AppUtils.getReference(
+                AboutActivity.this, R.attr.colorAccent)));
         textView.setText(R.string.text_newVersionAvailable);
     }
 }
