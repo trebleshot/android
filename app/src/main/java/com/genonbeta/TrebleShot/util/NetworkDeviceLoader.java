@@ -74,8 +74,8 @@ public class NetworkDeviceLoader
         load(false, database, ipAddress, listener);
     }
 
-    public static NetworkDevice load(boolean currentThread, final AccessDatabase database,
-                                     final String ipAddress, final OnDeviceRegisteredListener listener)
+    public static NetworkDevice load(boolean currentThread, final AccessDatabase database, final String ipAddress,
+                                     final OnDeviceRegisteredListener listener)
     {
         CommunicationBridge.Client.ConnectionHandler connectionHandler = client -> {
             try {

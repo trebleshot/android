@@ -30,7 +30,6 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
@@ -39,6 +38,7 @@ import androidx.annotation.AttrRes;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -337,7 +337,8 @@ public class AppUtils
     public static SuperPreferences getViewingPreferences(Context context)
     {
         if (mViewingPreferences == null)
-            mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING, Context.MODE_PRIVATE));
+            mViewingPreferences = new SuperPreferences(context.getSharedPreferences(Keyword.Local.SETTINGS_VIEWING,
+                    Context.MODE_PRIVATE));
 
         return mViewingPreferences;
     }

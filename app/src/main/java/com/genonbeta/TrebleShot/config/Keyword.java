@@ -52,6 +52,7 @@ public class Keyword
             INDEX_FILE_MIME = "fileMime",
             INDEX_DIRECTORY = "directory",
             DEVICE_INFO = "deviceInfo",
+            DEVICE_INFO_SERIAL = "deviceId",
             DEVICE_INFO_BRAND = "brand",
             DEVICE_INFO_MODEL = "model",
             DEVICE_INFO_USER = "user",
@@ -79,9 +80,6 @@ public class Keyword
             NETWORK_ADDRESS_IP = "ipAdr",
             FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection",
             STUB = "stub";
-
-    @Deprecated
-    public static final String DEVICE_INFO_SERIAL = "deviceId";
 
     public enum Flavor
     {
