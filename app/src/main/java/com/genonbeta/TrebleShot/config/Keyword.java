@@ -72,11 +72,11 @@ public class Keyword
             ERROR_REQUIRE_TRUSTZONE = "errorRequireTrustZone",
             HANDSHAKE_REQUIRED = "handshakeRequired",
             HANDSHAKE_ONLY = "handshakeOnly",
-            NETWORK_NAME = "nwName",
+            NETWORK_SSID = "nwName",
             NETWORK_PIN = "pin",
             NETWORK_PASSWORD = "nwPwd",
             NETWORK_KEYMGMT = "ntKeyMgmt",
-            NETWORK_ADDRESS_BSSID = "bsid",
+            NETWORK_BSSID = "bsid",
             NETWORK_ADDRESS_IP = "ipAdr",
             FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection",
             STUB = "stub";

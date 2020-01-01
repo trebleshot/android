@@ -42,8 +42,8 @@ import java.util.List;
  * created by: veli
  * date: 7/20/18 8:56 PM
  */
-public class ThirdPartyLibraryListFragment
-        extends DynamicRecyclerViewFragment<ThirdPartyLibraryListFragment.ModuleItem, RecyclerViewAdapter.ViewHolder, ThirdPartyLibraryListFragment.LicencesAdapter>
+public class ThirdPartyLibraryListFragment extends DynamicRecyclerViewFragment<ThirdPartyLibraryListFragment.ModuleItem,
+        RecyclerViewAdapter.ViewHolder, ThirdPartyLibraryListFragment.LicencesAdapter>
 {
     @Override
     public LicencesAdapter onAdapter()

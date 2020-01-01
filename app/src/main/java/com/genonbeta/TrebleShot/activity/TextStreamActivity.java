@@ -29,9 +29,7 @@ import com.genonbeta.TrebleShot.fragment.TextStreamListFragment;
 import com.genonbeta.TrebleShot.ui.callback.PowerfulActionModeSupport;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
-public class TextStreamActivity
-        extends Activity
-        implements PowerfulActionModeSupport
+public class TextStreamActivity extends Activity implements PowerfulActionModeSupport
 {
     private PowerfulActionMode mActionMode;
     private TextStreamListFragment mStreamListFragment;
@@ -54,14 +52,8 @@ public class TextStreamActivity
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        mActionMode.setOnSelectionTaskListener(new PowerfulActionMode.OnSelectionTaskListener()
-        {
-            @Override
-            public void onSelectionTask(boolean started, PowerfulActionMode actionMode)
-            {
-                toolbar.setVisibility(!started ? View.VISIBLE : View.GONE);
-            }
-        });
+        mActionMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(!started
+                ? View.VISIBLE : View.GONE));
     }
 
     @Override
