@@ -19,8 +19,10 @@
 package com.genonbeta.TrebleShot.activity;
 
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
 
@@ -41,13 +43,28 @@ public class ThirdPartyLibrariesActivity extends Activity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.actions_third_party_libraries, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
         int id = item.getItemId();
 
         if (id == android.R.id.home)
             onBackPressed();
-        else
+        else if (id == R.id.menu_action_info) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setTitle(R.string.text_help)
+                    .setMessage(R.string.text_thirdPartyLibrariesHelp)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
+
+        } else
             return super.onOptionsItemSelected(item);
 
         return true;
