@@ -24,8 +24,10 @@ import android.content.*;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
+import android.net.MacAddress;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.*;
@@ -42,6 +44,7 @@ import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDeviceActivity;
 import com.genonbeta.TrebleShot.activity.TextEditorActivity;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkDescription;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
@@ -54,7 +57,6 @@ import com.genonbeta.TrebleShot.ui.callback.NetworkDeviceSelectedListener;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.NetworkDeviceLoader;
 import com.genonbeta.android.framework.util.Interrupter;
 import com.google.zxing.ResultPoint;
 import com.journeyapps.barcodescanner.BarcodeCallback;
@@ -67,13 +69,16 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.UnfamiliarNetwork;
+import static com.genonbeta.TrebleShot.util.NetworkDeviceLoader.OnDeviceRegisteredListener;
+
 /**
  * created by: veli
  * date: 12/04/18 17:21
  */
-public class BarcodeConnectFragment
-        extends com.genonbeta.android.framework.app.Fragment
-        implements TitleSupport, UITask, IconSupport, AddDeviceActivity.DeviceSelectionSupport
+public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.Fragment implements TitleSupport,
+        UITask, IconSupport, AddDeviceActivity.DeviceSelectionSupport
 {
     public static final String TAG = "BarcodeConnectFragment";
 
@@ -126,10 +131,11 @@ public class BarcodeConnectFragment
         }
     };
 
-    private NetworkDeviceLoader.OnDeviceRegisteredListener mRegisteredListener = new NetworkDeviceLoader.OnDeviceRegisteredListener()
+    private OnDeviceRegisteredListener mRegisteredListener = new OnDeviceRegisteredListener()
     {
         @Override
-        public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device, final DeviceConnection connection)
+        public void onDeviceRegistered(AccessDatabase database, final NetworkDevice device,
+                                       final DeviceConnection connection)
         {
             if (mDeviceSelectedListener != null)
                 mDeviceSelectedListener.onNetworkDeviceSelected(device, connection);
@@ -152,7 +158,8 @@ public class BarcodeConnectFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
         View view = inflater.inflate(R.layout.layout_barcode_connect, container, false);
 
@@ -259,14 +266,7 @@ public class BarcodeConnectFragment
 
     protected void handleBarcode(final String code)
     {
-        final DialogInterface.OnDismissListener dismissListener = new DialogInterface.OnDismissListener()
-        {
-            @Override
-            public void onDismiss(DialogInterface dialog)
-            {
-                updateState();
-            }
-        };
+        final DialogInterface.OnDismissListener dismissListener = dialog -> updateState();
 
         try {
             //mPreviousScanResult = code; // Fail-safe
@@ -274,25 +274,40 @@ public class BarcodeConnectFragment
                 throw new JSONException("Showing as text.");
 
             JSONObject jsonObject = new JSONObject(code);
+            final int accessPin = jsonObject.has(Keyword.NETWORK_PIN) ? jsonObject.getInt(Keyword.NETWORK_PIN) : -1;
 
-            NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork = new NetworkDeviceListAdapter.HotspotNetwork();
-            final int accessPin = jsonObject.has(Keyword.NETWORK_PIN)
-                    ? jsonObject.getInt(Keyword.NETWORK_PIN)
-                    : -1;
+            if (jsonObject.has(Keyword.NETWORK_SSID)) {
+                String ssid = jsonObject.getString(Keyword.NETWORK_SSID);
+                String bssid = null;
+                String password = null;
+                NetworkDeviceListAdapter.NetworkSpecifier informer;
 
-            if (jsonObject.has(Keyword.NETWORK_NAME)) {
-                hotspotNetwork.SSID = jsonObject.getString(Keyword.NETWORK_NAME);
-                hotspotNetwork.qrConnection = true;
-                boolean passProtected = jsonObject.has(Keyword.NETWORK_PASSWORD);
+                if (jsonObject.has(Keyword.NETWORK_BSSID))
+                    bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
 
-                if (passProtected) {
-                    hotspotNetwork.password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
-                    hotspotNetwork.keyManagement = jsonObject.getInt(Keyword.NETWORK_KEYMGMT);
-                }
+                if (jsonObject.has(Keyword.NETWORK_PASSWORD))
+                    password = jsonObject.getString(Keyword.NETWORK_PASSWORD);
 
-                makeAcquaintance(hotspotNetwork, accessPin);
+                if (Build.VERSION.SDK_INT >= 29) {
+                    // TODO: 1/1/20 Ensure using both wpa2 and wpa3 does not cause an issue
+                    WifiNetworkSuggestion.Builder builder = new WifiNetworkSuggestion.Builder()
+                            .setSsid(ssid);
+
+                    if (password != null)
+                        builder.setWpa2Passphrase(password)
+                                .setWpa3Passphrase(password);
+
+                    if (bssid != null)
+                        builder.setBssid(MacAddress.fromString(bssid));
+
+                    informer = new NetworkSuggestion(ssid, builder.build());
+                } else
+                    informer = new UnfamiliarNetwork(new NetworkDescription(ssid, bssid, password));
+
+                informer.qrCode = true;
+                makeAcquaintance(informer, accessPin);
             } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
-                final String bssid = jsonObject.getString(Keyword.NETWORK_ADDRESS_BSSID);
+                final String bssid = jsonObject.getString(Keyword.NETWORK_BSSID);
                 final String ipAddress = jsonObject.getString(Keyword.NETWORK_ADDRESS_IP);
 
                 WifiInfo wifiInfo = mConnectionUtils.getConnectionUtils().getWifiManager().getConnectionInfo();
@@ -332,8 +347,7 @@ public class BarcodeConnectFragment
                     .setMessage(code)
                     .setNegativeButton(R.string.butn_close, null)
                     .setPositiveButton(R.string.butn_show, (dialog, which) -> {
-                        TextStreamObject textObject = new TextStreamObject(
-                                AppUtils.getUniqueNumber(), code);
+                        TextStreamObject textObject = new TextStreamObject(AppUtils.getUniqueNumber(), code);
                         AppUtils.getDatabase(getContext()).publish(textObject);
                         AppUtils.getDatabase(getContext()).broadcast();
 
@@ -396,15 +410,8 @@ public class BarcodeConnectFragment
         }
 
         mTaskContainer.setVisibility(isConnecting ? View.VISIBLE : View.GONE);
-
-        mTaskInterruptButton.setOnClickListener(isConnecting ? new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                interrupter.interrupt();
-            }
-        } : null);
+        mTaskInterruptButton.setOnClickListener(isConnecting ? (View.OnClickListener) v ->
+                interrupter.interrupt() : null);
     }
 
     public void updateState()
@@ -415,7 +422,8 @@ public class BarcodeConnectFragment
         final boolean wifiEnabled = mConnectionUtils.getConnectionUtils().getWifiManager().isWifiEnabled();
         final boolean hasCameraPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
-        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 26 // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
+        // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
+        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 26
                 || mConnectionUtils.getConnectionUtils().canAccessLocation();
         final boolean state = (wifiEnabled || mShowAsText) && hasCameraPermission && hasLocationPermission;
 
@@ -427,17 +435,12 @@ public class BarcodeConnectFragment
                 mConductText.setText(R.string.text_cameraPermissionRequired);
                 mConductButton.setText(R.string.butn_ask);
 
-                mConductButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
-                    }
-                });
+                mConductButton.setOnClickListener(v -> ActivityCompat.requestPermissions(getActivity(), new String[]{
+                        Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA));
 
                 if (!mPermissionRequestedCamera)
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSION_CAMERA);
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.CAMERA},
+                            REQUEST_PERMISSION_CAMERA);
 
                 mPermissionRequestedCamera = true;
             } else if (!hasLocationPermission) {
@@ -445,17 +448,12 @@ public class BarcodeConnectFragment
                 mConductText.setText(R.string.mesg_locationPermissionRequiredAny);
                 mConductButton.setText(R.string.butn_enable);
 
-                mConductButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        mConnectionUtils.validateLocationPermission(getActivity(), REQUEST_PERMISSION_LOCATION, mPermissionWatcher);
-                    }
-                });
+                mConductButton.setOnClickListener(v -> mConnectionUtils.validateLocationPermission(getActivity(),
+                        REQUEST_PERMISSION_LOCATION, mPermissionWatcher));
 
                 if (!mPermissionRequestedLocation)
-                    ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_CAMERA);
+                    ActivityCompat.requestPermissions(getActivity(), new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION}, REQUEST_PERMISSION_CAMERA);
 
                 mPermissionRequestedLocation = true;
             } else {
@@ -463,14 +461,8 @@ public class BarcodeConnectFragment
                 mConductText.setText(R.string.text_scanQRWifiRequired);
                 mConductButton.setText(R.string.butn_enable);
 
-                mConductButton.setOnClickListener(new View.OnClickListener()
-                {
-                    @Override
-                    public void onClick(View v)
-                    {
-                        mConnectionUtils.turnOnWiFi(getActivity(), REQUEST_TURN_WIFI_ON, mPermissionWatcher);
-                    }
-                });
+                mConductButton.setOnClickListener(v -> mConnectionUtils.turnOnWiFi(getActivity(), REQUEST_TURN_WIFI_ON,
+                        mPermissionWatcher));
             }
         } else {
             mBarcodeView.resume();

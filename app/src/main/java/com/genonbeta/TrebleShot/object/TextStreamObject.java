@@ -30,9 +30,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
  * date: 30.12.2017 13:19
  */
 
-public class TextStreamObject
-        extends GroupEditableListAdapter.GroupShareable
-        implements DatabaseObject<Object>
+public class TextStreamObject extends GroupEditableListAdapter.GroupShareable implements DatabaseObject<Object>
 {
     public String text;
 

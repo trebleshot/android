@@ -22,7 +22,6 @@ import android.content.*;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.*;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
@@ -350,14 +349,13 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
         if (device instanceof HotspotNetwork) {
             final HotspotNetwork hotspotNetwork = (HotspotNetwork) device;
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-
-            builder.setTitle(hotspotNetwork.nickname);
-            builder.setMessage(R.string.text_trebleshotHotspotDescription);
-            builder.setNegativeButton(R.string.butn_close, null);
-            builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
-                    ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) -> getConnectionUtils().toggleConnection(
-                    hotspotNetwork));
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                    .setTitle(device.nickname)
+                    .setMessage(R.string.text_trebleshotHotspotDescription)
+                    .setNegativeButton(R.string.butn_close, null)
+                    .setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
+                            ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
+                            getConnectionUtils().toggleConnection(hotspotNetwork));
 
             builder.show();
         } else
@@ -405,7 +403,7 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
 
                 if (DeviceScannerService.STATUS_OK.equals(scanStatus)
                         || DeviceScannerService.SCANNER_NOT_AVAILABLE.equals(scanStatus)) {
-                    boolean selfNetwork = getConnectionUtils().isConnectionSelfNetwork();
+                    boolean selfNetwork = getConnectionUtils().isConnectionToHotspotNetwork();
 
                     if (!selfNetwork)
                         createSnackbar(DeviceScannerService.STATUS_OK.equals(scanStatus) ? R.string.mesg_scanningDevices

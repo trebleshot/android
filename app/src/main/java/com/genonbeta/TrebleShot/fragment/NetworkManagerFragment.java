@@ -201,7 +201,7 @@ public class NetworkManagerFragment
         try {
             JSONObject object = new JSONObject()
                     .put(Keyword.NETWORK_ADDRESS_IP, ipAddress)
-                    .put(Keyword.NETWORK_ADDRESS_BSSID, bssid);
+                    .put(Keyword.NETWORK_BSSID, bssid);
 
             updateViews(object, R.string.butn_wifiSettings, getString(R.string.text_easyDiscoveryHelp), networkName, ipAddress);
         } catch (Exception e) {

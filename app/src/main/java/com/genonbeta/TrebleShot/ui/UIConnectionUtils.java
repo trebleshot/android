@@ -126,9 +126,10 @@ public class UIConnectionUtils
                         activity, task, object, accessPin, registerListener);
 
                 try {
-                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork)
+                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork
+                            || object instanceof NetworkDeviceListAdapter.UnfamiliarNetwork)
                         mAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
-                                (NetworkDeviceListAdapter.HotspotNetwork) object,
+                                (NetworkDeviceListAdapter.NetworkSpecifier) object,
                                 (delimiter, timePassed) -> timePassed >= 30000);
                     else if (object instanceof InetAddress)
                         mAddress = (InetAddress) object;

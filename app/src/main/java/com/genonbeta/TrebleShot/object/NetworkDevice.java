@@ -142,8 +142,9 @@ public class NetworkDevice implements DatabaseObject<Object>, Serializable
         database.remove(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_DEVICECONNECTION)
                 .setWhere(AccessDatabase.FIELD_DEVICECONNECTION_DEVICEID + "=?", id));
 
-        List<TransferAssignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(AccessDatabase.TABLE_TRANSFERASSIGNEE)
-                .setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID + "=?", id), TransferAssignee.class, null);
+        List<TransferAssignee> assignees = database.castQuery(dbInstance, new SQLQuery.Select(
+                AccessDatabase.TABLE_TRANSFERASSIGNEE).setWhere(AccessDatabase.FIELD_TRANSFERASSIGNEE_DEVICEID
+                + "=?", id), TransferAssignee.class, null);
 
         for (TransferAssignee assignee : assignees)
             database.remove(dbInstance, assignee, null);

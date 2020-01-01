@@ -231,7 +231,6 @@ public class AppUtils
         return mDefaultPreferences;
     }
 
-
     public static String getDeviceSerial(Context context)
     {
         if (Build.VERSION.SDK_INT < 26 && Build.SERIAL != null)
@@ -248,12 +247,20 @@ public class AppUtils
         return uuid;
     }
 
+    public static boolean isFamiliarHotspot(String ssid)
+    {
+        String prefix = AppConfig.PREFIX_ACCESS_POINT;
+        return ssid != null && (ssid.startsWith(prefix) || ssid.startsWith("\"" + prefix));
+    }
+
     public static String getFriendlySSID(String ssid)
     {
-        return ssid
-                .replace("\"", "")
-                .substring(AppConfig.PREFIX_ACCESS_POINT.length())
-                .replace("_", " ");
+        ssid = ssid.replace("\"", "");
+
+        if (isFamiliarHotspot(ssid))
+            ssid = ssid.substring(AppConfig.PREFIX_ACCESS_POINT.length());
+
+        return ssid.replace("_", " ");
     }
 
     @NonNull
@@ -329,6 +336,11 @@ public class AppUtils
         return permissionRequests;
     }
 
+    /**
+     * @return Returns a number unique to the session.
+     * @deprecated The numbers are not that unique and the use cases does not meet the standards.
+     */
+    @Deprecated
     public static int getUniqueNumber()
     {
         return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);

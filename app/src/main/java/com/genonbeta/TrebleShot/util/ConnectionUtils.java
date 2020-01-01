@@ -25,14 +25,16 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
+import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.util.Log;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.android.framework.util.Interrupter;
 
@@ -41,6 +43,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.List;
+
+import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
 
 /**
  * created by: veli
@@ -89,26 +93,72 @@ public class ConnectionUtils
         return getWifiManager().isWifiEnabled() && (Build.VERSION.SDK_INT < 23 || canAccessLocation());
     }
 
+    public static WifiConfiguration createWifiConfig(ScanResult result, String password)
+    {
+        WifiConfiguration config = new WifiConfiguration();
+        config.hiddenSSID = false;
+        config.BSSID = result.BSSID;
+        config.status = WifiConfiguration.Status.ENABLED;
+
+        if (result.capabilities.contains("WEP")) {
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+            config.SSID = "\"" + result.SSID + "\"";
+            config.wepTxKeyIndex = 0;
+            config.wepKeys[0] = password;
+        } else if (result.capabilities.contains("PSK")) {
+            config.SSID = "\"" + result.SSID + "\"";
+            config.preSharedKey = "\"" + password + "\"";
+        } else if (result.capabilities.contains("EAP")) {
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+            config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+            config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+            config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+            config.SSID = "\"" + result.SSID + "\"";
+            config.preSharedKey = "\"" + password + "\"";
+        } else {
+            config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
+            config.SSID = "\"" + result.SSID + "\"";
+            config.preSharedKey = null;
+        }
+
+        return config;
+    }
+
+    /**
+     * @return True if disabling the network was successful
+     * @deprecated Do not use this method with 10 and above.
+     */
+    @Deprecated
     public boolean disableCurrentNetwork()
     {
         // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
         // This is because we are only allowed to manipulate the connections that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
-        return isConnectedToAnyNetwork()
-                && getWifiManager().disconnect()
+        return isConnectedToAnyNetwork() && getWifiManager().disconnect()
                 && getWifiManager().disableNetwork(getWifiManager().getConnectionInfo().getNetworkId());
     }
 
+    public boolean enableNetwork(int networkId)
+    {
+        Log.d(TAG, "enableNetwork: Enabling network: " + networkId);
+        if (getWifiManager().enableNetwork(networkId, true))
+            return true;
+
+        Log.d(TAG, "toggleConnection: Could not enable the network");
+        return false;
+    }
+
     public InetAddress establishHotspotConnection(final Interrupter interrupter,
-                                                  final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+                                                  final NetworkSpecifier hotspotNetwork,
                                                   final ConnectionCallback connectionCallback)
     {
         return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
     }
 
     @WorkerThread
-    private InetAddress establishHotspotConnection(final Interrupter interrupter,
-                                                   final NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork,
+    private InetAddress establishHotspotConnection(final Interrupter interrupter, NetworkSpecifier specifier,
                                                    final ConnectionCallback connectionCallback, short leftAttempts)
     {
         leftAttempts--;
@@ -121,45 +171,62 @@ public class ConnectionUtils
 
         while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
+            @NonNull final DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
 
-            if (!getWifiManager().isWifiEnabled()) {
+            Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
+                    + wifiDhcpInfo.toString());
+
+            if (Build.VERSION.SDK_INT < 29 && !getWifiManager().isWifiEnabled()) {
                 Log.d(TAG, "establishHotspotConnection(): Wifi is off. Making a request to turn it on");
 
                 if (!getWifiManager().setWifiEnabled(true)) {
                     Log.d(TAG, "establishHotspotConnection(): Wifi was off. The request has failed. Exiting.");
                     break;
                 }
-            } else if (!isConnectedToNetwork(hotspotNetwork) && !connectionToggled) {
+            } else if (specifier instanceof UnfamiliarNetwork) {
+                Log.d(TAG, "establishHotspotConnection: The network is not ready to be used yet.");
+
+                NetworkDescription description = ((UnfamiliarNetwork) specifier).object;
+                String ssid = description.ssid;
+                String bssid = description.bssid;
+                String password = description.password;
+                ScanResult result = findFromScanResults(ssid, bssid);
+
+                getWifiManager().startScan();
+
+                if (result == null)
+                    Log.e(TAG, "establishHotspotConnection: No network found with the name " + ssid);
+                else {
+                    specifier = new HotspotNetwork(createWifiConfig(result, password));
+                    Log.d(TAG, "establishHotspotConnection: Created HotspotNetwork object from scan results");
+                }
+            } else if (specifier instanceof HotspotNetwork && !isConnectedToNetwork((HotspotNetwork) specifier)
+                    && !connectionToggled) {
                 Log.d(TAG, "establishHotspotConnection(): Requested network toggle");
-                toggleConnection(hotspotNetwork);
-
+                connectionToggled = toggleConnection((HotspotNetwork) specifier);
+            } else if (specifier instanceof NetworkSuggestion && !connectionToggled) {
+                Log.d(TAG, "establishHotspotConnection: A network suggestion. Hm. Android 10?");
                 connectionToggled = true;
-            } else {
-                final DhcpInfo wifiDhcpInfo = getWifiManager().getDhcpInfo();
+                // TODO: 1/1/20 Implement wifi network suggestion for Android 10
+            } else if (wifiDhcpInfo.gateway != 0) {
+                try {
+                    Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
+                    NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(testAddress);
 
-                Log.d(TAG, "establishHotspotConnection(): Waiting to reach to the network. DhcpInfo: "
-                        + wifiDhcpInfo.toString());
+                    address = testAddress;
 
-                if (wifiDhcpInfo.gateway != 0) {
-                    try {
-                        Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
-                        NetworkInterface networkInterface = NetworkUtils.findNetworkInterface(testAddress);
-
+                    if (testAddress.isReachable(pingTimeout) || testAddress.isReachable(networkInterface,
+                            3600, pingTimeout)) {
+                        Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
                         address = testAddress;
-
-                        if (testAddress.isReachable(pingTimeout) || testAddress.isReachable(networkInterface,
-                                3600, pingTimeout)) {
-                            Log.d(TAG, "establishHotspotConnection(): AP has been reached. Returning OK state.");
-                            address = testAddress;
-                            break;
-                        } else
-                            Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else
-                    Log.d(TAG, "establishHotspotConnection(): No DHCP provided. Looping...");
-            }
+                        break;
+                    } else
+                        Log.d(TAG, "establishHotspotConnection(): Connection check ping failed");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else
+                Log.d(TAG, "establishHotspotConnection(): No DHCP provided or connection not ready. Looping...");
 
             if (connectionCallback.onTimePassed(1000, passedTime) || interrupter.interrupted()) {
                 Log.d(TAG, "establishHotspotConnection(): Timed out or onTimePassed returned true. Exiting...");
@@ -174,8 +241,45 @@ public class ConnectionUtils
             }
         }
 
-        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(
-                interrupter, hotspotNetwork, connectionCallback, leftAttempts);
+        return address != null || leftAttempts <= 0 ? address : establishHotspotConnection(interrupter, specifier,
+                connectionCallback, leftAttempts);
+    }
+
+    public WifiConfiguration findFromConfigurations(WifiConfiguration configuration)
+    {
+        return findFromConfigurations(configuration.SSID, configuration.BSSID);
+    }
+
+    public WifiConfiguration findFromConfigurations(String ssid, @Nullable String bssid)
+    {
+        List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
+        for (WifiConfiguration config : list)
+            if (bssid == null) {
+                if (ssid.equalsIgnoreCase(config.SSID))
+                    return config;
+            } else {
+                if (bssid.equalsIgnoreCase(config.BSSID))
+                    return config;
+            }
+
+        return null;
+    }
+
+    public ScanResult findFromScanResults(String ssid, @Nullable String bssid) throws SecurityException
+    {
+        if (canReadScanResults()) {
+            for (ScanResult result : getWifiManager().getScanResults())
+                if (result.SSID.equalsIgnoreCase(ssid) && (bssid == null || result.BSSID.equalsIgnoreCase(bssid))) {
+                    Log.d(TAG, "findFromScanResults: Found the network with capabilities: " + result.capabilities);
+                    return result;
+                }
+        } else {
+            Log.e(TAG, "findFromScanResults: Cannot read scan results");
+            throw new SecurityException("You do not have permission to read the scan results");
+        }
+
+        Log.d(TAG, "findFromScanResults: Could not find the related Wi-Fi network with SSID " + ssid);
+        return null;
     }
 
     public boolean hasLocationPermission(Context context)
@@ -209,27 +313,31 @@ public class ConnectionUtils
         return mWifiManager;
     }
 
-    public boolean isConnectionSelfNetwork()
+    public boolean isConnectionToHotspotNetwork()
     {
         WifiInfo wifiInfo = getWifiManager().getConnectionInfo();
         return wifiInfo != null && getCleanNetworkName(wifiInfo.getSSID()).startsWith(AppConfig.PREFIX_ACCESS_POINT);
     }
 
+    /**
+     * @return True if connected to a Wi-Fi network.
+     * @deprecated Do not use this method with 10 and above.
+     */
+    @Deprecated
     public boolean isConnectedToAnyNetwork()
     {
         NetworkInfo info = getConnectivityManager().getActiveNetworkInfo();
         return info != null && info.getType() == ConnectivityManager.TYPE_WIFI && info.isConnected();
     }
 
-    public boolean isConnectedToNetwork(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
+    public boolean isConnectedToNetwork(HotspotNetwork hotspotNetwork)
     {
         if (!isConnectedToAnyNetwork())
             return false;
 
-        if (hotspotNetwork.BSSID != null)
-            return hotspotNetwork.BSSID.equals(getWifiManager().getConnectionInfo().getBSSID());
-
-        return hotspotNetwork.SSID.equals(getCleanNetworkName(getWifiManager().getConnectionInfo().getSSID()));
+        String bssid = hotspotNetwork.object.BSSID;
+        Log.d(TAG, "isConnectedToNetwork: " + bssid + " other: " + getWifiManager().getConnectionInfo().getBSSID());
+        return bssid != null && bssid.equalsIgnoreCase(getWifiManager().getConnectionInfo().getBSSID());
     }
 
     public boolean isLocationServiceEnabled()
@@ -237,113 +345,53 @@ public class ConnectionUtils
         return mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
+    /**
+     * @return True if the mobile data connection is active.
+     * @deprecated Do not use this method above 9, there is a better method in-place.
+     */
+    @Deprecated
     public boolean isMobileDataActive()
     {
         return mConnectivityManager.getActiveNetworkInfo() != null
                 && mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
-    public boolean toggleConnection(NetworkDeviceListAdapter.HotspotNetwork hotspotNetwork)
+    public boolean startConnection(HotspotNetwork hotspotNetwork)
     {
-        if (!isConnectedToNetwork(hotspotNetwork)) {
-            if (isConnectedToAnyNetwork())
-                disableCurrentNetwork();
+        if (isConnectedToNetwork(hotspotNetwork)) {
+            Log.d(TAG, "toggleConnection: Already connected to the network");
+            return true;
+        }
 
-            WifiConfiguration config = new WifiConfiguration();
+        if (isConnectedToAnyNetwork()) {
+            Log.d(TAG, "toggleConnection: Connected to some other network, will try to disable it.");
+            disableCurrentNetwork();
+        }
 
-            config.SSID = String.format("\"%s\"", hotspotNetwork.SSID);
-
-            switch (hotspotNetwork.keyManagement) {
-                case 0: // OPEN
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-                    break;
-                case 1: // WEP64
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
-
-                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
-                        config.wepKeys[0] = hotspotNetwork.password;
-                    } else
-                        Log.d(TAG, "Please type hex pair for the password");
-                    break;
-                case 2: // WEP128
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.SHARED);
-                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
-
-                    if (hotspotNetwork.password != null
-                            && hotspotNetwork.password.matches("[0-9A-Fa-f]*")) {
-                        config.wepKeys[0] = hotspotNetwork.password;
-                    } else
-                        Log.d(TAG, "Please type hex pair for the password");
-                    break;
-                case 3: // WPA_TKIP
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-                    config.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
-                    config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
-                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-
-                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
-                        config.preSharedKey = hotspotNetwork.password;
-                    } else {
-                        config.preSharedKey = '"' + hotspotNetwork.password + '"';
-                    }
-                    break;
-                case 4: // WPA2_AES
-                    config.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
-                    config.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
-                    config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-                    config.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
-                    config.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
-                    config.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
-
-                    if (hotspotNetwork.password != null && hotspotNetwork.password.matches("[0-9A-Fa-f]{64}")) {
-                        config.preSharedKey = hotspotNetwork.password;
-                    } else {
-                        config.preSharedKey = '"' + hotspotNetwork.password + '"';
-                    }
-                    break;
-            }
-
-            /*
-            old wifi connectivity code works for below M
-            int netId = getWifiManager().addNetwork(config);
+        try {
+            WifiConfiguration config = hotspotNetwork.object;
+            WifiConfiguration existingConfig = findFromConfigurations(config);
 
             getWifiManager().disconnect();
-            getWifiManager().enableNetwork(netId, true);
 
-            return getWifiManager().reconnect();*/
-
-            try {
-                int netId = getWifiManager().addNetwork(config);
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
-                    for (WifiConfiguration hotspotWifi : list) {
-                        if (hotspotWifi.SSID != null && hotspotWifi.SSID.equalsIgnoreCase(config.SSID)) {
-                            getWifiManager().disconnect();
-                            getWifiManager().enableNetwork(hotspotWifi.networkId, true);
-                            return getWifiManager().reconnect();
-                        }
-                    }
-                } else {
-                    getWifiManager().disconnect();
-                    getWifiManager().enableNetwork(netId, true);
-                    return getWifiManager().reconnect();
-                }
-            } catch (Exception exp) {
-                disableCurrentNetwork();
-                return false;
+            if (existingConfig != null) {
+                Log.d(TAG, "toggleConnection: Network already exists, will try to enable it.");
+                return enableNetwork(existingConfig.networkId);
+            } else {
+                Log.d(TAG, "toggleConnection: Network did not exist before, adding it.");
+                return enableNetwork(getWifiManager().addNetwork(config));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         disableCurrentNetwork();
 
         return false;
+    }
+
+    public boolean toggleConnection(HotspotNetwork hotspotNetwork) {
+        return isConnectedToNetwork(hotspotNetwork) ? getWifiManager().disconnect() : startConnection(hotspotNetwork);
     }
 
     public interface ConnectionCallback

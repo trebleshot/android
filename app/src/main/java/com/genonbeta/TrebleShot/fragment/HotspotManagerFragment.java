@@ -47,8 +47,6 @@ import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.TrebleShot.util.ConnectionUtils;
-import com.genonbeta.TrebleShot.util.HotspotUtils;
-import com.genonbeta.TrebleShot.util.NetworkUtils;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
@@ -85,23 +83,9 @@ public class HotspotManagerFragment
     private boolean mWaitForWiFi = false;
     private boolean mHotspotStartedExternally = false;
 
-    private UIConnectionUtils.RequestWatcher mHotspotWatcher = new UIConnectionUtils.RequestWatcher()
-    {
-        @Override
-        public void onResultReturned(boolean result, boolean shouldWait)
-        {
-            mWaitForHotspot = shouldWait;
-        }
-    };
+    private UIConnectionUtils.RequestWatcher mHotspotWatcher = (result, shouldWait) -> mWaitForHotspot = shouldWait;
 
-    private UIConnectionUtils.RequestWatcher mWiFiWatcher = new UIConnectionUtils.RequestWatcher()
-    {
-        @Override
-        public void onResultReturned(boolean result, boolean shouldWait)
-        {
-            mWaitForWiFi = shouldWait;
-        }
-    };
+    private UIConnectionUtils.RequestWatcher mWiFiWatcher = (result, shouldWait) -> mWaitForWiFi = shouldWait;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState)
@@ -116,11 +100,13 @@ public class HotspotManagerFragment
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
         View view = getLayoutInflater().inflate(R.layout.layout_hotspot_manager, container, false);
 
-        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(getContext(), R.attr.colorPassive)));
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(
+                getContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_hotspot_manager_qr_image);
         mToggleButton = view.findViewById(R.id.layout_hotspot_manager_info_toggle_button);
         mContainerText1 = view.findViewById(R.id.layout_hotspot_manager_info_container_text1_container);
@@ -222,7 +208,8 @@ public class HotspotManagerFragment
         if (mHotspotStartedExternally)
             startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS));
         else
-            getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT, mHotspotWatcher);
+            getUIConnectionUtils().toggleHotspot(true, getActivity(), REQUEST_LOCATION_PERMISSION_FOR_HOTSPOT,
+                    mHotspotWatcher);
     }
 
     private void updateViewsWithBlank()
@@ -245,17 +232,21 @@ public class HotspotManagerFragment
     }
 
     // for hotspot
-    private void updateViews(String networkName, String password, int keyManagement)
+    private void updateViews(WifiConfiguration configuration)
     {
         mHotspotStartedExternally = false;
 
         try {
-            JSONObject object = new JSONObject()
-                    .put(Keyword.NETWORK_NAME, networkName)
-                    .put(Keyword.NETWORK_PASSWORD, password)
-                    .put(Keyword.NETWORK_KEYMGMT, keyManagement);
+            String ssid = configuration.SSID;
+            String bssid = configuration.BSSID;
+            String key = configuration.preSharedKey;
 
-            updateViews(object, getString(R.string.text_qrCodeAvailableHelp), networkName, password, R.string.butn_stopHotspot);
+            JSONObject object = new JSONObject()
+                    .put(Keyword.NETWORK_SSID, ssid)
+                    .put(Keyword.NETWORK_BSSID, bssid)
+                    .put(Keyword.NETWORK_PASSWORD, key);
+
+            updateViews(object, getString(R.string.text_qrCodeAvailableHelp), ssid, key, R.string.butn_stopHotspot);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -283,7 +274,8 @@ public class HotspotManagerFragment
                 }
 
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400, 400);
+                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400,
+                        400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
 
@@ -317,21 +309,15 @@ public class HotspotManagerFragment
 
     private void updateState()
     {
-        boolean isEnabled = getUIConnectionUtils().getConnectionUtils().getHotspotUtils().isEnabled();
-        WifiConfiguration wifiConfiguration = getConnectionUtils().getHotspotUtils().getConfiguration();
-
         showMenu();
 
-        if (!isEnabled) {
+        if (!getConnectionUtils().getHotspotUtils().isEnabled())
             updateViewsWithBlank();
-        } else if (getConnectionUtils().getHotspotUtils() instanceof HotspotUtils.HackAPI
-                && wifiConfiguration != null) {
-            updateViews(wifiConfiguration.SSID, wifiConfiguration.preSharedKey,
-                    NetworkUtils.getAllowedKeyManagement(wifiConfiguration.allowedKeyManagement));
-        } else if (Build.VERSION.SDK_INT >= 26)
-            AppUtils.startForegroundService(getActivity(),
-                    new Intent(getActivity(), CommunicationService.class)
-                            .setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
+        else if (Build.VERSION.SDK_INT >= 26)
+            AppUtils.startForegroundService(getActivity(), new Intent(getActivity(), CommunicationService.class)
+                    .setAction(CommunicationService.ACTION_REQUEST_HOTSPOT_STATUS));
+        else // With Oreo, we always have a WifiConfiguration
+            updateViews(getConnectionUtils().getHotspotUtils().getConfiguration());
     }
 
     private class StatusReceiver extends BroadcastReceiver
@@ -343,13 +329,10 @@ public class HotspotManagerFragment
                 updateState();
             else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
                 if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
-                    updateViews(intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_NAME),
-                            intent.getStringExtra(CommunicationService.EXTRA_HOTSPOT_PASSWORD),
-                            intent.getIntExtra(CommunicationService.EXTRA_HOTSPOT_KEY_MGMT, -1));
+                    updateViews(intent.getParcelableExtra(CommunicationService.EXTRA_HOTSPOT_CONFIGURATION));
                 else if (getConnectionUtils().getHotspotUtils().isEnabled()
-                        && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false)) {
+                        && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false))
                     updateViewsStartedExternally();
-                }
             }
         }
     }

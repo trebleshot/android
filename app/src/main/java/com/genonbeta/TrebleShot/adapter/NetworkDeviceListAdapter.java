@@ -20,12 +20,15 @@ package com.genonbeta.TrebleShot.adapter;
 
 import android.content.Context;
 import android.net.wifi.ScanResult;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiNetworkSuggestion;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -58,8 +61,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
 
         mConnectionUtils = connectionUtils;
         mIconBuilder = AppUtils.getDefaultIconBuilder(context);
-        mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes)
-                : new ArrayList<>();
+        mHiddenDeviceTypes = hiddenDeviceTypes != null ? Arrays.asList(hiddenDeviceTypes) : new ArrayList<>();
     }
 
     @Override
@@ -68,36 +70,20 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         List<EditableNetworkDevice> list = new ArrayList<>();
 
         if (mConnectionUtils.canReadScanResults()) {
-            for (ScanResult resultIndex : mConnectionUtils.getWifiManager().getScanResults()) {
-                if (!resultIndex.SSID.startsWith(AppConfig.PREFIX_ACCESS_POINT))
+            for (ScanResult result : mConnectionUtils.getWifiManager().getScanResults()) {
+                if (!AppUtils.isFamiliarHotspot(result.SSID))
                     continue;
 
-                HotspotNetwork hotspotNetwork = new HotspotNetwork();
-
+                HotspotNetwork hotspotNetwork = new HotspotNetwork(ConnectionUtils.createWifiConfig(result,
+                        null));
                 hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-                hotspotNetwork.SSID = resultIndex.SSID;
-                hotspotNetwork.BSSID = resultIndex.BSSID;
-                hotspotNetwork.nickname = AppUtils.getFriendlySSID(resultIndex.SSID);
 
                 list.add(hotspotNetwork);
             }
         }
 
-        if (list.size() == 0 && mConnectionUtils.isConnectionSelfNetwork()) {
-            WifiInfo wifiInfo = mConnectionUtils.getWifiManager().getConnectionInfo();
-
-            HotspotNetwork hotspotNetwork = new HotspotNetwork();
-
-            hotspotNetwork.lastUsageTime = System.currentTimeMillis();
-            hotspotNetwork.SSID = wifiInfo.getSSID();
-            hotspotNetwork.BSSID = wifiInfo.getBSSID();
-            hotspotNetwork.nickname = AppUtils.getFriendlySSID(wifiInfo.getSSID());
-
-            list.add(hotspotNetwork);
-        }
-
         for (EditableNetworkDevice device : AppUtils.getDatabase(getContext()).castQuery(new SQLQuery.Select(
-                AccessDatabase.TABLE_DEVICES).setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
+                        AccessDatabase.TABLE_DEVICES).setOrderBy(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME + " DESC"),
                 EditableNetworkDevice.class))
             if (filterItem(device) && !mHiddenDeviceTypes.contains(device.type) && (!device.isLocalAddress
                     || AppUtils.getDefaultPreferences(getContext()).getBoolean("developer_mode", false)))
@@ -111,8 +97,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     public EditableListAdapter.EditableViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
     {
         return new EditableListAdapter.EditableViewHolder(getInflater().inflate(
-                isHorizontalOrientation() || isGridLayoutRequested()
-                        ? R.layout.list_network_device_grid
+                isHorizontalOrientation() || isGridLayoutRequested() ? R.layout.list_network_device_grid
                         : R.layout.list_network_device, parent, false));
     }
 
@@ -122,7 +107,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         try {
             NetworkDevice device = getItem(position);
             View parentView = holder.getView();
-            boolean hotspotNetwork = device instanceof HotspotNetwork;
+            boolean hotspotNetwork = device instanceof NetworkSpecifier;
 
             TextView deviceText = parentView.findViewById(R.id.text2);
             TextView userText = parentView.findViewById(R.id.text1);
@@ -217,18 +202,17 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
-    public static class HotspotNetwork extends EditableNetworkDevice
+    public static class NetworkSpecifier<T> extends EditableNetworkDevice
     {
-        public String SSID;
-        public String BSSID;
-        public String password;
-        public int keyManagement;
-        public boolean qrConnection;
+        public T object;
+        public boolean qrCode = false;
 
-        public HotspotNetwork()
+        public NetworkSpecifier(String nickname, T object)
         {
             super();
 
+            this.nickname = AppUtils.getFriendlySSID(nickname);
+            this.object = object;
             this.clientVersion = BuildConfig.CLIENT_VERSION;
             this.versionName = "stamp";
             this.versionCode = -1;
@@ -237,7 +221,45 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         @Override
         public long getId()
         {
-            return SSID.hashCode();
+            return object.hashCode();
+        }
+    }
+
+    public static class HotspotNetwork extends NetworkSpecifier<WifiConfiguration>
+    {
+        public HotspotNetwork(WifiConfiguration configuration)
+        {
+            super(configuration.SSID, configuration);
+        }
+    }
+
+    public static class UnfamiliarNetwork extends NetworkSpecifier<NetworkDescription>
+    {
+        public UnfamiliarNetwork(NetworkDescription networkObject)
+        {
+            super(networkObject.ssid, networkObject);
+        }
+    }
+
+    public static class NetworkSuggestion extends NetworkSpecifier<WifiNetworkSuggestion>
+    {
+        public NetworkSuggestion(String nickname, WifiNetworkSuggestion networkObject)
+        {
+            super(nickname, networkObject);
+        }
+    }
+
+    public static class NetworkDescription
+    {
+        public String ssid;
+        public String bssid;
+        public String password;
+
+        public NetworkDescription(String ssid, @Nullable String bssid, String password)
+        {
+            this.ssid = ssid;
+            this.bssid = bssid;
+            this.password = password;
         }
     }
 }

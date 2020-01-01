@@ -169,37 +169,6 @@ public class NetworkUtils
         return filteredInterfaceList;
     }
 
-    /**
-     * Return the integet value of an allowed passphrase types for {@link WifiConfiguration}
-     *
-     * @param key KeySet to the key from.
-     * @return The integer representation of the connection
-     * @deprecated A WifiConfiguration can support more than one encryption methods and this assumes
-     * that as if it is only one and fails when the first supported method is not equal to 1
-     */
-    @Deprecated
-    public static int getAllowedKeyManagement(BitSet key)
-    {
-        String keyManagement = key.toString();
-
-
-        try {
-            return Integer.valueOf(keyManagement.substring(1, keyManagement.length() - 1));
-        } catch (Exception e) {
-        }
-
-        return -1;
-    }
-
-    public static byte[] getUTF8Bytes(String string)
-    {
-        try {
-            return string.getBytes("UTF-8");
-        } catch (Exception ex) {
-            return null;
-        }
-    }
-
     public static boolean ping(String ipV4address, int timeout)
     {
         try {

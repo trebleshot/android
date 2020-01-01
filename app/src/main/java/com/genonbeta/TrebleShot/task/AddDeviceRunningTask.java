@@ -96,7 +96,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                         }
 
                         if (mDevice instanceof NetworkDeviceListAdapter.HotspotNetwork
-                                && ((NetworkDeviceListAdapter.HotspotNetwork) mDevice).qrConnection)
+                                && ((NetworkDeviceListAdapter.HotspotNetwork) mDevice).qrCode)
                             jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
 
                         jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
@@ -127,7 +127,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
 
                                 filesArray.put(thisJson);
                             } catch (Exception e) {
-                                Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: " + e.getClass().getName() + " : " + transferObject.name);
+                                Log.e(AddDevicesToTransferActivity.TAG, "Sender error on fileUri: "
+                                        + e.getClass().getName() + " : " + transferObject.name);
                             }
                         }
 

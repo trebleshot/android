@@ -99,9 +99,7 @@ public class CommunicationService extends Service
             EXTRA_CLIPBOARD_ACCEPTED = "extraClipboardAccepted",
             EXTRA_HOTSPOT_ENABLED = "extraHotspotEnabled",
             EXTRA_HOTSPOT_DISABLING = "extraHotspotDisabling",
-            EXTRA_HOTSPOT_NAME = "extraHotspotName",
-            EXTRA_HOTSPOT_KEY_MGMT = "extraHotspotKeyManagement",
-            EXTRA_HOTSPOT_PASSWORD = "extraHotspotPassword",
+            EXTRA_HOTSPOT_CONFIGURATION = "extraHotspotConfiguration",
             EXTRA_TASK_CHANGE_TYPE = "extraTaskChangeType",
             EXTRA_TASK_LIST = "extraTaskListRunning",
             EXTRA_DEVICE_LIST = "extraDeviceListRunning",
@@ -810,8 +808,8 @@ public class CommunicationService extends Service
             try {
                 DocumentFile savePath = FileUtils.getSavePath(getApplicationContext(), processHolder.group);
                 boolean areFilesDone = getDatabase().getFirstFromTable(getDbInstance(),
-                        TransferUtils.createIncomingSelection(processHolder.group.id,
-                                TransferObject.Flag.DONE, false)) == null;
+                        TransferUtils.createIncomingSelection(processHolder.group.id, TransferObject.Flag.DONE,
+                                false)) == null;
                 boolean jobDone = !processHolder.interrupter.interrupted() && areFilesDone;
 
                 processHolder.activeConnection.reply(new JSONObject()
@@ -1174,18 +1172,12 @@ public class CommunicationService extends Service
                 .putExtra(EXTRA_HOTSPOT_DISABLING, true));
     }
 
-    private void sendHotspotStatus(WifiConfiguration wifiConfiguration)
+    private void sendHotspotStatus(@Nullable WifiConfiguration wifiConfiguration)
     {
         Intent statusIntent = new Intent(ACTION_HOTSPOT_STATUS)
                 .putExtra(EXTRA_HOTSPOT_ENABLED, wifiConfiguration != null)
-                .putExtra(EXTRA_HOTSPOT_DISABLING, false);
-
-        if (wifiConfiguration != null) {
-            statusIntent.putExtra(EXTRA_HOTSPOT_NAME, wifiConfiguration.SSID)
-                    .putExtra(EXTRA_HOTSPOT_PASSWORD, wifiConfiguration.preSharedKey)
-                    .putExtra(EXTRA_HOTSPOT_KEY_MGMT, NetworkUtils.getAllowedKeyManagement(
-                            wifiConfiguration.allowedKeyManagement));
-        }
+                .putExtra(EXTRA_HOTSPOT_DISABLING, false)
+                .putExtra(EXTRA_HOTSPOT_CONFIGURATION, wifiConfiguration);
 
         sendBroadcast(statusIntent);
     }
@@ -1207,7 +1199,6 @@ public class CommunicationService extends Service
     {
         ProcessHolder processHolder = new ProcessHolder();
         processHolder.type = type;
-
         processHolder.device = new NetworkDevice(deviceId);
 
         try {
@@ -1224,8 +1215,7 @@ public class CommunicationService extends Service
             throw new TransferGroupNotFoundException();
         }
 
-        processHolder.assignee = new TransferAssignee(processHolder.group, processHolder.device,
-                processHolder.type);
+        processHolder.assignee = new TransferAssignee(processHolder.group, processHolder.device, processHolder.type);
 
         try {
             getDatabase().reconstruct(getDbInstance(), processHolder.assignee);
@@ -1281,8 +1271,7 @@ public class CommunicationService extends Service
                         }
 
                         try {
-                            CoolSocket.ActiveConnection.Response lastResponse
-                                    = holder.activeConnection.receive();
+                            CoolSocket.ActiveConnection.Response lastResponse = holder.activeConnection.receive();
 
                             Log.d(TAG, "startTransferAsClient(): Final response before " +
                                     "exit: " + lastResponse.response);
@@ -1290,8 +1279,8 @@ public class CommunicationService extends Service
                             e.printStackTrace();
                         }
                     } else {
-                        getNotificationHelper().notifyConnectionError(holder, responseJSON.has(
-                                Keyword.ERROR) ? responseJSON.getString(Keyword.ERROR) : null);
+                        getNotificationHelper().notifyConnectionError(holder, responseJSON.has(Keyword.ERROR)
+                                ? responseJSON.getString(Keyword.ERROR) : null);
                     }
                 }
             } catch (Exception e) {
