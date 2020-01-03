@@ -51,10 +51,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
     public static <T> T connect(AccessDatabase database, Class<T> clazz, final Client.ConnectionHandler handler)
     {
         Client clientInstance = connect(database, true, handler);
-
-        return clientInstance.getReturn() != null && clazz != null
-                ? clazz.cast(clientInstance.getReturn())
-                : null;
+        return clientInstance.getReturn() != null && clazz != null ? clazz.cast(clientInstance.getReturn()) : null;
     }
 
     public static Client connect(AccessDatabase database, boolean currentThread, final Client.ConnectionHandler handler)
@@ -143,19 +140,25 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return mDevice;
         }
 
+        public int getSecureKey() {
+            return mDevice == null ? mSecureKey : mDevice.secureKey;
+        }
+
         public void setDevice(NetworkDevice device)
         {
             mDevice = device;
         }
 
-        public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection, boolean handshakeOnly) throws IOException, TimeoutException, CommunicationException
+        public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection,
+                                                     boolean handshakeOnly) throws IOException, TimeoutException,
+                CommunicationException
         {
             try {
                 JSONObject reply = new JSONObject()
                         .put(Keyword.HANDSHAKE_REQUIRED, true)
                         .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
                         .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceSerial(getContext()))
-                        .put(Keyword.DEVICE_SECURE_KEY, mDevice == null ? mSecureKey : mDevice.tmpSecureKey);
+                        .put(Keyword.DEVICE_SECURE_KEY, getSecureKey());
 
                 AppUtils.applyDeviceToJSON(getContext(), reply);
 
@@ -179,7 +182,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return loadDevice(connectWithHandshake(inetAddress, true));
         }
 
-        public NetworkDevice loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException, IOException, CommunicationException
+        public NetworkDevice loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException,
+                IOException, CommunicationException
         {
             try {
                 CoolSocket.ActiveConnection.Response response = activeConnection.receive();
@@ -196,7 +200,9 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             mSecureKey = secureKey;
         }
 
-        public NetworkDevice updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection, NetworkDevice targetDevice) throws IOException, TimeoutException, CommunicationException, DifferentClientException
+        public NetworkDevice updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection,
+                                                NetworkDevice targetDevice) throws IOException, TimeoutException,
+                CommunicationException, DifferentClientException
         {
             NetworkDevice loadedDevice = loadDevice(activeConnection);
             NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice,
@@ -206,6 +212,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                 throw new DifferentClientException("The target device did not match with the connected one");
             else {
                 loadedDevice.lastUsageTime = System.currentTimeMillis();
+                loadedDevice.secureKey = getSecureKey();
 
                 mDatabase.publish(loadedDevice);
                 mDatabase.broadcast();

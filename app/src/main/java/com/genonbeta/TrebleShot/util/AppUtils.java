@@ -305,9 +305,7 @@ public class AppUtils
             TypedArray values = context.getTheme().obtainStyledAttributes(context.getApplicationInfo().theme,
                     new int[]{refId});
 
-            return values.length() > 0
-                    ? values.getResourceId(0, 0)
-                    : 0;
+            return values.length() > 0 ? values.getResourceId(0, 0) : 0;
         }
 
         return typedValue.resourceId;
@@ -337,10 +335,12 @@ public class AppUtils
     }
 
     /**
-     * @return Returns a number unique to the session.
-     * @deprecated The numbers are not that unique and the use cases does not meet the standards.
+     * This method returns a number unique to the application session. One of the reasons it is not deprecated is that
+     * it is heavily used for the {@link android.app.PendingIntent} who asks for unique operation or unique request code
+     * to function. In order to get rid of this, first, the notification should be shown in a merged manner meaning each
+     * notification should not create an individual notification so that notification actions don't create a collision.
+     * @return A unique integer number that does not mix with the current session.
      */
-    @Deprecated
     public static int getUniqueNumber()
     {
         return (int) (System.currentTimeMillis() / 1000) + (++mUniqueNumber);

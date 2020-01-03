@@ -44,6 +44,7 @@ import androidx.core.widget.ImageViewCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.Keyword;
+import com.genonbeta.TrebleShot.service.CommunicationService;
 import com.genonbeta.TrebleShot.ui.UIConnectionUtils;
 import com.genonbeta.TrebleShot.ui.callback.IconSupport;
 import com.genonbeta.TrebleShot.ui.callback.TitleSupport;
@@ -59,9 +60,7 @@ import org.json.JSONObject;
 
 import java.net.UnknownHostException;
 
-public class NetworkManagerFragment
-        extends Fragment
-        implements TitleSupport, IconSupport
+public class NetworkManagerFragment extends Fragment implements TitleSupport, IconSupport
 {
     private final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -79,13 +78,8 @@ public class NetworkManagerFragment
     private ImageView mCodeView;
     private ColorStateList mColorPassiveState;
 
-    private UIConnectionUtils.RequestWatcher mRequestWatcher = new UIConnectionUtils.RequestWatcher()
-    {
-        @Override
-        public void onResultReturned(boolean result, boolean shouldWait)
-        {
+    private UIConnectionUtils.RequestWatcher mRequestWatcher = (result, shouldWait) -> {
 
-        }
     };
 
     @Override
@@ -95,15 +89,18 @@ public class NetworkManagerFragment
 
         mIntentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         mIntentFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(CommunicationService.ACTION_PIN_USED);
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState)
     {
         View view = getLayoutInflater().inflate(R.layout.layout_network_manager, container, false);
 
-        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(getContext(), R.attr.colorPassive)));
+        mColorPassiveState = ColorStateList.valueOf(ContextCompat.getColor(getContext(), AppUtils.getReference(
+                getContext(), R.attr.colorPassive)));
         mCodeView = view.findViewById(R.id.layout_network_manager_qr_image);
         mContainerText1 = view.findViewById(R.id.layout_network_manager_info_container_text1_container);
         mContainerText2 = view.findViewById(R.id.layout_network_manager_info_container_text2_container);
@@ -113,16 +110,12 @@ public class NetworkManagerFragment
         mText3 = view.findViewById(R.id.layout_network_manager_info_container_text3);
         mActionButton = view.findViewById(R.id.layout_network_manager_info_toggle_button);
 
-        mActionButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                if (!canReadWifiInfo())
-                    getUIConnectionUtils().validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION, mRequestWatcher);
-                else
-                    startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
-            }
+        mActionButton.setOnClickListener(v -> {
+            if (!canReadWifiInfo())
+                getUIConnectionUtils().validateLocationPermission(getActivity(), REQUEST_LOCATION_PERMISSION,
+                        mRequestWatcher);
+            else
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
         });
 
         return view;
@@ -155,8 +148,8 @@ public class NetworkManagerFragment
 
     public boolean canReadWifiInfo()
     {
-        return Build.VERSION.SDK_INT < 26
-                || (getConnectionUtils().hasLocationPermission(getContext()) && getConnectionUtils().isLocationServiceEnabled());
+        return Build.VERSION.SDK_INT < 26 || (getConnectionUtils().hasLocationPermission(getContext())
+                && getConnectionUtils().isLocationServiceEnabled());
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -209,16 +202,15 @@ public class NetworkManagerFragment
         }
     }
 
-    public void updateViews(@Nullable JSONObject codeIndex, @StringRes int buttonText, @Nullable String text1, @Nullable String text2, @Nullable String text3)
+    public void updateViews(@Nullable JSONObject codeIndex, @StringRes int buttonText, @Nullable String text1,
+                            @Nullable String text2, @Nullable String text3)
     {
-        boolean showQRCode = codeIndex != null
-                && codeIndex.length() > 0
-                && getContext() != null;
+        boolean showQRCode = codeIndex != null && codeIndex.length() > 0 && getContext() != null;
 
         try {
             if (showQRCode) {
                 {
-                    int networkPin = AppUtils.getUniqueNumber();
+                    int networkPin = (int) (Integer.MAX_VALUE * Math.random());
 
                     codeIndex.put(Keyword.NETWORK_PIN, networkPin);
 
@@ -228,7 +220,8 @@ public class NetworkManagerFragment
                 }
 
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
-                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400, 400);
+                BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400,
+                        400);
                 BarcodeEncoder encoder = new BarcodeEncoder();
 
                 Bitmap bitmap = encoder.createBitmap(bitMatrix);
@@ -282,7 +275,8 @@ public class NetworkManagerFragment
         public void onReceive(Context context, Intent intent)
         {
             if (WifiManager.WIFI_STATE_CHANGED_ACTION.equals(intent.getAction())
-                    || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction()))
+                    || ConnectivityManager.CONNECTIVITY_ACTION.equals(intent.getAction())
+                    || CommunicationService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
         }
     }

@@ -27,7 +27,7 @@ import com.genonbeta.android.database.SQLiteDatabase;
 import java.io.Serializable;
 import java.util.List;
 
-public class NetworkDevice implements DatabaseObject<Object>, Serializable
+public class NetworkDevice implements DatabaseObject<Void>, Serializable
 {
     public String brand;
     public String model;
@@ -36,7 +36,7 @@ public class NetworkDevice implements DatabaseObject<Object>, Serializable
     public String versionName;
     public int versionCode;
     public int clientVersion;
-    public int tmpSecureKey;
+    public int secureKey;
     public long lastUsageTime;
     public boolean isTrusted = false;
     public boolean isRestricted = false;
@@ -84,7 +84,7 @@ public class NetworkDevice implements DatabaseObject<Object>, Serializable
         values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY, tmpSecureKey);
+        values.put(AccessDatabase.FIELD_DEVICES_SECUREKEY, secureKey);
         values.put(AccessDatabase.FIELD_DEVICES_TYPE, type.toString());
 
         return values;
@@ -103,7 +103,7 @@ public class NetworkDevice implements DatabaseObject<Object>, Serializable
         this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
         this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
         this.isLocalAddress = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-        this.tmpSecureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
+        this.secureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_SECUREKEY);
 
         if (item.containsKey(AccessDatabase.FIELD_DEVICES_CLIENTVERSION))
             this.clientVersion = item.getAsInteger(AccessDatabase.FIELD_DEVICES_CLIENTVERSION);
@@ -123,19 +123,19 @@ public class NetworkDevice implements DatabaseObject<Object>, Serializable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
     {
 
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Object parent)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
     {
         database.getContext().deleteFile(generatePictureId());
 

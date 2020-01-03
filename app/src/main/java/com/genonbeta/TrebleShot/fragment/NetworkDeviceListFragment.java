@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.fragment;
 
 import android.content.*;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.*;
@@ -352,10 +353,12 @@ public class NetworkDeviceListFragment extends EditableListFragment<EditableNetw
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                     .setTitle(device.nickname)
                     .setMessage(R.string.text_trebleshotHotspotDescription)
-                    .setNegativeButton(R.string.butn_close, null)
-                    .setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
-                            ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
-                            getConnectionUtils().toggleConnection(hotspotNetwork));
+                    .setNegativeButton(R.string.butn_close, null);
+
+            if (Build.VERSION.SDK_INT < 29)
+                builder.setPositiveButton(getConnectionUtils().isConnectedToNetwork(hotspotNetwork)
+                        ? R.string.butn_disconnect : R.string.butn_connect, (dialog, which) ->
+                        getConnectionUtils().toggleConnection(hotspotNetwork));
 
             builder.show();
         } else

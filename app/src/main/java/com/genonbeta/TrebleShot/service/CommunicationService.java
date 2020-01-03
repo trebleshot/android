@@ -89,7 +89,9 @@ public class CommunicationService extends Service
             ACTION_REQUEST_TASK_STATUS = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_STATUS",
             ACTION_REQUEST_TASK_LIST = "com.genonbeta.TrebleShot.transaction.action.REQUEST_TASK_LIST",
             ACTION_INCOMING_TRANSFER_READY = "com.genonbeta.TrebleShot.transaction.action.INCOMING_TRANSFER_READY",
+            ACTION_PIN_USED = "com.genonbeta.TrebleShot.transaction.action.PIN_USED",
             EXTRA_DEVICE_ID = "extraDeviceId",
+            EXTRA_DEVICE_PIN = "extraDevicePin",
             EXTRA_STATUS_STARTED = "extraStatusStarted",
             EXTRA_CONNECTION_ADAPTER_NAME = "extraConnectionAdapterName",
             EXTRA_REQUEST_ID = "extraRequestId",
@@ -241,6 +243,7 @@ public class CommunicationService extends Service
                 String deviceId = intent.getStringExtra(EXTRA_DEVICE_ID);
                 boolean isAccepted = intent.getBooleanExtra(EXTRA_IS_ACCEPTED, false);
                 int notificationId = intent.getIntExtra(NotificationUtils.EXTRA_NOTIFICATION_ID, -1);
+                int suggestedPin = intent.getIntExtra(EXTRA_DEVICE_PIN, 0);
 
                 getNotificationHelper().getUtils().cancel(notificationId);
 
@@ -249,6 +252,10 @@ public class CommunicationService extends Service
                 try {
                     getDatabase().reconstruct(device);
                     device.isRestricted = !isAccepted;
+
+                    if (isAccepted)
+                        device.secureKey = suggestedPin;
+
                     getDatabase().update(device);
                     getDatabase().broadcast();
                 } catch (Exception e) {
@@ -596,8 +603,8 @@ public class CommunicationService extends Service
                         e.printStackTrace();
                     }
                 else
-                    getNotificationHelper().notifyTransferRequest(device, group,
-                            TransferObject.Type.INCOMING, pendingRegistry);
+                    getNotificationHelper().notifyTransferRequest(device, group, TransferObject.Type.INCOMING,
+                            pendingRegistry);
             }
 
             getDatabase().broadcast();
@@ -1122,8 +1129,7 @@ public class CommunicationService extends Service
         return findProcessById(groupId, deviceId, type) != null;
     }
 
-    private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type,
-                                        int state)
+    private void notifyTaskStatusChange(long groupId, String deviceId, TransferObject.Type type, int state)
     {
         Intent intent = new Intent(ACTION_TASK_STATUS_CHANGE)
                 .putExtra(EXTRA_TASK_CHANGE_TYPE, state)
@@ -1310,18 +1316,24 @@ public class CommunicationService extends Service
                 JSONObject responseJSON = analyzeResponse(clientRequest);
                 JSONObject replyJSON = new JSONObject();
 
-                if (wasUpdateRequest(activeConnection, responseJSON, replyJSON))
+                if (isUpdateRequest(activeConnection, responseJSON, replyJSON))
                     return;
 
                 boolean result = false;
                 boolean shouldContinue = false;
                 boolean isLegacyDevice = false; // For this type of devices, we only try to send our identity.
+                boolean pinUsed = false;
+                boolean handshakeRequired = responseJSON.has(Keyword.HANDSHAKE_REQUIRED) && responseJSON.getBoolean(
+                        Keyword.HANDSHAKE_REQUIRED);
+                boolean handshakeOnly = handshakeRequired && responseJSON.has(Keyword.HANDSHAKE_ONLY)
+                        && responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY);
 
-                final int networkPin = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
-                final boolean isSecureConnection = networkPin != -1 && responseJSON.has(Keyword.DEVICE_SECURE_KEY)
-                        && responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) == networkPin;
+                final int suggestedPin = responseJSON.has(Keyword.DEVICE_SECURE_KEY)
+                        ? responseJSON.getInt(Keyword.DEVICE_SECURE_KEY) : -1;
+                final int knownPin = getDefaultPreferences().getInt(Keyword.NETWORK_PIN, -1);
+                final boolean hasGlobalKeys = knownPin != -1 && suggestedPin == knownPin;
 
-                NetworkDevice device = null;
+                NetworkDevice device;
 
                 try {
                     device = NetworkDeviceLoader.loadFrom(getDatabase(), responseJSON);
@@ -1334,16 +1346,34 @@ public class CommunicationService extends Service
                 }
 
                 try {
-                    NetworkDevice testDevice = new NetworkDevice(device.id);
-                    getDatabase().reconstruct(testDevice);
+                    NetworkDevice existingInfo = new NetworkDevice(device.id);
+                    getDatabase().reconstruct(existingInfo);
 
-                    if (isSecureConnection)
-                        testDevice.isRestricted = false;
+                    boolean keysMatch = existingInfo.secureKey == suggestedPin;
+                    boolean hasValidKeys = hasGlobalKeys || keysMatch;
+                    boolean shouldUpdate;
 
-                    if (!testDevice.isRestricted)
+                    if (!existingInfo.isRestricted && !hasValidKeys && !handshakeOnly) {
+                        Log.d(TAG, "onConnected: Notifying a pin issue. Revoked the access for now.");
+                        getNotificationHelper().notifyConnectionRequest(device, suggestedPin);
+                    }
+
+                    // If the device is restricted and has matching keys, it means we need to update its old data.
+                    shouldUpdate = hasValidKeys == existingInfo.isRestricted;
+                    existingInfo.isRestricted = !hasValidKeys;
+
+                    if (hasGlobalKeys && !keysMatch) {
+                        pinUsed = true;
+                        device.secureKey = suggestedPin;
+                    }
+
+                    if (!existingInfo.isRestricted)
                         shouldContinue = true;
 
-                    device.applyPreferences(testDevice);
+                    device.applyPreferences(existingInfo);
+
+                    if (shouldUpdate)
+                        getDatabase().publish(device);
                 } catch (ReconstructionFailedException ignored) {
                     if (isLegacyDevice) {
                         device = NetworkDeviceLoader.load(true, getDatabase(),
@@ -1353,26 +1383,29 @@ public class CommunicationService extends Service
                             throw new Exception("Could not reach to the opposite server");
                     }
 
-                    device.isTrusted = false;
-
-                    if (isSecureConnection)
-                        device.isRestricted = false;
+                    device.isTrusted = hasGlobalKeys;
+                    device.isRestricted = !hasGlobalKeys;
 
                     getDatabase().publish(device);
 
-                    shouldContinue = true;
+                    shouldContinue = true; // For the first round, we let the client pass.
 
-                    if (device.isRestricted)
-                        getNotificationHelper().notifyConnectionRequest(device);
+                    if (hasGlobalKeys)
+                        pinUsed = true;
+
+                    if (device.isRestricted && !handshakeOnly)
+                        getNotificationHelper().notifyConnectionRequest(device, suggestedPin);
                 }
 
                 AppUtils.applyDeviceToJSON(CommunicationService.this, replyJSON);
 
-                if (responseJSON.has(Keyword.HANDSHAKE_REQUIRED)
-                        && responseJSON.getBoolean(Keyword.HANDSHAKE_REQUIRED)) {
+                if (pinUsed)
+                    sendBroadcast(new Intent(ACTION_PIN_USED));
+
+                if (handshakeRequired) {
                     pushReply(activeConnection, replyJSON, true);
 
-                    if (responseJSON.has(Keyword.HANDSHAKE_ONLY) && responseJSON.getBoolean(Keyword.HANDSHAKE_ONLY))
+                    if (handshakeOnly)
                         return;
 
                     clientRequest = activeConnection.receive();
@@ -1394,10 +1427,12 @@ public class CommunicationService extends Service
                                     && getOngoingIndexList().size() < 1) {
                                 final long groupId = responseJSON.getLong(Keyword.TRANSFER_GROUP_ID);
                                 final String jsonIndex = responseJSON.getString(Keyword.FILES_INDEX);
+                                final boolean noPrompt = responseJSON.has(Keyword.FLAG_TRANSFER_QR_CONNECTION)
+                                        && responseJSON.getBoolean(Keyword.FLAG_TRANSFER_QR_CONNECTION);
 
                                 result = true;
 
-                                handleTransferRequest(groupId, jsonIndex, device, connection, false);
+                                handleTransferRequest(groupId, jsonIndex, device, connection, noPrompt);
                             }
                             break;
                         case (Keyword.REQUEST_RESPONSE):
@@ -1425,9 +1460,8 @@ public class CommunicationService extends Service
                             break;
                         case (Keyword.REQUEST_CLIPBOARD):
                             if (responseJSON.has(Keyword.TRANSFER_CLIPBOARD_TEXT)) {
-                                TextStreamObject textStreamObject = new TextStreamObject(
-                                        AppUtils.getUniqueNumber(), responseJSON.getString(
-                                        Keyword.TRANSFER_CLIPBOARD_TEXT));
+                                TextStreamObject textStreamObject = new TextStreamObject(AppUtils.getUniqueNumber(),
+                                        responseJSON.getString(Keyword.TRANSFER_CLIPBOARD_TEXT));
 
                                 getDatabase().publish(textStreamObject);
                                 getDatabase().broadcast();
@@ -1525,8 +1559,8 @@ public class CommunicationService extends Service
             activeConnection.reply(reply.put(Keyword.RESULT, result).toString());
         }
 
-        private boolean wasUpdateRequest(ActiveConnection activeConnection, JSONObject responseJSON,
-                                         JSONObject replyJSON) throws TimeoutException, JSONException, IOException
+        private boolean isUpdateRequest(ActiveConnection activeConnection, JSONObject responseJSON,
+                                        JSONObject replyJSON) throws TimeoutException, JSONException, IOException
         {
             if (!responseJSON.has(Keyword.REQUEST))
                 return false;

@@ -192,6 +192,7 @@ public class UIConnectionUtils
                                          final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
                                          final DialogInterface.OnClickListener retryButtonListener)
     {
+        int secureKey = (int) (Integer.MAX_VALUE * Math.random());
         return CommunicationBridge.connect(AppUtils.getDatabase(activity), NetworkDevice.class, client -> {
             try {
                 client.setSecureKey(accessPin);
@@ -212,7 +213,7 @@ public class UIConnectionUtils
                             AppUtils.getDatabase(activity), device, inetAddress.getHostAddress());
 
                     device.lastUsageTime = System.currentTimeMillis();
-                    device.tmpSecureKey = accessPin;
+                    device.secureKey = accessPin;
                     device.isRestricted = false;
                     device.isTrusted = true;
 

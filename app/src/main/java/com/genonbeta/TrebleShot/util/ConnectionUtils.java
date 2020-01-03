@@ -133,7 +133,8 @@ public class ConnectionUtils
     @Deprecated
     public boolean disableCurrentNetwork()
     {
-        // TODO: Networks added by other applications will possibly reconnect even if we disconnect them
+        // WONTFIX: Android 10 makes this obsolete.
+        // NOTTODO: Networks added by other applications will possibly reconnect even if we disconnect them
         // This is because we are only allowed to manipulate the connections that we added.
         // And if it is the case, then the return value of disableNetwork will be false.
         return isConnectedToAnyNetwork() && getWifiManager().disconnect()
@@ -245,11 +246,27 @@ public class ConnectionUtils
                 connectionCallback, leftAttempts);
     }
 
+    /**
+     * @see #findFromConfigurations(String, String)
+     * @param configuration The configuration that contains network SSID, BSSID, other fields required to filter the
+     *                      network
+     */
+    @Deprecated
     public WifiConfiguration findFromConfigurations(WifiConfiguration configuration)
     {
         return findFromConfigurations(configuration.SSID, configuration.BSSID);
     }
 
+    /**
+     *
+     * @param ssid The SSID that will be used to filter.
+     * @param bssid The MAC address of the network. Its use is prioritized when not null as it is unique.
+     * @return The matching configuration or null if no configuration matched with the given parameters.
+     *
+     * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
+     * APIs it makes use of.
+     */
+    @Deprecated
     public WifiConfiguration findFromConfigurations(String ssid, @Nullable String bssid)
     {
         List<WifiConfiguration> list = getWifiManager().getConfiguredNetworks();
@@ -336,7 +353,7 @@ public class ConnectionUtils
             return false;
 
         String bssid = hotspotNetwork.object.BSSID;
-        Log.d(TAG, "isConnectedToNetwork: " + bssid + " other: " + getWifiManager().getConnectionInfo().getBSSID());
+        Log.d(TAG, "isConnectedToNetwork: " + bssid + " othr: " + getWifiManager().getConnectionInfo().getBSSID());
         return bssid != null && bssid.equalsIgnoreCase(getWifiManager().getConnectionInfo().getBSSID());
     }
 
@@ -356,6 +373,14 @@ public class ConnectionUtils
                 && mConnectivityManager.getActiveNetworkInfo().getType() == ConnectivityManager.TYPE_MOBILE;
     }
 
+    /**
+     * Enable and connect to the given network specification.
+     * @param hotspotNetwork The network specifier that will be connected to.
+     * @return True when the request is successful and false when it fails.
+     *
+     * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
+     * APIs it makes use of.
+     */
     public boolean startConnection(HotspotNetwork hotspotNetwork)
     {
         if (isConnectedToNetwork(hotspotNetwork)) {
@@ -390,7 +415,17 @@ public class ConnectionUtils
         return false;
     }
 
-    public boolean toggleConnection(HotspotNetwork hotspotNetwork) {
+    /**
+     * This method activates or deactivates a given network depending on its state.
+     * @param hotspotNetwork The network specifier that you want to toggle the connection to.
+     * @return True when the request is successful, false if otherwise.
+     *
+     * @deprecated The use of this method is limited to Android version 9 and below due to the deprecation of the
+     * APIs it makes use of.
+     */
+    @Deprecated
+    public boolean toggleConnection(HotspotNetwork hotspotNetwork)
+    {
         return isConnectedToNetwork(hotspotNetwork) ? getWifiManager().disconnect() : startConnection(hotspotNetwork);
     }
 

@@ -93,6 +93,7 @@ public class HotspotManagerFragment
         super.onCreate(savedInstanceState);
 
         mIntentFilter.addAction(CommunicationService.ACTION_HOTSPOT_STATUS);
+        mIntentFilter.addAction(CommunicationService.ACTION_PIN_USED);
         mIntentFilter.addAction(WIFI_AP_STATE_CHANGED);
 
         setHasOptionsMenu(true);
@@ -122,7 +123,7 @@ public class HotspotManagerFragment
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
     {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.actions_hotspot_manager, menu);
@@ -216,14 +217,11 @@ public class HotspotManagerFragment
     {
         mHotspotStartedExternally = false;
 
-        updateViews(null,
-                getString(R.string.text_qrCodeHotspotDisabledHelp),
-                null,
-                null,
+        updateViews(null, getString(R.string.text_qrCodeHotspotDisabledHelp), null, null,
                 R.string.text_startHotspot);
     }
 
-    private void updateViewsStartedExternally()
+    private void updateViewsAsStartedExternally()
     {
         mHotspotStartedExternally = true;
 
@@ -252,19 +250,16 @@ public class HotspotManagerFragment
         }
     }
 
-    private void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1,
-                             @Nullable String text2, @Nullable String text3,
-                             @StringRes int buttonText)
+    private void updateViews(@Nullable JSONObject codeIndex, @Nullable String text1, @Nullable String text2,
+                             @Nullable String text3, @StringRes int buttonText)
     {
-        boolean showQRCode = codeIndex != null
-                && codeIndex.length() > 0
-                && getContext() != null;
+        boolean showQRCode = codeIndex != null && codeIndex.length() > 0 && getContext() != null;
 
         try {
 
             if (showQRCode) {
                 {
-                    int networkPin = AppUtils.getUniqueNumber();
+                    int networkPin = (int) (Integer.MAX_VALUE * Math.random());
 
                     codeIndex.put(Keyword.NETWORK_PIN, networkPin);
 
@@ -325,14 +320,15 @@ public class HotspotManagerFragment
         @Override
         public void onReceive(Context context, Intent intent)
         {
-            if (WIFI_AP_STATE_CHANGED.equals(intent.getAction()))
+            if (WIFI_AP_STATE_CHANGED.equals(intent.getAction())
+                    || CommunicationService.ACTION_PIN_USED.equals(intent.getAction()))
                 updateState();
             else if (CommunicationService.ACTION_HOTSPOT_STATUS.equals(intent.getAction())) {
                 if (intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_ENABLED, false))
                     updateViews(intent.getParcelableExtra(CommunicationService.EXTRA_HOTSPOT_CONFIGURATION));
                 else if (getConnectionUtils().getHotspotUtils().isEnabled()
                         && !intent.getBooleanExtra(CommunicationService.EXTRA_HOTSPOT_DISABLING, false))
-                    updateViewsStartedExternally();
+                    updateViewsAsStartedExternally();
             }
         }
     }

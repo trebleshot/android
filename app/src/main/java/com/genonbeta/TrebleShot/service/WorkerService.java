@@ -155,12 +155,11 @@ public class WorkerService extends Service
                             .setAction(ACTION_KILL_SIGNAL)
                             .putExtra(EXTRA_TASK_HASH, runningTask.hashCode()), 0);
 
-            runningTask.mNotification = mNotificationUtils.buildDynamicNotification(
-                    runningTask.hashCode(), NotificationUtils.NOTIFICATION_CHANNEL_LOW);
+            runningTask.mNotification = mNotificationUtils.buildDynamicNotification(runningTask.hashCode(),
+                    NotificationUtils.NOTIFICATION_CHANNEL_LOW);
 
             runningTask.mNotification.setSmallIcon(runningTask.getIconRes() == 0
-                    ? R.drawable.ic_autorenew_white_24dp_static
-                    : runningTask.getIconRes())
+                    ? R.drawable.ic_autorenew_white_24dp_static : runningTask.getIconRes())
                     .setContentTitle(getString(R.string.text_taskOngoing))
                     .addAction(R.drawable.ic_close_white_24dp_static,
                             getString(R.string.butn_cancel), cancelIntent);
@@ -200,19 +199,14 @@ public class WorkerService extends Service
 
     public void run(final RunningTask runningTask)
     {
-        mExecutor.submit(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                runningTask.setService(WorkerService.this);
+        mExecutor.submit(() -> {
+            runningTask.setService(WorkerService.this);
 
-                registerWork(runningTask);
-                runningTask.run();
-                unregisterWork(runningTask);
+            registerWork(runningTask);
+            runningTask.run();
+            unregisterWork(runningTask);
 
-                runningTask.setService(null);
-            }
+            runningTask.setService(null);
         });
     }
 
@@ -407,7 +401,8 @@ public class WorkerService extends Service
                 }
             };
 
-            return context.bindService(new Intent(context, WorkerService.class), serviceConnection, Context.BIND_AUTO_CREATE);
+            return context.bindService(new Intent(context, WorkerService.class), serviceConnection,
+                    Context.BIND_AUTO_CREATE);
         }
     }
 

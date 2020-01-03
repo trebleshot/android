@@ -84,7 +84,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
         values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY, tmpSecureKey);
+        values.put(AccessDatabase.FIELD_DEVICES_SECUREKEY, tmpSecureKey);
 
         return values;
     }
@@ -102,7 +102,7 @@ public class NetworkDeviceV12 implements DatabaseObject<Object>
         this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
         this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
         this.isLocalAddress = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
-        this.tmpSecureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_TMPSECUREKEY);
+        this.tmpSecureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_SECUREKEY);
     }
 
     @Override
