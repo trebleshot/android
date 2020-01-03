@@ -347,7 +347,6 @@
     <string name="mesg_versionNotSupported">பரிந்துரைக்கப்பட்ட Versionற்க்கு பதிவேற்றம் செய்யுங்கள்.</string>
     <string name="mesg_connectionUpdated">%s இணைப்பு மூலம் தொடர்பு கொள்கிறது</string>
     <string name="mesg_helpFolderSelection">இந்த அடைவை தேர்வு செய்ய தட்டவும்</string>
-    <string name="mesg_hotspotCreatedInfo">Wifi Settings-ல் %s-ல் இணையவும்</string>
     <string name="butn_selectNone">ஏதுமில்லை</string>
     <string name="mesg_transferConnectionNotSetUpFix">தொடர்பு முறையை தேர்ந்தெடுங்கள்</string>
     <string name="text_yearCountShort">%d வருடம்</string>
