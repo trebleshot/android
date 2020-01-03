@@ -121,7 +121,7 @@ public abstract class Activity extends AppCompatActivity
             }
         }
 
-        // Apply Ubuntu Font Family as a patch if enabled
+        // Apply the Preferred Font Family as a patch if enabled
         if (mCustomFontsEnabled) {
             Log.d(Activity.class.getSimpleName(), "Custom fonts have been applied");
             getTheme().applyStyle(R.style.TextAppearance_Cantarell, true);
