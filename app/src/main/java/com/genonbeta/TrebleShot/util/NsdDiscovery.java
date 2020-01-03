@@ -63,8 +63,7 @@ public class NsdDiscovery
 
     public NsdManager.DiscoveryListener getDiscoveryListener()
     {
-        if (mNsdDiscoveryListener == null
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (mNsdDiscoveryListener == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mNsdDiscoveryListener = new NsdManager.DiscoveryListener()
             {
                 @Override
@@ -114,7 +113,8 @@ public class NsdDiscovery
                                 Log.v(TAG, "Resolved with success " + serviceInfo.getServiceName()
                                         + " with IP address of " + serviceInfo.getHost().getHostAddress());
 
-                                NetworkDeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(), null);
+                                NetworkDeviceLoader.load(getDatabase(), serviceInfo.getHost().getHostAddress(),
+                                        null);
                             }
                         });
                     }
@@ -143,8 +143,7 @@ public class NsdDiscovery
 
     public NsdManager.RegistrationListener getRegistrationListener()
     {
-        if (isServiceEnabled()
-                && mNsdRegistrationListener == null
+        if (isServiceEnabled() && mNsdRegistrationListener == null
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             mNsdRegistrationListener = new NsdManager.RegistrationListener()
             {
@@ -185,16 +184,16 @@ public class NsdDiscovery
 
     public void registerService()
     {
-        if (isServiceEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             final NsdServiceInfo localServiceInfo = new NsdServiceInfo();
 
-            localServiceInfo.setServiceName(AppConfig.NDS_COMM_SERVICE_NAME + "_" + AppUtils.getUniqueNumber());
+            localServiceInfo.setServiceName(AppConfig.NDS_COMM_SERVICE_NAME);
             localServiceInfo.setServiceType(AppConfig.NDS_COMM_SERVICE_TYPE);
             localServiceInfo.setPort(AppConfig.SERVER_PORT_COMMUNICATION);
 
             try {
-                getNsdManager().registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD, getRegistrationListener());
+                getNsdManager().registerService(localServiceInfo, NsdManager.PROTOCOL_DNS_SD,
+                        getRegistrationListener());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -203,10 +202,10 @@ public class NsdDiscovery
 
     public void startDiscovering()
     {
-        if (isServiceEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+        if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             try {
-                getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD, getDiscoveryListener());
+                getNsdManager().discoverServices(AppConfig.NDS_COMM_SERVICE_TYPE, NsdManager.PROTOCOL_DNS_SD,
+                        getDiscoveryListener());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -214,8 +213,7 @@ public class NsdDiscovery
 
     public void stopDiscovering()
     {
-        if (isServiceEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+        if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             try {
                 getNsdManager().stopServiceDiscovery(getDiscoveryListener());
             } catch (Exception e) {
@@ -225,8 +223,7 @@ public class NsdDiscovery
 
     public void unregisterService()
     {
-        if (isServiceEnabled()
-                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+        if (isServiceEnabled() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
             try {
                 getNsdManager().unregisterService(getRegistrationListener());
             } catch (Exception e) {
