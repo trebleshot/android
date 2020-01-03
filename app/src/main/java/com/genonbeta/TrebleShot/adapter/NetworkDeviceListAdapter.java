@@ -29,6 +29,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import com.genonbeta.TrebleShot.BuildConfig;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -225,6 +226,10 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
+    /**
+     * Aimed to be used with Android 9 and below
+     */
+    @Deprecated
     public static class HotspotNetwork extends NetworkSpecifier<WifiConfiguration>
     {
         public HotspotNetwork(WifiConfiguration configuration)
@@ -233,6 +238,10 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
+    /**
+     * Aimed to be used with Android 9 and below
+     */
+    @Deprecated
     public static class UnfamiliarNetwork extends NetworkSpecifier<NetworkDescription>
     {
         public UnfamiliarNetwork(NetworkDescription networkObject)
@@ -241,6 +250,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
+    @RequiresApi(29)
     public static class NetworkSuggestion extends NetworkSpecifier<WifiNetworkSuggestion>
     {
         public NetworkSuggestion(String nickname, WifiNetworkSuggestion networkObject)
