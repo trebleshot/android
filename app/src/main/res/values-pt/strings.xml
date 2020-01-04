@@ -276,7 +276,7 @@
     <string name="text_secondCountShort">%d seg</string>
     <string name="butn_exit">Sair</string>
     <string name="butn_queueCounted">Fila (%d)</string>
-    <string name="mesg_updateDownloadComplete">Atualização recebida com sucesso e guardada nos seus ficheiros recebidos</string>
+    <string name="mesg_updateDownloadComplete">Atualização recebida e guardada nos seus ficheiros recebidos</string>
     <string name="text_listEmptyFiles">Nenhum ficheiro aqui</string>
     <string name="text_listEmptyImage">Nenhuma foto aqui</string>
     <string name="text_listEmptyApp">Nenhuma aplicação aqui</string>
