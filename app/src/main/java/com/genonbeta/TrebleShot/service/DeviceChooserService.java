@@ -56,7 +56,7 @@ public class DeviceChooserService extends ChooserTargetService
         TextDrawable.IShapeBuilder iconBuilder = AppUtils.getDefaultIconBuilder(getApplicationContext());
 
         for (NetworkDevice device : database.castQuery(new SQLQuery.Select(AccessDatabase.TABLE_DEVICES), NetworkDevice.class)) {
-            if (device.isLocalAddress)
+            if (device.isLocal)
                 continue;
 
             Bundle bundle = new Bundle();

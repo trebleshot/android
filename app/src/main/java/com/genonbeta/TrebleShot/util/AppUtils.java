@@ -255,7 +255,7 @@ public class AppUtils
         return mDefaultPreferences;
     }
 
-    public static String getDeviceSerial(Context context)
+    public static String getDeviceId(Context context)
     {
         if (Build.VERSION.SDK_INT < 26 && Build.SERIAL != null)
             return Build.SERIAL;
@@ -306,7 +306,7 @@ public class AppUtils
 
     public static NetworkDevice getLocalDevice(Context context)
     {
-        NetworkDevice device = new NetworkDevice(getDeviceSerial(context));
+        NetworkDevice device = new NetworkDevice(getDeviceId(context));
 
         device.brand = Build.BRAND;
         device.model = Build.MODEL;
@@ -314,7 +314,8 @@ public class AppUtils
         device.clientVersion = BuildConfig.CLIENT_VERSION;
         device.versionCode = BuildConfig.VERSION_CODE;
         device.versionName = BuildConfig.VERSION_NAME;
-        device.isLocalAddress = true;
+        device.isLocal = true;
+        device.secureKey = AppUtils.generateKey();
 
         return device;
     }

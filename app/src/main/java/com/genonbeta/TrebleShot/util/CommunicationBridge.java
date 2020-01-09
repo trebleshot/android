@@ -19,7 +19,6 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import android.util.Log;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
@@ -114,8 +113,6 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             boolean keyNotSent = getDevice() == null;
             updateDeviceIfOkay(activeConnection);
 
-            Log.d(TAG, "communicate: not sent " + keyNotSent + " handshakeOnly " + handshakeOnly);
-
             if (!handshakeOnly && keyNotSent) {
                 try {
                     activeConnection.reply(new JSONObject().put(Keyword.DEVICE_INFO_KEY, getDevice().secureKey)
@@ -176,7 +173,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                 JSONObject reply = new JSONObject()
                         .put(Keyword.HANDSHAKE_REQUIRED, true)
                         .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
-                        .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceSerial(getContext()))
+                        .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceId(getContext()))
                         .put(Keyword.DEVICE_PIN, mPin);
 
                 AppUtils.applyDeviceToJSON(getContext(), reply, mDevice != null ? mDevice.secureKey : -1);
@@ -239,7 +236,8 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
 
                     loadedDevice.secureKey = getDevice().secureKey;
                     loadedDevice.isRestricted = false;
-                }
+                } else
+                    loadedDevice.isLocal = AppUtils.getDeviceId(getContext()).equals(loadedDevice.id);
             }
 
             loadedDevice.lastUsageTime = System.currentTimeMillis();

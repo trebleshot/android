@@ -40,7 +40,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     public long lastUsageTime;
     public boolean isTrusted = false;
     public boolean isRestricted = false;
-    public boolean isLocalAddress = false;
+    public boolean isLocal = false;
     public Type type = Type.NORMAL;
 
     public NetworkDevice()
@@ -84,7 +84,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
         values.put(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME, lastUsageTime);
         values.put(AccessDatabase.FIELD_DEVICES_ISRESTRICTED, isRestricted ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_ISTRUSTED, isTrusted ? 1 : 0);
-        values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocalAddress ? 1 : 0);
+        values.put(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS, isLocal ? 1 : 0);
         values.put(AccessDatabase.FIELD_DEVICES_SECUREKEY, secureKey);
         values.put(AccessDatabase.FIELD_DEVICES_TYPE, type.toString());
 
@@ -103,7 +103,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
         this.lastUsageTime = item.getAsLong(AccessDatabase.FIELD_DEVICES_LASTUSAGETIME);
         this.isTrusted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISTRUSTED) == 1;
         this.isRestricted = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISRESTRICTED) == 1;
-        this.isLocalAddress = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
+        this.isLocal = item.getAsInteger(AccessDatabase.FIELD_DEVICES_ISLOCALADDRESS) == 1;
         this.secureKey = item.getAsInteger(AccessDatabase.FIELD_DEVICES_SECUREKEY);
 
         if (item.containsKey(AccessDatabase.FIELD_DEVICES_CLIENTVERSION))
@@ -118,7 +118,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
 
     public void applyPreferences(NetworkDevice otherDevice)
     {
-        isLocalAddress = otherDevice.isLocalAddress;
+        isLocal = otherDevice.isLocal;
         isRestricted = otherDevice.isRestricted;
         isTrusted = otherDevice.isTrusted;
     }
