@@ -110,8 +110,6 @@ public class AppUtils
         if (key >= 0)
             deviceInformation.put(Keyword.DEVICE_INFO_KEY, key);
 
-        Log.d(TAG, "applyDeviceToJSON: " + deviceInformation + " " + key);
-
         try {
             ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(context.openFileInput("profilePicture"));
