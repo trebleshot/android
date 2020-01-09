@@ -422,7 +422,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
         final boolean hasCameraPermission = ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_GRANTED;
         // With Android Oreo, to gather Wi-Fi information, minimal access to location is needed
-        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 26
+        final boolean hasLocationPermission = Build.VERSION.SDK_INT < 23
                 || mConnectionUtils.getConnectionUtils().canAccessLocation();
         final boolean state = (wifiEnabled || mShowAsText) && hasCameraPermission && hasLocationPermission;
 
