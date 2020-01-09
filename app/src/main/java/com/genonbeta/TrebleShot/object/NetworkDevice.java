@@ -36,7 +36,7 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     public String versionName;
     public int versionCode;
     public int clientVersion;
-    public int secureKey;
+    public int secureKey = -1;
     public long lastUsageTime;
     public boolean isTrusted = false;
     public boolean isRestricted = false;
@@ -52,9 +52,10 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
         this.id = id;
     }
 
-    public NetworkDevice(ContentValues item)
+    private void checkSecureKey()
     {
-        reconstruct(item);
+        if (secureKey < 0)
+            throw new RuntimeException("Secure key for " + nickname + " cannot be invalid when the device is saved");
     }
 
     public String generatePictureId()
@@ -125,13 +126,13 @@ public class NetworkDevice implements DatabaseObject<Void>, Serializable
     @Override
     public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
     {
-
+        checkSecureKey();
     }
 
     @Override
     public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, Void parent)
     {
-
+        checkSecureKey();
     }
 
     @Override

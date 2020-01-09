@@ -258,15 +258,7 @@ public class HotspotManagerFragment
         try {
 
             if (showQRCode) {
-                {
-                    int networkPin = (int) (Integer.MAX_VALUE * Math.random());
-
-                    codeIndex.put(Keyword.NETWORK_PIN, networkPin);
-
-                    AppUtils.getDefaultPreferences(getContext()).edit()
-                            .putInt(Keyword.NETWORK_PIN, networkPin)
-                            .apply();
-                }
+                codeIndex.put(Keyword.NETWORK_PIN, AppUtils.generateNetworkPin(getContext()));
 
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
                 BitMatrix bitMatrix = formatWriter.encode(codeIndex.toString(), BarcodeFormat.QR_CODE, 400,

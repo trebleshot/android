@@ -19,13 +19,14 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.content.Context;
-import androidx.annotation.Nullable;
+import android.util.Log;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
+import com.genonbeta.android.database.exception.ReconstructionFailedException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -78,7 +79,7 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
     {
         private AccessDatabase mDatabase;
         private NetworkDevice mDevice;
-        private int mSecureKey = -1;
+        private int mPin = -1;
 
         public Client(AccessDatabase database)
         {
@@ -88,20 +89,42 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection)
                 throws IOException, TimeoutException, DifferentClientException, CommunicationException
         {
-            CoolSocket.ActiveConnection activeConnection = connectWithHandshake(targetConnection.toInet4Address(),
-                    false);
+            return communicate(targetDevice, targetConnection, false);
+        }
 
-            communicate(activeConnection, targetDevice);
+        public CoolSocket.ActiveConnection communicate(NetworkDevice targetDevice, DeviceConnection targetConnection,
+                                                       boolean handshakeOnly)
+                throws IOException, TimeoutException, DifferentClientException, CommunicationException
+        {
+            setDevice(targetDevice);
+            return communicate(targetConnection.toInet4Address(), handshakeOnly);
+        }
 
+        public CoolSocket.ActiveConnection communicate(InetAddress address, boolean handshakeOnly)
+                throws IOException, TimeoutException, DifferentClientException, CommunicationException
+        {
+            CoolSocket.ActiveConnection activeConnection = connectWithHandshake(address, handshakeOnly);
+            communicate(activeConnection, handshakeOnly);
             return activeConnection;
         }
 
-        public CoolSocket.ActiveConnection communicate(CoolSocket.ActiveConnection activeConnection,
-                                                       NetworkDevice targetDevice) throws IOException, TimeoutException,
-                DifferentClientException, CommunicationException
+        public void communicate(CoolSocket.ActiveConnection activeConnection, boolean handshakeOnly) throws IOException,
+                TimeoutException, DifferentClientException, CommunicationException
         {
-            updateDeviceIfOkay(activeConnection, targetDevice);
-            return activeConnection;
+            boolean keyNotSent = getDevice() == null;
+            updateDeviceIfOkay(activeConnection);
+
+            Log.d(TAG, "communicate: not sent " + keyNotSent + " handshakeOnly " + handshakeOnly);
+
+            if (!handshakeOnly && keyNotSent) {
+                try {
+                    activeConnection.reply(new JSONObject().put(Keyword.DEVICE_INFO_KEY, getDevice().secureKey)
+                            .toString());
+                    activeConnection.receive(); // STUB
+                } catch (Exception e) {
+                    throw new CommunicationException("Could not provide the device we are communicating with a key.");
+                }
+            }
         }
 
         public CoolSocket.ActiveConnection connect(InetAddress inetAddress) throws IOException
@@ -116,6 +139,12 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
         public CoolSocket.ActiveConnection connect(DeviceConnection connection) throws IOException
         {
             return connect(connection.toInet4Address());
+        }
+
+        public CoolSocket.ActiveConnection connectWithHandshake(DeviceConnection connection, boolean handshakeOnly)
+                throws IOException, TimeoutException, CommunicationException
+        {
+            return connectWithHandshake(connection.toInet4Address(), handshakeOnly);
         }
 
         public CoolSocket.ActiveConnection connectWithHandshake(InetAddress inetAddress, boolean handshakeOnly)
@@ -134,19 +163,9 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             return mDatabase;
         }
 
-        @Nullable
         public NetworkDevice getDevice()
         {
             return mDevice;
-        }
-
-        public int getSecureKey() {
-            return mDevice == null ? mSecureKey : mDevice.secureKey;
-        }
-
-        public void setDevice(NetworkDevice device)
-        {
-            mDevice = device;
         }
 
         public CoolSocket.ActiveConnection handshake(CoolSocket.ActiveConnection activeConnection,
@@ -158,9 +177,9 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
                         .put(Keyword.HANDSHAKE_REQUIRED, true)
                         .put(Keyword.HANDSHAKE_ONLY, handshakeOnly)
                         .put(Keyword.DEVICE_INFO_SERIAL, AppUtils.getDeviceSerial(getContext()))
-                        .put(Keyword.DEVICE_SECURE_KEY, getSecureKey());
+                        .put(Keyword.DEVICE_PIN, mPin);
 
-                AppUtils.applyDeviceToJSON(getContext(), reply);
+                AppUtils.applyDeviceToJSON(getContext(), reply, mDevice != null ? mDevice.secureKey : -1);
 
                 activeConnection.reply(reply.toString());
             } catch (JSONException e) {
@@ -168,18 +187,6 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             }
 
             return activeConnection;
-        }
-
-        public NetworkDevice loadDevice(String ipAddress) throws TimeoutException, IOException,
-                CommunicationException
-        {
-            return loadDevice(InetAddress.getByName(ipAddress));
-        }
-
-        public NetworkDevice loadDevice(InetAddress inetAddress) throws TimeoutException, IOException,
-                CommunicationException
-        {
-            return loadDevice(connectWithHandshake(inetAddress, true));
         }
 
         public NetworkDevice loadDevice(CoolSocket.ActiveConnection activeConnection) throws TimeoutException,
@@ -195,31 +202,51 @@ abstract public class CommunicationBridge implements CoolSocket.Client.Connectio
             }
         }
 
-        public void setSecureKey(int secureKey)
+        public void setDevice(NetworkDevice device)
         {
-            mSecureKey = secureKey;
+            mDevice = device;
         }
 
-        public NetworkDevice updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection,
-                                                NetworkDevice targetDevice) throws IOException, TimeoutException,
-                CommunicationException, DifferentClientException
+        public void setPin(int pin)
+        {
+            mPin = pin;
+        }
+
+        protected void updateDeviceIfOkay(CoolSocket.ActiveConnection activeConnection) throws IOException,
+                TimeoutException, CommunicationException, DifferentClientException
         {
             NetworkDevice loadedDevice = loadDevice(activeConnection);
-            NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice,
-                    activeConnection.getClientAddress());
 
-            if (!targetDevice.id.equals(loadedDevice.id))
+            NetworkDeviceLoader.processConnection(getDatabase(), loadedDevice, activeConnection.getClientAddress());
+
+            if (getDevice() != null && !getDevice().id.equals(loadedDevice.id))
                 throw new DifferentClientException("The target device did not match with the connected one");
-            else {
-                loadedDevice.lastUsageTime = System.currentTimeMillis();
-                loadedDevice.secureKey = getSecureKey();
 
-                mDatabase.publish(loadedDevice);
-                mDatabase.broadcast();
-                setDevice(loadedDevice);
+            if (loadedDevice.clientVersion >= 1) {
+                if (getDevice() == null) {
+                    try {
+                        NetworkDevice existingDevice = new NetworkDevice(loadedDevice.id);
+
+                        AppUtils.getDatabase(getContext()).reconstruct(existingDevice);
+                        setDevice(existingDevice);
+                    } catch (ReconstructionFailedException ignored) {
+                        loadedDevice.secureKey = AppUtils.generateKey();
+                    }
+                }
+
+                if (getDevice() != null) {
+                    loadedDevice.applyPreferences(getDevice());
+
+                    loadedDevice.secureKey = getDevice().secureKey;
+                    loadedDevice.isRestricted = false;
+                }
             }
 
-            return loadedDevice;
+            loadedDevice.lastUsageTime = System.currentTimeMillis();
+
+            mDatabase.publish(loadedDevice);
+            mDatabase.broadcast();
+            setDevice(loadedDevice);
         }
 
         public interface ConnectionHandler

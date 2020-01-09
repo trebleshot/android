@@ -203,9 +203,9 @@ public class TransferAssigneeListFragment extends EditableListFragment<ShowingAs
             int id = item.getItemId();
 
             if (id == R.id.popup_changeChangeConnection) {
-                TransferUtils.changeConnection(getActivity(), assignee.device,
-                        assignee, (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated, TextUtils
-                                .getAdapterName(getContext(), connection)).show());
+                TransferUtils.changeConnection(getActivity(), assignee.device, assignee,
+                        (connection, assignee1) -> createSnackbar(R.string.mesg_connectionUpdated,
+                                TextUtils.getAdapterName(getContext(), connection)).show());
             } else if (id == R.id.popup_remove) {
                 AppUtils.getDatabase(getContext()).removeAsynchronous(getActivity(), assignee);
             } else

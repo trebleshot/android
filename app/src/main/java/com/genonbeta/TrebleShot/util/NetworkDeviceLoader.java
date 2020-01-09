@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class NetworkDeviceLoader
 {
@@ -79,7 +80,9 @@ public class NetworkDeviceLoader
     {
         CommunicationBridge.Client.ConnectionHandler connectionHandler = client -> {
             try {
-                NetworkDevice device = client.loadDevice(ipAddress);
+                client.communicate(InetAddress.getByName(ipAddress), true);
+
+                NetworkDevice device = client.getDevice();
 
                 if (device.id != null) {
                     NetworkDevice localDevice = AppUtils.getLocalDevice(database.getContext());
@@ -87,8 +90,6 @@ public class NetworkDeviceLoader
 
                     if (!localDevice.id.equals(device.id)) {
                         device.lastUsageTime = System.currentTimeMillis();
-
-                        database.publish(device);
 
                         if (listener != null)
                             listener.onDeviceRegistered(database, device, connection);
@@ -125,6 +126,7 @@ public class NetworkDeviceLoader
         device.brand = deviceInfo.getString(Keyword.DEVICE_INFO_BRAND);
         device.model = deviceInfo.getString(Keyword.DEVICE_INFO_MODEL);
         device.nickname = deviceInfo.getString(Keyword.DEVICE_INFO_USER);
+        device.secureKey = deviceInfo.has(Keyword.DEVICE_INFO_KEY) ? deviceInfo.getInt(Keyword.DEVICE_INFO_KEY) : -1;
         device.lastUsageTime = System.currentTimeMillis();
         device.versionCode = appInfo.getInt(Keyword.APP_INFO_VERSION_CODE);
         device.versionName = appInfo.getString(Keyword.APP_INFO_VERSION_NAME);

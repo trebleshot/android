@@ -94,6 +94,11 @@ public class AppUtils
 
     public static void applyDeviceToJSON(Context context, JSONObject object) throws JSONException
     {
+        applyDeviceToJSON(context, object, -1);
+    }
+
+    public static void applyDeviceToJSON(Context context, JSONObject object, int key) throws JSONException
+    {
         NetworkDevice device = getLocalDevice(context);
 
         JSONObject deviceInformation = new JSONObject()
@@ -101,6 +106,11 @@ public class AppUtils
                 .put(Keyword.DEVICE_INFO_BRAND, device.brand)
                 .put(Keyword.DEVICE_INFO_MODEL, device.model)
                 .put(Keyword.DEVICE_INFO_USER, device.nickname);
+
+        if (key >= 0)
+            deviceInformation.put(Keyword.DEVICE_INFO_KEY, key);
+
+        Log.d(TAG, "applyDeviceToJSON: " + deviceInformation + " " + key);
 
         try {
             ByteArrayOutputStream imageBytes = new ByteArrayOutputStream();
@@ -189,6 +199,22 @@ public class AppUtils
         }
 
         return null;
+    }
+
+    public static int generateKey()
+    {
+        return (int) (Integer.MAX_VALUE * Math.random());
+    }
+
+    public static int generateNetworkPin(Context context)
+    {
+        int networkPin = AppUtils.generateKey();
+
+        getDefaultPreferences(context).edit()
+                .putInt(Keyword.NETWORK_PIN, networkPin)
+                .apply();
+
+        return networkPin;
     }
 
     public static TextDrawable.IShapeBuilder getDefaultIconBuilder(Context context)
@@ -290,7 +316,6 @@ public class AppUtils
         device.clientVersion = BuildConfig.CLIENT_VERSION;
         device.versionCode = BuildConfig.VERSION_CODE;
         device.versionName = BuildConfig.VERSION_NAME;
-        device.isRestricted = false;
         device.isLocalAddress = true;
 
         return device;
@@ -339,6 +364,7 @@ public class AppUtils
      * it is heavily used for the {@link android.app.PendingIntent} who asks for unique operation or unique request code
      * to function. In order to get rid of this, first, the notification should be shown in a merged manner meaning each
      * notification should not create an individual notification so that notification actions don't create a collision.
+     *
      * @return A unique integer number that does not mix with the current session.
      */
     public static int getUniqueNumber()

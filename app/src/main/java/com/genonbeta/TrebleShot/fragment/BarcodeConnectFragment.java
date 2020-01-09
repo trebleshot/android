@@ -304,7 +304,6 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
                 } else
                     informer = new UnfamiliarNetwork(new NetworkDescription(ssid, bssid, password));
 
-                informer.qrCode = true;
                 makeAcquaintance(informer, accessPin);
             } else if (jsonObject.has(Keyword.NETWORK_ADDRESS_IP)) {
                 final String bssid = jsonObject.getString(Keyword.NETWORK_BSSID);

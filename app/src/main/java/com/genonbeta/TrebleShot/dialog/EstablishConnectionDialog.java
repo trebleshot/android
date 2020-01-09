@@ -91,24 +91,11 @@ public class EstablishConnectionDialog extends ProgressDialog
 
                                 try {
                                     final long startTime = System.currentTimeMillis();
-                                    final CoolSocket.ActiveConnection activeConnection = client.connect(
-                                            connectionResult.connection);
-                                    final Interrupter.Closer selfCloser = userAction -> {
-                                        try {
-                                            activeConnection.getSocket().close();
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-                                    };
-
-                                    getInterrupter().addCloser(selfCloser);
-
-                                    client.handshake(activeConnection, true);
-                                    client.updateDeviceIfOkay(activeConnection, networkDevice);
-
-                                    getInterrupter().removeCloser(selfCloser);
-
+                                    CoolSocket.ActiveConnection connection = client.connectWithHandshake(
+                                            connectionResult.connection, true);
                                     connectionResult.pingTime = (int) (System.currentTimeMillis() - startTime);
+
+                                    connection.getSocket().close();
                                 } catch (Exception e) {
                                     e.printStackTrace();
                                 } finally {

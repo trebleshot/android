@@ -188,36 +188,27 @@ public class UIConnectionUtils
     }
 
     @WorkerThread
-    public NetworkDevice setupConnection(final Activity activity, final InetAddress inetAddress, final int accessPin,
+    public NetworkDevice setupConnection(final Activity activity, final InetAddress inetAddress, int accessPin,
                                          final NetworkDeviceLoader.OnDeviceRegisteredListener listener,
                                          final DialogInterface.OnClickListener retryButtonListener)
     {
-        int secureKey = (int) (Integer.MAX_VALUE * Math.random());
         return CommunicationBridge.connect(AppUtils.getDatabase(activity), NetworkDevice.class, client -> {
             try {
-                client.setSecureKey(accessPin);
+                client.setPin(accessPin);
 
-                CoolSocket.ActiveConnection activeConnection = client.connectWithHandshake(inetAddress,
-                        false);
-                NetworkDevice device = client.loadDevice(activeConnection);
+                CoolSocket.ActiveConnection activeConnection = client.communicate(inetAddress, false);
 
                 activeConnection.reply(new JSONObject()
                         .put(Keyword.REQUEST, Keyword.REQUEST_ACQUAINTANCE)
                         .toString());
 
+                NetworkDevice device = client.getDevice();
                 JSONObject receivedReply = new JSONObject(activeConnection.receive().response);
 
                 if (receivedReply.has(Keyword.RESULT) && receivedReply.getBoolean(Keyword.RESULT)
                         && device.id != null) {
                     final DeviceConnection connection = NetworkDeviceLoader.processConnection(
                             AppUtils.getDatabase(activity), device, inetAddress.getHostAddress());
-
-                    device.lastUsageTime = System.currentTimeMillis();
-                    device.secureKey = accessPin;
-                    device.isRestricted = false;
-                    device.isTrusted = true;
-
-                    AppUtils.getDatabase(activity).publish(device);
 
                     if (listener != null)
                         listener.onDeviceRegistered(AppUtils.getDatabase(activity), device, connection);

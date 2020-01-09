@@ -206,7 +206,6 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
     public static class NetworkSpecifier<T> extends EditableNetworkDevice
     {
         public T object;
-        public boolean qrCode = false;
 
         public NetworkSpecifier(String nickname, T object)
         {

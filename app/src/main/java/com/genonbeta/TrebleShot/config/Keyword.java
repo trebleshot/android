@@ -56,8 +56,9 @@ public class Keyword
             DEVICE_INFO_BRAND = "brand",
             DEVICE_INFO_MODEL = "model",
             DEVICE_INFO_USER = "user",
+            DEVICE_INFO_KEY = "key", // Introduced in 99
             DEVICE_INFO_PICTURE = "devicePicture",
-            DEVICE_SECURE_KEY = "secureKey",
+            DEVICE_PIN = "pin", // Introduced in 99
             APP_INFO = "appInfo",
             APP_INFO_VERSION_NAME = "versionName",
             APP_INFO_VERSION_CODE = "versionCode",
@@ -78,7 +79,6 @@ public class Keyword
             NETWORK_KEYMGMT = "ntKeyMgmt",
             NETWORK_BSSID = "bsid",
             NETWORK_ADDRESS_IP = "ipAdr",
-            FLAG_TRANSFER_QR_CONNECTION = "flagTransferQRConnection",
             STUB = "stub";
 
     public enum Flavor

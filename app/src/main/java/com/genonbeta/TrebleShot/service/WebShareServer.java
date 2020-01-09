@@ -119,7 +119,6 @@ public class WebShareServer extends NanoHTTPD
             device.versionCode = mThisDevice.versionCode;
             device.versionName = mThisDevice.versionName;
             device.nickname = clientAddress;
-            device.isRestricted = false;
             device.type = NetworkDevice.Type.WEB;
         }
 
