@@ -26,7 +26,6 @@ import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
-import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.TrebleShot.object.*;
@@ -70,8 +69,6 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
 
         CommunicationBridge.connect(AppUtils.getDatabase(getService()), true,
                 client -> {
-                    client.setDevice(mDevice);
-
                     try {
                         boolean doUpdate = false;
                         final JSONObject jsonRequest = new JSONObject();
@@ -95,12 +92,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                         } catch (Exception ignored) {
                         }
 
-                        if (mDevice instanceof NetworkDeviceListAdapter.HotspotNetwork
-                                && ((NetworkDeviceListAdapter.HotspotNetwork) mDevice).qrCode)
-                            jsonRequest.put(Keyword.FLAG_TRANSFER_QR_CONNECTION, true);
-
-                        jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER);
-                        jsonRequest.put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
+                        jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER)
+                                .put(Keyword.TRANSFER_GROUP_ID, mGroup.id);
 
                         if (existingRegistry.size() == 0)
                             throw new Exception("Empty share holder id: " + mGroup.id);
@@ -117,10 +110,10 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             JSONObject thisJson = new JSONObject();
 
                             try {
-                                thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name);
-                                thisJson.put(Keyword.INDEX_FILE_SIZE, transferObject.size);
-                                thisJson.put(Keyword.TRANSFER_REQUEST_ID, transferObject.id);
-                                thisJson.put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
+                                thisJson.put(Keyword.INDEX_FILE_NAME, transferObject.name)
+                                        .put(Keyword.INDEX_FILE_SIZE, transferObject.size)
+                                        .put(Keyword.TRANSFER_REQUEST_ID, transferObject.id)
+                                        .put(Keyword.INDEX_FILE_MIME, transferObject.mimeType);
 
                                 if (transferObject.directory != null)
                                     thisJson.put(Keyword.INDEX_DIRECTORY, transferObject.directory);

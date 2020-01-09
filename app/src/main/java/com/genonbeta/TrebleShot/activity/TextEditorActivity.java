@@ -214,20 +214,19 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
 
             startActivity(Intent.createChooser(shareIntent, getString(R.string.text_fileShareAppChoose)));
         } else if (id == R.id.menu_action_share_trebleshot) {
-            startActivityForResult(
-                    new Intent(TextEditorActivity.this, AddDeviceActivity.class)
-                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE, AddDeviceActivity.RequestType.RETURN_RESULT),
-                    REQUEST_CODE_CHOOSE_DEVICE);
+            startActivityForResult(new Intent(TextEditorActivity.this, AddDeviceActivity.class)
+                            .putExtra(AddDeviceActivity.EXTRA_REQUEST_TYPE,
+                                    AddDeviceActivity.RequestType.RETURN_RESULT), REQUEST_CODE_CHOOSE_DEVICE);
         } else if (id == R.id.menu_action_show_as_qr_code) {
             if (mEditTextEditor.length() > 0 && mEditTextEditor.length() <= 1200) {
                 MultiFormatWriter formatWriter = new MultiFormatWriter();
+
                 try {
                     BitMatrix bitMatrix = formatWriter.encode(mEditTextEditor.getText().toString(),
                             BarcodeFormat.QR_CODE, 800, 800);
 
                     BarcodeEncoder encoder = new BarcodeEncoder();
                     Bitmap bitmap = encoder.createBitmap(bitMatrix);
-
                     BottomSheetDialog dialog = new BottomSheetDialog(this);
 
                     View view = LayoutInflater.from(this).inflate(R.layout.layout_show_text_as_qr_code, null);
@@ -237,9 +236,8 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                             .load(bitmap)
                             .into(qrImage);
 
-                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
-                    );
+                    ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT);
 
                     dialog.setTitle(R.string.butn_showAsQrCode);
                     dialog.setContentView(view, params);
@@ -282,21 +280,17 @@ public class TextEditorActivity extends Activity implements SnackbarSupport
                         doCommunicate(device, connection);
 
                 CommunicationBridge.connect(getDatabase(), true, client -> {
-                    client.setDevice(device);
-
                     try {
-                        final JSONObject jsonRequest = new JSONObject();
-                        final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
-                        jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD);
-                        jsonRequest.put(Keyword.TRANSFER_CLIPBOARD_TEXT, mEditTextEditor.getText().toString());
+                        final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
+                        final JSONObject jsonRequest = new JSONObject()
+                                .put(Keyword.REQUEST, Keyword.REQUEST_CLIPBOARD)
+                                .put(Keyword.TRANSFER_CLIPBOARD_TEXT, mEditTextEditor.getText().toString());
 
                         activeConnection.reply(jsonRequest.toString());
 
-                        CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                        JSONObject clientResponse = new JSONObject(activeConnection.receive().response);
                         activeConnection.getSocket().close();
-
-                        JSONObject clientResponse = new JSONObject(response.response);
 
                         if (clientResponse.has(Keyword.RESULT) && clientResponse.getBoolean(Keyword.RESULT))
                             createSnackbar(R.string.mesg_sent).show();

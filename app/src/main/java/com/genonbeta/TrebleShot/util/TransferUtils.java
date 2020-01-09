@@ -304,8 +304,7 @@ public class TransferUtils
                         AppUtils.getDatabase(activity));
 
                 try {
-                    final CoolSocket.ActiveConnection activeConnection = client.communicate(device,
-                            connection);
+                    final CoolSocket.ActiveConnection activeConnection = client.communicate(device, connection);
 
                     Interrupter.Closer connectionCloser = userAction -> {
                         try {
@@ -317,18 +316,15 @@ public class TransferUtils
 
                     getInterrupter().addCloser(connectionCloser);
 
-                    JSONObject jsonRequest = new JSONObject();
-
-                    jsonRequest.put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB);
-                    jsonRequest.put(Keyword.TRANSFER_GROUP_ID, assignee.groupId);
+                    JSONObject jsonRequest = new JSONObject()
+                            .put(Keyword.REQUEST, Keyword.REQUEST_TRANSFER_JOB)
+                            .put(Keyword.TRANSFER_GROUP_ID, assignee.groupId);
 
                     activeConnection.reply(jsonRequest.toString());
 
-                    final CoolSocket.ActiveConnection.Response response = activeConnection.receive();
+                    final JSONObject responseJSON = new JSONObject(activeConnection.receive().response);
                     activeConnection.getSocket().close();
                     getInterrupter().removeCloser(connectionCloser);
-
-                    final JSONObject responseJSON = new JSONObject(response.response);
 
                     if (!responseJSON.getBoolean(Keyword.RESULT) && !activity.isFinishing())
                         activity.runOnUiThread(() -> {
@@ -432,7 +428,8 @@ public class TransferUtils
                     activity.runOnUiThread(() -> {
                         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
-                        builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation, FileUtils.getReadableUri(group.savePath)));
+                        builder.setMessage(context.getString(R.string.mesg_notSavingToChosenLocation,
+                                FileUtils.getReadableUri(group.savePath)));
                         builder.setNegativeButton(R.string.butn_close, null);
 
                         builder.setPositiveButton(R.string.butn_saveAnyway,
