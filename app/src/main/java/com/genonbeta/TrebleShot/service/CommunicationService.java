@@ -169,7 +169,6 @@ public class CommunicationService extends Service
                 }
             });
 
-
         try {
             mWebShareServer = new WebShareServer(this, AppConfig.SERVER_PORT_WEBSHARE);
             mWebShareServer.setAsyncRunner(new WebShareServer.BoundRunner(

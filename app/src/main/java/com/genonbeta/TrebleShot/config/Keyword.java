@@ -79,7 +79,7 @@ public class Keyword
             NETWORK_KEYMGMT = "ntKeyMgmt",
             NETWORK_BSSID = "bsid",
             NETWORK_ADDRESS_IP = "ipAdr",
-            STUB = "stub";
+            STUB = "stub"; // This keyword has meaning other than helping keep the communication process unblocked
 
     public enum Flavor
     {
