@@ -17,27 +17,27 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <PreferenceCategory
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory
         android:title="@string/text_notification">
 
-        <CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_vibrate"
             android:summary="@string/text_useVibrationSummary"
             android:title="@string/text_useVibration"/>
 
-        <CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_sound"
             android:summary="@string/text_useSoundsSummary"
             android:title="@string/text_useSounds"/>
 
-        <CheckBoxPreference
+        <androidx.preference.CheckBoxPreference
             android:defaultValue="true"
             android:key="notification_light"
             android:summary="@string/text_useLightSummary"
             android:title="@string/text_useLights"/>
 
-    </PreferenceCategory>
-</PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

@@ -17,18 +17,18 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceCategory
-        android:title="@string/text_notification">
+            android:title="@string/text_notification">
         <PreferenceScreen
-            android:summary="@string/text_notificationSettingsSummary"
-            android:title="@string/text_notificationSettings">
+                android:summary="@string/text_notificationSettingsSummary"
+                android:title="@string/text_notificationSettings">
             <intent android:action="android.settings.APP_NOTIFICATION_SETTINGS">
                 <extra
-                    android:name="android.provider.extra.APP_PACKAGE"
-                    android:value="@string/conf_packageName"/>
+                        android:name="android.provider.extra.APP_PACKAGE"
+                        android:value="@string/conf_packageName"/>
             </intent>
         </PreferenceScreen>
     </PreferenceCategory>
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

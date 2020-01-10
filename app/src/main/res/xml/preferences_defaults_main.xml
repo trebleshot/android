@@ -17,79 +17,79 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="scan_devices_auto"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="trust_always"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="hotspot_trust"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="kill_service_on_exit"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="qr_trust" />
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_vibrate"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_sound"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_light"/>
     
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_vibrate"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_sound"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="notification_light"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="nsd_enabled"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="developer_mode"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="custom_fonts"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="allow_autoconnect"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="show_system_apps"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="false"
         android:key="dark_theme"/>
 
-    <CheckBoxPreference
+    <androidx.preference.CheckBoxPreference
         android:defaultValue="true"
         android:key="load_thumbnails" />
 
 
-</PreferenceScreen>
+</androidx.preference.PreferenceScreen>

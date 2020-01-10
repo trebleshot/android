@@ -1258,8 +1258,8 @@ public class CommunicationService extends Service
                     CoolSocket.ActiveConnection.Response response = holder.activeConnection.receive();
                     JSONObject responseJSON = new JSONObject(response.response);
 
-                    Log.d(TAG, "startTransferAsClient(): " + holder.type.toString()
-                            + "; About to start with " + response.response);
+                    Log.d(TAG, "startTransferAsClient(): " + holder.type.toString() + "; About to start with "
+                            + response.response);
 
                     if (responseJSON.getBoolean(Keyword.RESULT)) {
                         holder.attemptsLeft = 2;

@@ -16,49 +16,55 @@
   ~ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
   -->
 
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
-    <PreferenceCategory android:title="@string/text_application">
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="dark_theme"
-            android:summary="@string/text_applyDarkThemeSummary"
-            android:title="@string/text_applyDarkTheme" />
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+                                      xmlns:app="http://schemas.android.com/apk/res-auto"
+                                      xmlns:tools="http://schemas.android.com/tools">
+    <androidx.preference.PreferenceCategory android:title="@string/text_application">
+        <androidx.preference.CheckBoxPreference
+                android:defaultValue="false"
+                android:icon="@drawable/ic_palette_white_24dp"
+                android:key="dark_theme"
+                android:summary="@string/text_applyDarkThemeSummary"
+                android:title="@string/text_applyDarkTheme" />
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:dependency="dark_theme"
-            android:key="amoled_theme"
-            android:summary="@string/text_amoledOptimizedBlackThemeSummary"
-            android:title="@string/text_amoledOptimizedBlackTheme" />
+        <androidx.preference.CheckBoxPreference
+                android:defaultValue="false"
+                android:dependency="dark_theme"
+                android:icon="@drawable/ic_invert_colors_black_24dp"
+                android:key="amoled_theme"
+                android:summary="@string/text_amoledOptimizedBlackThemeSummary"
+                android:title="@string/text_amoledOptimizedBlackTheme" />
 
-        <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="custom_fonts"
-            android:summary="@string/const_text_useAppFontsSummary"
-            android:title="@string/const_text_useAppFonts"
-            tools:targetApi="16" />
+        <androidx.preference.CheckBoxPreference
+                android:defaultValue="false"
+                android:icon="@drawable/ic_short_text_white_24dp"
+                android:key="custom_fonts"
+                android:summary="@string/const_text_useAppFontsSummary"
+                android:title="@string/const_text_useAppFonts"
+                tools:targetApi="16" />
 
-        <CheckBoxPreference
-            android:defaultValue="@bool/genfw_screen_isLarge"
-            android:key="two_row_layout"
-            android:summary="@string/text_twoRowLayoutSummary"
-            android:title="@string/text_twoRowLayout"
-            app:isPreferenceVisible="@bool/genfw_screen_isLarge" />
+        <androidx.preference.CheckBoxPreference
+                android:defaultValue="@bool/genfw_screen_isLarge"
+                android:icon="@drawable/ic_view_column_white_24dp"
+                android:key="two_row_layout"
+                android:summary="@string/text_twoRowLayoutSummary"
+                android:title="@string/text_twoRowLayout"
+                app:isPreferenceVisible="@bool/genfw_screen_isLarge" />
 
-        <EditTextPreference
-            android:dialogTitle="@string/text_deviceNameTitle"
-            android:inputType="text"
-            android:key="device_name"
-            android:maxLength="32"
-            android:summary="@string/text_deviceNameSummary"
-            android:title="@string/text_deviceName" />
+        <androidx.preference.EditTextPreference
+                android:dialogTitle="@string/text_deviceNameTitle"
+                android:inputType="text"
+                android:icon="@drawable/ic_edit_white_24dp"
+                android:key="device_name"
+                android:maxLength="32"
+                android:summary="@string/text_deviceNameSummary"
+                android:title="@string/text_deviceName" />
 
-        <PreferenceScreen
-            android:summary="@string/text_storagePathSummary"
-            android:title="@string/text_storagePath">
+        <androidx.preference.PreferenceScreen
+                android:icon="@drawable/ic_save_white_24dp"
+                android:summary="@string/text_storagePathSummary"
+                android:title="@string/text_storagePath">
             <intent android:action="com.genonbeta.intent.action.UPDATE_STORAGE_PATH" />
-        </PreferenceScreen>
-    </PreferenceCategory>
-</PreferenceScreen>
+        </androidx.preference.PreferenceScreen>
+    </androidx.preference.PreferenceCategory>
+</androidx.preference.PreferenceScreen>

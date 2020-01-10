@@ -18,7 +18,7 @@
   -->
 
 <resources>
-    <array name="theme_options">
+    <array name="theme_option_list">
         <item>dark</item>
         <item>light</item>
         <item>follow_system</item>
