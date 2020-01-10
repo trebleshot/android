@@ -22,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.fragment.inner.LookPreferencesFragment;
 
 public class PreferencesFragment extends PreferenceFragmentCompat
 {
@@ -31,5 +32,7 @@ public class PreferencesFragment extends PreferenceFragmentCompat
         addPreferencesFromResource(R.xml.preferences_main_app);
         addPreferencesFromResource(R.xml.preferences_main_notification);
         addPreferencesFromResource(R.xml.preferences_main_advanced);
+
+        LookPreferencesFragment.loadThemeOptionsTo(getContext(), findPreference("theme"));
     }
 }

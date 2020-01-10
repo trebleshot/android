@@ -502,4 +502,8 @@
         product. For more details, please refer to the source code.
     </string>
     <string name="text_uiTheme">Theme</string>
+    <string name="text_darkTheme">Dark</string>
+    <string name="text_lightTheme">Light</string>
+    <string name="text_followSystemTheme">Follow system theme</string>
+    <string name="text_batterySaverTheme">Battery Saver decides</string>
 </resources>
