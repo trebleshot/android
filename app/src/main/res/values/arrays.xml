@@ -19,14 +19,16 @@
 
 <resources>
     <array name="theme_option_list">
-        <item>dark</item>
         <item>light</item>
-        <item>follow_system</item>
+        <item>dark</item>
+        <item>system</item>
+        <item>battery</item>
     </array>
 
     <string-array name="theme_option_strings">
-        <item>Dark</item>
         <item>Light</item>
+        <item>Dark</item>
         <item>Follow system theme</item>
+        <item>Battery saver decides</item>
     </string-array>
 </resources>

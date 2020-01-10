@@ -180,11 +180,17 @@ public class WelcomeActivity extends Activity
     }
 
     @Override
+    protected void onStart()
+    {
+        super.onStart();
+        slideSplashView();
+    }
+
+    @Override
     protected void onResume()
     {
         super.onResume();
 
-        slideSplashView();
         setUserProfile();
         checkPermissionsState();
     }

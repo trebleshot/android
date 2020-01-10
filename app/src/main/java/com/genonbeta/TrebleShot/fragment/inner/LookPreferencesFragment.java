@@ -23,8 +23,7 @@ import android.os.Bundle;
 import androidx.preference.PreferenceFragmentCompat;
 import com.genonbeta.TrebleShot.R;
 
-public class LookPreferencesFragment
-        extends PreferenceFragmentCompat
+public class LookPreferencesFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener
 {
     @Override
@@ -56,12 +55,8 @@ public class LookPreferencesFragment
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key)
     {
-        if (("custom_fonts".equals(key) || "dark_theme".equals(key) || "amoled_theme".equals(key))
-                && getActivity() != null) {
-            /*PreferenceUtils.syncPreferences(AppUtils.getDefaultLocalPreferences(getContext()),
-                    AppUtils.getDefaultPreferences(getContext()).getWeakManager());*/
-
+        if (("custom_fonts".equals(key) || "theme".equals(key) || "amoled_theme".equals(key))
+                && getActivity() != null)
             getActivity().recreate();
-        }
     }
 }

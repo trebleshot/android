@@ -20,17 +20,20 @@
 <androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                                       xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <androidx.preference.CheckBoxPreference
-            android:defaultValue="false"
-            android:key="dark_theme"
-            android:title="@string/text_applyDarkTheme"
-            app:icon="@drawable/ic_palette_white_24dp" />
+    <androidx.preference.ListPreference
+            android:defaultValue="light"
+            android:key="theme"
+            android:title="@string/text_uiTheme"
+            android:summary="%s"
+            android:icon="@drawable/ic_palette_white_24dp"
+            android:entries="@array/theme_option_strings"
+            android:entryValues="@array/theme_option_list"/>
 
     <androidx.preference.CheckBoxPreference
-            android:dependency="dark_theme"
             android:defaultValue="false"
             android:icon="@drawable/ic_invert_colors_black_24dp"
             android:key="amoled_theme"
+            android:summary="@string/text_amoledOptimizedBlackThemeSummary"
             android:title="@string/text_amoledOptimizedBlackTheme" />
 
     <androidx.preference.CheckBoxPreference

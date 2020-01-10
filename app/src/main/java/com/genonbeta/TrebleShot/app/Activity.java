@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.app;
 
 import android.content.*;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,6 +29,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.util.Log;
 import android.widget.ImageView;
 import androidx.annotation.NonNull;
@@ -60,9 +62,13 @@ import java.util.List;
 
 public abstract class Activity extends AppCompatActivity
 {
+    public static final String ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED = "android.os.action.POWER_SAVE_MODE_CHANGED";
+
     public static final int REQUEST_PICK_PROFILE_PHOTO = 1000;
+
     private final List<WorkerService.RunningTask> mAttachedTasks = new ArrayList<>();
     private AlertDialog mOngoingRequest;
+    private IntentFilter mFilter = new IntentFilter();
     private boolean mDarkThemeRequested = false;
     private boolean mAmoledDarkThemeRequested = false;
     private boolean mThemeLoadingFailed = false;
@@ -70,12 +76,24 @@ public abstract class Activity extends AppCompatActivity
     private boolean mSkipPermissionRequest = false;
     private boolean mWelcomePageDisallowed = false;
 
+    private BroadcastReceiver mReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if (ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED.equals(intent.getAction()))
+                checkForThemeChange();
+        }
+    };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState)
     {
         mDarkThemeRequested = isDarkThemeRequested();
         mAmoledDarkThemeRequested = isAmoledDarkThemeRequested();
         mCustomFontsEnabled = isUsingCustomFonts();
+
+        mFilter.addAction(ACTION_SYSTEM_POWER_SAVE_MODE_CHANGED);
 
         if (mDarkThemeRequested) {
             try {
@@ -135,10 +153,10 @@ public abstract class Activity extends AppCompatActivity
     {
         super.onResume();
 
-        if (((mDarkThemeRequested != isDarkThemeRequested() || (isDarkThemeRequested()
-                && mAmoledDarkThemeRequested != isAmoledDarkThemeRequested())) && !mThemeLoadingFailed)
-                || mCustomFontsEnabled != isUsingCustomFonts())
-            recreate();
+        checkForThemeChange();
+
+        if (Build.VERSION.SDK_INT >= 23)
+            registerReceiver(mReceiver, mFilter);
 
         if (!hasIntroductionShown() && !mWelcomePageDisallowed) {
             startActivity(new Intent(this, WelcomeActivity.class));
@@ -147,6 +165,15 @@ public abstract class Activity extends AppCompatActivity
             if (!mSkipPermissionRequest)
                 requestRequiredPermissions(true);
         }
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+
+        if (Build.VERSION.SDK_INT >= 23)
+            unregisterReceiver(mReceiver);
     }
 
     @Override
@@ -310,6 +337,23 @@ public abstract class Activity extends AppCompatActivity
         }
     }
 
+    public boolean isPowerSaveMode()
+    {
+        if (android.os.Build.VERSION.SDK_INT < 23)
+            return false;
+
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        return powerManager != null && powerManager.isPowerSaveMode();
+    }
+
+    public void checkForThemeChange()
+    {
+        if (((mDarkThemeRequested != isDarkThemeRequested() || (isDarkThemeRequested()
+                && mAmoledDarkThemeRequested != isAmoledDarkThemeRequested())) && !mThemeLoadingFailed)
+                || mCustomFontsEnabled != isUsingCustomFonts())
+            recreate();
+    }
+
     public boolean checkForTasks()
     {
         ServiceConnection serviceConnection = new ServiceConnection()
@@ -380,7 +424,11 @@ public abstract class Activity extends AppCompatActivity
 
     public boolean isDarkThemeRequested()
     {
-        return getDefaultPreferences().getBoolean("dark_theme", false);
+        String value = getDefaultPreferences().getString("theme", "light");
+        int systemWideTheme = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+
+        return "dark".equals(value) || ("system".equals(value) && systemWideTheme == Configuration.UI_MODE_NIGHT_YES)
+                || ("battery".equals(value) && isPowerSaveMode());
     }
 
     public boolean isUsingCustomFonts()
