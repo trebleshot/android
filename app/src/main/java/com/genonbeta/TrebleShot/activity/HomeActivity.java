@@ -262,7 +262,7 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
             });
             builder.show();
         } else if (R.id.menu_activity_feedback == mChosenMenuItemId) {
-            AppUtils.createFeedbackIntent(HomeActivity.this);
+            AppUtils.startFeedbackActivity(HomeActivity.this);
         } else if (R.id.menu_activity_main_crash_test == mChosenMenuItemId) {
             throw new NullPointerException("The crash was intentional, since 'Crash now' was called");
         } else if (R.id.menu_activity_main_db_migration == mChosenMenuItemId) {

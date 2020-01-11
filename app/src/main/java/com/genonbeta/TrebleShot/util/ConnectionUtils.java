@@ -19,16 +19,15 @@
 package com.genonbeta.TrebleShot.util;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
-import android.net.wifi.ScanResult;
-import android.net.wifi.WifiConfiguration;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
+import android.net.wifi.*;
 import android.os.Build;
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -42,6 +41,7 @@ import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.*;
@@ -151,8 +151,7 @@ public class ConnectionUtils
         return false;
     }
 
-    public InetAddress establishHotspotConnection(final Interrupter interrupter,
-                                                  final NetworkSpecifier hotspotNetwork,
+    public InetAddress establishHotspotConnection(final Interrupter interrupter, final NetworkSpecifier hotspotNetwork,
                                                   final ConnectionCallback connectionCallback)
     {
         return establishHotspotConnection(interrupter, hotspotNetwork, connectionCallback, (short) 4);
@@ -168,7 +167,7 @@ public class ConnectionUtils
         final long startTime = System.currentTimeMillis();
 
         InetAddress address = null;
-        boolean connectionToggled = false;
+        boolean connectionToggled = specifier instanceof NetworkSuggestion; // suggestions comes pretested and initiated
 
         while (true) {
             int passedTime = (int) (System.currentTimeMillis() - startTime);
@@ -205,10 +204,6 @@ public class ConnectionUtils
                     && !connectionToggled) {
                 Log.d(TAG, "establishHotspotConnection(): Requested network toggle");
                 connectionToggled = toggleConnection((HotspotNetwork) specifier);
-            } else if (specifier instanceof NetworkSuggestion && !connectionToggled) {
-                Log.d(TAG, "establishHotspotConnection: A network suggestion. Hm. Android 10?");
-                connectionToggled = true;
-                // TODO: 1/1/20 Implement wifi network suggestion for Android 10
             } else if (wifiDhcpInfo.gateway != 0) {
                 try {
                     Inet4Address testAddress = NetworkUtils.convertInet4Address(wifiDhcpInfo.gateway);
@@ -413,6 +408,14 @@ public class ConnectionUtils
         disableCurrentNetwork();
 
         return false;
+    }
+
+    @TargetApi(29)
+    public int suggestNetwork(NetworkSuggestion suggestion) {
+        final List<WifiNetworkSuggestion> suggestions = new ArrayList<>();
+        suggestions.add(suggestion.object);
+
+        return getWifiManager().addNetworkSuggestions(suggestions);
     }
 
     /**

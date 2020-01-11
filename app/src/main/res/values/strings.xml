@@ -506,4 +506,14 @@
     <string name="text_lightTheme">Light</string>
     <string name="text_followSystemTheme">Follow system theme</string>
     <string name="text_batterySaverTheme">Battery Saver decides</string>
+    <string name="text_errorExceededMaximumSuggestions">The maximum number of networks that can be added by TrebleShot
+        exceeded. Please, previously removed added unused networks to continue.
+    </string>
+    <string name="butn_openSettings">Open settings</string>
+    <string name="text_errorNetworkSuggestionsDisallowed">TrebleShot disallowed to suggest networks. For this feature to
+        work as intended, please allow it in the settings.
+    </string>
+    <string name="text_errorNetworkSuggestionInternal">Failed to add network specifications due to some internal
+        error.
+    </string>
 </resources>

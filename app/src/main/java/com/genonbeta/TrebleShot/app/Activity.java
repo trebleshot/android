@@ -413,8 +413,7 @@ public abstract class Activity extends AppCompatActivity
 
     public boolean hasIntroductionShown()
     {
-        return getDefaultPreferences().
-                getBoolean("introduction_shown", false);
+        return getDefaultPreferences().getBoolean("introduction_shown", false);
     }
 
     public boolean isAmoledDarkThemeRequested()
@@ -433,8 +432,7 @@ public abstract class Activity extends AppCompatActivity
 
     public boolean isUsingCustomFonts()
     {
-        return getDefaultPreferences().getBoolean("custom_fonts", false)
-                && Build.VERSION.SDK_INT >= 16;
+        return getDefaultPreferences().getBoolean("custom_fonts", false) && Build.VERSION.SDK_INT >= 16;
     }
 
     public void loadProfilePictureInto(String deviceName, ImageView imageView)

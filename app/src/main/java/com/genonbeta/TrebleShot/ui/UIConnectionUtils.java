@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -34,6 +35,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.genonbeta.CoolSocket.CoolSocket;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter;
+import com.genonbeta.TrebleShot.adapter.NetworkDeviceListAdapter.NetworkSuggestion;
 import com.genonbeta.TrebleShot.config.Keyword;
 import com.genonbeta.TrebleShot.object.DeviceConnection;
 import com.genonbeta.TrebleShot.object.NetworkDevice;
@@ -91,14 +93,11 @@ public class UIConnectionUtils
     public static void showUnknownError(final Activity activity,
                                         final DialogInterface.OnClickListener retryButtonListener)
     {
-        new Handler(Looper.getMainLooper()).post(() -> {
-            if (!activity.isFinishing())
-                new AlertDialog.Builder(activity)
-                        .setMessage(R.string.mesg_somethingWentWrong)
-                        .setNegativeButton(R.string.butn_close, null)
-                        .setPositiveButton(R.string.butn_retry, retryButtonListener)
-                        .show();
-        });
+        postDialog(activity, new AlertDialog.Builder(activity)
+                .setMessage(R.string.mesg_somethingWentWrong)
+                .setNegativeButton(R.string.butn_close, null)
+                .setPositiveButton(R.string.butn_retry, retryButtonListener)
+                .create());
     }
 
     public ConnectionUtils getConnectionUtils()
@@ -126,12 +125,51 @@ public class UIConnectionUtils
                         activity, task, object, accessPin, registerListener);
 
                 try {
-                    if (object instanceof NetworkDeviceListAdapter.HotspotNetwork
-                            || object instanceof NetworkDeviceListAdapter.UnfamiliarNetwork)
-                        mAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
-                                (NetworkDeviceListAdapter.NetworkSpecifier) object,
-                                (delimiter, timePassed) -> timePassed >= 30000);
-                    else if (object instanceof InetAddress)
+                    if (object instanceof NetworkDeviceListAdapter.NetworkSpecifier) {
+                        boolean canContinue = true;
+
+                        if (object instanceof NetworkSuggestion) {
+                            // We might have used WifiManager.ACTION_WIFI_NETWORK_SUGGESTION_POST_CONNECTION intent
+                            // to proceed, but as we are already going to do concurrent task, it should become available
+                            // during that period.
+                            final int status = getConnectionUtils().suggestNetwork((NetworkSuggestion) object);
+
+                            if (status != WifiManager.STATUS_NETWORK_SUGGESTIONS_SUCCESS
+                                    && status != WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_DUPLICATE) {
+                                canContinue = false;
+
+                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                                        .setTitle(R.string.text_error)
+                                        .setNegativeButton(R.string.butn_close, null);
+
+                                switch (status) {
+                                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_ADD_EXCEEDS_MAX_PER_APP:
+                                        dialogBuilder.setMessage(R.string.text_errorExceededMaximumSuggestions)
+                                                .setPositiveButton(R.string.butn_openSettings,
+                                                        (dialog, which) -> activity.startActivity(new Intent(
+                                                                Settings.ACTION_WIFI_SETTINGS)));
+                                        break;
+                                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_APP_DISALLOWED:
+                                        dialogBuilder.setMessage(R.string.text_errorNetworkSuggestionsDisallowed)
+                                                .setPositiveButton(R.string.butn_openSettings,
+                                                        (dialog, which) -> AppUtils.startApplicationDetails(activity));
+
+                                    case WifiManager.STATUS_NETWORK_SUGGESTIONS_ERROR_INTERNAL:
+                                        dialogBuilder.setMessage(R.string.text_errorNetworkSuggestionInternal)
+                                                .setPositiveButton(R.string.butn_feedbackContact,
+                                                        (dialog, which) -> AppUtils.startFeedbackActivity(activity));
+                                }
+
+                                postDialog(activity, dialogBuilder.create());
+                            }
+                        }
+
+                        if (canContinue) {
+                            mAddress = getConnectionUtils().establishHotspotConnection(getInterrupter(),
+                                    (NetworkDeviceListAdapter.NetworkSpecifier) object,
+                                    (delimiter, timePassed) -> timePassed >= 30000);
+                        }
+                    } else if (object instanceof InetAddress)
                         mAddress = (InetAddress) object;
                     else if (object instanceof DeviceConnection)
                         mAddress = ((DeviceConnection) object).toInet4Address();
@@ -146,20 +184,17 @@ public class UIConnectionUtils
                         }, retryButtonListener) != null;
                     }
 
-                    if (!mConnected && !getInterrupter().interruptedByUser())
-                        new Handler(Looper.getMainLooper()).post(() -> {
-                            if (!activity.isFinishing()) {
-                                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
-                                        .setMessage(R.string.mesg_connectionFailure)
-                                        .setNegativeButton(R.string.butn_close, null)
-                                        .setPositiveButton(R.string.butn_retry, retryButtonListener);
+                    if (!mConnected && !getInterrupter().interruptedByUser()) {
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity)
+                                .setMessage(R.string.mesg_connectionFailure)
+                                .setNegativeButton(R.string.butn_close, null)
+                                .setPositiveButton(R.string.butn_retry, retryButtonListener);
 
-                                if (object instanceof NetworkDevice)
-                                    dialogBuilder.setTitle(((NetworkDevice) object).nickname);
+                        if (object instanceof NetworkDevice)
+                            dialogBuilder.setTitle(((NetworkDevice) object).nickname);
 
-                                dialogBuilder.show();
-                            }
-                        });
+                        postDialog(activity, dialogBuilder.create());
+                    }
                 } catch (Exception ignored) {
 
                 } finally {
@@ -185,6 +220,15 @@ public class UIConnectionUtils
         mWirelessEnableRequested = false;
 
         return returnedState;
+    }
+
+    public static void postDialog(Activity activity, AlertDialog dialog)
+    {
+        new Handler(Looper.getMainLooper()).post(() -> {
+            if (!activity.isFinishing()) {
+                dialog.show();
+            }
+        });
     }
 
     @WorkerThread

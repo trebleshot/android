@@ -103,7 +103,7 @@ public class AboutActivity extends Activity
         if (id == android.R.id.home) {
             finish();
         } else if (id == R.id.actions_about_feedback) {
-            AppUtils.createFeedbackIntent(AboutActivity.this);
+            AppUtils.startFeedbackActivity(AboutActivity.this);
         } else
             return super.onOptionsItemSelected(item);
 

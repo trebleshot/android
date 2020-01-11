@@ -19,16 +19,13 @@
 package com.genonbeta.TrebleShot.dialog;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
-import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
+import com.genonbeta.TrebleShot.util.AppUtils;
 
 import static com.genonbeta.TrebleShot.activity.HomeActivity.REQUEST_PERMISSION_ALL;
 
@@ -53,13 +50,7 @@ public class RationalePermissionRequest extends AlertDialog.Builder
         setMessage(permission.message);
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, mPermissionQueue.permission))
-            setNeutralButton(R.string.butn_settings, (dialogInterface, i) -> {
-                Intent intent = new Intent()
-                        .setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                        .setData(Uri.fromParts("package", activity.getPackageName(), null));
-
-                activity.startActivity(intent);
-            });
+            setNeutralButton(R.string.butn_settings, (dialogInterface, i) -> AppUtils.startApplicationDetails(activity));
 
         setPositiveButton(R.string.butn_ask, (dialogInterface, i) -> ActivityCompat.requestPermissions(activity,
                 new String[]{mPermissionQueue.permission}, REQUEST_PERMISSION_ALL));

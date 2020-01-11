@@ -383,8 +383,7 @@ public class BarcodeConnectFragment extends com.genonbeta.android.framework.app.
 
     protected void makeAcquaintance(Object object, int accessPin)
     {
-        mConnectionUtils.makeAcquaintance(getActivity(), BarcodeConnectFragment.this, object, accessPin,
-                mRegisteredListener);
+        mConnectionUtils.makeAcquaintance(getActivity(), this, object, accessPin, mRegisteredListener);
     }
 
     public void setDeviceSelectedListener(NetworkDeviceSelectedListener listener)

@@ -29,7 +29,9 @@ import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.Base64;
 import android.util.Log;
 import android.util.TypedValue;
@@ -128,7 +130,12 @@ public class AppUtils
                 .put(Keyword.DEVICE_INFO, deviceInformation);
     }
 
-    public static void createFeedbackIntent(Activity activity)
+    public static void startApplicationDetails(Activity activity) {
+        activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                .setData(Uri.fromParts("package", activity.getPackageName(), null)));
+    }
+
+    public static void startFeedbackActivity(Activity activity)
     {
         Intent intent = new Intent(Intent.ACTION_SEND)
                 .setType("text/plain")
@@ -299,9 +306,7 @@ public class AppUtils
         String deviceName = getDefaultPreferences(context)
                 .getString("device_name", null);
 
-        return deviceName == null || deviceName.length() == 0
-                ? Build.MODEL.toUpperCase()
-                : deviceName;
+        return deviceName == null || deviceName.length() == 0 ? Build.MODEL.toUpperCase() : deviceName;
     }
 
     public static NetworkDevice getLocalDevice(Context context)
@@ -345,15 +350,6 @@ public class AppUtils
                     R.string.text_requestPermissionStorage,
                     R.string.text_requestPermissionStorageSummary));
         }
-
-        // TODO: 7/28/19 Remove the strings related to the device serial
-		/*
-		if (Build.VERSION.SDK_INT >= 26) {
-			permissionRequests.add(new RationalePermissionRequest.PermissionRequest(context,
-					Manifest.permission.READ_PHONE_STATE,
-					R.string.text_requestPermissionReadPhoneState,
-					R.string.text_requestPermissionReadPhoneStateSummary));
-		}*/
 
         return permissionRequests;
     }

@@ -18,6 +18,7 @@
 
 package com.genonbeta.TrebleShot.adapter;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -247,7 +248,7 @@ public class NetworkDeviceListAdapter extends EditableListAdapter<NetworkDeviceL
         }
     }
 
-    @RequiresApi(29)
+    @TargetApi(29)
     public static class NetworkSuggestion extends NetworkSpecifier<WifiNetworkSuggestion>
     {
         public NetworkSuggestion(String nickname, WifiNetworkSuggestion networkObject)
