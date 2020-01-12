@@ -362,7 +362,6 @@ public abstract class Activity extends AppCompatActivity
             public void onServiceConnected(ComponentName name, IBinder service)
             {
                 WorkerService workerService = ((WorkerService.LocalBinder) service).getService();
-
                 WorkerService.RunningTask task = workerService
                         .findTaskByHash(WorkerService.intentHash(getIntent()));
 

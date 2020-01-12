@@ -25,7 +25,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -66,7 +65,6 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
 
                 lister.offerObliged(this, packageHolder);
             }
-
         }
     }
 

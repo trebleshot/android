@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.AddDevicesToTransferActivity;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
@@ -44,12 +45,15 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
 {
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
+    private List<ShareActivity.FileContainer> mFileContainers;
     private Intent mOriginalIntent;
 
-    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent)
+    public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent,
+                                      @Nullable List<ShareActivity.FileContainer> fileContainers)
     {
         mFileUris = fileUris;
         mFileNames = fileNames;
+        mFileContainers = fileContainers;
         mOriginalIntent = originalIntent;
     }
 
@@ -88,8 +92,7 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
 
                 if (selectableStream.getDocumentFile().isDirectory())
                     ShareActivity.createFolderStructure(selectableStream.getDocumentFile(),
-                            selectableStream.getDocumentFile().getName(), measuredObjects,
-                            this);
+                            selectableStream.getDocumentFile().getName(), measuredObjects, this);
                 else {
                     if (fileName != null)
                         selectableStream.setFriendlyName(fileName);
