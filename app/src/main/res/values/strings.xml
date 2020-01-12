@@ -461,7 +461,8 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">or</string>
     <string name="text_visitWebShareAddress">Visit this link with your browser</string>
-    <string name="text_webShareInfo">Enable web-sharing for transfers individually and visit any web-link shown below with a device that is connected to the same network.</string>
+    <string name="text_webShareInfo">Enable web-sharing for transfers individually and visit any web-link shown below
+        with a device that is connected to the same network.</string>
     <string name="text_dowloadTrebleshotAndroid">Download TrebleShot for Android</string>
     <string name="text_listEmptyConnection">Networks you connect appear here</string>
     <string name="mesg_errorNotAnIpAddress">Not an IP Address
@@ -516,4 +517,5 @@
     <string name="text_errorNetworkSuggestionInternal">Failed to add network specifications due to some internal
         error.
     </string>
+    <string name="text_splitApk">Split APK</string>
 </resources>

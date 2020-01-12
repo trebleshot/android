@@ -116,7 +116,8 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     public boolean onOptionsItemSelected(MenuItem item)
     {
         if (item.getItemId() == R.id.show_system_apps) {
-            boolean isShowingSystem = !AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps", false);
+            boolean isShowingSystem = !AppUtils.getDefaultPreferences(getContext()).getBoolean("show_system_apps",
+                    false);
 
             AppUtils.getDefaultPreferences(getContext()).edit()
                     .putBoolean("show_system_apps", isShowingSystem)

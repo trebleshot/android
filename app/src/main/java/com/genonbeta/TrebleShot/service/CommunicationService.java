@@ -353,8 +353,7 @@ public class CommunicationService extends Service
                 setupHotspot();
             } else if (ACTION_REQUEST_HOTSPOT_STATUS.equals(intent.getAction())) {
                 sendHotspotStatus(getHotspotUtils().getConfiguration());
-            } else if (ACTION_SERVICE_STATUS.equals(intent.getAction())
-                    && intent.hasExtra(EXTRA_STATUS_STARTED)) {
+            } else if (ACTION_SERVICE_STATUS.equals(intent.getAction()) && intent.hasExtra(EXTRA_STATUS_STARTED)) {
                 boolean startRequested = intent.getBooleanExtra(EXTRA_STATUS_STARTED, false);
 
                 if (!startRequested && !hasOngoingTasks()) {
@@ -1163,8 +1162,7 @@ public class CommunicationService extends Service
     private void refreshServiceState()
     {
         startForeground(CommunicationNotificationHelper.SERVICE_COMMUNICATION_FOREGROUND_NOTIFICATION_ID,
-                getNotificationHelper().getCommunicationServiceNotification(
-                        mWebShareServer != null && mWebShareServer.isAlive()).build());
+                getNotificationHelper().getCommunicationServiceNotification().build());
     }
 
     private void sendHotspotStatusDisabling()

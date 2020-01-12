@@ -24,6 +24,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -64,6 +66,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
 
                 lister.offerObliged(this, packageHolder);
             }
+
         }
     }
 
@@ -93,9 +96,12 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
                 ImageView image = parentView.findViewById(R.id.image);
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
+                ViewGroup layoutSplitApk = parentView.findViewById(R.id.layout_split_apk);
+                boolean isSplitApk = Build.VERSION.SDK_INT >= 26 && object.appInfo.splitSourceDirs != null;
 
                 text1.setText(object.friendlyName);
                 text2.setText(object.version);
+                layoutSplitApk.setVisibility(isSplitApk ? View.VISIBLE : View.GONE);
 
                 parentView.setSelected(object.isSelectableSelected());
 
@@ -139,6 +145,12 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
             this.appInfo = appInfo;
             this.version = version;
             this.packageName = packageName;
+        }
+
+        @Override
+        public boolean setSelectableSelected(boolean selected)
+        {
+            return super.setSelectableSelected(selected);
         }
     }
 }

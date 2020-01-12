@@ -22,9 +22,11 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
 import com.genonbeta.TrebleShot.object.TransferGroup;
@@ -37,20 +39,22 @@ import java.io.IOException;
 
 public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
 {
-    public static void copy(Context context, DocumentFile source, DocumentFile destination,
-                            Interrupter interrupter) throws Exception
+    public static void copy(Context context, DocumentFile source, DocumentFile destination, Interrupter interrupter)
+            throws Exception
     {
-        copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
+        copy(context, source, destination, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT,
+                AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
     public static DocumentFile getApplicationDirectory(Context context)
     {
-        String defaultPath = getDefaultApplicationDirectoryPath(context);
+        File defaultPath = getDefaultApplicationDirectoryPath(context);
         SharedPreferences defaultPreferences = AppUtils.getDefaultPreferences(context);
 
         if (defaultPreferences.contains("storage_path")) {
             try {
-                DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path", null)));
+                DocumentFile savePath = fromUri(context, Uri.parse(defaultPreferences.getString("storage_path",
+                        null)));
 
                 if (savePath.isDirectory() && savePath.canWrite())
                     return savePath;
@@ -59,40 +63,43 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
             }
         }
 
-        File defaultFolder = new File(defaultPath);
+        if (defaultPath.isFile())
+            defaultPath.delete();
 
-        if (defaultFolder.isFile())
-            defaultFolder.delete();
+        if (!defaultPath.isDirectory())
+            defaultPath.mkdirs();
 
-        if (!defaultFolder.isDirectory())
-            defaultFolder.mkdirs();
-
-        return DocumentFile.fromFile(defaultFolder);
+        return DocumentFile.fromFile(defaultPath);
     }
 
-    public static String getDefaultApplicationDirectoryPath(Context context)
+    @SuppressWarnings("deprecation")
+    public static File getDefaultApplicationDirectoryPath(Context context)
     {
-        return Environment.getExternalStorageDirectory().getAbsolutePath()
-                + File.separator
-                + context.getString(R.string.text_appName);
+        if (Build.VERSION.SDK_INT >= 29)
+            return context.getNoBackupFilesDir();
+
+        File primaryDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+
+        if ((!primaryDir.isDirectory() && !primaryDir.mkdirs()) || !primaryDir.canWrite())
+            primaryDir = Environment.getExternalStorageDirectory();
+
+        return new File(primaryDir + File.separator + context.getString(R.string.text_appName));
     }
 
     public static String getFileFormat(String fileName)
     {
         final int lastDot = fileName.lastIndexOf('.');
-
-        if (lastDot >= 0)
-            return fileName.substring(lastDot + 1).toLowerCase();
-
-        return null;
+        return lastDot >= 0 ? fileName.substring(lastDot + 1).toLowerCase() : null;
     }
 
-    public static DocumentFile getIncomingPseudoFile(Context context, TransferObject transferObject, TransferGroup group, boolean createIfNotExists) throws IOException
+    public static DocumentFile getIncomingPseudoFile(Context context, TransferObject transferObject,
+                                                     TransferGroup group, boolean createIfNotExists) throws IOException
     {
         return fetchFile(getSavePath(context, group), transferObject.directory, transferObject.file, createIfNotExists);
     }
 
-    public static DocumentFile getIncomingFile(Context context, TransferObject transferObject, TransferGroup group) throws IOException
+    public static DocumentFile getIncomingFile(Context context, TransferObject transferObject, TransferGroup group)
+            throws IOException
     {
         DocumentFile pseudoFile = getIncomingPseudoFile(context, transferObject, group, true);
 
@@ -120,7 +127,8 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
     public static boolean move(Context context, DocumentFile targetFile, DocumentFile destinationFile,
                                Interrupter interrupter) throws Exception
     {
-        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT, AppConfig.DEFAULT_SOCKET_TIMEOUT);
+        return move(context, targetFile, destinationFile, interrupter, AppConfig.BUFFER_LENGTH_DEFAULT,
+                AppConfig.DEFAULT_SOCKET_TIMEOUT);
     }
 
     /**
@@ -178,7 +186,8 @@ public class FileUtils extends com.genonbeta.android.framework.util.FileUtils
      * @return File moved to its actual name
      * @throws IOException Thrown when rename fails
      */
-    public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile, TransferObject transferObject) throws Exception
+    public static DocumentFile saveReceivedFile(DocumentFile savePath, DocumentFile currentFile,
+                                                TransferObject transferObject) throws Exception
     {
         String uniqueName = FileUtils.getUniqueFileName(savePath, transferObject.name, true);
 

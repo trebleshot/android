@@ -31,6 +31,7 @@ import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
+import androidx.core.content.ContextCompat;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -124,22 +125,24 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
             lister.offerObliged(this, new DirectoryHolder(defaultFolder, getContext().getString(R.string.text_receivedFiles),
                     R.drawable.ic_trebleshot_rounded_white_24dp_static));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
-                    getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
-
-            if (Build.VERSION.SDK_INT >= 19)
+            if (Build.VERSION.SDK_INT <= 28) {
                 lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
-                        getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM),
+                        getContext().getString(R.string.text_photo), R.drawable.ic_photo_white_24dp));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                    getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
+                if (Build.VERSION.SDK_INT >= 19)
+                    lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                            .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                            getContext().getString(R.string.text_documents), R.drawable.ic_library_books_white_24dp));
 
-            lister.offerObliged(this, new PublicDirectoryHolder(Environment
-                    .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
-                    getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
+                lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                        getContext().getString(R.string.text_downloads), R.drawable.ic_file_download_white_24dp));
+
+                lister.offerObliged(this, new PublicDirectoryHolder(Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC),
+                        getContext().getString(R.string.text_music), R.drawable.ic_music_note_white_24dp));
+            }
 
             File fileSystemRoot = new File(".");
 
