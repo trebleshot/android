@@ -95,7 +95,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
                 TextView text1 = parentView.findViewById(R.id.text);
                 TextView text2 = parentView.findViewById(R.id.text2);
                 ViewGroup layoutSplitApk = parentView.findViewById(R.id.layout_split_apk);
-                boolean isSplitApk = Build.VERSION.SDK_INT >= 26 && object.appInfo.splitSourceDirs != null;
+                boolean isSplitApk = Build.VERSION.SDK_INT >= 21 && object.appInfo.splitSourceDirs != null;
 
                 text1.setText(object.friendlyName);
                 text2.setText(object.version);
