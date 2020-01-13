@@ -30,12 +30,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.GlideApp;
 import com.genonbeta.TrebleShot.R;
+import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.util.FileUtils;
 import com.genonbeta.TrebleShot.widget.GroupEditableListAdapter;
 
 import java.io.File;
+import java.util.*;
 
 public class ApplicationListAdapter extends GroupEditableListAdapter<ApplicationListAdapter.PackageHolder,
         GroupEditableListAdapter.GroupViewHolder>
@@ -120,7 +124,7 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         return true;
     }
 
-    public static class PackageHolder extends GroupEditableListAdapter.GroupShareable
+    public static class PackageHolder extends GroupEditableListAdapter.GroupShareable implements ShareActivity.Container
     {
         public static final String FORMAT = ".apk";
         public static final String MIME_TYPE = FileUtils.getFileContentType(FORMAT);
@@ -149,6 +153,21 @@ public class ApplicationListAdapter extends GroupEditableListAdapter<Application
         public boolean setSelectableSelected(boolean selected)
         {
             return super.setSelectableSelected(selected);
+        }
+
+        @Nullable
+        @Override
+        public Containable expand()
+        {
+            if (Build.VERSION.SDK_INT < 21 || appInfo.splitSourceDirs == null)
+                return null;
+
+            List<Uri> fileList = new ArrayList<>();
+
+            for (String location : appInfo.splitSourceDirs)
+                fileList.add(Uri.fromFile(new File(location)));
+
+            return new Containable(uri, fileList);
         }
     }
 }

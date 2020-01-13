@@ -22,15 +22,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.app.Activity;
-import com.genonbeta.TrebleShot.io.ParcelableFile;
+import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.task.OrganizeSharingRunningTask;
 import com.genonbeta.TrebleShot.util.FileUtils;
@@ -41,7 +39,6 @@ import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +66,7 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
     private TextView mProgressTextRight;
     private TextView mTextMain;
     private List<Uri> mFileUris;
-    private ArrayList<FileContainer> mFileContainers;
+    private List<Containable> mContainableList;
     private List<CharSequence> mFileNames;
     private OrganizeSharingRunningTask mTask;
 
@@ -79,7 +76,6 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
         DocumentFile[] files = file.listFiles();
 
         if (files != null) {
-
             if (task.getAnchorListener() != null)
                 task.getAnchorListener().getProgressBar()
                         .setMax(task.getAnchorListener().getProgressBar().getMax() + files.length);
@@ -153,7 +149,7 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
                     mTextMain = findViewById(R.id.textMain);
 
                     if (getIntent().hasExtra(EXTRA_FILE_CONTAINER))
-                        mFileContainers = getIntent().getParcelableArrayListExtra(EXTRA_FILE_CONTAINER);
+                        mContainableList = getIntent().getParcelableArrayListExtra(EXTRA_FILE_CONTAINER);
 
                     findViewById(R.id.cancelButton).setOnClickListener(v -> {
                         if (mTask != null)
@@ -187,7 +183,7 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
             mTask = ((OrganizeSharingRunningTask) task);
             mTask.setAnchorListener(this);
         } else {
-            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames, getIntent(), mFileContainers);
+            mTask = new OrganizeSharingRunningTask(mFileUris, mFileNames, getIntent(), mContainableList);
 
             mTask.setTitle(getString(R.string.mesg_organizingFiles))
                     .setAnchorListener(this)
@@ -284,6 +280,11 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
             mFriendlyName = friendlyName;
         }
 
+        public void setDirectory(String directory)
+        {
+            mDirectory = directory;
+        }
+
         @Override
         public boolean setSelectableSelected(boolean selected)
         {
@@ -292,54 +293,10 @@ public class ShareActivity extends Activity implements SnackbarSupport, Activity
         }
     }
 
-    public static class FileContainer implements Serializable, Parcelable
+    public interface Container
     {
-        public static final Creator<FileContainer> CREATOR = new Creator<FileContainer>()
-        {
-            @Override
-            public FileContainer createFromParcel(Parcel source)
-            {
-                return new FileContainer(source);
-            }
-
-            @Override
-            public FileContainer[] newArray(int size)
-            {
-                return new FileContainer[size];
-            }
-        };
-
-        public String targetUri;
-        public List<ParcelableFile> files;
-
-        public FileContainer(Parcel in) {
-            files = new ArrayList<>();
-            targetUri = in.readString();
-
-            in.readTypedList(files, ParcelableFile.CREATOR);
-        }
-
-        public FileContainer(String targetUri, List<ParcelableFile> files)
-        {
-            this.targetUri = targetUri;
-            this.files = files;
-        }
-
-        @Override
-        public int describeContents()
-        {
-            return 0;
-        }
-
-        @Override
-        public void writeToParcel(Parcel dest, int flags)
-        {
-            ParcelableFile[] fileArray = new ParcelableFile[files.size()];
-
-            files.toArray(fileArray);
-            dest.writeString(targetUri);
-            dest.writeParcelableArray(fileArray, flags);
-        }
+        @Nullable
+        Containable expand();
     }
 }
 

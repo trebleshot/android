@@ -22,24 +22,24 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.activity.ShareActivity;
+import com.genonbeta.TrebleShot.activity.ShareActivity.Container;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.dialog.ChooseSharingMethodDialog;
 import com.genonbeta.TrebleShot.fragment.ShareableListFragment;
+import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.genonbeta.TrebleShot.activity.ShareActivity.ACTION_SEND;
-import static com.genonbeta.TrebleShot.activity.ShareActivity.ACTION_SEND_MULTIPLE;
 
 /**
  * created by: veli
@@ -76,11 +76,11 @@ public class SharingActionModeCallback<T extends Shareable> extends EditableList
         List<T> selectedItemList = new ArrayList<>(getFragment().getSelectionConnection().getSelectedItemList());
 
         if (selectedItemList.size() > 0 && isSharing) {
-            Intent shareIntent = new Intent()
+            Intent shareIntent = (isLocalShare ? new Intent(context, ShareActivity.class) : new Intent())
                     .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    .setAction((item.getItemId() == R.id.action_mode_share_all_apps)
-                            ? (selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND)
-                            : (selectedItemList.size() > 1 ? ACTION_SEND_MULTIPLE : ACTION_SEND));
+                    .setAction(selectedItemList.size() > 1 ? Intent.ACTION_SEND_MULTIPLE : Intent.ACTION_SEND);
+
+            ArrayList<Containable> containerList = new ArrayList<>();
 
             if (selectedItemList.size() > 1) {
                 ShareableListFragment.MIMEGrouper mimeGrouper = new ShareableListFragment.MIMEGrouper();
@@ -90,6 +90,8 @@ public class SharingActionModeCallback<T extends Shareable> extends EditableList
                 for (T sharedItem : selectedItemList) {
                     uriList.add(sharedItem.uri);
                     nameList.add(sharedItem.fileName);
+
+                    addIfEligible(containerList, sharedItem);
 
                     if (!mimeGrouper.isLocked())
                         mimeGrouper.process(sharedItem.mimeType);
@@ -101,10 +103,15 @@ public class SharingActionModeCallback<T extends Shareable> extends EditableList
             } else if (selectedItemList.size() == 1) {
                 T sharedItem = selectedItemList.get(0);
 
+                addIfEligible(containerList, sharedItem);
+
                 shareIntent.setType(sharedItem.mimeType)
                         .putExtra(Intent.EXTRA_STREAM, sharedItem.uri)
                         .putExtra(ShareActivity.EXTRA_FILENAME_LIST, sharedItem.fileName);
             }
+
+            if (containerList.size() > 0)
+                shareIntent.putParcelableArrayListExtra(ShareActivity.EXTRA_FILE_CONTAINER, containerList);
 
             try {
                 if (isLocalShare)
@@ -123,6 +130,16 @@ public class SharingActionModeCallback<T extends Shareable> extends EditableList
             return super.onActionMenuItemSelected(context, actionMode, item);
 
         return false;
+    }
+
+    private void addIfEligible(ArrayList<Containable> list, T sharedItem)
+    {
+        if (sharedItem instanceof Container) {
+            Containable containable = ((Container) sharedItem).expand();
+
+            if (containable != null)
+                list.add(containable);
+        }
     }
 
     public static class SelectionDuo<T extends Shareable>

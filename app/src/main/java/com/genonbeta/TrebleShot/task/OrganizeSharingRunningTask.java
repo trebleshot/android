@@ -30,30 +30,34 @@ import com.genonbeta.TrebleShot.activity.ShareActivity;
 import com.genonbeta.TrebleShot.activity.ViewTransferActivity;
 import com.genonbeta.TrebleShot.activity.WebShareActivity;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
+import com.genonbeta.TrebleShot.io.Containable;
 import com.genonbeta.TrebleShot.object.TransferGroup;
 import com.genonbeta.TrebleShot.object.TransferObject;
 import com.genonbeta.TrebleShot.service.WorkerService;
 import com.genonbeta.TrebleShot.util.AppUtils;
 import com.genonbeta.android.database.SQLQuery;
-import com.genonbeta.android.database.SQLiteDatabase;
+import com.genonbeta.android.framework.io.DocumentFile;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.genonbeta.TrebleShot.activity.ShareActivity.*;
 
 public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareActivity>
 {
     private List<Uri> mFileUris;
     private List<CharSequence> mFileNames;
-    private List<ShareActivity.FileContainer> mFileContainers;
+    private List<Containable> mContainableList;
     private Intent mOriginalIntent;
 
     public OrganizeSharingRunningTask(List<Uri> fileUris, List<CharSequence> fileNames, Intent originalIntent,
-                                      @Nullable List<ShareActivity.FileContainer> fileContainers)
+                                      @Nullable List<Containable> containableList)
     {
         mFileUris = fileUris;
         mFileNames = fileNames;
-        mFileContainers = fileContainers;
+        mContainableList = containableList;
         mOriginalIntent = originalIntent;
     }
 
@@ -67,7 +71,7 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
             getAnchorListener().updateText(thisTask, getService().getString(R.string.mesg_organizingFiles));
         }
 
-        final List<ShareActivity.SelectableStream> measuredObjects = new ArrayList<>();
+        final List<SelectableStream> measuredObjects = new ArrayList<>();
         final List<TransferObject> pendingObjects = new ArrayList<>();
         final TransferGroup groupInstance = new TransferGroup(AppUtils.getUniqueNumber());
 
@@ -84,27 +88,46 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
             }
 
             Uri fileUri = mFileUris.get(position);
-            String fileName = mFileNames != null ? String.valueOf(mFileNames.get(position)) : null;
 
             try {
-                ShareActivity.SelectableStream selectableStream =
-                        new ShareActivity.SelectableStream(getService(), fileUri, null);
+                SelectableStream stream = new SelectableStream(getService(), fileUri, null);
+                DocumentFile file = stream.getDocumentFile();
+                boolean isDirectory = file.isDirectory();
+                String fileName = mFileNames != null ? String.valueOf(mFileNames.get(position)) : file.getName();
 
-                if (selectableStream.getDocumentFile().isDirectory())
-                    ShareActivity.createFolderStructure(selectableStream.getDocumentFile(),
-                            selectableStream.getDocumentFile().getName(), measuredObjects, this);
-                else {
-                    if (fileName != null)
-                        selectableStream.setFriendlyName(fileName);
+                stream.setFriendlyName(fileName);
 
-                    measuredObjects.add(selectableStream);
+                if (mContainableList != null && mContainableList.size() > 0) {
+                    Containable containable = null;
+
+                    for (Containable currentContainable : mContainableList)
+                        if (currentContainable.targetUri.equals(fileUri)) {
+                            containable = currentContainable;
+                            break;
+                        }
+
+                    if (containable != null) {
+                        mContainableList.remove(containable);
+
+                        String directory = stream.getDirectory() == null ? fileName
+                                : stream.getDirectory() + File.separator + fileName;
+
+                        stream.setDirectory(directory);
+
+                        for (Uri childUri : containable.children) {
+                            SelectableStream childStream = new SelectableStream(getService(), childUri, directory);
+                            measure(childStream, measuredObjects, childStream.getDocumentFile().isDirectory());
+                        }
+                    }
                 }
+
+                measure(stream, measuredObjects, isDirectory);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
         }
 
-        for (ShareActivity.SelectableStream selectableStream : measuredObjects) {
+        for (SelectableStream selectableStream : measuredObjects) {
             if (getInterrupter().interrupted())
                 break;
 
@@ -138,9 +161,9 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
                     .setWhere(String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID),
                             String.valueOf(groupInstance.id)));
         } else {
-            int flags = mOriginalIntent.getIntExtra(ShareActivity.EXTRA_FLAGS, 0);
-            boolean flagAddNewDevice = (flags & ShareActivity.FLAG_LAUNCH_DEVICE_ADDING) != 0;
-            boolean flagWebShare = (flags & ShareActivity.FLAG_WEBSHARE) != 0;
+            int flags = mOriginalIntent.getIntExtra(EXTRA_FLAGS, 0);
+            boolean flagAddNewDevice = (flags & FLAG_LAUNCH_DEVICE_ADDING) != 0;
+            boolean flagWebShare = (flags & FLAG_WEBSHARE) != 0;
 
             if (flagWebShare) {
                 groupInstance.isServedOnWeb = true;
@@ -163,5 +186,12 @@ public class OrganizeSharingRunningTask extends WorkerService.RunningTask<ShareA
 
         if (getAnchorListener() != null)
             getAnchorListener().finish();
+    }
+
+    private void measure(SelectableStream stream, List<SelectableStream> objects, boolean isDirectory) {
+        if (isDirectory)
+            createFolderStructure(stream.getDocumentFile(), stream.getDocumentFile().getName(), objects, this);
+        else
+            objects.add(stream);
     }
 }

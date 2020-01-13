@@ -201,11 +201,15 @@ public class WorkerService extends Service
     {
         mExecutor.submit(() -> {
             runningTask.setService(WorkerService.this);
-
             registerWork(runningTask);
-            runningTask.run();
-            unregisterWork(runningTask);
 
+            try {
+                runningTask.run();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            unregisterWork(runningTask);
             runningTask.setService(null);
         });
     }
