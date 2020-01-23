@@ -308,7 +308,7 @@
     <string name="butn_exit">Salir</string>
     <string name="butn_queueCounted">Cola (%d)</string>
     <string name="text_previewThenProceedNotice">Por favor verifique sus selecciones tocando el botón \"Cola\" para poder continuar</string>
-    <string name="mesg_updateDownloadComplete">Actualización recibida con éxito y guardada en sus archivos recibidos</string>
+    <string name="mesg_updateDownloadComplete">Actualización recibida y guardada en sus archivos recibidos</string>
     <string name="text_listEmptyFiles">No hay archivos aquí</string>
     <string name="text_listEmptyImage">No hay fotos aquí</string>
     <string name="text_listEmptyApp">No hay aplicaciones aquí</string>

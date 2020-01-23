@@ -308,7 +308,7 @@
     <string name="butn_exit">Wyjście</string>
     <string name="butn_queueCounted">Kolejka (%d)</string>
     <string name="text_previewThenProceedNotice">Sprawdź wybrane opcje, klikając \"Kolejka\", aby kontynuować</string>
-    <string name="mesg_updateDownloadComplete">Aktualizacja została pomyślnie odebrana i zapisana w odebranych plikach</string>
+    <string name="mesg_updateDownloadComplete">Aktualizacja została odebrana i zapisana w odebranych plikach</string>
     <string name="text_listEmptyFiles">Brak plików</string>
     <string name="text_listEmptyImage">Brak zdjęć</string>
     <string name="text_listEmptyApp">Brak aplikacji</string>

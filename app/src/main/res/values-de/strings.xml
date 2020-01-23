@@ -310,7 +310,7 @@
     <string name="butn_exit">Beenden</string>
     <string name="butn_queueCounted">Warteschlange (%d)</string>
     <string name="text_previewThenProceedNotice">Bitte die Auswahl prüfen durch Tippen auf \"Warteschlange\", um fortzusetzen</string>
-    <string name="mesg_updateDownloadComplete">Update erfolgreich empfangen und bei den empfangenen Dateien gespeichert</string>
+    <string name="mesg_updateDownloadComplete">Update empfangen und bei den empfangenen Dateien gespeichert</string>
     <string name="text_listEmptyFiles">Keine Dateien</string>
     <string name="text_listEmptyImage">Keine Fotos</string>
     <string name="text_listEmptyApp">Keine Apps</string>
@@ -455,7 +455,7 @@
     <string name="butn_connectionTest">Verbindungstest</string>
     <string name="text_textMillisecond">%d ms</string>
     <string name="butn_revokePin">PIN zurückziehen</string>
-    <string name="const_text_useAppFonts">Empfohlene Schriftart setzen</string>
+    <string name="const_text_useAppFonts">Empfohlene Schriftart verwenden</string>
     <string name="const_text_useAppFontsSummary">Benutze die mitgelieferte angepasste Schriftart</string>
     <string name="mesg_waiting">Warten</string>
     <string name="text_amoledOptimizedBlackTheme">Optimiert für AMOLED Bildschirm</string>
@@ -470,7 +470,7 @@
     <string name="mode_webShareAddress">http://%s:%d/</string>
     <string name="text_or">oder</string>
     <string name="text_visitWebShareAddress">Besuchen Sie diesen Link mit Ihrem Browser</string>
-    <string name="text_webShareInfo">Unten sehen Sie Links, die Geräte im gleichen Netzwerk per Browser verbinden können. Als nächstes schalten Sie die Webfreigabe für einzelne Übertragungen ein.</string>
+    <string name="text_webShareInfo">Aktiviere Teilen über das Web für einzelne Übertragungen und besuche einen unten angezeigten Weblink mit einem Gerät im selben Netzwerk.</string>
     <string name="text_dowloadTrebleshotAndroid">TrebleShot für Android herunterladen</string>
     <string name="text_listEmptyConnection">Netzwerke, die Sie verbinden, erscheinen hier</string>
     <string name="mesg_errorNotAnIpAddress">Keine IP-Adresse
@@ -479,4 +479,11 @@
     <string name="butn_asApk">Als APK</string>
     <string name="butn_asLink">Als Link</string>
     <string name="text_linkTrebleshot">Geben Sie Dateien mit TrebleShot frei! Hier können Sie es herunterladen: %s</string>
+    <string name="butn_downloadAllAsZip">Alles als ZIP herunterladen (einzel, unkomprimiert)</string>
+    <string name="text_interfaceVPN">VPN-Server</string>
+    <string name="mesg_textStreamSaved">Text gespeichert</string>
+    <string name="butn_changeMode">Modus wechseln</string>
+    <string name="mesg_qrScannerTextMode">QR Codes werden als Text angezeigt</string>
+    <string name="mesg_qrScannerDefaultMode">Zurück zu den Standardaktionen für QR-Codes</string>
+    <string name="butn_showAsQrCode">Als QR-Code anzeigen</string>
 </resources>
