@@ -278,13 +278,14 @@ public class WebShareServer extends NanoHTTPD
                                         FileUtils.sizeExpression(destFile.length(), false),
                                         TimeUtils.getFriendlyElapsedTime(mContext, receiveTimeElapsed)))
                                 .addAction(R.drawable.ic_folder_white_24dp_static,
-                                        mContext.getString(R.string.butn_showFiles),
-                                        PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), new Intent(mContext, FileExplorerActivity.class)
+                                        mContext.getString(R.string.butn_showFiles), PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(),
+                                                new Intent(mContext, FileExplorerActivity.class)
                                                 .putExtra(FileExplorerActivity.EXTRA_FILE_PATH, savePath.getUri()), 0));
 
                         try {
                             Intent openIntent = FileUtils.getOpenIntent(mContext, destFile);
-                            notification.setContentIntent(PendingIntent.getActivity(mContext, AppUtils.getUniqueNumber(), openIntent, 0));
+                            notification.setContentIntent(PendingIntent.getActivity(mContext,
+                                    AppUtils.getUniqueNumber(), openIntent, 0));
                         } catch (Exception e) {
                         }
 
@@ -308,11 +309,7 @@ public class WebShareServer extends NanoHTTPD
             }
         }
 
-        String[] args = new String[]{};
-
-        if (session.getUri().length() > 1) {
-            args = session.getUri().substring(1).split("/");
-        }
+        String[] args = session.getUri().length() > 1 ? session.getUri().substring(1).split("/") : new String[0];
 
         try {
             switch (args.length >= 1 ? args[0] : "") {
@@ -654,8 +651,7 @@ public class WebShareServer extends NanoHTTPD
     public static class BoundRunner implements NanoHTTPD.AsyncRunner
     {
         private ExecutorService executorService;
-        private final List<ClientHandler> running =
-                Collections.synchronizedList(new ArrayList<ClientHandler>());
+        private final List<ClientHandler> running = Collections.synchronizedList(new ArrayList<>());
 
         public BoundRunner(ExecutorService executorService)
         {

@@ -21,10 +21,7 @@ package com.genonbeta.TrebleShot.io;
 import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Containable implements Parcelable
