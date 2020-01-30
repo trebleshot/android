@@ -58,6 +58,7 @@ public final class ApplicationGlideModule extends AppGlideModule
         registry.append(ApplicationInfo.class, ApplicationInfo.class,
                 new ModelLoaderFactory<ApplicationInfo, ApplicationInfo>()
                 {
+                    @NonNull
                     @Override
                     public ModelLoader<ApplicationInfo, ApplicationInfo> build(
                             @NonNull MultiModelLoaderFactory multiFactory)
@@ -73,11 +74,12 @@ public final class ApplicationGlideModule extends AppGlideModule
                 }).append(ApplicationInfo.class, Drawable.class, new ApplicationIconDecoder(context));
     }
 
-    private class ApplicationIconModelLoader implements ModelLoader<ApplicationInfo, ApplicationInfo>
+    private static class ApplicationIconModelLoader implements ModelLoader<ApplicationInfo, ApplicationInfo>
     {
         @Nullable
         @Override
-        public LoadData<ApplicationInfo> buildLoadData(@NonNull final ApplicationInfo applicationInfo, int width, int height, @NonNull Options options)
+        public LoadData<ApplicationInfo> buildLoadData(@NonNull final ApplicationInfo applicationInfo, int width,
+                                                       int height, @NonNull Options options)
         {
             return new LoadData<>(new ObjectKey(applicationInfo), new DataFetcher<ApplicationInfo>()
             {
@@ -116,13 +118,13 @@ public final class ApplicationGlideModule extends AppGlideModule
         }
 
         @Override
-        public boolean handles(ApplicationInfo applicationInfo)
+        public boolean handles(@NonNull ApplicationInfo applicationInfo)
         {
             return true;
         }
     }
 
-    private class ApplicationIconDecoder implements ResourceDecoder<ApplicationInfo, Drawable>
+    private static class ApplicationIconDecoder implements ResourceDecoder<ApplicationInfo, Drawable>
     {
         private final Context context;
 
@@ -133,7 +135,8 @@ public final class ApplicationGlideModule extends AppGlideModule
 
         @Nullable
         @Override
-        public Resource<Drawable> decode(@NonNull ApplicationInfo source, int width, int height, @NonNull Options options) throws IOException
+        public Resource<Drawable> decode(@NonNull ApplicationInfo source, int width, int height,
+                                         @NonNull Options options)
         {
             Drawable icon = source.loadIcon(context.getPackageManager());
             return new DrawableResource<Drawable>(icon)
@@ -162,7 +165,7 @@ public final class ApplicationGlideModule extends AppGlideModule
         }
 
         @Override
-        public boolean handles(@NonNull ApplicationInfo source, @NonNull Options options) throws IOException
+        public boolean handles(@NonNull ApplicationInfo source, @NonNull Options options)
         {
             return true;
         }

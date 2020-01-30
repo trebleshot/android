@@ -20,6 +20,7 @@ package com.genonbeta.TrebleShot.object;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
+import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
@@ -309,24 +310,30 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               TransferGroup parent)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               TransferGroup parent)
     {
         lastChangeDate = System.currentTimeMillis();
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, TransferGroup parent)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               TransferGroup parent)
     {
         // Normally we'd like to check every file, but it may take a while.
         if (!Type.INCOMING.equals(type) || (!Flag.INTERRUPTED.equals(getFlag())
                 && (!Flag.DONE.equals(getFlag()) || !mDeleteOnRemoval)))
             return;
+
+        final String TAG = TransferObject.class.getSimpleName();
+        final long startTime = System.currentTimeMillis();
 
         try {
             if (parent == null) {
@@ -342,6 +349,8 @@ public class TransferObject implements DatabaseObject<TransferGroup>, Editable
         } catch (Exception e) {
             // do nothing
         }
+
+        Log.d(TAG, "onRemoveObject: Took " + (System.currentTimeMillis() - startTime) + "nsecs to complete");
     }
 
     @Override

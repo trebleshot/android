@@ -32,7 +32,8 @@ public class DynamicNotification extends NotificationCompat.Builder
     private NotificationManagerCompat mManager;
     private int mNotificationId;
 
-    public DynamicNotification(Context context, NotificationManagerCompat manager, String notificationChannel, int notificationId)
+    public DynamicNotification(Context context, NotificationManagerCompat manager, String notificationChannel,
+                               int notificationId)
     {
         super(context, notificationChannel);
         mManager = manager;
@@ -65,7 +66,7 @@ public class DynamicNotification extends NotificationCompat.Builder
     public DynamicNotification updateProgress(int max, int percent, boolean indeterminate)
     {
         setProgress(max, percent, indeterminate);
-        mManager.notify(mNotificationId, build());
+        show();
 
         return this;
     }

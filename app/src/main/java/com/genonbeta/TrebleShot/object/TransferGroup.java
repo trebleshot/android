@@ -19,6 +19,7 @@
 package com.genonbeta.TrebleShot.object;
 
 import android.content.ContentValues;
+import android.util.Log;
 import com.genonbeta.TrebleShot.database.AccessDatabase;
 import com.genonbeta.android.database.DatabaseObject;
 import com.genonbeta.android.database.SQLQuery;
@@ -118,20 +119,26 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
     }
 
     @Override
-    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onCreateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               NetworkDevice parent)
     {
         this.dateCreated = System.currentTimeMillis();
     }
 
     @Override
-    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onUpdateObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               NetworkDevice parent)
     {
 
     }
 
     @Override
-    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database, NetworkDevice parent)
+    public void onRemoveObject(android.database.sqlite.SQLiteDatabase dbInstance, SQLiteDatabase database,
+                               NetworkDevice parent)
     {
+        final String TAG = TransferGroup.class.getSimpleName();
+        final long startTime = System.currentTimeMillis();
+
         SQLQuery.Select objectSelection = new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER).setWhere(
                 String.format("%s = ?", AccessDatabase.FIELD_TRANSFER_GROUPID), String.valueOf(id));
 
@@ -149,5 +156,7 @@ public class TransferGroup implements DatabaseObject<NetworkDevice>, Selectable
         } else
             database.removeAsObject(dbInstance, objectSelection, TransferObject.class, null, null,
                     this);
+
+        Log.d(TAG, "onRemoveObject: Took " + (System.currentTimeMillis() - startTime) + "nsecs to complete");
     }
 }

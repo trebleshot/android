@@ -193,7 +193,7 @@ public class AccessDatabase extends SQLiteDatabase
         if (activity == null || activity.isFinishing())
             return;
 
-        new WorkerService.RunningTask()
+        new WorkerService.RunningTask<WorkerService.OnAttachListener>()
         {
             @Override
             protected void onRun()
