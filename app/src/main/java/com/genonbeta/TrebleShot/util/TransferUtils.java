@@ -342,7 +342,7 @@ public class TransferUtils
                                 case Keyword.ERROR_NOT_FOUND:
                                     msg = R.string.mesg_notValidTransfer;
                                     break;
-                                case Keyword.ERROR_REQUIRE_TRUSTZONE:
+                                case Keyword.ERROR_REQUIRE_TRUST:
                                     msg = R.string.mesg_errorNotTrusted;
                                     break;
                                 case Keyword.ERROR_NOT_ALLOWED:

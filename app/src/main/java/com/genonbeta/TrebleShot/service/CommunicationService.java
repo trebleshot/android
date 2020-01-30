@@ -1499,29 +1499,30 @@ public class CommunicationService extends Service
                                         processHolder.assignee = new TransferAssignee(group, device, type);
 
                                         getDatabase().reconstruct(processHolder.assignee);
-                                        pushReply(activeConnection, new JSONObject(), true);
-                                        Log.d(TAG, "CommunicationServer.onConnected(): " +
-                                                "Reply sent for the connection");
 
-                                        result = true;
+                                        if (TransferObject.Type.OUTGOING.equals(type)) {
+                                            Log.d(TAG, "onConnected: Informing before starting to send.");
 
-                                        if (TransferObject.Type.OUTGOING.equals(type))
+                                            pushReply(activeConnection, new JSONObject(), true);
                                             handleTransferAsSender(processHolder);
-                                        else if (TransferObject.Type.INCOMING.equals(type)) {
-                                            Log.d(TAG, "CommunicationServer.onConnected(): "
-                                                    + activeConnection.receive().response);
 
-                                            if (device.isTrusted)
+                                            result = true;
+                                        } else if (TransferObject.Type.INCOMING.equals(type)) {
+                                            JSONObject currentReply = new JSONObject();
+                                            result = device.isTrusted;
+
+                                            if (!result)
+                                                currentReply.put(Keyword.ERROR, Keyword.ERROR_REQUIRE_TRUST);
+
+                                            pushReply(activeConnection, currentReply, result);
+                                            Log.d(TAG, "onConnected: Replied: " + currentReply.toString());
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().response);
+
+                                            if (result)
                                                 handleTransferAsReceiver(processHolder);
-                                            else {
-                                                result = false;
-                                                responseJSON.put(Keyword.ERROR, Keyword.ERROR_REQUIRE_TRUSTZONE);
-                                            }
 
-                                            Log.d(TAG, "CommunicationServer.onConnected(): "
-                                                    + activeConnection.receive().response);
-                                        } else
-                                            result = false;
+                                            Log.d(TAG, "onConnected: " + activeConnection.receive().response);
+                                        }
                                     } else
                                         responseJSON.put(Keyword.ERROR, Keyword.ERROR_NOT_ACCESSIBLE);
                                 } catch (Exception e) {

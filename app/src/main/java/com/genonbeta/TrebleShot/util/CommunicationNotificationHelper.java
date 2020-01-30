@@ -372,6 +372,7 @@ public class CommunicationNotificationHelper
         if (errorKey != null)
             switch (errorKey) {
                 case Keyword.ERROR_NOT_ALLOWED:
+                case Keyword.ERROR_REQUIRE_TRUST:
                     errorMsg = getContext().getString(R.string.mesg_notAllowed);
                     break;
                 case Keyword.ERROR_NOT_FOUND:
