@@ -21,6 +21,7 @@ package com.genonbeta.TrebleShot.task;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import androidx.appcompat.app.AlertDialog;
 import com.genonbeta.CoolSocket.CoolSocket;
@@ -61,13 +62,15 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
     public void onRun()
     {
         final Context context = getService().getApplicationContext();
+        final AccessDatabase database = AppUtils.getDatabase(context);
+        final SQLiteDatabase instance = database.getWritableDatabase();
 
         final DialogInterface.OnClickListener retryButtonListener = (dialog, which) -> {
             if (getAnchorListener() != null)
                 getAnchorListener().doCommunicate(mDevice, mConnection);
         };
 
-        CommunicationBridge.connect(AppUtils.getDatabase(getService()), true,
+        CommunicationBridge.connect(database, true,
                 client -> {
                     try {
                         boolean doUpdate = false;
@@ -75,18 +78,16 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                         final TransferAssignee assignee = new TransferAssignee(mGroup, mDevice,
                                 TransferObject.Type.OUTGOING, mConnection);
 
-                        final List<TransferObject> existingRegistry =
-                                new ArrayList<>(AppUtils.getDatabase(context).castQuery(
-                                        new SQLQuery.Select(AccessDatabase.TABLE_TRANSFER)
-                                                .setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID + "=? AND "
-                                                                + AccessDatabase.FIELD_TRANSFER_TYPE + "=?",
-                                                        String.valueOf(mGroup.id),
-                                                        TransferObject.Type.OUTGOING.toString()), TransferObject.class));
+                        final List<TransferObject> existingRegistry = database.castQuery(instance, new SQLQuery.Select(
+                                AccessDatabase.TABLE_TRANSFER).setWhere(AccessDatabase.FIELD_TRANSFER_GROUPID
+                                        + "=? AND " + AccessDatabase.FIELD_TRANSFER_TYPE + "=?", String.valueOf(
+                                                mGroup.id), TransferObject.Type.OUTGOING.toString()),
+                                TransferObject.class, null);
 
                         try {
                             // Checks if the current assignee is already on the list, if so, update
-                            AppUtils.getDatabase(context).reconstruct(new TransferAssignee(
-                                    assignee.groupId, assignee.deviceId, TransferObject.Type.OUTGOING));
+                            database.reconstruct(instance, new TransferAssignee(assignee.groupId, assignee.deviceId,
+                                    TransferObject.Type.OUTGOING));
 
                             doUpdate = true;
                         } catch (Exception ignored) {
@@ -128,7 +129,7 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                         // so that if the user rejects, it won't be removed from the sender
                         jsonRequest.put(Keyword.FILES_INDEX, filesArray.toString());
 
-                        getInterrupter().addCloser(userAction -> AppUtils.getDatabase(context).remove(assignee));
+                        getInterrupter().addCloser(userAction -> database.remove(assignee));
 
                         final CoolSocket.ActiveConnection activeConnection = client.communicate(mDevice, mConnection);
 
@@ -151,12 +152,12 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                             publishStatusText(context.getString(R.string.mesg_organizingFiles));
 
                             if (doUpdate)
-                                AppUtils.getDatabase(context).update(assignee);
+                                database.update(instance, assignee, mGroup);
                             else
-                                AppUtils.getDatabase(context).insert(assignee);
+                                database.insert(instance, assignee, mGroup);
 
-                            AppUtils.getDatabase(context).update(existingRegistry);
-                            AppUtils.getDatabase(context).broadcast();
+                            database.update(instance, existingRegistry, null, mGroup);
+                            database.broadcast();
 
                             if (getAnchorListener() != null) {
                                 getAnchorListener().setResult(RESULT_OK, new Intent()
@@ -166,9 +167,8 @@ public class AddDeviceRunningTask extends WorkerService.RunningTask<AddDevicesTo
                                 getAnchorListener().finish();
                             }
                         } else if (getAnchorListener() != null) {
-                            UIConnectionUtils.showConnectionRejectionInformation(
-                                    getAnchorListener(), mDevice, clientResponse,
-                                    retryButtonListener);
+                            UIConnectionUtils.showConnectionRejectionInformation(getAnchorListener(), mDevice,
+                                    clientResponse, retryButtonListener);
                         }
                     } catch (Exception e) {
                         if (!(e instanceof InterruptedException)) {
