@@ -24,6 +24,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.format.DateFormat;
 import android.util.Log;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.config.AppConfig;
@@ -75,7 +76,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
     }
 
     @Override
-    public void uncaughtException(Thread t, Throwable e)
+    public void uncaughtException(@NonNull Thread t, @NonNull Throwable e)
     {
         try {
             if ((!mCrashLogFile.exists() || mCrashLogFile.delete())
@@ -83,24 +84,26 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
                 StringBuilder stringBuilder = new StringBuilder();
                 StackTraceElement[] stackTraceElements = e.getStackTrace();
 
-                stringBuilder.append("--TREBLESHOT-CRASH-LOG--\n");
-
-                stringBuilder.append("\nException: " + e.getClass().getSimpleName());
-                stringBuilder.append("\nMessage: " + e.getMessage());
-                stringBuilder.append("\nCause: " + e.getCause());
-                stringBuilder.append("\nDate: " + DateFormat.getLongDateFormat(this).format(
-                        new Date(System.currentTimeMillis())));
-                stringBuilder.append("\n\n");
-                stringBuilder.append("--STACKTRACE--\n\n");
+                stringBuilder.append("--TREBLESHOT-CRASH-LOG--\n")
+                        .append("\nException: ")
+                        .append(e.getClass().getSimpleName())
+                        .append("\nMessage: ")
+                        .append(e.getMessage())
+                        .append("\nCause: ")
+                        .append(e.getCause()).append("\nDate: ")
+                        .append(DateFormat.getLongDateFormat(this).format(new Date(
+                                System.currentTimeMillis())))
+                        .append("\n\n")
+                        .append("--STACKTRACE--\n\n");
 
                 if (stackTraceElements.length > 0)
                     for (StackTraceElement element : stackTraceElements) {
-                        stringBuilder.append(element.getClassName());
-                        stringBuilder.append(".");
-                        stringBuilder.append(element.getMethodName());
-                        stringBuilder.append(":");
-                        stringBuilder.append(element.getLineNumber());
-                        stringBuilder.append("\n");
+                        stringBuilder.append(element.getClassName())
+                                .append(".")
+                                .append(element.getMethodName())
+                                .append(":")
+                                .append(element.getLineNumber())
+                                .append("\n");
                     }
 
                 FileOutputStream outputStream = new FileOutputStream(mCrashLogFile);
@@ -162,7 +165,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler
                     .apply();
 
         // Some pre-kitkat devices were soft rebooting when this feature was turned on by default.
-        // So we will disable it for them and they will still remain an option for the user.
+        // So we will disable it for them and it will still remain as an option for the user.
         if (!nsdDefined)
             defaultPreferences.edit()
                     .putBoolean("nsd_enabled", Build.VERSION.SDK_INT >= 19)

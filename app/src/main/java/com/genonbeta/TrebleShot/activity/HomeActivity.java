@@ -84,7 +84,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         mActionMode = findViewById(R.id.content_powerful_action_mode);
         mNavigationView = findViewById(R.id.nav_view);
         mDrawerLayout = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+                R.string.text_navigationDrawerOpen, R.string.text_navigationDrawerClose);
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
@@ -98,7 +99,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
         });
 
         mNavigationView.setNavigationItemSelectedListener(this);
-        mActionMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(!started ? View.VISIBLE : View.GONE));
+        mActionMode.setOnSelectionTaskListener((started, actionMode) -> toolbar.setVisibility(!started ? View.VISIBLE
+                : View.GONE));
 
         if (UpdateUtils.hasNewVersion(this))
             highlightUpdater(getDefaultPreferences().getString("availableVersion", null));
@@ -159,7 +161,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
                             .apply())
                     .setNegativeButton(R.string.butn_no, (dialog, which) -> {
                         AppUtils.publishLatestChangelogSeen(HomeActivity.this);
-                        Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(HomeActivity.this, R.string.mesg_versionUpdatedChangelogRejected,
+                                Toast.LENGTH_SHORT).show();
                     })
                     .show();
         }
@@ -240,7 +243,8 @@ public class HomeActivity extends Activity implements NavigationView.OnNavigatio
             exitApp();
         } else if (R.id.menu_activity_main_donate == mChosenMenuItemId) {
             try {
-                startActivity(new Intent(this, Class.forName("com.genonbeta.TrebleShot.activity.DonationActivity")));
+                startActivity(new Intent(this, Class.forName(
+                        "com.genonbeta.TrebleShot.activity.DonationActivity")));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

@@ -158,8 +158,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
         // we first get the default files
         for (GenericTransferItem object : derivedList) {
             object.assignees = assigneeArray;
-            object.directory = object.directory == null || object.directory.length() == 0 ? null
-                    : object.directory;
+            object.directory = object.directory == null || object.directory.length() == 0 ? null : object.directory;
 
             if (currentPath != null && object.directory == null)
                 continue;
@@ -168,8 +167,7 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
             boolean isIncoming = TransferObject.Type.INCOMING.equals(object.type);
             boolean isOutgoing = TransferObject.Type.OUTGOING.equals(object.type);
 
-            if ((currentPath == null && object.directory == null)
-                    || object.directory.equals(currentPath)) {
+            if ((currentPath == null && object.directory == null) || object.directory.equals(currentPath)) {
                 try {
                     if (!loadThumbnails)
                         object.supportThumbnail = false;
@@ -182,7 +180,8 @@ public class TransferListAdapter extends GroupEditableListAdapter<TransferListAd
                             if (isOutgoing)
                                 documentFile = FileUtils.fromUri(getContext(), Uri.parse(object.file));
                             else if (TransferObject.Flag.DONE.equals(object.getFlag()))
-                                documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, mGroup, false);
+                                documentFile = FileUtils.getIncomingPseudoFile(getContext(), object, mGroup,
+                                        false);
 
                             if (documentFile != null && documentFile.exists()) {
                                 object.documentFile = documentFile;
