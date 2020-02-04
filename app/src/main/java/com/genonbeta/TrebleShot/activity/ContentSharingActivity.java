@@ -31,7 +31,9 @@ import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
 import com.genonbeta.TrebleShot.fragment.*;
+import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
+import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
 import com.google.android.material.tabs.TabLayout;
 
@@ -44,7 +46,7 @@ public class ContentSharingActivity extends Activity
     public static final String TAG = ContentSharingActivity.class.getSimpleName();
 
     private PowerfulActionMode mMode;
-    private SharingActionModeCallback mSelectionCallback;
+    private SharingActionModeCallback<Shareable> mSelectionCallback;
     private Activity.OnBackPressedListener mBackPressedListener;
 
     @Override
@@ -65,8 +67,8 @@ public class ContentSharingActivity extends Activity
         final TabLayout tabLayout = findViewById(R.id.activity_content_sharing_tab_layout);
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
-        mSelectionCallback = new SharingActionModeCallback(null);
-        final PowerfulActionMode.SelectorConnection selectorConnection = new PowerfulActionMode.SelectorConnection(
+        mSelectionCallback = new SharingActionModeCallback<>(null);
+        final PowerfulActionMode.SelectorConnection<Shareable> selectorConnection = new PowerfulActionMode.SelectorConnection<Shareable>(
                 mMode, mSelectionCallback);
 
         final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
@@ -74,12 +76,10 @@ public class ContentSharingActivity extends Activity
             @Override
             public void onItemInstantiated(StableItem item)
             {
-                EditableListFragmentImpl fragmentImpl = (EditableListFragmentImpl) item.getInitiatedItem();
-                //EditableListFragmentModelImpl fragmentModelImpl = (EditableListFragmentModelImpl) item.getInitiatedItem();
+                EditableListFragmentImpl<Shareable> fragmentImpl = (EditableListFragmentImpl<Shareable>) item.getInitiatedItem();
 
                 fragmentImpl.setSelectionCallback(mSelectionCallback);
                 fragmentImpl.setSelectorConnection(selectorConnection);
-                //fragmentModelImpl.setLayoutClickListener(groupLayoutClickListener);
 
                 if (viewPager.getCurrentItem() == item.getCurrentPosition())
                     attachListeners(fragmentImpl);
@@ -156,11 +156,10 @@ public class ContentSharingActivity extends Activity
         }
     }
 
-    public void attachListeners(EditableListFragmentImpl fragment)
+    public void attachListeners(EditableListFragmentImpl<Shareable> fragment)
     {
         mSelectionCallback.updateProvider(fragment);
-        mBackPressedListener = fragment instanceof Activity.OnBackPressedListener
-                ? (OnBackPressedListener) fragment
+        mBackPressedListener = fragment instanceof Activity.OnBackPressedListener ? (OnBackPressedListener) fragment
                 : null;
     }
 }
