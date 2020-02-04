@@ -26,6 +26,7 @@ import androidx.annotation.Nullable;
 import com.genonbeta.TrebleShot.adapter.ActiveConnectionListAdapter;
 import com.genonbeta.TrebleShot.config.AppConfig;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.*;
 import java.util.*;
@@ -163,7 +164,7 @@ public class NetworkUtils
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
 
         return filteredInterfaceList;
@@ -182,9 +183,19 @@ public class NetworkUtils
 
     public static boolean ping(InetAddress inetAddress, int timeout)
     {
+        String binary = "/system/bin/ping";
+
         try {
-            return inetAddress.isReachable(timeout);
-        } catch (IOException ignored) {
+            if (!new File(binary).canExecute())
+                throw new IOException("Ping binary (assumed path) cannot be executed. Using 'isReachable' method.");
+
+            return Runtime.getRuntime().exec(binary + " -c 1 -w " + timeout + " "
+                    + inetAddress.getHostAddress()).waitFor() == 0;
+        } catch (Exception e) {
+            try {
+                return inetAddress.isReachable(timeout);
+            } catch (IOException ignored) {
+            }
         }
 
         return false;
