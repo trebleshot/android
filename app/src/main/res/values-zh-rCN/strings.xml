@@ -289,7 +289,7 @@
     <string name="butn_saveAnyway">仍然保存</string>
     <string name="text_taskOngoing">正在进行的任务</string>
     <string name="butn_queueCounted">队列 (%d)</string>
-    <string name="mesg_updateDownloadComplete">更新接收完毕并已保存至已收到的文件</string>
+    <string name="mesg_updateDownloadComplete">更新已接收并已保存至已收到的文件</string>
     <string name="text_listEmptyFiles">此处无文件</string>
     <string name="text_listEmptyImage">此处无图片</string>
     <string name="text_listEmptyApp">此处无应用</string>
@@ -451,7 +451,7 @@
     <string name="mesg_errorNotTrustZoneDevice">将本设备在接收方设置为信任域设备方可进行此操作。</string>
     <string name="butn_enterIpAddress">输入IP地址</string>
     <string name="text_enterIpAddress">@string/butn_enterIpAddress</string>
-    <string name="butn_webShare">通过浏览器(网页)分享</string>
+    <string name="butn_webShare">通过浏览器分享</string>
     <string name="text_webShare">@string/butn_webShare</string>
     <string name="text_webShareNoContentNotice">使用“在浏览器中分享”以在此处查看传输！</string>
     <string name="butn_shareOnBrowser">在浏览器中分享</string>
