@@ -290,7 +290,7 @@
     <string name="butn_exit">יציאה</string>
     <string name="butn_queueCounted">תור (%d)</string>
     <string name="text_previewThenProceedNotice">נא לוודא את הבחירות שלך על ידי נגיעה ב־„תור” כדי להמשיך</string>
-    <string name="mesg_updateDownloadComplete">העדכון התקבל בהצלחה ונשמר לקבצים שהתקבלו אצלך</string>
+    <string name="mesg_updateDownloadComplete">העדכון התקבל ונשמר לקבצים שהתקבלו אצלך</string>
     <string name="text_listEmptyFiles">אין כאן קבצים</string>
     <string name="text_listEmptyImage">אין כאן תמונות</string>
     <string name="text_listEmptyApp">אין כאן יישומונים</string>
