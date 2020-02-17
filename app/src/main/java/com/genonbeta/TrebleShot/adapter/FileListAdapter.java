@@ -663,7 +663,7 @@ public class FileListAdapter extends GroupEditableListAdapter<FileListAdapter.Ge
             if (o instanceof FileHolderMerger)
                 return MathUtils.compare(((FileHolderMerger) o).getType().ordinal(), getType().ordinal());
 
-            return 1;
+            return 0;
         }
 
         public enum Type
