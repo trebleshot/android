@@ -18,7 +18,6 @@
 
 package com.genonbeta.TrebleShot.dialog;
 
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +46,8 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
     private LayoutInflater mInflater;
     private TextDrawable.IShapeBuilder mIconBuilder;
 
-    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity,
-                                        final PreloadedGroup group, final List<String> activeList)
+    public ToggleMultipleTransferDialog(@NonNull final ViewTransferActivity activity, final PreloadedGroup group,
+                                        final List<String> activeList)
     {
         super(activity);
 
@@ -63,14 +62,7 @@ public class ToggleMultipleTransferDialog extends AlertDialog.Builder
         setNegativeButton(R.string.butn_close, null);
 
         if (group.hasOutgoing())
-            setNeutralButton(R.string.butn_addDevices, new DialogInterface.OnClickListener()
-            {
-                @Override
-                public void onClick(DialogInterface dialog, int which)
-                {
-                    activity.startDeviceAddingActivity();
-                }
-            });
+            setNeutralButton(R.string.butn_addDevices, (dialog, which) -> activity.startDeviceAddingActivity());
 
         ShowingAssignee senderAssignee = null;
 

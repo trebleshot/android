@@ -55,7 +55,8 @@ public class ImageListAdapter extends GalleryGroupEditableListAdapter<ImageListA
     @Override
     protected void onLoad(GroupLister<ImageHolder> lister)
     {
-        Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null, null, null);
+        Cursor cursor = mResolver.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null, null,
+                null, null);
 
         if (cursor != null) {
             if (cursor.moveToFirst()) {

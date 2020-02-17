@@ -43,9 +43,8 @@ import java.util.ArrayList;
  * Date: 5/30/17 10:47 AM
  */
 
-public class FileExplorerFragment
-        extends FileListFragment
-        implements Activity.OnBackPressedListener, DetachListener, IconSupport, TitleSupport
+public class FileExplorerFragment extends FileListFragment implements Activity.OnBackPressedListener, DetachListener,
+        IconSupport, TitleSupport
 {
     public static final String TAG = FileExplorerFragment.class.getSimpleName();
 
@@ -60,9 +59,7 @@ public class FileExplorerFragment
         if (parent == null)
             return null;
 
-        return parent.canRead()
-                ? parent
-                : getReadableFolder(parent);
+        return parent.canRead() ? parent : getReadableFolder(parent);
     }
 
     @Override
@@ -82,23 +79,17 @@ public class FileExplorerFragment
         mPathView = adaptedView.findViewById(R.id.fragment_fileexplorer_pathresolver);
         mPathAdapter = new FilePathResolverRecyclerAdapter(getContext());
 
-        mPathAdapter.setOnClickListener(new PathResolverRecyclerAdapter.OnClickListener<DocumentFile>()
-        {
-            @Override
-            public void onClick(PathResolverRecyclerAdapter.Holder<DocumentFile> holder)
-            {
-                goPath(holder.index.object);
-            }
-        });
+        mPathAdapter.setOnClickListener(holder -> goPath(holder.index.object));
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL,
+                false);
         layoutManager.setStackFromEnd(true);
 
         mPathView.setLayoutManager(layoutManager);
         mPathView.setHasFixedSize(true);
         mPathView.setAdapter(mPathAdapter);
 
-        return super.onListView(mainContainer, (ViewGroup) adaptedView.findViewById(R.id.fragment_fileexplorer_listViewContainer));
+        return super.onListView(mainContainer, adaptedView.findViewById(R.id.fragment_fileexplorer_listViewContainer));
     }
 
     @Override
@@ -154,14 +145,7 @@ public class FileExplorerFragment
 
         if (id == R.id.actions_file_explorer_create_folder) {
             if (getAdapter().getPath() != null && getAdapter().getPath().canWrite())
-                new FolderCreationDialog(getContext(), getAdapter().getPath(), new FolderCreationDialog.OnFolderCreatedListener()
-                {
-                    @Override
-                    public void onFolderCreated(DocumentFile directoryFile)
-                    {
-                        refreshList();
-                    }
-                }).show();
+                new FolderCreationDialog(getContext(), getAdapter().getPath(), directoryFile -> refreshList()).show();
             else
                 Snackbar.make(getListView(), R.string.mesg_currentPathUnavailable, Snackbar.LENGTH_SHORT).show();
         } else

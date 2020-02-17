@@ -24,9 +24,11 @@ import android.os.Looper;
 import android.view.MenuItem;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 import com.genonbeta.TrebleShot.R;
 import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter;
+import com.genonbeta.TrebleShot.adapter.SmartFragmentPagerAdapter.StableItem;
 import com.genonbeta.TrebleShot.app.Activity;
 import com.genonbeta.TrebleShot.app.EditableListFragment;
 import com.genonbeta.TrebleShot.app.EditableListFragmentImpl;
@@ -35,6 +37,7 @@ import com.genonbeta.TrebleShot.object.Shareable;
 import com.genonbeta.TrebleShot.ui.callback.SharingActionModeCallback;
 import com.genonbeta.android.framework.object.Selectable;
 import com.genonbeta.android.framework.widget.PowerfulActionMode;
+import com.genonbeta.android.framework.widget.PowerfulActionMode.SelectorConnection;
 import com.google.android.material.tabs.TabLayout;
 
 /**
@@ -68,15 +71,16 @@ public class ContentSharingActivity extends Activity
         final ViewPager viewPager = findViewById(R.id.activity_content_sharing_view_pager);
 
         mSelectionCallback = new SharingActionModeCallback<>(null);
-        final PowerfulActionMode.SelectorConnection<Shareable> selectorConnection = new PowerfulActionMode.SelectorConnection<Shareable>(
-                mMode, mSelectionCallback);
+        final SelectorConnection<Shareable> selectorConnection = new SelectorConnection<>(mMode, mSelectionCallback);
 
-        final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this, getSupportFragmentManager())
+        final SmartFragmentPagerAdapter pagerAdapter = new SmartFragmentPagerAdapter(this,
+                getSupportFragmentManager())
         {
             @Override
             public void onItemInstantiated(StableItem item)
             {
-                EditableListFragmentImpl<Shareable> fragmentImpl = (EditableListFragmentImpl<Shareable>) item.getInitiatedItem();
+                Fragment fragment = item.getInitiatedItem();
+                EditableListFragmentImpl<Shareable> fragmentImpl = (EditableListFragmentImpl<Shareable>) fragment;
 
                 fragmentImpl.setSelectionCallback(mSelectionCallback);
                 fragmentImpl.setSelectorConnection(selectorConnection);
@@ -86,17 +90,15 @@ public class ContentSharingActivity extends Activity
             }
         };
 
-        //mMode.setContainerLayout(findViewById(R.id.activity_content_sharing_action_mode_layout));
         Bundle fileExplorerArgs = new Bundle();
         fileExplorerArgs.putBoolean(FileExplorerFragment.ARG_SELECT_BY_CLICK, true);
 
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(0, ApplicationListFragment.class,
-                null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(1, FileExplorerFragment.class,
-                fileExplorerArgs).setTitle(getString(R.string.text_files)));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(2, MusicListFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(3, ImageListFragment.class, null));
-        pagerAdapter.add(new SmartFragmentPagerAdapter.StableItem(4, VideoListFragment.class, null));
+        pagerAdapter.add(new StableItem(0, ApplicationListFragment.class, null));
+        pagerAdapter.add(new StableItem(1, FileExplorerFragment.class, fileExplorerArgs).setTitle(getString(
+                R.string.text_files)));
+        pagerAdapter.add(new StableItem(2, MusicListFragment.class, null));
+        pagerAdapter.add(new StableItem(3, ImageListFragment.class, null));
+        pagerAdapter.add(new StableItem(4, VideoListFragment.class, null));
 
         pagerAdapter.createTabs(tabLayout, false, true);
         viewPager.setAdapter(pagerAdapter);
@@ -109,7 +111,8 @@ public class ContentSharingActivity extends Activity
             {
                 viewPager.setCurrentItem(tab.getPosition());
 
-                final EditableListFragment fragment = (EditableListFragment) pagerAdapter.getItem(tab.getPosition());
+                final EditableListFragmentImpl<Shareable> fragment = (EditableListFragmentImpl<Shareable>) pagerAdapter
+                        .getItem(tab.getPosition());
 
                 attachListeners(fragment);
 
