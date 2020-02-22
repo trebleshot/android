@@ -18,8 +18,6 @@
 
 package com.genonbeta.TrebleShot.app;
 
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -34,7 +32,6 @@ import androidx.collection.ArrayMap;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.genonbeta.TrebleShot.R;
-import com.genonbeta.TrebleShot.dialog.SelectionEditorDialog;
 import com.genonbeta.TrebleShot.exception.NotReadyException;
 import com.genonbeta.TrebleShot.object.Editable;
 import com.genonbeta.TrebleShot.object.Shareable;
@@ -63,7 +60,7 @@ import java.util.Map;
 
 abstract public class EditableListFragment<T extends Editable, V extends EditableListAdapter.EditableViewHolder,
         E extends EditableListAdapter<T, V>> extends DynamicRecyclerViewFragment<T, V, E>
-        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>
+        implements EditableListFragmentImpl<T>, EditableListFragmentModelImpl<V>, SelectableHost<T>
 {
     private IEngineConnection<T> mEngineConnection;
     private FilteringDelegate<T> mFilteringDelegate;
@@ -83,6 +80,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     private FastScroller mFastScroller;
     private Map<String, Integer> mSortingOptions = new ArrayMap<>();
     private Map<String, Integer> mOrderingOptions = new ArrayMap<>();
+    private List<T> mSelectableList = new ArrayList<>();
     private ContentObserver mObserver;
     private LayoutClickListener<V> mLayoutClickListener;
     private String mSearchText;
@@ -119,6 +117,9 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         super.onCreate(savedInstanceState);
         getAdapter().setFragment(this);
         mTwoRowLayoutState = isTwoRowLayout();
+        mEngineConnection = new EngineConnection<>(getDistinctiveTitle(getContext()));
+        mEngineConnection.setSelectableProvider(getAdapterImpl());
+        mEngineConnection.setSelectableHost(this::getSelectableList);
     }
 
     @Override
@@ -127,8 +128,6 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         super.onActivityCreated(savedInstanceState);
 
         setHasOptionsMenu(true);
-
-        mEngineConnection = new EngineConnection<>(getDistinctiveTitle(getContext()));
 
         if (mUseDefaultPaddingDecoration) {
             float padding = mDefaultPaddingDecorationSize > -1 ? mDefaultPaddingDecorationSize
@@ -324,7 +323,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         if (id == R.id.actions_abs_editable_multi_select && getSelectionCallback() != null)
             getEngineConnection().getMode().start(getSelectionCallback());
         else*/
-            if (groupId == R.id.actions_abs_editable_group_sorting)
+        if (groupId == R.id.actions_abs_editable_group_sorting)
             changeSortingCriteria(item.getOrder());
         else if (groupId == R.id.actions_abs_editable_group_sort_order)
             changeOrderingCriteria(item.getOrder());
@@ -389,8 +388,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         return false;
     }
 
-    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId,
-                                         Map<String, Integer> options)
+    protected void applyDynamicMenuItems(MenuItem mainItem, int groupId, Map<String, Integer> options)
     {
         if (mainItem != null) {
             mainItem.setVisible(true);
@@ -462,8 +460,7 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
         refreshList();
     }
 
-    public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String,
-            Integer> options)
+    public void checkPreferredDynamicItem(MenuItem dynamicItem, int preferredItemId, Map<String, Integer> options)
     {
         if (dynamicItem != null) {
             Menu gridSizeMenu = dynamicItem.getSubMenu();
@@ -551,6 +548,12 @@ abstract public class EditableListFragment<T extends Editable, V extends Editabl
     public IEngineConnection<T> getEngineConnection()
     {
         return mEngineConnection;
+    }
+
+    @Override
+    public List<T> getSelectableList()
+    {
+        return mSelectableList;
     }
 
     public int getSortingCriteria()

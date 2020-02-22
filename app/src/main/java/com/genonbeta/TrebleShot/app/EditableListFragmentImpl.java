@@ -27,6 +27,7 @@ import com.genonbeta.TrebleShot.widget.EditableListAdapterImpl;
 import com.genonbeta.android.framework.app.ListFragmentImpl;
 import com.genonbeta.android.framework.util.actionperformer.IEngineConnection;
 import com.genonbeta.android.framework.util.actionperformer.PerformerListener;
+import com.genonbeta.android.framework.util.actionperformer.SelectableProvider;
 
 /**
  * created by: veli

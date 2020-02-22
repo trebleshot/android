@@ -71,11 +71,11 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     @Override
     public void onUpdate(List<T> passedItem)
     {
-        synchronized (getItemList()) {
+        synchronized (getList()) {
             mItemList.clear();
             mItemList.addAll(passedItem);
 
-            syncSelectionList(getItemList());
+            syncSelectionList(getList());
         }
     }
 
@@ -96,7 +96,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     @Override
     public int getCount()
     {
-        return getItemList().size();
+        return getList().size();
     }
 
     public Comparator<T> getDefaultComparator()
@@ -192,11 +192,6 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
         return AppUtils.getUniqueNumber();
     }
 
-    public List<T> getItemList()
-    {
-        return mItemList;
-    }
-
     @Override
     public int getItemViewType(int position)
     {
@@ -206,7 +201,13 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
     @Override
     public List<T> getList()
     {
-        return getItemList();
+        return mItemList;
+    }
+
+    @Override
+    public List<T> getSelectableList()
+    {
+        return getList();
     }
 
     @Override
@@ -284,8 +285,7 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
     public boolean notifyGridSizeUpdate(int gridSize, boolean isScreenLarge)
     {
-        return mGridLayoutRequested = (!isScreenLarge && gridSize > 1)
-                || gridSize > 2;
+        return mGridLayoutRequested = (!isScreenLarge && gridSize > 1) || gridSize > 2;
     }
 
     public void setSortingCriteria(int sortingCriteria, int sortingOrder)
@@ -296,16 +296,13 @@ abstract public class EditableListAdapter<T extends Editable, V extends Editable
 
     public synchronized void syncSelectionList()
     {
-        synchronized (getItemList()) {
-            syncSelectionList(getItemList());
+        synchronized (getList()) {
+            syncSelectionList(getList());
         }
     }
 
     public synchronized void syncSelectionList(List<T> itemList)
     {
-        if (getFragment() == null || getFragment().getEngineConnection() == null)
-            return;
-
         for (T item : itemList)
             item.setSelectableSelected(mFragment.getEngineConnection().isSelected(item));
     }

@@ -99,8 +99,7 @@ public class ApplicationListFragment extends GroupEditableListFragment<Applicati
     @Override
     public boolean onDefaultClickAction(GroupEditableListAdapter.GroupViewHolder holder)
     {
-        return getEngineConnection() != null
-                ? getEngineConnection().setSelected(holder)
+        return getEngineConnection() != null ? getEngineConnection().setSelected(holder)
                 : performLayoutClickOpen(holder);
     }
 
